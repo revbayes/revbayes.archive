@@ -23,6 +23,7 @@
  * $Id$
  */
 
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbMathLogic.h"
 #include "RbSettings.h"
@@ -91,6 +92,20 @@ bool RbMath::compDefinitelyLessThan(double a, double b, double epsilon) {
     return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
 }
 
+
+bool RbMath::isAComputableNumber(double x)
+{
+    if ( x != x )
+        return false;
+    if ( x == RbConstants::Double::neginf )
+        return false;
+    if ( x == RbConstants::Double::nan )
+        return false;
+    if ( x == RbConstants::Double::inf )
+        return false;
+    
+    return true;
+}
 
 /** Tests whether a double is finite */
 bool RbMath::isFinite(double x) {

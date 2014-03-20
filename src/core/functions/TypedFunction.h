@@ -47,24 +47,30 @@ namespace RevBayesCore {
         virtual                            ~TypedFunction(void);
         
         // public methods
+        const std::string&                  getRevDeclaration(void) const;                                              //!< Get the Rev declaration of the function, if any
         valueType&                          getValue(void);
         const valueType&                    getValue(void) const;
         void                                setDeterministicNode(DeterministicNode<valueType> *n);                      //!< Set the stochastic node holding this distribution
 
         // pure virtual public methors
         virtual TypedFunction*              clone(void) const = 0;                                                      //!< Clone the function
-        virtual void                        update(void) = 0;                                                           //!< Clone the function
+        virtual void                        update(void) = 0;                                                           //!< Update the value of the function
     
     protected:
-        TypedFunction(valueType *v);
+        TypedFunction(valueType *v, std::string revDecl = "");
         TypedFunction(const TypedFunction &f);
+       
+        // overloaded operators
+        TypedFunction&                      operator=(const TypedFunction &d); 
         
+
         // members 
         DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
         valueType*                          value;
     
     private:
         mutable bool                        dirty;
+        std::string                         revDeclaration;                                                             //!< Rev language declaration, if any
     };
     
     // Global functions using the class
@@ -78,12 +84,22 @@ namespace RevBayesCore {
 #include "IsDerivedFrom.h"
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(), value( v ), dagNode( NULL ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v, std::string revDecl) : Function(),
+    dagNode( NULL ), 
+    value( v ), 
+    dirty(true),
+    revDeclaration(revDecl)
+{
     
 }
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), dagNode( NULL ), dirty(true) {
+RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), 
+    dagNode( NULL ), 
+    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), 
+    dirty(true),
+    revDeclaration( f.revDeclaration )
+{
 
 }
 
@@ -91,11 +107,36 @@ template <class valueType>
 RevBayesCore::TypedFunction<valueType>::~TypedFunction( void ) {
     
     delete value;
-
 }
 
+
 template <class valueType>
-const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
+RevBayesCore::TypedFunction<valueType>& RevBayesCore::TypedFunction<valueType>::operator=(const TypedFunction &f) {
+    
+    if ( this != &f ) 
+    {
+        // call base class
+        Function::operator=( f );
+        
+        // make my own copy of the value (we rely on proper implementation of assignment operators)
+        delete value;
+        value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value );
+    }
+    
+    return *this;
+}
+
+
+template <class valueType>
+const std::string& RevBayesCore::TypedFunction<valueType>::getRevDeclaration(void) const
+{
+    return revDeclaration;
+}
+
+
+template <class valueType>
+const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const 
+{
     
     if (dirty) 
     {
@@ -107,7 +148,8 @@ const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const {
 }
 
 template <class valueType>
-valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) {
+valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) 
+{
     
     if ( dirty ) 
     {
@@ -121,14 +163,16 @@ valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) {
 
 
 template <class valueType>
-void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicNode<valueType> *n) {
+void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicNode<valueType> *n) 
+{
     
     dagNode = n;
 }
 
 
 template <class valueType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedFunction<valueType>& f) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const TypedFunction<valueType>& f) 
+{
     
     o << "f(x) = " << f.getValue();
     

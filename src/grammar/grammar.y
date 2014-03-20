@@ -31,20 +31,26 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "SyntaxElement.h"
-#include "SyntaxConstantAssignment.h"
-#include "SyntaxDeterministicAssignment.h"
-#include "SyntaxStochasticAssignment.h"
+#include "SyntaxAdditionAssignment.h"
 #include "SyntaxBinaryExpr.h"
 #include "SyntaxClassDef.h"
 #include "SyntaxConstant.h"
-#include "SyntaxVariableDecl.h"
+#include "SyntaxConstantAssignment.h"
+#include "SyntaxDecrement.h"
+#include "SyntaxDeterministicAssignment.h"
+#include "SyntaxDivisionAssignment.h"
 #include "SyntaxForLoop.h"
 #include "SyntaxFormal.h"
 #include "SyntaxFunctionCall.h"
 #include "SyntaxFunctionDef.h"
+#include "SyntaxIncrement.h"
 #include "SyntaxLabeledExpr.h"
+#include "SyntaxMultiplicationAssignment.h"
 #include "SyntaxStatement.h"
+#include "SyntaxStochasticAssignment.h"
+#include "SyntaxSubtractionAssignment.h"
 #include "SyntaxUnaryExpr.h"
+#include "SyntaxVariableDecl.h"
 #include "SyntaxVariable.h"
 #include "Workspace.h"
 
@@ -99,6 +105,7 @@ Parser& parser = Parser::getParser();
 %type <syntaxElement> constant
 %type <syntaxElement> statement expression stmt_or_expr
 %type <syntaxElement> arrowAssign tildeAssign equationAssign
+%type <syntaxElement> additionAssign subtractionAssign multiplicationAssign divisionAssign
 %type <syntaxElement> declaration classDef memberDef
 %type <syntaxElement> functionDef
 %type <syntaxElement> forStatement ifStatement whileStatement
@@ -113,7 +120,10 @@ Parser& parser = Parser::getParser();
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING RBNULL FALSE TRUE 
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN EQUAL 
+%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN 
+%token ADDITION_ASSIGN SUBTRACTION_ASSIGN MULTIPLICATION_ASSIGN DIVISION_ASSIGN 
+%token DECREMENT INCREMENT
+%token EQUAL 
 %token AND OR AND2 OR2 GT GE LT LE EQ NE
 %token END_OF_INPUT
 
@@ -125,6 +135,7 @@ Parser& parser = Parser::getParser();
 %destructor { delete ($$); } variable functionCall fxnCall argument formal constant
 %destructor { delete ($$); } statement expression stmt_or_expr 
 %destructor { delete ($$); } arrowAssign tildeAssign equationAssign 
+%destructor { delete ($$); } additionAssign subtractionAssign multiplicationAssign divisionAssign
 %destructor { delete ($$); } declaration classDef memberDef 
 %destructor { delete ($$); } functionDef 
 %destructor { delete ($$); } forStatement ifStatement whileStatement 
@@ -144,6 +155,10 @@ Parser& parser = Parser::getParser();
 %right      ARROW_ASSIGN
 %right      TILDE_ASSIGN
 %right      EQUATION_ASSIGN
+%right      ADDITION_ASSIGN
+%right      SUBTRACTION_ASSIGN
+%right      MULTIPLICATION_ASSIGN
+%right      DIVISION_ASSIGN
 %right      EQUAL
 %left       OR OR2
 %left       AND AND2
@@ -152,6 +167,7 @@ Parser& parser = Parser::getParser();
 %left       '+' '-'
 %left       '*' '/'
 %left       ':'
+%right      DECREMENT INCREMENT
 %left       UMINUS UPLUS
 %right      '^'
 %left       '.' UAND
@@ -306,6 +322,11 @@ expression  :   constant                    { $$ = $1; }
             |   '!' expression %prec UNOT   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, $2); }
             |   AND expression %prec UAND   { $$ = new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, $2); }
 
+            |   DECREMENT variable          { $$ = new SyntaxDecrement( $2 ); }
+            |   variable DECREMENT          { $$ = new SyntaxDecrement( $1 ); }
+            |   INCREMENT variable          { $$ = new SyntaxIncrement( $2 ); }
+            |   variable INCREMENT          { $$ = new SyntaxIncrement( $1 ); }
+
             |   expression ':' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, $1, $3); }
 
             |   expression '+' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Add, $1, $3); }
@@ -329,6 +350,11 @@ expression  :   constant                    { $$ = $1; }
             |   arrowAssign                 { $$ = $1; }
             |   equationAssign              { $$ = $1; }
             |   tildeAssign                 { $$ = $1; }
+
+            |   additionAssign              { $$ = $1; }
+            |   subtractionAssign           { $$ = $1; }
+            |   multiplicationAssign        { $$ = $1; }
+            |   divisionAssign              { $$ = $1; }
 
             |   functionCall                { $$ = $1; }
 
@@ -380,6 +406,70 @@ equationAssign  :   variable EQUATION_ASSIGN expression
                         printf("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
 #endif
                         $$ = new SyntaxDeterministicAssignment($1, $3); 
+                    }
+                ;
+
+additionAssign  :   variable ADDITION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting addition assignment (ADDITION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxAdditionAssignment($1, $3); 
+                    }
+                |   functionCall ADDITION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting addition assignment (ADDITION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxAdditionAssignment($1, $3); 
+                    }
+                ;
+
+subtractionAssign  :   variable SUBTRACTION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting subtraction assignment (SUBTRACTION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxSubtractionAssignment($1, $3); 
+                    }
+                |   functionCall SUBTRACTION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting subtraction assignment (SUBTRACTION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxSubtractionAssignment($1, $3); 
+                    }
+                ;
+
+multiplicationAssign  :   variable MULTIPLICATION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting multiplication assignment (MULTIPLICATION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxMultiplicationAssignment($1, $3); 
+                    }
+                |   functionCall MULTIPLICATION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting multiplication assignment (MULTIPLICATION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxMultiplicationAssignment($1, $3); 
+                    }
+                ;
+
+divisionAssign  :   variable DIVISION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting division assignment (DIVISION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxDivisionAssignment($1, $3); 
+                    }
+                |   functionCall DIVISION_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting division assignment (DIVISION_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxDivisionAssignment($1, $3); 
                     }
                 ;
 

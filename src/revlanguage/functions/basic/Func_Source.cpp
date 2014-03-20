@@ -74,7 +74,7 @@ RbLanguageObject* Func_Source::execute( void ) {
         getline( inFile, line );
         lineNumber++;
         
-        if (echo_on) RBOUT(line);
+        if (echo_on) RBOUT("RevBayes > " + line);
         
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
@@ -143,7 +143,7 @@ const TypeSpec& Func_Source::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_Source::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbVoid_name;
+    static TypeSpec returnTypeSpec = RlUtils::Void;
     
     return returnTypeSpec;
 }

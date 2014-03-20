@@ -1,27 +1,8 @@
-/**
- * @file
- * This file contains the implementation of Func_readAlignment.
- *
- * @brief Implementation of Func_readAlingment
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-08-22 11:45:25 +0200 (Wed, 22 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id: Func_readCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
- */
-
-
 #include "ArgumentRule.h"
 #include "Func_writeFasta.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RlAbstractCharacterData.h"
-#include "RlCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
 #include "FastaWriter.h"
@@ -30,15 +11,30 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
-Func_writeFasta* Func_writeFasta::clone( void ) const {
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of the model. 
+ */
+Func_writeFasta* Func_writeFasta::clone( void ) const 
+{
     
     return new Func_writeFasta( *this );
 }
 
 
-/** Execute function */
-RbLanguageObject* Func_writeFasta::execute( void ) {
+/** 
+ * Execute the function. 
+ * Here we will extract the character data object from the arguments and get the file name
+ * into which we shall write the character data. Then we simply create a FastaWriter
+ * instance and delegate the work
+ *
+ * \return NULL because the output is going into a file
+ */
+RbLanguageObject* Func_writeFasta::execute( void ) 
+{
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
@@ -51,15 +47,23 @@ RbLanguageObject* Func_writeFasta::execute( void ) {
 }
 
 
-
-
-/** Get argument rules */
-const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const {
+/** 
+ * Get the argument rules for this function.
+ *
+ * The argument rules of the writeFasta function are:
+ * (1) the filename which must be a string.
+ * (2) the data object that must be some character matrix.
+ *
+ * \return The argument rules.
+ */
+const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const 
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if (!rulesSet) {
+    if (!rulesSet) 
+    {
         argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "data", true, AbstractCharacterData::getClassTypeSpec() ) );
         rulesSet = true;
@@ -69,24 +73,41 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_writeFasta::getClassName(void) { 
+/**
+ * Get class name of object 
+ *
+ * \return The class' name.
+ */
+const std::string& Func_writeFasta::getClassName(void) 
+{ 
     
     static std::string rbClassName = "Write fasta function";
     
 	return rbClassName; 
 }
 
-/** Get class type spec describing type of object */
-const TypeSpec& Func_writeFasta::getClassTypeSpec(void) { 
+
+/**
+ * Get class type spec describing type of an object from this class (static).
+ *
+ * \return TypeSpec of this class.
+ */
+const TypeSpec& Func_writeFasta::getClassTypeSpec(void) 
+{ 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
 
-/** Get type spec */
-const TypeSpec& Func_writeFasta::getTypeSpec( void ) const {
+
+/**
+ * Get type-specification on this object (non-static).
+ *
+ * \return The type spec of this object.
+ */
+const TypeSpec& Func_writeFasta::getTypeSpec( void ) const 
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -94,8 +115,14 @@ const TypeSpec& Func_writeFasta::getTypeSpec( void ) const {
 }
 
 
-/** Get return type */
-const TypeSpec& Func_writeFasta::getReturnType( void ) const {
+/** 
+ * Get the return type of the function. 
+ * This function does not return anything so the return type is NULL.
+ *
+ * \return NULL
+ */
+const TypeSpec& Func_writeFasta::getReturnType( void ) const 
+{
     
     static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
     return returnTypeSpec;

@@ -25,9 +25,9 @@ namespace RevBayesCore {
     class ExponentialFunction : public ContinuousFunction {
         
     public:
-        ExponentialFunction(const TypedDagNode<double> *a);
+        ExponentialFunction(const TypedDagNode<double> *a, std::string revDecl = "");
         
-        ExponentialFunction*                clone(void) const;                                                  //!< Create a clon.
+        ExponentialFunction*                clone(void) const;                                                  //!< Create a clone
         void                                update(void);                                                       //!< Recompute the value
         
     protected:

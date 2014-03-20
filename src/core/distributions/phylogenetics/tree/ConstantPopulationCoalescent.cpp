@@ -161,7 +161,7 @@ bool ConstantPopulationCoalescent::matchesConstraints( void ) {
     
     for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it) 
     {
-        if ( !root.containsClade( *it ) ) 
+        if ( !root.containsClade( *it, true ) ) 
         {
             return false;
         }
@@ -221,7 +221,7 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
     tau->setRoot(root);
     
     // connect the tree with the topology
-    psi->setTopology( tau );
+    psi->setTopology( tau, true );
     
     // now simulate the ages
     

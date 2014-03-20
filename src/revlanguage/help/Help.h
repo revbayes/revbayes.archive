@@ -23,46 +23,45 @@
 #ifndef Help_H
 #define Help_H
 
-#include "HelpNode.h"
-
 #include <string>
 #include <vector>
-
+#include "pugixml/pugixml.hpp"
 
 class Help {
-    
 public:
-    ~Help(void);                                                                                         //!< Destructor
-    std::string                     formatHelpString(const std::string& qs, size_t columnWidth);                                        //!< Format the help information for printing to the terminal
-    static Help&                    getHelp(void)                                                                                       //!< Return a reference to the singleton help
+    ~Help(void); //!< Destructor
+    std::string formatHelpString(const std::string& qs, size_t columnWidth); //!< Format the help information for printing to the terminal
+
+    static Help& getHelp(void) //!< Return a reference to the singleton help
     {
         static Help globalHelpInstance = Help();
         return globalHelpInstance;
     }
-    HelpNode*                       getHelpNodeForQuery(const std::string& qs);                                                         //!< Returns the help node for a query
-    void                            initializeHelp(std::string f);                                                                      //!< Initialize the help from an XML file
-    bool                            isHelpAvailableForQuery(const std::string& qs);                                                     //!< Used by the parser to query the help tree for a specific command
-    bool                            isUserHelpAvailable(void) { return isHelpInitialized; }                                             //!< Returns whether the help was successfully initialized
-    void                            print(void);                                                                                        //!< Print the help tree
-    
+    void initializeHelp(); //!< Initialize the help from an XML file
+    bool isHelpAvailableForQuery(const std::string& qs); //!< Used by the parser to query the help tree for a specific command
+
+    bool isUserHelpAvailable(void) {
+        return isHelpInitialized;
+    } //!< Returns whether the help was successfully initialized
+
 private:
-    Help(void);                                                                                         //!< Default constructor
-    Help(const Help&);                                                                                  //!< Copy constructor (hidden away as this is a singleton class)
-    Help&                           operator=(const Help&);                                                                             //!< Assignment operator (hidden away as this is a singleton class)
-    size_t                          getNumHelpEntries(void);                                                                            //!< Returns the number of help entries for a command
-    std::string                     formatStringWithBreaks(const std::string s, std::string padding, size_t w);                         //!< Used for formatting a string for printing to the screen
-    std::string                     formatStringWithBreaks(const std::string s, std::string padding, size_t col, size_t w);             //!< Used for formatting a string for printing to the screen
-    std::string                     formatStringWithBreaks(const std::string s, std::string padding1, std::string padding2, size_t w);  //!< Used for formatting a string for printing to the screen
-    bool                            parseHelpFile(std::string& fn);                                                                     //!< Parse the XML file containing user help information
-    std::string                     getNextTag(HelpNode* p, std::istream& inStream);                                                    //!< Get the next XML tag in the help file
-    std::string                     getNextTag(HelpNode* p, std::string& s);                                                            //!< Get the next XML tag in the help file
-    char                            getSpecialCharacter(std::istream& inStream);                                                        //!< Parse special characters, such as "&apos;"
-    void                            skipWhiteSpace(std::istream& inStream);                                                             //!< Skip white space
-    
-    bool                            isHelpInitialized;                                                                                  //!< Flag indicating whether the help has been initialized
-    HelpNode*                       helpRoot;                                                                                           //!< The root of the help tree
-    std::vector<HelpNode*>          helpNodes;                                                                                          //!< A vector holding the help nodes that were allocated
-    int                             numHelpNodes;                                                                                       //!< The number of help nodes
+    Help(void); //!< Default constructor
+    Help(const Help&); //!< Copy constructor (hidden away as this is a singleton class)
+    Help& operator=(const Help&); //!< Assignment operator (hidden away as this is a singleton class)
+    std::string wrapText(const std::string s, std::string padding, size_t w); //!< Used for formatting a string for printing to the screen
+    pugi::xml_parse_result loadHelpFile(const std::string& qs); //!< loads the help xml file, name of file is expected to be <query>.xml
+    std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks);
+    std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks, bool stripLineBreaks);
+    std::string replaceString(std::string subject, const std::string& search, const std::string& replace);
+    template <typename T>std::string to_string(T value);
+    std::string stripConsecutiveSpace(std::string subject);
+
+
+
+    bool isHelpInitialized; //!< Flag indicating whether the help has been initialized
+    std::string pathToHelpDir; //!< Where the help xml files are located
+    pugi::xml_document doc; //!< the (parsed) xml help file
+
 };
 
 #endif

@@ -30,7 +30,7 @@ namespace RevLanguage {
         Func_normalizeVector();
         
         // Basic utility functions
-        Func_normalizeVector*               clone(void) const;                                          //!< Clone the object
+        Func_normalizeVector*       clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassName(void);                                         //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object

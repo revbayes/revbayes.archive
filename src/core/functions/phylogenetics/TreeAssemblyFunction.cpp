@@ -8,7 +8,7 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Topology> *t, cons
     addParameter( tau );
     addParameter( brlen );
     
-    value->setTopology( &(tau->getValue()) );
+    value->setTopology( &(tau->getValue()), false );
     
     update();
 }
@@ -72,7 +72,7 @@ void TreeAssemblyFunction::update( void ) {
 void TreeAssemblyFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     if (oldP == tau) {
         tau = static_cast<const TypedDagNode<Topology>* >( newP );
-        value->setTopology( &(tau->getValue()) );
+        value->setTopology( &(tau->getValue()), false );
     }
     else if (oldP == brlen) {
         brlen = static_cast<const TypedDagNode<std::vector<double> >* >( newP );

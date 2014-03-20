@@ -65,7 +65,6 @@ namespace RevBayesCore {
         
     private:
         std::set<const DagNode*>            parameters;
-
     };
     
     // Global functions using the class

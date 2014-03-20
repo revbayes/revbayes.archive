@@ -23,6 +23,8 @@
 #include "RbUtil.h"
 #include "StochasticNode.h"
 
+#include <iomanip>
+#include <ostream>
 #include <sstream>
 
 using namespace RevLanguage;
@@ -91,7 +93,9 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
         }
     }
     table.insert(std::pair<std::string, Function* >(name, func));
-    
+
+    /* Name the function so that it is aware of what it is called */
+    func->setName( name );
 }
 
 
@@ -270,6 +274,9 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
             }
         }
         
+        // free the memory
+        delete matchScore;
+        
         /* Delete all processed arguments except those of the best matching function, if it is ambiguous */
         for ( it = retVal.first; it != retVal.second; it++ ) 
         {
@@ -344,6 +351,25 @@ const Function& FunctionTable::getFunction(const std::string& name, const std::v
 }
 
 
+/** Get a copy of the function table, including either the functions in the frame or in the entire environment */
+std::multimap<std::string, Function*> FunctionTable::getTableCopy(bool env) const
+{
+    std::multimap<std::string, Function*> tableCopy = table;
+
+    // TODO: Do not insert hidden (overridden) functions from parent table
+    if (env == true && parentTable != NULL)
+    {
+        std::multimap<std::string, Function*> parentTableCopy = parentTable->getTableCopy(true);
+        std::multimap<std::string, Function*>::iterator it;
+        
+        for (it=parentTableCopy.begin(); it!=parentTableCopy.end(); it++)
+            tableCopy.insert( (*it) );
+    }
+    
+    return tableCopy;
+}
+
+
 /** Check if two formals are unique */
 bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const  {
 
@@ -411,28 +437,66 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
 }
 
 
-/** Print function table for user */
-void FunctionTable::printValue(std::ostream& o) const {
+/** Print function table for user in pretty format */
+void FunctionTable::printValue(std::ostream& o, bool env) const {
+    
+    std::multimap<std::string, Function*> printTable;
+    
+    // We get a single table for frame or environment, sorted appropriately
+    printTable = getTableCopy( env );
 
-    o << "<name> = <returnType> function (<formal arguments>)" << std::endl;
-    for (std::multimap<std::string, Function *>::const_iterator i=table.begin(); i!=table.end(); i++) 
+    // Do not print anything if table is empty
+    if (printTable.size() == 0)
+        return;
+
+    size_t maxFunctionNameLength = 6;   // Length of '<name>'
+    size_t maxReturnTypeLength   = 12;  // Length of '<returnType>'
+
+    for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
     {
-        o << i->first << " = ";
-        i->second->printValue(o);
-        o << std::endl;
+        if ( i->first.size() > maxFunctionNameLength )
+            maxFunctionNameLength = i->first.size();
+        if ( i->second->getReturnType().getType().size() > maxReturnTypeLength )
+            maxReturnTypeLength = i->second->getReturnType().getType().size();
+    }
+
+    int nameLen       = int( maxFunctionNameLength );
+    int returnTypeLen = int( maxReturnTypeLength );
+    int argTabLen     = nameLen + returnTypeLen + 14;   // position of closing parenthesis
+    int headerLen     = nameLen + returnTypeLen + 33;
+
+    o << std::setw(nameLen) << std::left << "<name>" << " = ";
+    o << std::setw(returnTypeLen) << "<returnType> " << " function (<formal arguments>)" << std::endl;
+    o << std::setw(headerLen) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
+
+    for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
+    {
+        o << std::setw(nameLen) << i->first << " = ";
+        
+        o << std::setw(returnTypeLen) << i->second->getReturnType().getType() << " function " << std::setw(1);
+        
+        const RevLanguage::ArgumentRules& argRules = i->second->getArgumentRules();
+        
+        if ( argRules.size() > 1 )
+        {
+            o << "(" << std::endl;
+            for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
+            {
+                o << std::setw(argTabLen) << std::setfill(' ') << " " << std::setw(1);
+                (*i)->printValue(o);
+                if ( i != argRules.end() - 1 )
+                    o << ",";
+                o << std::endl;
+            }
+            o << std::setw(argTabLen) << std::setfill(' ') << std::right << ")" << std::left << std::setw(1) << std::endl;
+        }
+        else
+        {
+            o << "(";
+            for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
+                (*i)->printValue(o);
+            o << ")" << std::endl;
+        }
     }
 }
 
-
-/** Complete info about object */
-std::string FunctionTable::debugInfo(void) const {
-
-    std::ostringstream o;
-    if (table.size() == 0)
-        o << "FunctionTable with no entries" << std::endl;
-    else
-        o << "FunctionTable with " << table.size() << " entries:" << std::endl;
-    printValue(o);
-
-    return o.str();
-}

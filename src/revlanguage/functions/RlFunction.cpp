@@ -36,18 +36,20 @@ Function::Function(void) : RbLanguageObject(), args( ) {
 }
 
 /** Copy constructor. */
-Function::Function(const Function &x) : RbLanguageObject(x), args(  ) {
+Function::Function(const Function &x) : RbLanguageObject( x ), 
+    argsProcessed( x.argsProcessed ),
+    args( x.args ),
+    env( x.env ),
+    name( x.name )
+{
     
-    // here we only get a shallow copy of the vector of arguments
-    args = x.args;
-    
-    argsProcessed = x.argsProcessed;
 }
 
 
 /** Destructor. We need to free the arguments here. */
 Function::~Function(void) {
     
+    // we don't own the enclosing environment -> we don't delete it.
 }
 
 
@@ -311,7 +313,7 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
 
 
 /** Debug info about object */
-std::string Function::debugInfo(void) const {
+std::string Function::callSignature(void) const {
     
     std::ostringstream o;
     o << getTypeSpec() << ": " << std::endl;
@@ -355,6 +357,38 @@ const TypeSpec& Function::getClassTypeSpec(void) {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
     
 	return rbClass; 
+}
+
+
+/** Get name of function */
+const std::string& Function::getName(void) const {
+    
+    return name;
+}
+
+/** Get Rev declaration of the function, formatted for output to the user */
+std::string Function::getRevDeclaration(void) const {
+    
+    std::ostringstream o;
+    
+    /* It is unclear whether the 'function' specifier is needed. We leave it out for now. */
+    // o << "function ";
+ 
+    o << getReturnType();
+    if ( name == "" )
+        o << " <unnamed> (";
+    else
+        o << " " << name << " (";
+
+    const ArgumentRules& argRules = getArgumentRules();
+    for (size_t i=0; i<argRules.size(); i++) {
+        if (i != 0)
+            o << ", ";
+        argRules[i].printValue(o);
+    }
+    o << ")";
+    
+    return o.str();
 }
 
 
@@ -603,9 +637,6 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
 /** Set a member variable */
 void Function::setArgument(const std::string& name, Argument& arg, const bool c) {
-    // calling the internal method to set the DAG node
-    // the derived classes should know how to set their members
-//    setArgumentVariable(name, arg.getVariablePtr() );
     
     // make sure that the argument has the correct label
     Argument myArg = Argument( arg.getVariable(), name, c );
@@ -623,6 +654,11 @@ void Function::setExecutionEnviroment(Environment *e) {
 
 }
 
+/** Set name of function */
+void Function::setName(const std::string& nm) {
+    
+    name = nm;
+}
 
 
 

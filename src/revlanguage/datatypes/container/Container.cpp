@@ -113,7 +113,7 @@ RbLanguageObject* Container::executeMethod(std::string const &name, const std::v
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
 
-        if (size() < (size_t)(index.getValue()) )
+        if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
         {
             throw RbException("Index out of bounds in []");
         }

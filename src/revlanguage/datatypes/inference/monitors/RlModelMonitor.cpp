@@ -1,4 +1,3 @@
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
@@ -15,35 +14,51 @@
 
 using namespace RevLanguage;
 
-ModelMonitor::ModelMonitor(void) : Monitor() {
+ModelMonitor::ModelMonitor(void) : Monitor() 
+{
     
 }
 
 
 /** Clone object */
-ModelMonitor* ModelMonitor::clone(void) const {
+ModelMonitor* ModelMonitor::clone(void) const 
+{
     
 	return new ModelMonitor(*this);
 }
 
 
-void ModelMonitor::constructInternalObject( void ) {
+void ModelMonitor::constructInternalObject( void ) 
+{
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
     const std::string&                  fn      = static_cast<const RlString &>( filename->getValue() ).getValue();
     const std::string&                  sep     = static_cast<const RlString &>( separator->getValue() ).getValue();
-    int                                 g       = static_cast<const Natural &>( printgen->getValue() ).getValue();
+    int                                 g       = static_cast<const Natural  &>( printgen->getValue() ).getValue();
     bool                                pp      = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
     bool                                l       = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
     bool                                pr      = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
-    value = new RevBayesCore::ModelMonitor(g, fn, sep, pp, l, pr);
+    bool                                ap      = static_cast<const RlBoolean &>( append->getValue() ).getValue();
+    bool                                so      = static_cast<const RlBoolean &>( stochOnly->getValue() ).getValue();
+    RevBayesCore::ModelMonitor *m = new RevBayesCore::ModelMonitor(g, fn, sep);
+    
+    // now set the flags
+    m->setAppend( ap );
+    m->setPrintLikelihood( l );
+    m->setPrintPosterior( pp );
+    m->setPrintPrior( pr );
+    m->setStochasticNodesOnly( so );
+    
+    // store the new model into our value variable
+    value = m;
 }
 
 
 /** Get class name of object */
-const std::string& ModelMonitor::getClassName(void) { 
+const std::string& ModelMonitor::getClassName(void) 
+{ 
     
     static std::string rbClassName = "ModelMonitor";
     
@@ -51,7 +66,8 @@ const std::string& ModelMonitor::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ModelMonitor::getClassTypeSpec(void) { 
+const TypeSpec& ModelMonitor::getClassTypeSpec(void) 
+{ 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
@@ -74,6 +90,8 @@ const MemberRules& ModelMonitor::getMemberRules(void) const {
         modelMonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         modelMonitorMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        modelMonitorMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        modelMonitorMemberRules.push_back( new ArgumentRule("stochasticOnly", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         
         
         rulesSet = true;
@@ -83,7 +101,8 @@ const MemberRules& ModelMonitor::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& ModelMonitor::getTypeSpec( void ) const {
+const TypeSpec& ModelMonitor::getTypeSpec( void ) const 
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -92,34 +111,52 @@ const TypeSpec& ModelMonitor::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void ModelMonitor::printValue(std::ostream &o) const {
+void ModelMonitor::printValue(std::ostream &o) const 
+{
     
     o << "ModelMonitor";
 }
 
 
 /** Set a member variable */
-void ModelMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void ModelMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+{
     
-    if ( name == "filename" ) {
+    if ( name == "filename" ) 
+    {
         filename = var;
     }
-    else if ( name == "separator" ) {
+    else if ( name == "separator" ) 
+    {
         separator = var;
     }
-    else if ( name == "printgen" ) {
+    else if ( name == "printgen" ) 
+    {
         printgen = var;
     }
-    else if ( name == "prior" ) {
+    else if ( name == "prior" ) 
+    {
         prior = var;
     }
-    else if ( name == "posterior" ) {
+    else if ( name == "posterior" ) 
+    {
         posterior = var;
     }
-    else if ( name == "likelihood" ) {
+    else if ( name == "likelihood" ) 
+    {
         likelihood = var;
     }
-    else {
+    else if ( name == "append" ) 
+    {
+        append = var;
+    }
+    else if ( name == "stochasticOnly" ) 
+    {
+        stochOnly = var;
+    }
+    else 
+    {
         Monitor::setConstMemberVariable(name, var);
     }
+    
 }

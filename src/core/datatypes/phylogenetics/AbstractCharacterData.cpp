@@ -1,11 +1,3 @@
-//
-//  AbstractCharacterData.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/15/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "AbstractCharacterData.h"
 
 

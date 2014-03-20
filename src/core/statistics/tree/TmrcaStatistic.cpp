@@ -41,21 +41,22 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const {
 void TmrcaStatistic::update( void ) {
     
     
+    const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
+    size_t minCaldeSize = n.size() + 2;
+    for (size_t i = tree->getValue().getNumberOfTips(); i < n.size(); ++i) 
+    {
+        TopologyNode *node = n[i];
+        size_t cladeSize = node->getTaxaStringVector().size();
+        if ( cladeSize < minCaldeSize && node->containsClade( clade, false ) ) 
+        {
+            index = int( node->getIndex() );
+            minCaldeSize = cladeSize;
+//            break;
+        }
+    }
     if ( index < 0 ) 
     {
-        const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
-        for (std::vector<TopologyNode*>::const_iterator it = n.begin(); it != n.end(); ++it) 
-        {
-            if ( (*it)->containsClade( clade ) ) 
-            {
-                index = int( (*it)->getIndex() );
-                break;
-            }
-        }
-        if ( index < 0 ) 
-        {
-            throw RbException("TMRCA-Statistics can only be applied if clade is present.");
-        }
+        throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
     
     double tmrca = tree->getValue().getAge(index);

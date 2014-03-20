@@ -136,7 +136,8 @@ RbPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
             throw RbException( msg );
         }
     }
-    else {
+    else 
+    {
         newValue = value.clone();
         newValue->makeConstantValue();
             

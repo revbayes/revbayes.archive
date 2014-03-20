@@ -1,32 +1,15 @@
-/**
- * @file
- * This file contains the declaration of the character state evolution along a tree class.
- *
- * @brief Declaration and implementation of NormalDistribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef RlCharacterStateEvolutionAlongTree_H
 #define RlCharacterStateEvolutionAlongTree_H
 
-#include "AbstractCharacterData.h"
-#include "RlAbstractCharacterData.h"
-#include "RlCharacterData.h"
+#include "AbstractDiscreteCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
 
 namespace RevLanguage {
     
     template <class treeType>
-    class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractCharacterData > {
+    class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractDiscreteCharacterData > {
         
     public:
         CharacterStateEvolutionAlongTree( void );
@@ -64,9 +47,9 @@ namespace RevLanguage {
 }
 
 
-#include "CharacterData.h"
 #include "OptionRule.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
+#include "NucleotideBranchHeterogeneousCharEvoModel.h"
 #include "RbNullObject.h"
 #include "RlRateMatrix.h"
 #include "RlString.h"
@@ -76,7 +59,7 @@ namespace RevLanguage {
 
 
 template <class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractCharacterData >() {
+RevLanguage::CharacterStateEvolutionAlongTree<treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractDiscreteCharacterData >() {
     
 }
 
@@ -116,7 +99,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     if ( dt == "DNA" ) 
     {
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, 4, true, n);
+        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
+//        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, 4, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -169,7 +153,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     } 
     else if ( dt == "RNA" )
     {
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, 4, true, n);
+        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType> *dist = new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::RnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

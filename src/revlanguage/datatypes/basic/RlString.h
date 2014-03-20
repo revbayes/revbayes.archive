@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of RlString, which is
- * a RevBayes wrapper around a regular RlString.
- *
- * @brief Declaration of RlString
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef RlString_H
 #define RlString_H
 
@@ -33,6 +18,10 @@ namespace RevLanguage {
             RlString(double i);                                                                     //!< Constructor from double
             RlString(const std::string& v);                                                         //!< Constructor from RlString
             RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
+        
+            // Basic operator functions
+            RbLanguageObject*               add(const RbLanguageObject &rhs) const;                 //!< Addition operator used for example in '+=' statements
+            RlString*                       add(const RlString &rhs) const;                         //!< Addition operator used for example in '+=' statements
 
             // Basic utility functions
             RlString*                       clone(void) const;                                      //!< Copy

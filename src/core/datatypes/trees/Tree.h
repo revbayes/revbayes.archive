@@ -80,7 +80,7 @@ namespace RevBayesCore {
         bool                                                isRooted(void) const;                                                   //!< Is the Tree rooted
 //        void                                                setRooted(bool tf);                                                     //!< Set the rootedness of the Tree
 //        void                                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the Tree from it
-        void                                                setTopology(const Topology *t);
+        void                                                setTopology(const Topology *t, bool owns);
         
     protected:
         // preventing instantiation of the base class
@@ -94,6 +94,7 @@ namespace RevBayesCore {
         // protected members
         const Topology*                                     topology;
         mutable TreeChangeEventHandler                      changeEventHandler;
+        bool                                                ownsTopology;
     };
 
     // Global functions using the class

@@ -1,12 +1,3 @@
-//
-//  ConstantBirthDeathProcess.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
@@ -24,77 +15,122 @@
 
 using namespace RevLanguage;
 
-ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : TypedDistribution<TimeTree>() {
+/**
+ * Default constructor.
+ * 
+ * The default constructor does nothing except allocating the object.
+ */
+ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : BirthDeathProcess() 
+{
     
 }
 
 
-ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of the process. 
+ */
+ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const 
+{
     return new ConstantRateBirthDeathProcess(*this);
 }
 
 
-RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::createDistribution( void ) const {
+/**
+ * Create a new internal distribution object.
+ *
+ * This function simply dynamically allocates a new internal distribution object that can be 
+ * associated with the variable. The internal distribution object is created by calling its
+ * constructor and passing the distribution-parameters (other DAG nodes) as arguments of the 
+ * constructor. The distribution constructor takes care of the proper hook-ups.
+ *
+ * \return A new internal distribution object.
+ */
+RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::createDistribution( void ) const 
+{
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* o = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* e = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* r = static_cast<const Probability &>( rho->getValue() ).getValueNode();
-    const std::string &strategy = static_cast<const RlString &>( samplingStrategy->getValue() ).getValue();
-    const std::string& cond = static_cast<const RlString &>( condition->getValue() ).getValue();
-    int n = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
-    const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
-    const std::vector<RevBayesCore::Clade> &c = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
+    
+    // the origin
+    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
+    // speciation rate
+    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    // extinction rate
+    RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
+    // sampling probability
+    RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getValue() ).getValueNode();
+    // sampling strategy
+    const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getValue() ).getValue();
+    // condition
+    const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
+    // number of taxa
+    int n                                       = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
+    // taxon names
+    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    // clade constraints
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
+    
+    // create the internal distribution object
     RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, s, e, r, strategy, cond, n, names, c);
     
     return d;
 }
 
 
-
-/* Get class name of object */
-const std::string& ConstantRateBirthDeathProcess::getClassName(void) { 
+/**
+ * Get class name of object 
+ *
+ * \return The class' name.
+ */
+const std::string& ConstantRateBirthDeathProcess::getClassName( void ) 
+{ 
     
-    static std::string rbClassName = "constant-rate Birth-Death Process";
+    static std::string rbClassName = "ConstBDProcess";
     
 	return rbClassName; 
 }
 
-/* Get class type spec describing type of object */
-const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec(void) { 
+
+/**
+ * Get class type spec describing type of an object from this class (static).
+ *
+ * \return TypeSpec of this class.
+ */
+const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec( void ) 
+{ 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
 
 
-
-
-/** Return member rules (no members) */
-const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const {
+/** 
+ * Get the member rules used to create the constructor of this object.
+ *
+ * The member rules of the constant-rate birth-death process are:
+ * (1) the speciation rate lambda which must be a positive real.
+ * (2) the extinction rate mu that must be a positive real.
+ * (3) all member rules specified by BirthDeathProcess.
+ *
+ * \return The member rules.
+ */
+const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const 
+{
     
     static MemberRules distcBirthDeathMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"  , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
-        Vector<RlString> optionsStrategy;
-        optionsStrategy.push_back( RlString("uniform") );
-        optionsStrategy.push_back( RlString("diversified") );
-        distcBirthDeathMemberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy ) );
-        Vector<RlString> optionsCondition;
-        optionsCondition.push_back( RlString("time") );
-        optionsCondition.push_back( RlString("survival") );
-        distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("time"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
+
+        // add the rules from the base class
+        const MemberRules &parentRules = BirthDeathProcess::getMemberRules();
+        distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
     }
@@ -103,7 +139,13 @@ const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const {
 }
 
 
-const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const {
+/**
+ * Get type-specification on this object (non-static).
+ *
+ * \return The type spec of this object.
+ */
+const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const 
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -111,69 +153,20 @@ const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const {
 }
 
 
-/** Print value for user */
-void ConstantRateBirthDeathProcess::printValue(std::ostream& o) const {
+/** 
+ * Set a member variable.
+ * 
+ * Sets a member variable with the given name and store the pointer to the variable.
+ * The value of the variable might still change but this function needs to be called again if the pointer to
+ * the variable changes. The current values will be used to create the distribution object.
+ *
+ * \param[in]    name     Name of the member variable.
+ * \param[in]    var      Pointer to the variable.
+ */
+void ConstantRateBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+{
     
-    o << " const BDP (lambda=";
-    if ( lambda != NULL ) {
-        o << lambda->getName();
-    } else {
-        o << "?";
-    }
-    o << ", mu=";
-    if ( mu != NULL ) {
-        o << mu->getName();
-    } else {
-        o << "?";
-    }
-    o << ", rho=";
-    if ( rho != NULL ) {
-        o << rho->getName();
-    } else {
-        o << "?";
-    }
-    o << ", samplingStrategy=";
-    if ( samplingStrategy != NULL ) {
-        o << samplingStrategy->getName();
-    } else {
-        o << "?";
-    }
-    o << ", condition=";
-    if ( condition != NULL ) {
-        o << condition->getName();
-    } else {
-        o << "?";
-    }
-    o << ", nTaxa=";
-    if ( numTaxa != NULL ) {
-        o << numTaxa->getName();
-    } else {
-        o << "?";
-    }
-    o << ", names=";
-    if ( taxonNames != NULL ) {
-        o << taxonNames->getName();
-    } else {
-        o << "?";
-    }
-    o << ", constraints=";
-    if ( constraints != NULL ) {
-        o << constraints->getName();
-    } else {
-        o << "?";
-    }
-    o << ")";
-}
-
-
-/** Set a member variable */
-void ConstantRateBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
-    
-    if ( name == "origin" ) 
-    {
-        origin = var;
-    }
-    else if ( name == "lambda" ) 
+    if ( name == "lambda" ) 
     {
         lambda = var;
     }
@@ -181,31 +174,8 @@ void ConstantRateBirthDeathProcess::setConstMemberVariable(const std::string& na
     {
         mu = var;
     }
-    else if ( name == "rho" ) 
-    {
-        rho = var;
-    }
-    else if ( name == "samplingStrategy" ) 
-    {
-        samplingStrategy = var;
-    }
-    else if ( name == "nTaxa" ) 
-    {
-        numTaxa = var;
-    }
-    else if ( name == "names" ) 
-    {
-        taxonNames = var;
-    }
-    else if ( name == "constraints" ) 
-    {
-        constraints = var;
-    }
-    else if ( name == "condition" ) 
-    {
-        condition = var;
-    }
     else {
-        Distribution::setConstMemberVariable(name, var);
+        BirthDeathProcess::setConstMemberVariable(name, var);
     }
+    
 }

@@ -53,35 +53,21 @@ RbLanguageObject* Func_readTrace::execute( void ) {
         
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( (myFileManager.isFileNamePresent() == false && myFileManager.testDirectory() == false) ||
-        (myFileManager.isFileNamePresent() == true  && (myFileManager.testFile() == false || myFileManager.testDirectory() == false)) ) {
+    if ( !myFileManager.testFile() || !myFileManager.testDirectory() ) {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
-        //throw( RbException(errorStr) );
+        throw( RbException(errorStr) );
     }
-        
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = myFileManager.isDirectory(fn.getValue());
-    if (readingDirectory == true)
-        RBOUT("Recursively reading the contents of a directory");
-    else
-        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
-        myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    else {
-#       if defined (WIN32)
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
-#       else
-        vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
-#       endif
+    if ( myFileManager.isFile() )
+    {
+        vectorOfFileNames.push_back( myFileManager.getFileName() );
     }
-    if (readingDirectory == true) {
-        std::stringstream o1;
-        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        RBOUT(o1.str());
+    else 
+    {
+        myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
     }
         
     std::vector<RevBayesCore::Trace> data;

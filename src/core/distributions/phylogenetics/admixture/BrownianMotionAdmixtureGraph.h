@@ -16,7 +16,7 @@
 #include <set>
 #include <map>
 
-#include "CharacterData.h"
+#include "ContinuousCharacterData.h"
 #include "ContinuousCharacterState.h"
 #include "MatrixReal.h"
 #include "EigenSystem.h"
@@ -27,7 +27,7 @@ namespace RevBayesCore {
     
     class SnpData;
     
-    class BrownianMotionAdmixtureGraph : public TypedDistribution<CharacterData<ContinuousCharacterState> > {
+    class BrownianMotionAdmixtureGraph : public TypedDistribution< ContinuousCharacterData > {
         
     public:
         BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > > *br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls=1.0);
@@ -38,7 +38,7 @@ namespace RevBayesCore {
         BrownianMotionAdmixtureGraph*               clone(void) const;
         double                                      computeLnProbability(void);
         void                                        redrawValue(void);
-        void                                        setValue(CharacterData<ContinuousCharacterState>* v);
+        void                                        setValue(ContinuousCharacterData* v);
         void                                        swapParameter(const DagNode *oldP, const DagNode *newP);
         void                                        keepSpecialization(DagNode* affecter);
         void                                        restoreSpecialization(DagNode* restorer);

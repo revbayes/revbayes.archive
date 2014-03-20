@@ -32,6 +32,39 @@
 using namespace RevLanguage;
 
 
+
+
+/** Constructor: we set member variables here from member rules */
+RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
+    
+}
+
+
+/** 
+ * Destructor. 
+ * Nothing to do here because we don't own anything.
+ */
+RbLanguageObject::~RbLanguageObject( void )
+{
+    
+}
+
+
+/**
+ * Addition operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::add(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot add a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
+    
+    return NULL;
+}
+
 /** The default implementation does nothing because we don't have an internal object */
 void RbLanguageObject::constructInternalObject( void ) {
     // nothing to do
@@ -41,35 +74,43 @@ void RbLanguageObject::constructInternalObject( void ) {
 
 /** Convert to type and dim. The caller manages the returned object. */
 RbLanguageObject* RbLanguageObject::convertTo(const TypeSpec& typeSpec) const {
-    
-//    if ( typeSpec.getBaseType() == Container::getClassName() ) {
-//        Container *v = new Container( typeSpec.getElementType() );
-//        v->push_back( this->clone() );
-//        
-//        // we rely on the implemented conversion functions inside the vector class
-//        RbLanguageObject* returnVector = v->convertTo( typeSpec );
-//        
-//        // we need to free the temporary vector object
-//        delete v;
-//        
-//        return returnVector;
-//    }
-    
+        
     throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
     
     return NULL;
 }
 
 
-/** Constructor: we set member variables here from member rules */
-RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
+/**
+ * Decrement operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ */
+void RbLanguageObject::decrement( void ) 
+{
+    throw RbException("Cannot decrement a value of type '" + this->getType() + "'.");
 
 }
 
 
-/* 
-  * Execute simple method. 
-  */
+/**
+ * Division operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::divide(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot divide a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
+    
+    return NULL;
+}
+
+
+/** 
+ * Execute simple method. 
+ */
 RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "get") 
@@ -94,9 +135,9 @@ RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const
     }
     else if ( name == "methods" ) 
     {
-        // just print the method names
+        // just print the method names (including inherited methods)
         const MethodTable &m = getMethods();
-        m.printValue(std::cout);
+        m.printValue(std::cout, true);
         
         return NULL;
     }
@@ -159,10 +200,10 @@ const MethodTable& RbLanguageObject::getMethods(void) const {
         ArgumentRules* getArgRules = new ArgumentRules();
         
         // add the 'members()' method
-        methods.addFunction("members", new MemberFunction(RbVoid_name, getMembersArgRules) );
+        methods.addFunction("members", new MemberFunction(RlUtils::Void, getMembersArgRules) );
         
         // add the 'members()' method
-        methods.addFunction("methods", new MemberFunction(RbVoid_name, getMethodsArgRules) );
+        methods.addFunction("methods", new MemberFunction(RlUtils::Void, getMethodsArgRules) );
         
         // add the 'memberNames()' method
         getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
@@ -202,6 +243,17 @@ bool RbLanguageObject::hasMember(std::string const &name) const {
 
 
 /**
+ * Increment operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ */
+void RbLanguageObject::increment( void ) 
+{
+    throw RbException("Cannot increment a value of type '" + this->getType() + "'.");
+    
+}
+
+
+/**
  * The default implementation is that the variable is constant. Only variables which actually store
  * internally DAG nodes have to ask the DAG nodes if they are constant.
  */
@@ -212,10 +264,6 @@ bool RbLanguageObject::isConstant( void ) const {
 
 /** Is convertible to type? */
 bool RbLanguageObject::isConvertibleTo(const TypeSpec& type) const {
-    
-//    if (type.getBaseType() == Vector::getClassName() && isTypeSpec(type.getElementType())) {
-//        return true;
-//    }
     
     return false;
 }
@@ -235,6 +283,22 @@ bool RbLanguageObject::isTypeSpec(const TypeSpec& typeSpec) const {
   */
 void RbLanguageObject::makeConstantValue( void ) {
     // do nothing
+}
+
+
+/**
+ * Multiplication operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::multiply(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot multiply a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
+    
+    return NULL;
 }
 
 
@@ -297,12 +361,41 @@ void RbLanguageObject::setMemberVariable(const std::string& name, const RbPtr<Va
 
 /** 
  * Setting the name of the internal variable. The default implementation does nothing because we don't have a DAG node as our internal variable.
- * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
+ * Note, RevLanguage types which can be used as types in the DAG should override this method.
  */
 void RbLanguageObject::setName(std::string const &n) {
     // do nothing
 }
 
+
+/**
+ * Subtraction operation.
+ * Since we don't know the types and thus don't know the special behavior we simply throw and error.
+ *
+ * \param[in]   rhs     The right hand side value of the division operation.
+ *
+ * \return              NULL
+ */
+RbLanguageObject* RbLanguageObject::subtract(const RbLanguageObject &rhs) const
+{
+    throw RbException("Cannot subtract a value of type '" + rhs.getType() + "' from a value of type '" + this->getType() + "'.");
+    
+    return NULL;
+}
+
+
+/**
+ * Get the info about this object as a string.
+ * By default we simply call the overloaded operator<<.
+ *
+ */
+std::string RbLanguageObject::toString( void ) const
+{
+    std::stringstream o;
+    printValue(o);
+    
+    return o.str();
+}
 
 /** Make sure we can print the value of the object easily */
 std::ostream& operator<<(std::ostream& o, const RbLanguageObject& x) {

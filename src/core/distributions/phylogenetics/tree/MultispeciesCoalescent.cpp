@@ -669,7 +669,7 @@ void MultispeciesCoalescent::simulateTree( void ) {
     tau->setRoot(root);
     
     // connect the tree with the topology
-    psi->setTopology( tau );
+    psi->setTopology( tau, true );
     
     for ( std::map<TopologyNode*, double>::iterator it = nodes2ages.begin(); it != nodes2ages.end(); ++it) {
         size_t index = it->first->getIndex();

@@ -9,6 +9,7 @@
 #include "TypeSpec.h"
 #include "Vector.h"
 
+#include <vector>
 
 using namespace RevLanguage;
 
@@ -81,10 +82,26 @@ const TypeSpec& Model::getTypeSpec( void ) const {
 }
 
 
-/** Get type spec */
+/** Print a simplified representation of the model for the user. */
 void Model::printValue(std::ostream &o) const {
     
-    o << "Model";
+    const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
+    std::vector<RevBayesCore::DagNode*>::const_iterator it;
+
+    o << "Model with " << theNodes.size() << " nodes\n\n";
+    
+    o << "List of nodes:\n";
+    o << "==============\n\n";
+
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
+    {
+        if ( (*it)->getName() != "" )
+            o << (*it)->getName() << ":" << std::endl;
+        else
+            o << "<" << (*it) << ">:" << std::endl;
+        (*it)->printStructureInfo(o);
+        o << std::endl;
+    }
 }
 
 

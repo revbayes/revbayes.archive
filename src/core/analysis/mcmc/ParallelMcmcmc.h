@@ -1,13 +1,5 @@
-//
-//  ParallelMcmcmc.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/20/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__ParallelMcmcmc__
-#define __rb_mlandis__ParallelMcmcmc__
+#ifndef ParallelMcmcmc_H
+#define ParallelMcmcmc_H
 
 #include "Mcmc.h"
 #include "Model.h"
@@ -19,6 +11,19 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Parallel Metropolis-Coupled Markov chain Monte Carlo (MCMCMC) algorithm class.
+     * 
+     * This file contains the declaration of the Markov chain Monte Carlo (MCMC) algorithm class. 
+     * An MCMC object manages the MCMC analysis by setting up the chain, calling the moves, the monitors and etc.
+     *
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Michael Landis & Sebastian Hoehna)
+     * @since Version 1.0, 2013-05-20
+     *
+     */
     class ParallelMcmcmc {
         
     public:
@@ -30,17 +35,17 @@ namespace RevBayesCore {
         void                                                burnin(int g, int ti);
         ParallelMcmcmc*                                     clone(void) const;
         void                                                printOperatorSummary(void) const;
-        void                                                run(int g);        
+        void                                                run(size_t g);        
         
     private:
         void                                                initialize(void);
         void                                                swapChains(void);
         double                                              computeBeta(double d, double s, int i);   // incremental temperature schedule
         
-        int                                                 numChains;
-        int                                                 numProcesses;
-        std::vector<int>                                    chainIdxByHeat;
-        std::vector<std::vector<int> >                      chainsPerProcess;
+        size_t                                              numChains;
+        size_t                                              numProcesses;
+        std::vector<size_t>                                 chainIdxByHeat;
+        std::vector<std::vector<size_t> >                   chainsPerProcess;
         std::vector<Mcmc*>                                  chains;
         unsigned int                                        gen;
         unsigned int                                        swapInterval;

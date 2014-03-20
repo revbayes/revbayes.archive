@@ -59,22 +59,28 @@
      ARROW_ASSIGN = 275,
      TILDE_ASSIGN = 276,
      EQUATION_ASSIGN = 277,
-     EQUAL = 278,
-     AND = 279,
-     OR = 280,
-     AND2 = 281,
-     OR2 = 282,
-     GT = 283,
-     GE = 284,
-     LT = 285,
-     LE = 286,
-     EQ = 287,
-     NE = 288,
-     END_OF_INPUT = 289,
-     UNOT = 290,
-     UPLUS = 291,
-     UMINUS = 292,
-     UAND = 293
+     ADDITION_ASSIGN = 278,
+     SUBTRACTION_ASSIGN = 279,
+     MULTIPLICATION_ASSIGN = 280,
+     DIVISION_ASSIGN = 281,
+     DECREMENT = 282,
+     INCREMENT = 283,
+     EQUAL = 284,
+     AND = 285,
+     OR = 286,
+     AND2 = 287,
+     OR2 = 288,
+     GT = 289,
+     GE = 290,
+     LT = 291,
+     LE = 292,
+     EQ = 293,
+     NE = 294,
+     END_OF_INPUT = 295,
+     UNOT = 296,
+     UPLUS = 297,
+     UMINUS = 298,
+     UAND = 299
    };
 #endif
 /* Tokens.  */
@@ -98,29 +104,35 @@
 #define ARROW_ASSIGN 275
 #define TILDE_ASSIGN 276
 #define EQUATION_ASSIGN 277
-#define EQUAL 278
-#define AND 279
-#define OR 280
-#define AND2 281
-#define OR2 282
-#define GT 283
-#define GE 284
-#define LT 285
-#define LE 286
-#define EQ 287
-#define NE 288
-#define END_OF_INPUT 289
-#define UNOT 290
-#define UPLUS 291
-#define UMINUS 292
-#define UAND 293
+#define ADDITION_ASSIGN 278
+#define SUBTRACTION_ASSIGN 279
+#define MULTIPLICATION_ASSIGN 280
+#define DIVISION_ASSIGN 281
+#define DECREMENT 282
+#define INCREMENT 283
+#define EQUAL 284
+#define AND 285
+#define OR 286
+#define AND2 287
+#define OR2 288
+#define GT 289
+#define GE 290
+#define LT 291
+#define LE 292
+#define EQ 293
+#define NE 294
+#define END_OF_INPUT 295
+#define UNOT 296
+#define UPLUS 297
+#define UMINUS 298
+#define UAND 299
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 73 "./grammar.y"
+#line 79 "./grammar.y"
 {
     char*                                           c_string;
     std::string*                                    string;
@@ -137,7 +149,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 141 "./grammar.tab.h"
+#line 153 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

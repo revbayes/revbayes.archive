@@ -30,19 +30,41 @@
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : name(""), index(indx), rootNode( true ), tipNode( true ), interiorNode( false ), newick(""), newickNeedsRefreshing( true ), parent( NULL ), topology( NULL ) {
+TopologyNode::TopologyNode(int indx) : 
+    name(""), 
+    index(indx), 
+    rootNode( true ), 
+    tipNode( true ), 
+    interiorNode( false ), 
+    newick(""), 
+    newickNeedsRefreshing( true ), 
+    parent( NULL ), 
+    tree( NULL ) 
+{
     
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : name(n), index(indx), rootNode( true ), tipNode( true ), interiorNode( false ), newick(""), newickNeedsRefreshing( true ), parent( NULL ), topology( NULL ) {
+TopologyNode::TopologyNode(const std::string& n, int indx) : 
+    name(n), 
+    index(indx), 
+    rootNode( true ), 
+    tipNode( true ), 
+    interiorNode( false ), 
+    newick(""), 
+    newickNeedsRefreshing( true ), 
+    parent( NULL ), 
+    tree( NULL ) 
+{
     
 }
 
 
 /** Copy constructor. We use a shallow copy. */
-TopologyNode::TopologyNode(const TopologyNode &n) : topology( NULL ) {
+TopologyNode::TopologyNode(const TopologyNode &n) : 
+    tree( NULL ) 
+{
     
     // copy the members
     name                    = n.name;
@@ -57,7 +79,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) : topology( NULL ) {
     branchComments          = n.branchComments;
     
     // copy the children
-    for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
+    for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) 
+    {
         TopologyNode* theNode = *it;
         TopologyNode* theClone = theNode->clone();
         children.push_back( theClone );
@@ -69,7 +92,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) : topology( NULL ) {
 
 
 /** Destructor */
-TopologyNode::~TopologyNode(void) {
+TopologyNode::~TopologyNode(void) 
+{
     
     // we do not own the parent so we do not delete it
     
@@ -79,12 +103,14 @@ TopologyNode::~TopologyNode(void) {
     // make sure that I was removed from my parent
     if (parent != NULL)
         parent->removeChild(this);
+    
 }
 
 
 TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
     
-    if (this == &n) {
+    if (this == &n) 
+    {
         
         removeAllChildren();
         
@@ -103,7 +129,8 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
         parent          = n.parent;
         
         // copy the children
-        for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) {
+        for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++) 
+        {
             children.push_back( (*it)->clone() );
         }
         
@@ -115,43 +142,6 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n) {
     return *this;
 }
 
-
-/** Add a child node. We own it from here on. */
-void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
-    
-    // add the child to our internal vector
-    children.push_back(c);
-    
-    // mark for newick recomputation
-    if ( forceNewickRecomp )
-        flagNewickRecomputation();
-    
-    // fire tree change event
-    if ( topology != NULL ) {
-        //        topology->getTreeChangeEventHandler().fire( *this );
-        topology->getTreeChangeEventHandler().fire( *c );
-    }
-    
-    tipNode = false;
-    interiorNode = true;
-}
-
-
-void TopologyNode::addParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
-
-    if ( !internalOnly || !isTip()  ) {
-        std::stringstream o;
-        o << n << "=" << p[index];
-        std::string comment = o.str();
-        nodeComments.push_back( comment );
-        
-        newickNeedsRefreshing = true;
-        
-        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it) {
-            (*it)->addParameter(n, p, internalOnly);
-        }
-    }
-}
 
 
 void TopologyNode::addBranchParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
@@ -173,8 +163,60 @@ void TopologyNode::addBranchParameter(std::string const &n, const std::vector<do
 }
 
 
+/** Add a child node. We own it from here on. */
+void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
+    
+    // add the child to our internal vector
+    children.push_back(c);
+    
+    // mark for newick recomputation
+    if ( forceNewickRecomp )
+        flagNewickRecomputation();
+    
+    // fire tree change event
+    if ( tree != NULL ) 
+    {
+        tree->getTreeChangeEventHandler().fire( *c );
+    }
+    
+    tipNode = false;
+    interiorNode = true;
+}
+
+
+void TopologyNode::addNodeParameter(std::string const &n, double p) 
+{
+    
+    std::stringstream o;
+    o << n << "=" << p;
+    std::string comment = o.str();
+    nodeComments.push_back( comment );
+        
+    newickNeedsRefreshing = true;
+        
+}
+
+
+void TopologyNode::addParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
+
+    if ( !internalOnly || !isTip()  ) {
+        std::stringstream o;
+        o << n << "=" << p[index];
+        std::string comment = o.str();
+        nodeComments.push_back( comment );
+        
+        newickNeedsRefreshing = true;
+        
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it) {
+            (*it)->addParameter(n, p, internalOnly);
+        }
+    }
+}
+
+
 /* Build newick string */
 std::string TopologyNode::buildNewickString( void ) {
+    
     // create the newick string
     std::stringstream o;
     
@@ -207,7 +249,7 @@ std::string TopologyNode::buildNewickString( void ) {
             o << "]";
         }
         
-        if ( topology != NULL ) 
+        if ( tree != NULL ) 
         {
             o << ":" << getBranchLength();
         }
@@ -254,7 +296,7 @@ std::string TopologyNode::buildNewickString( void ) {
             }
             o << "]";
         }
-        if ( topology != NULL ) 
+        if ( tree != NULL ) 
         {
             o << ":" << getBranchLength();
         }
@@ -337,7 +379,7 @@ std::string TopologyNode::computePlainNewick( void ) const {
 }
 
 
-bool TopologyNode::containsClade(const TopologyNode *c) const {
+bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const {
     
     std::vector<std::string> myTaxa   = getTaxaStringVector();
     std::vector<std::string> yourTaxa = c->getTaxaStringVector();
@@ -347,6 +389,7 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
         return false;
     }
     
+    // check that every taxon of the clade is present in this subtree
     for (std::vector<std::string>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it) 
     {
         bool found = false;
@@ -365,7 +408,7 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
         }
     }
     
-    if ( myTaxa.size() == yourTaxa.size() ) 
+    if ( !strict || myTaxa.size() == yourTaxa.size() ) 
     {
         return true;
     } 
@@ -374,7 +417,7 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
         bool contains = false;
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
         {
-            contains |= (*it)->containsClade(c);
+            contains |= (*it)->containsClade(c,strict);
             if ( contains ) 
             {
                 break;
@@ -385,7 +428,8 @@ bool TopologyNode::containsClade(const TopologyNode *c) const {
 }
 
 
-bool TopologyNode::containsClade(const Clade &c) const {
+bool TopologyNode::containsClade(const Clade &c, bool strict) const 
+{
     
     std::vector<std::string> myTaxa   = getTaxaStringVector();
     
@@ -394,6 +438,7 @@ bool TopologyNode::containsClade(const Clade &c) const {
         return false;
     }
     
+    // check that every taxon of the clade is in this subtree
     for (std::vector<std::string>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it) 
     {
         bool found = false;
@@ -412,7 +457,7 @@ bool TopologyNode::containsClade(const Clade &c) const {
         }
     }
     
-    if ( myTaxa.size() == c.size() ) 
+    if ( !strict || myTaxa.size() == c.size() ) 
     {
         return true;
     } 
@@ -421,7 +466,7 @@ bool TopologyNode::containsClade(const Clade &c) const {
         bool contains = false;
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
         {
-            contains |= (*it)->containsClade(c);
+            contains |= (*it)->containsClade(c,strict);
             if ( contains ) 
             {
                 break;
@@ -495,7 +540,7 @@ void TopologyNode::flagNewickRecomputation( void ) {
  * then we need to compute the age from the time.
  */
 double TopologyNode::getAge( void ) const {
-    return topology->getAge(index);
+    return tree->getAge(index);
 }
 
 
@@ -504,7 +549,7 @@ double TopologyNode::getAge( void ) const {
  * We comput the difference of my time and my parents time.
  */
 double TopologyNode::getBranchLength( void ) const {
-    return topology->getBranchLength(index);
+    return tree->getBranchLength(index);
 }
 
 
@@ -545,7 +590,44 @@ size_t TopologyNode::getIndex( void ) const {
 }
 
 
-const std::string& TopologyNode::getName( void ) const {
+/**
+ * Get the maximal depth starting from this node. 
+ * The depth here mean the maximal path length along the branches until a terminal node (tip) is reached.
+ * For ultrametric trees all path lengths are equivalent, but for serial sampled trees not.
+ * Hence, we compute the maximal depths by recursively exploring each path along the branches to the children.
+ *
+ * \return    The maximal depth (path length) from this node to the most recent tip.
+ */
+double TopologyNode::getMaxDepth( void ) const
+{
+    
+    // iterate over the childen
+    double max = 0.0;
+    for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
+    {
+        double m = 0.0;
+        TopologyNode& node = *(*it);
+        if ( node.isTip() ) 
+        {
+            m = node.getBranchLength();
+        }
+        else
+        {
+            m = node.getBranchLength() + node.getMaxDepth();
+        }
+        
+        if ( m > max ) 
+        {
+            max = m;
+        }
+    }
+    
+    return max;
+}
+
+
+const std::string& TopologyNode::getName( void ) const 
+{
     
     return name;
 }
@@ -554,6 +636,29 @@ const std::string& TopologyNode::getName( void ) const {
 size_t TopologyNode::getNumberOfChildren( void ) const {
     
     return children.size();
+}
+
+
+/**
+ * Get the number of nodes contained in the subtree starting with this node as the root.
+ * This either returns 1 if this is a tip node (or 0 if we do not count tipes) 
+ * or computes recursively the number of nodes in both children plus one for this node.
+ *
+ * \param[in]   tips       Shall we count tips?
+ * \return                 Subtree size.
+ */
+size_t TopologyNode::getNumberOfNodesInSubtree( bool countTips ) const
+{
+    
+    if ( tipNode ) 
+    {
+        return (countTips ? 1 : 0);
+    }
+    else
+    {
+        return children[0]->getNumberOfNodesInSubtree(countTips) + children[1]->getNumberOfNodesInSubtree(countTips) + 1; 
+    }
+    
 }
 
 TopologyNode& TopologyNode::getParent(void) { 
@@ -589,7 +694,7 @@ std::vector<std::string> TopologyNode::getTaxaStringVector( void ) const {
 
 double TopologyNode::getTime( void ) const {
     
-    return topology->getTime( index );
+    return tree->getTime( index );
 }
 
 
@@ -706,10 +811,10 @@ void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp) {
     interiorNode = children.size() > 0;
     
     // fire tree change event
-    if ( topology != NULL ) 
+    if ( tree != NULL ) 
     {
-        topology->getTreeChangeEventHandler().fire( *c );
-        topology->getTreeChangeEventHandler().fire( *this );
+        tree->getTreeChangeEventHandler().fire( *c );
+        tree->getTreeChangeEventHandler().fire( *this );
     }
     
     // mark for newick recomputation
@@ -746,10 +851,9 @@ void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
             flagNewickRecomputation();
         
         // fire tree change event
-        if ( topology != NULL ) 
+        if ( tree != NULL ) 
         {
-            //            topology->getTreeChangeEventHandler().fire( *p );
-            topology->getTreeChangeEventHandler().fire( *this );
+            tree->getTreeChangeEventHandler().fire( *this );
         }
         
     }
@@ -758,12 +862,12 @@ void TopologyNode::setParent(TopologyNode* p, bool forceNewickRecomp) {
 }
 
 
-void TopologyNode::setTopology(Tree *t) {
+void TopologyNode::setTree(Tree *t) {
     
-    topology = t;
+    tree = t;
     for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i) 
     {
-        (*i)->setTopology( t );
+        (*i)->setTree( t );
     }
     
 }

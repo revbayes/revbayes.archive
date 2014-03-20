@@ -44,7 +44,7 @@ double ConstantRateBirthDeathMassExtinction::lnSpeciationRate(double t) const {
 }
 
 
-double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end, double T, double r) const {
+double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end) const {
     
     // compute the rate
     double mu = extinction->getValue();
@@ -81,13 +81,6 @@ double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end,
     // add the integral of the final epoch until the present time
     den += exp(-rate*start) * mu / (rate * accumulatedMassExtinction ) * ( exp(rate*end) - exp(rate*prev_time));
     
-    // add sampling
-    if ( (start < T) && (end >= T) )
-    {
-        accumulatedMassExtinction *= r;
-        den -= (r-1)*exp( rate*(T-start) ) / accumulatedMassExtinction;
-    }
-    
     return (1.0 / den);
     
 }
@@ -115,21 +108,32 @@ double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t
 
 
 
-double ConstantRateBirthDeathMassExtinction::simSpeciation(double origin, double r) {
+std::vector<double> ConstantRateBirthDeathMassExtinction::simSpeciations(size_t n, double origin, double r) const {
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-	double u = rng->uniform01();
+    std::vector<double> times = std::vector<double>(n, 0.0);
     
-    // get the parameters
-    double lambda = speciation->getValue()*r;
-    double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
-    double div = lambda - mu;
+    for (size_t i = 0; i < n; ++i) 
+    {
+        double u = rng->uniform01();
     
-    double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
+        // get the parameters
+        double lambda = speciation->getValue()*r;
+        double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
+        double div = lambda - mu;
+    
+        double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
 	
-    return t;
+        times[i] = t;
+    }
+    
+    
+    // finally sort the times
+    std::sort(times.begin(), times.end());
+    
+    return times;
 }
 
 

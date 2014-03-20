@@ -22,27 +22,38 @@
 using namespace RevLanguage;
 
 /** Simple constructor */
-TypeSpec::TypeSpec(const std::string &objType) : parent( NULL ), baseType( objType ), elementType( NULL ) {
+TypeSpec::TypeSpec(const std::string &objType) : 
+baseType( objType ), 
+elementType( NULL ),
+parent( NULL )
+{
     
     type = baseType;
 }
 
 
 /** Complete constructor */
-TypeSpec::TypeSpec(const TypeSpec& base, TypeSpec* elemType) : parent( new TypeSpec( *base.getParentType() )  ), baseType( base.getBaseType() ), elementType( elemType ) {
-    elementType = elemType;
+TypeSpec::TypeSpec(const TypeSpec& base, TypeSpec* elemType) : 
+baseType( base.getBaseType() ), 
+elementType( elemType ), 
+parent( new TypeSpec( *base.getParentType() )  )
+{
     
     type = baseType;
     
     // add the element type
-    if (elementType != NULL) {
+    if (elementType != NULL) 
+    {
         type += "<" + elementType->toString() + ">";
     }
 }
 
 
 /** Complete constructor */
-TypeSpec::TypeSpec(const std::string &objType, TypeSpec* p, TypeSpec* elemType) : parent( p ), baseType( objType ) {
+TypeSpec::TypeSpec(const std::string &objType, TypeSpec* p, TypeSpec* elemType) : 
+baseType( objType ), 
+parent( p )
+{
     elementType = elemType;
     
     type = baseType;

@@ -4,12 +4,14 @@
 #include "ConstantNode.h"
 #include "Mcmc.h"
 #include "Model.h"
+#include "OptionRule.h"
 #include "RbLanguageObject.h"
 #include "RbException.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
+#include "RlString.h"
 #include "TypeSpec.h"
 #include "VectorRbPointer.h"
 
@@ -41,7 +43,8 @@ void Mcmc::constructInternalObject( void ) {
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
     const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
     const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
-    value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
+    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getValue() ).getValue();
+    value = new RevBayesCore::Mcmc(mdl, mvs, mntr, sched);
 }
 
 
@@ -97,39 +100,46 @@ const TypeSpec& Mcmc::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Mcmc::getMemberRules(void) const {
     
-    static MemberRules modelMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+
+        Vector<RlString> options;
+        options.push_back( RlString("sequential") );
+        options.push_back( RlString("random") );
+        options.push_back( RlString("single") );
+        
+        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
         
         rulesSet = true;
     }
     
-    return modelMemberRules;
+    return memberRules;
 }
 
 
 /* Get method specifications */
 const MethodTable& Mcmc::getMethods(void) const {
     
-    static MethodTable methods = MethodTable();
+    static MethodTable   methods    = MethodTable();
     static bool          methodsSet = false;
     
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RbVoid_name, runArgRules) );
+        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RbVoid_name, burninArgRules) );
+        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-        methods.addFunction("operatorSummary", new MemberFunction( RbVoid_name, operatorSummaryArgRules) );
+        methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RbLanguageObject::getMethods() );
@@ -166,6 +176,9 @@ void Mcmc::setConstMemberVariable(const std::string& name, const RbPtr<const Var
     }
     else if ( name == "monitors") {
         monitors = var;
+    }
+    else if ( name == "moveschedule") {
+        moveSchedule = var;
     }
     else {
         RbLanguageObject::setConstMemberVariable(name, var);

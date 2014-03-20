@@ -33,10 +33,12 @@
  */
 
 namespace RevLanguage {
+    
+    class Integer;
 
-class Real : public RlModelVariableWrapper<double> {
+    class Real : public RlModelVariableWrapper<double> {
 
-    public:
+        public:
 
         Real(void);                                                                                             //!< Default constructor (0.0)
         Real(RevBayesCore::TypedDagNode<double> *v);                                                            //!< Construct from DAG node
@@ -44,8 +46,22 @@ class Real : public RlModelVariableWrapper<double> {
         Real(int v);                                                                                            //!< Construct from int 
         Real(const Real& x);                                                                                    //!< Copy constructor
         
-        // Overloaded operators
-        
+        // Basic operator functions
+        virtual RbLanguageObject*       add(const RbLanguageObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
+        Real*                           add(const Real &rhs) const;                                             //!< Addition operator used for example in '+=' statements
+        Real*                           add(const Integer &rhs) const;                                          //!< Addition operator used for example in '+=' statements
+        void                            decrement(void);                                                        //!< Decrement operator used for example in 'a--' statements
+        virtual RbLanguageObject*       divide(const RbLanguageObject &rhs) const;                              //!< Division operator used for example in '/=' statements
+        Real*                           divide(const Real &rhs) const;                                          //!< Division operator used for example in '/=' statements
+        Real*                           divide(const Integer &rhs) const;                                       //!< Division operator used for example in '/=' statements
+        void                            increment(void);                                                        //!< Decrement operator used for example in 'a++' statements
+        virtual RbLanguageObject*       multiply(const RbLanguageObject &rhs) const;                            //!< Multiplication operator used for example in '*=' statements
+        Real*                           multiply(const Real &rhs) const;                                        //!< Multiplication operator used for example in '*=' statements
+        Real*                           multiply(const Integer &rhs) const;                                     //!< Multiplication operator used for example in '*=' statements
+        virtual RbLanguageObject*       subtract(const RbLanguageObject &rhs) const;                            //!< Subtraction operator used for example in '-=' statements
+        Real*                           subtract(const Real &rhs) const;                                        //!< Subtraction operator used for example in '-=' statements
+        Real*                           subtract(const Integer &rhs) const;                                     //!< Subtraction operator used for example in '-=' statements
+
         // Basic utility functions
         virtual Real*                   clone(void) const;                                                      //!< Clone object
         virtual RbLanguageObject*       convertTo(const TypeSpec& type) const;                                  //!< Convert to type
@@ -56,7 +72,7 @@ class Real : public RlModelVariableWrapper<double> {
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
 
     
-};
+    };
     
 }
 

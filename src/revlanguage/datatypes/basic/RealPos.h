@@ -23,19 +23,32 @@
 
 namespace RevLanguage {
 
-class RealPos : public Real {
+    class Natural;
+    
+    class RealPos : public Real {
 
-    public:
-        RealPos(void);                                                          //!< Default constructor
-        RealPos(RevBayesCore::TypedDagNode<double> *x);                         //!< Construct from double
-        RealPos(double x);                                                      //!< Construct from double
-        RealPos(int x);                                                         //!< Construct from int 
+        public:
+        RealPos(void);                                                              //!< Default constructor
+        RealPos(RevBayesCore::TypedDagNode<double> *x);                             //!< Construct from double
+        RealPos(double x);                                                          //!< Construct from double
+        RealPos(int x);                                                             //!< Construct from int 
+
+        // Basic operator functions
+        virtual RbLanguageObject*       add(const RbLanguageObject &rhs) const;     //!< Addition operator used for example in '+=' statements
+        RealPos*                        add(const Natural &rhs) const;              //!< Addition operator used for example in '+=' statements
+        RealPos*                        add(const RealPos &rhs) const;              //!< Addition operator used for example in '+=' statements
+        virtual RbLanguageObject*       divide(const RbLanguageObject &rhs) const;  //!< Division operator used for example in '/=' statements
+        RealPos*                        divide(const Natural &rhs) const;           //!< Division operator used for example in '/=' statements
+        RealPos*                        divide(const RealPos &rhs) const;           //!< Division operator used for example in '/=' statements
+        virtual RbLanguageObject*       multiply(const RbLanguageObject &rhs) const;//!< Multiplication operator used for example in '*=' statements
+        RealPos*                        multiply(const Natural &rhs) const;         //!< Multiplication operator used for example in '*=' statements
+        RealPos*                        multiply(const RealPos &rhs) const;         //!< Multiplication operator used for example in '*=' statements
 
         // Basic utility functions
-        virtual RealPos*                clone(void) const;                      //!< Clone object
-        static const std::string&       getClassName(void);                     //!< Get class name
-        static const TypeSpec&          getClassTypeSpec(void);                 //!< Get class type spec
-        virtual const TypeSpec&         getTypeSpec(void) const;                //!< Get language type of the object
+        virtual RealPos*                clone(void) const;                          //!< Clone object
+        static const std::string&       getClassName(void);                         //!< Get class name
+        static const TypeSpec&          getClassTypeSpec(void);                     //!< Get class type spec
+        virtual const TypeSpec&         getTypeSpec(void) const;                    //!< Get language type of the object
     
 };
     

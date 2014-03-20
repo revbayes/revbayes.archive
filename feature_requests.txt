@@ -6,11 +6,14 @@
 Get some help information in there so users at least can see a neatly organized list of the available functions. Part of the ls(all=true) output could be used as a starting point for this. In fact, ls(all=true) was by far the most frequent function call we used.
 
 2.1) The xml reader for the help information needs to be restructured. It should be possible to create paragraphs in longer pieces of text. It should be possible to create url links and links to other help topics. The references should be better structured. There should be a section with executable code. The output should be more beautiful.
+
 2.2) Make sure all functions have an XML help file and make sure that the XML help file is displayed more nicely than it is currently. I have provided an example for the readCharacterData function but would like to elaborate a little more on it. Generally speaking, I want help information very similar to that available in R, with paragraphs, subsections and executable code like they do. I also think we should read the info on the fly instead of processing all of it on start-up. And the help XML files should be structured so that we can easily make a bunch of hyper-linked html pages from them in time for the workshop. Currently, the help directory only contains the readCharacterData.xml page and then a bunch of pages that were made in 2011 in connection with the RevBayes workshop in Berkeley. I am going to delete the latter because they are completely outdated.
 
 
 3.1) In a similar vein, '? <object name>' or '<function_name>' should produce useful help information on the object and usage of the function if no XML help info is available. 
+
 3.2) Sensible information for the common objects, such as vectors and models. For instance, if you define a model with the name 'mymodel', then typing 'mymodel' should return some kind of information about the model and its DAG components (like the functionality John programmed for the 2011 version of the core...). It would be quite helpful to programmers too.
+
 3.3) The '? function-name' should print the usage of the function if there is no help for the function. Now it does not print any useful information at all. Just typing 'function-name', however, results in usage information, so this should be an easy fix.
 
 
@@ -85,9 +88,10 @@ Sebastian: The map-function of a treetrace might be a starting point here.
 
 
 11) Better console navigation:
+(hint, implement readline lib...)
 - up-arrow should give previous command
 - left-arrow should move the cursor left
-
+- tab completion
 
 12) Add some global mathematical constants: pi, e, ...
 

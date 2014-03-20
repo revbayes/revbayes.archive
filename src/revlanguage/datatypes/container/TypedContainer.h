@@ -97,32 +97,43 @@ namespace RevLanguage {
 #include "StochasticNode.h"
 
 template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType) : Container(elemType), value( new RevBayesCore::ConstantNode<rbType>( "", new rbType() ) ) {
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType) : Container(elemType), 
+    value( new RevBayesCore::ConstantNode<rbType>( "", new rbType() ) ) 
+{
+    value->incrementReferenceCount();
+}
+
+
+
+template <typename rbType>
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, const rbType &v) : Container(elemType), 
+    value( new RevBayesCore::ConstantNode<rbType>( "", new rbType(v) ) ) 
+{
+    value->incrementReferenceCount ();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, const rbType &v) : Container(elemType), value( new RevBayesCore::ConstantNode<rbType>( "", new rbType(v) ) ) {
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, RevBayesCore::TypedDagNode<rbType> *v) : Container(elemType), 
+    value( v ) 
+{
+    value->incrementReferenceCount();
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypeSpec &elemType, RevBayesCore::TypedDagNode<rbType> *v) : Container(elemType), value( v ) {
-    
-}
-
-
-
-template <typename rbType>
-RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : Container( v ), value( NULL ) {
+RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : Container( v ), 
+    value( NULL ) 
+{
     
     if ( v.value != NULL ) 
     {
         value = v.value->clone();
+        value->incrementReferenceCount();
     }
     
 }
@@ -132,7 +143,11 @@ RevLanguage::TypedContainer<rbType>::TypedContainer(const TypedContainer &v) : C
 template <typename rbType>
 RevLanguage::TypedContainer<rbType>::~TypedContainer() {
     
-    delete value;
+    if ( value->decrementReferenceCount() == 0 ) 
+    {
+        delete value;
+    }
+
 }
 
 
@@ -142,13 +157,17 @@ RevLanguage::TypedContainer<rbType>& RevLanguage::TypedContainer<rbType>::operat
     if ( this != &v ) 
     {
         // free the memory
-        delete value;
+        if ( value->decrementReferenceCount() == 0 ) 
+        {
+            delete value;
+        }
         value = NULL;
         
         // create own copy
         if ( v.value != NULL ) 
         {
             value = v.value->clone();
+            value->incrementReferenceCount();
         }
     }
     
@@ -320,22 +339,22 @@ const RevLanguage::MethodTable&  RevLanguage::TypedContainer<rbType>::getMethods
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RbVoid_name, clampArgRules) );
+        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
         
         ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberFunction( RbVoid_name, redrawArgRules) );
+        methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
         
         // add method for call "x.sort()" as a function
         ArgumentRules* sortArgRules = new ArgumentRules();
-        methods.addFunction("sort",  new MemberFunction( RbVoid_name, sortArgRules) );
+        methods.addFunction("sort",  new MemberFunction( RlUtils::Void, sortArgRules) );
         
         // add method for call "x.unique()" as a function
         ArgumentRules* uniqueArgRules = new ArgumentRules();
-        methods.addFunction("unique",  new MemberFunction( RbVoid_name, uniqueArgRules) );
+        methods.addFunction("unique",  new MemberFunction( RlUtils::Void, uniqueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Container::getMethods() );
@@ -379,8 +398,13 @@ void RevLanguage::TypedContainer<rbType>::makeConstantValue( void ) {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), new rbType(value->getValue()) );
         value->replace(newVal);
-        delete value;
+        
+        if ( value->decrementReferenceCount() == 0) {
+            delete value;
+        }
+        
         value = newVal;
+        value->incrementReferenceCount();
     }
 }
 
@@ -406,8 +430,9 @@ void RevLanguage::TypedContainer<rbType>::setName(std::string const &n) {
 template <typename rbType>
 void RevLanguage::TypedContainer<rbType>::printValue(std::ostream &o) const {
     
+    o << "[ ";
     value->printValue(o,", ");
-    
+    o << " ]";
 }
 
 

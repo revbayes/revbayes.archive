@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Func_writeFasta, which writes the content of a CharacterData object into
- * a file with fasta format.
- *
- * @brief Declaration of Func_writeFasta
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-27 16:10:36 +0200 (Sun, 27 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func_readCharacterData.h 1587 2012-05-27 14:10:36Z hoehna $
- */
-
 #ifndef Func_writeFasta_H
 #define Func_writeFasta_H
 
@@ -21,7 +5,20 @@
 
 
 namespace RevLanguage {
-    
+
+    /**
+     * Function that takes in character data and writes it into a file in Fasta format.
+     *
+     * 
+     * This function is a very basic function that simply takes in a character data object
+     * and delegate the writing/outputting of the data into a file to the FastaWrite.
+     * See FastaWriter.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-04-15, version 1.0
+     */
     class Func_writeFasta :  public Function {
         
     public:

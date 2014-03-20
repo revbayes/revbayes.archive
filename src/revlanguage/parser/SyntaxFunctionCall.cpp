@@ -111,23 +111,11 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         const RlString& theLabel = (*i)->getLabel();
         RbPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
         
-//        // We need here to replace the constant expression by constant variables
-//        // Constant variables are faster and can be converted safely!
-//        if ( (*i)->isConstExpression() ) {
-//            
-//            RbLanguageObject *tmp = theVar->getValue().clone();
-//            
-//            throw RbException("Incomplete implementation!");
-//            //tmp->makeConstant()
-//
-//            theVar->setValue( tmp );
-//        }
-        
         Argument theArg = Argument( theVar, theLabel.getValue() );
         args.push_back( theArg );
     }
 
-    Function* func;
+    Function* func = NULL;
     if (variable == NULL) 
     {
         bool found = false;
@@ -159,8 +147,6 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     {
 
         RbPtr<Variable> theVar = variable->evaluateContent( env );
-
-        bool successful = false;
             
         RbLanguageObject &theMemberObject = theVar->getValue();
             
@@ -170,9 +156,9 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         Function* theFunction = mt.getFunction( functionName, args ).clone();
         theFunction->processArguments(args);
         MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
-        theMemberFunction->setMemberObject( &theMemberObject );
+        theMemberFunction->setMemberObject( theVar );
         func = theMemberFunction;
-        successful = true;
+
     }
     
     RbLanguageObject* funcReturnValue = func->execute();

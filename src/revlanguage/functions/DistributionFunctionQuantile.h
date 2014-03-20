@@ -31,6 +31,7 @@ namespace RevLanguage {
         DistributionFunctionQuantile(ContinuousDistribution *d);    
         DistributionFunctionQuantile(PositiveContinuousDistribution *d);                                                                             //!< Object constructor
         DistributionFunctionQuantile(const DistributionFunctionQuantile& obj);                                                                    //!< Copy constructor
+        virtual ~DistributionFunctionQuantile(void);
         
         // overloaded operators
         DistributionFunctionQuantile&           operator=(const DistributionFunctionQuantile& c);

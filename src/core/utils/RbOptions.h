@@ -16,6 +16,9 @@
 #define RbOptions_H
 
 /* The debug switches */
+/* It is useful to list the switches here but it is preferable to switch
+   the defines on in the IDE rather than by uncommenting them here, so
+   that accidental commits do not disturb other developers. Beware! */
 //#define ASSERTIONS_ALL
 //#define ASSERTIONS_TREE
 //#define ASSERTIONS_DISTRIBUTIONS
@@ -23,10 +26,18 @@
 //#define DEBUG_PARSER
 //#define DEBUG_WORKSPACE
 //#define DEBUG_BISON_FLEX
-//#define DEBUG_MCMC
+//#define DEBUG_MCMC      // Define this to debug mcmc computation shortcuts (and perhaps other mcmc code). NB! Slow!
 //#define DEBUG_HELP_SYSTEM
+#define SSE_ENABLED
+//#define AVX_ENABLED
 //#define TESTING
+//#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
 
+
+/* Test whether we should use linenoise */
+#if !defined (NO_LINENOISE)
+//#define USE_LIB_LINENOISE
+#endif
 
 /* Test whether we need to debug everything. */
 #if defined (DEBUG_ALL)
@@ -52,7 +63,7 @@
 #endif
 
 // switch debuggin g MCMC on
-≥#ifndef DEBUG_MCMC÷
+#ifndef DEBUG_MCMC
 #define DEBUG_MCMC
 #endif
 
@@ -97,4 +108,6 @@
 #ifdef USE_LIB_OPENMP
 #endif
 
+
+#endif
 

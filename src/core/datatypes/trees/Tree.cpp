@@ -24,31 +24,52 @@
 using namespace RevBayesCore;
 
 /* Default constructor */
-Tree::Tree(void) : topology( NULL ) {
+Tree::Tree(void) : 
+    topology( NULL ), 
+    changeEventHandler(),
+    ownsTopology( false ) 
+{
     
 }
 
 
 /* Copy constructor */
-Tree::Tree(const Tree& t) : changeEventHandler( t.changeEventHandler ) {
+Tree::Tree(const Tree& t) : 
+    topology( NULL ),
+    changeEventHandler( ),
+    ownsTopology( t.ownsTopology )
+{
     
     // set the topology
-    topology      = t.topology;
+    if ( ownsTopology ) 
+    {
+        topology      = new Topology( *t.topology );
+    }
+    else
+    {
+        topology      = t.topology;
+    }
     
     // set the tree for each node
-    topology->getNodes()[topology->getNumberOfNodes()-1]->setTopology( this );
+    topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
 }
 
 
 /* Destructor */
-Tree::~Tree(void) {
-    // nothing to do
+Tree::~Tree(void) 
+{
+    if ( ownsTopology ) 
+    {
+        delete topology;
+    }
+    
 }
 
 
 Tree& Tree::operator=(const Tree &t) {
     
-    if (this != &t) {
+    if (this != &t) 
+    {
         // nothing really to do here, should be done in the derived classes
         // @TODO: Find a better solution - Sebastian
         // Problem: If we redraw the tree because the initial states are invalid, 
@@ -56,10 +77,24 @@ Tree& Tree::operator=(const Tree &t) {
         // But it is not nice if the tree distribution needs to remember this!!!
 //        changeEventHandler = t.changeEventHandler;
         
-        topology = t.topology;
+        // free the topology if we owned it before
+        if ( ownsTopology ) 
+        {
+            delete topology;
+        }
+        ownsTopology = t.ownsTopology;
+        
+        if ( ownsTopology ) 
+        {
+            topology      = new Topology( *t.topology );
+        }
+        else
+        {
+            topology      = t.topology;
+        }
         
         // set the tree for each node
-        topology->getNodes()[topology->getNumberOfNodes()-1]->setTopology( this );
+        topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
     }
     
     return *this;
@@ -172,26 +207,6 @@ double Tree::getTmrca(const TopologyNode &n) {
     return topology->getRoot().getTmrca( n );
 }
 
-//TreeChangeEventHandler& Tree::getTreeChangeEventHandler(void) const;//!< Get the change-event handler for this tree
-
-bool Tree::isBinary(void) const {
-    
-    return topology->isBinary();
-}
-
-bool Tree::isRooted(void) const {
-    
-    return topology->isRooted();
-}
-
-//void Tree::setRooted(bool tf) {
-//    throw RbException("Cannot set rootedness of tree. This needs to be done in the topology!!!");
-//}
-//
-//void Tree::setRoot(TopologyNode* r) {
-//    throw RbException("Cannot set root of tree. This needs to be done in the topology!!!");
-//}
-
 
 TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const {
     
@@ -217,12 +232,35 @@ bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const {
 }
 
 
-void Tree::setTopology(const Topology *t) {
+bool Tree::isBinary(void) const 
+{
+    
+    return topology->isBinary();
+}
+
+
+bool Tree::isRooted(void) const 
+{
+    
+    return topology->isRooted();
+}
+
+
+void Tree::setTopology(const Topology *t, bool owns) 
+{
+    // free the old topology if necessary
+    if ( ownsTopology && topology != NULL )
+    {
+        delete  topology;
+    }
+    
+    ownsTopology = owns;
+    
     // set the topology of this tree
     topology = t;
     
     // set the tree for each node
-    topology->getNodes()[topology->getNumberOfNodes()-1]->setTopology( this );
+    topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
     
     resizeElementVectors( t->getNumberOfNodes() );
 

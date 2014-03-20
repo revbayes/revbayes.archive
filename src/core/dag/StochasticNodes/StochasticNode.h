@@ -52,6 +52,7 @@ namespace RevBayesCore {
         const valueType&                                    getValue(void) const;
         bool                                                isClamped(void) const;                                                      //!< Is this DAG node clamped?
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
+        void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                        reInitialized(void);                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
@@ -81,10 +82,13 @@ namespace RevBayesCore {
 #include "RbConstants.h"
 #include "RbOptions.h"
 #include "TypedDistribution.h"
+#include "UserInterface.h"
 
 
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ), clamped( false ), ignoreRedraw(false), lnProb( RbConstants::Double::neginf ), needsProbabilityRecalculation( true ), distribution( d ) {
+    
+    this->type = DagNode::STOCHASTIC;
     
     // set myself as the DAG node of the distribution
     distribution->setStochasticNode( this );
@@ -102,6 +106,8 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ), clamped( n.clamped ), ignoreRedraw(n.ignoreRedraw), needsProbabilityRecalculation( true ), distribution( n.distribution->clone() ) {
+    
+    this->type = DagNode::STOCHASTIC;
     
     // set myself as the DAG node of the distribution
     distribution->setStochasticNode( this );
@@ -246,6 +252,30 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
     // delegate call
     DynamicNode<valueType>::keepMe( affecter );
     
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &o ) const
+{
+    o << "_variableType = Stochastic DAG node" << std::endl;
+    o << "_distribution = " << "<unnamed>" << std::endl;
+    o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_value        = " << this->distribution->getValue() << std::endl;
+    o << "_lnProb       = " << lnProb << std::endl;
+    if ( this->touched )
+        o << "_storedLnProb = " << storedLnProb << std::endl;    
+    
+    o << "_parents      = ";
+    this->printParents(o);
+    o << std::endl;
+    
+    o << "_children     = ";
+    this->printChildren(o);
+    o << std::endl;
+    
+    o << std::endl;
 }
 
 

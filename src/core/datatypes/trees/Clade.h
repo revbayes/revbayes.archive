@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of a Clade. A clade is simply a container of the taxon names.
- *
- * @brief Declaration of Clade
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-07-17 10:31:20 +0200 (Tue, 17 Jul 2012) $
- * @author The RevBayes core development team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-12-04, version 1.0
- * @extends MemberObject
- *
- * $Id: TopologyNode.h 1682 2012-07-17 08:31:20Z hoehna $
- */
-
 #ifndef Clade_H
 #define Clade_H
 
@@ -23,13 +6,22 @@
 
 namespace RevBayesCore {
     
+    /**
+     * Object describing clades.
+     *
+     * A clade is simply a container of the taxon names.
+     * Hence, this class just provides some convenience methods but could be considered as
+     * a string-vector.
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2013-03-10, version 1.0
+     */
     class Clade  {
         
     public:
-        Clade(const std::vector<std::string> &n);                                                                          //!< Default constructor with optional index
-//        Clade(const Clade &n);                                        //!< Copy constructor
-//        virtual                                    ~Clade(void);                                                         //!< Destructor
-//        Clade&                                      operator=(const Clade& n);
+        Clade(const std::vector<std::string> &n, double a);                                                                 //!< Default constructor with optional index
+        
         std::vector<std::string>::const_iterator    begin(void) const;
         std::vector<std::string>::iterator          begin(void);
         std::vector<std::string>::const_iterator    end(void) const;
@@ -44,12 +36,18 @@ namespace RevBayesCore {
         Clade*                                      clone(void) const;                                                      //!< Clone object
         
         // public methods
-        const std::string&                          getTaxonName(size_t i) const;
-        size_t                                      size(void) const;
+        double                                      getAge(void) const;                                                     //!< Get the age of this clade.
+        const std::string&                          getTaxonName(size_t i) const;                                           //!< Get a single taxon name.
+        const std::vector<std::string>&             getTaxonNames(void) const;                                              //!< Get the taxon names.
+        size_t                                      size(void) const;                                                       //!< Get the number of taxa.
+        std::string                                 toString(void) const;                                                   //!< Convert this value into a string.
         
         // public TopologyNode functions
         
-    private:    
+    private: 
+        
+        // members
+        double                                      age;
         std::vector<std::string>                    taxonNames;
         
     };

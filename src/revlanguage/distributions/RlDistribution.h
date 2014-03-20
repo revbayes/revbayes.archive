@@ -25,29 +25,28 @@
 
 namespace RevLanguage {
 
-class Distribution : public RbLanguageObject {
+    class Distribution : public RbLanguageObject {
     
-public:
-    virtual                                         ~Distribution(void);                                                                  //!< Destructor
-    Distribution(const Distribution &x);                                                    //!< Copy constuctor
+    public:
+        virtual                                         ~Distribution(void);                                                                //!< Destructor
     
-    // Basic utility functions you have to override
-    virtual Distribution*                           clone(void) const = 0;                                                              //!< Clone object
-    static const std::string&                       getClassName(void);                                                                 //!< Get class name
-    static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
+        // Basic utility functions you have to override
+        virtual Distribution*                           clone(void) const = 0;                                                              //!< Clone object
+        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
+       
+        // Basit utility functions
+        void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
     
-    // Basic utility functions you may want to override
-    virtual std::string                             debugInfo(void) const;                                                              //!< Brief info about object
-    
-    // Distribution functions you have to override
-    virtual RbLanguageObject*                       createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
-    virtual RevBayesCore::Distribution*             createDistribution(void) const = 0;                                               //!< Create a random variable from this distribution
+        // Distribution functions you have to override
+        virtual RbLanguageObject*                       createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
+        virtual RevBayesCore::Distribution*             createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
     
     
-protected:
-    Distribution(void);                                                                   //!< Basic constructor
+    protected:
+        Distribution(void);                                                                                                                 //!< Basic constructor hidden to disallow initialization
     
-};
+    };
     
 }
 

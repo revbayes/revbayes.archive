@@ -27,26 +27,29 @@
 
 namespace RevLanguage {
 
-class Function;
+    class Function;
 
-class MethodTable : public FunctionTable {
-
+    class MethodTable : public FunctionTable {
     public:
-        MethodTable(MethodTable* parent = NULL);                                                                //!< Empty table
-        virtual                    ~MethodTable() {}                                                            //!< Destructor doesn't need to do anything
+        MethodTable(MethodTable* parent = NULL); //!< Empty table
+
+        virtual ~MethodTable() {
+        } //!< Destructor doesn't need to do anything
 
         // Assignment operator
-        MethodTable&                operator=(const MethodTable& x);                                            //!< Assignment operator 
+        MethodTable& operator=(const MethodTable& x); //!< Assignment operator 
 
         // Basic utility functions
-        MethodTable*                clone(void) const { return new MethodTable(*this); }                        //!< Clone object
-        std::string                 debugInfo(void) const;                                                      //!< Complete info to string
+
+        MethodTable* clone(void) const {
+            return new MethodTable(*this);
+        } //!< Clone object
 
         // MethodTable function (we just set the name of MemberFunction objects here)
-        void                        addFunction(const std::string name, Function *func);         //!< Add function; set name if appropriate
-    
-};
-    
+        void addFunction(const std::string name, Function *func); //!< Add function; set name if appropriate
+
+    };
+
 }
 
 #endif

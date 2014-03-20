@@ -87,7 +87,7 @@ template <class valueType>
 void RevBayesCore::VectorIndexOperator<valueType>::update( void ) {
     
     const std::vector<valueType> &v = vector->getValue();
-    *(this->value) = v[index->getValue()];
+    *(this->value) = v[index->getValue() - 1];
 }
 
 

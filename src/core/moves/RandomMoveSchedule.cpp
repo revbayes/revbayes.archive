@@ -1,11 +1,3 @@
-//
-//  SequenctialMoveSchedule.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/17/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -37,12 +29,12 @@ double RandomMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* RandomMoveSchedule::nextMove( int gen ) {
+Move* RandomMoveSchedule::nextMove( unsigned long gen ) {
     
     movesPerIteration = 0.0;
     for (size_t i = 0; i < weights.size(); ++i)
     {
-        if ( moves[i]->isActive(gen) )
+        if ( moves[i]->isActive( gen ) )
         {
             movesPerIteration += weights[i];
         }

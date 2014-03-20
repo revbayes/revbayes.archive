@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Exponential distribution, which is used create
- * random variables of Exponential distributions.
- *
- * @brief Declaration and implementation of ExponentialDistribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef RlExponentialDistribution_H
 #define RlExponentialDistribution_H
 
@@ -23,23 +6,36 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the exponential distribution.
+     *
+     * The RevLanguage wrapper of the exponential distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the ExponentialDistribution.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2012-08-08, version 1.0
+     *
+     */
     class ExponentialDistribution :  public PositiveContinuousDistribution {
         
     public:
-        ExponentialDistribution( void );
-        virtual ~ExponentialDistribution();
+        ExponentialDistribution( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        ExponentialDistribution*                        clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-        void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
+        ExponentialDistribution*                        clone(void) const;                                                                              //!< Clone the object
+        static const std::string&                       getClassName(void);                                                                             //!< Get class name
+        static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
+        const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
+        const MemberRules&                              getMemberRules(void) const;                                                                     //!< Get member rules (const)
         
         
         // Distribution functions you have to override
-        RevBayesCore::ExponentialDistribution*          createDistribution(void) const;
+        RevBayesCore::ExponentialDistribution*          createDistribution(void) const;                                                                 //!< Create the internal distribution object
         
     protected:
         
@@ -47,8 +43,9 @@ namespace RevLanguage {
         
         
     private:
-        RbPtr<const Variable>                           lambda;
-        
+        RbPtr<const Variable>                           lambda;                                                                                         //!< The rate of the distribution
+        RbPtr<const Variable>                           offset;
+
     };
     
 }

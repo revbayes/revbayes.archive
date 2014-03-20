@@ -15,7 +15,7 @@
 
 using namespace RevBayesCore;
 
-WangLandauMcmc::WangLandauMcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca, double ch, int ci, size_t ns, double se, double sc, double ub, double lb, size_t np) : Mcmc(m,moves,mons,ca,ch,ci), numSteps(ns), stepEpsilon(se), stepConstant(sc), upperBoundEnergy(ub), lowerBoundEnergy(lb), numPartitions(np)
+WangLandauMcmc::WangLandauMcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca, double ch, int ci, size_t ns, double se, double sc, double ub, double lb, size_t np) : Mcmc(m,moves,mons,"random",ca,ch,ci), numSteps(ns), stepEpsilon(se), stepConstant(sc), upperBoundEnergy(ub), lowerBoundEnergy(lb), numPartitions(np)
 {
     
     // initialize vectors
@@ -114,7 +114,7 @@ void WangLandauMcmc::updateBias(void)
 }
 
 
-int WangLandauMcmc::nextCycle(bool advanceCycle) {
+size_t WangLandauMcmc::nextCycle(bool advanceCycle) {
     
     size_t proposals = round( schedule->getNumberMovesPerIteration() );
     for (size_t i=0; i<proposals; i++)

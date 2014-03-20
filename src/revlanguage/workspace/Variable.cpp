@@ -29,17 +29,72 @@
 using namespace RevLanguage;
 
 /** Constructor of filled variable. */
-Variable::Variable(const TypeSpec& ts) : valueTypeSpec( ts ), value( NULL ) {
+Variable::Variable(const TypeSpec& ts) : 
+    name(""),
+    refCount( 0 ),
+    value( NULL ), 
+    valueTypeSpec( ts )
+{
     
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(RbLanguageObject *v, const std::string &n) : valueTypeSpec( RbLanguageObject::getClassTypeSpec() ), name( n ), value( NULL ) {
+Variable::Variable(RbLanguageObject *v, const std::string &n) : 
+name( n ), 
+refCount( 0 ),
+value( NULL ),
+valueTypeSpec( RbLanguageObject::getClassTypeSpec() )
+{
     
     setValue( v );
     
 }
 
+
+/** Constructor of filled variable. */
+Variable::Variable(const Variable &v) : 
+    name( v.name ), 
+    refCount( 0 ),
+    value( NULL ),
+    valueTypeSpec( v.valueTypeSpec )
+{
+    
+    if ( v.value != NULL )
+    {
+        setValue( v.value->clone() );
+    }
+        
+    
+}
+
+
+Variable::~Variable( void )
+{
+    delete value;
+}
+
+
+Variable& Variable::operator=(const Variable &v)
+{
+    
+    if ( this != &v )
+    {
+        
+        name = v.name;
+        valueTypeSpec = v.valueTypeSpec;
+        
+        delete value;
+        value = NULL;
+        
+        if ( v.value != NULL )
+        {
+            setValue( v.value->clone() );
+        }
+        
+    }
+    
+    return *this;
+}
 
 /* Clone variable and variable */
 Variable* Variable::clone( void ) const {
@@ -147,7 +202,6 @@ void Variable::replaceValue( RbLanguageObject *newValue ) {
         value->replaceVariable( newValue );
         
         delete value;
-        value = newValue;
 
     }
     

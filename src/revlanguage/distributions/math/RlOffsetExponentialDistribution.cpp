@@ -9,7 +9,7 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "OffsetExponentialDistribution.h"
+#include "ExponentialDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -17,7 +17,7 @@
 
 using namespace RevLanguage;
 
-OffsetExponentialDistribution::OffsetExponentialDistribution() : PositiveContinuousDistribution() {
+OffsetExponentialDistribution::OffsetExponentialDistribution() : ContinuousDistribution() {
     
 }
 
@@ -33,11 +33,11 @@ OffsetExponentialDistribution* OffsetExponentialDistribution::clone( void ) cons
 }
 
 
-RevBayesCore::OffsetExponentialDistribution* OffsetExponentialDistribution::createDistribution( void ) const {
+RevBayesCore::ExponentialDistribution* OffsetExponentialDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l           = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* o           = static_cast<const RealPos &>( offset->getValue() ).getValueNode();
-    RevBayesCore::OffsetExponentialDistribution* d  = new RevBayesCore::OffsetExponentialDistribution( l, o );
+    RevBayesCore::TypedDagNode<double>* l     = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* o     = static_cast<const Real    &>( offset->getValue() ).getValueNode();
+    RevBayesCore::ExponentialDistribution* d  = new RevBayesCore::ExponentialDistribution( l, o );
     
     return d;
 }
@@ -71,7 +71,7 @@ const MemberRules& OffsetExponentialDistribution::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         distExpMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec()   , new RealPos(1.0) ) );
-        distExpMemberRules.push_back( new ArgumentRule( "offset", true, RealPos::getClassTypeSpec()   , new RealPos(0.0) ) );
+        distExpMemberRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec()  ) );
         
         rulesSet = true;
     }

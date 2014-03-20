@@ -263,7 +263,7 @@ bool TimeDependentBirthDeathProcess::matchesConstraints( void ) {
     const TopologyNode &root = value->getRoot();
     
     for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it) {
-        if ( !root.containsClade( *it ) ) {
+        if ( !root.containsClade( *it, true ) ) {
             return false;
         }
     }
@@ -408,7 +408,7 @@ void TimeDependentBirthDeathProcess::simulateTree( void ) {
     tau->setRoot(root);
     
     // set the topology of the tree
-    psi.setTopology(tau);
+    psi.setTopology(tau,true);
     
     // now simulate the speciation times
     // draw a sample for the origin

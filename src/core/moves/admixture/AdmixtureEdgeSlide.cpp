@@ -96,8 +96,8 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         storedAdmixtureParentChild = &storedAdmixtureParent->getChild(0);
 
         // get old branch idx
-        int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
-        int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+        // int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
+        // int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
 
         //std::cout << "nd_a\n";
         
@@ -165,7 +165,7 @@ double AdmixtureEdgeSlide::performSimpleMove( void ) {
         // find the node where the paths diverge by traversing both paths from root to tip
         AdmixtureNode* mrca = nd_a;
         //std::cout << "mrca : root -> tip\n";
-        int numSplits = 0;
+        // int numSplits = 0;
         while (nd_a == nd_b && !path_a.empty() && !path_b.empty())
         {
             mrca = nd_a;

@@ -23,6 +23,7 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TopologyNode.h"
+#include "TreeUtilities.h"
 #include "TypeSpec.h"
 #include "Vector.h"
 
@@ -68,18 +69,29 @@ TimeTree* TimeTree::clone(void) const {
 /* Map calls to member methods */
 RevLanguage::RbLanguageObject* TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "nnodes") {
+    if (name == "nnodes") 
+    {
         size_t n = this->value->getValue().getNumberOfNodes();
         return new Natural( n );
     }
-    else if (name == "height") {
+    else if (name == "height") 
+    {
         const RevBayesCore::TopologyNode& r = this->value->getValue().getTipNode( 0 );
         return new RealPos( r.getTime() );
     } 
-    else if (name == "names") {
+    else if (name == "names") 
+    {
         const std::vector<std::string>& n = this->value->getValue().getNames();
         return new Vector<RlString>( n );
     } 
+    else if (name == "rescale")
+    {
+        double f = static_cast<const RealPos&>( args[0].getVariable()->getValue() ).getValue();
+        RevBayesCore::TimeTree &tree = value->getValue();
+        RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
+        
+        return NULL;
+    }
     
     return RlModelVariableWrapper<RevBayesCore::TimeTree>::executeMethod( name, args );
 }
@@ -103,21 +115,27 @@ const TypeSpec& TimeTree::getClassTypeSpec(void) {
 
 
 /* Get method specifications */
-const RevLanguage::MethodTable& TimeTree::getMethods(void) const {
+const RevLanguage::MethodTable& TimeTree::getMethods(void) const 
+{
     
     static MethodTable    methods                     = MethodTable();
     static bool           methodsSet                  = false;
     
-    if ( methodsSet == false ) {
+    if ( methodsSet == false ) 
+    {
         
         ArgumentRules* nnodesArgRules = new ArgumentRules();
-        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
+        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
 
         ArgumentRules* heightArgRules = new ArgumentRules();
-        methods.addFunction("height", new MemberFunction(Natural::getClassTypeSpec(),       heightArgRules              ) );
+        methods.addFunction("height", new MemberFunction(Natural::getClassTypeSpec(),          heightArgRules   ) );
 
         ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
+
+        ArgumentRules* rescaleArgRules = new ArgumentRules();
+        rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
+        methods.addFunction("rescale", new MemberFunction(RlUtils::Void,                       rescaleArgRules  ) );
 
         // necessary call for proper inheritance
         methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::TimeTree>::getMethods() );

@@ -1,22 +1,7 @@
-/**
- * @file
- * This file contains the declaration of Alignment, which is
- * class that holds a character matrix in RevBayes.
- *
- * @brief Declaration of Alignment
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
+#ifndef RlDiscreteTaxonData_H
+#define RlDiscreteTaxonData_H
 
-#ifndef RlTaxonData_H
-#define RlTaxonData_H
-
-#include "TaxonData.h"
+#include "DiscreteTaxonData.h"
 #include "RlModelVariableWrapper.h"
 
 #include <set>
@@ -28,17 +13,16 @@ namespace RevLanguage {
     
     
     template <class rlCharType>
-    class TaxonData : public RlModelVariableWrapper<RevBayesCore::TaxonData<typename rlCharType::valueType> > {
+    class DiscreteTaxonData : public RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> > {
         
     public:
-        TaxonData(void);                                                                                                                    //!< Constructor requires character type
-        TaxonData(RevBayesCore::TaxonData<typename rlCharType::valueType> *v);                                                          //!< Constructor requires character type
-        TaxonData(const TaxonData& d);                                                                                                  //!< Constructor requires character type
+        DiscreteTaxonData(void);                                                                                                                    //!< Constructor requires character type
+        DiscreteTaxonData(RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v);                                                          //!< Constructor requires character type
         
-        typedef RevBayesCore::TaxonData<typename rlCharType::valueType> valueType;
+        typedef RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> valueType;
         
         // Basic utility functions
-        TaxonData*                          clone(void) const;                                                                                  //!< Clone object
+        DiscreteTaxonData*                  clone(void) const;                                                                                  //!< Clone object
         static const std::string&           getClassName(void);                                                                                 //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
@@ -60,33 +44,27 @@ namespace RevLanguage {
 
 
 template <class rlCharType>
-RevLanguage::TaxonData<rlCharType>::TaxonData(void) : RlModelVariableWrapper<RevBayesCore::TaxonData<typename rlCharType::valueType> >() {
+RevLanguage::DiscreteTaxonData<rlCharType>::DiscreteTaxonData(void) : RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> >() {
     
 }
 
 
 template <class rlCharType>
-RevLanguage::TaxonData<rlCharType>::TaxonData( RevBayesCore::TaxonData<typename rlCharType::valueType> *v) : RlModelVariableWrapper<RevBayesCore::TaxonData<typename rlCharType::valueType> >( v ) {
-    
-}
-
-
-template <class rlCharType>
-RevLanguage::TaxonData<rlCharType>::TaxonData( const TaxonData<rlCharType> &v) : RlModelVariableWrapper<RevBayesCore::TaxonData<typename rlCharType::valueType> >( v ) {
+RevLanguage::DiscreteTaxonData<rlCharType>::DiscreteTaxonData( RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v) : RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> >( v ) {
     
 }
 
 
 
 template <typename charType>
-RevLanguage::TaxonData<charType>* RevLanguage::TaxonData<charType>::clone() const {
-    return new TaxonData<charType>( *this );
+RevLanguage::DiscreteTaxonData<charType>* RevLanguage::DiscreteTaxonData<charType>::clone() const {
+    return new DiscreteTaxonData<charType>( *this );
 }
 
 
 /* Map calls to member methods */
 template <typename charType>
-RevLanguage::RbLanguageObject* RevLanguage::TaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RbLanguageObject* RevLanguage::DiscreteTaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if ( name == "[]") 
     {
@@ -102,22 +80,22 @@ RevLanguage::RbLanguageObject* RevLanguage::TaxonData<charType>::executeMethod(s
         return element;
     } 
     
-    return RlModelVariableWrapper<RevBayesCore::TaxonData<typename charType::valueType> >::executeMethod( name, args );
+    return RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename charType::valueType> >::executeMethod( name, args );
 }
 
 
 /* Get class name of object */
 template <typename rlType>
-const std::string& RevLanguage::TaxonData<rlType>::getClassName(void) { 
+const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassName(void) { 
     
-    static std::string rbClassName = "TaxonData";
+    static std::string rbClassName = "DiscreteTaxonData";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
 template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::TaxonData<rlType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
@@ -128,7 +106,7 @@ const RevLanguage::TypeSpec& RevLanguage::TaxonData<rlType>::getClassTypeSpec(vo
 /** Get the methods for this vector class */
 /* Get method specifications */
 template <typename rlType>
-const RevLanguage::MethodTable& RevLanguage::TaxonData<rlType>::getMethods(void) const {
+const RevLanguage::MethodTable& RevLanguage::DiscreteTaxonData<rlType>::getMethods(void) const {
     
     static MethodTable    methods                     = MethodTable();
     static bool           methodsSet                  = false;
@@ -154,7 +132,7 @@ const RevLanguage::MethodTable& RevLanguage::TaxonData<rlType>::getMethods(void)
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::TaxonData<rlType>::getTypeSpec(void) const {
+const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;

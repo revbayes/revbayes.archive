@@ -46,7 +46,6 @@
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlPowerPosterior.h"
-//#include "Simulate.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
@@ -54,10 +53,12 @@
 #include "RlDirichletDistribution.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
-#include "RlGeometricBrownianMotion.h"
+#include "RlGeometricDistribution.h"
+#include "RlPoissonDistribution.h"
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
+#include "RlOffsetLognormalDistribution.h"
 #include "RlOneOverXDistribution.h"
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
@@ -65,6 +66,9 @@
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
+#include "RlConstantRateSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "RlDiversityDependentPureBirthProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
 // sequence models
@@ -73,9 +77,13 @@
 /* Moves */
 #include "RlMove.h"
 
-/* Moves on eal values*/
+/* Moves on real values*/
 #include "RlScaleMove.h"
 #include "RlSlidingMove.h"
+
+/* Moves on integer values*/
+#include "RlRandomIntegerWalkMove.h"
+#include "RlRandomGeometricWalkMove.h"
 
 /* Moves on Simplices */
 #include "RlSimplexMove.h"
@@ -87,6 +95,7 @@
 
 /* Tree Proposals */
 #include "RlFixedNodeheightPruneRegraft.h"
+#include "RlNarrowExchange.h"
 #include "RlNearestNeighborInterchange.h"
 #include "RlNearestNeighborInterchange_nonClock.h"
 #include "RlNodeTimeSlideUniform.h"
@@ -129,6 +138,7 @@
 #include "Func_simplex.h"
 #include "Func_type.h"
 #include "Func_Source.h"
+#include "Func_structure.h"
 #include "Func_write.h"
 
 /* Builtin templated functions */
@@ -145,6 +155,7 @@
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
 #include "Func_writeFasta.h"
+#include "Func_writeNexus.h"
 #include "RlTmrcaStatistic.h"
 #include "RlTreeHeightStatistic.h"
 #include "RlTreeAssemblyFunction.h"
@@ -196,6 +207,7 @@
 #include "Func_log.h"
 #include "Func_mean.h"
 #include "Func_power.h"
+#include "Func_powermix.h"
 #include "Func_round.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
@@ -236,6 +248,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
+        /* Add MemberObject types without auto-generated constructors (alphabetic order) */
+        addType( "Simplex", new Simplex() );
+        
         
         //////////////////
         /* Add monitors */
@@ -263,6 +278,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Moves on real values */
         addTypeWithConstructor("mScale",                new ScaleMove() );
         addTypeWithConstructor("mSlide",                new SlidingMove() );
+        
+        /* Moves on integer values */
+        addTypeWithConstructor("mRandomIntegerWalk",    new RandomIntegerWalkMove() );
+        addTypeWithConstructor("mRandomGeometricWalk",  new RandomGeometricWalkMove() );
 
         /* Moves on simplices */
         addTypeWithConstructor("mSimplex",              new SimplexMove() );
@@ -274,6 +293,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
+        addTypeWithConstructor("mNarrow",               new NarrowExchange() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
         addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
         addTypeWithConstructor("mNodeTimeSlideUniform", new NodeTimeSlideUniform() );
@@ -306,22 +326,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "gamma", new GammaDistribution() );
         
         
-        // geometric Brownian motion (BM)
-        addDistribution( "geomBM", new GeometricBrownianMotion() );
+        // geometric distribution
+        addDistribution( "geom", new GeometricDistribution() );
+        
+        // geometric distribution
+        addDistribution( "poisson", new PoissonDistribution() );
         
         
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
+        addDistribution( "exponential", new OffsetExponentialDistribution() );
         
-        // normal distribution
+        // lognormal distribution
         addDistribution( "lnorm", new LognormalDistribution() );
+        addDistribution( "lnorm", new OffsetLognormalDistribution() );
         
         // normal distribution
         addDistribution( "norm", new NormalDistribution() );
-        
-        // offset-exponential distribution
-        addDistribution( "offsetExponential", new OffsetExponentialDistribution() );
-        
+                
         // 1/x distribution
         addDistribution( "oneOverX", new OneOverXDistribution() );
         
@@ -335,6 +357,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        
+        // constant rate birth-death process distribution
+        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
+
+        // piecewise constant rate birth-death process distribution
+        addDistribution( "BirthDeathSkySerial", new PiecewiseConstantSerialSampledBirthDeathProcess() );
+
+        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
+        addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
@@ -406,6 +438,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "simplex",                  new Func_simplex()                  );
+        addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
         
         
@@ -440,6 +473,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("plnorm", new DistributionFunctionCdf( new LognormalDistribution() ) );
         addFunction("qlnorm", new DistributionFunctionQuantile( new LognormalDistribution() ) );
         addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new LognormalDistribution() ) );
+        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new OffsetLognormalDistribution() ) );
+        addFunction("plnorm", new DistributionFunctionCdf( new OffsetLognormalDistribution() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantile( new OffsetLognormalDistribution() ) );
+        addFunction("rlnorm", new DistributionFunctionRv<Real>( new OffsetLognormalDistribution() ) );
         
         // normal distribution
         addFunction("dnorm", new DistributionFunctionPdf<Real>( new NormalDistribution() ) );
@@ -539,6 +576,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		
 		
         addFunction( "power",     new Func_power() );
+        addFunction( "powermix",  new Func_powermix() );
         
         
         // sin function
@@ -584,6 +622,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "readTrees",                   new Func_readTrees()                   );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
+        addFunction( "writeNexus",                  new Func_writeNexus()                  );
         
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );

@@ -35,7 +35,7 @@ double SequentialMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* SequentialMoveSchedule::nextMove( int gen ) {
+Move* SequentialMoveSchedule::nextMove( size_t gen ) {
     
     bool found = false;
     do {

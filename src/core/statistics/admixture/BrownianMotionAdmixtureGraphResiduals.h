@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class BrownianMotionAdmixtureGraphResiduals : public TypedFunction<std::vector<double> > {
         
     public:
-        BrownianMotionAdmixtureGraphResiduals(const StochasticNode<CharacterData<ContinuousCharacterState> >* n);                                                                                   //!< Default constructor
+        BrownianMotionAdmixtureGraphResiduals(const StochasticNode<ContinuousCharacterData >* n);                                                                                   //!< Default constructor
         BrownianMotionAdmixtureGraphResiduals(const BrownianMotionAdmixtureGraphResiduals& n);                                                                                      //!< Copy constructor
         virtual                                    ~BrownianMotionAdmixtureGraphResiduals(void);                                                                  //!< Destructor
         
@@ -38,7 +38,7 @@ namespace RevBayesCore {
         
     private:
         // members
-        const StochasticNode<CharacterData<ContinuousCharacterState> >* bmag;
+        const StochasticNode<ContinuousCharacterData >*         bmag;
         
     };
     

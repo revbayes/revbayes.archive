@@ -10,7 +10,9 @@
 
 using namespace RevBayesCore;
 
-TreeHeightStatistic::TreeHeightStatistic(const TypedDagNode<TimeTree> *t) : TypedFunction<double>( new double(0.0) ), tree( t ) {
+TreeHeightStatistic::TreeHeightStatistic(const TypedDagNode<TimeTree> *t) : TypedFunction<double>( new double(0.0) ), 
+    tree( t ) 
+{
     // add the tree parameter as a parent
     addParameter( tree );
     
@@ -18,24 +20,29 @@ TreeHeightStatistic::TreeHeightStatistic(const TypedDagNode<TimeTree> *t) : Type
 }
 
 
-TreeHeightStatistic::TreeHeightStatistic(const TreeHeightStatistic &n) : TypedFunction<double>( n ), tree( n.tree ) {
+TreeHeightStatistic::TreeHeightStatistic(const TreeHeightStatistic &n) : TypedFunction<double>( n ), 
+tree( n.tree ) 
+{
     // no need to add parameters, happens automatically
 }
 
 
-TreeHeightStatistic::~TreeHeightStatistic( void ) {
+TreeHeightStatistic::~TreeHeightStatistic( void ) 
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-TreeHeightStatistic* TreeHeightStatistic::clone( void ) const {
+TreeHeightStatistic* TreeHeightStatistic::clone( void ) const 
+{
     
     return new TreeHeightStatistic( *this );
 }
 
 
-void TreeHeightStatistic::update( void ) {
+void TreeHeightStatistic::update( void ) 
+{
      
     const TopologyNode& r = tree->getValue().getRoot();
     *value = r.getAge();
@@ -43,7 +50,8 @@ void TreeHeightStatistic::update( void ) {
 
 
 
-void TreeHeightStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void TreeHeightStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
+{
     
     if (oldP == tree) 
     {

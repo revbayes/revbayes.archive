@@ -51,6 +51,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
+#include "NexusWriter.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "RlBranchLengthTree.h"
@@ -88,26 +89,17 @@ RevLanguage::RbLanguageObject* RevLanguage::Func_mapTree<treeType>::execute( voi
     typename treeType::valueType* tree = summary.map();
     
     if ( filename != "" ) {        
-        std::fstream                        outStream;
         
-        // open the stream to the file
-        outStream.open( filename.c_str(), std::fstream::out );
-        outStream << "#NEXUS" << std::endl;
-        outStream  << std::endl;
-        outStream << "\tBegin taxa;" << std::endl;
-        outStream << "\tDimensions ntax=" << tree->getNumberOfTips() << ";" << std::endl;;
-        outStream << "\tTaxlabels" << std::endl;
-        std::vector<std::string> taxlabels = tree->getRoot().getTaxaStringVector();
-        for (std::vector<std::string>::const_iterator it = taxlabels.begin(); it != taxlabels.end(); ++it) {
-            outStream << "\t\t" << *it << std::endl;
-        }
-		outStream << "\t\t;" << std::endl;
-        outStream << "End;" << std::endl;
-        outStream << std::endl; 
-        outStream << "Begin trees;" << std::endl;
-        outStream << "tree TREE1 = [&R]" << *tree << ";" << std::endl;
-        outStream << "End;" << std::endl;
-        outStream << std::endl;
+        RevBayesCore::NexusWriter writer(filename);
+        writer.openStream();
+        
+        RevBayesCore::Clade c( tree->getRoot().getTaxaStringVector(), 0.0 );
+        writer.writeNexusBlock(c);
+        
+        writer.writeNexusBlock(*tree);
+        
+        writer.closeStream();
+        
     }
     
     return new treeType( tree );

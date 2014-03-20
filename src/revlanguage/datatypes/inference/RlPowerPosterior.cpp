@@ -140,12 +140,12 @@ const MethodTable& PowerPosterior::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RbVoid_name, runArgRules) );
+        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RbVoid_name, burninArgRules) );
+        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* pathSamplingArgRules = new ArgumentRules();
         methods.addFunction("pathSampling", new MemberFunction( Real::getClassTypeSpec(), pathSamplingArgRules) );

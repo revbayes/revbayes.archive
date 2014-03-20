@@ -21,7 +21,7 @@ namespace RevBayesCore
     public:
         WangLandauMcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0, int ci=0, size_t ns=1e6, double se=10e-5, double sc=0.25, double ub=0.0, double lb=1000.0, size_t np=20);
         
-         virtual int                                nextCycle(bool advanceCycle);
+         virtual size_t                              nextCycle(bool advanceCycle);
         
     protected:
 

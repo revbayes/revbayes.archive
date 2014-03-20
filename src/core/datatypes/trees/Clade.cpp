@@ -1,39 +1,42 @@
-//
-//  Clade.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/10/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "Clade.h"
-
+#include <algorithm>
 #include <iostream>
 
 
 using namespace RevBayesCore;
 
 
-Clade::Clade(const std::vector<std::string> &n) : taxonNames( n ) {
+/**
+ * Default constructor that instantiates the object.
+ * Additionally, we sort the vector of taxon names.
+ *
+ * \param[in]   n    The vector containing the taxon names.
+ */
+Clade::Clade(const std::vector<std::string> &n, double a) :
+    age( a ),
+    taxonNames( n ) 
+{
     
+    // for identifiability we always keep the taxon names sorted
+    std::sort(taxonNames.begin(), taxonNames.end());    
 }
 
 
-bool Clade::operator==(const Clade &c) const {
+
+/**
+ * Overloaded equals operator.
+ * Only if we have the extact same taxon names then these two clades are equal.
+ */
+bool Clade::operator==(const Clade &c) const 
+{
     
     if ( c.size() != taxonNames.size() )
         return false;
     
-    for ( std::vector<std::string>::const_iterator it = taxonNames.begin(); it != taxonNames.end(); ++it) {
-        bool found = false;
-        for (std::vector<std::string>::const_iterator j = c.begin(); j != c.end(); ++j) {
-            if ( *j == * it ) {
-                found = true;
-                break;
-            }
-        }
-        
-        if ( !found ) {
+    for (size_t i = 0; i < taxonNames.size(); ++i) 
+    {
+        if ( taxonNames[i] != c.getTaxonName(i) )
+        {
             return false;
         }
     }
@@ -42,62 +45,146 @@ bool Clade::operator==(const Clade &c) const {
 }
 
 
-bool Clade::operator!=(const Clade &c) const {
+/**
+ * Not equals operator that uses the equals operator.
+ */
+bool Clade::operator!=(const Clade &c) const 
+{
     return !operator==( c );
 }
 
-bool Clade::operator<(const Clade &c) const {
+
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator<(const Clade &c) const 
+{
     return taxonNames.size() < c.size();
 }
 
 
-std::vector<std::string>::const_iterator Clade::begin(void) const {
+
+/**
+ * Get the const-iterator to the first taxon name.
+ */
+std::vector<std::string>::const_iterator Clade::begin(void) const 
+{
     return taxonNames.begin();
 }
 
 
-std::vector<std::string>::iterator Clade::begin(void) {
+/**
+ * Get the iterator to the first taxon name.
+ */
+std::vector<std::string>::iterator Clade::begin(void) 
+{
     return taxonNames.begin();
 }
 
 
-std::vector<std::string>::const_iterator Clade::end(void) const {
+/**
+ * Get the const-iterator after the last taxon name.
+ */
+std::vector<std::string>::const_iterator Clade::end(void) const 
+{
     return taxonNames.end();
 }
 
 
-std::vector<std::string>::iterator Clade::end(void) {
+/**
+ * Get the iterator after the last taxon name.
+ */
+std::vector<std::string>::iterator Clade::end(void) 
+{
     return taxonNames.end();
 }
 
 
-
-Clade* Clade::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of the model. 
+ */
+Clade* Clade::clone(void) const 
+{
     return new Clade(*this);
 }
 
 
-const std::string& Clade::getTaxonName(size_t i) const {
+/**
+ * Get the clade age.
+ *
+ * \return    The stored age.
+ */
+double Clade::getAge( void ) const 
+{
+    
+    return age;
+}
+
+
+/**
+ * Get the taxon name at position i.
+ *
+ * \param[in]    i    The index for the taxon name we are interested in.
+ *
+ * \return       The name of the taxon.
+ */
+const std::string& Clade::getTaxonName(size_t i) const 
+{
     return taxonNames[i];
 }
 
 
-size_t Clade::size(void) const {
+/**
+ * Get all taxon names.
+ *
+ * \return       The vector of taxon names.
+ */
+const std::vector<std::string>& Clade::getTaxonNames( void ) const 
+{
+    return taxonNames;
+}
+
+
+/**
+ * Get the number of taxa contained in this clade.
+ *
+ * \return       Size of the taxon name vector.
+ */
+size_t Clade::size(void) const 
+{
     return taxonNames.size();
 }
 
 
+/**
+ * Write the value of this clade as a string.
+ *
+ * \return    A single string containing the entire clade.
+ */
+std::string Clade::toString( void ) const
+{
+    std::string s = "{";
+    
+    for (size_t i = 0; i < taxonNames.size(); ++i) 
+    {
+        if ( i > 0 ) {
+            s += ",";
+        }
+        s += taxonNames[i];
+    }
+    s += "}";
+    
+    return s;
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Clade& x) {
-    o << "{";
-    
-    for (size_t i = 0; i < x.size(); ++i) {
-        if ( i > 0 ) {
-            o << ",";
-        }
-        o << x.getTaxonName(i);
-    }
-    o << "}";
+   
+    o << x.toString();
+   
     return o;
 }
 

@@ -63,9 +63,16 @@ Clade* Clade::clone(void) const {
 }
 
 
-void Clade::constructInternalObject( void ) {
+void Clade::constructInternalObject( void ) 
+{
     // we free the memory first
-    delete value;
+    if ( value != NULL )
+    {
+        if ( value->decrementReferenceCount() == 0 ) 
+        {
+            delete value;
+        }
+    }
     
     // now allocate a new Clade
     std::vector<std::string> n;
@@ -73,7 +80,8 @@ void Clade::constructInternalObject( void ) {
     {
         n.push_back( static_cast<const RlString &>( (*it)->getValue() ).getValue() );
     }
-    value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n));
+    value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n,0.0));
+    value->incrementReferenceCount();
     
 }
 

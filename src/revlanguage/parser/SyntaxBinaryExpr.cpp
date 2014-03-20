@@ -49,7 +49,8 @@ SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x)
 
 /** Destructor deletes operands */
 SyntaxBinaryExpr::~SyntaxBinaryExpr() {
-    
+    delete leftOperand;
+    delete rightOperand;
 }
 
 

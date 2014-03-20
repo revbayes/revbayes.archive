@@ -17,13 +17,21 @@ using namespace RevBayesCore;
 
 
 /* Default constructor */
-Topology::Topology(void) : root( NULL ), numTips( 0 ), numNodes( 0 ), rooted( false ), binary( true ) {
+Topology::Topology(void) : 
+    root( NULL ), 
+    numTips( 0 ), 
+    numNodes( 0 ), 
+    rooted( false ), 
+    binary( true ) 
+{
     
 }
 
 
 /* Copy constructor */
-Topology::Topology(const Topology& t) : root( NULL ) {
+Topology::Topology(const Topology& t) : 
+    root( NULL ) 
+{
     
     // set the parameters
     binary      = t.binary;
@@ -32,29 +40,32 @@ Topology::Topology(const Topology& t) : root( NULL ) {
     rooted      = t.rooted;
     
     // need to perform a deep copy of the BranchLengthTree nodes
-    if (t.root != NULL) {
-        root = t.getRoot().clone();
+    if (t.root != NULL) 
+    {
+        TopologyNode * newRoot = t.getRoot().clone();
         
-        // fill the nodes vector
-        //    fillNodesByPreorderTraversal(root);
-        fillNodesByPhylogeneticTraversal(root);
+        // set the root. This will also set the nodes vector.
+        setRoot(newRoot);
     }
     
 }
 
 
 /* Destructor */
-Topology::~Topology(void) {
-    
+Topology::~Topology(void) 
+{
+
     nodes.clear();
     
     delete root;
 }
 
 
-Topology& Topology::operator=(const Topology &t) {
+Topology& Topology::operator=(const Topology &t) 
+{
     
-    if (this != &t) {
+    if (this != &t) 
+    {
         
         nodes.clear();
         delete root;
@@ -76,34 +87,24 @@ Topology& Topology::operator=(const Topology &t) {
 
 
 /* Clone function */
-Topology* Topology::clone(void) const {
+Topology* Topology::clone(void) const 
+{
     
     return new Topology(*this);
 }
 
 
-std::vector<std::string> Topology::getNames( void ) const {
+std::vector<std::string> Topology::getNames( void ) const 
+{
     std::vector<std::string> names;
-    for (size_t i = 0; i < getNumberOfTips(); ++i) {
+    for (size_t i = 0; i < getNumberOfTips(); ++i) 
+    {
         const TopologyNode& n = getTipNode( i );
         names.push_back( n.getName() );
     }
     
     return names;
 }
-
-
-///* fill the nodes vector by a preorder traversal recursively starting with this node. */
-//void Topology::fillNodesByPreorderTraversal(TopologyNode* node) {
-//    
-//    // this is preorder so add yourself first
-//    nodes.push_back(node);
-//    
-//    // now call this function recursively for all your children
-//    for (size_t i=0; i<node->getNumberOfChildren(); i++) {
-//        fillNodesByPreorderTraversal(&node->getChild(i));
-//    }
-//}
 
 /* fill the nodes vector by a phylogenetic traversal recursively starting with this node. 
  * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
@@ -123,6 +124,12 @@ void Topology::fillNodesByPhylogeneticTraversal(TopologyNode* node) {
         // this is phylogenetic ordering so the internal nodes come last
         nodes.push_back(node);
     }
+}
+
+
+const std::string& Topology::getNewickRepresentation( void ) const {
+    
+    return root->computeNewick();
 }
 
 
@@ -170,12 +177,6 @@ size_t Topology::getNumberOfInteriorNodes( void ) const {
 size_t Topology::getNumberOfNodes( void ) const {
     
     return nodes.size();
-}
-
-
-const std::string& Topology::getNewickRepresentation( void ) const {
-    
-    return root->computeNewick();
 }
 
 

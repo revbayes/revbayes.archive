@@ -55,6 +55,41 @@ RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : RlModelVariab
 }
 
 
+/**
+ * Generic addition operator.
+ * We test if the rhs is of a type that we use for a specialized addition operation.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the sum.
+ */
+RbLanguageObject* RlString::add( const RbLanguageObject& rhs ) const 
+{
+    
+    if ( rhs.getTypeSpec() == RlString::getClassTypeSpec() )
+        return add( static_cast<const RlString&>( rhs ) );
+    
+    return RlModelVariableWrapper<std::string>::add( rhs );
+}
+
+
+/**
+ * Specialized addition operation between two string values.
+ * The return value is also of type string.
+ *
+ * \param[in]   rhs     The right hand side operand of the addition operation.
+ *
+ * \return              A new object holding the concatenation.
+ */
+RlString* RlString::add(const RevLanguage::RlString &rhs) const
+{
+    
+    RlString *n = new RlString( value->getValue() + rhs.getValue() );
+    
+    return n;
+}
+
+
 /** Clone function */
 RlString* RevLanguage::RlString::clone() const {
 
@@ -91,7 +126,7 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 /** Print value */
 void RlString::printValue(std::ostream& o) const {
 
-//	o << "\"" << value << "\"";
+	o << "\"" << value << "\"";
 	o << value->getValue();
 }
 

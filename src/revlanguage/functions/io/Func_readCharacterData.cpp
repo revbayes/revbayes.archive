@@ -1,23 +1,6 @@
-/**
- * @file
- * This file contains the implementation of Func_readAlignment.
- *
- * @brief Implementation of Func_readAlingment
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-08-22 11:45:25 +0200 (Wed, 22 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id: Func_readCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
- */
-
 #include "ArgumentRule.h"
-#include "CharacterData.h"
 #include "ConstantNode.h"
+#include "DiscreteCharacterData.h"
 #include "Ellipsis.h"
 #include "Func_readCharacterData.h"
 #include "NclReader.h"
@@ -25,8 +8,8 @@
 #include "RbFileManager.h"
 #include "RbNullObject.h"
 #include "RlBoolean.h"
-#include "RlCharacterData.h"
 #include "RlAminoAcidState.h"
+#include "RlDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
@@ -58,45 +41,22 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
+    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
     {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
         throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
     }
-    
-    // are we reading a single file or are we reading the contents of a directory?
-    bool readingDirectory = false;
-    if ( myFileManager.getFilePath() != "" && myFileManager.getFileName() == "")
-        readingDirectory = true;
-    if (readingDirectory == true)
-        RBOUT("Recursively reading the contents of a directory");
-    else
-        RBOUT("Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"");
-    
+        
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
-    if (readingDirectory == true)
+    if ( myFileManager.isDirectory() )
+    {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
+    }
     else 
     {
-        std::string filepath = myFileManager.getFilePath();
-        if ( filepath != "" )
-        {
-#           if defined (WIN32)
-            filepath += "\\";
-#           else
-            filepath += "/";
-#           endif
-        }
-        filepath += myFileManager.getFileName();
-        vectorOfFileNames.push_back( filepath );
-    }
-    if (readingDirectory == true)
-    {
-        std::stringstream o1;
-        o1 << "Found " << vectorOfFileNames.size() << " files in directory";
-        RBOUT(o1.str());
+        vectorOfFileNames.push_back( myFileManager.getFullFileName() );
     }
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
@@ -146,23 +106,23 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
                 numMatricesReadForThisFile++;
                 
                 if ( dType == "DNA" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::DnaState> *>( *it );
-                    CharacterData<DnaState> *mDNA = new CharacterData<DnaState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
+                    DiscreteCharacterData<DnaState> *mDNA = new DiscreteCharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                 }
                 else if ( dType == "RNA" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::RnaState> *>( *it );
-                    CharacterData<RnaState> *mRNA = new CharacterData<RnaState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
+                    DiscreteCharacterData<RnaState> *mRNA = new DiscreteCharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                 }
                 else if ( dType == "Protein" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                    CharacterData<AminoAcidState> *mAA = new CharacterData<AminoAcidState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
+                    DiscreteCharacterData<AminoAcidState> *mAA = new DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
                 else if ( dType == "Standard" ) {
-                    RevBayesCore::CharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::CharacterData<RevBayesCore::StandardState> *>( *it );
-                    CharacterData<StandardState> *mSS = new CharacterData<StandardState>( coreM );
+                    RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
+                    DiscreteCharacterData<StandardState> *mSS = new DiscreteCharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                 }
                 else {
@@ -180,28 +140,28 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     
     
     // print summary of results of file reading to the user
-    if (readingDirectory == true)
+    if (myFileManager.isDirectory() == true)
     {
         std::stringstream o2;
         if ( numFilesRead == 0 )
-            o2 << "Failed to read any files";
+            o2 << "Failed to read any files from directory '" << fn.getValue() << "'";
         else if ( numFilesRead == 1 ) {
             if ( m->size() == 1 )
-                o2 << "Successfully read one file with one character matrix";
+                o2 << "Successfully read one file with one character matrix from directory '" << fn.getValue() << "'";
             else
-                o2 << "Successfully read one file with " << m->size() << " character matrices";
+                o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
         }
         else
-            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices";
+            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn.getValue() << "'";
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
-        if ( vectorOfFileNames.size() - m->size() > 0 && myWarnings.size() > 0 )
+        if ( vectorOfFileNames.size() - numFilesRead > 0 && myWarnings.size() > 0 )
         {
             std::stringstream o3;
-            if (vectorOfFileNames.size() - m->size() == 1)
+            if (vectorOfFileNames.size() - numFilesRead == 1)
                 o3 << "Did not read a file for the following ";
             else
-                o3 << "Did not read " << vectorOfFileNames.size() - m->size() << " files for the following ";
+                o3 << "Did not read " << vectorOfFileNames.size() - numFilesRead << " files for the following ";
             if (myWarnings.size() == 1)
                 o3 << "reason:";
             else
@@ -213,15 +173,21 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     }
     else
     {
-        if (m->size() > 0)
-            RBOUT("Successfully read file");
+        if (m->size() == 1)
+            RBOUT("Successfully read one character matrix from file '" + fn.getValue() + "'");
+        else if (m->size() > 1)
+        {
+            std::stringstream o3;
+            o3 << "Successfully read " << m->size() << " character matrices from file '" << fn.getValue() << "'";
+            RBOUT(o3.str());
+        }
         else
         {
             std::set<std::string> myWarnings = reader.getWarnings();
             if ( myWarnings.size() > 0 )
             {
                 std::stringstream o3;
-                o3 << "Error reading the file";
+                o3 << "Error reading file '" << fn.getValue() << "'";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
                     RBOUT("Error:   " + (*it));

@@ -1,7 +1,44 @@
 #!/bin/sh
 HERE=$(pwd)
 echo $HERE
+
+#################
+# parse command line arguments
+while echo $1 | grep ^- > /dev/null; do
+    eval $( echo $1 | sed 's/-//g' | tr -d '\012')=$2
+    shift
+    shift
+done
+
+# set default values
+if [ ! -n "$boost" ] # not is set
+then 
+    boost="true"
+fi
+
+#################
+# 1) build boost libraries separatly
+
+if [ "$boost" = "true" ]
+then
+    echo 'Building boost libraries'    
+    echo 'you can turn this of with argument "-boost false"'
+    
+    cd ../../boost_1_55_0
+    rm ./project-config.jam*                                # clean up from previous runs
+    ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time
+    ./b2
+    
+else
+    echo 'not building boost libraries'
+fi
+
+#################
+# 2) generate cmake configuration
+cd $HERE
 cd ../../src
+
+echo 'generating revBayes build files'
 
 # 1. CMakeLists.txt
 echo 'cmake_minimum_required(VERSION 2.6)
@@ -13,11 +50,11 @@ project(RevBayes)
 
 # Default compiler flags
 if (WIN32)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg -static")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg -static")
 else ()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg")
 endif ()
 
 # Add extra CMake libraries into ./CMake
@@ -28,15 +65,74 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
 # TODO Split these up based on sub-package dependency
 include_directories(' > "$HERE/CMakeLists.txt"
-find core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
+find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ')
 
-add_subdirectory(core)   # Split into much smaller libraries
+# Split into much smaller libraries
+add_subdirectory(ui)
+add_subdirectory(libs)
+add_subdirectory(core)   
 add_subdirectory(revlanguage)
 
+
+
+############# executables #################
+# main rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-target_link_libraries(rb rb-parser rb-core)
+#target_link_libraries(rb rb-parser rb-core libs boost_system boost_regex boost_thread boost_date_time)
+target_link_libraries(rb rb-parser rb-core )
+
+# utility for generating help html files.
+add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/HelpHtmlGenerator.cpp)
+target_link_libraries(help-html-generator rb-parser rb-core libs boost_filesystem boost_system boost_regex)
+
+
+
+########## boost section ##############
+#include_directories("../../../../boost_1_55_0")
+
+add_library(boost_system SHARED IMPORTED)
+set_target_properties(boost_system PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_system.a")
+           
+add_library(boost_filesystem SHARED IMPORTED)
+set_target_properties(boost_filesystem PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_filesystem.a")
+
+add_library(boost_regex SHARED IMPORTED)
+set_target_properties(boost_regex PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_regex.a")
+
+add_library(boost_thread SHARED IMPORTED)
+set_target_properties(boost_thread PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_thread.a")
+
+add_library(boost_date_time SHARED IMPORTED)
+set_target_properties(boost_date_time PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_date_time.a")
+
+#add_dependencies(generate-help-html libs boost_filesystem boost_system)                                                                                                                                                                              
+
+
+######## end of boost #################
+
+
+
 ' >> $HERE/CMakeLists.txt
+
+echo
+
+if [ ! -d "$HERE/ui" ]; then
+mkdir "$HERE/ui"
+fi
+echo 'set(UI_FILES' > "$HERE/ui/CMakeLists.txt"
+find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/ui/CMakeLists.txt"
+echo ')
+add_library(rb-ui ${UI_FILES})'  >> "$HERE/ui/CMakeLists.txt"
+
+if [ ! -d "$HERE/libs" ]; then
+mkdir "$HERE/libs"
+fi
+echo 'set(LIBS_FILES' > "$HERE/libs/CMakeLists.txt"
+find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CMakeLists.txt"
+echo ')
+add_library(libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
+
 
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"
@@ -46,6 +142,7 @@ find core | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/core/CM
 echo ')
 add_library(rb-core ${CORE_FILES})'  >> "$HERE/core/CMakeLists.txt"
 
+
 if [ ! -d "$HERE/revlanguage" ]; then
 mkdir "$HERE/revlanguage"
 fi
@@ -53,4 +150,5 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
+
 

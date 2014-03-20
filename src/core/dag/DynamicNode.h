@@ -77,7 +77,7 @@ RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
 /** Clone the entire graph: clone children, swap parents */
 template<class valueType>
 RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const {
-        
+    
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
     

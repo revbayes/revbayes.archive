@@ -45,9 +45,8 @@ class FunctionTable {
         FunctionTable&                          operator=(const FunctionTable& x);                                                      //!< Assignment operator 
 
         // Basic utility functions
-        virtual std::string                     debugInfo(void) const;                                                                  //!< Brief info to string
         virtual FunctionTable*                  clone(void) const;                                                                      //!< Clone object
-        void                                    printValue(std::ostream& o) const;                                                      //!< Print table for user
+        void                                    printValue(std::ostream& o, bool env) const;                                            //!< Print table for user
 
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, Function *func);                                    //!< Add function
@@ -59,13 +58,14 @@ class FunctionTable {
         std::vector<Function*>                  findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         const Function&                         getFunction(const std::string& name);                                                   //!< Get function (a copy)
         const Function&                         getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
+        std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
         void                                    setParentTable(const FunctionTable* ft) { parentTable = ft; }                           //!< Set parent table
 
     protected:
         Function&                               findFunction(const std::string&           name,
                                                              const std::vector<Argument>& args);                                        //!< Find function, process args
-        
+    
         // Member variables
         std::multimap<std::string, Function*>   table;                                                                                  //!< Table of functions
         const FunctionTable*                    parentTable;                                                                            //!< Enclosing table

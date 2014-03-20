@@ -29,23 +29,28 @@
 using namespace RevLanguage;
 
 /** Constructor */
-MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) : 
-Function(), argumentRules(argRules), object(NULL), returnType(retType) {
+MemberFunction::MemberFunction(const TypeSpec retType, ArgumentRules* argRules) : Function(), 
+    argumentRules(argRules), 
+    object(NULL), 
+    returnType(retType) 
+{
     
 }
 
 
 /** Clone the object */
-MemberFunction* MemberFunction::clone(void) const {
+MemberFunction* MemberFunction::clone(void) const 
+{
     
     return new MemberFunction(*this);
 }
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject* MemberFunction::execute( void ) {
+RbLanguageObject* MemberFunction::execute( void ) 
+{
     
-    return object->executeMethod( funcName, args );
+    return object->getValue().executeMethod( funcName, args );
     
 }
 
@@ -89,7 +94,7 @@ const TypeSpec& MemberFunction::getReturnType(void) const {
 }
 
 
-void MemberFunction::setMemberObject( RbLanguageObject *obj) {
+void MemberFunction::setMemberObject( const RbPtr<Variable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;

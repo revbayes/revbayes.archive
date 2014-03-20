@@ -119,8 +119,12 @@ RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vec
     {
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
-            
-            
+
+        if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
+        {
+            throw RbException("Index out of bounds in []");
+        }
+
         RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getValueNode() );
         RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
             
@@ -128,7 +132,7 @@ RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vec
         
         return v;
     } 
-     
+    
     return TypedContainer<std::vector<double> >::executeMethod( name, args );
 }
 
@@ -173,7 +177,7 @@ const std::string& Simplex::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ), new TypeSpec( RealPos::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Container::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -201,11 +205,11 @@ const MethodTable&  Simplex::getMethods(void) const {
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RbVoid_name, clampArgRules) );
+        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RbVoid_name, setValueArgRules) );
+        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
                 
         // necessary call for proper inheritance
         methods.setParentTable( &TypedContainer<std::vector<double> >::getMethods() );
@@ -251,8 +255,13 @@ void Simplex::makeConstantValue( void ) {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<std::vector<double> >* newVal = new RevBayesCore::ConstantNode<std::vector<double> >(value->getName(), new std::vector<double>(value->getValue()) );
         value->replace(newVal);
-        delete value;
+        // We will not be referencing the value any longer
+        if ( value->decrementReferenceCount() == 0) 
+        {
+            delete value;
+        }
         value = newVal;
+        value->incrementReferenceCount();
     }
 }
 
@@ -272,7 +281,9 @@ void Simplex::setName(std::string const &n) {
 /** Print value for user */
 void Simplex::printValue(std::ostream &o) const {
     
-    value->printValue(o,"");
+    o << "[ ";
+    value->printValue(o,", ");
+    o << " ]";
 }
 
 
