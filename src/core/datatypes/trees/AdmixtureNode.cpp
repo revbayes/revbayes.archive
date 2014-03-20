@@ -684,7 +684,7 @@ void AdmixtureNode::removeChild(AdmixtureNode* c, bool enforceNewickRecomp) {
     else
     {
         std::stringstream ss_err;
-        ss_err << "Cannot find node in list of children nodes " << c << " " << this;
+        ss_err << "Cannot find node " << c << " in list of children nodes for " << this;
         std::cout << ss_err.str() << "\n";
        // throw(RbException(ss_err.str()));
 //        throw(RbException("Cannot find node in list of children nodes"));

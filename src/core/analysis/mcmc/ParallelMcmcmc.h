@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class ParallelMcmcmc {
         
     public:
-        ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc=4, int np=4, int si=1000, double dt=0.1, double sh=1.0);
+        ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc=4, int np=4, int si=1000, double dt=0.1, double st=1.0, double sh=1.0);
         ParallelMcmcmc(const ParallelMcmcmc &m);
         virtual                                            ~ParallelMcmcmc(void);                                                          //!< Virtual destructor
         
@@ -35,7 +35,7 @@ namespace RevBayesCore {
     private:
         void                                                initialize(void);
         void                                                swapChains(void);
-        double                                              computeBeta(double d, int i);   // incremental temperature schedule
+        double                                              computeBeta(double d, double s, int i);   // incremental temperature schedule
         
         int                                                 numChains;
         int                                                 numProcesses;
@@ -47,6 +47,7 @@ namespace RevBayesCore {
         
         int                                                 activeIndex; // index of coldest chain, i.e. which one samples the posterior
         double                                              delta;       // delta-T, temperature increment for computeBeta
+        double                                              sigma;       // scales power in heating schedule
         double                                              startingHeat; // default 1.0
         
     };

@@ -18,9 +18,9 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeRemoveResidualWeights::AdmixtureEdgeRemoveResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag) {
+AdmixtureEdgeRemoveResidualWeights::AdmixtureEdgeRemoveResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag), delta(d) {
     
-    nodes.insert(rate);
+    //nodes.insert(rate);
     nodes.insert(residuals);
     nodes.insert(admixtureCount);
     //nodes.insert(dt);
@@ -62,6 +62,7 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
     //std::cout << "\nAdmix Node Rem RW\n";
     
     // Get random number generator
+    failed = false;
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     AdmixtureTree& tau = variable->getValue();
@@ -105,12 +106,9 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         storedAdmixtureParentParent->addChild(storedAdmixtureParentChild);
         storedAdmixtureParentChild->setParent(storedAdmixtureParentParent);
         
-        /*
-        std::cout << storedAdmixtureChild << " " << &storedAdmixtureChild->getParent() << " " << &storedAdmixtureChild->getChild(0) << "\n";
-        std::cout << storedAdmixtureChildParent << " " << &storedAdmixtureChildParent->getChild(0) << "\n";
-        std::cout << storedAdmixtureChildChild << " " << &storedAdmixtureChildChild->getParent() << "\n";
-*/
         
+        /*
+         
         // get set of tips descendant from AC and AP
         //std::cout << "tips_ap\n";
         std::set<AdmixtureNode*> tips_ap;
@@ -118,7 +116,7 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         //std::cout << "tips_ac\n";
         std::set<AdmixtureNode*> tips_ac;
         findDescendantTips(tips_ac, storedAdmixtureChild);
-
+*/
         
         
         // remove nodes from admixtureTree vector
@@ -129,92 +127,64 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         storedResiduals = residuals->getValue();
         size_t numTaxa = tau.getNumberOfTips();
         double bwdProposal = 0.0;
+        
+        double maxStoredResidual = 0.0;
+        for (size_t i = 0; i < storedResiduals.size(); i++)
+            if (storedResiduals[i] > maxStoredResidual)
+                maxStoredResidual = storedResiduals[i];
+        double lambda = delta / maxStoredResidual;
+        
+        // get sum of positive residuals for each taxon against all other taxa
         std::vector<double> residualWeights_a(numTaxa,0.0);
+        
         double sumResidualWeights_a = 0.0;
         for (size_t i = 0; i < numTaxa; i++)
         {
             for (size_t j = 0; j < numTaxa; j++)
             {
                 double r = storedResiduals[i * numTaxa + j];
+                r = exp(lambda*r);
                 if (r > 0.0 && i != j)
+                    //if (i != j)
                 {
-                    residualWeights_a[i] = r;
+                    residualWeights_a[i] += r;
                     sumResidualWeights_a += r;
                 }
+                
             }
         }
-//        bwdProposal *= (residualWeights_a[k_a] / sumResidualWeights_a);
         
-        //std::cout << tips_ap.size() << "\n";
+        size_t k_a = admixtureParent->getIndex();
+        bwdProposal *= (residualWeights_a[k_a] / sumResidualWeights_a);
         
-        
-        // get bwd proposal probs given residuals probs
-        double t = storedAdmixtureParentParent->getAge() - storedAdmixtureParentChild->getAge();
-        for (std::set<AdmixtureNode*>::iterator it1 = tips_ap.begin(); it1 != tips_ap.end(); it1++)
+        // get sum of positive residuals for each taxon wrt taxon A
+        std::vector<double> residualWeights_b(numTaxa,0.0);
+        double sumResidualWeights_b = 0.0;
+        for (size_t i = 0; i < numTaxa; i++)
         {
-            size_t k_a = (*it1)->getIndex();
-            double p_a = residualWeights_a[k_a] / sumResidualWeights_a;
-            double t_a = storedAdmixtureParentParent->getAge() - (*it1)->getAge();
-            
-            // get sum of positive residuals for each taxon wrt taxon A
-            std::vector<double> residualWeights_b(numTaxa,0.0);
-            double sumResidualWeights_b = 0.0;
-            for (size_t i = 0; i < numTaxa; i++)
+            double r = storedResiduals[k_a * numTaxa + i];
+            r = exp(lambda*r);
+            if (r > 0.0 && k_a != i)
+                //if (k_a != i)
             {
-                double r = storedResiduals[k_a * numTaxa + i];
-                if (r > 0.0 && k_a != i)
-                {
-                    residualWeights_b[i] = r;
-                    sumResidualWeights_b += r;
-                }
+                residualWeights_b[i] += r;
+                sumResidualWeights_b += r;
             }
-        
-            double p_b = 0.0;
-            for (std::set<AdmixtureNode*>::iterator it2 = tips_ac.begin(); it2 != tips_ac.end(); it2++)
-            {
-                p_b += residualWeights_b[(*it2)->getIndex()] / sumResidualWeights_b;
-//                bwdProposal += p_a * (residualWeights_b[(*it2)->getIndex()] / sumResidualWeights_b) * (t / t_a);
-            }
-            
-            bwdProposal += p_a * (t / t_a) * p_b;
         }
-     
         
+        size_t k_b = admixtureChild->getIndex();
+        bwdProposal *= (residualWeights_b[k_b] / sumResidualWeights_b);
         
-        // The prior and proposal densities are equal for the edge weight, thus cancelling.
-        
+        // prior & propsal admixture weights cancel...
         double lnW = 0.0;
-        
-        // bwd proposal
-        // double a = 1.0;
-        // double b = 3.0;
-        // lnW = RbStatistics::Beta::lnPdf(a,b,storedAdmixtureChild->getWeight());
-
-        // prior
-        // double prior_a = 1.0;
-        // double prior_b = 3.0;
-        // lnW += RbStatistics::Beta::lnPdf(prior_a, prior_b, storedAdmixtureChild->getWeight());
-        
         
         // prior * proposal ratio
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
-        double unitTreeLength = tau.getUnitTreeLength();
-//        double lnP = log( (numEvents+1) / (rate->getValue() * unitTreeLength));
-        //double lnP = -log(unitTreeLength);
-        //double lnJ = -2 * log(1 - w); // inverse of admixture edge add jacobian
-        
-        double lnP = 0.0;
-        
-        // quick fix -- should inherit from Move instead of SimpleMove
-        // lnP -= variable->getLnProbabilityRatio();
-        
-        //std::cout << "remove_RW\t" << lnP << "\t" << rate->getValue() << "\t" << unitTreeLength << "\t" << numEvents << "\n";
-        //std::cout << bwdProposal << "\n";
+        admixtureCount->setValue(new int(numEvents));
 
-         admixtureCount->setValue(new int(numEvents));
         return 0.0;
-        return lnP + lnW;// + log(bwdProposal); // + lnJ;
-        //return lnP;
+        //double lnFwdProposal = -log(numEvents+1);
+        //return lnW + log(bwdProposal) - lnFwdProposal;
     }
 }
 
@@ -240,7 +210,6 @@ void AdmixtureEdgeRemoveResidualWeights::rejectSimpleMove( void ) {
         
         admixtureCount->setValue(new int(numEvents+1));
         
-        
         tau.pushAdmixtureNode(storedAdmixtureParent);
         tau.pushAdmixtureNode(storedAdmixtureChild);
         
@@ -258,8 +227,6 @@ void AdmixtureEdgeRemoveResidualWeights::acceptSimpleMove(void) {
         storedAdmixtureChild->setParent(p);
         delete storedAdmixtureChild;
         delete storedAdmixtureParent;
-        
-        //std::cout << "accept\n";
     }
 }
 
@@ -273,15 +240,13 @@ void AdmixtureEdgeRemoveResidualWeights::swapNode(DagNode *oldN, DagNode *newN) 
         //std::cout << "AER\ttau\n";
         variable = static_cast<StochasticNode<AdmixtureTree>* >(newN) ;
     }
+    /*
     else if (oldN == rate)
     {
         //std::cout << "AER\trate\n";
         rate = static_cast<StochasticNode<double>* >(newN);
     }
-//    else if (oldN == delayTimer)
- //   {
- //       delayTimer = static_cast<ConstantNode<int>* >(newN);
-  //  }
+    */
     else if (oldN == residuals)
     {
         residuals = static_cast<DeterministicNode<std::vector<double> >* >(newN);
@@ -333,7 +298,7 @@ double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
     // touch the node
     variable->touch();
     //rate->touch();
-    //admixtureCount->touch();
+    admixtureCount->touch();
     
     probRatio = variable->getLnProbabilityRatio();
     probRatio += admixtureCount->getLnProbabilityRatio();
@@ -351,6 +316,8 @@ double AdmixtureEdgeRemoveResidualWeights::performMove( double &probRatio ) {
             //std::cout << theNode->getName() << "\t" << probRatio << "\n";
         }
     }
+    
+    //std::cout << hr << "\n";
     
     return hr;
 }

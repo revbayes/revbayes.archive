@@ -26,7 +26,7 @@ namespace RevBayesCore {
         
     public:
 //        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, int me, bool asa, double weight);                                                          //!<  constructor
-        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double weight);                                                          //!<  constructor
+        AdmixtureEdgeAddResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeAddResidualWeights*              clone(void) const;                                                                  //!< Clone object
@@ -58,6 +58,7 @@ namespace RevBayesCore {
         int                             delay;
         int                             maxEvents;
         int                             numEvents;
+        double                          delta;
         
         // stored objects to undo proposal
         AdmixtureNode*                  storedAdmixtureParent;

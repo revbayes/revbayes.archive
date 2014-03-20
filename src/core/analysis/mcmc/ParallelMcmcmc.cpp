@@ -16,17 +16,19 @@
 #if defined (USE_LIB_OPENMP)
     #include <omp.h>
 #endif
+ 
+#define DEBUG_PMC3 0
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double sh) : delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0), startingHeat(sh)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double st, double sh) : sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0), startingHeat(sh)
 {
     activeIndex = 0;
     
     for (int i = 0; i < numChains; i++)
     {
         // get chain heat
-        double b = computeBeta(delta,i) * startingHeat;
+        double b = computeBeta(delta,sigma,i) * startingHeat;
         
         // create chains
         bool a = (i == 0 ? true : false);
@@ -81,10 +83,10 @@ void ParallelMcmcmc::initialize(void)
     
 }
 
-double ParallelMcmcmc::computeBeta(double delta, int idx)
+double ParallelMcmcmc::computeBeta(double d, double s, int idx)
 {
     // MJL: May want other distributions of beta in the future
-    return pow(1 + delta, -idx);
+    return pow(1 + d, -pow(idx,s));
 }
 
 void ParallelMcmcmc::burnin(int g, int ti)
@@ -208,11 +210,13 @@ void ParallelMcmcmc::swapChains(void)
         
         // test override
         //accept = true;
+#if DEBUG_PMC3
         std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
         std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
         std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
         std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
-              
+#endif
+        
         // on accept, swap beta values and active chains
         if (accept)
         {
@@ -240,8 +244,10 @@ void ParallelMcmcmc::swapChains(void)
         }
         //std::cout << "activeIndex " << activeIndex << "\n";
     }
+    
+#if DEBUG_PMC3
    
-    int nc = (numChains < 10 ? numChains : 10);
+    int nc = (numChains < 10 || true ? numChains : 10);
     for (int j = 0; j < nc; j++)
     {
         int i = chainIdxByHeat[j];
@@ -251,6 +257,6 @@ void ParallelMcmcmc::swapChains(void)
     std::cout << "freq accepted: " << (double)numAccepted/(numChains-1) << "\n";
     
     std::cout << "\n";
-    
+# endif
     
 }

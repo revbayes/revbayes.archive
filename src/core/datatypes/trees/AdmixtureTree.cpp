@@ -716,6 +716,7 @@ void AdmixtureTree::addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, Admixtu
     pp->removeChild(pc,false);
     pp->addChild(p,false);
     p->setParent(pp,false);
+    p->setOutgroup(pc->isOutgroup());
     
     // add admixtureChild
     c->addChild(cc,false);
@@ -723,6 +724,7 @@ void AdmixtureTree::addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, Admixtu
     cp->removeChild(cc,false);
     cp->addChild(c,false);
     c->setParent(cp,false);
+    c->setOutgroup(cc->isOutgroup());
     
     if (enforceNewickRecomp)
         root->flagNewickRecomputation();
@@ -739,13 +741,19 @@ void AdmixtureTree::addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, Admixtu
 
 void AdmixtureTree::removeAdmixtureEdge(AdmixtureNode* p, bool enforceNewickRecomp)
 {
+    AdmixtureNode* n = NULL;
+    
+    if (&p->getAdmixtureParent() != NULL)
+        p = &p->getAdmixtureParent();
+    
     // remove admixtureParent
     AdmixtureNode* pp = &p->getParent();
     AdmixtureNode* pc = &p->getChild(0);
     
+    p->setParent(n);
     p->removeChild(pc, false);
     pc->setParent(pp, false);
-    pp->removeChild(p);
+    pp->removeChild(p, false);
     pp->addChild(pc, false);
 
     // remove admixtureChild
@@ -753,9 +761,10 @@ void AdmixtureTree::removeAdmixtureEdge(AdmixtureNode* p, bool enforceNewickReco
     AdmixtureNode* cp = &c->getParent();
     AdmixtureNode* cc = &c->getChild(0);
     
+    c->setParent(n);
     c->removeChild(cc, false);
     cc->setParent(cp, false);
-    cp->removeChild(c);
+    cp->removeChild(c, false);
     cp->addChild(cc, false);
     
     if (enforceNewickRecomp)
@@ -803,6 +812,43 @@ void AdmixtureTree::subtreePruneRegraft(AdmixtureNode* p, AdmixtureNode* old_pc,
     // recompute newick str at end
     if (enforceNewickRecomp)
         root->flagNewickRecomputation();
+}
+
+void AdmixtureTree::findDescendantTips(std::set<AdmixtureNode*>& s, AdmixtureNode* p)
+{
+    if (p->getNumberOfChildren() == 0)
+    {
+        //std::cout << p << "\t" << p->getIndex() << "\n";
+        s.insert(p);
+    }
+    else
+    {
+        for (size_t i = 0; i < p->getNumberOfChildren(); i++)
+            findDescendantTips(s, &p->getChild(i));
+    }
+}
+std::string AdmixtureTree::getAdmixtureEdgeStr(AdmixtureNode* p, AdmixtureNode* c)
+{
+    std::stringstream ss;
+    std::set<AdmixtureNode*> ps,cs;
+    findDescendantTips(ps, p);
+    findDescendantTips(cs, c);
+    std::set<AdmixtureNode*>::iterator its;
+    for (its = ps.begin(); its != ps.end(); its++)
+    {
+        if (its != ps.begin()) ss << ",";
+        ss << (*its)->getName();
+    }
+    ss << " -> ";
+    for (its = cs.begin(); its != cs.end(); its++)
+    {
+        if (its != cs.begin()) ss << ",";
+        ss << (*its)->getName();
+    }
+    ss << "\ta=" << c->getAge();
+    ss << "\tw=" << c->getWeight();
+    
+    return ss.str();
 }
 
 void AdmixtureTree::subtreePruneRegraft(AdmixtureNode* p, AdmixtureNode* old_pc, AdmixtureNode* new_pc, double t, bool enforceNewickRecomp)

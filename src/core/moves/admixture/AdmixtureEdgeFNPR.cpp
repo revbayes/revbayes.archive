@@ -46,7 +46,7 @@ void AdmixtureEdgeFNPR::findNewBrothers(std::vector<AdmixtureNode *> &b, Admixtu
         for (size_t i = 0; i < numChildren; i++)
         {
             child = &n->getChild( i );
-            if ( child->getAge() < p.getAge() ) {
+            if ( child->getAge() < p.getAge()) { // && child != &q ) {
                 b.push_back( child );
             } else {
                 findNewBrothers(b, p, child);
@@ -57,9 +57,6 @@ void AdmixtureEdgeFNPR::findNewBrothers(std::vector<AdmixtureNode *> &b, Admixtu
 
 /** Perform the move */
 double AdmixtureEdgeFNPR::performSimpleMove( void ) {
-    
-    //std::cout << "\nAdmix Edge FNPR\n";
-    failed = false;
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -90,9 +87,7 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         // store admixture edge position
         storedAdmixtureParent = admixtureParents[index];
         storedAdmixtureChild = &storedAdmixtureParent->getAdmixtureChild();
-        storedAdmixtureChildParent = &storedAdmixtureChild->getParent();
         storedAdmixtureChildChild = &storedAdmixtureChild->getChild(0);
-        storedAdmixtureParentParent = &storedAdmixtureParent->getParent();
         storedAdmixtureParentChild = &storedAdmixtureParent->getChild(0);
         
         // get old branch idx
@@ -101,67 +96,36 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         
         // find new attach point
         std::vector<AdmixtureNode*> brothers;
-        AdmixtureNode* nd_a =  &storedAdmixtureParent->getChild(0);
-        AdmixtureNode* nd_b = &storedAdmixtureChild->getChild(0);
-        //bool swapParent = false;
+        newAdmixtureParentChild =  storedAdmixtureParentChild;
+        newAdmixtureChildChild = storedAdmixtureChildChild;
+
+        //std::cout << newAdmixtureParentChild << " -> " << newAdmixtureChildChild << "\n";
+        
         // get new parent attach pt
         if (GLOBAL_RNG->uniform01() < 0.5)
         {
-            findNewBrothers(brothers, *storedAdmixtureParent, &tau.getRoot());
-            nd_a = brothers[int(rng->uniform01() * brothers.size())];
+            findNewBrothers(brothers, *storedAdmixtureChild, &tau.getRoot());
+            newAdmixtureParentChild = brothers[int(rng->uniform01() * brothers.size())];
         }
         // get new child attach pt
         else
         {
-            findNewBrothers(brothers, *storedAdmixtureChild, &tau.getRoot());
-            nd_b = brothers[int(rng->uniform01() * brothers.size())];
+            findNewBrothers(brothers, *storedAdmixtureParent, &tau.getRoot());
+            newAdmixtureChildChild = brothers[int(rng->uniform01() * brothers.size())];
         }
         
+//        std::cout << newAdmixtureParentChild << " -> " << newAdmixtureChildChild << "\n";
+//        for (size_t i = 0; i < brothers.size(); i++)
+//            std::cout << brothers[i] << "\t";
+//        std::cout << "\n";
+//        if (newAdmixtureParentChild == newAdmixtureChildChild)
+//            std::cout << "huh...\n";
+        
         // remove admixture edge from graph
-        
-        tau.removeAdmixtureEdge(storedAdmixtureParent);
-        
-//        storedAdmixtureChild->removeChild(storedAdmixtureChildChild, false);
-//        storedAdmixtureChildChild->setParent(storedAdmixtureChildParent, false);
-//        storedAdmixtureChildParent->removeChild(storedAdmixtureChild, false);
-//        storedAdmixtureChildParent->addChild(storedAdmixtureChildChild, false);
-//        
-//        storedAdmixtureParent->removeChild(storedAdmixtureParentChild, false);
-//        storedAdmixtureParentChild->setParent(storedAdmixtureParentParent, false);
-//        storedAdmixtureParentParent->removeChild(storedAdmixtureParent, false);
-//        storedAdmixtureParentParent->addChild(storedAdmixtureParentChild, false);
-        
+        tau.removeAdmixtureEdge(storedAdmixtureParent, true);
         
         // get age for admixture event
         storedAge = storedAdmixtureChild->getAge();
-        
-        AdmixtureNode* root = &tau.getRoot();
-        
-//        // store adjacent nodes to new parent node
-//        newAdmixtureParentChild = nd_a;
-//        newAdmixtureParentParent = &nd_a->getParent();
-//        
-//        // insert admixtureParent into graph
-//        //storedAdmixtureParent->setAge(newAge);
-//        storedAdmixtureParent->setParent(root, false);
-//        newAdmixtureParentChild->setParent(storedAdmixtureParent, false);
-//        newAdmixtureParentParent->addChild(storedAdmixtureParent, false);
-//        newAdmixtureParentParent->removeChild(newAdmixtureParentChild, false);
-//        storedAdmixtureParent->addChild(newAdmixtureParentChild, false);
-//        storedAdmixtureParent->setParent(newAdmixtureParentParent, false);
-//        
-//        // store adjacent nodes to new child node
-//        newAdmixtureChildChild = nd_b;
-//        newAdmixtureChildParent = &nd_b->getParent();
-//        
-//        // insert admixtureChild into graph
-//        //storedAdmixtureChild->setAge(newAge);
-//        storedAdmixtureChild->setParent(root, false);
-//        newAdmixtureChildChild->setParent(storedAdmixtureChild, false);
-//        newAdmixtureChildParent->addChild(storedAdmixtureChild, false);
-//        newAdmixtureChildParent->removeChild(newAdmixtureChildChild, false);
-//        storedAdmixtureChild->addChild(newAdmixtureChildChild, false);
-//        storedAdmixtureChild->setParent(newAdmixtureChildParent, true);
         
         // get weight for admixture event
         storedWeight = storedAdmixtureChild->getWeight();
@@ -172,52 +136,51 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         double a2 = lambda * unitWeight + 1.0;
         double b2 = lambda * (1.0 - unitWeight) + 1.0;
         
-        
         double newUnitWeight = RbStatistics::Beta::rv(a2, b2, *rng);
         double fwdWeightLnProb = RbStatistics::Beta::lnPdf(a2, b2, newUnitWeight);
         double newWeight = newUnitWeight * admixtureMaxScaler;
         double new_a2 = lambda * newUnitWeight + 1.0;
         double new_b2 = lambda * (1.0 - newUnitWeight) + 1.0;
         double bwdWeightLnProb = RbStatistics::Beta::lnPdf(new_a2, new_b2, unitWeight);
-        //std::cout << bwdWeightLnProb << "\n";
         
-        storedAdmixtureChild->setWeight(newWeight);
+        // add edge
+        tau.addAdmixtureEdge(storedAdmixtureParent, storedAdmixtureChild, newAdmixtureParentChild, newAdmixtureChildChild, storedAge, newWeight, true);
         
-        // update branch rates
+//        // update branch rates
+//        double lnBwdPropRates = 0.0;
+//        storedBranchRates.clear();
+//        double delta = 1.0;
+//        // ... have old branch idx already
+//        int newChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
+//        int newParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+//        std::set<int> idxSet;
+//        idxSet.insert(oldChildBranchIdx);
+//        idxSet.insert(oldParentBranchIdx);
+//        idxSet.insert(newChildBranchIdx);
+//        idxSet.insert(newParentBranchIdx);
+//        
+//        for (std::set<int>::iterator it = idxSet.begin(); it != idxSet.end(); it++)
+//        {
+//            int idx = *it;
+//            double v = branchRates[idx]->getValue();
+//            storedBranchRates[idx] = v;
+//            double u = exp(delta*(GLOBAL_RNG->uniform01() - 0.5));
+//            branchRates[idx]->setValue(new double(u * v));
+//            lnBwdPropRates += log(u);
+//        }
+//        
+//        
+//        // ln hastings ratio
+//        double lnFwdProposal = log(fwdProposal) + fwdWeightLnProb;
+//        double lnBwdProposal = log(bwdProposal) + bwdWeightLnProb;
+//        
+//        //std::cout << "fnpr lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
+//        //std::cout << storedAge << " -> " << newAge << "\n";
+//        
+//        return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
+//        //return -1000.0;
         
-        double lnBwdPropRates = 0.0;
-        
-        storedBranchRates.clear();
-        double delta = 1.0;
-        // ... have old branch idx already
-        int newChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
-        int newParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
-        std::set<int> idxSet;
-        idxSet.insert(oldChildBranchIdx);
-        idxSet.insert(oldParentBranchIdx);
-        idxSet.insert(newChildBranchIdx);
-        idxSet.insert(newParentBranchIdx);
-        
-        for (std::set<int>::iterator it = idxSet.begin(); it != idxSet.end(); it++)
-        {
-            int idx = *it;
-            double v = branchRates[idx]->getValue();
-            storedBranchRates[idx] = v;
-            double u = exp(delta*(GLOBAL_RNG->uniform01() - 0.5));
-            branchRates[idx]->setValue(new double(u * v));
-            lnBwdPropRates += log(u);
-        }
-        
-        
-        // ln hastings ratio
-        double lnFwdProposal = log(fwdProposal) + fwdWeightLnProb;
-        double lnBwdProposal = log(bwdProposal) + bwdWeightLnProb;
-        
-        //std::cout << "fnpr lnPropRat\t" << lnBwdProposal - lnFwdProposal << " = " << lnBwdProposal << " - " << lnFwdProposal << ";\t";
-        //std::cout << storedAge << " -> " << newAge << "\n";
-        
-        return lnBwdProposal - lnFwdProposal + lnBwdPropRates;
-        //return -1000.0;
+        return bwdWeightLnProb - fwdWeightLnProb;
     }
 }
 
@@ -231,100 +194,53 @@ void AdmixtureEdgeFNPR::rejectSimpleMove( void ) {
         
         //std::cout << "reject edge slide\n";
         
-        // NOTE: root used to protect from infinite recursions caused by AdmixtureNode::flagNewickComputation() from addChild,removeChild,setParent.
-        //AdmixtureNode* root = &variable->getValue().getRoot();
-        
-        
+        AdmixtureTree& tau = variable->getValue();
         
         // remove admixture edge from graph
-        storedAdmixtureChild->removeChild(newAdmixtureChildChild, false);
-        newAdmixtureChildChild->setParent(newAdmixtureChildParent, false);
-        newAdmixtureChildParent->removeChild(storedAdmixtureChild, false);
-        newAdmixtureChildParent->addChild(newAdmixtureChildChild, false);
+        tau.removeAdmixtureEdge(storedAdmixtureParent,false);
         
-        storedAdmixtureParent->removeChild(newAdmixtureParentChild, false);
-        newAdmixtureParentChild->setParent(newAdmixtureParentParent, false);
-        newAdmixtureParentParent->removeChild(storedAdmixtureParent, false);
-        newAdmixtureParentParent->addChild(newAdmixtureParentChild, false);
+        // insert admixture edge
+        tau.addAdmixtureEdge(storedAdmixtureParent, storedAdmixtureChild, storedAdmixtureParentChild, storedAdmixtureChildChild, storedAge, storedWeight, true);
         
-        // insert admixtureParent into graph
-        storedAdmixtureParentChild->setParent(storedAdmixtureParent, false);
-        storedAdmixtureParentParent->addChild(storedAdmixtureParent, false);
-        storedAdmixtureParentParent->removeChild(storedAdmixtureParentChild, false);
-        storedAdmixtureParent->addChild(storedAdmixtureParentChild, false);
-        storedAdmixtureParent->setParent(storedAdmixtureParentParent, false);
         
-        // insert admixtureChild into graph
-        storedAdmixtureChildChild->setParent(storedAdmixtureChild, false);
-        storedAdmixtureChildParent->addChild(storedAdmixtureChild, false);
-        storedAdmixtureChildParent->removeChild(storedAdmixtureChildChild, false);
-        storedAdmixtureChild->addChild(storedAdmixtureChildChild, false);
-        storedAdmixtureChild->setParent(storedAdmixtureChildParent, false);
+//        storedAdmixtureChild->removeChild(newAdmixtureChildChild, false);
+//        newAdmixtureChildChild->setParent(newAdmixtureChildParent, false);
+//        newAdmixtureChildParent->removeChild(storedAdmixtureChild, false);
+//        newAdmixtureChildParent->addChild(newAdmixtureChildChild, false);
+//        
+//        storedAdmixtureParent->removeChild(newAdmixtureParentChild, false);
+//        newAdmixtureParentChild->setParent(newAdmixtureParentParent, false);
+//        newAdmixtureParentParent->removeChild(storedAdmixtureParent, false);
+//        newAdmixtureParentParent->addChild(newAdmixtureParentChild, false);
+//        
+//        // insert admixtureParent into graph
+//        storedAdmixtureParentChild->setParent(storedAdmixtureParent, false);
+//        storedAdmixtureParentParent->addChild(storedAdmixtureParent, false);
+//        storedAdmixtureParentParent->removeChild(storedAdmixtureParentChild, false);
+//        storedAdmixtureParent->addChild(storedAdmixtureParentChild, false);
+//        storedAdmixtureParent->setParent(storedAdmixtureParentParent, false);
+//        
+//        // insert admixtureChild into graph
+//        storedAdmixtureChildChild->setParent(storedAdmixtureChild, false);
+//        storedAdmixtureChildParent->addChild(storedAdmixtureChild, false);
+//        storedAdmixtureChildParent->removeChild(storedAdmixtureChildChild, false);
+//        storedAdmixtureChild->addChild(storedAdmixtureChildChild, false);
+//        storedAdmixtureChild->setParent(storedAdmixtureChildParent, false);
 
+//        // restore rates
+//        for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
+//        {
+//            branchRates[it->first]->setValue(new double(it->second));
+//        }
+//
         
-        /*
-        // revert admixture parent
-        if (storedAdmixtureParentParent == newAdmixtureParentParent && storedAdmixtureParentChild == newAdmixtureParentChild)
-        {
-            ; // do nothing
-        }
-        else
-        {
-            storedAdmixtureParent->setParent(root, false);
-            
-            newAdmixtureParentParent->removeChild(storedAdmixtureParent, false);
-            newAdmixtureParentChild->setParent(newAdmixtureParentParent, false);
-            newAdmixtureParentParent->addChild(newAdmixtureParentChild, false);
-            storedAdmixtureParentParent->removeChild(storedAdmixtureParentChild, false);
-            storedAdmixtureParentParent->addChild(storedAdmixtureParent, false);
-            storedAdmixtureParent->setParent(storedAdmixtureParentParent, false);
-            
-            newAdmixtureParentChild->setParent(newAdmixtureParentParent, false);
-            storedAdmixtureParentChild->setParent(storedAdmixtureParent, false);
-            storedAdmixtureParent->removeChild(newAdmixtureParentChild, false);
-            storedAdmixtureParent->addChild(storedAdmixtureParentChild, false);
-            
-            storedAdmixtureParent->setParent(storedAdmixtureParentParent, false);
-        }
-        storedAdmixtureParent->setAge(storedAge);
-        
-        // revert admixture child
-        if (storedAdmixtureChildParent == newAdmixtureChildParent && storedAdmixtureChildChild == newAdmixtureChildChild)
-        {
-            ; // do nothing
-        }
-        else
-        {
-            storedAdmixtureChild->setParent(root, false);
-            
-            newAdmixtureChildParent->removeChild(storedAdmixtureChild, false);
-            newAdmixtureChildChild->setParent(newAdmixtureChildParent, false);
-            newAdmixtureChildParent->addChild(newAdmixtureChildChild, false);
-            storedAdmixtureChildParent->removeChild(storedAdmixtureChildChild, false);
-            storedAdmixtureChildParent->addChild(storedAdmixtureChild, false);
-            storedAdmixtureChild->setParent(storedAdmixtureChildParent, false);
-            
-            newAdmixtureChildChild->setParent(newAdmixtureChildParent, false);
-            storedAdmixtureChildChild->setParent(storedAdmixtureChild, false);
-            storedAdmixtureChild->removeChild(newAdmixtureChildChild, false);
-            storedAdmixtureChild->addChild(storedAdmixtureChildChild, false);
-            
-            storedAdmixtureChild->setParent(storedAdmixtureChildParent, false);
-            
-        }
-        
-        */
-        
-        // restore rates
-        for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
-        {
-            branchRates[it->first]->setValue(new double(it->second));
-        }
         
         // revert the age
-        storedAdmixtureChild->setAge(storedAge);
-        storedAdmixtureChild->setWeight(storedWeight);
+//        storedAdmixtureChild->setAge(storedAge);
+//        storedAdmixtureChild->setWeight(storedWeight);
         
+//        tau.getRoot().flagNewickRecomputation();
+//
     }
     //std::cout << "reject admixture edge FNPR\n";
 }
@@ -391,15 +307,16 @@ double AdmixtureEdgeFNPR::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch();
-    probRatio = 0.0;
+    //probRatio = 0.0;
+    probRatio = variable->getLnProbabilityRatio();
     
-    for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
-    {
-        branchRates[it->first]->touch();
-        probRatio += branchRates[it->first]->getLnProbabilityRatio();
-        //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
-    }
-    
+//    for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
+//    {
+//        branchRates[it->first]->touch();
+//        probRatio += branchRates[it->first]->getLnProbabilityRatio();
+//        //std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
+//    }
+//    
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {
         
         std::set<DagNode* > affectedNodes;

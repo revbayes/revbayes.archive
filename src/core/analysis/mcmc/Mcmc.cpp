@@ -399,11 +399,52 @@ int Mcmc::nextCycle(bool advanceCycle) {
             // Propose a new value
             double lnProbabilityRatio;
             double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-
-            // Calculate acceptance ratio
-            double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
             
-            if (lnR >= 0.0) 
+            ///////
+            // likelihood-only heat test
+            
+            /*
+            double lnP = 0.0;
+            const std::vector<DagNode*> &n = model.getDagNodes();
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+                (*it)->touch();
+                double p = (*it)->getLnProbabilityRatio();
+                std::cout << (*it)->getName() << " " << p << " " << p * ( (*it)->isClamped() ? chainHeat : 1.0 ) << "\n";
+                if ( (*it)->isClamped() )
+                    p *= chainHeat;
+                lnP += p;
+                
+            }
+            //double lnP2 = lnP - lnProbabilityRatio;
+            //std::cout << "* " << lnP2 << "\n";
+             
+            // Calculate acceptance ratio
+            double lnR = lnP + lnHastingsRatio;
+            std::cout << lnP << " " << lnProbabilityRatio << "\n";
+//            std::cout << lnR << " = " << lnP << " + " << lnHastingsRatio << "\n";
+            ////////////
+            */
+
+            double lnL = 0.0;
+            const std::vector<DagNode*> &n = model.getDagNodes();
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
+            {
+                if ( (*it)->getName() == "AdmixtureGraph" )
+                {
+                    lnL += (*it)->getLnProbabilityRatio();
+                    //std::cout << (*it)->getName() << " " << lnL << " " << lnL * ( (*it)->isClamped() ? chainHeat : 1.0 ) << "\n";
+                }
+            }
+            
+            double lnP = lnProbabilityRatio - lnL + chainHeat*lnL;
+            //std::cout << lnProbabilityRatio << " " << lnP << "\n";
+            double lnR = lnP + lnHastingsRatio;
+            
+            
+            // Calculate acceptance ratio
+            // double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
+                        
+            if (lnR >= 0.0)
             {
                 theMove->accept();
                 lnProbability += lnProbabilityRatio;

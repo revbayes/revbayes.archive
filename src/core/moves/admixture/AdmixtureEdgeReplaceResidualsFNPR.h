@@ -1,36 +1,39 @@
 //
-//  AdmixtureEdgeRemoveResidualWeights.h
-//  revbayes_mlandis
+//  AdmixtureEdgeReplaceResidualsFNPR.h
+//  rb_mlandis
 //
-//  Created by Michael Landis on 1/21/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
+//  Created by Michael Landis on 2/10/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__
-#define __revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__
+#ifndef __rb_mlandis__AdmixtureEdgeReplaceResidualsFNPR__
+#define __rb_mlandis__AdmixtureEdgeReplaceResidualsFNPR__
+
+
+
 
 #include <ostream>
 #include <set>
 #include <string>
+#include <list>
 
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "Move.h"
 #include "StochasticNode.h"
+#include "AdmixtureNode.h"
 #include "AdmixtureTree.h"
 #include "Tree.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeRemoveResidualWeights : public Move {
+    class AdmixtureEdgeReplaceResidualsFNPR : public Move {
         
     public:
-        //AdmixtureEdgeRemoveResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor
-        AdmixtureEdgeRemoveResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, double weight);                                            //!<  constructor
-        
+        AdmixtureEdgeReplaceResidualsFNPR( StochasticNode<AdmixtureTree> *n, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double weight);                                            //!<  constructor
         
         // Basic utility functions
-        AdmixtureEdgeRemoveResidualWeights*            clone(void) const;                                                                  //!< Clone object
+        AdmixtureEdgeReplaceResidualsFNPR*       clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         bool                            isActive(int g) const;
         
@@ -44,33 +47,43 @@ namespace RevBayesCore {
         double                          performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
         void                            rejectMove(void);
         
-        
     private:
         
+        void                            findNewBrothers(std::vector<AdmixtureNode *> &b, AdmixtureNode &p, AdmixtureNode *n);
         void                            findDescendantTips(std::set<AdmixtureNode*>& s, AdmixtureNode* p);
+        void                            storeAdmixtureEventsForLineage(AdmixtureNode* p);
+        double                          performResidualsFNPR(void);
         
         // member variables
         StochasticNode<AdmixtureTree>*  variable;
-        StochasticNode<double>*         rate;
-        StochasticNode<int>*            admixtureCount;
         DeterministicNode<std::vector<double> >* residuals;
-        //ConstantNode<int>*              delayTimer;
         bool changed;
         int activeGen;
         int numEvents;
+        int maxEvents;
+        bool allowSisterAdmixture;
         double delta;
         
         // stored objects to undo proposal
         bool                            failed;
-        AdmixtureNode*                  storedAdmixtureChild;
-        AdmixtureNode*                  storedAdmixtureParent;
-        AdmixtureNode*                  storedAdmixtureChildChild;
-        AdmixtureNode*                  storedAdmixtureParentChild;
-        AdmixtureNode*                  storedAdmixtureChildParent;
-        AdmixtureNode*                  storedAdmixtureParentParent;
+        AdmixtureNode*                  pruneChild;
+        AdmixtureNode*                  pruneParent;
+        AdmixtureNode*                  pruneNephew;
+        AdmixtureNode*                  pruneNode;
+        AdmixtureNode*                  regraftParent;
+        AdmixtureNode*                  regraftChild;
         std::vector<double>             storedResiduals;
+        AdmixtureTree                   storedAdmixtureTree;
+        double storedAge;
+        double storedPruneAge;
+        
+        std::list<AdmixtureEdgePosition> storedAdmixtureEdges;
+        std::list<AdmixtureEdgePosition> newAdmixtureEdges;
         
     };
     
 }
-#endif /* defined(__revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__) */
+
+
+
+#endif /* defined(__rb_mlandis__AdmixtureEdgeReplaceResidualsFNPR__) */

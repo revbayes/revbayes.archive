@@ -19,6 +19,20 @@
 
 namespace RevBayesCore {
     
+    struct AdmixtureEdgePosition
+    {
+        AdmixtureNode* admixtureParent;
+        AdmixtureNode* admixtureChild;
+        AdmixtureNode* admixtureParentChild;
+        AdmixtureNode* admixtureChildChild;
+        double age;
+        double weight;
+        AdmixtureEdgePosition(AdmixtureNode* p, AdmixtureNode* c, AdmixtureNode* pc, AdmixtureNode* cc, double a, double w) : admixtureParent(p), admixtureChild(c), admixtureParentChild(pc), admixtureChildChild(cc), age(a), weight(w)
+        {
+            ;//std::cout << "hello\n";
+        }
+    };
+    
     class AdmixtureTree : public Tree {
         
     public:
@@ -79,6 +93,8 @@ namespace RevBayesCore {
         void                                        removeAdmixtureEdge(AdmixtureNode* p, bool enforceNewickRecomp = true);
         void                                        subtreePruneRegraft(AdmixtureNode* p,  AdmixtureNode* old_pc, AdmixtureNode* new_pc, bool enforceNewickRecomp = true);
         void                                        subtreePruneRegraft(AdmixtureNode* p,  AdmixtureNode* old_pc, AdmixtureNode* new_pc, double t, bool enforceNewickRecomp = true);
+        void                                        findDescendantTips(std::set<AdmixtureNode*>& s, AdmixtureNode* p);
+        std::string                                 getAdmixtureEdgeStr(AdmixtureNode* p, AdmixtureNode* c);
         
         void                                        freeMemory(void);
         void                                        updateTipOrderByNames(std::vector<std::string> names);

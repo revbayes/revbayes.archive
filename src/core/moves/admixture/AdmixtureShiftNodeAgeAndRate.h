@@ -13,7 +13,7 @@
 #include <set>
 #include <string>
 
-#include "SimpleMove.h"
+#include "Move.h"
 #include "ContinuousStochasticNode.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
