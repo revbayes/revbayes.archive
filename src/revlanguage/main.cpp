@@ -18,29 +18,28 @@
 #include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
 extern "C" {
-#include "linenoise/linenoise.h" //http://github.com/msteveb/linenoise
+#include "../libs/linenoise/linenoise.h" //https://github.com/tadmarshall/linenoise
 }
 
-typedef std::vector<std::string> StringVector;
-
-WorkspaceUtils workspaceUtils;
-CommandLineUtils commandLineUtils;
-
-StringVector completions;
-StringVector currentFunction;
-
-/* callback for '.' */
-int dotCallback(const char *buf, size_t len, char c) {
-
-    return 0;
-}
-
-/* callback for '(' */
-int openingParCallback(const char *buf, size_t len, char c) {
-    std::string func = commandLineUtils.getFunctionName(buf);
-    StringVector s = workspaceUtils.getFunctionSignatures(func);
-    for (unsigned int i = 0; i < s.size(); i++) {
-        printf("\n\r%s\n\r", s[i].c_str());
+/* @return 
+ *      all functions the user has access to */
+std::vector<std::string> getFunctionTable(bool print) {
+    typedef std::multimap<std::string, RevLanguage::Function*> FunctionMap;
+    typedef std::vector<std::string> StringVector;    
+ 
+    FunctionMap functionsMap = RevLanguage::Workspace::userWorkspace().getFunctionTable().getTableCopy(true);
+    
+    StringVector functions;
+    for (FunctionMap::iterator it = functionsMap.begin(); it != functionsMap.end(); ++it) {
+        functions.push_back(it->first);
+    }
+    
+    StringVector result;
+    for (StringVector::iterator it = functions.begin(); it < std::unique(functions.begin(), functions.end()); it++) {
+        if (print) {
+            std::cout << *it << std::endl;
+        }
+        result.push_back(*it);
     }
     return 0;
 }
@@ -50,8 +49,9 @@ int openingParCallback(const char *buf, size_t len, char c) {
 // todo: parameter values: make a guess if parameter value is a file... and display that somehow 
 
 void completion(const char *buf, linenoiseCompletions *lc) {
-    unsigned int separatorPos = commandLineUtils.getLastSeparatorPosition(buf);
-    unsigned int startPos = separatorPos;
+    std::vector<std::string> functions = getFunctionTable(false);
+    int startpos = 0;
+    size_t matchlen = std::strlen(buf + startpos);
     
     StringVector functions = workspaceUtils.getFunctions();
     StringVector objects = workspaceUtils.getObjects();
@@ -97,7 +97,18 @@ int main(int argc, const char * argv[]) {
     RevLanguageMain rl;
     rl.startRevLanguageEnvironment(argc, argv);
 
-    /* Set callback functions*/
+    /* Declare things we need */
+    char *default_prompt = (char *) "RevBayes > ";
+    char *incomplete_prompt = (char *) "RevBayes + ";
+    char *prompt = default_prompt;
+    int result = 0;
+    std::string commandLine;
+
+#if defined (USE_LIB_LINENOISE)
+
+    char *line;
+
+    /* Set the tab completion callback.*/
     linenoiseSetCompletionCallback(completion);
     linenoiseSetCharacterCallback(dotCallback, '.');
     linenoiseSetCharacterCallback(openingParCallback, '(');
@@ -110,12 +121,7 @@ int main(int argc, const char * argv[]) {
      * The typed string is returned as a malloc() allocated string by
      * linenoise, so the user needs to free() it. */
 
-    char *default_prompt = (char *) "RevBayes > ";
-    char *incomplete_prompt = (char *) "RevBayes + ";
-    char* prompt = default_prompt;
-    int result = 0;
-    char *line;
-    std::string commandLine;
+
 
     while ((line = linenoise(prompt)) != NULL) {
 
@@ -137,6 +143,31 @@ int main(int argc, const char * argv[]) {
 
         free(line);
     }
+#else
+
+    std::string line;
+
+    for (;;) {
+        
+        std::cout << prompt;
+        std::istream& retStream = getline( std::cin, line );
+
+        if ( !retStream )
+            exit( 0 );
+ 
+        if (result == 0 || result == 2) {
+            prompt = default_prompt;
+            commandLine = line;
+        } else if (result == 1) {
+            prompt = incomplete_prompt;
+            commandLine += line;
+        }
+        
+        result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
+    }
+    
+#endif
+
     return 0;
 
 }

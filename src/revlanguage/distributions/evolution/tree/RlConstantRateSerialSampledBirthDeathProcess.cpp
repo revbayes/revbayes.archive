@@ -1,13 +1,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "DiversityDependentPureBirthProcess.h"
+#include "ConstantRateSerialSampledBirthDeathProcess.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlDiversityDependentPureBirthProcess.h"
+#include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
@@ -21,7 +21,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : TypedDistribution<TimeTree>() 
+ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathProcess() : TypedDistribution<TimeTree>() 
 {
     
 }
@@ -33,9 +33,9 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : Typed
  *
  * \return A new copy of the model. 
  */
-DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( void ) const 
+ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathProcess::clone( void ) const 
 {
-    return new DiversityDependentPureBirthProcess(*this);
+    return new ConstantRateSerialSampledBirthDeathProcess(*this);
 }
 
 
@@ -49,7 +49,7 @@ DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( v
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::createDistribution( void ) const 
+RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathProcess::createDistribution( void ) const 
 {
     
     // get the parameters
@@ -57,9 +57,15 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
     // the origin
     RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
     // speciation rate
-    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( initialLambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
     // extinction rate
-    RevBayesCore::TypedDagNode<int>* k          = static_cast<const Natural &>( capacity->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
+    // sampling rate
+    RevBayesCore::TypedDagNode<double>* p       = static_cast<const RealPos &>( psi->getValue() ).getValueNode();
+    // sampling probability
+    RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getValue() ).getValueNode();
+    // time between now and most recent sample
+    double tLastSample                          = static_cast<const RealPos &>( tLast->getValue() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
     // taxon names
@@ -74,7 +80,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
     }
     
     // create the internal distribution object
-    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, cond, taxa, c);
+    RevBayesCore::ConstantRateSerialSampledBirthDeathProcess*   d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(o, s, e, p, r, tLastSample, cond, taxa, c);
     
     return d;
 }
@@ -86,7 +92,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
  *
  * \return The class' name.
  */
-const std::string& DiversityDependentPureBirthProcess::getClassName( void ) 
+const std::string& ConstantRateSerialSampledBirthDeathProcess::getClassName( void ) 
 { 
     
     static std::string rbClassName = "DivDependentPureBirthProcess";
@@ -100,7 +106,7 @@ const std::string& DiversityDependentPureBirthProcess::getClassName( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& DiversityDependentPureBirthProcess::getClassTypeSpec( void ) 
+const TypeSpec& ConstantRateSerialSampledBirthDeathProcess::getClassTypeSpec( void ) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -119,7 +125,7 @@ const TypeSpec& DiversityDependentPureBirthProcess::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) const 
+const MemberRules& ConstantRateSerialSampledBirthDeathProcess::getMemberRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -127,18 +133,20 @@ const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) cons
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "capacity", true, Natural::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho", true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         Vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
         optionsCondition.push_back( RlString("nTaxa") );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
-
+        
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();
         distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
@@ -155,7 +163,7 @@ const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) cons
  *
  * \return The type spec of this object.
  */
-const TypeSpec& DiversityDependentPureBirthProcess::getTypeSpec( void ) const 
+const TypeSpec& ConstantRateSerialSampledBirthDeathProcess::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -174,24 +182,32 @@ const TypeSpec& DiversityDependentPureBirthProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void DiversityDependentPureBirthProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void ConstantRateSerialSampledBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 
     {
-        initialLambda = var;
+        lambda = var;
     }
-    else if ( name == "capacity" ) 
+    else if ( name == "mu" ) 
     {
-        capacity = var;
+        mu = var;
+    }
+    else if ( name == "psi" ) 
+    {
+        psi = var;
+    }
+    else if ( name == "rho" ) 
+    {
+        rho = var;
+    }
+    else if ( name == "timeSinceLastSample" ) 
+    {
+        tLast = var;
     }
     else if ( name == "origin" ) 
     {
         origin = var;
-    }
-    else if ( name == "nTaxa" ) 
-    {
-        numTaxa = var;
     }
     else if ( name == "names" ) 
     {

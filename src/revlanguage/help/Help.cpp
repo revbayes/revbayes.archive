@@ -251,8 +251,8 @@ std::string Help::formatOutString(std::string s, size_t columnWidth, int indentL
 std::string Help::wrapText(const std::string s, std::string padding, size_t w)
 {
     std::string wrappedText(padding);
-    int cc = 0; // character count
-    int ww = w - padding.size(); // available width with regards to eventual padding
+    size_t cc = 0; // character count
+    size_t ww = w - padding.size(); // available width with regards to eventual padding
 
     // loop through every char in string
     for (unsigned i = 0; i < s.size(); i++)
@@ -262,7 +262,7 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
         {
             // we now have a possible point where to wrap the line.
             // peek ahead and see where next possible wrap point is:
-            int next = s.substr(i).find_first_of(" ", 1);
+            size_t next = s.substr(i).find_first_of(" ", 1);
 
             // if next wrap point is beyond the width, then wrap line now
             if (cc + next > ww && next != -1)

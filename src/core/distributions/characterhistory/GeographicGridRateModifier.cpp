@@ -79,7 +79,7 @@ double GeographicGridRateModifier::computeRateModifier(std::vector<CharacterEven
         const std::set<GeographicArea*> p_adj = gridAreas[idx_p]->getAdjacentAreas();
         for (it_adj = p_adj.begin(); it_adj != p_adj.end(); it_adj++)
         {
-            unsigned adj_idx = (*it_adj)->getIndex();
+            size_t adj_idx = (*it_adj)->getIndex();
             if (currState[adj_idx]->getState() == 0)
                 sum += 1.0;
             if (adj_idx == newState->getIndex())

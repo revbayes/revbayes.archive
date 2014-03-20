@@ -35,7 +35,7 @@ namespace RevBayesCore {
         virtual void                        update(void) = 0;                                       //!< Clone the function
         
     protected:
-        ContinuousFunction(double *v);
+        ContinuousFunction(double *v, std::string revDecl = "");
         
     };
         

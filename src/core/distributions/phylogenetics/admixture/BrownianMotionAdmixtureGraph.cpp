@@ -1268,7 +1268,7 @@ double BrownianMotionAdmixtureGraph::findCovariance(AdmixtureNode* p, AdmixtureN
             for (itp_step = itp_path->begin(), itp_prev = itp_path->end(); itp_step != itp_path->end(); itp_prev = itp_step, ++itp_step)
             {
                 // branch rate (population size) parameter index
-                size_t brIdx;
+                size_t brIdx = 0;
                 
                 // skip first step (root node)
                 if (itp_step == itp_path->begin())

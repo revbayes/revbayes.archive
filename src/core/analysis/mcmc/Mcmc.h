@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class Mcmc {
     
     public:
-        Mcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, bool ca=true, double ch=1.0, int ci=0);
+        Mcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT="random", bool ca=true, double ch=1.0, int ci=0);
         Mcmc(const Mcmc &m);
         virtual                                            ~Mcmc(void);                                                                             //!< Virtual destructor
        
@@ -59,7 +59,6 @@ namespace RevBayesCore {
 
     protected:
 
-        void                                                assignMoveSchedule(void);
         void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
                                                                                         std::vector<DagNode*>&      orderedStochasticNodes,
                                                                                         std::set<const DagNode*>&   visitedNodes);
@@ -68,17 +67,18 @@ namespace RevBayesCore {
         void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
     
         // members
-        size_t                                              chainIdx;
         bool                                                chainActive;
         double                                              chainHeat;
+        size_t                                              chainIdx;
         unsigned long                                       generation;
         double                                              lnProbability;
         Model                                               model;
-        std::vector<Move*>                                  moves;
-        MoveSchedule*                                       schedule;
         std::vector<Monitor*>                               monitors;
-        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
+        std::vector<Move*>                                  moves;
         std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
+        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
+        MoveSchedule*                                       schedule;
+        std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
 
     };
 

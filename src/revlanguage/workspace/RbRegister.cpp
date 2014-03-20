@@ -54,6 +54,7 @@
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
+#include "RlPoissonDistribution.h"
 #include "RlLognormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
@@ -65,6 +66,7 @@
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
+#include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlDiversityDependentPureBirthProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
@@ -326,6 +328,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // geometric distribution
         addDistribution( "geom", new GeometricDistribution() );
         
+        // geometric distribution
+        addDistribution( "poisson", new PoissonDistribution() );
+        
         
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
@@ -351,6 +356,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        
+        // constant rate birth-death process distribution
+        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );

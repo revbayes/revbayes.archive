@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-ExponentialFunction::ExponentialFunction(const TypedDagNode<double> *x) : ContinuousFunction( new double(0.0) ), a( x ) {
+ExponentialFunction::ExponentialFunction(const TypedDagNode<double> *x, std::string revDecl) : ContinuousFunction( new double(0.0), revDecl ), a( x ) {
     addParameter( x );
 
 }

@@ -115,7 +115,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         args.push_back( theArg );
     }
 
-    Function* func;
+    Function* func = NULL;
     if (variable == NULL) 
     {
         bool found = false;

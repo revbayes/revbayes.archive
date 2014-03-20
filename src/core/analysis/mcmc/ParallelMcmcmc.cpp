@@ -22,7 +22,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         
         // create chains
         bool a = (i == 0 ? true : false);
-        Mcmc* oneChain = new Mcmc(m, moves, mons, a, b);
+        Mcmc* oneChain = new Mcmc(m, moves, mons, "random", a, b);
         oneChain->setChainIndex(i);
         oneChain->startMonitors();
         
@@ -166,15 +166,15 @@ void ParallelMcmcmc::swapChains(void)
     if (numChains < 2)
         return;
     
-    int numAccepted = 0;
+    size_t numAccepted = 0;
     
     //for (size_t i = 1; i < numChains; i++)
     for (size_t i = numChains-1; i > 0; i--)
     {
         
         // swap adjacent chains
-        int j = chainIdxByHeat[i-1];
-        int k = chainIdxByHeat[i];
+        size_t j = chainIdxByHeat[i-1];
+        size_t k = chainIdxByHeat[i];
         
         // compute exchange ratio
         double bj = chains[j]->getChainHeat();

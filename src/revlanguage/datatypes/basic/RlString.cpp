@@ -126,7 +126,7 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 /** Print value */
 void RlString::printValue(std::ostream& o) const {
 
-//	o << "\"" << value << "\"";
+	o << "\"" << value << "\"";
 	o << value->getValue();
 }
 
