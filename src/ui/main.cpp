@@ -63,8 +63,8 @@ int main(int argc, const char* argv[]) {
 
     if (vm.count("help")) {
         std::cout << "Usage: [options] file1 file2 ...\n\n";
-        std::cout << desc;
-        //return 0;
+        std::cout << desc << endl;
+        return 0;
     }
 
     if (vm.count("include-path")) {
@@ -98,7 +98,8 @@ int main(int argc, const char* argv[]) {
         std::cout << "Interactive prompt is not enabled, program about to exit. \nUse argument --help to see all command line argument options." << std::endl;
         exit(0);
     }
-    exit(0);
+    
+    
 
     /* Declare things we need */
     char *default_prompt = (char *) "RevBayes > ";
