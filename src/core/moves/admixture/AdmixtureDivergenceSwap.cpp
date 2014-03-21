@@ -186,6 +186,8 @@ double AdmixtureDivergenceSwap::performSimpleMove( void ) {
         
         tau.getRoot().flagNewickRecomputation();
     }
+
+    return 0.0; // Better return something to keep compilers happy
 }
 
 
