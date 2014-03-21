@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of the interface for all univariate continuous functions. 
- * Univariate functions are continuous function with only one single parameter, which is of type real.
+ * Univariate functions are continuous functions with only one single parameter, which is of type real.
  * Univariate functions provide a method for computing the integral in the interval [a,b].
  *
  * @brief Declaration of continous functions.

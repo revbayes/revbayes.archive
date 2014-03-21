@@ -33,8 +33,8 @@ namespace RevBayesCore {
         
     public:
         SimplexFunction(const std::vector<const TypedDagNode<double> *> &args);
-        SimplexFunction(const SimplexFunction &n);                                                                                        //!< Copy constructor
-        virtual                                            ~SimplexFunction(void);                                                       //!< Virtual destructor
+        SimplexFunction(const SimplexFunction &n);                                                                                      //!< Copy constructor
+        virtual                                            ~SimplexFunction(void);                                                      //!< Virtual destructor
         
         // public member functions
         SimplexFunction*                                    clone(void) const;                                                          //!< Create an independent clone
