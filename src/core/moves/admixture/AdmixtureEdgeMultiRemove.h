@@ -1,36 +1,54 @@
 //
-//  AdmixtureEdgeRemoveResidualWeights.h
-//  revbayes_mlandis
+//  AdmixtureEdgeMultiRemove.h
+//  rb_mlandis
 //
-//  Created by Michael Landis on 1/21/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
+//  Created by Michael Landis on 1/13/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__
-#define __revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__
+#ifndef __rb_mlandis__AdmixtureEdgeMultiRemove__
+#define __rb_mlandis__AdmixtureEdgeMultiRemove__
+
 
 #include <ostream>
 #include <set>
 #include <string>
+#include <list>
 
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "Move.h"
 #include "StochasticNode.h"
+#include "AdmixtureNode.h"
 #include "AdmixtureTree.h"
 #include "Tree.h"
 
 namespace RevBayesCore {
+    /*
+    struct AdmixtureEdgePosition
+    {
+        AdmixtureNode* admixtureParent;
+        AdmixtureNode* admixtureChild;
+        AdmixtureNode* admixtureParentChild;
+        AdmixtureNode* admixtureChildChild;
+        double age;
+        double weight;
+        AdmixtureEdgePosition(AdmixtureNode* p, AdmixtureNode* c, AdmixtureNode* pc, AdmixtureNode* cc, double a, double w) : admixtureParent(p), admixtureChild(c), admixtureParentChild(pc), admixtureChildChild(cc), age(a), weight(w)
+        {
+            ;//std::cout << "hello\n";
+        }
+    };
+     */
     
-    class AdmixtureEdgeRemoveResidualWeights : public Move {
+    class AdmixtureEdgeMultiRemove : public Move {
         
     public:
-        //AdmixtureEdgeRemoveResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor
-        AdmixtureEdgeRemoveResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, double weight);                                            //!<  constructor
+        //AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor
+        AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double delta, double p, int ag, double weight);                                            //!<  constructor
         
         
         // Basic utility functions
-        AdmixtureEdgeRemoveResidualWeights*            clone(void) const;                                                                  //!< Clone object
+        AdmixtureEdgeMultiRemove*       clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         bool                            isActive(int g) const;
         
@@ -43,7 +61,6 @@ namespace RevBayesCore {
         void                            acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
         double                          performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
         void                            rejectMove(void);
-        
         
     private:
         
@@ -59,6 +76,7 @@ namespace RevBayesCore {
         int activeGen;
         int numEvents;
         double delta;
+        double pRemove;
         
         // stored objects to undo proposal
         bool                            failed;
@@ -70,7 +88,10 @@ namespace RevBayesCore {
         AdmixtureNode*                  storedAdmixtureParentParent;
         std::vector<double>             storedResiduals;
         
+        std::list<AdmixtureEdgePosition> storedAdmixtureEdges;
+        
     };
     
 }
-#endif /* defined(__revbayes_mlandis__AdmixtureEdgeRemoveResidualWeights__) */
+
+#endif /* defined(__rb_mlandis__AdmixtureEdgeMultiRemove__) */

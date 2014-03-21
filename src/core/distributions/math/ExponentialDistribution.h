@@ -30,6 +30,7 @@ namespace RevBayesCore {
     class ExponentialDistribution : public ContinuousDistribution {
         
     public:
+        ExponentialDistribution(const TypedDagNode<double> *l);
         ExponentialDistribution(const TypedDagNode<double> *l, const TypedDagNode<double> *o);
         ExponentialDistribution(const ExponentialDistribution &n);                                                                      //!< Copy constructor
         virtual                                            ~ExponentialDistribution(void);                                              //!< Virtual destructor

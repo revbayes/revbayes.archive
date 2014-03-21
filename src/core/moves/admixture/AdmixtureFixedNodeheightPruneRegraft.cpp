@@ -83,7 +83,7 @@ double AdmixtureFixedNodeheightPruneRegraft::performSimpleMove( void ) {
     } while ( parent->isRoot() || parent->getNumberOfChildren() != 2);
      
     //AdmixtureNode& node          = parent->getChild(0);
-    AdmixtureNode& brother       = parent->getChild(1);
+    AdmixtureNode& brother       = parent->getChild(int(2*rng->uniform01()));
     AdmixtureNode& grandparent   = parent->getParent();
 
     // collect the possible reattachement points

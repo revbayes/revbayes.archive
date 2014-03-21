@@ -355,7 +355,7 @@ double AdmixtureEdgeReplaceCladeResiduals::performSimpleMove( void ) {
         // update branch rates
         storedBranchRates.clear();
         double lnBwdPropRates = 0.0;
-        double delta = 0.0;
+        double delta = 0.5;
         // ... have oldBranchIdx already
         int newChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
         int newParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
@@ -509,7 +509,7 @@ void AdmixtureEdgeReplaceCladeResiduals::rejectMove( void ) {
     
     // touch the node
     variable->touch();
-    rate->touch();
+    //rate->touch();
 }
 
 
@@ -540,11 +540,13 @@ double AdmixtureEdgeReplaceCladeResiduals::performMove( double &probRatio ) {
     
     // touch the node
     variable->touch();
-    probRatio = 0.0;
+    probRatio = variable->getLnProbabilityRatio();
+//    probRatio += admixtureCount->getLnProbabilityRatio();
+//    probRatio = 0.0;
     
     for (std::map<int,double>::iterator it = storedBranchRates.begin(); it != storedBranchRates.end(); it++)
     {
-        //branchRates[it->first]->touch();
+        branchRates[it->first]->touch();
         probRatio += branchRates[it->first]->getLnProbabilityRatio();
 //        std::cout << branchRates[it->first]->getLnProbabilityRatio() << "\n";
     }

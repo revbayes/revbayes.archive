@@ -281,7 +281,7 @@ void Mcmc::initializeChain( void ) {
             //std::cout << (*i)->getName() << std::endl;
             if ( !(*i)->isClamped() && (*i)->isStochastic() )
             {
-                std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
+                // std::cout << "Redrawing values for node " << (*i)->getName() << std::endl;
                 (*i)->redraw();
                 //                    (*i)->touch(); Not necessary. The distribution will automaticall call touch().
             }
@@ -423,6 +423,31 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
             // Propose a new value
             double lnProbabilityRatio;
             double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
+            
+            ///////
+            // likelihood-only heat test
+            
+            /*
+            double lnP = 0.0;
+            const std::vector<DagNode*> &n = model.getDagNodes();
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
+                (*it)->touch();
+                double p = (*it)->getLnProbabilityRatio();
+                std::cout << (*it)->getName() << " " << p << " " << p * ( (*it)->isClamped() ? chainHeat : 1.0 ) << "\n";
+                if ( (*it)->isClamped() )
+                    p *= chainHeat;
+                lnP += p;
+                
+            }
+            //double lnP2 = lnP - lnProbabilityRatio;
+            //std::cout << "* " << lnP2 << "\n";
+             
+            // Calculate acceptance ratio
+            double lnR = lnP + lnHastingsRatio;
+            std::cout << lnP << " " << lnProbabilityRatio << "\n";
+//            std::cout << lnR << " = " << lnP << " + " << lnHastingsRatio << "\n";
+            ////////////
+            */
 
 #ifdef DEBUG_MCMC
             // TODO: In non-debug version, we need to make sure we abandon the move if one of these values
@@ -436,8 +461,8 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
             
             // Calculate acceptance ratio
             double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
-            
-            if (lnR >= 0.0) 
+                        
+            if (lnR >= 0.0)
             {
                 theMove->accept();
                 lnProbability += lnProbabilityRatio;

@@ -1,14 +1,13 @@
 //
-//  AdmixtureEdgeReplaceResidualWeights.h
+//  AdmixtureDivergenceSwap.h
 //  rb_mlandis
 //
-//  Created by Michael Landis on 4/3/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
+//  Created by Michael Landis on 1/8/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__AdmixtureEdgeReplaceResidualWeights__
-#define __rb_mlandis__AdmixtureEdgeReplaceResidualWeights__
-
+#ifndef __rb_mlandis__AdmixtureDivergenceSwap__
+#define __rb_mlandis__AdmixtureDivergenceSwap__
 
 #include <ostream>
 #include <map>
@@ -25,13 +24,13 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeReplaceResidualWeights : public Move {
+    class AdmixtureDivergenceSwap : public Move {
         
     public:
-        AdmixtureEdgeReplaceResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, double d, int ag, bool asa, double weight);                                                          //!<  constructor
+        AdmixtureDivergenceSwap( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
-        AdmixtureEdgeReplaceResidualWeights*              clone(void) const;                                                                  //!< Clone object
+        AdmixtureDivergenceSwap*              clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         bool                            isActive(int g) const;
         
@@ -59,7 +58,6 @@ namespace RevBayesCore {
         bool                            failedAdd;
         bool                            allowSisterAdmixture;
         int                             activeGen;
-        double                          delta;
         
         // stored objects to undo proposal
         AdmixtureNode*                  storedAdmixtureParent;
@@ -68,6 +66,18 @@ namespace RevBayesCore {
         AdmixtureNode*                  storedAdmixtureChildChild;
         AdmixtureNode*                  storedAdmixtureParentParent;
         AdmixtureNode*                  storedAdmixtureChildParent;
+      
+        AdmixtureNode*                  storedAdmixtureChildTopologyParent;
+        AdmixtureNode*                  storedAdmixtureParentTopologyParent;
+        AdmixtureNode*                  storedAdmixtureChildTopologyParentChild;
+        AdmixtureNode*                  storedAdmixtureParentTopologyParentChild;
+        
+        AdmixtureNode*                  storedPruneParent;
+        AdmixtureNode*                  storedPruneChild;
+        AdmixtureNode*                  storedPruneBrother;
+        AdmixtureNode*                  storedRegraftParent;
+        AdmixtureNode*                  storedRegraftChild;
+        
         AdmixtureNode*                  newAdmixtureChildChild;
         AdmixtureNode*                  newAdmixtureParentChild;
         AdmixtureNode*                  newAdmixtureChildParent;
@@ -76,10 +86,10 @@ namespace RevBayesCore {
         double                          storedAdmixtureAge;
         double                          storedAdmixtureWeight;
         std::map<int,double>            storedBranchRates;
-
+        
         std::vector<double>             storedResiduals;
     };
     
 }
 
-#endif /* defined(__rb_mlandis__AdmixtureEdgeReplaceResidualWeights__) */
+#endif /* defined(__rb_mlandis__AdmixtureDivergenceSwap__) */

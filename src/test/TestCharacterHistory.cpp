@@ -106,11 +106,11 @@ bool TestCharacterHistory::run( void ) {
     
     //////////
     // test
-    int maxGen = (int)((double)mcmcGenerations / 10);
+    int maxGen = 10000;//(int)((double)mcmcGenerations / 10);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
-    size_t numTaxa = 10;
+    size_t numTaxa = 20;
     size_t numNodes = 2 * numTaxa - 1;
     std::vector<std::string> taxonNames;
     for (size_t i = 0; i < numTaxa; i++)
@@ -128,13 +128,14 @@ bool TestCharacterHistory::run( void ) {
     std::string geo_type = "square";
     if (geo_type == "square")
     {
-        for (size_t i = 0; i < sqrt(numCharacters); i++)
+        for (int i = 0; i < sqrt(numCharacters); i++)
         {
-            for (size_t j = 0; j < sqrt(numCharacters); j++)
+            for (int j = 0; j < sqrt(numCharacters); j++)
             {
                 std::vector<double> tmp;
-                tmp.push_back(i);
-                tmp.push_back(j);
+                tmp.push_back(i-5);
+                tmp.push_back(j-70);
+                //std::cout << i << " " << j << "\n";
                 geo_coords.push_back(tmp);
             }
         }
@@ -245,8 +246,8 @@ bool TestCharacterHistory::run( void ) {
 
 //    rateGain->setValue(new double(.3));
 //    rateLoss->setValue(new double(3.0));
-    rateGain->setValue(new double(.2));
-    rateLoss->setValue(new double(2.0));
+    rateGain->setValue(new double(0.2));
+    rateLoss->setValue(new double(3.0));
 
     std::vector<const TypedDagNode<double>* > rates;
     rates.push_back(rateLoss);
@@ -300,7 +301,7 @@ bool TestCharacterHistory::run( void ) {
         DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(rates, tau, br_vector[i], distancePower, dispersalPower, extinctionPower, areaStationaryFrequency, areaPower, numCharacters, numStates, i, gdrm, grsrm, lrsrm, asrm, ggrmv);
         //DispersalHistoryCtmc* tmp_ahc = new DispersalHistoryCtmc(q, rates, tau, br_vector[i], distancePower, numCharacters, numStates, i, NULL);
         
-        if (i == 1)
+        if (i < 2)
             tmp_ahc->getValue().setSampleChildCharacters(maskSet);
         
         StochasticNode<BranchHistory>* sn_bh = new StochasticNode<BranchHistory>("bh" + ss.str(), tmp_ahc);

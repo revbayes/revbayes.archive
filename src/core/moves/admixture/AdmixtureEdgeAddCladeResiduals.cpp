@@ -280,8 +280,8 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         if (storedAdmixtureParentChild->getAge() > minAge)
             minAge = storedAdmixtureParentChild->getAge();
         
-        double newAge = GLOBAL_RNG->uniform01() * (maxAge-minAge) + minAge;
-    //    std::cout << minAge << " < " << newAge << " < " << maxAge << "\n";
+        double admixtureAge = GLOBAL_RNG->uniform01() * (maxAge-minAge) + minAge;
+    //    std::cout << minAge << " < " << admixtureAge << " < " << maxAge << "\n";
         
         // sample weight
         double a = 1.0;
@@ -290,9 +290,10 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         // double lnW = RbStatistics::Beta::lnPdf(a, b, admixtureWeight);
         admixtureWeight /= 2;
         
+        /*
         // insert admixtureParent into graph
         storedAdmixtureParent = new AdmixtureNode((int)tau.getNumberOfNodes());
-        storedAdmixtureParent->setAge(newAge);
+        storedAdmixtureParent->setAge(admixtureAge);
         storedAdmixtureParent->setParent(storedAdmixtureParentParent,false);
         storedAdmixtureParent->addChild(storedAdmixtureParentChild,false);
         storedAdmixtureParent->setOutgroup(storedAdmixtureParentChild->isOutgroup());
@@ -303,7 +304,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         
         // insert admixtureChild into graph
         storedAdmixtureChild = new AdmixtureNode((int)tau.getNumberOfNodes());
-        storedAdmixtureChild->setAge(newAge);
+        storedAdmixtureChild->setAge(admixtureAge);
         storedAdmixtureChild->setParent(storedAdmixtureChildParent,false);
         storedAdmixtureChild->addChild(storedAdmixtureChildChild,false);
         storedAdmixtureChild->setOutgroup(storedAdmixtureChildChild->isOutgroup());
@@ -316,12 +317,24 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         // update branch rates
         // ... ??
         
-        // update newick
-        tau.getRoot().flagNewickRecomputation();
-        
         // create admixture edge
         storedAdmixtureChild->setAdmixtureParent(storedAdmixtureParent);
         storedAdmixtureParent->setAdmixtureChild(storedAdmixtureChild);
+        */
+        
+      
+        storedAdmixtureParent = new AdmixtureNode((int)tau.getNumberOfNodes());
+        tau.pushAdmixtureNode(storedAdmixtureParent);
+        storedAdmixtureChild = new AdmixtureNode((int)tau.getNumberOfNodes());
+        tau.pushAdmixtureNode(storedAdmixtureChild);
+        
+        storedAdmixtureChild->setOutgroup(storedAdmixtureChildChild->isOutgroup());
+        storedAdmixtureParent->setOutgroup(storedAdmixtureParentChild->isOutgroup());
+        
+        tau.addAdmixtureEdge(storedAdmixtureParent, storedAdmixtureChild, storedAdmixtureParentChild, storedAdmixtureChildChild, admixtureAge, admixtureWeight, false);
+
+        // update newick
+        tau.getRoot().flagNewickRecomputation();
         
         // prior * proposal ratio
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
@@ -349,16 +362,20 @@ void AdmixtureEdgeAddCladeResiduals::rejectSimpleMove( void ) {
     {
         //std::cout << "add_RW reject\n";
         
-        // revert edges
-        storedAdmixtureChildChild->setParent(storedAdmixtureChildParent,false);
-        storedAdmixtureChildParent->removeChild(storedAdmixtureChild,false);
-        storedAdmixtureChildParent->addChild(storedAdmixtureChildChild,false);
-        storedAdmixtureParentChild->setParent(storedAdmixtureParentParent,false);
-        storedAdmixtureParentParent->removeChild(storedAdmixtureParent,false);
-        storedAdmixtureParentParent->addChild(storedAdmixtureParentChild,false);
-        
         // remove nodes from graph structure
         AdmixtureTree& tau = variable->getValue();
+        
+        // revert edges
+        /*
+         storedAdmixtureChildChild->setParent(storedAdmixtureChildParent);
+         storedAdmixtureChildParent->removeChild(storedAdmixtureChild);
+         storedAdmixtureChildParent->addChild(storedAdmixtureChildChild);
+         storedAdmixtureParentChild->setParent(storedAdmixtureParentParent);
+         storedAdmixtureParentParent->removeChild(storedAdmixtureParent);
+         storedAdmixtureParentParent->addChild(storedAdmixtureParentChild);
+         */
+        
+        tau.removeAdmixtureEdge(storedAdmixtureParent,false);
         tau.eraseAdmixtureNode(storedAdmixtureParent);
         tau.eraseAdmixtureNode(storedAdmixtureChild);
         tau.getRoot().flagNewickRecomputation();
@@ -459,7 +476,8 @@ double AdmixtureEdgeAddCladeResiduals::performMove( double &probRatio ) {
     variable->touch();
     //rate->touch();
     //admixtureCount->touch();
-    probRatio = admixtureCount->getLnProbabilityRatio();
+    probRatio = variable->getLnProbabilityRatio();
+    probRatio += admixtureCount->getLnProbabilityRatio();
     //std::cout << "probRatio " << probRatio << "\n";
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf ) {

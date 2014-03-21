@@ -54,7 +54,6 @@ double AdmixtureSubtreePruneRegraft::performSimpleMove( void ) {
         double u = rng->uniform01();
         size_t index = std::floor(tau.getNumberOfNodes() * u);
         storedNode = &tau.getNode(index);
-//    } while ( storedNode->isRoot() || storedNode->getTopologyParent().isRoot() || storedNode->getNumberOfChildren() != 2);
     } while ( storedNode->isRoot() || storedNode->getNumberOfChildren() != 2);
     storedParent = &storedNode->getParent();
     
