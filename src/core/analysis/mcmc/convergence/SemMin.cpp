@@ -7,8 +7,8 @@
 //
 
 #include "SemMin.h"
-
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 
@@ -35,7 +35,7 @@ int SemMin::estimateBurnin(const std::vector<double>& values) {
         analysis.analyseCorrelation(values,i);
         
         // check if the new ess is better than any previous ones
-        if (std::isfinite(analysis.getStdErrorOfMean()) && analysis.getStdErrorOfMean() > 0 && min_sem > analysis.getStdErrorOfMean()) {
+        if (RbMath::isFinite(analysis.getStdErrorOfMean()) && analysis.getStdErrorOfMean() > 0 && min_sem > analysis.getStdErrorOfMean()) {
             min_sem = analysis.getStdErrorOfMean();
             best_burnin = i;
         }

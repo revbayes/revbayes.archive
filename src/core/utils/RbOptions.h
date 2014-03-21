@@ -28,7 +28,7 @@
 //#define DEBUG_BISON_FLEX
 //#define DEBUG_MCMC      // Define this to debug mcmc computation shortcuts (and perhaps other mcmc code). NB! Slow!
 //#define DEBUG_HELP_SYSTEM
-//#define SSE_ENABLED
+#define SSE_ENABLED
 //#define AVX_ENABLED
 //#define TESTING
 //#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
@@ -36,7 +36,7 @@
 
 /* Test whether we should use linenoise */
 #if !defined (NO_LINENOISE)
-#define USE_LIB_LINENOISE
+//#define USE_LIB_LINENOISE
 #endif
 
 /* Test whether we need to debug everything. */

@@ -184,8 +184,6 @@ bool Workspace::existsType( const TypeSpec& name ) const {
         return true;
 }
 
-
-
 /** Print the frame content, not the entire environment. */
 void Workspace::printValue(std::ostream& o) const {
 

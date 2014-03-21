@@ -15,9 +15,6 @@
 #include <list>
 #include <set>
 #include <map>
-//#include <armadillo>
-
-//#include "AdmixtureHistory.h"
 
 #include "ContinuousCharacterData.h"
 #include "ContinuousCharacterState.h"

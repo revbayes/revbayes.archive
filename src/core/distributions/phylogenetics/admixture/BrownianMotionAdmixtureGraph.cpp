@@ -250,11 +250,13 @@ void BrownianMotionAdmixtureGraph::updateParameters(DagNode* toucher)
         else
         {
             updateTipPathsToRoot();
+            //std::cout << toucher << "\n";
+            //true;
         }
     }
     
     // return;
-    if (toucher == diffusionRate || toucher == admixtureRate || toucher == branchRates || toucher == tau || toucher == NULL)
+    if (toucher == diffusionRate || toucher == branchRates || toucher == tau || toucher == NULL) // toucher == admixtureRate ||
     {
         updateCovariance();
         updateSampleCovariance();
@@ -321,10 +323,8 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
     // std::vector<TopologyNode*> nodesByIndex = tau->getValue().getNodesByIndex();
     
     
-    for (int i = 0; i < numTaxa; i++)
-    {
-        std::cout << "check match " << snps->getPopulationNames(i) << " " << tau->getValue().getNode(i).getName() << "\n";
-    }
+//    for (int i = 0; i < numTaxa; i++)
+//        std::cout << "check match " << snps->getPopulationNames(i) << " " << tau->getValue().getNode(i).getName() << "\n";
     
     for (int i = 0; i < blockSize*numBlocks; i++)
     {
@@ -337,7 +337,7 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
     }
     
     //std::cout << tau->getValue().getNewickRepresentation() << "\n";
-    std::cout << "dims\t" << data.size() << "\t" << data[0].size() << "\n";
+    // std::cout << "dims\t" << data.size() << "\t" << data[0].size() << "\n";
     //std::cout << "data\n";
     //printR(data);
 }
@@ -443,9 +443,14 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
             if (snps->getNumSamples(i,j) > 0)
             {
                 double N_i = snps->getNumSamples(i,j) / 2.0; // assume diploidy
-                double Z_i = N_i * (2 * N_i - 1);
-                double n_ik = 2 * N_i * data[j][i]; // convert allele frequency to allele count
-                sampleMeanBias[i] += n_ik * (2 * N_i - n_ik) / Z_i;
+                if (N_i == 0.5)
+                {
+                    std::cerr << "ERROR: " << snps->getPopulationNames(i) << " contains haploid data at locus " << j << "\n";
+                    std::exit(0);
+                }
+                double Z_i = N_i * (2.0 * N_i - 1.0);
+                double n_ik = 2.0 * N_i * data[j][i]; // convert allele frequency to allele count
+                sampleMeanBias[i] += n_ik * (2.0 * N_i - n_ik) / Z_i;
                 ns++;
                 //std::cout << N_i << " " << Z_i << " " << n_ik << " " << sampleMeanBias[i] << " " << data[j][i] << "\n";
             }
@@ -483,8 +488,8 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
         }
     }
     
-    std::cout << "sampleCovarianceBias\n";
-    print(sampleCovarianceBias);
+//    std::cout << "sampleCovarianceBias\n";
+//    print(sampleCovarianceBias);
     ;
 }
 
@@ -527,6 +532,10 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceEstimator(void)
         //std::cout << "sampleCovarianceEstimator[" << k << "]\n";
         //print(sampleCovarianceEstimator[k]);
     }
+    
+    // free memory
+    std::vector<std::vector<double> > wipe;
+    data.swap(wipe);
 }
 
 void BrownianMotionAdmixtureGraph::initializeMeanSampleCovarianceEstimator(void)
@@ -548,9 +557,8 @@ void BrownianMotionAdmixtureGraph::initializeMeanSampleCovarianceEstimator(void)
         }
     }
 
-    std::cout << "pre-bias meanSampleCovarianceEstimator\n";
-    print(meanSampleCovarianceEstimator);
-    
+//    std::cout << "pre-bias meanSampleCovarianceEstimator\n";
+//    print(meanSampleCovarianceEstimator);    
     
     /*
     if (useBias)
@@ -567,8 +575,8 @@ void BrownianMotionAdmixtureGraph::initializeMeanSampleCovarianceEstimator(void)
 
     rbMeanSampleCovariance *= (numBlocks * blockSize);
 
-    std::cout << "meanSampleCovarianceEstimator\n";
-    print(meanSampleCovarianceEstimator);
+//    std::cout << "meanSampleCovarianceEstimator\n";
+//    print(meanSampleCovarianceEstimator);
 
 }
 
@@ -595,8 +603,12 @@ void BrownianMotionAdmixtureGraph::initializeCompositeCovariance(void)
         }
     }
     
-    std::cout << "compositeCovariance\n";
-    print(compositeCovariance);
+    // free memory
+    std::vector<std::vector<std::vector<double> > > wipe;
+    sampleCovarianceEstimator.swap(wipe);
+    
+//    std::cout << "compositeCovariance\n";
+//    print(compositeCovariance);
 }
 
 void BrownianMotionAdmixtureGraph::initializeSampleCovariance(void)
@@ -647,6 +659,7 @@ void BrownianMotionAdmixtureGraph::updateCovariance(void)
     {
         for (size_t j = i; j < numTaxa; j++)
         {
+            //double v = sqrt(findCovariance(tipNodesByIndex[i],tipNodesByIndex[j])) * sigma;
             double v = findCovariance(tipNodesByIndex[i],tipNodesByIndex[j]) * sigma;
             // MJL readd, change model VCV bias, not data directly...
             v += sampleCovarianceBias[i][j];
@@ -656,10 +669,9 @@ void BrownianMotionAdmixtureGraph::updateCovariance(void)
         }
     }
     
-    /*
-    std::cout << "updateCovariance\n";
-    print(covariance);
-     */
+//    std::cout << "updateCovariance\n";
+//    print(covariance);
+    
     
 }
 
@@ -846,8 +858,8 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
         // W.at(i,i) += (1.0 / 1e3);
     }
     
-    //std::cout << W << "\n";
-    //std::cout << X << "\n";
+//    std::cout << W << "\n";
+//    std::cout << X << "\n";
     
     // drop smallest singular value using SVD
     if (true)

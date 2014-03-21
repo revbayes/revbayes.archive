@@ -51,7 +51,6 @@ namespace RevBayesCore {
     private:
 //        void                                        equalizeBranchLengths(TimeNode &node);                                  //!< Equalizing branch lengths between subtrees so that no rounding errors happen
         
-//        std::vector<double>                         times;
         std::vector<double>                         ages;
 
     };

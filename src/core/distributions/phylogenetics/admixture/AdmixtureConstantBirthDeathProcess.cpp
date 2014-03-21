@@ -147,7 +147,7 @@ AdmixtureConstantBirthDeathProcess* AdmixtureConstantBirthDeathProcess::clone( v
 double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     
     // uncomment for uniform prior
-//    return 0.0;
+    // return 0.0;
     
     // retrieved the speciation times
     double lnPrior = 0.0;
@@ -158,9 +158,13 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
             times.push_back(p->getTime());
         if (&p->getAdmixtureParent() != NULL)
         {
-            lnPrior += RbStatistics::Beta::lnPdf(1, 3, p->getWeight()*2);
+            lnPrior += RbStatistics::Beta::lnPdf(1.0, 5.0, p->getWeight()*2);
         }
     }
+    
+    // uniform topology, priors on weights
+    //return lnPrior;
+    
     // sort the vector of times in ascending order
     std::sort(times.begin(), times.end());
     

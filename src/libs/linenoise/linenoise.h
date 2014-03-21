@@ -41,23 +41,28 @@
 #ifndef NO_COMPLETION
 
 typedef struct linenoiseCompletions {
-        size_t len;
-        char **cvec;
-    } linenoiseCompletions;
+    size_t len;
+    char **cvec;
+} linenoiseCompletions;
 
-    typedef void(linenoiseCompletionCallback) (const char *, linenoiseCompletions *);
-    void linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
-    void linenoiseAddCompletion(linenoiseCompletions *, const char *);
+typedef void(linenoiseCompletionCallback) (const char *, linenoiseCompletions *);
+void linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
+void linenoiseAddCompletion(linenoiseCompletions *, const char *);
 #endif
 
-    char *linenoise(const char *prompt);
-    int linenoiseHistoryAdd(const char *line);
-    int linenoiseHistorySetMaxLen(int len);
-    int linenoiseHistoryGetMaxLen(void);
-    int linenoiseHistorySave(const char *filename);
-    int linenoiseHistoryLoad(const char *filename);
-    void linenoiseHistoryFree(void);
-    char **linenoiseHistory(int *len);
-    int linenoiseColumns(void);
+typedef int(linenoiseCharacterCallback) (const char *, size_t, char);
+void linenoiseSetCharacterCallback(linenoiseCharacterCallback *, char);
+
+char *linenoise(const char *prompt);
+int linenoiseHistoryAdd(const char *line);
+int linenoiseHistorySetMaxLen(int len);
+int linenoiseHistoryGetMaxLen(void);
+int linenoiseHistorySave(const char *filename);
+int linenoiseHistoryLoad(const char *filename);
+void linenoiseHistoryFree(void);
+char **linenoiseHistory(int *len);
+int linenoiseColumns(void);
+
+//static void linenoiseRefreshLine(const char* prompt);
 
 #endif /* __LINENOISE_H */

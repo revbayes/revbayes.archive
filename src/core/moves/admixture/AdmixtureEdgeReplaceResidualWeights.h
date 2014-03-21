@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class AdmixtureEdgeReplaceResidualWeights : public Move {
         
     public:
-        AdmixtureEdgeReplaceResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);                                                          //!<  constructor
+        AdmixtureEdgeReplaceResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, double d, int ag, bool asa, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         AdmixtureEdgeReplaceResidualWeights*              clone(void) const;                                                                  //!< Clone object
@@ -59,6 +59,7 @@ namespace RevBayesCore {
         bool                            failedAdd;
         bool                            allowSisterAdmixture;
         int                             activeGen;
+        double                          delta;
         
         // stored objects to undo proposal
         AdmixtureNode*                  storedAdmixtureParent;

@@ -16,13 +16,11 @@ using namespace RevBayesCore;
  * \param[in]    s      Initial speciation rate (lambda_0).
  * \param[in]    k      Carrying capacity.
  * \param[in]    cdt    Condition of the process (none/survival/#Taxa).
- * \param[in]    nTaxa  Number of observed taxa.
- * \param[in]    tn     Taxon names.
+ * \param[in]    tn     Taxa.
  * \param[in]    c      Clades conditioned to be present.
  */
 DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
-                                                                       const std::string &cdt, unsigned int nTaxa, 
-                                                                       const std::vector<std::string> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, cdt, nTaxa, tn, c ), 
+                                                                       const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, cdt, tn, c ), 
         initialSpeciation( s ), 
         capacity( k ) 
 {
