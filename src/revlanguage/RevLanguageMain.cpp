@@ -19,7 +19,7 @@ RevLanguageMain::RevLanguageMain() {
 
 }
 
-int RevLanguageMain::startRevLanguageEnvironment(const int argc, const char* argv[]) {
+void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles) {
 
     // Print a nifty message
     RbVersion version = RbVersion();
@@ -39,14 +39,13 @@ int RevLanguageMain::startRevLanguageEnvironment(const int argc, const char* arg
     std::cerr << std::endl;
 #endif
 
-    // process the command line arguments as source file names
-    int argIndex = 1;
+    // process the command line arguments as source file names    
     std::string line;
     std::string commandLine;
     int result = 0;
 
-    while (argIndex < argc) {
-        line = "source(\"" + std::string(argv[argIndex++]) + "\")";
+    for(unsigned int i =0 ; i < sourceFiles.size(); i++){
+        line = "source(\"" + sourceFiles[i] + "\")";
         std::cout << "RevBayes > " << line << std::endl;
 
         // Process the command line
@@ -61,8 +60,6 @@ int RevLanguageMain::startRevLanguageEnvironment(const int argc, const char* arg
             result = 0;
         }
     }
-
-    return 0;
 }
 
 

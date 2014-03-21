@@ -137,8 +137,11 @@
 
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 #define LINENOISE_MAX_LINE 4096
+#define _USE_UTF8
 
 static linenoiseCharacterCallback *characterCallback[256] = {NULL};
+
+
 
 #define ctrl(C) ((C) - '@')
 
@@ -702,7 +705,7 @@ static int fd_read(struct current *current) {
                     case VK_NEXT:
                         return SPECIAL_PAGE_DOWN;
                 }
-            }                /* Note that control characters are already translated in AsciiChar */
+            }/* Note that control characters are already translated in AsciiChar */
             else {
 #ifdef USE_UTF8
                 return k->uChar.UnicodeChar;
@@ -859,6 +862,7 @@ static void refreshLine(const char *prompt, struct current *current) {
     eraseEol(current);
     setCursorPos(current, pos + pchars + backup);
 }
+
 
 static void set_current(struct current *current, const char *str) {
     strncpy(current->buf, str, current->bufmax);
@@ -1375,13 +1379,14 @@ process_char:
             default:
 
                 if (characterCallback[(int) c]) {
-                    int rcode;
-
-                    rcode = characterCallback[(int) c](current->buf, current->len, c);
-                    refreshLine(current->prompt, current);
-                    if (rcode == 1) {
-                        continue;
+                    if (c >= ' ') {
+                        if (insert_char(current, current->pos, c) == 1) {
+                            refreshLine(current->prompt, current);
+                        }
                     }
+                    characterCallback[(int) c](current->buf, current->len, c);
+
+                    continue;
                 }
 
                 /* Only tab is allowed without ^V */
@@ -1444,7 +1449,7 @@ char *linenoise(const char *prompt) {
 
 /* Register a callback function to be called when a character is pressed */
 void linenoiseSetCharacterCallback(linenoiseCharacterCallback *fn, char c) {
-    if (c < ' ') return;
+    //if (c < ' ') return;
 
     characterCallback[(int) c] = fn;
 }

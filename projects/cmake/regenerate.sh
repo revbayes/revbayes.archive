@@ -17,7 +17,7 @@ then
 fi
 
 #################
-# 1) build boost libraries separatly
+# 1) build boost libraries separately
 
 if [ "$boost" = "true" ]
 then
@@ -25,8 +25,8 @@ then
     echo 'you can turn this of with argument "-boost false"'
     
     cd ../../boost_1_55_0
-    rm ./project-config.jam*                                # clean up from previous runs
-    ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time
+    rm ./project-config.jam*  # clean up from previous runs
+    ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math
     ./b2
     
 else
@@ -34,7 +34,19 @@ else
 fi
 
 #################
-# 2) generate cmake configuration
+# 2) collect some information that can be used in source
+cd $HERE
+cd ../../src/ui
+echo "/* These values are automatically generated at installation by regenerate.sh script */" > constants.h
+echo "static const char* INSTALL_DIR = \"$HERE\";" >> constants.h
+
+cd ../revlanguage
+echo "/* These values are automatically generated at installation by regenerate.sh script */" > constants.h
+echo "static const char* INSTALL_DIR = \"$HERE\";" >> constants.h
+
+
+#################
+# 3) generate cmake configuration
 cd $HERE
 cd ../../src
 
@@ -69,7 +81,7 @@ find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_S
 echo ')
 
 # Split into much smaller libraries
-add_subdirectory(ui)
+#add_subdirectory(ui)
 add_subdirectory(libs)
 add_subdirectory(core)   
 add_subdirectory(revlanguage)
@@ -77,10 +89,13 @@ add_subdirectory(revlanguage)
 
 
 ############# executables #################
-# main rev-bayes binary
+# basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-#target_link_libraries(rb rb-parser rb-core libs boost_system boost_regex boost_thread boost_date_time)
 target_link_libraries(rb rb-parser rb-core )
+
+# extended rev-bayes binary
+add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
+target_link_libraries(rb-extended rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l)
 
 # utility for generating help html files.
 add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/HelpHtmlGenerator.cpp)
@@ -89,7 +104,6 @@ target_link_libraries(help-html-generator rb-parser rb-core libs boost_filesyste
 
 
 ########## boost section ##############
-#include_directories("../../../../boost_1_55_0")
 
 add_library(boost_system SHARED IMPORTED)
 set_target_properties(boost_system PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_system.a")
@@ -106,7 +120,20 @@ set_target_properties(boost_thread PROPERTIES IMPORTED_LOCATION "../../boost_1_5
 add_library(boost_date_time SHARED IMPORTED)
 set_target_properties(boost_date_time PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_date_time.a")
 
-#add_dependencies(generate-help-html libs boost_filesystem boost_system)                                                                                                                                                                              
+add_library(boost_program_options SHARED IMPORTED)
+set_target_properties(boost_program_options PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_program_options.a")
+
+add_library(boost_math_c99 SHARED IMPORTED)
+set_target_properties(boost_math_c99 PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_math_c99.a")
+
+add_library(boost_math_c99f SHARED IMPORTED)
+set_target_properties(boost_math_c99f PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_math_c99f.a")
+
+add_library(boost_math_tr1f SHARED IMPORTED)
+set_target_properties(boost_math_tr1f PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_math_tr1f.a")
+
+add_library(boost_math_tr1l SHARED IMPORTED)
+set_target_properties(boost_math_tr1l PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_math_tr1l.a")
 
 
 ######## end of boost #################

@@ -63,4 +63,6 @@ void linenoiseHistoryFree(void);
 char **linenoiseHistory(int *len);
 int linenoiseColumns(void);
 
+//static void linenoiseRefreshLine(const char* prompt);
+
 #endif /* __LINENOISE_H */

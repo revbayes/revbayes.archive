@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+#include "constants.h"
+
 namespace fs = boost::filesystem;
 using namespace std;
 
@@ -40,8 +42,8 @@ struct compare_path {
 
 int main(int argc, const char * argv[]) {
 
-    fs::path hereDir = fs::initial_path<fs::path>(); // absolute path to this executable
-    fs::path helpDir = fs::canonical(fs::path("../../help"), hereDir);
+    string installDir = INSTALL_DIR; // from constants.h, value set at installation by regenerate.sh
+    fs::path helpDir = fs::canonical(fs::path("../../help"), fs::path(installDir));
 
     cout << endl << "This tool will automatically generate the index.html page in:" << endl
             << helpDir.string() << " - directory" << endl

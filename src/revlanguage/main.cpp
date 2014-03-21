@@ -18,11 +18,19 @@
 #include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
 
+
 int main(int argc, const char * argv[]) {
 
+    /* seek out files from command line */
+    std::vector<std::string> sourceFiles;
+    int argIndex = 1;
+    while (argIndex < argc) {
+        sourceFiles.push_back(std::string(argv[argIndex++]));
+    }
+        
     /* initialize environment */
     RevLanguageMain rl;
-    rl.startRevLanguageEnvironment(argc, argv);
+    rl.startRevLanguageEnvironment(sourceFiles);
 
     /* Declare things we need */
     char *default_prompt = (char *) "RevBayes > ";
