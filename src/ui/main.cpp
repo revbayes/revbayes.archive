@@ -63,8 +63,8 @@ int main(int argc, const char* argv[]) {
 
     if (vm.count("help")) {
         std::cout << "Usage: [options] file1 file2 ...\n\n";
-        std::cout << desc << endl;
-        return 0;
+        std::cout << desc << std::endl;
+        return(0);
     }
 
     if (vm.count("include-path")) {
