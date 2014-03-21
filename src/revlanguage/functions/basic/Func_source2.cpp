@@ -19,7 +19,7 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "Func_Source.h"
+#include "Func_source2.h"
 #include "Parser.h"
 #include "RbException.h"
 #include "RbNullObject.h"
@@ -35,20 +35,20 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_Source::Func_Source( void ) : Function() {
+Func_source::Func_source( void ) : Function() {
     
 }
 
 
 /** Clone object */
-Func_Source* Func_Source::clone( void ) const {
+Func_source* Func_source::clone( void ) const {
     
-    return new Func_Source( *this );
+    return new Func_source( *this );
 }
 
 
 /** Execute function */
-RbLanguageObject* Func_Source::execute( void ) {
+RbLanguageObject* Func_source::execute( void ) {
     
     /* Open file */
     std::string fname = static_cast<const RlString &>( args[0].getVariable()->getValue() ).getValue();
@@ -99,7 +99,7 @@ RbLanguageObject* Func_Source::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_Source::getArgumentRules( void ) const {
+const ArgumentRules& Func_source::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -116,7 +116,7 @@ const ArgumentRules& Func_Source::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_Source::getClassName(void) { 
+const std::string& Func_source::getClassName(void) {
     
     static std::string rbClassName = "Source function";
     
@@ -124,7 +124,7 @@ const std::string& Func_Source::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_Source::getClassTypeSpec(void) { 
+const TypeSpec& Func_source::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -132,7 +132,7 @@ const TypeSpec& Func_Source::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_Source::getTypeSpec( void ) const {
+const TypeSpec& Func_source::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -141,7 +141,7 @@ const TypeSpec& Func_Source::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_Source::getReturnType( void ) const {
+const TypeSpec& Func_source::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

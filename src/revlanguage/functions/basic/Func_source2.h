@@ -17,20 +17,20 @@
  * $Id: Func_source.h 1431 2012-04-22 19:06:58Z hoehna $
  */
 
-#ifndef Func_Source_H
-#define Func_Source_H
+#ifndef Func_source_H
+#define Func_source_H
 
 #include "RlFunction.h"
 
 namespace RevLanguage {
 
-class Func_Source : public Function {
+class Func_source : public Function {
     
 public:
-    Func_Source( void );
+    Func_source( void );
     
     // Basic utility functions
-    Func_Source*                            clone(void) const;                                                          //!< Clone object
+    Func_source*                            clone(void) const;                                                          //!< Clone object
     static const std::string&               getClassName(void);                                                         //!< Get class name
     static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&                         getTypeSpec(void) const;                                                    //!< Get language type of the object

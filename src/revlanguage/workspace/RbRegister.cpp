@@ -135,7 +135,7 @@
 #include "Func_seed.h"
 #include "Func_simplex.h"
 #include "Func_type.h"
-#include "Func_Source.h"
+#include "Func_source2.h"
 #include "Func_structure.h"
 #include "Func_write.h"
 
@@ -637,7 +637,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Add RevLanguage only functions here //
         /////////////////////////////////////////
         
-        addFunction( "source",         new Func_Source() );
+        addFunction( "source",         new Func_source() );
         addFunction( "write",          new Func_write()  );
         
         // inference function

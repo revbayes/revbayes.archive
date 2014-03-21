@@ -36,7 +36,7 @@ namespace RevLanguage {
         static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                    //!< Get language type of the object
     
-        // Func_source functions
+        // Func_range functions
         const ArgumentRules&                    getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions

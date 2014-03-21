@@ -33,7 +33,7 @@ int EssMax::estimateBurnin(const std::vector<double>& values) {
         analysis.analyseCorrelation(values,i);
         
         // check if the new ess is better than any previous ones
-        if (isfinite(analysis.getEss()) && max_ess < analysis.getEss()) {
+        if (std::isfinite(analysis.getEss()) && max_ess < analysis.getEss()) {
             max_ess = analysis.getEss();
             best_burnin = i;
         }
