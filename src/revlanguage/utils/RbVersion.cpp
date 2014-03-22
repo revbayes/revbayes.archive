@@ -33,7 +33,7 @@ std::string RbVersion::getVersion( void ) const {
 std::string RbVersion::getHeader( void ) const {
     
     std::string header = "";
-    header += "\n\n";
+    header += "\n";
     header += "RevBayes version " + getVersion() + " (" + getDate() + ")\n";
     header += "\n";
     header += "RevBayes is an R-like environment for statistical computation,\n";
