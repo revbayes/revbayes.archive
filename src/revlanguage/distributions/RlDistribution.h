@@ -36,6 +36,7 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
        
         // Basit utility functions
+        virtual void                                    printStructure(std::ostream& o) const {}                                            //!< Print structure of language object for user
         void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
     
         // Distribution functions you have to override

@@ -26,7 +26,7 @@ Func_structure* Func_structure::clone( void ) const {
 RbLanguageObject* Func_structure::execute( void ) {
     
     std::cout << "_valueType    = " << args[0].getVariable()->getValue().getType() << std::endl;
-    args[0].getVariable()->getValue().getValueNode()->printStructureInfo( std::cout );
+    args[0].getVariable()->getValue().printStructure( std::cout );
     
     // no return value
     return NULL;

@@ -103,22 +103,19 @@ RbPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env
     
     // Declare variable storing the return value of the assignment expression
     RbPtr<Variable> theVariable = NULL;
-    
-    
+
 #ifdef DEBUG_PARSER
     printf( "Equation assignment\n" );
 #endif
     
     // get the rhs expression wrapped and executed into a variable
-    theVariable = expression->evaluateContent(env);
-    
-    // Create new stochastic node
-    RbLanguageObject* rv = theVariable->getValue().clone();
+    theVariable = expression->evaluateDeterministicExpressionContent(env);
     
     // fill the slot with the new variable
-    theSlot->setValue( rv );
+    // @todo Fredrik: Do we really need to make a clone here?
+    theSlot->setValue( theVariable->getValue().clone() );
     
-    // set the name of the DAG node. This will ensure nicer outputs about the DAG.
+    // set the name of the DAG node for convenience
     theVariable->getValue().setName( theSlot->getName() );
     
     

@@ -392,6 +392,15 @@ std::string Function::getRevDeclaration(void) const {
 }
 
 
+/** Print structure of object for user */
+void Function::printStructure(std::ostream& o) const {
+    
+    o << "_variableType = " << getType() << std::endl;
+    o << "_declaration  = " << getRevDeclaration() << std::endl;
+    o << "_value        = " << getValueNode();
+}
+
+
 /** Print value for user */
 void Function::printValue(std::ostream& o) const {
 
