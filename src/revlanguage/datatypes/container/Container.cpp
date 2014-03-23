@@ -136,4 +136,11 @@ bool Container::isConvertibleTo(const TypeSpec& typeSpec) const {
 }
 
 
+void Container::printStructure(std::ostream& o) const {
 
+    o << "_variableType = Container" << std::endl;
+    o << "_value        = ";
+    printValue( o );
+    o << std::endl;
+}
+s

@@ -274,8 +274,6 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
     o << "_children     = ";
     this->printChildren(o);
     o << std::endl;
-    
-    o << std::endl;
 }
 
 

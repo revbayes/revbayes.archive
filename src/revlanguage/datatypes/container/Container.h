@@ -36,7 +36,7 @@ namespace RevLanguage {
         static const std::string&                   getClassName(void);                                                 //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual bool                                isConvertibleTo(const TypeSpec& type) const;                        //!< Is convertible to type?
-        virtual void                                printStructure(std::ostream& o) const {}                            //!< Print structure of language object for user
+        virtual void                                printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
         virtual void                                printValue(std::ostream& o) const = 0;                              //!< Print value for user
     
         // Container functions you have to override
