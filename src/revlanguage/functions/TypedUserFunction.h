@@ -1,21 +1,14 @@
 /**
- * @file
- * This file contains the declaration and implementation of the templated function used
- * for indirect (deterministic) references to variables. The reference function is only
- * used in deterministic nodes created by Rev in statements like
- *
- *    b := a
- *
- * If you are referencing elements of a variable, or use any other expression in
- * the rhs of a deterministic assignment, the normal statement processing will 
- * produce the appropriate deterministic node variable.
- *
- * @author Fredrik Ronquist
- * @license GPL version 3
- */
+* @file
+* This file contains the declaration and implementation of the templated RevBayesCore function
+* used as the internal deterministic node function object in user-defined functions.
+*
+* @author Fredrik Ronquist
+* @license GPL version 3
+*/
 
-#ifndef TypedReferenceFunction_h
-#define TypedReferenceFunction_h
+#ifndef TypedUserFunction_H
+#define TypedUserFunction_H
 
 #include "TypedFunction.h"
 
@@ -27,18 +20,18 @@ namespace RevBayesCore {
     class TypedDagNode;
     
     template<class valueType>
-    class TypedReferenceFunction : public TypedFunction<valueType> {
+    class TypedUserFunction : public TypedFunction<valueType> {
         
     public:
-                                            TypedReferenceFunction(const TypedDagNode<valueType>* var );                //!< Constructor setting variable referenced
-                                            TypedReferenceFunction(const TypedReferenceFunction &f);                    //!< Copy constructor
+        TypedUserFunction(const TypedDagNode<valueType>* var );                //!< Constructor setting variable referenced
+        TypedReferenceFunction(const TypedReferenceFunction &f);                    //!< Copy constructor
         virtual                            ~TypedReferenceFunction(void);                                               //!< Virtual destructor
         
         // pure virtual public methors
         TypedReferenceFunction<valueType>*  clone(void) const;                                                          //!< Clone the function
         void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP) ;           //!< Exchange a parameter to the function
         void                                update(void);                                                               //!< Update the value of the function
-
+        
     private:
         const TypedDagNode<valueType>*      variable;                                                                   //!< The variable we reference
     };
@@ -48,9 +41,9 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::TypedReferenceFunction<valueType>::TypedReferenceFunction(const TypedDagNode<valueType>* var) :
+RevBayesCore::TypedUserFunction<valueType>::TypedReferenceFunction(const TypedDagNode<valueType>* var) :
 TypedFunction<valueType>( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( var->getValue() ), "<Reference Function>" ),
-    variable( var )
+variable( var )
 {
     /* Add referenced variable as parent */
     this->addParameter( variable );
@@ -62,8 +55,8 @@ TypedFunction<valueType>( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>:
 
 template <class valueType>
 RevBayesCore::TypedReferenceFunction<valueType>::TypedReferenceFunction(const RevBayesCore::TypedReferenceFunction<valueType> &n) :
-    TypedFunction<valueType>( n ),
-    variable( n.variable )
+TypedFunction<valueType>( n ),
+variable( n.variable )
 {
     /* Just update value. No need to add parameters, it happens automatically. */
     update();
@@ -86,10 +79,10 @@ RevBayesCore::TypedReferenceFunction<valueType>* RevBayesCore::TypedReferenceFun
 
 template <class valueType>
 void RevBayesCore::TypedReferenceFunction<valueType>::update( void ) {
-    
+
     if ( TypedFunction<valueType>::value != NULL )
         delete TypedFunction<valueType>::value;
-
+    
     TypedFunction<valueType>::value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( variable->getValue() );
 }
 

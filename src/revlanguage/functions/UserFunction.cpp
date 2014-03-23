@@ -121,10 +121,12 @@ RbLanguageObject* UserFunction::execute( void ) {
     // Set initial return value
     RbPtr<Variable> retVar = NULL;
     
-    // Create new variable frame
+    // Create new variable frame starting with the environment where we defined the function
+    // If we can no longer access the variables we need, an error will be thrown, so referencing
+    // variables in the define environment is at the user's own risk
     Environment functionEnvironment = Environment( defineEnvironment );
-    // \TODO: Check that the arguments can still be accessed
-    //    Environment functionEnvironment = Environment( args );
+
+    // Add the arguments to the environment
     for (std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it) {
         RbPtr<Variable> theVar = it->getVariable()->clone();
         functionEnvironment.addVariable( it->getLabel(), theVar );
