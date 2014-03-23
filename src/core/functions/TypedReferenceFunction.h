@@ -1,12 +1,14 @@
 /**
  * @file
- * This file contains the declaration of the typed lookup function. It is used for dynamic lookup
- * of elements of containers, and for indirect references to variables. Lookup functions are
- * used in deterministic nodes created by Rev statements like
+ * This file contains the declaration of the typed function used for indirect
+ * (deterministic) references to variables. The reference function is only used
+ * in deterministic nodes created by Rev in statements like
  *
  *    b := a
- *    b := a[1]
- *    b := a[i]
+ *
+ * If you are referencing elements of a variable, or use any other expression in
+ * the rhs of a deterministic assignment, the normal statement processing will 
+ * produce the appropriate deterministic node variable.
  *
  * @author Fredrik Ronquist
  * @license GPL version 3
