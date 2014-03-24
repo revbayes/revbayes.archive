@@ -143,4 +143,3 @@ void Container::printStructure(std::ostream& o) const {
     printValue( o );
     o << std::endl;
 }
-s

@@ -1,0 +1,52 @@
+# Test file for fossilized birth-death process (not work yet)
+
+# read the data/tree
+data <- readCharacterData("data_with_fossils.nex")
+
+# get some useful variables from the data
+names <- trueTree.names()
+
+# fossilized birth-death process priors
+speciation    ~ exponential(0.1)
+extinction    ~ exponential(0.1)
+fossilization ~ exponential(0.1)
+rho <- 1.0  
+# for piece-wise constant rates, vectors are needed for sp, ex, fo, rho
+org ~ unif(0.0,100.0)
+[tmrca ~ unif(0.0,100.0)]
+
+# tree from birth-death process
+tau ~ FossilizedBirthDeathRandom(origin=org, lambda=speciation, mu=extinction, psi=fossilization, rho=rho, names=names, condition="survival")
+
+kappa ~ exponential(0.5)
+pi ~ dirichlet(bf <- simplex(1,1,1,1))
+
+# the rate matrix
+Q := HKY(kappa,pi)
+
+moves[moves.size()+1] <- mScale(speciation, lambda=1.0, tune=true, weight=3.0)
+moves[moves.size()+1] <- mScale(extinction, lambda=1.0, tune=true, weight=3.0)
+moves[moves.size()+1] <- mScale(fossilization, lambda=1.0, tune=true, weight=3.0)
+moves[moves.size()+1] <- mSlide(org, delta=1.0, tune=true, weight=3.0)
+
+moves[moves.size()+1] <- mNarrow(psi, 5.0)
+moves[moves.size()+1] <- mFNPR(psi, 2.0)
+moves[moves.size()+1] <- mSubtreeScale(psi, 5.0)
+moves[moves.size()+1] <- mTreeScale(psi, 1.0, true, 1.0)
+moves[moves.size()+1] <- mNodeTimeSlideUniform(psi, 20.0)
+moves[moves.size()+1] <- mRootTimeSlide(psi, 1.0, true, 1.0)
+moves[moves.size()+1] <- mScale(kappa, lambda=1.0, tune=true, weight=3.0)
+
+mymodel <- model(speciation)
+
+monitors[1] <- modelmonitor(filename="FBD_R.log",printgen=10, separator = "	")
+monitors[2] <- screenmonitor(printgen=1000, separator = "	", speciation, extinction, fossilization, org)
+
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=5000,tuningInterval=250)
+mymcmc.run(generations=50000)
+
+mymcmc.operatorSummary()
+
+q()
