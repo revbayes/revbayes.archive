@@ -1,6 +1,8 @@
 #ifndef TimeAndDate_H
 #define TimeAndDate_H
 
+#include <iostream>
+
 namespace RevBayesCore {
     
     /**
@@ -27,6 +29,8 @@ namespace RevBayesCore {
         
     };
     
+    std::ostream& operator<<(std::ostream& o, const TimeAndDate& x) ;
+
 }
 
 #endif

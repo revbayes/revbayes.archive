@@ -1,8 +1,8 @@
 
-#ifndef RlClade_H
-#define RlClade_H
+#ifndef RlTaxon_H
+#define RlTaxon_H
 
-#include "Clade.h"
+#include "Taxon.h"
 #include "RlModelVariableWrapper.h"
 
 #include <set>
@@ -11,35 +11,35 @@
 
 
 namespace RevLanguage {
+    
     /**
     * @file
-    * This file contains the declaration of a Clade, which is
-    * the class that contains the names of the taxa that build the clade.
+    * This file contains the declaration of a Taxon, which is
+    * the class that contains the name of a taxon with associated species and date.
     *
-    * @brief Declaration of Clade
+    * @brief Declaration of Taxon
     *
     * (c) Copyright 2009-
     * @date Last modified: $Date: $
     * @author The RevBayes Development Core Team
     * @license GPL version 3
     *
-    * 
+    *
     */
-
     
-    class Clade : public RlModelVariableWrapper<RevBayesCore::Clade> {
+    class Taxon : public RlModelVariableWrapper<RevBayesCore::Taxon> {
         
     public:
-        Clade(void);                                                                                                                         //!< Constructor requires character type
-        Clade(RevBayesCore::Clade *v);                                                                                                    //!< Constructor requires character type
-        Clade(const RevBayesCore::Clade &v);                                                                                              //!< Constructor requires character type
-        Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n);                                                                        //!< Constructor requires character type
-        Clade(const Clade& d);                                                                                                            //!< Constructor requires character type
+        Taxon(void);                                                                                                                         //!< Constructor requires character type
+        Taxon(RevBayesCore::Taxon *v);                                                                                                    //!< Constructor requires character type
+        Taxon(const RevBayesCore::Taxon &v);                                                                                              //!< Constructor requires character type
+        Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n);                                                                        //!< Constructor requires character type
+        Taxon(const Taxon& d);                                                                                                            //!< Constructor requires character type
         
-        typedef RevBayesCore::Clade valueType;
+        typedef RevBayesCore::Taxon valueType;
         
         // Basic utility functions
-        Clade*                              clone(void) const;                                                                                  //!< Clone object
+        Taxon*                              clone(void) const;                                                                                  //!< Clone object
         void                                constructInternalObject(void);                                          //!< We construct the a new internal MCMC object.
         static const std::string&           getClassName(void);                                                                                 //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
@@ -53,7 +53,11 @@ namespace RevLanguage {
     protected:
         void                                setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
         
-        std::vector<RbPtr<const Variable> > names;
+        RbPtr<const Variable> taxon;
+        RbPtr<const Variable> species;
+        RbPtr<const Variable> date;
+
+                
 
     };
     
