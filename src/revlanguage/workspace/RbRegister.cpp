@@ -50,7 +50,9 @@
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
+#include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
+#include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
@@ -63,6 +65,7 @@
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
+#include "RlWhiteNoisePhyloProcess.h"
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
@@ -325,6 +328,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
+        // white noise process
+        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
+        
+        // white noise process
+        addDistribution( "brownian", new BrownianPhyloProcess() );
         
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
@@ -635,6 +643,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
         addFunction( "treeHeight",                  new TreeHeightStatistic()              );
+  
+        addFunction( "expbranchtree", new ExponentialBranchTree() );
+
         
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
