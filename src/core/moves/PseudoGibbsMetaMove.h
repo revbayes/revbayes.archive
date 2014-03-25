@@ -49,9 +49,9 @@ namespace RevBayesCore {
 		
         // Hidden member variables
         const Move*			                            move;
-        int 											numberOfSubsets;
+        size_t 											numberOfSubsets;
 		AbstractCharacterData* 							data;
-		std::vector< std::vector<int> >					dataSubsets;
+		std::vector< std::vector<size_t> >				dataSubsets;
     };
     
 }

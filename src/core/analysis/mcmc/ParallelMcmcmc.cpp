@@ -8,17 +8,19 @@
 #if defined (USE_LIB_OPENMP)
     #include <omp.h>
 #endif
+ 
+#define DEBUG_PMC3 0
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double sh) : delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0), startingHeat(sh)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double st, double sh) : Cloneable( ), sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), currentGeneration(0), startingHeat(sh)
 {
     activeIndex = 0;
     
     for (size_t i = 0; i < numChains; i++)
     {
         // get chain heat
-        double b = computeBeta(delta,int(i)) * startingHeat;
+        double b = computeBeta(delta,sigma,i) * startingHeat;
         
         // create chains
         bool a = (i == 0 ? true : false);
@@ -59,13 +61,31 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
 }
 
 ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
-{   
-    // MJL: Do I need a copy ctor for Analysis objects (e.g. non-DAG)?
+{
+    sigma = m.sigma;
+    delta = m.delta;
+    startingHeat = m.startingHeat;
+    numChains = m.numChains;
+    numProcesses = m.numProcesses;
+    chainsPerProcess = m.chainsPerProcess;
+    chainIdxByHeat = m.chainIdxByHeat;
+    swapInterval = m.swapInterval;
+    activeIndex = m.activeIndex;
+    
+    currentGeneration = m.currentGeneration;
+    for (size_t i = 0; i < chains.size(); i++)
+        chains.push_back(new Mcmc( *(m.chains[i])) );
+    
 }
 
 ParallelMcmcmc::~ParallelMcmcmc(void)
 {
-    
+    for (size_t i = 0; i < chains.size(); i++)
+    {
+        
+        delete chains[i];
+    }
+    chains.clear();
 }
 
 void ParallelMcmcmc::initialize(void)
@@ -73,10 +93,10 @@ void ParallelMcmcmc::initialize(void)
     
 }
 
-double ParallelMcmcmc::computeBeta(double delta, int idx)
+double ParallelMcmcmc::computeBeta(double d, double s, int idx)
 {
     // MJL: May want other distributions of beta in the future
-    return pow(1.0 + delta, -idx);
+    return pow(1 + d, -pow(idx,s));
 }
 
 void ParallelMcmcmc::burnin(int g, int ti)
@@ -86,8 +106,7 @@ void ParallelMcmcmc::burnin(int g, int ti)
 
 ParallelMcmcmc* ParallelMcmcmc::clone(void) const
 {
-    // MJL: I think this is handled through Mcmc, though may want to derive ParallelMCMCMC from Cloneable
-    return NULL;
+    return new ParallelMcmcmc(*this);
 }
 
 void ParallelMcmcmc::printOperatorSummary(void) const
@@ -102,7 +121,7 @@ void ParallelMcmcmc::printOperatorSummary(void) const
 void ParallelMcmcmc::run(size_t generations)
 {
     // print file header
-    if (gen == 0)
+    if (currentGeneration == 0)
         chains[0]->monitor(0);
     
     // run chain
@@ -149,7 +168,7 @@ void ParallelMcmcmc::run(size_t generations)
         } // processor job end
         
         // advance gen counter
-        gen += swapInterval;
+        currentGeneration += swapInterval;
         
         // perform chain swap
         swapChains();
@@ -166,15 +185,15 @@ void ParallelMcmcmc::swapChains(void)
     if (numChains < 2)
         return;
     
-    int numAccepted = 0;
+    size_t numAccepted = 0;
     
     //for (size_t i = 1; i < numChains; i++)
     for (size_t i = numChains-1; i > 0; i--)
     {
         
         // swap adjacent chains
-        int j = chainIdxByHeat[i-1];
-        int k = chainIdxByHeat[i];
+        size_t j = chainIdxByHeat[i-1];
+        size_t k = chainIdxByHeat[i];
         
         // compute exchange ratio
         double bj = chains[j]->getChainHeat();
@@ -200,11 +219,13 @@ void ParallelMcmcmc::swapChains(void)
         
         // test override
         //accept = true;
-        //std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
-        //std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
-        //std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
-        //std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
-              
+#if DEBUG_PMC3
+        std::cout << "\nbj " << bj << "; bk " << bk << "; lnPj " << lnPj << "; lnPk " << lnPk << "\n";
+        std::cout << "bj*(lnPk-lnPj) " << bj*(lnPk-lnPj) << "; bk*(lnPj-lnPk) " << bk*(lnPj-lnPk) << "\n";
+        std::cout << "swapChains()\t" << j << " <--> " << k << "  " << lnR << "\n";
+        std::cout << u << "  " << exp(lnR) << "  " << (accept ? "accept\n" : "reject\n");
+#endif
+        
         // on accept, swap beta values and active chains
         if (accept)
         {
@@ -232,16 +253,19 @@ void ParallelMcmcmc::swapChains(void)
         }
         //std::cout << "activeIndex " << activeIndex << "\n";
     }
+    
+#if DEBUG_PMC3
    
-    /*
-    for (int j = 0; j < numChains; j++)
+    int nc = (numChains < 10 || true ? numChains : 10);
+    for (int j = 0; j < nc; j++)
     {
         int i = chainIdxByHeat[j];
-        std::cout << i << " " << chains[i]->getChainHeat() << " " << chains[i]->getLnPosterior() << " == " << chains[i]->getModelLnProbability() << " " << (chains[i]->isChainActive() ? "*" : "") << (i == activeIndex ? "#" : "") << "\n";
+        std::cout << i << " " << chains[i]->getChainHeat() << " * " << chains[i]->getLnPosterior() << " = " << chains[i]->getChainHeat() * chains[i]->getLnPosterior() << "\n";
+        //chains[i]->getModelLnProbability() << " " << (chains[i]->isChainActive() ? "*" : "") << (i == activeIndex ? "#" : "") << "\n";
     }
     std::cout << "freq accepted: " << (double)numAccepted/(numChains-1) << "\n";
     
     std::cout << "\n";
-    */
+# endif
     
 }

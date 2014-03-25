@@ -37,6 +37,7 @@ namespace RevLanguage {
        
         // Basic utility functions you have to override
         virtual RlModelVariableWrapper*         clone(void) const = 0;                                                      //!< Clone object
+        RlModelVariableWrapper<rbType>*         dagReference(void);                                                         //!< Make reference to object
     
         // function you might want to overwrite
         virtual RbLanguageObject*               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
@@ -48,10 +49,13 @@ namespace RevLanguage {
         RevBayesCore::TypedDagNode<rbType>*     getValueNode(void) const;
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
+        virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
         void                                    replaceVariable(RbLanguageObject *newVar);                                  //!< Replace the internal DAG node
-    
+
+        RlModelVariableWrapper<rbType>*         shallowCopy(void);      // Testing...
+        
         // getters and setters
         virtual const rbType&                   getValue(void) const;
         void                                    setValue(rbType *x);
@@ -77,9 +81,11 @@ namespace RevLanguage {
 #include "ArgumentRules.h"
 #include "Cloner.h"
 #include "ConstantNode.h"
+#include "DeterministicNode.h"
 #include "MemberFunction.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
+#include "TypedReferenceFunction.h"
 
 template <typename rbType>
 RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), 
@@ -190,6 +196,23 @@ RevLanguage::RlModelVariableWrapper<rbType>& RevLanguage::RlModelVariableWrapper
 }
 
 
+template <typename rbType>
+RevLanguage::RlModelVariableWrapper<rbType>* RevLanguage::RlModelVariableWrapper<rbType>::dagReference(void) {
+    
+    RevBayesCore::TypedReferenceFunction< rbType >* f = new RevBayesCore::TypedReferenceFunction< rbType >(value);
+    RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
+    
+    RevLanguage::RlModelVariableWrapper<rbType>* newObj = this->clone();
+
+    // replace value with deterministic reference and attempt memory management
+    newObj->value->decrementReferenceCount();
+    newObj->value = newVal;
+    newObj->value->incrementReferenceCount();
+
+    return newObj;
+}
+
+
 /* Map calls to member methods */
 template <typename rbType>
 RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
@@ -253,7 +276,7 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
 }
 
 
-/* Map calls to member methods */
+/* Find member variables */
 template <typename rbType>
 RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getMember(std::string const &name) const
 {
@@ -399,18 +422,18 @@ bool RevLanguage::RlModelVariableWrapper<rbType>::isConstant( void ) const {
 template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::makeConstantValue( void ) {
     
-    if ( value == NULL ) 
+    if ( value == NULL )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
-    } 
-    else 
+    }
+    else
     {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
         RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( value->getValue() ) );
         value->replace(newVal);
         
         // delete the value if there are no other references to it.
-        if ( value->decrementReferenceCount() == 0 ) 
+        if ( value->decrementReferenceCount() == 0 )
         {
             delete value;
         }
@@ -421,6 +444,14 @@ void RevLanguage::RlModelVariableWrapper<rbType>::makeConstantValue( void ) {
         value->incrementReferenceCount();
     }
     
+}
+
+
+/** Print structure info for user */
+template <typename rbType>
+void RevLanguage::RlModelVariableWrapper<rbType>::printStructure(std::ostream &o) const {
+    
+    value->printStructureInfo(o);
 }
 
 
@@ -489,5 +520,10 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
     
 }
 
+
+template <typename rbType>
+RevLanguage::RlModelVariableWrapper<rbType>* RevLanguage::RlModelVariableWrapper<rbType>::shallowCopy(void) {
+    
+}
 
 #endif

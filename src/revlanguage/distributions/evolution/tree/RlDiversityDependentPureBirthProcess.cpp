@@ -11,6 +11,7 @@
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
+#include "Taxon.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
@@ -61,15 +62,19 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
     RevBayesCore::TypedDagNode<int>* k          = static_cast<const Natural &>( capacity->getValue() ).getValueNode();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
-    // number of taxa
-    int n                                       = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
     // taxon names
     const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
     // clade constraints
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
     
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i) 
+    {
+        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
+    }
+    
     // create the internal distribution object
-    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, cond, n, names, c);
+    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, cond, taxa, c);
     
     return d;
 }

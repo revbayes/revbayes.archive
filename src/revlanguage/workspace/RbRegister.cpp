@@ -69,6 +69,8 @@
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
+#include "RlConstantRateSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RlDiversityDependentPureBirthProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
@@ -131,14 +133,18 @@
 #include "Func__unot.h"
 
 /* Built-in functions */
+#include "Func_citation.h"
 #include "Func_clear.h"
+#include "Func_contributors.h"
+#include "Func_help.h"
+#include "Func_license.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
 #include "Func_seed.h"
 #include "Func_simplex.h"
 #include "Func_type.h"
-#include "Func_Source.h"
+#include "Func_source.h"
 #include "Func_structure.h"
 #include "Func_write.h"
 
@@ -363,6 +369,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process distribution
         addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        
+        // constant rate birth-death process distribution
+        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
+
+        // piecewise constant rate birth-death process distribution
+        addDistribution( "BirthDeathSkySerial", new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
@@ -431,8 +443,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_ne",       new Func__ne<           RlBoolean,      RlBoolean >()             );
         
         
-        /* Add builtin functions (alphabetical order) */
+        /* Add builtin (basic) functions (alphabetical order) */
+        addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "contributors",             new Func_contributors()             );
+        addFunction( "help",                     new Func_help()                     );
+        addFunction( "license",                  new Func_license()                  );
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
@@ -648,7 +664,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Add RevLanguage only functions here //
         /////////////////////////////////////////
         
-        addFunction( "source",         new Func_Source() );
+        addFunction( "source",         new Func_source() );
         addFunction( "write",          new Func_write()  );
         
         // inference function

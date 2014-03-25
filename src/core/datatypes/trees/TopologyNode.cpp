@@ -590,6 +590,42 @@ size_t TopologyNode::getIndex( void ) const {
 }
 
 
+/**
+ * Get the maximal depth starting from this node. 
+ * The depth here mean the maximal path length along the branches until a terminal node (tip) is reached.
+ * For ultrametric trees all path lengths are equivalent, but for serial sampled trees not.
+ * Hence, we compute the maximal depths by recursively exploring each path along the branches to the children.
+ *
+ * \return    The maximal depth (path length) from this node to the most recent tip.
+ */
+double TopologyNode::getMaxDepth( void ) const
+{
+    
+    // iterate over the childen
+    double max = 0.0;
+    for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it) 
+    {
+        double m = 0.0;
+        TopologyNode& node = *(*it);
+        if ( node.isTip() ) 
+        {
+            m = node.getBranchLength();
+        }
+        else
+        {
+            m = node.getBranchLength() + node.getMaxDepth();
+        }
+        
+        if ( m > max ) 
+        {
+            max = m;
+        }
+    }
+    
+    return max;
+}
+
+
 const std::string& TopologyNode::getName( void ) const 
 {
     

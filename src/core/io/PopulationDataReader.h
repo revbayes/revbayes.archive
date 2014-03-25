@@ -18,17 +18,20 @@
 namespace RevBayesCore {
     
     class SnpData;
+    class MicrosatData;
     
     class PopulationDataReader {
         
     public:
         PopulationDataReader();
-        SnpData* readSnpData(const std::string& fileName);
-        SnpData* readSnpData2(const std::string& fileName, int thinBy=1);
+        SnpData* readSnpData2(const std::string& fileName);
+        SnpData* readSnpData(const std::string& fileName, int thinBy=1);
+        MicrosatData* readMicrosatData(const std::string& fileName, int thinBy=1);
         
     private:
         
         SnpData* snps;
+        MicrosatData* msats;
         
     };
     

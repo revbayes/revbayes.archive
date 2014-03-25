@@ -4,6 +4,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "Taxon.h"
 #include "TopologyNode.h"
 #include "Topology.h"
 
@@ -20,19 +21,17 @@ using namespace RevBayesCore;
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
  * \param[in]    o         Origin or time of the process.
- * \param[in]    r         Sampling probability of a species at present.
- * \param[in]    ss        The sampling strategy (uniform/diversified).
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
  * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt, unsigned int nTaxa, 
-                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
+AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt,  
+                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
     origin( o ),
     condition( cdt ), 
-    numTaxa( nTaxa ), 
-    taxonNames( tn ), 
+    numTaxa( tn.size() ), 
+    taxa( tn ), 
     constraints( c ) 
 {
     
@@ -40,7 +39,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
-    // but since the probability of the divergence times contains the factor (n-1)! we simply stor
+    // but since the probability of the divergence times contains the factor (n-1)! we simply store
     // 2^{n-1} / n!
     double lnFact = 0.0;
     for (size_t i = 2; i <= numTaxa; i++) 
@@ -144,7 +143,10 @@ void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*>
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double AbstractBirthDeathProcess::computeLnProbability( void ) {
+double AbstractBirthDeathProcess::computeLnProbability( void ) 
+{
+    // prepare probability computation
+    prepareProbComputation();
     
     // variable declarations and initialization
     double lnProbTimes = 0;
@@ -156,11 +158,11 @@ double AbstractBirthDeathProcess::computeLnProbability( void ) {
     }
     
     // present time 
-    double tipTime = value->getTipNode(0).getTime();
+    double rootAge = value->getRoot().getAge();
     double org = origin->getValue();
     
     // test that the time of the process is larger or equal to the present time
-    if ( tipTime > org ) 
+    if ( rootAge > org ) 
     {
         return RbConstants::Double::neginf;
     }
@@ -238,6 +240,78 @@ int AbstractBirthDeathProcess::diversity(double t) const
 }
 
 
+/**
+ * Get the age of the internal nodes meassured since the time of the most recent tip.
+ * We get the ages from the nodes and simply subtruct these from the age of the most recent tip.
+ *
+ * \return     A vector of ages. The caller needs to deallocate this vector.
+ */
+std::vector<double>* AbstractBirthDeathProcess::getAgesOfInternalNodesFromMostRecentSample( void ) const
+{
+    
+    // get the time of the process
+    
+    double minTipAge = 0.0;
+    for (size_t i = 0; i < numTaxa; ++i) 
+    {
+        double tipAge = value->getAge( i );
+        if ( tipAge < minTipAge) 
+        {
+            minTipAge = tipAge;
+        }
+    }
+    
+    // retrieved the speciation times
+    std::vector<double> *ages = new std::vector<double>();
+    for (size_t i = numTaxa; i < 2*numTaxa-1; ++i) 
+    {
+        const TopologyNode& n = value->getNode( i );
+        double t = n.getAge() - minTipAge;
+        ages->push_back(t);
+    }
+    // sort the vector of times in ascending order
+    std::sort(ages->begin(), ages->end());
+    
+    return ages;
+}
+
+
+/**
+ * Get the age of all tip nodes meassured since the time of the most recent tip.
+ * We get the ages from the nodes and simply subtruct these from the age of the most recent tip.
+ *
+ * \return     A vector of ages. The caller needs to deallocate this vector.
+ */
+std::vector<double>* AbstractBirthDeathProcess::getAgesOfTipsFromMostRecentSample( void ) const
+{
+    
+    // get the time of the process
+    
+    double minTipAge = 0.0;
+    for (size_t i = 0; i < numTaxa; ++i) 
+    {
+        double tipAge = value->getAge( i );
+        if ( tipAge < minTipAge) 
+        {
+            minTipAge = tipAge;
+        }
+    }
+    
+    // retrieved the speciation times
+    std::vector<double> *ages = new std::vector<double>();
+    for (size_t i = 0; i < numTaxa; ++i) 
+    {
+        const TopologyNode& n = value->getNode( i );
+        double t = n.getAge() - minTipAge;
+        ages->push_back(t);
+    }
+    // sort the vector of times in ascending order
+    std::sort(ages->begin(), ages->end());
+    
+    return ages;
+}
+
+
 
 /**
  * We check here if all the constraints are satisfied.
@@ -259,6 +333,16 @@ bool AbstractBirthDeathProcess::matchesConstraints( void )
     }
     
     return true;
+}
+
+
+/**
+ * Prepare the probability computation. Here we can pre-calculate some values for more
+ * efficient probability calculation. The derived classes may want to do something ...
+ */
+void AbstractBirthDeathProcess::prepareProbComputation( void )
+{
+    
 }
 
 
@@ -310,7 +394,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
         nodes.erase(nodes.begin()+index);
         
         // set name
-        std::string& name = taxonNames[i];
+        const std::string& name = taxa[i].getName();
         node->setName(name);
     }
     

@@ -272,6 +272,159 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
 
 
 /**
+ * @brief Get semantic value (r-value) of deterministic expression
+ *
+ * This function returns the semantic value of the variable expression
+ * when it is part of a deterministic expression. In this case, we
+ * should not return the variable or a variable element itself but an
+ * indirect reference to it. Among other things, this takes care of
+ * reassignment and proper updating of the variable that is returned.
+ */
+RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environment& env) {
+    
+    // @todo Fredrik: Deal with control variables and loop variables. Do we want to throw
+    // an error or generate references to immutable constants?
+    if ( replacementValue != NULL )
+        throw RbException( "Loop variables in deterministic expressions not supported (yet)" );
+    
+    /* Get variable */
+    RbPtr<Variable> theVar = NULL;
+    
+    size_t usedIndices = 0;
+    
+    // if the base variable is not set we have a simple object, otherwise a member object
+    if ( baseVariable == NULL ) {
+        
+        if ( functionCall == NULL ) {
+            // we test whether this variable exists
+            if ( env.existsVariable( identifier ) ) {
+                VariableSlot& theSlot = env[ identifier ];
+                
+                std::vector<int> slotIndices;
+                // @todo Fredrik: This does not work for dynamic lookups. Wait to see if we can get rid of variable fields
+                // before trying to correct this.
+                std::list<SyntaxElement*>::const_iterator it=index->begin();
+                for (size_t i = 0; i < theSlot.getDim() && i < index->size(); ++i, ++it, ++usedIndices) {
+                    SyntaxElement*         indexSyntaxElement     = *it;
+                    RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+                    
+                    // we assume that the indices have to be natural values
+                    if ( indexVar->getValue().isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                        Natural &n = static_cast<Natural &>( indexVar->getValue() );
+                        slotIndices.push_back( n.getValue()-1 );
+                    } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
+                        RbLanguageObject* convObj = indexVar->getValue().convertTo( Natural::getClassTypeSpec() );
+                        Natural *n = static_cast<Natural *>( convObj );
+                        int tmp = n->getValue()-1;
+                        slotIndices.push_back( tmp );
+                        
+                        delete n;
+                    } else {
+                        throw RbException("Only natural numbers are allowed as indices for variable slots.");
+                    }
+                }
+                
+                if ( slotIndices.size() != 0 )
+                    throw RbException( "Dynamic reference to field variables not supported yet" );
+
+                // First get the variable we want to reference
+                RbLanguageObject* theObj = &(theSlot.getVariable(slotIndices)->getValue());
+                RbLanguageObject* theReference = theObj->dagReference();
+
+                // Now make a new variable, which is a reference to that variable
+                theVar = RbPtr<Variable>( new Variable( theReference, "" ) );
+            }
+            else if ( env.existsFunction( identifier ) ) {
+                const Function& theFunction = env.getFunction( identifier );
+                theVar = RbPtr<Variable>( new Variable( theFunction.clone() ) );
+            }
+            else {
+                // there is no variable with that name and also no function
+                throw RbException("No variable or function with name \"" + identifier + "\" found!");
+            }
+        } else {
+            theVar = functionCall->evaluateContent( env );
+        }
+    }
+    else {
+        
+        if ( functionCall == NULL ) {
+            
+            // The call to getValue of baseVariable either returns
+            // a value or results in the throwing of an exception
+            const RbPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
+            
+            if ( identifier == "" )
+                throw RbException( "Member variable identifier missing" );
+            
+            const RbLanguageObject &theMemberObject = baseVar->getValue();
+            const RbLanguageObject* member = theMemberObject.getMember( identifier );
+            
+            // test whether we actually got a variable back
+            if ( member != NULL ) {
+                theVar = new Variable( member->clone(), "" );
+            }
+            else {
+                throw RbException("Cannot find member '" + identifier + "' of variable '" + baseVar->getName() + "'.");
+            }
+        }
+        else {
+            
+            functionCall->setBaseVariable( baseVariable->clone() );
+            theVar = functionCall->evaluateContent( env );
+        }
+    }
+    
+    if (!index->empty()) {
+        
+        /* We want to create a dynamic lookup to an element of a container variable */
+        std::list<SyntaxElement*>::const_iterator it= index->begin();
+        for (size_t i = 0; i < usedIndices; ++i) {
+            ++it;
+        }
+        for (; it!=index->end(); it++)
+        {
+            /* The index variables are going to be inserted as arguments in the index operator function, so we can use standard evaluateContent fxn */
+            SyntaxElement*         indexSyntaxElement     = *it;
+            RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+            
+            //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
+            
+            // create the new variable name
+            std::string varName = theVar->getName() + "[" + indexVar->getValue().toString() + "]";
+            
+            // convert the value into a member object
+            RbLanguageObject &mObject = theVar->getValue();
+            
+            // get the method table for this member object
+            // \TODO: We should not allow const casts
+            MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
+            
+            // create the arguments which consist only of the single paramater inside the square brackets
+            std::vector<Argument> args;
+            args.push_back( Argument( indexVar ) );
+            
+            // get the member function with name "[]"
+            MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
+            theMemberFunction->processArguments( args );
+            // We need to clone because otherwise we overwrite all methods for this object
+            
+            // set the member object for the member function
+            theMemberFunction->setMemberObject( theVar );
+            //            RbPtr<Function> func( theMemberFunction );
+            
+            RbLanguageObject* subElement = theMemberFunction->execute();
+            delete theMemberFunction;
+            
+            theVar = RbPtr<Variable>( new Variable( subElement, varName ) );
+        }
+    }
+
+    return theVar;
+}
+
+
+/**
  * @brief Get semantic value (r-value)
  *
  * The variable can either be a member or a base variable. In the latter

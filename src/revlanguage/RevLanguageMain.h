@@ -18,11 +18,13 @@
 #ifndef RevLanguageMain_H
 #define RevLanguageMain_H
 
+#include <string>
+#include <vector>
 
 class RevLanguageMain {
 public:
     RevLanguageMain();
-    int startRevLanguageEnvironment(const int argc, const char* argv[]);
+    void startRevLanguageEnvironment(std::vector<std::string> sourceFiles);
     
 
 };

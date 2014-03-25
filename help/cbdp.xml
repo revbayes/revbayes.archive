@@ -20,7 +20,9 @@
     </description>
 
     <usage>
+        <![CDATA[
         ConstBDProcess cBDP( RealPos lambda, RealPos mu = 0.0, RealPos origin, Probability rho = 1.0, String samplingStrategy="uniform", String condition="survival", Natural nTaxa, Vector<String> names, Vector<Clade> constraints )
+        ]]>
     </usage>    
     
     <argument>

@@ -20,7 +20,21 @@
 
 using namespace RevLanguage;
 
-/** Is the syntax expression constant? 
+
+/**
+ *  This function evaluates the semantic value of the element if it is part of a deterministic
+ *  expression. It allows variable syntax elements to produce lookups of themselves.
+ *  The default behavior is to evaluate the semantic value in the standard way, which is
+ *  sufficient for all other types of syntax elements.
+ *
+ */
+RbPtr<Variable> SyntaxElement::evaluateDeterministicExpressionContent(Environment& env) {
+
+    return evaluateContent(env);
+}
+
+
+/** Is the syntax expression constant?
  *  This is used for replacing the expression than by a constant.
  *  By default a syntax element is not constant.
  */

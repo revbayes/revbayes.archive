@@ -28,6 +28,7 @@
 
 #include "AdmixtureTree.h"
 #include "TopologyNode.h"
+#include "RbException.h"
 #include "RbOptions.h"
 #include <algorithm>
 #include <iostream>
@@ -683,6 +684,177 @@ const std::vector<std::string>& AdmixtureTree::getNames(void)
 void AdmixtureTree::setNames(const std::vector<std::string>& n)
 {
     names = n;
+}
+
+void AdmixtureTree::addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, AdmixtureNode* pc, AdmixtureNode* cc, bool enforceNewickRecomp)
+{
+    
+    AdmixtureNode* pp = &pc->getParent();
+    AdmixtureNode* cp = &cc->getParent();
+    
+    // check age
+    if (p->getAge() > pp->getAge() || p->getAge() > cp->getAge())
+    {
+        std::stringstream ss_err;
+        ss_err << "Cannot regraft nd.age > nd.pa.age :" << p->getAge() << " > " << pp->getAge() << "\n";
+        throw(RbException(ss_err.str()));
+    }
+    else if (p->getAge() < pc->getAge() || p->getAge() < cc->getAge())
+    {
+        std::stringstream ss_err;
+        ss_err << "Cannot regraft nd.age < nd.ch.age :" << p->getAge() << " > " << pc->getAge() << "\n";
+        throw(RbException(ss_err.str()));
+    }
+    
+    // set admixture edge relationship
+    p->setAdmixtureChild(c);
+    c->setAdmixtureParent(p);
+    
+    // add admixtureParent
+    p->addChild(pc,false);
+    pc->setParent(p,false);
+    pp->removeChild(pc,false);
+    pp->addChild(p,false);
+    p->setParent(pp,false);
+    p->setOutgroup(pc->isOutgroup());
+    
+    // add admixtureChild
+    c->addChild(cc,false);
+    cc->setParent(c,false);
+    cp->removeChild(cc,false);
+    cp->addChild(c,false);
+    c->setParent(cp,false);
+    c->setOutgroup(cc->isOutgroup());
+    
+    if (enforceNewickRecomp)
+        root->flagNewickRecomputation();
+}
+
+void AdmixtureTree::addAdmixtureEdge(AdmixtureNode* p, AdmixtureNode* c, AdmixtureNode* pc, AdmixtureNode* cc, double t, double w, bool enforceNewickRecomp)
+{
+    p->setAge(t);
+    c->setAge(t);
+    c->setWeight(w);
+    
+    addAdmixtureEdge(p, c, pc, cc, enforceNewickRecomp);
+}
+
+void AdmixtureTree::removeAdmixtureEdge(AdmixtureNode* p, bool enforceNewickRecomp)
+{
+    AdmixtureNode* n = NULL;
+    
+    if (&p->getAdmixtureParent() != NULL)
+        p = &p->getAdmixtureParent();
+    
+    // remove admixtureParent
+    AdmixtureNode* pp = &p->getParent();
+    AdmixtureNode* pc = &p->getChild(0);
+    
+    p->setParent(n);
+    p->removeChild(pc, false);
+    pc->setParent(pp, false);
+    pp->removeChild(p, false);
+    pp->addChild(pc, false);
+
+    // remove admixtureChild
+    AdmixtureNode* c = &p->getAdmixtureChild();
+    AdmixtureNode* cp = &c->getParent();
+    AdmixtureNode* cc = &c->getChild(0);
+    
+    c->setParent(n);
+    c->removeChild(cc, false);
+    cc->setParent(cp, false);
+    cp->removeChild(c, false);
+    cp->addChild(cc, false);
+    
+    if (enforceNewickRecomp)
+        root->flagNewickRecomputation();
+}
+
+void AdmixtureTree::subtreePruneRegraft(AdmixtureNode* p, AdmixtureNode* old_pc, AdmixtureNode* new_pc, bool enforceNewickRecomp)
+{
+    
+    AdmixtureNode* old_pp = &p->getParent();
+    AdmixtureNode* new_pp = &new_pc->getParent();
+    
+    // check age
+    if (p->getAge() > new_pp->getAge())
+    {
+        std::stringstream ss_err;
+        ss_err << "Cannot regraft nd.age > nd.pa.age :" << p->getAge() << " > " << new_pp->getAge() << "\n";
+        throw(RbException(ss_err.str()));
+    }
+    else if (p->getAge() < new_pc->getAge())
+    {
+        std::stringstream ss_err;
+        ss_err << "Cannot regraft nd.age < nd.ch.age :" << p->getAge() << " > " << new_pc->getAge() << "\n";
+        throw(RbException(ss_err.str()));
+    }
+
+    // old_pc_bro remains at original divergence site
+    AdmixtureNode* old_pc_bro = &old_pp->getChild(0);
+    if (old_pc_bro == old_pc)
+        old_pc_bro = &old_pp->getChild(1);
+    
+    // prune p and old_pc clade
+    old_pp->removeChild(p, false);
+    old_pp->addChild(old_pc_bro, false);
+    old_pc_bro->setParent(old_pp, false);
+    p->removeChild(old_pc_bro, false);
+    
+    // regraft p and old_pc clade
+    new_pp->removeChild(new_pc, false);
+    p->setParent(new_pp, false);
+    new_pp->addChild(p, false);
+    new_pc->setParent(p, false);
+    p->addChild(new_pc, false);
+    
+    // recompute newick str at end
+    if (enforceNewickRecomp)
+        root->flagNewickRecomputation();
+}
+
+void AdmixtureTree::findDescendantTips(std::set<AdmixtureNode*>& s, AdmixtureNode* p)
+{
+    if (p->getNumberOfChildren() == 0)
+    {
+        //std::cout << p << "\t" << p->getIndex() << "\n";
+        s.insert(p);
+    }
+    else
+    {
+        for (size_t i = 0; i < p->getNumberOfChildren(); i++)
+            findDescendantTips(s, &p->getChild(i));
+    }
+}
+std::string AdmixtureTree::getAdmixtureEdgeStr(AdmixtureNode* p, AdmixtureNode* c)
+{
+    std::stringstream ss;
+    std::set<AdmixtureNode*> ps,cs;
+    findDescendantTips(ps, p);
+    findDescendantTips(cs, c);
+    std::set<AdmixtureNode*>::iterator its;
+    for (its = ps.begin(); its != ps.end(); its++)
+    {
+        if (its != ps.begin()) ss << ",";
+        ss << (*its)->getName();
+    }
+    ss << " -> ";
+    for (its = cs.begin(); its != cs.end(); its++)
+    {
+        if (its != cs.begin()) ss << ",";
+        ss << (*its)->getName();
+    }
+    ss << "\ta=" << c->getAge();
+    ss << "\tw=" << c->getWeight();
+    
+    return ss.str();
+}
+
+void AdmixtureTree::subtreePruneRegraft(AdmixtureNode* p, AdmixtureNode* old_pc, AdmixtureNode* new_pc, double t, bool enforceNewickRecomp)
+{
+    p->setAge(t);
+    subtreePruneRegraft(p, old_pc, new_pc, enforceNewickRecomp);
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AdmixtureTree& x) {

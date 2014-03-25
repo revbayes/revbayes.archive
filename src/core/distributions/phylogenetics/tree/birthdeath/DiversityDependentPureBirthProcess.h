@@ -6,6 +6,7 @@
 namespace RevBayesCore {
     
     class Clade;
+    class Taxon;
     
     /**
      * @brief Diversity-dependent pure-birth (Yule) process.
@@ -25,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<int> *k, 
-                                           const std::string &cdt, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);                                //!< Constructor
+                                           const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);                                //!< Constructor
         
         // public member functions
         DiversityDependentPureBirthProcess*                 clone(void) const;                                                                                  //!< Create an independent clone

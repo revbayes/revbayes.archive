@@ -216,8 +216,6 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     o << "_children     = ";
     this->printChildren(o);
     o << std::endl;
-    
-    o << std::endl;
 }
 
 

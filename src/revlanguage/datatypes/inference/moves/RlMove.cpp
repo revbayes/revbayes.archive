@@ -47,9 +47,9 @@ const MemberRules& Move::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        moveMemberRules.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec() ) );
+        moveMemberRules.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
         
-        /* Inherit weight from Move, put it after variable */
+        /* Inherit variables from RlControlVariableWrapper, put them last */
         const MemberRules& inheritedRules = RlControlVariableWrapper<RevBayesCore::Move>::getMemberRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
@@ -60,6 +60,25 @@ const MemberRules& Move::getMemberRules(void) const {
 }
 
 
+/** Return member methods */
+const MethodTable& Move::getMethods(void) const {
+    
+    static MethodTable memberMethods;
+    static bool methodsSet = false;
+    
+    if ( !methodsSet ) {
+//        memberMethods.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec() ) );
+        
+        /* Inherit methods from RlControlVariableWrapper, put them last */
+        //const MemberRules& inheritedRules = RlControlVariableWrapper<RevBayesCore::Move>::getMemberRules();
+        //moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        
+        methodsSet = true;
+    }
+
+
+    return memberMethods;
+}
 
 
 /** Set a member variable */

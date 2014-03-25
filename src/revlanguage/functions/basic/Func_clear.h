@@ -1,7 +1,7 @@
 /**
  * @file
  * This file contains the declaration of Func_clear, which is
- * the function used to rclear the workspace.
+ * the function used to clear the workspace.
  *
  * @brief Declaration of Func_clear
  *
@@ -35,7 +35,7 @@ namespace RevLanguage {
         static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                    //!< Get language type of the object
         
-        // Func_source functions
+        // Func_clear functions
         const ArgumentRules&                    getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return false; }                                         //!< Function may throw exceptions

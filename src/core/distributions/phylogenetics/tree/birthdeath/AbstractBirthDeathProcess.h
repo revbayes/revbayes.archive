@@ -1,6 +1,7 @@
 #ifndef AbstractBirthDeathProcess_H
 #define AbstractBirthDeathProcess_H
 
+#include "Taxon.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -25,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt, 
-                                  unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
+                                  const std::vector<Taxon> &tn, const std::vector<Clade> &c);        
         
         // pure virtual member functions
         virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
@@ -41,7 +42,7 @@ namespace RevBayesCore {
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                                         //!< Compute the log-transformed probability of the current value.
         virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const = 0;                                        //!< Simulate n speciation events.
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-
+        virtual void                                        prepareProbComputation(void);
         
         // helper functions
         void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, 
@@ -49,6 +50,8 @@ namespace RevBayesCore {
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         std::vector<double>*                                divergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
+        std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
+        std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
         bool                                                matchesConstraints(void);
         void                                                simulateTree(void);
 
@@ -56,8 +59,8 @@ namespace RevBayesCore {
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
-        unsigned int                                        numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
-        std::vector<std::string>                            taxonNames;                                                                                         //!< Taxon names that will be attached to new simulated trees.
+        size_t                                              numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
+        std::vector<Taxon>                                  taxa;                                                                                         //!< Taxon names that will be attached to new simulated trees.
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
     };

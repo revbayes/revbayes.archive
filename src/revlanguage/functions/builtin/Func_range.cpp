@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_source, which is
- * the function used to read commands (source) from a file.
+ * This file contains the implementation of Func_range, which is
+ * the function used to compute range (colon) vectors.
  *
- * @brief Implementation of Func_source
+ * @brief Implementation of Func_range
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $

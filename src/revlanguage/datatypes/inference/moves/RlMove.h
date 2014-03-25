@@ -41,6 +41,7 @@ namespace RevLanguage {
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const MemberRules&                  getMemberRules(void) const;                                                     //!< Get member rules (const)
+        virtual const MethodTable&                  getMethods(void) const;                         //!< Get member methods (const)
         
     protected:
         

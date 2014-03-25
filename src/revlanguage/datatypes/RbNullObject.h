@@ -47,6 +47,7 @@ public:
     static const std::string&           getClassName(void);                                                     //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get the type spec for this instance
+    virtual void                        printStructure(std::ostream& o) const {}                                //!< Print structure of language object for user
     void                                printValue(std::ostream& o) const;                                      //!< Print value for user
         
     

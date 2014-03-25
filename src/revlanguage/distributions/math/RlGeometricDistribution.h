@@ -1,5 +1,5 @@
 #ifndef RlGeometricDistribution_H
-#define RlDeometricDistribution_H
+#define RlGeometricDistribution_H
 
 #include "GeometricDistribution.h"
 #include "Natural.h"
