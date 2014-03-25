@@ -35,6 +35,7 @@ namespace RevLanguage {
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
+        
         // Distribution functions you have to override
         RevBayesCore::WhiteNoisePhyloProcess*            createDistribution(void) const;
         
