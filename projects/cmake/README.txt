@@ -8,7 +8,7 @@ $ ./regenerate.sh
 
 CMake build instructions:
 
-$ cmake .
+$ cmake . cmake . <-DCMAKE_BUILD_TYPE=debugfull | cmake . -DCMAKE_BUILD_TYPE=release>
 $ make
 $ ./rb
 
