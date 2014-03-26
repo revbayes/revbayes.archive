@@ -50,7 +50,7 @@ namespace RevBayesCore {
         // helper methods
         void                                                    simulate();
         double                                                  recursiveLnProb(const TopologyNode& n);
-        void                                                    recursiveSimulate(const TopologyNode& n, double r);
+        void                                                    recursiveSimulate(const TopologyNode& n);
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
