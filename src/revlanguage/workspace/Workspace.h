@@ -72,23 +72,24 @@ namespace RevLanguage {
     class Workspace : public Environment {
     public:
 
-        // Frame functions you have to override
-        Workspace* clone(void) const; //!< Clone frame
-        void printValue(std::ostream& o) const; //!< Print table for user
+        // Environment (frame) functions you have to override
+        Workspace*              clone(void) const;                                                          //!< Clone frame
+        void                    printValue(std::ostream& o) const;                                          //!< Print table for user
 
-        bool addDistribution(const std::string& name, Distribution *dist); //!< Add distribution on continuous variable
+        // Workspace functions
+        bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution on continuous variable
         //        bool                            addDistribution(const std::string& name, DistributionContinuous *dist);                       //!< Add distribution on continuous variable
         //        bool                            addType(RlMo *exampleObj);                                                          //!< Add type
-        bool addType(RbLanguageObject *exampleObj); //!< Add type
-        bool addType(const std::string& name, RbLanguageObject *exampleObj); //!< Add special abstract type (synonym)
-        bool addTypeWithConstructor(const std::string& name, RbLanguageObject *templ); //!< Add type with constructor
-
-        bool areTypesInitialized(void) const {
-            return typesInitialized;
-        } //!< Is type table initialized?
-        bool existsType(const TypeSpec& name) const; //!< Does the type exist in the type table?
-        const TypeSpec& getClassTypeSpecOfType(const std::string& type) const; //!< Get reference to class vector of type
-        void initializeGlobalWorkspace(void); //!< Initialize global workspace
+        bool                    addType(RbLanguageObject *exampleObj); //!< Add type
+        bool                    addType(const std::string& name, RbLanguageObject *exampleObj);             //!< Add special abstract type (synonym)
+        bool                    addTypeWithConstructor(const std::string& name, RbLanguageObject *templ);   //!< Add type with constructor
+        bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
+        bool                    existsType(const TypeSpec& name) const;                                     //!< Does the type exist in the type table?
+        const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
+        RbLanguageObject*       getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
+        const std::string&      getTemplateValueType(const std::string& type) const;                        //!< Get the templated internal value type of the object
+        TypeTable               getTypeTable(void){ return typeTable; }
+        void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
 
         static Workspace& globalWorkspace(void) //!< Get global workspace
         {
@@ -102,22 +103,20 @@ namespace RevLanguage {
             return userSpace;
         }
         
-        TypeTable getTypeTable(void){
-            return typeTable;
-        }
 
     private:
-        Workspace(void); //!< Workspace with NULL parent
-        Workspace(Workspace* parentSpace); //!< Workspace with parent
-        Workspace(Environment* parentSpace); //!< Workspace with parent
-        Workspace(const Workspace& w); //!< Prevent copy
-        Workspace& operator=(const Workspace& w); //!< Prevent assignment
+                                Workspace(void);                                                            //!< Workspace with NULL parent
+                                Workspace(Workspace* parentSpace);                                          //!< Workspace with parent
+                                Workspace(Environment* parentSpace);                                        //!< Workspace with parent
+                                Workspace(const Workspace& w);                                              //!< Prevent copy
 
-        TypeTable typeTable; //!< Type table
+        Workspace&              operator=(const Workspace& w);                                              //!< Prevent assignment
 
-        bool typesInitialized; //!< Is type table initialized? Before then, we can't perform type checking.
+        TypeTable               typeTable;                                                                  //!< Type table
 
-        static const TypeSpec typeSpec;
+        bool                    typesInitialized;                           //!< Is type table initialized? Before then, we can't perform type checking.
+
+        static const TypeSpec   typeSpec;
     };
 
 }

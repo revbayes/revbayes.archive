@@ -48,6 +48,7 @@ namespace RevLanguage {
         
         // Regular functions   
         virtual RbLanguageObject*                   execute(void);                                                              //!< Execute function
+        virtual RbLanguageObject*                   executeCode(void);                                                          //!< Execute Rev code of function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
         void                                        setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var);             
@@ -58,7 +59,7 @@ namespace RevLanguage {
         const TypeSpec                              returnType;                         //!< The return type (complete specification)
         std::list<SyntaxElement*>*                  code;                               //!< The code
         Environment*                                defineEnvironment;                  //!< The definition environment
-        
+        std::string                                 templateValueType;                  //!< The templated internal value type of the return value
     };
     
 }
