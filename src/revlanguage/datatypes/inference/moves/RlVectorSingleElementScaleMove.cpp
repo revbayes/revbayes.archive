@@ -120,6 +120,9 @@ void VectorSingleElementScaleMove::setConstMemberVariable(const std::string& nam
     else if ( name == "lambda" ) {
         lambda = var;
     }
+    else if ( name == "weight" ) {
+        weight = var;
+    }
     else if ( name == "tune" ) {
         tune = var;
     }

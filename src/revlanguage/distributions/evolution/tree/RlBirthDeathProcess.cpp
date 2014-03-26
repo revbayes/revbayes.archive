@@ -62,7 +62,7 @@ const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
  *
  * The member rules of the homogeneous birth-death process are:
  * (1) time of the process since the origin.
- * (2) the sampling porbability.
+ * (2) the sampling probability.
  * (3) the sampling strategy.
  * (4) the condition.
  * (5) the number of taxa.
