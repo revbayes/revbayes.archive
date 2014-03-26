@@ -28,6 +28,68 @@ MultispeciesCoalescentConstantPopulationProcess::MultispeciesCoalescentConstantP
     
 }
 
+/**
+ * Clone the object 
+ *
+ * \return a clone of the object.
+ */
+
+MultispeciesCoalescentConstantPopulationProcess* MultispeciesCoalescentConstantPopulationProcess::clone(void) const {
+    
+    return new MultispeciesCoalescentConstantPopulationProcess(*this);
+    
+}
+
+
+
+
+/**
+ * Create a new internal distribution object.
+ *
+ * This function simply dynamically allocates a new internal distribution object that can be 
+ * associated with the variable. The internal distribution object is created by calling its
+ * constructor and passing the distribution-parameters (other DAG nodes) as arguments of the 
+ * constructor. The distribution constructor takes care of the proper hook-ups.
+ *
+ * \return A new internal distribution object.
+ */
+RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationProcess::createDistribution( void ) const 
+{
+    
+    // get the parameters
+    // species tree
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* RbSpeciesTree       = static_cast<const TimeTree &>( speciesTree->getValue() ).getValueNode();
+
+    // taxons
+    std::map <std::string, std::string> g2s;
+    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> > *t = static_cast<const Vector<Taxon> &>( taxons->getValue() ).getValueNode(); 
+    for (size_t i = 0 ; i < t->getValue().size(); ++i)  {
+        g2s[t->getValue()[i].getName()] = g2s[t->getValue()[i].getSpeciesName()];
+    }
+
+    // create the internal distribution object
+    RevBayesCore::MultispeciesCoalescent*   d = new RevBayesCore::MultispeciesCoalescent(RbSpeciesTree, g2s);
+
+    // the effective population size
+    RevBayesCore::TypedDagNode<std::vector<double> >* RbNes;
+    if ( Ne->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
+        {
+            RbNes = static_cast<const Vector<RealPos> &>( Ne->getValue() ).getValueNode();
+            d->setNes(RbNes);
+
+        }
+        else 
+        {
+            RevBayesCore::TypedDagNode< double >* NeValue = static_cast<const RealPos &>( Ne->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< double >* RbNe = static_cast<const RealPos &>( Ne->getValue() ).getValueNode();
+            d->setNe(RbNe);
+        }
+    //RevBayesCore::TypedDagNode<std::vector< double> >* RbNe       = static_cast<const Vector<RealPos> &>( Ne->getValue() ).getValueNode();
+    
+    return d;
+}
+
+
 
 /**
  * Get class name of object 
@@ -78,7 +140,10 @@ const MemberRules& MultispeciesCoalescentConstantPopulationProcess::getMemberRul
     if ( !rulesSet ) 
     {
         distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "speciesTree", true, TimeTree::getClassTypeSpec() ) );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"  , true, RealPos::getClassTypeSpec() ) );
+        std::vector<TypeSpec> branchNeTypes;
+        branchNeTypes.push_back( RealPos::getClassTypeSpec() );
+        branchNeTypes.push_back( Vector<RealPos>::getClassTypeSpec() );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "branchNes"    , true, branchNeTypes ) );
         distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxons"  , true, Vector<Taxon>::getClassTypeSpec() ) );
         rulesSet = true;
     }
@@ -118,3 +183,15 @@ void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(con
     }
     
 }
+
+
+/** Get type spec */
+const TypeSpec& MultispeciesCoalescentConstantPopulationProcess::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
+}
+
+
+
