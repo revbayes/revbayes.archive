@@ -45,6 +45,7 @@
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "RlMcmc.h"
 #include "RlModel.h"
+#include "RlParallelMcmcmc.h"
 #include "RlPowerPosterior.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
@@ -249,6 +250,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
         addTypeWithConstructor( "mcmc",             new Mcmc()  );
+        addTypeWithConstructor( "pmcmcmc",          new ParallelMcmcmc() );
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
