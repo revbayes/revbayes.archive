@@ -9,4 +9,6 @@ projects/cmake/core
 projects/cmake/libs
 projects/cmake/revlanguage
 projects/cmake/ui
+projects/cmake/help*
+projects/cmake/rb*
 projects/xcode/revbayes.xcodeproj
