@@ -150,7 +150,6 @@ typename rlType::valueType& RevLanguage::Vector<rlType>::operator[]( size_t inde
     return this->value->getValue()[index];
 }
 
-
 /* Subscript operator */
 template <typename rlType>
 const typename rlType::valueType& RevLanguage::Vector<rlType>::operator[]( size_t index ) const {

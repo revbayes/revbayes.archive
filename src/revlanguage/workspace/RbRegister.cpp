@@ -51,7 +51,9 @@
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
+#include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
+#include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
@@ -64,6 +66,7 @@
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
+#include "RlWhiteNoisePhyloProcess.h"
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
@@ -327,6 +330,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
+        // white noise process
+        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
+        
+        // white noise process
+        addDistribution( "brownian", new BrownianPhyloProcess() );
         
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
@@ -361,18 +369,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // Phylogenetic distributions
         
-        // constant rate birth-death process distribution
-        addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        // constant rate birth-death process
+        addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BirthDeathConstant"           , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BDConst"                      , new ConstantRateBirthDeathProcess() );
         
-        // constant rate birth-death process distribution
-        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
+        // constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathConstantSerial"     , new ConstantRateSerialSampledBirthDeathProcess() );
+        addDistribution( "BDConstSS"                    , new ConstantRateSerialSampledBirthDeathProcess() );
 
-        // piecewise constant rate birth-death process distribution
-        addDistribution( "BirthDeathSkySerial", new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        // piecewise constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
+        addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
         addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
+        addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
+        addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
@@ -637,6 +651,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
         addFunction( "treeHeight",                  new TreeHeightStatistic()              );
+  
+        addFunction( "expbranchtree", new ExponentialBranchTree() );
+
         
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
