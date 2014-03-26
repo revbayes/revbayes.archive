@@ -11,8 +11,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:296:37: note: use array indexing to silence this warning
-        printf( "make\t--\t%s%s\n", spaces( depth ), object_str( t->name ) );
-                                    ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -23,8 +21,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:303:37: note: use array indexing to silence this warning
-        printf( "make\t--\t%s%s\n", spaces( depth ), object_str( t->name ) );
-                                    ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -35,8 +31,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:376:45: note: use array indexing to silence this warning
-            printf( "bind\t--\t%s%s: %s\n", spaces( depth ),
-                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -47,8 +41,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:384:45: note: use array indexing to silence this warning
-            printf( "time\t--\t%s%s: %s\n", spaces( depth ),
-                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -59,8 +51,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:389:45: note: use array indexing to silence this warning
-            printf( "time\t--\t%s%s: %s\n", spaces( depth ),
-                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -71,8 +61,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:731:13: note: use array indexing to silence this warning
-            spaces( depth ), object_str( t->name ) );
-            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -87,8 +75,7 @@ modules/path.c:16:12: warning: implicit declaration of function 'file_query' is 
 ...updated 1 target...
 ./bootstrap/jam0 -f build.jam --toolset=darwin --toolset-root=
 ...found 158 targets...
-...updating 3 targets...
-[MKDIR] bin.macosxx86_64
+...updating 2 targets...
 [COMPILE] bin.macosxx86_64/b2
 make.c:296:37: warning: adding 'int' to a string does not append to the string [-Wstring-plus-int]
         printf( "make\t--\t%s%s\n", spaces( depth ), object_str( t->name ) );
@@ -97,8 +84,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:296:37: note: use array indexing to silence this warning
-        printf( "make\t--\t%s%s\n", spaces( depth ), object_str( t->name ) );
-                                    ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -109,8 +94,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:303:37: note: use array indexing to silence this warning
-        printf( "make\t--\t%s%s\n", spaces( depth ), object_str( t->name ) );
-                                    ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -121,8 +104,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:376:45: note: use array indexing to silence this warning
-            printf( "bind\t--\t%s%s: %s\n", spaces( depth ),
-                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -133,8 +114,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:384:45: note: use array indexing to silence this warning
-            printf( "time\t--\t%s%s: %s\n", spaces( depth ),
-                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -145,8 +124,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:389:45: note: use array indexing to silence this warning
-            printf( "time\t--\t%s%s: %s\n", spaces( depth ),
-                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -157,8 +134,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:731:13: note: use array indexing to silence this warning
-            spaces( depth ), object_str( t->name ) );
-            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -169,8 +144,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:768:43: note: use array indexing to silence this warning
-            printf( "->%s%2d Name: %s\n", spaces( depth ), depth, target_name( t
-                                          ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -181,8 +154,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:772:43: note: use array indexing to silence this warning
-            printf( "  %s%2d Name: %s\n", spaces( depth ), depth, target_name( t
-                                          ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -193,8 +164,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:778:38: note: use array indexing to silence this warning
-        printf( "  %s    Loc: %s\n", spaces( depth ), object_str( t->boundname )
-                                     ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -205,8 +174,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:784:42: note: use array indexing to silence this warning
-        printf( "  %s       : Stable\n", spaces( depth ) );
-                                         ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -217,8 +184,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:787:41: note: use array indexing to silence this warning
-        printf( "  %s       : Newer\n", spaces( depth ) );
-                                        ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -229,8 +194,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:790:56: note: use array indexing to silence this warning
-        printf( "  %s       : Up to date temp file\n", spaces( depth ) );
-                                                       ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -241,8 +204,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:793:65: note: use array indexing to silence this warning
-        printf( "  %s       : Temporary file, to be updated\n", spaces( depth )
-                                                                ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -253,8 +214,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:797:61: note: use array indexing to silence this warning
-        printf( "  %s       : Been touched, updating it\n", spaces( depth ) );
-                                                            ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -265,8 +224,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:800:56: note: use array indexing to silence this warning
-        printf( "  %s       : Missing, creating it\n", spaces( depth ) );
-                                                       ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -277,8 +234,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:803:57: note: use array indexing to silence this warning
-        printf( "  %s       : Outdated, updating it\n", spaces( depth ) );
-                                                        ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -289,8 +244,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:806:56: note: use array indexing to silence this warning
-        printf( "  %s       : Rebuild, updating it\n", spaces( depth ) );
-                                                       ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -301,8 +254,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:809:47: note: use array indexing to silence this warning
-        printf( "  %s       : Updating it\n", spaces( depth ) );
-                                              ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -313,8 +264,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:812:51: note: use array indexing to silence this warning
-        printf( "  %s       : Can not find it\n", spaces( depth ) );
-                                                  ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -325,8 +274,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:815:47: note: use array indexing to silence this warning
-        printf( "  %s       : Can make it\n", spaces( depth ) );
-                                              ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -337,8 +284,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:821:34: note: use array indexing to silence this warning
-        printf( "  %s       : ", spaces( depth ) );
-                                 ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -349,8 +294,6 @@ make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                     ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
 make.c:833:52: note: use array indexing to silence this warning
-        printf( "  %s       : Depends on %s (%s)", spaces( depth ),
-                                                   ^
 make.c:85:44: note: expanded from macro 'spaces'
 #define spaces(x) ( "                    " + ( x > 20 ? 0 : 20-x ) )
                                            ^
@@ -360,4 +303,4 @@ modules/path.c:16:12: warning: implicit declaration of function 'file_query' is 
            ^
 1 warning generated.
 [COPY] bin.macosxx86_64/bjam
-...updated 3 targets...
+...updated 2 targets...

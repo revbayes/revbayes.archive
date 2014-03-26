@@ -12,13 +12,13 @@ namespace RevBayesCore {
     class Taxon;
     
     /**
-     * @brief Piecewise-Constant birth-death process with serially sampled tips.
+     * @brief Piecewise-constant fossilized birth-death process with serially sampled fossils.
      *
      * The piecewise-constant birth-death process has constant rates for each time interval.
      * At the end of each time interval there may be an abrupt rate-shift (jump) for each
      * of the rates. Additionally, there may be sampling at the end of each interval.
-     * Finally, tips may be sampled when a lineages dies (e.g., fossils) with rate psi or at
-     * sampling times (including the present).
+     * Finally, fossils are sampled with rate psi, the others (fossils and extant taxa) are
+     * sampled at sampling times (including the present).
      *
      * We assume that the rate vectors have one more element than the rate-change vectors.
      * Thus, one rate-change means always two interval, two rate-changes three interval, and so on.
@@ -37,7 +37,7 @@ namespace RevBayesCore {
                                                       const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et,
                                                       const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt,
                                                       const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,
-                                                      double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);  //!< Constructor
+                                                      const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);  //!< Constructor
         
         // public member functions
         PiecewiseConstantFossilizedBirthDeathProcess*    clone(void) const;                                         //!< Create an independent clone
@@ -65,7 +65,6 @@ namespace RevBayesCore {
         const TypedDagNode<std::vector<double> >*        psiTimes;                                                  //!< The times of the (fossil) sampling rate changes.
         const TypedDagNode<std::vector<double> >*        rho;                                                       //!< The instantaneous sampling probability.
         const TypedDagNode<std::vector<double> >*        rhoTimes;                                                  //!< The times of the instantaneous sampling events.
-        double                                           timeSinceLastSample;
         
         mutable std::vector<double>                      rateChangeTimes;
         mutable std::vector<double>                      birth;
