@@ -1,5 +1,5 @@
 #ifndef RlPiecewiseConstantSerialSampledBirthDeathProcess_H
-#define RlPiecewiseConstantSerialSampledBirthDeathProcess_h
+#define RlPiecewiseConstantSerialSampledBirthDeathProcess_H
 
 #include "PiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RlTypedDistribution.h"
