@@ -25,20 +25,19 @@ namespace RevBayesCore {
     class AbstractMove : public Cloneable {
         
     public:
-        virtual                                                ~AbstractMove(void);                                                                             //!< Destructor
+        virtual                                                ~AbstractMove(void);                                                                     //!< Destructor
         
         // pure virtual public methods
         virtual AbstractMove*                                   clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                                                            //!< Get the name of the move for summary printing
-        virtual void                                            perform(void) = 0;                                                                      //!< Perform the move.
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;                                             //!< Swap the pointers to the variable on which the move works on.
-
+        virtual void                                            perform(void) = 0;                                                                      //!< Perform the move.
+        virtual void                                            printSummary(std::ostream &o) const = 0;                                                //!< Print the move summary
+        
         // functions you should not override
 //        void                                                    autoTune(void);                                                                         //!< automatically tune this move
-//        double                                                  getAcceptanceRatio(void) const;                                                         //!< Get acceptance ratio
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
 //        virtual bool                                            isActive(unsigned long g) const;                                                        //!< Is this move active at the iteration?
-        void                                                    printSummary(std::ostream &o) const;                                                    //!< Print the move summary
         
         // methods you may want to overwrite
         
@@ -47,14 +46,13 @@ namespace RevBayesCore {
         
         
         // method you might want to override
-        virtual void                                            tune(void);                                                                             //!< Specific tuning of the move
+        virtual void                                            tune(void) = 0;                                                                         //!< Specific tuning of the move
         
         // parameters
         double                                                  weight;
         
         // Hidden member variables
         bool                                                    autoTuning;
-        unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
         unsigned int                                            numTried;                                                                               //!< Number of times tried
                 
     };
