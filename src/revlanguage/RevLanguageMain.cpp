@@ -31,7 +31,7 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
     // Print an extra line to separate prompt from possible output from help call
-    RevLanguage::UserInterface::userInterface().output("\n");
+    // RevLanguage::UserInterface::userInterface().output("\n");
 
 #if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;

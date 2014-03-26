@@ -57,6 +57,7 @@ class Environment;
 
         // Regular functions
         virtual RbPtr<Variable>         evaluateContent(Environment& env) = 0;                                              //!< Get semantic value
+        virtual RbPtr<Variable>         evaluateDeterministicExpressionContent(Environment& env);                           //!< Get semantic value if part of a deterministic expression
         virtual bool                    isAssignment(void) const;
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
         virtual void                    replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) = 0;//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.

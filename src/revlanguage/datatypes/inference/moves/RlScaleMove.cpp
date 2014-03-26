@@ -112,7 +112,7 @@ const MemberRules& ScaleMove::getMemberRules(void) const
     if ( !rulesSet ) 
     {
         scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, RealPos::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new RealPos(1.0) ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */

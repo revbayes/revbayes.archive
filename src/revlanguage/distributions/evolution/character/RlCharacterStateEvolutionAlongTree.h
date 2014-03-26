@@ -118,8 +118,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             }
             
             dist->setClockRate( clockRates );
-        } 
-        else 
+        }
+        else
         {
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
             dist->setClockRate( clockRate );

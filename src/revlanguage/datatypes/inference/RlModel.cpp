@@ -88,7 +88,7 @@ void Model::printValue(std::ostream &o) const {
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;
 
-    o << "Model with " << theNodes.size() << " nodes\n\n";
+    o << "\nModel with " << theNodes.size() << " nodes\n\n";
     
     o << "List of nodes:\n";
     o << "==============\n\n";
