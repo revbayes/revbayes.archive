@@ -11,7 +11,7 @@ public:
 
     std::string getFunctionName(const char* buf) {
         std::string s = "";
-        for (unsigned int i = getLastSeparatorPosition(buf, true); i < strlen(buf); i++) {
+        for (size_t i = getLastSeparatorPosition(buf, true); i < strlen(buf); i++) {
             if (!contains(buf[i], separators.c_str())) {
                 s += buf[i];
             } else {
@@ -27,15 +27,15 @@ public:
 
     // todo: implement regex instead
 
-    int getLastSeparatorPosition(const char* buf, bool discardTrailingSeparators = false) {
+    size_t getLastSeparatorPosition(const char* buf, bool discardTrailingSeparators = false) {
         if (strlen(buf) == 0) {
             return 0;
         }
-        int pos = 0;
+        size_t pos = 0;
 
         // search from end of string to previous separator
         bool foundNonSeparator = false;
-        for (unsigned int i = strlen(buf) - 1; i > 0; i--) {
+        for (size_t i = strlen(buf) - 1; i > 0; i--) {
             if (discardTrailingSeparators) {
                 if (!foundNonSeparator) {
                     foundNonSeparator = !contains(buf[i], separators.c_str());
@@ -52,7 +52,7 @@ public:
     }
     
     bool lastEffectiveSeparatorIsBlank(const char* buf) {
-        int i = strlen(buf)-1;
+        long i = strlen(buf)-1;
         if(i < 0){
             return false;
         }

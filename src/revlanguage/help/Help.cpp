@@ -39,6 +39,8 @@
 #include <iterator>
 #include <list>
 
+#include "../constants.h"
+
 /** Default constructor */
 Help::Help(void)
 {
@@ -294,9 +296,9 @@ void Help::initializeHelp()
 
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
-    pathToHelpDir = fMngr.getCurrentDirectory();
+    //pathToHelpDir = fMngr.getCurrentDirectory();
 
-    pathToHelpDir += "/help/";
+    pathToHelpDir = HELP_DIR;
     fMngr.setFilePath(pathToHelpDir);
     if (fMngr.testDirectory() == false)
     {

@@ -45,12 +45,15 @@
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "RlMcmc.h"
 #include "RlModel.h"
+#include "RlParallelMcmcmc.h"
 #include "RlPowerPosterior.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
+#include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
+#include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
@@ -63,6 +66,7 @@
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
+#include "RlWhiteNoisePhyloProcess.h"
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
@@ -91,6 +95,7 @@
 
 /* Moves on real valued vectors */
 #include "RlSingleElementScale.h"
+#include "RlVectorSingleElementScaleMove.h"
 #include "RlVectorScale.h"
 
 /* Tree Proposals */
@@ -249,6 +254,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
         addTypeWithConstructor( "mcmc",             new Mcmc()  );
+        addTypeWithConstructor( "pmcmcmc",          new ParallelMcmcmc() );
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
@@ -293,7 +299,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Moves on vectors of real values */
         addTypeWithConstructor("mSingleElementScale",   new SingleElementScale() );
-        addTypeWithConstructor("mVectorScale",          new VectorScale() );        
+        addTypeWithConstructor("mVectorSingleElementScale",   new VectorSingleElementScaleMove() );
+        addTypeWithConstructor("mVectorScale",          new VectorScale() );
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
@@ -325,6 +332,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
+        // white noise process
+        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
+        
+        // white noise process
+        addDistribution( "brownian", new BrownianPhyloProcess() );
         
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
@@ -359,18 +371,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // Phylogenetic distributions
         
-        // constant rate birth-death process distribution
-        addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        // constant rate birth-death process
+        addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BirthDeathConstant"           , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BDConst"                      , new ConstantRateBirthDeathProcess() );
         
-        // constant rate birth-death process distribution
-        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
+        // constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathConstantSerial"     , new ConstantRateSerialSampledBirthDeathProcess() );
+        addDistribution( "BDConstSS"                    , new ConstantRateSerialSampledBirthDeathProcess() );
 
-        // piecewise constant rate birth-death process distribution
-        addDistribution( "BirthDeathSkySerial", new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        // piecewise constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
+        addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
         addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
+        addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
+        addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
@@ -635,6 +653,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
         addFunction( "treeHeight",                  new TreeHeightStatistic()              );
+  
+        addFunction( "expbranchtree", new ExponentialBranchTree() );
+
         
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
