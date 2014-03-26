@@ -119,7 +119,6 @@ RbPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
     // fill the slot with the new variable
     const RbLanguageObject& value = theVariable->getValue();
         
-        
     // check if the type is valid. This is necessary for reassignments
     if ( !value.getTypeSpec().isDerivedOf( theSlot->getValueTypeSpec() ) ) {
         // We are not of a derived type (or the same type)

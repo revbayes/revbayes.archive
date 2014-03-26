@@ -58,9 +58,11 @@ public:
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RbLanguageObject*           clone(void) const = 0;                                                                          //!< Clone object
+    virtual RbLanguageObject*           dagReference(void);                                                                             //!< Make an object referencing the dag node of this object
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the type spec of the instance
+    virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
     
     // Basic utility functions you may want to override
@@ -71,7 +73,7 @@ public:
 
     // functions wrapper objects of RB core objects you might want to overwrite
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
-    virtual void                        makeConstantValue();                                                                            //!< Convert the stored variable to a constant variable (if applicable)
+    virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
     virtual void                        replaceVariable(RbLanguageObject *newVar);                                                      //!< Replace the internal DAG node
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
   

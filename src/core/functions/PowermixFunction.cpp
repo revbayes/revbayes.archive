@@ -13,7 +13,7 @@
 using namespace RevBayesCore;
 
 PowermixFunction::PowermixFunction(const std::vector<const TypedDagNode< std::vector<double> >* > &args) : TypedFunction< std::vector<double> >( new std::vector<double>() ), parameters( args ) {
-    // add the lambda parameter as a parent
+    // add the parameters as parents
     std::vector<const TypedDagNode< std::vector<double> >* >::iterator it;
     for (it = parameters.begin(); it != parameters.end(); ++it) {
         this->addParameter( *it );

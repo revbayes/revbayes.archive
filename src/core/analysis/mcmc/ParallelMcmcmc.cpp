@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double st, double sh) : sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0), startingHeat(sh)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double st, double sh) : Cloneable( ), sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), currentGeneration(0), startingHeat(sh)
 {
     activeIndex = 0;
     
@@ -61,13 +61,31 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
 }
 
 ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
-{   
-    // MJL: Do I need a copy ctor for Analysis objects (e.g. non-DAG)?
+{
+    sigma = m.sigma;
+    delta = m.delta;
+    startingHeat = m.startingHeat;
+    numChains = m.numChains;
+    numProcesses = m.numProcesses;
+    chainsPerProcess = m.chainsPerProcess;
+    chainIdxByHeat = m.chainIdxByHeat;
+    swapInterval = m.swapInterval;
+    activeIndex = m.activeIndex;
+    
+    currentGeneration = m.currentGeneration;
+    for (size_t i = 0; i < chains.size(); i++)
+        chains.push_back(new Mcmc( *(m.chains[i])) );
+    
 }
 
 ParallelMcmcmc::~ParallelMcmcmc(void)
 {
-    
+    for (size_t i = 0; i < chains.size(); i++)
+    {
+        
+        delete chains[i];
+    }
+    chains.clear();
 }
 
 void ParallelMcmcmc::initialize(void)
@@ -88,8 +106,7 @@ void ParallelMcmcmc::burnin(int g, int ti)
 
 ParallelMcmcmc* ParallelMcmcmc::clone(void) const
 {
-    // MJL: I think this is handled through Mcmc, though may want to derive ParallelMCMCMC from Cloneable
-    return NULL;
+    return new ParallelMcmcmc(*this);
 }
 
 void ParallelMcmcmc::printOperatorSummary(void) const
@@ -104,7 +121,7 @@ void ParallelMcmcmc::printOperatorSummary(void) const
 void ParallelMcmcmc::run(size_t generations)
 {
     // print file header
-    if (gen == 0)
+    if (currentGeneration == 0)
         chains[0]->monitor(0);
     
     // run chain
@@ -151,7 +168,7 @@ void ParallelMcmcmc::run(size_t generations)
         } // processor job end
         
         // advance gen counter
-        gen += swapInterval;
+        currentGeneration += swapInterval;
         
         // perform chain swap
         swapChains();

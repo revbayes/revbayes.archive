@@ -58,7 +58,8 @@ class SyntaxVariable : public SyntaxElement {
 
         // Regular functions
         std::vector<int>                    computeIndex(Environment& env);                                                         //!< Evaluate index
-        RbPtr<Variable>                     createVariable(Environment& env);                                                       //!< Get semantic value
+        RbPtr<Variable>                     createVariable(Environment& env);                                                       //!< Get semantic value 
+        RbPtr<Variable>                     evaluateDeterministicExpressionContent(Environment& env);                               //!< Get semantic value (deterministic variable lookup/reference) if part of a deterministic expression
         RbPtr<Variable>                     evaluateContent(Environment& env);                                                      //!< Get semantic value
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj

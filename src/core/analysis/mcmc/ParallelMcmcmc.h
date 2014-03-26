@@ -1,6 +1,7 @@
 #ifndef ParallelMcmcmc_H
 #define ParallelMcmcmc_H
 
+#include "Cloneable.h"
 #include "Mcmc.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -24,7 +25,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2013-05-20
      *
      */
-    class ParallelMcmcmc {
+    class ParallelMcmcmc : Cloneable {
         
     public:
         ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc=4, int np=4, int si=1000, double dt=0.1, double st=1.0, double sh=1.0);
@@ -47,7 +48,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                 chainIdxByHeat;
         std::vector<std::vector<size_t> >                   chainsPerProcess;
         std::vector<Mcmc*>                                  chains;
-        unsigned int                                        gen;
+        unsigned int                                        currentGeneration;
         unsigned int                                        swapInterval;
         
         int                                                 activeIndex; // index of coldest chain, i.e. which one samples the posterior

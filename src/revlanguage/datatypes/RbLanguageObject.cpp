@@ -82,6 +82,16 @@ RbLanguageObject* RbLanguageObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /**
+ * Make a new object that is an indirect deterministic reference to the object.
+ * The default implementation throws an error.
+ */
+RbLanguageObject* RbLanguageObject::dagReference(void) {
+    
+    throw RbException( "Dynamic reference to this object type not supported");
+}
+
+
+/**
  * Decrement operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
  */
@@ -276,8 +286,7 @@ bool RbLanguageObject::isTypeSpec(const TypeSpec& typeSpec) const {
 }
 
 
-
-/** 
+/**
   * Converting the value of the internal variable to a constant. The default implementation does nothing because we don't have a DAG node as our internal variable.
   * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
   */

@@ -193,8 +193,6 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) 
     o << "_children     = ";
     this->printChildren(o);
     o << std::endl;
-    
-    o << std::endl;
 }
 
 

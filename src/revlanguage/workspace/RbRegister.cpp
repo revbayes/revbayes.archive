@@ -50,7 +50,9 @@
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
+#include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
+#include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
@@ -63,6 +65,7 @@
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
+#include "RlWhiteNoisePhyloProcess.h"
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
@@ -130,7 +133,11 @@
 #include "Func__unot.h"
 
 /* Built-in functions */
+#include "Func_citation.h"
 #include "Func_clear.h"
+#include "Func_contributors.h"
+#include "Func_help.h"
+#include "Func_license.h"
 #include "Func_ls.h"
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
@@ -321,6 +328,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
+        // white noise process
+        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
+        
+        // white noise process
+        addDistribution( "brownian", new BrownianPhyloProcess() );
         
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
@@ -437,8 +449,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_ne",       new Func__ne<           RlBoolean,      RlBoolean >()             );
         
         
-        /* Add builtin functions (alphabetical order) */
+        /* Add builtin (basic) functions (alphabetical order) */
+        addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "contributors",             new Func_contributors()             );
+        addFunction( "help",                     new Func_help()                     );
+        addFunction( "license",                  new Func_license()                  );
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
@@ -633,6 +649,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
         addFunction( "treeHeight",                  new TreeHeightStatistic()              );
+  
+        addFunction( "expbranchtree", new ExponentialBranchTree() );
+
         
         /* Add builtin templated functions */
         addFunction( "v",         new Func_rlvector<Monitor>() );
