@@ -46,7 +46,7 @@ numNodes <- tau.nnodes()
 nBranches <- numNodes - 1
 
 # define the concentration parameter, w/ gamma hyperprior
-expected_dpp_alpha <- dppConcParamFromNumTables(3, nBranches)
+expected_dpp_alpha <- dppConcParamFromNumTables(expected=3, numcustomers=nBranches)
 dp_a <- 2.0
 dp_b <- dp_a / expected_dpp_alpha
 dpp_alpha ~ gamma(dp_a, dp_b)
@@ -54,7 +54,8 @@ dpp_alpha ~ gamma(dp_a, dp_b)
 # define G_0 as an exponential distribution with lambda = 1
 dpp_g0_lam <- 1.0  
 
-branch_rate_vector ~ DPP(nBranches, dpp_alpha, exponential(dpp_g0_lam))
+g0 <- exponential(dpp_g0_lam)
+branch_rate_vector ~ DPPDistribution(g0,dpp_alpha,nBranches)
 
 moves[8] <- mDPPAlg8(branch_rate_vector,weight=1)
 moves[9] <- mScale(dpp_alpha,lambda=1,tune=true,weight=1)
