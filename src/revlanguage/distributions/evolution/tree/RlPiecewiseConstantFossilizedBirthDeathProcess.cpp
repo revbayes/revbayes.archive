@@ -72,7 +72,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFos
     // sampling times
     RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const Vector<Probability> &>( rhoTimes->getValue() ).getValueNode();
     // time between now and most recent sample
-    double tLastSample                          = static_cast<const RealPos &>( tLast->getValue() ).getValue();
+    // double tLastSample                          = static_cast<const RealPos &>( tLast->getValue() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
     // taxon names
@@ -87,7 +87,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFos
     }
     
     // create the internal distribution object
-    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(o, s, st, e, et, p, pt, r, rt, tLastSample, cond, taxa, c);
+    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(o, s, st, e, et, p, pt, r, rt, cond, taxa, c);
     
     return d;
 }
@@ -145,7 +145,7 @@ const MemberRules& PiecewiseConstantFossilizedBirthDeathProcess::getMemberRules(
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"              , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"                   , true, Vector<Probability>::getClassTypeSpec(), new Vector<Probability>(std::vector<double>(0.0)) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"              , true, Vector<Probability>::getClassTypeSpec(), new Vector<Probability>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample"   , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
+     // distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample"   , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         Vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
@@ -223,11 +223,11 @@ void PiecewiseConstantFossilizedBirthDeathProcess::setConstMemberVariable(const 
     {
         rhoTimes = var;
     }
-    else if ( name == "timeSinceLastSample" ) 
-    {
-        tLast = var;
-    }
-    else if ( name == "origin" ) 
+//  else if ( name == "timeSinceLastSample" )
+//  {
+//      tLast = var;
+//  }
+    else if ( name == "origin" )
     {
         origin = var;
     }
