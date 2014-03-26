@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class MultispeciesCoalescent : public TypedDistribution<TimeTree> {
         
     public:
-        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const TypedDagNode< std::vector<double> > *N, const std::map<std::string, std::string> &g2S);        
+        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::map<std::string, std::string> &g2S);        
         MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                          //!< Copy constructor
         virtual                                            ~MultispeciesCoalescent(void);                                                                    //!< Virtual destructor
         
@@ -39,8 +39,12 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                            //!< Implementation of swaping parameters
-        
+        void                                                setNes(TypedDagNode<std::vector<double> >* inputNes);
+        void                                                setNe(TypedDagNode<double>* inputNe);
+
     private:
+        
+        double                                              getNe(size_t index) const;
         
         // helper functions
         void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
@@ -50,7 +54,8 @@ namespace RevBayesCore {
         // members
         std::map<std::string, std::string>                  gene2species;
         const TypedDagNode<TimeTree>*                       speciesTree;
-        const TypedDagNode<std::vector<double> >*           Ne;
+        const TypedDagNode<std::vector<double> >*           Nes;
+        const TypedDagNode<double >*                        Ne;
         size_t                                              numTaxa;
         double                                              logTreeTopologyProb;
         

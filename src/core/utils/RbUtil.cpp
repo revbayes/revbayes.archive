@@ -97,6 +97,20 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Clade>
 }
 
 
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Taxon>& x) {
+    o << "(";
+    for (std::vector<Taxon>::const_iterator it = x.begin(); it != x.end(); ++it) {
+        if ( it != x.begin() ) {
+            o << ", ";
+        }
+        o << *it;
+    }
+    o << ")";
+    
+    return o;
+}
+
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<TimeTree>& x) {
     o << "(";
     for (std::vector<TimeTree>::const_iterator it = x.begin(); it != x.end(); ++it) {
