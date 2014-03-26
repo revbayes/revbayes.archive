@@ -1,5 +1,6 @@
 
 #include "Clade.h"
+#include "ConstantNode.h"
 #include "MultispeciesCoalescent.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
@@ -31,7 +32,11 @@ logTreeTopologyProb (0.0)
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
-    simulateTree();
+    //Default value for Ne
+    Ne = new ConstantNode<double>("Ne", new double(1.0) );
+    addParameter( Ne );
+    
+    redrawValue();
     
 }
 
@@ -235,7 +240,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
             
             TopologyNode *parent = coalTimes2coalNodes.begin()->second;
             double parentAge = parent->getAge();
-			double branchNe = Nes->getValue()[spNode->getIndex()];
+			double branchNe = getNe(spNode->getIndex());
 			double theta = 1.0 / branchNe;
 
             if ( parentAge < parentSpeciesAge ) 
@@ -558,28 +563,41 @@ double  MultispeciesCoalescent::getNe(size_t index) const {
     if (Ne != NULL) {
         return Ne->getValue();
     }
-    else {
+    else if (Nes != NULL) {
         return (Nes->getValue()[index]);
+    }
+    else {
+        std::cerr << "Error: Null Pointers for Ne and Nes."<<std::endl;
+        exit(-1);
     }
 }
 
 
 
 void MultispeciesCoalescent::redrawValue( void ) {
-    
+  
     simulateTree();
     
 }
 
 void MultispeciesCoalescent::setNes(TypedDagNode<std::vector<double> >* inputNes) {
+    if (Nes != NULL) {
+        removeParameter(Nes);
+    }
     Nes = inputNes;
     Ne= NULL;
+    addParameter(Nes);
 }
 
 
 void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe) {
+    if (Ne != NULL) {
+        removeParameter(Nes);
+    }
     Ne = inputNe;
     Nes = NULL;
+    addParameter(Ne);
+
 }
 
 
@@ -631,7 +649,7 @@ void MultispeciesCoalescent::simulateTree( void ) {
         }
         
         std::vector<TopologyNode*> initialIndividualsAtBranch = individualsPerBranch[spNode];
-        double branchNe = Nes->getValue()[spNode->getIndex()];
+        double branchNe = getNe(spNode->getIndex() );
         double theta = 1.0 / branchNe;
         
         double prevCoalescentTime = 0.0;
