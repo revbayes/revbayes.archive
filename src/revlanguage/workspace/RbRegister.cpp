@@ -72,6 +72,7 @@
 #include "RlConstantRateBirthDeathProcess.h"
 #include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "RlDiversityDependentPureBirthProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
@@ -383,6 +384,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // piecewise constant rate birth-death process with serially sampled tips
         addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
         addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+
+        // piecewise constant rate fossilized birth-death process with serially sampled fossils
+        addDistribution( "FossilizedBirthDeath"          , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "FBD"                           , new PiecewiseConstantFossilizedBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
