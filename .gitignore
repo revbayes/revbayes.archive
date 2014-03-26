@@ -7,4 +7,4 @@ projects/cmake/core
 projects/cmake/libs
 projects/cmake/rb
 projects/cmake/revlanguage
-
+projects/xcode/revbayes.xcodeproj
