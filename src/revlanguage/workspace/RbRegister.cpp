@@ -45,6 +45,7 @@
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "RlMcmc.h"
 #include "RlModel.h"
+#include "RlParallelMcmcmc.h"
 #include "RlPowerPosterior.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
@@ -94,6 +95,7 @@
 
 /* Moves on real valued vectors */
 #include "RlSingleElementScale.h"
+#include "RlVectorSingleElementScaleMove.h"
 #include "RlVectorScale.h"
 
 /* Tree Proposals */
@@ -252,6 +254,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
         addTypeWithConstructor( "mcmc",             new Mcmc()  );
+        addTypeWithConstructor( "pmcmcmc",          new ParallelMcmcmc() );
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
@@ -296,7 +299,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Moves on vectors of real values */
         addTypeWithConstructor("mSingleElementScale",   new SingleElementScale() );
-        addTypeWithConstructor("mVectorScale",          new VectorScale() );        
+        addTypeWithConstructor("mVectorSingleElementScale",   new VectorSingleElementScaleMove() );
+        addTypeWithConstructor("mVectorScale",          new VectorScale() );
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
