@@ -141,6 +141,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
                               "' taking specified arguments"));
         
         func->processArguments( args );
+        // call setConstMemberVariable(...)
         func->setExecutionEnviroment( &env );
     }
     else 

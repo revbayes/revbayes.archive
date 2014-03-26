@@ -32,14 +32,7 @@ const std::string& VectorSingleElementScaleMove::getMoveName( void ) const {
 
 
 double VectorSingleElementScaleMove::performSimpleMove( void ) {
-    
-    // test wether a move has been performed without accept/reject in between
-    if (changed) 
-    {
-        throw RbException("Trying to execute a simple moves twice without accept/reject in the meantime.");
-    }
-    changed = true;
-    
+        
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
@@ -71,7 +64,7 @@ void VectorSingleElementScaleMove::rejectSimpleMove( void ) {
     
     std::vector<double>& v = variable->getValue();
     v[index] = storedValue;
-    changed = false;
+    
 }
 
 void VectorSingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {

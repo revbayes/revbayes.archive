@@ -369,18 +369,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // Phylogenetic distributions
         
-        // constant rate birth-death process distribution
-        addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        // constant rate birth-death process
+        addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BirthDeathConstant"           , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BDConst"                      , new ConstantRateBirthDeathProcess() );
         
-        // constant rate birth-death process distribution
-        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
+        // constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathConstantSerial"     , new ConstantRateSerialSampledBirthDeathProcess() );
+        addDistribution( "BDConstSS"                    , new ConstantRateSerialSampledBirthDeathProcess() );
 
-        // piecewise constant rate birth-death process distribution
-        addDistribution( "BirthDeathSkySerial", new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        // piecewise constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
+        addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
         addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
+        addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
+        addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
         
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
