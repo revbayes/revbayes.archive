@@ -72,8 +72,12 @@
 #include "RlConstantRateBirthDeathProcess.h"
 #include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "RlDiversityDependentPureBirthProcess.h"
+#include "RlMultispeciesCoalescentConstantPopulationProcess.h"
+#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
+
 
 // sequence models
 #include "RlCharacterStateEvolutionAlongTree.h"
@@ -387,12 +391,20 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
         addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
+        // piecewise constant rate fossilized birth-death process with serially sampled fossils
+        addDistribution( "FossilizedBirthDeath"          , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "FBD"                           , new PiecewiseConstantFossilizedBirthDeathProcess() );
+
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
         addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
         addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
         addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
         
+        // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        addDistribution( "MultispCoal", new MultispeciesCoalescentConstantPopulationProcess() );
+        addDistribution( "MultispeciesCoalescentConstantPopulationProcess", new MultispeciesCoalescentConstantPopulationProcess() );
+
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
         
