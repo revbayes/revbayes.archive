@@ -18,6 +18,8 @@
 #ifndef Move_H
 #define Move_H
 
+#include "Cloneable.h"
+
 #include <ostream>
 #include <set>
 #include <vector>
@@ -26,7 +28,7 @@ namespace RevBayesCore {
     
     class DagNode;
 
-    class Move {
+    class Move : public Cloneable {
     
     public:
         virtual                                                ~Move(void);                                                                             //!< Destructor

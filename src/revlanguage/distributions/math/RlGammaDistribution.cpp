@@ -47,7 +47,7 @@ RevBayesCore::GammaDistribution* GammaDistribution::createDistribution( void ) c
 /* Get class name of object */
 const std::string& GammaDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Gamma distribution";
+    static std::string rbClassName = "GammaDistribution";
     
 	return rbClassName; 
 }

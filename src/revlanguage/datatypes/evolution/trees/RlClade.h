@@ -1,17 +1,3 @@
-/**
- * @file
- * This file contains the declaration of a Clade, which is
- * the class that contains the names of the taxa that build the clade.
- *
- * @brief Declaration of Clade
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
 
 #ifndef RlClade_H
 #define RlClade_H
@@ -25,7 +11,21 @@
 
 
 namespace RevLanguage {
-    
+    /**
+    * @file
+    * This file contains the declaration of a Clade, which is
+    * the class that contains the names of the taxa that build the clade.
+    *
+    * @brief Declaration of Clade
+    *
+    * (c) Copyright 2009-
+    * @date Last modified: $Date: $
+    * @author The RevBayes Development Core Team
+    * @license GPL version 3
+    *
+    * 
+    */
+
     
     class Clade : public RlModelVariableWrapper<RevBayesCore::Clade> {
         
