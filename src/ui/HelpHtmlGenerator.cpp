@@ -1,10 +1,12 @@
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
+
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>    
 #include <boost/filesystem/fstream.hpp>
 #include "boost/algorithm/string_regex.hpp"
+
 #include "pugixml.cpp"
 #include <vector>
 #include <iostream>
@@ -42,8 +44,7 @@ struct compare_path {
 
 int main(int argc, const char * argv[]) {
 
-    string installDir = INSTALL_DIR; // from constants.h, value set at installation by regenerate.sh
-    fs::path helpDir = fs::canonical(fs::path("../../help"), fs::path(installDir));
+    fs::path helpDir(HELP_DIR);
 
     cout << endl << "This tool will automatically generate the index.html page in:" << endl
             << helpDir.string() << " - directory" << endl
@@ -84,8 +85,16 @@ int main(int argc, const char * argv[]) {
     }
 
     // read html templates
-    string entry_tpl = load_file(helpDir.string() + "/html-template/entry.tpl.html");
-    string index_tpl = load_file(helpDir.string() + "/html-template/index.tpl.html");
+    fs::path entry_tpl_file = helpDir / "html-template/entry.tpl.html";
+    fs::path index_tpl_file = helpDir / "html-template/index.tpl.html";
+    
+    if(!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file)){
+        std::cout << "One or more of the html template files in help/html directory is missing.";
+    }
+    
+    if(!fs::exists(fs::path()));
+    string entry_tpl = load_file(entry_tpl_file.string());
+    string index_tpl = load_file(index_tpl_file.string());
 
     string entry_result, tmp, tmp1;
     pugi::xml_document xml_doc;
