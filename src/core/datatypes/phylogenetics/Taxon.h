@@ -39,6 +39,7 @@ namespace RevBayesCore {
         std::string                         speciesName;
     
     };
+	
     // Global functions using the class
     std::ostream&                       operator<<(std::ostream& o, const Taxon& x);                                         //!< Overloaded output operator
 }
