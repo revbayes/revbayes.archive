@@ -96,6 +96,7 @@
 /* Moves on real valued vectors */
 #include "RlSingleElementScale.h"
 #include "RlVectorSingleElementScaleMove.h"
+#include "RlVectorSingleElementSlidingMove.h"
 #include "RlVectorScale.h"
 
 /* Tree Proposals */
@@ -302,6 +303,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor("mVectorSingleElementScale",   new VectorSingleElementScaleMove() );
         addTypeWithConstructor("mVectorScale",          new VectorScale() );
         
+        addTypeWithConstructor("mVectorSingleElementSliding",   new VectorSingleElementSlidingMove() );
+
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
         addTypeWithConstructor("mNarrow",               new NarrowExchange() );
