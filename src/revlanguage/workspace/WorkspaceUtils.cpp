@@ -13,7 +13,7 @@
 
 typedef std::vector<std::string> StringVector;
 
-/* @return vector with all functions the user have access to */
+/* @return vector with all functions the user has access to */
 StringVector WorkspaceUtils::getFunctions() {
     typedef std::multimap<std::string, RevLanguage::Function*> FunctionMap;
 
@@ -27,39 +27,58 @@ StringVector WorkspaceUtils::getFunctions() {
     return makeUnique(functions);
 }
 
-/* @return vector with all objects the user have access to */
-// todo: combine global and userspace ?
+/* @return vector with all objects the user has access to */
+StringVector WorkspaceUtils::getVariables(bool all) {
 
-StringVector WorkspaceUtils::getVariables() {
     typedef std::map<std::string, RevLanguage::VariableSlot* > VariableTable;
+    StringVector objects;
+
     VariableTable v = RevLanguage::Workspace::userWorkspace().getVariableTable();
 
-    StringVector objects;
     for (VariableTable::iterator it = v.begin(); it != v.end(); ++it) {
         objects.push_back(it->first);
+    }
+
+    if ( all ) {
+
+        v = RevLanguage::Workspace::globalWorkspace().getVariableTable();
+        
+        for (VariableTable::iterator it = v.begin(); it != v.end(); ++it) {
+            objects.push_back(it->first);
+        }
     }
 
     return makeUnique(objects);
 }
 
 /* @return vector with all types the user have access to */
-StringVector WorkspaceUtils::getTypes() {
+StringVector WorkspaceUtils::getTypes(bool all) {
+
     typedef std::map<std::string, RevLanguage::RbLanguageObject*> TypeTable;
-
-    TypeTable t = RevLanguage::Workspace::globalWorkspace().getTypeTable();
-
     StringVector objects;
+
+    TypeTable t = RevLanguage::Workspace::userWorkspace().getTypeTable();
+
     for (TypeTable::iterator it = t.begin(); it != t.end(); ++it) {
         objects.push_back(it->first);
+    }
+
+    if ( all ) {
+        
+        t = RevLanguage::Workspace::globalWorkspace().getTypeTable();
+        
+        for (TypeTable::iterator it = t.begin(); it != t.end(); ++it) {
+            objects.push_back(it->first);
+        }
     }
 
     return makeUnique(objects);
 }
 
 /* @return vector with all types + variables the user have access to */
-StringVector WorkspaceUtils::getObjects() {
-    StringVector t = getTypes();
-    StringVector v = getVariables();
+StringVector WorkspaceUtils::getObjects(bool all) {
+    StringVector t = getTypes(all);
+    StringVector v = getVariables(all);
     t.insert(t.end(), v.begin(), v.end());
     return t;
 }

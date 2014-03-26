@@ -227,6 +227,18 @@ const MethodTable& RbLanguageObject::getMethods(void) const {
 
 
 /**
+ * Get the templated internal value type of the object as a string corresponding to the type name.
+ * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
+ * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
+ * return "Mcmc", etc.
+ */
+const std::string& RbLanguageObject::getTemplateValueType( void ) const {
+    
+    throw RbException("No value template type implemented for this object (lazy RevBayes programmers...)");
+}
+
+
+/**
  * Get the value as a DAG node. This default implementation throws an error.
  */
 const std::string& RbLanguageObject::getType( void ) const {
@@ -248,6 +260,12 @@ RevBayesCore::DagNode* RbLanguageObject::getValueNode( void ) const {
 
 /** Does this object have a member called "name" */
 bool RbLanguageObject::hasMember(std::string const &name) const {
+    return false;
+}
+
+
+/** Does this object have an internal value node? Default implementation returns false. */
+bool RbLanguageObject::hasValueNode(void) const {
     return false;
 }
 
@@ -374,6 +392,19 @@ void RbLanguageObject::setMemberVariable(const std::string& name, const RbPtr<Va
  */
 void RbLanguageObject::setName(std::string const &n) {
     // do nothing
+}
+
+
+/**
+ * Setting the value node, potentially replacing the existing value node. The default implementation
+ * throws an error because we do not have a value node.
+ */
+void RbLanguageObject::setValueNode(RevBayesCore::DagNode* newVal) {
+    
+    if ( this->hasValueNode() )
+        throw RbException( "Replacing or setting of the internal value node of this type of object not supported yet (lazy developers...)");
+    else
+        throw RbException( "This language object does not have an internal value node that can be replaced or set");
 }
 
 

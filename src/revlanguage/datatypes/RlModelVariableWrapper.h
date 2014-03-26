@@ -52,13 +52,14 @@ namespace RevLanguage {
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
-        void                                    replaceVariable(RbLanguageObject *newVar);                                  //!< Replace the internal DAG node
+        void                                    replaceVariable(RbLanguageObject *newVar);                                  //!< Replace the internal DAG node (and prepare to replace me...)
 
         RlModelVariableWrapper<rbType>*         shallowCopy(void);      // Testing...
         
         // getters and setters
-        virtual const rbType&                   getValue(void) const;
-        void                                    setValue(rbType *x);
+        virtual const rbType&                   getValue(void) const;                                                       //!< Get the value
+        void                                    setValue(rbType *x);                                                        //!< Set new constant value
+        void                                    setValueNode(RevBayesCore::DagNode *newVal);                                //!< Set or replace the internal dag node (and keep me)
         
     protected:
         RlModelVariableWrapper(void);
@@ -86,6 +87,8 @@ namespace RevLanguage {
 #include "RlUtils.h"
 #include "StochasticNode.h"
 #include "TypedReferenceFunction.h"
+
+#include <cassert>
 
 template <typename rbType>
 RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), 
@@ -491,7 +494,6 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) 
 }
 
 
-
 template <typename rbType>
 void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
     
@@ -516,6 +518,33 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
     value = newVal;
     
     // increment the reference count to the value
+    value->incrementReferenceCount();
+    
+}
+
+
+template <typename rbType>
+void RevLanguage::RlModelVariableWrapper<rbType>::setValueNode(RevBayesCore::DagNode* newVal) {
+    
+    assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newVal) != NULL );
+    
+    // Take care of the old value node
+    if ( value != NULL )
+    {
+        newVal->setName( value->getName() );
+        value->replace(newVal);
+        
+        if ( value->decrementReferenceCount() == 0 )
+        {
+            delete value;
+        }
+        
+    }
+    
+    // Set the new value node
+    value = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newVal );
+    
+    // Increment the reference count to the new value node
     value->incrementReferenceCount();
     
 }

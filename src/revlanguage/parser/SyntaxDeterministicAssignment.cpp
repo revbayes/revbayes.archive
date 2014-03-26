@@ -111,13 +111,11 @@ RbPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env
     // get the rhs expression wrapped and executed into a variable
     theVariable = expression->evaluateDeterministicExpressionContent(env);
     
-    // fill the slot with the new variable
-    // @todo Fredrik: Do we really need to make a clone here?
+    // fill the slot with a clone of the variable
+    // the variable itself will be passed on as the semantic value of the statement
+    // and can be used in further assignments
+    // when the slot is set, the clone is named
     theSlot->setValue( theVariable->getValue().clone() );
-    
-    // set the name of the DAG node for convenience
-    theVariable->getValue().setName( theSlot->getName() );
-    
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
