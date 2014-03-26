@@ -31,8 +31,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
  const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et,
  const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt,
  const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,
- double tLastSample, const std::string &cdt,
- const std::vector<Taxon> &tn, const std::vector<Clade> &c ): AbstractBirthDeathProcess( o, cdt, tn, c ),
+ const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c ): AbstractBirthDeathProcess( o, cdt, tn, c ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 
@@ -40,8 +39,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     psi( p ), 
     psiTimes( pt ),
     rho( r ),
-    rhoTimes( rt ),
-    timeSinceLastSample( tLastSample )
+    rhoTimes( rt )
 {
     addParameter( lambda );
     addParameter( lambdaTimes );
@@ -102,13 +100,13 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         }
         else
         {
-            lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
+        //  lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
         }
     }
     
     for (size_t i = 0; i < numTaxa-1; ++i) 
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
+        if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {
@@ -117,12 +115,12 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         
         double t = (*agesInternalNodes)[i];
         size_t index = l(t);
-        lnProbTimes += log( q(index,t+timeSinceLastSample) * birth[index] );
+        //  lnProbTimes += log( q(index,t+timeSinceLastSample) * birth[index] );
     }
     
     for (size_t i = 0; i < rateChangeTimes.size(); ++i) 
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
+        if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
             lnProbTimes == RbConstants::Double::neginf ) 
         {
@@ -144,8 +142,9 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
 
 
 /**
- *
- *
+ * return the index i so that t_i < t <= t_{i+1}
+ * where t_i is the instantaneous sampling time (i = 0,...)
+ * t_0 is present
  */
 size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t) const
 {
@@ -154,8 +153,7 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t) const
 
 
 /**
- *
- *
+ * recursive
  */
 size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t, size_t min, size_t max) const
 {
@@ -178,12 +176,11 @@ size_t PiecewiseConstantFossilizedBirthDeathProcess::l(double t, size_t min, siz
 
 /**
  * Compute the probability of survival if the process starts with one species at time start and ends at time end.
- * 
  *
  * \param[in]    start      Start time of the process.
  * \param[in]    end        End/stopping time of the process.
  *
- * \return Speciation rate at time t. 
+ * \return Probability of survival.
  */
 double PiecewiseConstantFossilizedBirthDeathProcess::pSurvival(double start, double end) const
 {
@@ -196,7 +193,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::pSurvival(double start, dou
 
 
 /**
- *
+ * p_i(t)
  */
 double PiecewiseConstantFossilizedBirthDeathProcess::p( size_t i, double t ) const
 {
@@ -218,13 +215,12 @@ double PiecewiseConstantFossilizedBirthDeathProcess::p( size_t i, double t ) con
     double dt   = ti - t;
     
     double A = sqrt( diff*diff + 4.0*bp);
-    double p0 = p(i-1,ti);
-    double B = ( (1.0 - 2.0*(1.0-r)*p0 )*b + d + f ) / A;
+    double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
     
     double e = exp(A*dt);
     double tmp = b + d + f - A * ((1.0+B)-e*(1.0-B))/((1.0+B)+e*(1.0-B));
     
-    return tmp / (2.0*b);    
+    return tmp / (2.0*b);
 }
 
 
@@ -328,7 +324,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
 
 
 /**
- *
+ * q_i(t)
  */
 double PiecewiseConstantFossilizedBirthDeathProcess::q( size_t i, double t ) const
 {
@@ -369,13 +365,9 @@ std::vector<double>* PiecewiseConstantFossilizedBirthDeathProcess::simSpeciation
 {
     
     // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    // RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-//    double birth = lambda->getValue();
-//    double death = mu->getValue();
-//    double p     = psi->getValue();
-//    double r     = rho->getValue();
     
     std::vector<double> *times = new std::vector<double>(n,0.0);
     for (size_t i = 0; i < n; i++ )
@@ -419,7 +411,6 @@ int PiecewiseConstantFossilizedBirthDeathProcess::survivors(double t) const
 
 /**
  * Swap the parameters held by this distribution.
- *
  * 
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
