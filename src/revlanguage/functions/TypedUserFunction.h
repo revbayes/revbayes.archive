@@ -11,6 +11,7 @@
 #define TypedUserFunction_H
 
 #include "TypedFunction.h"
+#include "UserFunction.h"
 
 #include <iostream>
 
@@ -23,17 +24,17 @@ namespace RevBayesCore {
     class TypedUserFunction : public TypedFunction<valueType> {
         
     public:
-        TypedUserFunction(const TypedDagNode<valueType>* var );                //!< Constructor setting variable referenced
-        TypedReferenceFunction(const TypedReferenceFunction &f);                    //!< Copy constructor
-        virtual                            ~TypedReferenceFunction(void);                                               //!< Virtual destructor
+                                            TypedUserFunction(RevLanguage::UserFunction* uF, std::vector<RevLanguage::Argument> args);  //!< Constructor setting user function and its arguments
+                                            TypedUserFunction(const TypedUserFunction<valueType>& f);                   //!< Copy constructor
+        virtual                            ~TypedUserFunction(void);                                                    //!< Virtual destructor
         
-        // pure virtual public methors
-        TypedReferenceFunction<valueType>*  clone(void) const;                                                          //!< Clone the function
-        void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP) ;           //!< Exchange a parameter to the function
+        // Public methods
+        TypedUserFunction<valueType>*       clone(void) const;                                                          //!< Clone the function
         void                                update(void);                                                               //!< Update the value of the function
+        void                                swapParameterInternal(const DagNode *oldP, const DagNode *newP) {}          //!< Exchange a parameter
         
     private:
-        const TypedDagNode<valueType>*      variable;                                                                   //!< The variable we reference
+        RevLanguage::UserFunction*          userFunction;                                                               //!< The user function
     };
     
 }
@@ -41,12 +42,13 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::TypedUserFunction<valueType>::TypedReferenceFunction(const TypedDagNode<valueType>* var) :
-TypedFunction<valueType>( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( var->getValue() ), "<Reference Function>" ),
-variable( var )
+RevBayesCore::TypedUserFunction<valueType>::TypedUserFunction(RevLanguage::UserFunction* uF, std::vector<RevLanguage::Argument> args) :
+    TypedFunction<valueType>( new valueType(), "<Rev Function>" ),
+    userFunction( uF->clone() )
 {
-    /* Add referenced variable as parent */
-    this->addParameter( variable );
+    
+    for ( std::vector<RevLanguage::Argument>::iterator it=args.begin(); it!=args.end(); ++it )
+        this->addParameter( it->getVariable()->getValue().getValueNode() );
     
     /* Update value */
     update();
@@ -54,9 +56,9 @@ variable( var )
 
 
 template <class valueType>
-RevBayesCore::TypedReferenceFunction<valueType>::TypedReferenceFunction(const RevBayesCore::TypedReferenceFunction<valueType> &n) :
-TypedFunction<valueType>( n ),
-variable( n.variable )
+RevBayesCore::TypedUserFunction<valueType>::TypedUserFunction(const RevBayesCore::TypedUserFunction<valueType> &n) :
+    TypedFunction<valueType>( n ),
+    userFunction( n.userFunction->clone() )
 {
     /* Just update value. No need to add parameters, it happens automatically. */
     update();
@@ -64,35 +66,36 @@ variable( n.variable )
 
 
 template <class valueType>
-RevBayesCore::TypedReferenceFunction<valueType>::~TypedReferenceFunction( void ) {
+RevBayesCore::TypedUserFunction<valueType>::~TypedUserFunction( void ) {
     
     /* We don't delete the parameters, because they might be used elsewhere. The model is responsible for this. */
+
+    /* We need to delete our copy of the user function */
+    delete userFunction;
 }
 
 
 template <class valueType>
-RevBayesCore::TypedReferenceFunction<valueType>* RevBayesCore::TypedReferenceFunction<valueType>::clone( void ) const {
+RevBayesCore::TypedUserFunction<valueType>* RevBayesCore::TypedUserFunction<valueType>::clone( void ) const {
     
-    return new TypedReferenceFunction<valueType>( *this );
+    return new TypedUserFunction<valueType>( *this );
 }
 
 
 template <class valueType>
-void RevBayesCore::TypedReferenceFunction<valueType>::update( void ) {
+void RevBayesCore::TypedUserFunction<valueType>::update( void ) {
 
-    if ( TypedFunction<valueType>::value != NULL )
+    // We can rely on the fact that only objects with value nodes have a TypedUserFunction
+    
+    RevLanguage::RbLanguageObject* retValue = userFunction->executeCode();
+    
+    if(TypedFunction<valueType>::value != NULL)
         delete TypedFunction<valueType>::value;
     
-    TypedFunction<valueType>::value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( variable->getValue() );
+    *(TypedFunction<valueType>::value) = static_cast< RevBayesCore::TypedDagNode<valueType>* >(userFunction->executeCode()->getValueNode())->getValue();
+
+    delete retValue;
 }
 
-
-template <class valueType>
-void RevBayesCore::TypedReferenceFunction<valueType>::swapParameterInternal(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP) {
-    
-    
-    if ( oldP == variable )
-        variable = static_cast< const TypedDagNode<valueType>* >( newP );
-}
 
 #endif

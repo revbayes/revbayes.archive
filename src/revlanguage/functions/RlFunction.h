@@ -63,7 +63,7 @@ namespace RevLanguage {
         virtual std::string                             callSignature(void) const;                                                          //!< Return call signature
 
         // Basic utility functions you should not have to override
-        const std::string&                              getName(void) const;                                                                //!< Name the function
+        const std::string&                              getName(void) const;                                                                //!< Get the name of the function
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
         void                                            printStructure(std::ostream& o) const;                                              //!< Print the structure of language object for user
         void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
