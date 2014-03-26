@@ -45,6 +45,7 @@
 /* MemberObject types with auto-generated constructors (alphabetic order) */
 #include "RlMcmc.h"
 #include "RlModel.h"
+#include "RlParallelMcmcmc.h"
 #include "RlPowerPosterior.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
@@ -70,6 +71,8 @@
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
 #include "RlConstantRateSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "RlDiversityDependentPureBirthProcess.h"
 #include "RlMultispeciesCoalescentConstantPopulationProcess.h"
 #include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
@@ -96,6 +99,7 @@
 
 /* Moves on real valued vectors */
 #include "RlSingleElementScale.h"
+#include "RlVectorSingleElementScaleMove.h"
 #include "RlVectorScale.h"
 
 /* Tree Proposals */
@@ -254,6 +258,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
         addTypeWithConstructor( "mcmc",             new Mcmc()  );
+        addTypeWithConstructor( "pmcmcmc",          new ParallelMcmcmc() );
         addTypeWithConstructor( "model",            new Model() );
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
@@ -298,7 +303,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Moves on vectors of real values */
         addTypeWithConstructor("mSingleElementScale",   new SingleElementScale() );
-        addTypeWithConstructor("mVectorScale",          new VectorScale() );        
+        addTypeWithConstructor("mVectorSingleElementScale",   new VectorSingleElementScaleMove() );
+        addTypeWithConstructor("mVectorScale",          new VectorScale() );
         
         /* Tree Proposals */
         addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
@@ -369,18 +375,28 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // Phylogenetic distributions
         
-        // constant rate birth-death process distribution
-        addDistribution( "cBDP", new ConstantRateBirthDeathProcess() );
+        // constant rate birth-death process
+        addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BirthDeathConstant"           , new ConstantRateBirthDeathProcess() );
+        addDistribution( "BDConst"                      , new ConstantRateBirthDeathProcess() );
         
-        // constant rate birth-death process distribution
-        addDistribution( "BirthDeathConstantSerial", new ConstantRateSerialSampledBirthDeathProcess() );
+        // constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathConstantSerial"     , new ConstantRateSerialSampledBirthDeathProcess() );
+        addDistribution( "BDConstSS"                    , new ConstantRateSerialSampledBirthDeathProcess() );
 
-        // piecewise constant rate birth-death process distribution
-        addDistribution( "BirthDeathSkySerial", new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        // piecewise constant rate birth-death process with serially sampled tips
+        addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+
+        // piecewise constant rate fossilized birth-death process with serially sampled fossils
+        addDistribution( "FossilizedBirthDeath"          , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "FBD"                           , new PiecewiseConstantFossilizedBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "divDepPBP", new DiversityDependentPureBirthProcess() );
+        addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
         addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
+        addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
+        addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "MultispCoal", new MultispeciesCoalescentConstantPopulationProcess() );

@@ -70,14 +70,14 @@ namespace RevLanguage {
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was executed.
         void                                            setName(const std::string& nm);                                                     //!< Name the function
     
-        // Functions you have to override
-        virtual RbLanguageObject* execute(void) = 0; //!< Execute function
-        virtual const ArgumentRules& getArgumentRules(void) const = 0; //!< Get argument rules
-        virtual const TypeSpec& getReturnType(void) const = 0; //!< Get type of return value
+        // Function functions you have to override
+        virtual RbLanguageObject*                       execute(void) = 0;                                                                  //!< Execute function
+        virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
-        // Functions you may want to override
-        virtual bool checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
-        virtual void processArguments(const std::vector<Argument>& passedArgs); //!< Process args, return a match score if pointer is not null
+        // Function function you may want to override
+        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
 
         virtual bool throws(void) const {
             return false;
@@ -94,9 +94,9 @@ namespace RevLanguage {
                                                         Function(void);                                                                     //!< Basic constructor
     
         // function you may want to override
-        virtual void clearArguments(void); //!< Clear argument Environment "args"
+        virtual void                                    clearArguments(void); //!< Clear argument Environment "args"
 
-        virtual void setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var) {
+        virtual void                                    setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var) {
         } //!< Set the private member variable here (for derived classes)!
 
         // Member variables
