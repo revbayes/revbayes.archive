@@ -3,6 +3,8 @@ projects/cmake/CMakeFiles
 projects/cmake/CMakeLists.txt
 projects/cmake/Makefile
 projects/cmake/cmake_install.cmake
+projects/cmake/revlanguage/
+*.o
 projects/cmake/core
 projects/cmake/libs
 projects/cmake/rb

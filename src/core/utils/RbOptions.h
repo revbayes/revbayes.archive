@@ -36,7 +36,7 @@
 
 /* Test whether we should use linenoise */
 #if !defined (NO_LINENOISE)
-//#define USE_LIB_LINENOISE
+#define USE_LIB_LINENOISE
 #endif
 
 /* Test whether we need to debug everything. */
