@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <stdbool.h>
 
+#include "RbClient.h"
 #include "RevLanguageMain.h"
 #include "RbOptions.h"
 #include "Parser.h"
@@ -17,18 +18,12 @@
 #include "functions/RlFunction.h"
 #include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
-extern "C" {
-#include "linenoise.h"
-}
-#include "lineedit/EditorMachine.h"
-#include "lineedit/EditorState.h"
-#include "lineedit/lineeditUtils.h"
 
 #include <boost/filesystem.hpp>
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
-
 #include <boost/program_options.hpp>
+
 using namespace boost;
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -46,8 +41,9 @@ int main(int argc, const char* argv[]) {
     // set up the command line options to parse    
     po::options_description desc("Available options are");
     desc.add_options()
-            ("help", "print this help")
+            ("help,h", "print this help")
             ("interactive,i", "enable interactive prompt\nBy default enabled when no files are given, otherwise disabled.")
+            ("disable-readline,d", "some terminals can't handle readline functionality well. Try this option if the output of your terminal is scrambled.")
             ("include-path,p", po::value<std::string>(&includePath)->default_value(includePath), "include path to prepend to file names.")
             ("input-file,f", po::value< std::vector<std::string> >(&sourceFiles), "input file. ")
             ;
@@ -64,7 +60,7 @@ int main(int argc, const char* argv[]) {
     if (vm.count("help")) {
         std::cout << "Usage: [options] file1 file2 ...\n\n";
         std::cout << desc << std::endl;
-        return(0);
+        return (0);
     }
 
     if (vm.count("include-path")) {
@@ -72,12 +68,12 @@ int main(int argc, const char* argv[]) {
     }
 
     if (vm.count("input-file")) {
-        interactive = false; // default behaviour if source file(s) supplied. Can be overridden by user
+        interactive = false; // default behavior if source file(s) supplied. Can be overridden by user
         // fix base path
         for (unsigned int i = 0; i < sourceFiles.size(); i++) {
-            
+
             fs::path tmp(fs::path(includePath) / sourceFiles[i]);
-            
+
             // check that file exists
             if (!fs::exists(tmp)) {
                 std::cout << "Warning: file '" + tmp.string() + "' does not exist." << std::endl;
@@ -86,22 +82,28 @@ int main(int argc, const char* argv[]) {
             }
         }
     }
-    
+
     /* initialize environment */
     RevLanguageMain rl;
     rl.startRevLanguageEnvironment(checkedSourceFiles);
-    
-    
+
+
     if (vm.count("interactive") || interactive) {
         std::cout << "Interactive mode enabled." << "\n";
     } else {
         std::cout << "Interactive prompt is not enabled, program about to exit. \nUse argument --help to see all command line argument options." << std::endl;
         exit(0);
     }
-    
-    
 
-    /* Declare things we need */
+    if(!vm.count("disable-readline")){
+        // todo: check state of terminal to determine if it's "readline" enabled.
+        RbClient c;
+        c.startInterpretor();
+        return 0;
+    }
+
+    /* Start the very basic RB interpreter if disable-readline has been set */
+    std::cout << "Starting RevBayes with basic interpretor" << std::endl;
     char *default_prompt = (char *) "RevBayes > ";
     char *incomplete_prompt = (char *) "RevBayes + ";
     char *prompt = default_prompt;

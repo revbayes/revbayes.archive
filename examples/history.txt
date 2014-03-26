@@ -1,0 +1,9 @@
+quit()
+source "UCLN_GTR.Rev"
+load("UCLN_GTR.Rev")
+q
+quit()
+ls
+quit()
+ls
+quit()

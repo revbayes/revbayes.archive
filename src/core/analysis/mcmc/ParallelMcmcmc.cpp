@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, int nc, int np, int si, double dt, double st, double sh) : sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), gen(0), startingHeat(sh)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT, int nc, int np, int si, double dt, double st, double sh) : Cloneable( ), sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), currentGeneration(0), startingHeat(sh), scheduleType(sT)
 {
     activeIndex = 0;
     
@@ -24,7 +24,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         
         // create chains
         bool a = (i == 0 ? true : false);
-        Mcmc* oneChain = new Mcmc(m, moves, mons, "random", a, b);
+        Mcmc* oneChain = new Mcmc(m, moves, mons, scheduleType, a, b);
         oneChain->setChainIndex(i);
         oneChain->startMonitors();
         
@@ -61,13 +61,41 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
 }
 
 ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m)
-{   
-    // MJL: Do I need a copy ctor for Analysis objects (e.g. non-DAG)?
+{
+    sigma = m.sigma;
+    delta = m.delta;
+    startingHeat = m.startingHeat;
+    numChains = m.numChains;
+    numProcesses = m.numProcesses;
+
+    chainIdxByHeat = m.chainIdxByHeat;
+    swapInterval = m.swapInterval;
+    activeIndex = m.activeIndex;
+    scheduleType = m.scheduleType;
+
+    chainsPerProcess.clear();
+    for (size_t i = 0; i < m.chainsPerProcess.size(); i++)
+    {
+        //chainsPerProcess[i].push_back(m.chainsPerProcess[i]);
+        chainsPerProcess.push_back(m.chainsPerProcess[i]);
+    }
+    
+    chains.clear();
+    for (size_t i = 0; i < m.chains.size(); i++)
+        chains.push_back(new Mcmc( *(m.chains[i])) );
+    
+    currentGeneration = m.currentGeneration;
+    
 }
 
 ParallelMcmcmc::~ParallelMcmcmc(void)
 {
-    
+    for (size_t i = 0; i < chains.size(); i++)
+    {
+        
+        delete chains[i];
+    }
+    chains.clear();
 }
 
 void ParallelMcmcmc::initialize(void)
@@ -88,8 +116,7 @@ void ParallelMcmcmc::burnin(int g, int ti)
 
 ParallelMcmcmc* ParallelMcmcmc::clone(void) const
 {
-    // MJL: I think this is handled through Mcmc, though may want to derive ParallelMCMCMC from Cloneable
-    return NULL;
+    return new ParallelMcmcmc(*this);
 }
 
 void ParallelMcmcmc::printOperatorSummary(void) const
@@ -104,7 +131,7 @@ void ParallelMcmcmc::printOperatorSummary(void) const
 void ParallelMcmcmc::run(size_t generations)
 {
     // print file header
-    if (gen == 0)
+    if (currentGeneration == 0)
         chains[0]->monitor(0);
     
     // run chain
@@ -112,17 +139,22 @@ void ParallelMcmcmc::run(size_t generations)
     {
         // start parallel job per block of swapInterval cycles
         size_t np = numProcesses; // in fact, used by the macro below
-        int pid = 1;
+        int pid = 0;
         
         #pragma omp parallel default(shared) private(np, pid)
         {
-            #if defined (USE_LIB_OPENMP)
+            #ifdef USE_LIB_OPENMP
                 pid = omp_get_thread_num();
             #endif
+            
+            //std::cout << i << "\n";
+            //std::cout << "pid_" << pid << "...\n" << std::endl;
+            //std::cout << "size " << chainsPerProcess[pid].size() << "\n";
             
             // Create process per chain
             for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
             {
+                //std::cout << "\t" << i << "," << j << "\n";
                 // get chain index from job vector
                 size_t chainIdx = chainsPerProcess[pid][j];
                 
@@ -151,7 +183,7 @@ void ParallelMcmcmc::run(size_t generations)
         } // processor job end
         
         // advance gen counter
-        gen += swapInterval;
+        currentGeneration += swapInterval;
         
         // perform chain swap
         swapChains();
