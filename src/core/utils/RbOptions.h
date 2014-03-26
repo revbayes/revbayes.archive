@@ -36,41 +36,41 @@
 
 /* Test whether we should use linenoise */
 #if !defined (NO_LINENOISE)
-//#define USE_LIB_LINENOISE
+#define USE_LIB_LINENOISE
 #endif
 
 /* Test whether we need to debug everything. */
 #if defined (DEBUG_ALL)
 
-// switch all assertions on
-#ifndef ASSERTIONS_ALL
-#define ASSERTIONS_ALL
-#endif
+    // switch all assertions on
+    #ifndef ASSERTIONS_ALL
+    #define ASSERTIONS_ALL
+    #endif
 
-// switch debugging parser on
-//#ifndef DEBUG_BISON_FLEX
-//#define DEBUG_BISON_FLEX
-//#endif
+    // switch debugging parser on
+    //#ifndef DEBUG_BISON_FLEX
+    //#define DEBUG_BISON_FLEX
+    //#endif
 
-// switch debugging parser on
-//#ifndef DEBUG_PARSER
-//#define DEBUG_PARSER
-//#endif
+    // switch debugging parser on
+    //#ifndef DEBUG_PARSER
+    //#define DEBUG_PARSER
+    //#endif
 
-// switch debugging parser on
-#ifndef DEBUG_WORKSPACE
-#define DEBUG_WORKSPACE
-#endif
+    // switch debugging parser on
+    #ifndef DEBUG_WORKSPACE
+    #define DEBUG_WORKSPACE
+    #endif
 
-// switch debuggin g MCMC on
-#ifndef DEBUG_MCMC
-#define DEBUG_MCMC
-#endif
+    // switch debuggin g MCMC on
+    #ifndef DEBUG_MCMC
+    #define DEBUG_MCMC
+    #endif
 
-// switch debugging help on
-#ifndef DEBUG_HELP_SYSTEM
-#define DEBUG_HELP_SYSTEM
-#endif
+    // switch debugging help on
+    #ifndef DEBUG_HELP_SYSTEM
+    #define DEBUG_HELP_SYSTEM
+    #endif
 
 #endif
 
@@ -80,14 +80,14 @@
 /* Test whether we need to debug everything. */
 #if defined (ASSERTIONS_ALL)
 
-// switch all assertions on
-#ifndef ASSERTIONS_DISTRIBUTIONS
-#define ASSERTIONS_DISTRIBUTIONS
-#endif
+    // switch all assertions on
+    #ifndef ASSERTIONS_DISTRIBUTIONS
+    #define ASSERTIONS_DISTRIBUTIONS
+    #endif
 
-#ifndef ASSERTIONS_TREE
-#define ASSERTIONS_TREE
-#endif
+    #ifndef ASSERTIONS_TREE
+    #define ASSERTIONS_TREE
+    #endif
 
 #endif
 
@@ -105,9 +105,7 @@
 // ParallelMcmcmc depends on boost for multiprocessing
 // Uncomment the first line to enable the boost library
 //#define USE_LIB_OPENMP
-#ifdef USE_LIB_OPENMP
+//#ifdef USE_LIB_OPENMP
+//#endif
+
 #endif
-
-
-#endif
-

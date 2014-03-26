@@ -441,7 +441,7 @@ bool TestAdmixtureGraph::run(void) {
     }
     else
     {
-        ParallelMcmcmc myPmc3(myModel, moves, monitors, numChains, numProcesses, swapInterval, deltaTemp, sigmaTemp, startingHeat);
+        ParallelMcmcmc myPmc3(myModel, moves, monitors, "random", numChains, numProcesses, swapInterval, deltaTemp, sigmaTemp, startingHeat);
         myPmc3.run(mcmcGenerations/divGens);
         myPmc3.printOperatorSummary();
     }
