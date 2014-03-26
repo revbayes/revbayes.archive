@@ -106,7 +106,10 @@ bool TestMultispeciesCoalescent::run( void ) {
     }
     
     ConstantNode<TimeTree> *spTree = new ConstantNode<TimeTree>("speciesTree", t);
-    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new MultispeciesCoalescent( spTree, indiv2species) );
+    MultispeciesCoalescent *m = new MultispeciesCoalescent( spTree, indiv2species);
+    m->setNes(Ne);
+    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", m);
+
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     std::vector<const TimeTree*> simTrees;
     for (size_t i = 0; i < nGeneTrees; ++i) 
@@ -180,7 +183,9 @@ bool TestMultispeciesCoalescent::run( void ) {
     for (size_t i = 0; i < nGeneTrees; ++i) {
         std::stringstream o;
         o << "G_" << i;
-        geneTrees_inf.push_back( new StochasticNode<TimeTree>( o.str(), new MultispeciesCoalescent( spTree_inf, indiv2species) ) );
+	MultispeciesCoalescent* m = new MultispeciesCoalescent( spTree_inf, indiv2species) ;
+	m->setNes(Ne_inf);
+        geneTrees_inf.push_back( new StochasticNode<TimeTree>( o.str(), m ) );
         geneTrees_inf[i]->clamp( const_cast<TimeTree*>(simTrees[i]) );
     }
     

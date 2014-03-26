@@ -4,7 +4,7 @@
 #include "ConstantNode.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
-#include "Func_readTreeTrace.h"
+//#include "Func_readTreeTrace.h"
 #include "Mcmc.h"
 #include "Model.h"
 #include "Monitor.h"
