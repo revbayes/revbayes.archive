@@ -61,6 +61,7 @@ public:
     virtual RbLanguageObject*           dagReference(void);                                                                             //!< Make an object referencing the dag node of this object
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
+    virtual const std::string&          getTemplateValueType(void) const;                                                               //!< Get the type spec of the instance
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the type spec of the instance
     virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
@@ -68,15 +69,17 @@ public:
     // Basic utility functions you may want to override
     virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
     virtual RbLanguageObject*           convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
-    virtual RevBayesCore::DagNode*      getValueNode(void) const;
+    virtual RevBayesCore::DagNode*      getValueNode(void) const;                                                                       //!< Get my internal value node (if applicable)
+    virtual bool                        hasValueNode(void) const;                                                                       //!< Do I have an internal value node?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
 
-    // functions wrapper objects of RB core objects you might want to overwrite
+    // Functions that wrapper objects containing RB core objects might want to override
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual void                        replaceVariable(RbLanguageObject *newVar);                                                      //!< Replace the internal DAG node
+    virtual void                        replaceVariable(RbLanguageObject *newVar);                                                      //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
-  
+    virtual void                        setValueNode(RevBayesCore::DagNode *newVal);                                                    //!< Set or replace the internal dag node (and keep me)
+
     // Member variable functions you may want to override
     virtual RbLanguageObject*           executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
     virtual RbLanguageObject*           getMember(const std::string& name) const;                                                       //!< Get member variable 
@@ -86,7 +89,6 @@ public:
     virtual void                        setConstMember(const std::string& name, const RbPtr<const Variable> &var);                      //!< Set member variable
     virtual void                        setMember(const std::string& name, const RbPtr<Variable> &var);                                 //!< Set member variable
     virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
-
     
     // Basic utility functions you should not have to override
     const std::string&                  getType(void) const;                                                                            //!< Get the type specification as a string
