@@ -42,6 +42,7 @@ Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Moni
     chainActive(ca),
     chainHeat(ch),
     chainIdx(ci),
+    generation(0),
     model( m ),
     monitors(),
     moves(),
@@ -66,6 +67,7 @@ Mcmc::Mcmc(const Mcmc &m) :
         chainActive(m.chainActive),
         chainHeat(m.chainHeat),
         chainIdx(m.chainIdx),
+        generation(m.generation),
         model( m.model ),
         monitors(),
         moves(),
@@ -678,10 +680,14 @@ void Mcmc::startMonitors( void ) {
     {
         
         // open filestream for each monitor
-        monitors[i]->openStream();
+        //monitors[i]->openStream();
         
         // if this chain is active, print the header
         if (chainActive) // surprised this works properly...
+        {
+            monitors[i]->openStream();
             monitors[i]->printHeader();
+            
+        }
     }
 }

@@ -53,7 +53,9 @@ namespace RevLanguage {
         RbPtr<const Variable>                       prior;
         RbPtr<const Variable>                       posterior;
         RbPtr<const Variable>                       likelihood;
-        
+        RbPtr<const Variable>                       append;
+        RbPtr<const Variable>                       chainHeat;
+        RbPtr<const Variable>                       chainIdx;
     };
     
 }

@@ -41,7 +41,11 @@ void FileMonitor::constructInternalObject( void ) {
     bool pp = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
-    value = new RevBayesCore::FileMonitor(n, g, fn, sep, pp, l, pr);
+    bool app = static_cast<const RlBoolean &>( append->getValue() ).getValue();
+    bool ci = static_cast<const RlBoolean &>( chainIdx->getValue() ).getValue();
+    bool ch = static_cast<const RlBoolean &>( chainHeat->getValue() ).getValue();
+    
+    value = new RevBayesCore::FileMonitor(n, g, fn, sep, pp, l, pr, app, ci, ch);
 }
 
 
@@ -71,14 +75,15 @@ const MemberRules& FileMonitor::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         filemonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        filemonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
         filemonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-
-        
+        filemonitorMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("chainIdx", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("chainHeat", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -124,6 +129,15 @@ void FileMonitor::setConstMemberVariable(const std::string& name, const RbPtr<co
     }
     else if ( name == "likelihood" ) {
         likelihood = var;
+    }
+    else if (name == "chainIdx") {
+        chainIdx = var;
+    }
+    else if (name == "chainHeat") {
+        chainHeat = var;
+    }
+    else if (name == "append") {
+        append = var;
     }
     else {
         RbLanguageObject::setConstMemberVariable(name, var);
