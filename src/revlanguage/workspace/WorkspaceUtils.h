@@ -16,16 +16,16 @@ public:
     StringVector getFunctionSignatures(std::string name);    
     bool isFunction(std::string name);
 
-    StringVector getVariables(void);
+    StringVector getVariables(bool all=false);
     StringVector getVariableMembers(std::string name);
     bool isVariable(std::string name);
 
-    StringVector getTypes(void);
+    StringVector getTypes(bool all=true);
     StringVector getTypeMembers(std::string name);
     bool isType(std::string name);
 
     // to hide the distinction of variables and types
-    StringVector getObjects(void);
+    StringVector getObjects(bool all=true);
     StringVector getObjectMembers(std::string name);
     bool isObject(std::string name);
 

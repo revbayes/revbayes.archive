@@ -1,5 +1,5 @@
-#ifndef VectorSingleElementScaleMove_H
-#define VectorSingleElementScaleMove_H
+#ifndef VectorSingleElementSlidingMove_H
+#define VectorSingleElementSlidingMove_H
 
 #include "SimpleMove.h"
 #include "StochasticNode.h"
@@ -15,7 +15,7 @@ namespace RevBayesCore {
      *
      * 
      * This move randomly picks an element of a vector of positive real numbers,
-     * proposes a scaling factor and then scales the value.
+     * proposes a scaling factor and then Slidings the value.
      * The actual scaling factor is computed by sf = exp( lambda * ( u - 0.5 ) )
      * where u ~ Uniform(0,1).
      * It generally makes more sense to apply the scaling move on a vector of positive
@@ -27,13 +27,13 @@ namespace RevBayesCore {
      * @copyright GPL version 3
      *
      */
-    class VectorSingleElementScaleMove : public SimpleMove {
+    class VectorSingleElementSlidingMove : public SimpleMove {
         
     public:
-        VectorSingleElementScaleMove(StochasticNode<std::vector<double> >* n, double l, bool t, double w);                         //!< Constructor
+        VectorSingleElementSlidingMove(StochasticNode<std::vector<double> >* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        VectorSingleElementScaleMove*                     clone(void) const;                                                                  //!< Clone this object.
+        VectorSingleElementSlidingMove*                     clone(void) const;                                                                  //!< Clone this object.
         const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
@@ -50,7 +50,7 @@ namespace RevBayesCore {
         
         StochasticNode<std::vector<double> >*   variable;
 
-        double                                      lambda;                                                                             //!< The scale parameter of the move (larger lambda -> larger proposals).
+        double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
         size_t                                      index;                                                                              //!< The index of the last modified element.
 		double                                      storedValue;                                                                        //!< The stored value of the last modified element.
         
