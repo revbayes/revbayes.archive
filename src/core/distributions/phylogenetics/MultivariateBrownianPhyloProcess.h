@@ -12,7 +12,7 @@
 #include <iostream>
 
 
-#include "CovarianceMatrix.h"
+#include "PrecisionMatrix.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -22,7 +22,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<CovarianceMatrix>* insigma, const TypedDagNode< std::vector<double> >* inrootval);
+        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega, const TypedDagNode< std::vector<double> >* inrootval);
         MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &from);
         
         // public member functions
@@ -31,7 +31,7 @@ namespace RevBayesCore {
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
-        
+        size_t                                                  getDim() {return omega->getValue().getDim();}
         
     private:
         // helper methods
@@ -41,7 +41,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< CovarianceMatrix >*                 sigma;
+        const TypedDagNode< PrecisionMatrix >*                  omega;
         const TypedDagNode< std::vector<double> >*              rootVal;
         
     };

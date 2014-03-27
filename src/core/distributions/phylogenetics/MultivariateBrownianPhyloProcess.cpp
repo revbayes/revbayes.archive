@@ -21,21 +21,20 @@
 using namespace RevBayesCore;
 
 
-
 // constructor(s)
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< CovarianceMatrix >* insigma, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* inomega, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), inomega->getValue().getDim(), 0.0 )),
 tau( intau ),
-sigma( insigma ),
+omega( inomega ),
 rootVal( inrootVal ) {
     this->addParameter( tau );
-    this->addParameter( sigma );
+    this->addParameter( omega );
     this->addParameter( rootVal );
     
     simulate();
 }
 
 
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MatrixReal>( n ), tau( n.tau ), sigma( n.sigma ), rootVal( n.rootVal ) {
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MatrixReal>( n ), tau( n.tau ), omega( n.omega ), rootVal( n.rootVal ) {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -48,8 +47,14 @@ MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::clone(void) 
 
 double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
     
-    return recursiveLnProb(tau->getValue().getRoot());
-    
+    double lnProb = 0;
+    if (omega->getValue().isPositive()) {
+        lnProb = -0.5 * log(omega->getValue().getLogDet()) + recursiveLnProb(tau->getValue().getRoot());
+    }
+    else{
+        lnProb = RbConstants::Double::neginf;
+    }
+    return lnProb;
 }
 
 
@@ -61,12 +66,23 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
     
     if (! from.isRoot()) {
         
-        // x ~ normal(x_up, sigma^2 * branchLength)
+        // x ~ normal(x_up, omega^2 * branchLength)
         
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
-//        double standDev = sigma->getValue() * from.getBranchLength();
-//        lnProb += log( RbStatistics::Normal::lnPdf(val, standDev, upval) );
+        
+        const PrecisionMatrix& om = omega->getValue();
+        
+        double s2 = 0;
+        for (size_t i=0; i<getDim(); i++)   {
+            double tmp = 0;
+            for (size_t j=0; j<getDim(); j++)   {
+                tmp += om[i][j] * (val[j] - upval[j]);
+            }
+            s2 += (val[i] - upval[i]) * tmp;
+        }
+        
+        lnProb -= 0.5 * s2;
     }
     
     // propagate forward
@@ -98,11 +114,11 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
     
     if (! from.isRoot())    {
         
-        // x ~ normal(x_up, sigma^2 * branchLength)
+        // x ~ normal(x_up, omega^2 * branchLength)
         
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
-//        double standDev = sigma->getValue() * from.getBranchLength();
+//        double standDev = omega->getValue() * from.getBranchLength();
         
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -125,8 +141,8 @@ void MultivariateBrownianPhyloProcess::swapParameter(const DagNode *oldP, const 
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
-    if ( oldP == sigma ) {
-        sigma = static_cast< const TypedDagNode<CovarianceMatrix> * >( newP );
+    if ( oldP == omega ) {
+        omega = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
     }
     
     if ( oldP == rootVal ) {
