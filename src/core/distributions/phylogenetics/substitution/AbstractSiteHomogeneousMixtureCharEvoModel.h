@@ -11,6 +11,8 @@
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
+#include <memory.h>
+
 namespace RevBayesCore {
     
     /**
