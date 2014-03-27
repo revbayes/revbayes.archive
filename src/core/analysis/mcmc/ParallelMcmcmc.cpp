@@ -147,14 +147,9 @@ void ParallelMcmcmc::run(size_t generations)
                 pid = omp_get_thread_num();
             #endif
             
-            //std::cout << i << "\n";
-            //std::cout << "pid_" << pid << "...\n" << std::endl;
-            //std::cout << "size " << chainsPerProcess[pid].size() << "\n";
-            
             // Create process per chain
             for (size_t j = 0; j < chainsPerProcess[pid].size(); j++)
             {
-                //std::cout << "\t" << i << "," << j << "\n";
                 // get chain index from job vector
                 size_t chainIdx = chainsPerProcess[pid][j];
                 
@@ -168,7 +163,6 @@ void ParallelMcmcmc::run(size_t generations)
                     //if (chainIdx == activeIndex)
                     if (chains[chainIdx]->isChainActive() )
                     {
-                        //std::cout << i + k << " only one\n";
                         //chains[activeIndex]->
                         chains[chainIdx]->monitor(i+k);
                     }
