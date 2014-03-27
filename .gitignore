@@ -1,10 +1,15 @@
-+projects/cmake/README.txt
-+projects/cmake/regenerate.sh
+# Whitelist
+# ----------------------------------------------
+!projects/cmake/README.txt
+!projects/cmake/regenerate.sh
 
+# Blacklist
+# ----------------------------------------------
+projects/cmake
 src/revlanguage/constants.h
 src/ui/constants.h
+boost_1_55_0/bootstrap.log
 boost_1_55_0/bin.v2
 boost_1_55_0/stage/lib/
 boost_1_55_0/project
-projects/cmake
 projects/xcode/revbayes.xcodeproj

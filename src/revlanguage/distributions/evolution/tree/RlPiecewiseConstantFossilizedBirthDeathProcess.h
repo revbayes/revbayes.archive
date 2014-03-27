@@ -32,7 +32,6 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;    //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const; //!< Get member rules (const)
         
-        
         // Distribution functions you have to override
         RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* createDistribution(void) const;  //!< Create an internal object of the diveristy-dependent pure-birth process.
         
@@ -49,7 +48,7 @@ namespace RevLanguage {
         RbPtr<const Variable>                           psiTimes;
         RbPtr<const Variable>                           rho;
         RbPtr<const Variable>                           rhoTimes;
-        RbPtr<const Variable>                           tLast;
+     // RbPtr<const Variable>                           tLast;
         RbPtr<const Variable>                           origin;                     //!< The time of the process since the origin
         RbPtr<const Variable>                           condition;                  //!< The condition of the process (none/survival/#Taxa)
         RbPtr<const Variable>                           taxonNames;                 //!< The taxon names that will be applied to the initally simulated tree

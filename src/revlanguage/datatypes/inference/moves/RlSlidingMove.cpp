@@ -31,7 +31,7 @@ void SlidingMove::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double d = static_cast<const Real &>( delta->getValue() ).getValue();
+    double d = static_cast<const RealPos &>( delta->getValue() ).getValue();
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
     RevBayesCore::TypedDagNode<double>* tmp = static_cast<const Real &>( x->getValue() ).getValueNode();
@@ -65,10 +65,10 @@ const MemberRules& SlidingMove::getMemberRules(void) const {
     static MemberRules slidingMoveMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) 
+    if ( !rulesSet )
     {
         slidingMoveMemberRules.push_back( new ArgumentRule( "x", false, Real::getClassTypeSpec() ) );
-        slidingMoveMemberRules.push_back( new ArgumentRule( "delta", true, Real::getClassTypeSpec() , new Real(1.0) ) );
+        slidingMoveMemberRules.push_back( new ArgumentRule( "delta", true, RealPos::getClassTypeSpec() , new RealPos(1.0) ) );
         slidingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
