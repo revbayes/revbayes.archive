@@ -6,7 +6,7 @@
     <xsl:template match="/">
         <html>
             <head>
-                <title>RevBayes Man Pages :: <xsl:value-of select="//name" /></title>
+                <title>RevBayes Manual Pages :: <xsl:value-of select="//name" /></title>
                 <link rel="stylesheet" type="text/css" href="help.css"/>
             </head>
             <body>
@@ -15,7 +15,7 @@
                     <a href="index.html">[Index]</a>
                 </div>
                 
-                <h1>RevBayes Man Pages :: <xsl:value-of select="//name" /></h1>
+                <h1>RevBayes Manual Pages :: <xsl:value-of select="//name" /></h1>
                 
                 <h2>
                     Name

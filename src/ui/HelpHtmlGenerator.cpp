@@ -1,10 +1,12 @@
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
+
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>    
 #include <boost/filesystem/fstream.hpp>
 #include "boost/algorithm/string_regex.hpp"
+
 #include "pugixml.cpp"
 #include <vector>
 #include <iostream>
@@ -42,12 +44,11 @@ struct compare_path {
 
 int main(int argc, const char * argv[]) {
 
-    string installDir = INSTALL_DIR; // from constants.h, value set at installation by regenerate.sh
-    fs::path helpDir = fs::canonical(fs::path("../../help"), fs::path(installDir));
+    fs::path helpDir(HELP_DIR);
 
     cout << endl << "This tool will automatically generate the index.html page in:" << endl
             << helpDir.string() << " - directory" << endl
-            << "All '*.xml' files here will be parsed and the function names will be added " << endl
+            << "All '*.xml' files here will be parsed and the function names added " << endl
             << "in alphabetical order to index.html. If you have made any manual changes to " << endl
             << "'help/index.html' these will be overwritten if you choose to continue. " << endl
             << endl
@@ -84,8 +85,17 @@ int main(int argc, const char * argv[]) {
     }
 
     // read html templates
-    string entry_tpl = load_file(helpDir.string() + "/html-template/entry.tpl.html");
-    string index_tpl = load_file(helpDir.string() + "/html-template/index.tpl.html");
+    fs::path entry_tpl_file = helpDir / "html-template/entry.tpl.html";
+    fs::path index_tpl_file = helpDir / "html-template/index.tpl.html";
+    
+    if(!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file)){
+        std::cout << "Error: One or more of the html template files in help/html directory is missing." 
+                << std::endl << "The index html cannot be constructed and program will exit." << std::endl;
+        exit(-1);
+    }
+    
+    string entry_tpl = load_file(entry_tpl_file.string());
+    string index_tpl = load_file(index_tpl_file.string());
 
     string entry_result, tmp, tmp1;
     pugi::xml_document xml_doc;
@@ -98,7 +108,8 @@ int main(int argc, const char * argv[]) {
         // try to load and parse the xml file
         parse_result = xml_doc.load_file((helpDir.string() + "/" + file.string()).c_str(), pugi::parse_default);
         if (parse_result.status != pugi::status_ok) {
-            cout << "Warning: failed to parse " << file.string() << ": " << endl << parse_result.description() << endl;
+            cout << "Warning: failed to parse " << file.string() << ": " << endl << parse_result.description() << endl
+                    << "offset: " << parse_result.offset << std::endl;
             continue;
         }
 
