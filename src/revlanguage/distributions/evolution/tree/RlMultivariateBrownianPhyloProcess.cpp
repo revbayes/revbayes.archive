@@ -10,49 +10,51 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "BrownianPhyloProcess.h"
-#include "RlBrownianPhyloProcess.h"
+#include "MultivariateBrownianPhyloProcess.h"
+#include "RlMultivariateBrownianPhyloProcess.h"
 #include "Real.h"
 #include "RlTimeTree.h"
 #include "TimeTree.h"
 #include "Real.h"
 #include "StochasticNode.h"
+#include "PrecisionMatrix.h"
+#include "RealSymmetricMatrix.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
 
 
-BrownianPhyloProcess* BrownianPhyloProcess::clone( void ) const {
-    return new BrownianPhyloProcess(*this);
+MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::clone( void ) const {
+    return new MultivariateBrownianPhyloProcess(*this);
 }
 
 
-RevBayesCore::BrownianPhyloProcess* BrownianPhyloProcess::createDistribution( void ) const {
+RevBayesCore::MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::createDistribution( void ) const {
     // get the parameters
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
     
-    RevBayesCore::TypedDagNode<double>* s  = static_cast<const Real&>( sigma->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* r  = static_cast<const Real&>( rootval->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om  = static_cast<const RealSymmetricMatrix&>( omega->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const Vector<Real>&>( rootval->getValue() ).getValueNode();
     
-    RevBayesCore::BrownianPhyloProcess* d    = new RevBayesCore::BrownianPhyloProcess( tau, s, r );
+    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
     
-    return d;
+    return process;
 
 }
 
 
 
 /* Get class name of object */
-const std::string& BrownianPhyloProcess::getClassName(void) {
+const std::string& MultivariateBrownianPhyloProcess::getClassName(void) {
     
-    static std::string rbClassName = "Brownian Process along Phylogeny";
+    static std::string rbClassName = "MultivariateBrownianPhyloProcess";
     
 	return rbClassName;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& BrownianPhyloProcess::getClassTypeSpec(void) {
+const TypeSpec& MultivariateBrownianPhyloProcess::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -62,7 +64,7 @@ const TypeSpec& BrownianPhyloProcess::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& BrownianPhyloProcess::getMemberRules(void) const {
+const MemberRules& MultivariateBrownianPhyloProcess::getMemberRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -70,8 +72,8 @@ const MemberRules& BrownianPhyloProcess::getMemberRules(void) const {
     if ( !rulesSet )
     {
         dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "sigma", true, RealPos::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "rootval", true, Real::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -79,7 +81,7 @@ const MemberRules& BrownianPhyloProcess::getMemberRules(void) const {
 }
 
 
-const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
+const TypeSpec& MultivariateBrownianPhyloProcess::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -91,9 +93,9 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void BrownianPhyloProcess::printValue(std::ostream& o) const {
+ void MultivariateBrownianPhyloProcess::printValue(std::ostream& o) const {
     
-    o << " brownian(";
+    o << " MultivariateBrownian(";
     
     o << "tau=";
     if ( tree != NULL ) {
@@ -104,9 +106,9 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
 
      o << ",";
      
-     o << "sigma=";
-     if ( sigma != NULL ) {
-         o << sigma->getName();
+     o << "omega=";
+     if ( omega != NULL ) {
+         o << omega->getName();
      } else {
          o << "?";
      }
@@ -126,15 +128,15 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void BrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void MultivariateBrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {
         tree = var;
     }
-    else if ( name == "sigma" )
+    else if ( name == "omega" )
     {
-        sigma = var;
+        omega = var;
     }
     else if ( name == "rootval" )
     {
