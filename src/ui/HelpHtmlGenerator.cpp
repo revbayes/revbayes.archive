@@ -48,7 +48,7 @@ int main(int argc, const char * argv[]) {
 
     cout << endl << "This tool will automatically generate the index.html page in:" << endl
             << helpDir.string() << " - directory" << endl
-            << "All '*.xml' files here will be parsed and the function names will be added " << endl
+            << "All '*.xml' files here will be parsed and the function names added " << endl
             << "in alphabetical order to index.html. If you have made any manual changes to " << endl
             << "'help/index.html' these will be overwritten if you choose to continue. " << endl
             << endl
@@ -89,10 +89,11 @@ int main(int argc, const char * argv[]) {
     fs::path index_tpl_file = helpDir / "html-template/index.tpl.html";
     
     if(!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file)){
-        std::cout << "One or more of the html template files in help/html directory is missing.";
+        std::cout << "Error: One or more of the html template files in help/html directory is missing." 
+                << std::endl << "The index html cannot be constructed and program will exit." << std::endl;
+        exit(-1);
     }
     
-    if(!fs::exists(fs::path()));
     string entry_tpl = load_file(entry_tpl_file.string());
     string index_tpl = load_file(index_tpl_file.string());
 
@@ -107,7 +108,8 @@ int main(int argc, const char * argv[]) {
         // try to load and parse the xml file
         parse_result = xml_doc.load_file((helpDir.string() + "/" + file.string()).c_str(), pugi::parse_default);
         if (parse_result.status != pugi::status_ok) {
-            cout << "Warning: failed to parse " << file.string() << ": " << endl << parse_result.description() << endl;
+            cout << "Warning: failed to parse " << file.string() << ": " << endl << parse_result.description() << endl
+                    << "offset: " << parse_result.offset << std::endl;
             continue;
         }
 
