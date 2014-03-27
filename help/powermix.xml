@@ -8,6 +8,7 @@
     <title>Compute a power-based mixture of two simplices</title>
 
     <description>
+        
         <p>
             This function takes two simplex parameters "a" and "b", and computes a mixture of them by using a simplex parameter "prop"
             with two components as exponents. Each component x[i] in the mixture is computed as:
@@ -66,8 +67,9 @@
     
     <example>
         <!-- Line breaks will be preserved when displaying the example section  -->
-        a &lt;- simplex(1,1,1)
-        b &lt;- simplex(1,2,3)
+        <![CDATA[
+        a <- simplex(1,1,1)
+        b <- simplex(1,2,3)
         
         # Equal mixture of the two components
         powermix(a,b,simplex(1,1))
@@ -80,6 +82,7 @@
         
         # Make mixture dependent only on the first component
         powermix(a,b,simplex(1,0))
+        ]]>
     </example>
 
 </help_entry>

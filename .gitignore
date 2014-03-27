@@ -1,10 +1,18 @@
-+projects/cmake/README.txt
-+projects/cmake/regenerate.sh
+# Whitelist
+# ----------------------------------------------
+# starting line with ! will negate the "ignore". 
 
+!projects/cmake/README.txt
+!projects/cmake/regenerate.sh
+
+# Blacklist
+# ----------------------------------------------
+# ignore all that's not explicitly whitelisted.
+
+projects/cmake
 src/revlanguage/constants.h
 src/ui/constants.h
 boost_1_55_0/bin.v2
 boost_1_55_0/stage/lib/
 boost_1_55_0/project
-projects/cmake
 projects/xcode/revbayes.xcodeproj
