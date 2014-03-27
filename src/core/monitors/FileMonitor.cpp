@@ -50,6 +50,9 @@ FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
     append      = f.append;
     chainIdx    = f.chainIdx;
     chainHeat   = f.chainHeat;
+    
+    if (f.outStream.is_open())
+        openStream();
 }
 
 
@@ -69,7 +72,7 @@ void FileMonitor::closeStream() {
 void FileMonitor::monitor(long gen) {
 
     // get the printing frequency
-    int samplingFrequency = printgen;
+    long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first
