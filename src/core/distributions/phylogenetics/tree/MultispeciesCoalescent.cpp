@@ -1,5 +1,6 @@
 
 #include "Clade.h"
+#include "ConstantNode.h"
 #include "MultispeciesCoalescent.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
@@ -14,24 +15,34 @@
 
 using namespace RevBayesCore;
 
-MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp, const TypedDagNode<std::vector<double> > *N, 
+MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,  
                                                const std::map<std::string, std::string> &g2s) : TypedDistribution<TimeTree>( NULL ), 
-speciesTree( sp ), Ne( N ), numTaxa( g2s.size() ), gene2species( g2s ) {
+gene2species( g2s ),
+speciesTree( sp ),
+Nes( NULL ),
+Ne( NULL ),
+numTaxa( g2s.size() ),
+logTreeTopologyProb (0.0)
+ {
     
     addParameter( speciesTree );
-    addParameter( Ne );
+  //  addParameter( Ne );
     
     double lnFact = RbMath::lnFactorial((int)(numTaxa));
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
-    simulateTree();
+    //Default value for Ne
+    Ne = new ConstantNode<double>("Ne", new double(1.0) );
+    addParameter( Ne );
+    
+    redrawValue();
     
 }
 
 
 
-MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ), speciesTree( v.speciesTree ), Ne( v.Ne ), numTaxa( v.numTaxa ), gene2species( v.gene2species ), logTreeTopologyProb( v.logTreeTopologyProb ) {
+MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ), gene2species( v.gene2species ), speciesTree( v.speciesTree ), Nes (v.Nes), Ne( v.Ne ),  numTaxa( v.numTaxa ), logTreeTopologyProb( v.logTreeTopologyProb ) {
     // parameters are automatically copied
 }
 
@@ -229,7 +240,7 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
             
             TopologyNode *parent = coalTimes2coalNodes.begin()->second;
             double parentAge = parent->getAge();
-			double branchNe = Ne->getValue()[spNode->getIndex()];
+			double branchNe = getNe(spNode->getIndex());
 			double theta = 1.0 / branchNe;
 
             if ( parentAge < parentSpeciesAge ) 
@@ -548,13 +559,46 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
 //}
 
 
+double  MultispeciesCoalescent::getNe(size_t index) const {
+    if (Ne != NULL) {
+        return Ne->getValue();
+    }
+    else if (Nes != NULL) {
+        return (Nes->getValue()[index]);
+    }
+    else {
+        std::cerr << "Error: Null Pointers for Ne and Nes."<<std::endl;
+        exit(-1);
+    }
+}
+
+
 
 void MultispeciesCoalescent::redrawValue( void ) {
-    
+  
     simulateTree();
     
 }
 
+void MultispeciesCoalescent::setNes(TypedDagNode<std::vector<double> >* inputNes) {
+    if (Nes != NULL) {
+        removeParameter(Nes);
+    }
+    Nes = inputNes;
+    Ne= NULL;
+    addParameter(Nes);
+}
+
+
+void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe) {
+    if (Ne != NULL) {
+        removeParameter(Nes);
+    }
+    Ne = inputNe;
+    Nes = NULL;
+    addParameter(Ne);
+
+}
 
 
 
@@ -605,7 +649,7 @@ void MultispeciesCoalescent::simulateTree( void ) {
         }
         
         std::vector<TopologyNode*> initialIndividualsAtBranch = individualsPerBranch[spNode];
-        double branchNe = Ne->getValue()[spNode->getIndex()];
+        double branchNe = getNe(spNode->getIndex() );
         double theta = 1.0 / branchNe;
         
         double prevCoalescentTime = 0.0;
@@ -685,9 +729,13 @@ void MultispeciesCoalescent::simulateTree( void ) {
 
 void MultispeciesCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
-    if (oldP == Ne) 
+    if (oldP == Nes) 
     {
-        Ne = static_cast<const TypedDagNode< std::vector<double> >* >( newP );
+        Nes = static_cast<const TypedDagNode< std::vector<double> >* >( newP );
+    }
+       else if ( oldP == Ne)
+    {
+        Ne = static_cast<const TypedDagNode< double >* >( newP );
     }
     else if ( oldP == speciesTree)
     {

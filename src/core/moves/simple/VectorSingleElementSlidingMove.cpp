@@ -1,4 +1,4 @@
-#include "VectorSingleElementScaleMove.h"
+#include "VectorSingleElementSlidingMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -11,27 +11,27 @@
 using namespace RevBayesCore;
 
 
-VectorSingleElementScaleMove::VectorSingleElementScaleMove(StochasticNode<std::vector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
+VectorSingleElementSlidingMove::VectorSingleElementSlidingMove(StochasticNode<std::vector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
     
 }
 
 
 /** Clone object */
-VectorSingleElementScaleMove* VectorSingleElementScaleMove::clone( void ) const {
+VectorSingleElementSlidingMove* VectorSingleElementSlidingMove::clone( void ) const {
     
-    return new VectorSingleElementScaleMove( *this );
+    return new VectorSingleElementSlidingMove( *this );
 }
 
 
 
-const std::string& VectorSingleElementScaleMove::getMoveName( void ) const {
+const std::string& VectorSingleElementSlidingMove::getMoveName( void ) const {
     static std::string name = "VectorSingleElementMove";
     
     return name;
 }
 
 
-double VectorSingleElementScaleMove::performSimpleMove( void ) {
+double VectorSingleElementSlidingMove::performSimpleMove( void ) {
         
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -45,27 +45,27 @@ double VectorSingleElementScaleMove::performSimpleMove( void ) {
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    v[index] *= scalingFactor;
+    double slidingFactor = lambda * ( u - 0.5 );
+    v[index] += slidingFactor;
     
     variable->addTouchedElementIndex(index);
 
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = 0;
     
     return lnHastingsratio;
 }
 
-void VectorSingleElementScaleMove::acceptSimpleMove()   {
+void VectorSingleElementSlidingMove::acceptSimpleMove()   {
     variable->clearTouchedElementIndices();
 }
 
-void VectorSingleElementScaleMove::printParameterSummary(std::ostream &o) const {
+void VectorSingleElementSlidingMove::printParameterSummary(std::ostream &o) const {
     o << "lambda = " << lambda;
 }
 
 
-void VectorSingleElementScaleMove::rejectSimpleMove( void ) {
+void VectorSingleElementSlidingMove::rejectSimpleMove( void ) {
     
     std::vector<double>& v = variable->getValue();
     v[index] = storedValue;
@@ -73,7 +73,7 @@ void VectorSingleElementScaleMove::rejectSimpleMove( void ) {
     
 }
 
-void VectorSingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
+void VectorSingleElementSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
@@ -82,7 +82,7 @@ void VectorSingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
 }
 
 
-void VectorSingleElementScaleMove::tune( void ) {
+void VectorSingleElementSlidingMove::tune( void ) {
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) {

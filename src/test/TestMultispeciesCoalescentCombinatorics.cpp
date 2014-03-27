@@ -68,7 +68,7 @@ bool TestMultispeciesCoalescentCombinatorics::run( void ) {
     }
     
     ConstantNode<TimeTree> *spTree = new ConstantNode<TimeTree>("speciesTree", speciesTree);
-    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new MultispeciesCoalescent( spTree, Ne, indiv2species) );
+    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new MultispeciesCoalescent( spTree, indiv2species) );
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     std::vector<const TimeTree*> simTrees;
     for (size_t i = 0; i < nGeneTrees; ++i) 

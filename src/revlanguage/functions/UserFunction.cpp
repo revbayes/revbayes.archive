@@ -23,8 +23,11 @@
 #include "UserFunction.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RealPos.h"
 #include "Signals.h"
+#include "TypedUserFunction.h"
 #include "TypeSpec.h"
+#include "Workspace.h"
 
 #include <sstream>
 
@@ -36,12 +39,20 @@ UserFunction::UserFunction( const ArgumentRules*  argRules,
                            std::list<SyntaxElement*>*  stmts,
                            Environment*                defineEnv)
 : Function(), argumentRules(argRules), returnType(retType), code(stmts), defineEnvironment(defineEnv) {
-    
+
+    // Needed for new model of treating user functions, so they can be included in dags. Uncommented for now.
+    // templateValueType = Workspace::userWorkspace().getTemplateValueType( returnType.getType() );
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) : Function(x), argumentRules( new ArgumentRules(*x.argumentRules) ), returnType( x.returnType ), code( NULL ), defineEnvironment( NULL ) {
+UserFunction::UserFunction(const UserFunction &x) :
+    Function(x),
+    argumentRules( new ArgumentRules(*x.argumentRules) ),
+    returnType( x.returnType ),
+    code( NULL ),
+    defineEnvironment( NULL ),
+    templateValueType( x.templateValueType ){
     
     // clone the environment
     defineEnvironment   = x.defineEnvironment->clone();
@@ -80,6 +91,8 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
             SyntaxElement* element = (*i)->clone();
             code->push_back(element);
         }
+        
+        templateValueType = f.templateValueType;
     }
     
     return *this;
@@ -115,16 +128,56 @@ UserFunction* UserFunction::clone(void) const {
 /** Execute function: call the object's internal implementation through executeOperation */
 RbLanguageObject* UserFunction::execute( void ) {
     
+    // For now, use the old way
+    return executeCode();
+    
+    // If we can match the types, we return an appropriate model variable with a deterministic node inside it
+    // If we cannot match the types, we return whatever variable the function returns, with a NULL function pointer
+    // to make sure we can warn the user if the object is included in a model dag
+
+    /* Return value of objects that do not have a templated internal value node */
+    if ( templateValueType == "" )
+        return executeCode();
+    
+    RbLanguageObject* retValue = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
+    
+    /* Generate the required internal function object */
+    if ( templateValueType == "double" )
+    {
+        /* templated from double */
+        RevBayesCore::TypedUserFunction<double>* f       = new RevBayesCore::TypedUserFunction<double>( this, args );
+        RevBayesCore::DeterministicNode<double>* detNode = new RevBayesCore::DeterministicNode<double>("", f);
+
+        static_cast< RlModelVariableWrapper<double>* >( retValue )->setValueNode( detNode );
+    }
+    else
+    {
+        /* Unknown template type  */
+        delete retValue;
+        throw( "This template value type not supported yet. This is a bug; please report it to the RevBayes issue tracker.");
+    }
+
+
+    return retValue;
+    
+}
+
+    
+/** In this function we execute the Rev code for the function (uncompiled syntax tree for now) */
+RbLanguageObject* UserFunction::executeCode( void ) {
+    
     // Clear signals
     Signals::getSignals().clearFlags();
     
     // Set initial return value
     RbPtr<Variable> retVar = NULL;
     
-    // Create new variable frame
+    // Create new variable frame starting with the environment where we defined the function
+    // If we can no longer access the variables we need, an error will be thrown, so referencing
+    // variables in the define environment is at the user's own risk
     Environment functionEnvironment = Environment( defineEnvironment );
-    // \TODO: Check that the arguments can still be accessed
-    //    Environment functionEnvironment = Environment( args );
+
+    // Add the arguments to the environment
     for (std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it) {
         RbPtr<Variable> theVar = it->getVariable()->clone();
         functionEnvironment.addVariable( it->getLabel(), theVar );
