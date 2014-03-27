@@ -67,8 +67,9 @@ PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDe
 
 
 /**
- * Compute the log-transformed probability of the current value under the current parameter values.
- *
+ * Compute the log probability of the current value under the current parameter values.
+ * Tip-dating (Theorem 1, Stadler et al. 2013 PNAS)
+ * Ancestral fossils will be considered in the future.
  */
 double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
@@ -79,10 +80,10 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     double org = origin->getValue();
     
     // retrieved the speciation times
-    std::vector<double>* agesInternalNodes  = getAgesOfInternalNodesFromMostRecentSample();
-    std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
+    std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
+    std::vector<double>* agesTips  = getAgesOfTipsFromMostRecentSample();
     
-    // multiply the probabilities for the tip ages
+    // for the tip ages
     for (size_t i = 0; i < numTaxa; ++i) 
     {
         if (lnProbTimes == RbConstants::Double::nan ||
@@ -100,11 +101,12 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         }
         else
         {
-        //  lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
+            lnProbTimes += log( fossil[index] / q(index, t) );
         }
     }
     
-    for (size_t i = 0; i < numTaxa-1; ++i) 
+    // for the internal node ages
+    for (size_t i = 0; i < numTaxa-1; ++i)
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
@@ -113,12 +115,13 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
             return RbConstants::Double::nan;
         }
         
-        double t = (*agesInternalNodes)[i];
+        double t = (*agesInts)[i];
         size_t index = l(t);
-        //  lnProbTimes += log( q(index,t+timeSinceLastSample) * birth[index] );
+        lnProbTimes += log( q(index,t) * birth[index] );
     }
-    
-    for (size_t i = 0; i < rateChangeTimes.size(); ++i) 
+ 
+    // for the degree-two vertices
+    for (size_t i = 0; i < rateChangeTimes.size(); ++i)
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
@@ -134,7 +137,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     
     lnProbTimes += log( q(rateChangeTimes.size(), org ) );
     
-    delete agesInternalNodes;
+    delete agesInts;
     delete agesTips;
     
     return lnProbTimes;
@@ -237,7 +240,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
     fossil.clear();
     sampling.clear();
     
-    std::set<double> eventTimes;
+    std::set<double> eventTimes;  // size(eventTimes) = size(rates) -1
     
     const std::vector<double>& birthTimes = lambdaTimes->getValue();
     for (std::vector<double>::const_iterator it = birthTimes.begin(); it != birthTimes.end(); ++it) 
@@ -272,7 +275,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
     const std::vector<double> &f = psi->getValue();
     const std::vector<double> &s = rho->getValue();
     
-    birth.push_back(    b[0] );
+    birth.push_back(    b[0] );  // fill in the first rate at time 0
     death.push_back(    d[0] );
     fossil.push_back(   f[0] );
     sampling.push_back( s[0] );
