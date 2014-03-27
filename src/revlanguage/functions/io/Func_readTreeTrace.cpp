@@ -54,7 +54,7 @@ RbLanguageObject* Func_readTreeTrace::execute( void ) {
     std::vector<std::string> vectorOfFileNames;
     if ( myFileManager.isFile() ) 
     {
-        vectorOfFileNames.push_back( myFileManager.getFileName() );
+        vectorOfFileNames.push_back( myFileManager.getFullFileName() );
     } 
     else 
     {
