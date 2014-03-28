@@ -30,39 +30,31 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual AbstractMove*                                   clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                                                            //!< Get the name of the move for summary printing
-        virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;                                             //!< Swap the pointers to the variable on which the move works on.
-        virtual void                                            perform(void) = 0;                                                                      //!< Perform the move.
         virtual void                                            printSummary(std::ostream &o) const = 0;                                                //!< Print the move summary
+        virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;                                             //!< Swap the pointers to the variable on which the move works on.
         
         // functions you should not override
-//        void                                                    autoTune(void);                                                                         //!< automatically tune this move
+        void                                                    autoTune(void);                                                                         //!< Automatic tuning of the move.
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
-//        virtual bool                                            isActive(unsigned long g) const;                                                        //!< Is this move active at the iteration?
-        
-        // methods you may want to overwrite
+        void                                                    perform(void);                                                                          //!< Perform the move.
         
     protected:
-        AbstractMove(double w, bool autoTune = false);                                      //!< Constructor
+        AbstractMove(double w, bool autoTune = false);                                                                                                  //!< Constructor
         
         
-        // method you might want to override
+        // pure virtual public methods
+        virtual void                                            performMove(void) = 0;                                                                  //!< Perform the move.
         virtual void                                            tune(void) = 0;                                                                         //!< Specific tuning of the move
+        
         
         // parameters
         double                                                  weight;
-        
-        // Hidden member variables
         bool                                                    autoTuning;
         unsigned int                                            numTried;                                                                               //!< Number of times tried
                 
     };
     
 }
-
-
-
-// Global functions using the class
-std::ostream&                       operator<<(std::ostream& o, const RevBayesCore::AbstractMove& x);   
 
 
 #endif
