@@ -14,6 +14,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+
 #include "StochasticNode.h"
 
 #include <iostream>
@@ -49,7 +50,7 @@ double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
     
     double lnProb = 0;
     if (omega->getValue().isPositive()) {
-        lnProb = -0.5 * log(omega->getValue().getLogDet()) + recursiveLnProb(tau->getValue().getRoot());
+        lnProb = 0.5 * log(omega->getValue().getLogDet()) + recursiveLnProb(tau->getValue().getRoot());
     }
     else{
         lnProb = RbConstants::Double::neginf;
@@ -115,15 +116,17 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
     if (! from.isRoot())    {
         
         // x ~ normal(x_up, omega^2 * branchLength)
+
+        std::vector<double>& val = (*value)[index];
         
+        omega->getValue().drawNormalSample((*value)[index]);
+
         size_t upindex = from.getParent().getIndex();
-        std::vector<double> upval = (*value)[upindex];
-//        double standDev = omega->getValue() * from.getBranchLength();
-        
-        // simulate the new Val
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-  //      (*value)[index] = RbStatistics::Normal::rv( upval, standDev, *rng);
-        
+        std::vector<double>& upval = (*value)[upindex];
+
+        for (size_t i=0; i<getDim(); i++)   {
+            val[i] += upval[i];
+        }
     }
     
     // propagate forward

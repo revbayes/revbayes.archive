@@ -9,6 +9,7 @@ using namespace RevBayesCore;
 
 DagNode::DagNode( const std::string &n ) : 
         children(),
+        heat( 1.0 ),
         name( n ), 
         parents(),
         touchedElements(),
@@ -20,6 +21,7 @@ DagNode::DagNode( const std::string &n ) :
 
 DagNode::DagNode( const DagNode &n ) : 
         children(),
+        heat( n.heat ),
         name( n.name ),  
         parents( n.parents ),
         touchedElements( n.touchedElements ),
@@ -89,6 +91,7 @@ DagNode& DagNode::operator=(const DagNode &d)
         }
         
         children.clear();
+        heat = d.heat;
         name = d.name;  
         parents = d.parents;
         touchedElements = d.touchedElements;

@@ -48,6 +48,11 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
+#ifndef USE_LIB_OPENMP2
+    throw RbException("You must #define USE_LIB_OPENMP to use ParallelMcmcmc");
+    return;
+#endif
+    
     // now allocate a new MCMC object
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
     const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
@@ -67,6 +72,7 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 
 /* Map calls to member methods */
 RbLanguageObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+
     
     if (name == "run")
     {

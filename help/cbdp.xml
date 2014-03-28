@@ -1,73 +1,81 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="help.xsl" type="text/xsl"?>
 
-<help_entry>
+<revbayes-help>
+<function-help-entry>
 
     <name>cBDP</name>
 
     <title>Constant-rate birth-death process</title>
 
     <description>
-        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+        <!-- Use <p> tags to separate paragraphs, if needed -->
         <p>
-            The constant-rate birth-death process specifies a prior distribution on time trees, that is a uniform distribution on labelled histories and a distribtion on the divergence times.
-            The trees are ultrametric (i.e. all tips were sampled at the same time). The speciation and extinction rates of the process are constant.
-            We do not constrain the parameter values so that the speciation rate must be larger than the extinction rate.
-        </p>
-        <p>
-            Another paragraph.
+            The constant-rate birth-death process species a prior probability distribution on time trees. The birth (speciation) and death (extinction)
+            rates are assumed to be constant over time. Unlike some implementations, cBDP does not constrain the birth rate to be larger than the death
+            rate.
         </p>
     </description>
 
     <usage>
         <![CDATA[
-        ConstBDProcess cBDP( RealPos lambda, RealPos mu = 0.0, RealPos origin, Probability rho = 1.0, String samplingStrategy="uniform", String condition="survival", Natural nTaxa, Vector<String> names, Vector<Clade> constraints )
+        ConstBDProcess cBDP(
+                             RealPos        lambda,
+                             RealPos        mu = 0.0,
+                             RealPos        origin,
+                             Probability    rho = 1.0,
+                             String         samplingStrategy="uniform",
+                             String         condition="survival",
+                             Natural        nTaxa,
+                             Vector<String> names,
+                             Vector<Clade>  constraints
+                           )
         ]]>
-    </usage>    
-    
+    </usage>
+
     <argument>
         <label>lambda</label>
         <argumentType>dynamic</argumentType>
-        <description>The speciation rate.</description>
+        <description>Birth (speciation) rate.</description>
         <valueType>Positive real number</valueType>
     </argument>
     <argument>
         <label>mu</label>
+        <description>Death (extinction) rate.</description>
         <argumentType>dynamic</argumentType>
-        <description>The extinction rate.</description>
         <valueType>Positive real number</valueType>
     </argument>
     <argument>
         <label>origin</label>
-        <argumentType>dynamic</argumentType>
         <description>The time of the process since the origin, i.e., the length of the stem branch plus the crown age.</description>
+        <argumentType>dynamic</argumentType>
         <valueType>Positive real number</valueType>
     </argument>
     <argument>
         <label>rho</label>
-        <argumentType>dynamic</argumentType>
         <description>The taxon sampling probability/fraction.</description>
+        <argumentType>dynamic</argumentType>
         <valueType>Positive real number between 0.0 and 1.0</valueType>
         <defaultValue>1.0</defaultValue>
     </argument>
     <argument>
         <label>samplingStrategy</label>
+        <description>The sampling strategy used if the taxon sampling is incomplete.</description>
         <argumentType>fixed</argumentType>
-        <description>The sampling strategy of incomplete taxon sampling.</description>
         <valueType>String</valueType>
-        <option>uniform</option>
-        <option>diversified</option>
-        <defaultValue>uniform</defaultValue>
+        <option>"uniform"</option>
+        <option>"diversified"</option>
+        <defaultValue>"uniform"</defaultValue>
     </argument>
     <argument>
         <label>condition</label>
         <argumentType>fixed</argumentType>
-        <description>The condition of the process, e.g., if we condition only on the time of the process, survival (non-extinction), obtaining a tree or the number of observed. For the latter choices we always condition additionally on the time.</description>
+        <description>Conditioning of the process. For details, see below.</description>
         <valueType>String</valueType>
-        <option>time</option>
-        <option>survival</option>
-        <option>tree</option>
-        <option>nTaxa</option>
+        <option>"time"</option>
+        <option>"survival"</option>
+        <option>"tree"</option>
+        <option>"nTaxa"</option>
         <defaultValue>time</defaultValue>
     </argument>
     <argument>
@@ -95,9 +103,23 @@
     <details>
         <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
         <p>
-            The implementation of the constant-rate birth-death process is based on Nee et al. (1994). The correction for incomplete biased (diversified) taxon sampling is
-            based on Höhna et al. (2011).
+            The implementation of the constant-rate birth-death process is based on Nee et al. (1994). The unconditioned process results in an improper probability
+            distribution, so the process needs to be conditioned on something. Possibilities include to condition the process on the time (duration), on survival
+            (non-extinction), on obtaining a tree, or on obtaining the number of observed taxa. The condition of the process is controlled by the 'condition' 
+            parameter.
         </p>
+        <p>
+            The process gives rise to trees with extinct branches, but observed trees typically do not include extinct branches. As implemented here, we
+            assume that it is trees without extinct branches, so-called reconstructed trees, that we observe. The probability distribution is modified accordingly.
+        </p>
+        <p>
+            It is commonly the case that the observed tree does not include all tips. The included tips may have been sampled uniformly at random from the available
+            complete tree. A particularly common bias is that the investigator has tried to maximize the diversity in the sampled tree, by including tips that are as
+            distantly related to each other as possible. This is referred to as diversified sampling. It is critical to model the sampling process
+            correctly to obtain accurate estimates of the birth and death rates (Hoehna et al. 2011); particularly the estimate of the death rate is sensitive to
+            violations of the sampling assumptions.
+        </p>
+
     </details>
 
     <author>Sebastian Hoehna</author>
@@ -120,16 +142,15 @@
     <seeAlso>
         <!-- The xslt page will try to auto generate links to the referred help entries, therefore
         only exact names of help items should be listed here (case sensitive) -->
-        <entry>mcmc</entry>
-        <entry>foobar</entry>
+        <entry>diversityDependentBirthDeathProcess</entry>
     </seeAlso>
     
     <example>
-        <!-- Line breaks will be preserved when displaying the example section  -->
-        trueTree &lt;- readTrees("data/primate.tree")[1]
+        <![CDATA[
+        trueTree <- readTrees("data/primate.tree")[1]
         
-        names &lt;- trueTree.names()
-        taxaCount &lt;- names.size()
+        names <- trueTree.names()
+        taxaCount <- names.size()
         
         # Birth-Death process priors
         speciation ~ exponential(0.1)
@@ -137,33 +158,28 @@
         org ~ unif(0.0,50.0)
         
         # moves for the birth-death parameters
-        moves[1] &lt;- mScale(speciation, lambda=1, tune=true, weight=2)
-        moves[2] &lt;- mScale(extinction, lambda=1, tune=true, weight=2)
-        moves[3] &lt;- mSlide(org, delta=1.0, weight=2.0)
+        moves[1] <- mScale(speciation, lambda=1, tune=true, weight=2)
+        moves[2] <- mScale(extinction, lambda=1, tune=true, weight=2)
+        moves[3] <- mSlide(org, delta=1.0, weight=2.0)
        
         # tree from birth-death process
         tau ~ cBDP(origin=org, lambda=speciation, mu=extinction, nTaxa=taxaCount, names=names)
        
         tau.clamp( trueTree )
         
-        monitors[1] &lt;- modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
-        monitors[2] &lt;- screenmonitor(printgen=1000, separator = "	", speciation)
+        monitors[1] <- modelmonitor(filename="testBirthDeath.log",printgen=10, separator = "	")
+        monitors[2] <- screenmonitor(printgen=1000, separator = "	", speciation)
         
-        mymodel &lt;- model(tau)
+        mymodel <- model(tau)
         
-        mymcmc &lt;- mcmc(mymodel, monitors, moves)
+        mymcmc <- mcmc(mymodel, monitors, moves)
         
         mymcmc.burnin(generations=20000,tuningInterval=100)
         mymcmc.run(generations=200000)
         mymcmc.operatorSummary()
-        
-        # quit RevBayes. DANGER!!! ;)
-        q()
+        ]]>
        
     </example>
 
-</help_entry>
-
-
-
-
+</function-help-entry>
+</revbayes-help>

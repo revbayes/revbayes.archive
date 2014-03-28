@@ -54,6 +54,7 @@ namespace RevLanguage {
         RbPtr<const Variable>                       deltaHeat;
         RbPtr<const Variable>                       sigmaHeat;
         RbPtr<const Variable>                       swapInterval;
+        RbPtr<const Variable>                       append;
     };
     
 }
