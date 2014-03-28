@@ -96,11 +96,12 @@ namespace RevBayesCore {
         virtual void                                                touchMe(DagNode *toucher) = 0;                                                  //!< Touch myself (flag for recalculation)
     
         // helper functions
-        void                                                        printChildren(std::ostream& o) const;                                   //!< Print children DAG nodes
-        void                                                        printParents(std::ostream& o) const;                                    //!< Print children DAG nodes
+        void                                                        printChildren(std::ostream& o) const;                                           //!< Print children DAG nodes
+        void                                                        printParents(std::ostream& o) const;                                            //!< Print children DAG nodes
         
         // members
-        mutable std::set<DagNode*>                                  children;                                                                      //!< The children in the model graph of this node
+        mutable std::set<DagNode*>                                  children;                                                                       //!< The children in the model graph of this node
+        double                                                      heat;                                                                           //!< The heat that will be applied to the likelihood function
         std::string                                                 name;
         std::set<const DagNode*>                                    parents;                                                                        //!< The parents in the DAG of this node
         std::set<size_t>                                            touchedElements;

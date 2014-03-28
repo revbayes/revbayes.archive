@@ -49,6 +49,9 @@ ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(const ExtendedNewickTreeMon
     posterior   = m.posterior;
     likelihood  = m.likelihood;
     append      = m.append;
+    
+    if (m.outStream.is_open())
+        openStream();
 }
 
 

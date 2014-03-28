@@ -35,7 +35,8 @@ ModelMonitor::ModelMonitor( const ModelMonitor &m) : Monitor( m ),
     append( m.append ),
     stochasticNodesOnly( m.stochasticNodesOnly )
 {
-    
+    if (m.outStream.is_open())
+        openStream();
 }
 
 

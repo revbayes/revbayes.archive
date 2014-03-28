@@ -114,7 +114,7 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
      o << ",";
      
      o << "rootval=";
-     if ( sigma != NULL ) {
+     if ( rootval != NULL ) {
          o << rootval->getName();
      } else {
          o << "?";
