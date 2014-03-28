@@ -8,8 +8,8 @@ $ ./regenerate.sh
 
 CMake build instructions for a development build:
 $ cmake . -DCMAKE_BUILD_TYPE=debugfull
-$ make
+$ make -j 4
 $ ./rb
 
-When making a release, use the cmake flag:
+When making a release, use instead this cmake flag:
 -DCMAKE_BUILD_TYPE=release

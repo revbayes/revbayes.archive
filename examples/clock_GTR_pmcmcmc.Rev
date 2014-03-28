@@ -65,24 +65,24 @@ seq.clamp(D)
 
 mymodel <- model(pi)
 
-monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)
+monitors[1] <- modelmonitor(filename="/Users/mlandis/Documents/code/rb_mlandis/Build/Products/Debug/gtr_clock.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="/Users/mlandis/Documents/code/rb_mlandis/Build/Products/Debug/gtr_clock.trees",printgen=10, separator = "	", append=false, chainIdx=true, chainHeat=false, tau)
 monitors[3] <- screenmonitor(printgen=10, separator = "	", pi)
 
  
 #mymcmc <- mcmc(mymodel, monitors, moves)
-mypmcmcmc <- pmcmcmc(mymodel, monitors, moves, numChains=8, numProcessors=8, deltaHeat=0.5, sigmaHeat=1.2, startHeat=0.8, swapInterval=30)
+mypmcmcmc <- pmcmcmc(mymodel, monitors, moves, moveschedule="random", numChains=8, numProcessors=8, deltaHeat=0.5, sigmaHeat=1.2, startHeat=0.8, swapInterval=30)
 
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 # mypmcmcmc.burnin(generations=1000,tuningInterval=100)
-mypmcmcmc.run(generations=2000)
+mypmcmcmc.run(generations=200)
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
- treetrace <- readTreeTrace("./gtr_clock.trees")
+treetrace <- readTreeTrace("/Users/mlandis/Documents/code/rb_mlandis/Build/Products/Debug/gtr_clock.trees")
 # and get the summary of the tree trace
- treetrace.summarize()
+treetrace.summarize()
 
 
- mapTree(treetrace,"primates_clock_MAP.tre")
+mapTree(treetrace,"primates_clock_MAP.tre")
