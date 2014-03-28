@@ -30,7 +30,7 @@ RealSymmetricMatrix::RealSymmetricMatrix(void) : RlModelVariableWrapper<RevBayes
 
 
 /* Construct from double */
-RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> * mat ) : RlModelVariableWrapper<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(mat->getValue().getDim()) ) {
+RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> * mat ) : RlModelVariableWrapper<RevBayesCore::PrecisionMatrix>( mat ) {
 }
 
 
