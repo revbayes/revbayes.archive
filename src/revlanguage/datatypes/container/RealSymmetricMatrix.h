@@ -38,7 +38,7 @@ namespace RevLanguage {
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+//        virtual bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
         

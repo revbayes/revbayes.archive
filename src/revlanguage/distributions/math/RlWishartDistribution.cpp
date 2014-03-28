@@ -40,10 +40,11 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
-    
+    /*
     if (omega != NULL)  {
         om = static_cast<const RealSymmetricMatrix &>( omega->getValue() ).getValueNode();
     }
+     */
     if (kappa != NULL)  {
         ka = static_cast<const RealPos&>( kappa->getValue() ).getValueNode();
     }
@@ -52,7 +53,7 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
 
     RevBayesCore::TypedDagNode<int>* dm = NULL;
     if (dim != NULL)    {
-        dm = static_cast<const Natural &>( df->getValue()).getValueNode();
+        dm = static_cast<const Natural &>( dim->getValue()).getValueNode();
     }
     RevBayesCore::WishartDistribution* w    =  0;
     
@@ -63,7 +64,7 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
         if (! dm || ! ka)   {
             throw RbException("error in WishartDistribution: should specify arguments");
         }
-            w = new RevBayesCore::WishartDistribution( dm, ka, deg );
+        w = new RevBayesCore::WishartDistribution( dm, ka, deg );
     }
     return w;
 }
@@ -97,7 +98,7 @@ const MemberRules& WishartDistribution::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         
-        distExpMemberRules.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+//        distExpMemberRules.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
         distExpMemberRules.push_back( new ArgumentRule( "df", true, Natural::getClassTypeSpec() ) );
         distExpMemberRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec() ) );
         distExpMemberRules.push_back( new ArgumentRule( "dim", true, Natural::getClassTypeSpec() ) );
@@ -120,11 +121,13 @@ const TypeSpec& WishartDistribution::getTypeSpec( void ) const {
 /** Print value for user */
 void WishartDistribution::printValue(std::ostream& o) const {
     
-    o << " Wishart(sigma=";
+    o << " Wishart(omega=";
+/*
     if ( omega != NULL ) {
         o << omega->getName();
     } else {
-        if (kappa != NULL)  {
+*/
+ if (kappa != NULL)  {
             if (dim == NULL)    {
                 throw RbException("error in Wishart distribution: kappa and dim should both be non null");
             }
@@ -133,7 +136,7 @@ void WishartDistribution::printValue(std::ostream& o) const {
         else{
             o << "?";
         }
-    }
+   // }
     o << ")";
 }
 
@@ -142,7 +145,7 @@ void WishartDistribution::printValue(std::ostream& o) const {
 void WishartDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
     if ( name == "omega" ) {
-        omega = var;
+//        omega = var;
     }
     else if ( name == "kappa" ) {
         kappa = var;
