@@ -13,6 +13,7 @@
 #include "RbConstants.h"
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
+#include "DistributionWishart.h"
 
 
 using namespace RevBayesCore;
@@ -44,7 +45,7 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(indim->getV
 }
 
 WishartDistribution::WishartDistribution(const WishartDistribution& from) :
-    TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getDim())),
+    TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getValue().getDim())),
     dim(from.dim),
     omega0(from.omega0),
     kappa(from.kappa),
@@ -59,16 +60,6 @@ WishartDistribution::WishartDistribution(const WishartDistribution& from) :
         addParameter(df);
 
         redrawValue();
-}
-
-size_t WishartDistribution::getDim()  const {
-    if (dim)    {
-        return dim->getValue();
-    }
-    if (! omega0)   {
-        throw RbException("error in WishartDistribution::getDim: should have either integer or matrix parameter");
-    }
-    return omega0->getValue().getDim();
 }
 
 WishartDistribution* WishartDistribution::clone(void) const   {
@@ -86,33 +77,28 @@ void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP
 }
 
 
-double WishartDistribution::getLogDet() const   {
-    if (omega0) {
-        return omega0->getValue().getLogDet();
-    }
-    return getDim() * log(kappa->getValue());
-}
-
 double WishartDistribution::computeLnProbability(void)  {
     
+    size_t dim = getValue().getDim();
+    
     double ret = 0;
-    ret -= 0.5 * getDF() * getLogDet();
-    ret += 0.5 * (getDF() - getDim() - 1) * getValue().getLogDet();
+    ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
+    ret += 0.5 * (getDF() - dim - 1) * getValue().getLogDet();
 
     double trace = 0;
  
     if (omega0) {
         const MatrixReal& inv = omega0->getValue().getInverse();
         
-        for (size_t i=0; i<getDim(); i++)   {
-            for (size_t j=0; j<getDim(); j++)   {
+        for (size_t i=0; i<dim; i++)   {
+            for (size_t j=0; j<dim; j++)   {
                 trace += inv[i][j] * getValue()[j][i];
             }
         }
     }
     else{
     
-        for (size_t i=0; i<getDim(); i++)   {
+        for (size_t i=0; i<dim; i++)   {
             trace += getValue()[i][i];
         }
     }
@@ -124,6 +110,8 @@ double WishartDistribution::computeLnProbability(void)  {
 
 void WishartDistribution::drawNormalSample(std::vector<double>& tmp)    {
 
+    size_t dim = getValue().getDim();
+
     if (omega0) {
         omega0->getValue().drawNormalSampleFromInverse(tmp);
     }
@@ -131,7 +119,7 @@ void WishartDistribution::drawNormalSample(std::vector<double>& tmp)    {
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
-        for (int i=0; i<getDim(); i++)  {
+        for (int i=0; i<dim; i++)  {
             tmp[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(kappa->getValue()), *rng);
         }
     }
@@ -139,17 +127,19 @@ void WishartDistribution::drawNormalSample(std::vector<double>& tmp)    {
 
 void WishartDistribution::redrawValue(void)  {
 
-    for (size_t i=0; i<getDim(); i++)   {
-        for (size_t j=0; j<getDim(); j++)   {
+    size_t dim = getValue().getDim();
+
+    for (size_t i=0; i<dim; i++)   {
+        for (size_t j=0; j<dim; j++)   {
             getValue()[i][j] = 0;
         }
     }
     
-    std::vector<double> tmp(getDim());
-    for (size_t k=0; k<getDim(); k++)   {
+    std::vector<double> tmp(dim);
+    for (size_t k=0; k<dim; k++)   {
         drawNormalSample(tmp);
-        for (size_t i=0; i<getDim(); i++)   {
-            for (size_t j=0; j<getDim(); j++)   {
+        for (size_t i=0; i<dim; i++)   {
+            for (size_t j=0; j<dim; j++)   {
                 getValue()[i][j] += tmp[i] * tmp[j];
             }
         }
