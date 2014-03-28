@@ -42,7 +42,13 @@ logTreeTopologyProb (0.0)
 
 
 
-MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ), gene2species( v.gene2species ), speciesTree( v.speciesTree ), Nes (v.Nes), Ne( v.Ne ),  numTaxa( v.numTaxa ), logTreeTopologyProb( v.logTreeTopologyProb ) {
+MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) : TypedDistribution<TimeTree>( v ), 
+        gene2species( v.gene2species ), 
+        speciesTree( v.speciesTree ), 
+        Nes (v.Nes), 
+        Ne( v.Ne ),  
+        numTaxa( v.numTaxa ), 
+        logTreeTopologyProb( v.logTreeTopologyProb ) {
     // parameters are automatically copied
 }
 
@@ -584,6 +590,9 @@ void MultispeciesCoalescent::setNes(TypedDagNode<std::vector<double> >* inputNes
     if (Nes != NULL) {
         removeParameter(Nes);
     }
+    if (Ne != NULL) {
+        removeParameter(Ne);
+    }
     Nes = inputNes;
     Ne= NULL;
     addParameter(Nes);
@@ -592,8 +601,12 @@ void MultispeciesCoalescent::setNes(TypedDagNode<std::vector<double> >* inputNes
 
 void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe) {
     if (Ne != NULL) {
+        removeParameter(Ne);
+    }
+       if (Nes != NULL) {
         removeParameter(Nes);
     }
+ 
     Ne = inputNe;
     Nes = NULL;
     addParameter(Ne);

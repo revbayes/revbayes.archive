@@ -40,7 +40,9 @@ namespace RevBayesCore {
     private:        
         // members
         std::string                     treeFilename;
-        
+//        std::int                        numProcesses;
+//        std::vector<std::vector<size_t> >                   genesPerProcess;
+
     };
     
 }
