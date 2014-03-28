@@ -138,7 +138,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_rlvector<valType>::getTypeSpec( v
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rlvector<valType>::getReturnType( void ) const {
     
-    return Vector<valType>::getClassTypeSpec();
+    return VectorRbPointer<valType>::getClassTypeSpec();
 }
 
 

@@ -36,6 +36,7 @@
 #include "TestMixtureModel.h"
 #include "TestMultispeciesCoalescent.h"
 #include "TestMultispeciesCoalescentCombinatorics.h"
+#include "TestMultispeciesCoalescentWithSequences.h"
 #include "TestNumericalIntegration.h"
 #include "TestNNI.h"
 #include "TestNormalModel.h"
@@ -204,9 +205,18 @@ bool Test::performTests(void) {
     
     /* A coalescent model test */
     try {
-        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/primates.tree");
+        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("../../examples/data/primates.tree");
 //        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
-//       testCoal.run();
+     //  testCoal.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    /* A coalescent model test complete with simulations and inference from sequences */
+    try {
+        TestMultispeciesCoalescentWithSequences testCoal = TestMultispeciesCoalescentWithSequences("../../examples/data/primates.tree");
+//        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
+       testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -246,7 +256,7 @@ bool Test::performTests(void) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-        testGtrGamma.run();
+     //   testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
