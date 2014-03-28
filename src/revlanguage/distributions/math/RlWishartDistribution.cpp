@@ -52,8 +52,10 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
     RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getValue()).getValueNode();
 
     RevBayesCore::TypedDagNode<int>* dm = NULL;
+//    int dm = -1;
     if (dim != NULL)    {
         dm = static_cast<const Natural &>( dim->getValue()).getValueNode();
+//        dm = static_cast<const Natural &>( dim->getValue()).getValue();
     }
     RevBayesCore::WishartDistribution* w    =  0;
     
