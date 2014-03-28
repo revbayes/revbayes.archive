@@ -40,64 +40,6 @@ char *line; // what is entered at command line
 
 typedef std::vector<std::string> StringVector;
 
-EditorMachine em;
-
-/* callback for '.' */
-int dotCallback(const char *buf, size_t len, char c) {
-
-    if (em.processInput(buf)) {
-        if (em.getCurrentState()->getSubject() == "objX") {
-            em.getCurrentState()->addCompletion("member1");
-            em.getCurrentState()->addCompletion("member2");
-            em.getCurrentState()->addCompletion("member3");
-        }
-    }
-    if (debug) printf("\n\r%s\n\r", em.getCurrentState()->getDescription().c_str());
-    return 0;
-}
-
-/* callback for '(' and ')' */
-int bracketCallback(const char *buf, size_t len, char c) {
-
-    if (em.processInput(buf)) {
-        if (em.getCurrentState()->getSubject() == "funcX") {
-            em.getCurrentState()->addCompletion("param1");
-            em.getCurrentState()->addCompletion("param2");
-            em.getCurrentState()->addCompletion("param3");
-        }
-    }
-    if (debug) printf("\n\r%s\n\r", em.getCurrentState()->getDescription().c_str());
-
-    return 0;
-}
-
-/* callback for '=' */
-int assignCallback(const char *buf, size_t len, char c) {
-    if (em.processInput(buf)) {
-        if (em.getCurrentState()->getSubject() == "param1") {
-            em.getCurrentState()->addCompletion("obj1");
-            em.getCurrentState()->addCompletion("obj2");
-            em.getCurrentState()->addCompletion("obj3");
-        }
-    }
-    if (debug) printf("\n\r%s\n\r", em.getCurrentState()->getDescription().c_str());
-    return 0;
-}
-
-/* callback for '"' */
-int stringCallback(const char *buf, size_t len, char c) {
-
-    if (em.processInput(buf)) {
-        if (em.getCurrentState()->getSubject() == "param2") {
-            em.getCurrentState()->addCompletion("file1");
-            em.getCurrentState()->addCompletion("file2");
-            em.getCurrentState()->addCompletion("file3");
-        }
-    }
-    if (debug) printf("\r\n%s\n\r", em.getCurrentState()->getDescription().c_str());
-    return 0;
-
-}
 
 /* callback for 'ESC' */
 int escapeCallback(const char *buf, size_t len, char c) {
@@ -149,42 +91,19 @@ int saveCallback(const char *buf, size_t len, char c) {
 /* tab completion callback */
 
 void completion(const char *buf, linenoiseCompletions *lc) {
-    int startPos = em.getLinePos();
-    // discard extra spaces
-    while (buf[startPos] == ' ') {
-        startPos++;
-    }
-    int matchlen = std::strlen(buf + startPos);
-
-    //pad previous complete commands
-    std::string newBuffer;
-    for (int i = 0; i < startPos; i++) {
-        newBuffer += buf[i];
-    }
-
-    StringVector completions = em.getCurrentState()->getCompletions();
-    if (debug) printf("\n\r%s\n\r", "Current completions:");
-    for (unsigned int i = 0; i < completions.size(); i++) {
-        if (debug) printf("\n\r\t%s", completions[i].c_str());
-        if (strncasecmp(buf + startPos, completions[i].c_str(), matchlen) == 0) {
-            linenoiseAddCompletion(lc, (newBuffer + completions[i]).c_str());
-        }
-    }
+    
 }
 
 void RbClient::startInterpretor() {
-    // add default completions to default state
-    em.getCurrentState()->addCompletion("objX");
-    em.getCurrentState()->addCompletion("funcX");
     
     /* Set callback functions*/
     linenoiseSetCompletionCallback(completion);
-    linenoiseSetCharacterCallback(dotCallback, '.');
-    linenoiseSetCharacterCallback(bracketCallback, '(');
-    linenoiseSetCharacterCallback(bracketCallback, ')');
-    linenoiseSetCharacterCallback(assignCallback, '=');
-    linenoiseSetCharacterCallback(stringCallback, '"');
-    linenoiseSetCharacterCallback(saveCallback, ctrl('S'));
+    //    linenoiseSetCharacterCallback(dotCallback, '.');
+    //    linenoiseSetCharacterCallback(bracketCallback, '(');
+    //    linenoiseSetCharacterCallback(bracketCallback, ')');
+    //    linenoiseSetCharacterCallback(assignCallback, '=');
+    //    linenoiseSetCharacterCallback(stringCallback, '"');
+    //    linenoiseSetCharacterCallback(saveCallback, ctrl('S'));
     linenoiseSetCharacterCallback(escapeCallback, 27);
 
 
@@ -209,7 +128,7 @@ void RbClient::startInterpretor() {
             mode = MODE_EDIT_FILE;
         }
 
-        em.reset();
+        
         free(line);
     }
 }
