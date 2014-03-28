@@ -24,12 +24,8 @@ namespace RevBayesCore {
         PrecisionMatrix(size_t n);                                                             //!< Construct rate matrix with n states
         PrecisionMatrix(const PrecisionMatrix& m);                                                  //!< Copy constructor
         
-        virtual                            ~PrecisionMatrix(void);                                                                 //!< Destructor
-        
-        // overloaded operators
-        PrecisionMatrix&                  operator=(const PrecisionMatrix& r);
-        
-        
+        virtual                            ~PrecisionMatrix(void) {}                                                                 //!< Destructor
+                
         // public methods
         // could not make them constant
         // because potentially need to update the eigensystem
@@ -39,20 +35,31 @@ namespace RevBayesCore {
         
         size_t                              getDim() const;
         
+        void                                touch();
+        void                                update() const;
         
-       // double                              getCorrelationCoefficient(int i, int j) const;
+        
         
         virtual PrecisionMatrix*            clone(void) const;
         
         void                                updateMatrix(void);
         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
+        const MatrixReal&                   getInverse(void) const;
+        
+        void                                drawNormalSample(std::vector<double>& v) const;
+        void                                drawNormalSampleFromInverse(std::vector<double>& v) const;
+
     protected:
         
         
     private:
-        mutable EigenSystem                         eigensystem;
+        
+        mutable EigenSystem                 eigensystem;
+        mutable bool                        eigenflag;
 
+        mutable MatrixReal                  inverse;
+        
     };
     
     
