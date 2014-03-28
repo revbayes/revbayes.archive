@@ -81,9 +81,9 @@ namespace RevBayesCore {
         
         // members
         double                                                              lnProb;
+        size_t                                                              numSites;
         const size_t                                                        numChars;
         size_t                                                              numSiteRates;
-        size_t                                                              numSites;
         const TypedDagNode<treeType>*                                       tau;
         std::vector<TransitionProbabilityMatrix>                            transitionProbMatrices;
         
@@ -155,7 +155,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     treatAmbiguousAsGaps( true )
 {
     
-    // add the paramoms to the parents list
+    // add the parameters to the parents list
     this->addParameter( tau );
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
