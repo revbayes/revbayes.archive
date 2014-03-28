@@ -1,4 +1,6 @@
 #include "MultivariateNormalDistribution.h"
+#include "DistributionMultivariateNormal.h"
+
 #include "RandomNumberFactory.h"
 
 using namespace RevBayesCore;
@@ -30,20 +32,7 @@ MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) co
 
 double MultivariateNormalDistribution::computeLnProbability( void ) {
     
-    const PrecisionMatrix& om = precision->getValue();
-
-    double s2 = 0;
-    for (size_t i=0; i<getValue().size(); i++)   {
-        double tmp = 0;
-        for (size_t j=0; j<getValue().size(); j++)   {
-            tmp += om[i][j] * (getValue()[j] - mean->getValue()[j]);
-        }
-        s2 += (getValue()[i] - mean->getValue()[i]) * tmp;
-    }
-    
-    double lnProb = 0.5 * log(precision->getValue().getLogDet()) - 0.5 * s2;
-    
-    return lnProb;
+    return RbStatistics::MultivariateNormal::lnPdf(mean->getValue(), precision->getValue(), *value);
 }
 
 

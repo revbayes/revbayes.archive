@@ -42,7 +42,7 @@ namespace RevLanguage {
         
         
     private:
-        RbPtr<const Variable>                           omega;
+ //       RbPtr<const Variable>                           omega;
         RbPtr<const Variable>                           kappa;
         RbPtr<const Variable>                           df;
         RbPtr<const Variable>                           dim;
