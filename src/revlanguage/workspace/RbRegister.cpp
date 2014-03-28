@@ -59,6 +59,7 @@
 #include "RlGeometricDistribution.h"
 #include "RlPoissonDistribution.h"
 #include "RlLognormalDistribution.h"
+#include "RlMultivariateNormalDistribution.h"
 #include "RlNormalDistribution.h"
 #include "RlOffsetExponentialDistribution.h"
 #include "RlOffsetLognormalDistribution.h"
@@ -66,7 +67,7 @@
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
-#include "RlWhiteNoisePhyloProcess.h"
+#include "RlWishartDistribution.h"
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
@@ -77,6 +78,9 @@
 #include "RlMultispeciesCoalescentConstantPopulationProcess.h"
 #include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
+
+#include "RlWhiteNoisePhyloProcess.h"
+#include "RlMultivariateBrownianPhyloProcess.h"
 
 
 // sequence models
@@ -339,12 +343,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
-        // white noise process
-        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
-        
-        // white noise process
-        addDistribution( "brownian", new BrownianPhyloProcess() );
-        
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
         
@@ -366,7 +364,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // normal distribution
         addDistribution( "norm", new NormalDistribution() );
-                
+
+        // multivariate normal distribution
+        addDistribution( "multivariatenormal", new MultivariateNormalDistribution() );
+        
+        // Wishart distribution
+        addDistribution( "wishart", new WishartDistribution() );
+        
         // 1/x distribution
         addDistribution( "oneOverX", new OneOverXDistribution() );
         
@@ -416,6 +420,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // uniform topology distribution
         addDistribution( "uniformTopology", new UniformTopologyDistribution() );
         
+        // white noise process
+        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
+        
+        // multivariate Brownian process
+        addDistribution( "mvbrownian", new MultivariateBrownianPhyloProcess() );
+        
+        // Brownian process
+        addDistribution( "brownian", new BrownianPhyloProcess() );
+    
         
         
         
