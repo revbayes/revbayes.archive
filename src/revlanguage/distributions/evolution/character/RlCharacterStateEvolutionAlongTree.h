@@ -126,7 +126,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        if ( q->getValueTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
