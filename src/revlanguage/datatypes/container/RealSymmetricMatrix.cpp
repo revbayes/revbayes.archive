@@ -78,11 +78,12 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
+/*
 bool RealSymmetricMatrix::isConvertibleTo(const TypeSpec& type) const {
     
     return RbLanguageObject::isConvertibleTo(type);
 }
-
+*/
 
 /** Print value for user */
 void RealSymmetricMatrix::printValue(std::ostream &o) const {
