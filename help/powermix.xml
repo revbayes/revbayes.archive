@@ -1,73 +1,73 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="help.xsl" type="text/xsl"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
 
-<revbayes-hel>
-<function-help-entry>
+<revbayes-help>
+    <function-help-entry>
 
-    <name>powermix</name>
+        <name>powermix</name>
 
-    <title>Compute a power-based mixture of two simplices</title>
+        <title>Compute a power-based mixture of two simplices</title>
 
-    <description>
+        <description>
         
-        <p>
-            This function takes two simplex parameters "a" and "b", and computes a mixture of them by using a simplex parameter "prop"
-            with two components as exponents. Each component x[i] in the mixture is computed as:
-        </p>
+            <p>
+                This function takes two simplex parameters "a" and "b", and computes a mixture of them by using a simplex parameter "prop"
+                with two components as exponents. Each component x[i] in the mixture is computed as:
+            </p>
             <![CDATA[
             x[i] <- a[i] ^ prop[0] * b[i] ^ prop[1]
             ]]>
-        <p>
-            The vector x is then normalized to produce the simplex representing the mixture.
-        </p>
-    </description>
+            <p>
+                The vector x is then normalized to produce the simplex representing the mixture.
+            </p>
+        </description>
 
-    <usage>
+        <usage>
         <![CDATA[
         Simplex powermix( Simplex a, Simplex b, Simplex prop )
         ]]>
-    </usage>
+        </usage>
     
-    <argument>
-        <label>a</label>
-        <description>First simplex of the mixture.</description>
-        <argumentType>dynamic</argumentType>
-        <valueType>Simplex</valueType>
-    </argument>
-    <argument>
-        <label>b</label>
-        <description>Second simplex of the mixture. It needs to have the same dimension as the first simplex.</description>
-        <argumentType>dynamic</argumentType>
-        <valueType>Simplex</valueType>
-    </argument>
-    <argument>
-        <label>prop</label>
-        <description>The two exponents (summing to 1) used in computing the elements of the mixture.</description>
-        <argumentType>dynamic</argumentType>
-        <valueType>Simplex</valueType>
-    </argument>
+        <argument>
+            <label>a</label>
+            <description>First simplex of the mixture.</description>
+            <argumentType>dynamic</argumentType>
+            <valueType>Simplex</valueType>
+        </argument>
+        <argument>
+            <label>b</label>
+            <description>Second simplex of the mixture. It needs to have the same dimension as the first simplex.</description>
+            <argumentType>dynamic</argumentType>
+            <valueType>Simplex</valueType>
+        </argument>
+        <argument>
+            <label>prop</label>
+            <description>The two exponents (summing to 1) used in computing the elements of the mixture.</description>
+            <argumentType>dynamic</argumentType>
+            <valueType>Simplex</valueType>
+        </argument>
 
-    <returnValue>Simplex</returnValue>
+        <returnValue>Simplex</returnValue>
 
-    <details>
-        <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
-        <p>
-            This function is useful in computing a mixture of two simplex parameters. The prop parameter determines how much each
-            input simplex affects the mixture. When prop = [0.5,0.5], the return value is a mixture where each input simplex has
-            the same influence. As the prop parameter approaches one of the two extremes, the corresponding simplex influences the
-            mixture to a larger extent. When prop = [1.0,0.0], the mixture is identical to the first input simplex, and when prop = [0.0,1.0],
-            the mixture is identical to the second input simplex.
-        </p>
-    </details>
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+                This function is useful in computing a mixture of two simplex parameters. The prop parameter determines how much each
+                input simplex affects the mixture. When prop = [0.5,0.5], the return value is a mixture where each input simplex has
+                the same influence. As the prop parameter approaches one of the two extremes, the corresponding simplex influences the
+                mixture to a larger extent. When prop = [1.0,0.0], the mixture is identical to the first input simplex, and when prop = [0.0,1.0],
+                the mixture is identical to the second input simplex.
+            </p>
+        </details>
 
-    <author>Fredrik Ronquist</author>
+        <author>Fredrik Ronquist</author>
 
-    <seeAlso>
-        <!-- The xslt page will try to auto generate links to the referred help entries, therefore
-        only exact names of help items should be listed here (case sensitive) -->
-    </seeAlso>
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore
+            only exact names of help items should be listed here (case sensitive) -->
+        </seeAlso>
     
-    <example>
+        <example>
         <![CDATA[
         a <- simplex(1,1,1)
         b <- simplex(1,2,3)
@@ -84,8 +84,8 @@
         # Make mixture dependent only on the first component
         powermix(a,b,simplex(1,0))
         ]]>
-    </example>
+        </example>
 
-</function-help-entry>
-</rebayes-help>
+    </function-help-entry>
+</revbayes-help>
 
