@@ -23,7 +23,7 @@ using namespace RevBayesCore;
  * \param[in]   t    The time tree along which the process is applied.
  * \param[in]   d    A scaling parameter for the branch length.
  */
-AutocorrelatedRateMultiplierJumpProcess::AutocorrelatedRateMultiplierJumpProcess(TypedDistribution<double> *d, const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* l): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 1.0 ) ), 
+AutocorrelatedRateMultiplierJumpProcess::AutocorrelatedRateMultiplierJumpProcess(TypedDistribution<double> *d, const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* l): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes()-1, 1.0 ) ), 
     valueDistribution( d ),
     tau( t ), 
     lambda( l ) 
@@ -75,26 +75,24 @@ double AutocorrelatedRateMultiplierJumpProcess::computeLnProbability(void) {
     const std::vector<double> &v = *value;
     for (size_t i = 0; i < v.size(); ++i) 
     {
+        double bl = tree.getBranchLength( i );
+        double p = 1.0 - exp(-l*bl);
+        if ( v[i] == 1.0 ) 
+        {
+            lnProb += log( 1.0 - p );
+        }
+        else
+        {
+            lnProb += log( p );
+            valueDistribution->getValue() = v[i];
+            lnProb += valueDistribution->computeLnProbability();
+        }
+        
         // check if the root rate matches 1.0
         // the move could have changed this
         if ( rootIndex != i )
         {
-            double bl = tree.getBranchLength( i );
-            double p = 1.0 - exp(-l*bl);
-            if ( v[i] == 1.0 ) 
-            {
-                lnProb += log( 1.0 - p );
-            }
-            else
-            {
-                lnProb += log( p );
-                valueDistribution->getValue() = v[i];
-                lnProb += valueDistribution->computeLnProbability();
-            }
-        }
-        else if ( v[rootIndex] != 1.0 )
-        {
-            lnProb = RbConstants::Double::neginf;
+            throw RbException("We should not have a rate multiplier for the root branch!!!");
         }
             
     }
@@ -111,12 +109,6 @@ void AutocorrelatedRateMultiplierJumpProcess::redrawValue(void)
 {
     // Get the random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-    // get the root
-    const TopologyNode& root = tau->getValue().getRoot();
-    
-    // get the index of the root
-    size_t rootIndex = root.getIndex();
     
     const Tree &tree = tau->getValue();
     double l = lambda->getValue();
@@ -124,24 +116,17 @@ void AutocorrelatedRateMultiplierJumpProcess::redrawValue(void)
     
     for (size_t i = 0; i < v.size(); ++i) 
     {
-        if ( rootIndex != i )
+        double bl = tree.getBranchLength( i );
+        double p = 1.0 - exp(-l*bl);
+        double u = rng->uniform01();
+        if ( u > p ) // we did not get a change event
         {
-            double bl = tree.getBranchLength( i );
-            double p = 1.0 - exp(-l*bl);
-            double u = rng->uniform01();
-            if ( u > p ) // we did not get a change event
-            {
-                v[i] = 1.0;
-            }
-            else // we got a change event
-            {
-                valueDistribution->redrawValue();
-                v[i] = valueDistribution->getValue();
-            }
+            v[i] = 1.0;
         }
-        else 
+        else // we got a change event
         {
-            v[rootIndex] = 1.0;
+            valueDistribution->redrawValue();
+            v[i] = valueDistribution->getValue();
         }
         
     } 
