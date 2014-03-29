@@ -14,8 +14,8 @@
 #include "RbOptions.h"
 #include "Parser.h"
 #include "Workspace.h"
-#include "workspace/FunctionTable.h"
-#include "functions/RlFunction.h"
+#include "FunctionTable.h"
+#include "RlFunction.h"
 #include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
 
