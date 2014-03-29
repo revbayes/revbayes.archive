@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class DPPScaleCatValsMove : public Move {
     
     public:
-        DPPScaleCatValsMove(StochasticNode<std::vector<double> >* node, double weight);                                                                      //!< Internal constructor
+        DPPScaleCatValsMove(StochasticNode<std::vector<double> >* node, double l, double weight);                                                                      //!< Internal constructor
     
         // Basic utility functions
         DPPScaleCatValsMove*									clone(void) const;                                                                  //!< Clone object
@@ -42,7 +42,8 @@ namespace RevBayesCore {
         void													rejectMove(void);                                                                   //!< Reject the InferenceMoveSimple
     
     private:
-    
+        double													lambda;                                                                             //!< The scaling parameter of the move  
+		
         StochasticNode<std::vector<double> >*                   variable;
 		double													safeExpo(double x);
  
