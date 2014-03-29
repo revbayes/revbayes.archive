@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="help.xsl" type="text/xsl"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
 
 <revbayes-help>
 <function-help-entry>

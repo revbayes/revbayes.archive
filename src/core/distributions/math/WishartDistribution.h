@@ -38,11 +38,11 @@ namespace RevBayesCore {
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);
         
-        size_t                                              getDim() const;
+//         size_t                                              getDim() const;
         
         int                                                 getDF() const {return df->getValue();}
         
-        double                                              getLogDet() const;
+        // double                                              getLogDet() const;
         
         void                                                drawNormalSample(std::vector<double>& v);
         

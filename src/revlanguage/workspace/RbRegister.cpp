@@ -67,6 +67,7 @@
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
 #include "RlWhiteNoisePhyloProcess.h"
+#include "RlWishartDistribution.h"
 
 // tree priors
 #include "RlConstantRateBirthDeathProcess.h"
@@ -102,6 +103,10 @@
 #include "RlVectorSingleElementScaleMove.h"
 #include "RlVectorSingleElementSlidingMove.h"
 #include "RlVectorScale.h"
+
+/* Moves on precision matrices */
+#include "RlVectorSingleElementSlidingMove.h"
+
 
 /* Tree Proposals */
 #include "RlFixedNodeheightPruneRegraft.h"
@@ -338,6 +343,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
+        
+        // dirichlet distribution
+        addDistribution( "wishart", new WishartDistribution() );
         
         // white noise process
         addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
