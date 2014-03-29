@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-HkyRateMatrixFunction::HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode<std::vector<double> > *bf) : TypedFunction<RateMatrix>( new RateMatrix_HKY() ), kappa( k ), baseFrequencies( bf ) {
+HkyRateMatrixFunction::HkyRateMatrixFunction(const TypedDagNode<double> *k, const TypedDagNode<std::vector<double> > *bf) : TypedFunction<RateMatrix>( new RateMatrix_HKY() ), baseFrequencies( bf ), kappa( k ) {
     // add the lambda parameter as a parent
     addParameter( baseFrequencies );
     addParameter( kappa );

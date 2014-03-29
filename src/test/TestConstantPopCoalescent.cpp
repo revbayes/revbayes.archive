@@ -34,7 +34,7 @@ bool TestConstantPopCoalescent::run( void ) {
     // first the priors
     ConstantNode<double> *Ne = new ConstantNode<double>("N", new double(10000.0) );
 
-    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new ConstantPopulationCoalescent( Ne, int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new ConstantPopulationCoalescent( Ne, int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     
     

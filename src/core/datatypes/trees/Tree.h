@@ -55,7 +55,7 @@ namespace RevBayesCore {
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                addNodeParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                clearBranchParameters(void);
-        std::vector<std::string>                            getNames() const;
+        std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getNode(size_t idx);                                                    //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                              //!< Get the node at index
         std::vector<TopologyNode*>                          getNodes(void) const;                                                   //!< Get a pointer to the nodes in the Tree

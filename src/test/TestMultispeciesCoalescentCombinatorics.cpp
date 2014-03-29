@@ -39,7 +39,7 @@ bool TestMultispeciesCoalescentCombinatorics::run( void ) {
     seed.push_back(42);
     GLOBAL_RNG->setSeed(seed);
     
-    double trueNE = 1000.0;
+//    double trueNE = 1000.0;
     size_t individualsPerSpecies = 2;
     size_t nGeneTrees = 100000;
     
@@ -53,9 +53,9 @@ bool TestMultispeciesCoalescentCombinatorics::run( void ) {
     
     /* testing the likelihood implementation */
     // first the priors
-    size_t nNodes = speciesTree->getNumberOfNodes();
-    ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
-    std::vector<std::string> speciesNames = speciesTree->getNames();
+  //  size_t nNodes = speciesTree->getNumberOfNodes();
+//    ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
+    std::vector<std::string> speciesNames = speciesTree->getTipNames();
     map<std::string, std::string> indiv2species;
     for (std::vector<std::string>::iterator s = speciesNames.begin(); s != speciesNames.end(); ++s) {
         for (size_t i = 1; i <= individualsPerSpecies; ++i)
