@@ -1,6 +1,7 @@
 #ifndef CONDITIONALCLADEPROBABILITYDISTRIBUTION_H
 #define	CONDITIONALCLADEPROBABILITYDISTRIBUTION_H
 
+#include <map>
 #include <vector>
 #include <string>
 
@@ -35,27 +36,24 @@ namespace RevBayesCore {
             }
 
         ConditionalCladeProbabilityDistribution();                                                               //Does nothing. Formal constructor must be followed by load_state.
-        ConditionalCladeProbabilityDistribution(Tree tree);                                               //Constructs a basic instance by calling construct.
+        ConditionalCladeProbabilityDistribution(Tree& tree);                                               //Constructs a basic instance by calling construct.
         
-        double getProbability(Tree tree) const;                                                  //Computes the probability of a string tree. Calls recompose on the tree, and then uses the map returned by recompose to compute the probability of the whole tree.
-        std::pair<std::string,double> getMapTree() const;                                    //Returns the maximum a posteriori tree that can be amalgamated from the ConditionalCladeProbabilityDistribution object. Uses a double-recursive traversal of all bipartitions.
-        
-        
-        const Clade&                    getChild(void) const;                                           //!< Getter for child clade
-        const Clade&                    getParent(void) const;                                          //!< Getter for parent clade
-        
+        double getProbability(Tree& tree) const;                                                  //Computes the probability of a string tree. Calls recompose on the tree, and then uses the map returned by recompose to compute the probability of the whole tree.
+        std::pair<Tree ,double> getMapTree() const;                                    //Returns the maximum a posteriori tree that can be amalgamated from the ConditionalCladeProbabilityDistribution object. Uses a double-recursive traversal of all bipartitions.
+                
     private:    
         
         // members
+        Tree*                                           constructorTree;
         size_t                                    numberOfObservedTrees;
         std::vector <Taxon>                                      taxons;
         std::vector < boost::dynamic_bitset<> >            biPartitions;
-        std::map <std::string, size_t>                tree_counts;
+        std::map < Tree*, size_t >                           tree_counts;
         std::set<int>                                   setOfAllLeafIds;                        //Set containing all leaf ids, i.e. ~Clade of all leaves in the tree.
         boost::dynamic_bitset<>                       completeBitVector;                      //bit vector with all bits to 1 (all species present)
         size_t                                                numTaxons;
         size_t                                                  K_Gamma;              //Total number of bipartitions.
-        double                      numberOfPossibleTreeTopologies;              //number of unrooted trees on Gamma_size leaves
+        size_t                           numberOfPossibleTreeTopologies;              //number of unrooted trees on Gamma_size leaves
         std::string                                      name_separator;                                                        //Character used between leaf names when writing the content of a leaf set.
         // std::map <std::string,std::string> tree_bipstrings;                                //Map between tree string and string containing all bipartitions in the tree.
         // std::map <std::string,std::string> bipstring_trees;                                //Dual from above. Map between string containing all bipartitions in the tree and tree string.
@@ -79,29 +77,35 @@ namespace RevBayesCore {
 
         
         //Functions
-        void construct(std::string tree_string);                                          //Constructs a basic instance.
+        void construct(Tree& tree);                                          //Constructs a basic instance.
 
         //  void save_state(std::string fname) ;                                               //Writes the object to a file.
         //  void load_state(std::string fname);
 
-        void construct(std::vector<std::string> trees,bool count_topologies=false);     //Given a vector of trees, fills an approx_posterior object by recursively calling decompose, and then doing some more counts.
+        void construct(std::vector<Tree>& trees,bool count_topologies=false);     //Given a vector of trees, fills an approx_posterior object by recursively calling decompose, and then doing some more counts.
         //  scalar_type nbipp(std::string tree) const;                                              //Computes the proportion of bipartitions already in the approx_posterior object that are present in the tree
         double binomial(int n,int m) const;                                                //Computes the binomial coefficient.
         double trinomial(int n1,int n2,int n3) const;                                      //Computes the multinomial coefficient for 3 elements.
 
-        Tree mapBacktrack(size_t g_id, std::map<size_t, double > * qmpp) const;//Recursive function that, given a bipartition id and a map associating bipartition ids to their maximum a posteriori value, builds the maximum a posteriori tree, complete with (average) branch lengths.
-        Tree random_tree() const;                                                        //Function that returns a random tree with unit branch lengths. Calls random_split.
-        std::vector< Tree >  all_trees() const {return all_trees(completeBitVector);};                //del-loc. Builds all rooted trees that can be built based on the complete set of leaves.
+        Tree* mapBacktrack(size_t g_id, std::map<size_t, double > * qmpp) const;//Recursive function that, given a bipartition id and a map associating bipartition ids to their maximum a posteriori value, builds the maximum a posteriori tree, complete with (average) branch lengths.
+        Tree* random_tree() const;                                                        //Function that returns a random tree with unit branch lengths. Calls random_split.
+        std::vector< Tree* >  all_trees() const {return all_trees(completeBitVector);};                //del-loc. Builds all rooted trees that can be built based on the complete set of leaves.
 
         //algorithmic
         void addTreeToDistribution(std::string G_string,std::set<int> * bip_ids=NULL );                //Parses a tree in string format and updates the ConditionalCladeProbabilityDistribution object accordingly (notably updates the Bip_bls, Bip_counts, Dip_counts, and set_ids + id_sets through set2id)
-        std::map < boost::dynamic_bitset<> , double> recompose(Tree tree) const;              //For a given input tree, returns a map between all sets of leaves contained in the tree and their corresponding conditional clade probability.
+        std::map < boost::dynamic_bitset<> , double> recompose(Tree& tree) const;              //For a given input tree, returns a map between all sets of leaves contained in the tree and their corresponding conditional clade probability.
         void register_leafset(std::string);
         size_t set2id( boost::dynamic_bitset<>  leaf_set) ;                                           //If the set of leaves exists, returns the set id, otherwise creates a new set id for this set and returns it.
 
         //numeric
         double Bi(int n2) const;                                                            //Returns the total number of binary tree topologies possible given a fixed bipartition between n2 leaves on one side and numTaxons-n2 leaves on the other side.
         double Tri(int n2,int n3) const;                                                    //Returns the total number of binary tree topologies possible given a fixed trifurcation between n2 leaves in one clade, n3 in another, and numTaxons-n2-n3 leaves in the last one.
+        
+        //from: http://rosettacode.org/wiki/Power_set#Recursive_version (accessed 12/13/11)
+        //"Given a set S, the power set (or powerset) of S, written P(S), or 2S, is the set of all subsets of S."
+        template<typename Set> std::set<Set> powerset(const Set& s, size_t n);
+        //from: http://rosettacode.org/wiki/Power_set#Recursive_version (accessed 12/13/11)
+        template<typename Set> std::set<Set> powerset(const Set& s);
 
         double p_dip(long int g_id,long int gp_id,long int gpp_id) const;                   //Probability of a trifurcation given by the ids of the clades.
         //scalar_type p_dip(std::set<int> gamma,std::set<int> gammap,std::set<int> gammapp); //Probability of a trifurcation given by the leaf sets of the clades.
@@ -114,8 +118,8 @@ namespace RevBayesCore {
 
         //nuisance
         std::string set2name( boost::dynamic_bitset<> leafSet) const;                                      //Prints the leaf names of leaves contained in a leaf set
-        Tree random_split( boost::dynamic_bitset<> leafSet) const;                                     //Recursive function that returns a random subtree given a leaf set as input and given the approx_posterior object. Can return clades never observed in the posterior sample.
-        std::vector<Tree>  all_trees( boost::dynamic_bitset<> leafSet) const;                        //del-loc. Builds all rooted trees that can be built with leaf set gamma.
+        Tree* random_split( boost::dynamic_bitset<> leafSet) const;                                     //Recursive function that returns a random subtree given a leaf set as input and given the approx_posterior object. Can return clades never observed in the posterior sample.
+        std::vector< Tree* >  all_trees( boost::dynamic_bitset<> leafSet) const;                        //del-loc. Builds all rooted trees that can be built with leaf set gamma.
         double count_trees() const;                                                         //Counts trees that can be amalgamated with the approx_posterior object with the complete leaf set, without actually building these trees.
         double count_trees(long int g_id) const;                                            //Counts trees that can be amalgamated with the leaf set with id g_id, without actually building these trees.
 
@@ -133,9 +137,6 @@ namespace RevBayesCore {
     };
         
 }
-
-#endif
-
 
 
 #endif	/* CONDITIONALCLADEPROBABILITYDISTRIBUTION_H */

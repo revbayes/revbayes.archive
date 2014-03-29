@@ -65,8 +65,8 @@ namespace RevBayesCore {
         std::string                         filename;                                                           //!< Filename to which we print the values
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
         bool                                posterior;                                                          //!< Flag if to print the posterior probability
-        bool                                prior;                                                              //!< Flag if to print the prior probability
         bool                                likelihood;                                                         //!< Flag if to print the likelihood
+        bool                                prior;                                                              //!< Flag if to print the prior probability
         bool                                append;                                                             //!< Flag if to append to existing file
         bool                                stochasticNodesOnly;                                                //!< Flag if only stochastic nodes should be printed
     };
