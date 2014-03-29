@@ -8,7 +8,6 @@
 namespace RevBayesCore {
     
     
-    
     /**
      * This class implements the random local clock process with branch length dependent jump probabilities.
      *
@@ -16,7 +15,9 @@ namespace RevBayesCore {
      * The probability of no jump is    p = 1 - exp( -lambda * t )        where t is the branch length.
      * If no jump occurs than the rate is 1.0. Otherwise, the rate is drawn from the procided distribution.
      * Generally, it makes sense if the distribution has mean = 1.0. 
-     * These value
+     * These value of this distribution is a rate multiplier for each branch. The actual values should be computed
+     * by a deterministic function that multiplies the parent rate with the branch rate multiplier for each branch.
+     * See RateMultipliesPhyloFunction.h
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
