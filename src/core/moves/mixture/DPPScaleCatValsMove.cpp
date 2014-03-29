@@ -23,9 +23,10 @@
 
 #include <cmath>
 
-RevBayesCore::DPPScaleCatValsMove::DPPScaleCatValsMove(StochasticNode<std::vector<double> > *v, double w) : Move( v, w, true ), variable( v ) {
+RevBayesCore::DPPScaleCatValsMove::DPPScaleCatValsMove(StochasticNode<std::vector<double> > *v, double l, double w) : Move( v, w, false ), variable( v ) {
     
 	// set isGibbs to true
+	lambda = l;
 }
 
 
@@ -61,8 +62,6 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 	std::vector<double>& elementVals = variable->getValue();
 	TypedDistribution<double>* g0 = dist.getBaseDistribution();
 	
-	// Is this only good for DPPs over doubles?
-	const double lambda = log(2.0); // this should be the tuning argument
 	double storedValue;
 	for(int i=0; i<numTables; i++){
 		
@@ -81,11 +80,13 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 		
 		// get new lnL
 		variable->touch();
-		g0->getValue() = tableVals[i];
-
+		g0->getValue() = tableVals[i]; // new
 		double priorRatio = g0->computeLnProbability(); //variable->getLnProbabilityRatio();
-		g0->getValue() = tableVals[i];
+		
+		variable->touch();
+		g0->getValue() = storedValue; // old
 		priorRatio -= g0->computeLnProbability();
+		
 		std::set<DagNode*> affected;
 		variable->getAffectedNodes( affected );
 		double lnProbRatio = 0.0;
