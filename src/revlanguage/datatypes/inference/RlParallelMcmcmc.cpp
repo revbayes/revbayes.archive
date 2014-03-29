@@ -48,7 +48,7 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-#ifndef USE_LIB_OPENMP2
+#ifndef USE_LIB_OPENMP
     throw RbException("You must #define USE_LIB_OPENMP to use ParallelMcmcmc");
     return;
 #endif

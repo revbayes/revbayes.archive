@@ -17,14 +17,14 @@
 #define TimeReversibleRateMatrix_H
 
 #include "MatrixReal.h"
-#include "RateMatrix.h"
+#include "RateValueMatrix.h"
 #include <complex>
 #include <vector>
 
 
 namespace RevBayesCore {
     
-    class TimeReversibleRateMatrix : public RateMatrix {
+    class TimeReversibleRateMatrix : public RateValueMatrix {
         
     public:
         ~TimeReversibleRateMatrix(void);                                                                            //!< Destructor

@@ -1,9 +1,17 @@
-#ifndef GeneralBranchHeterogeneousCharEvoModel_H
-#define GeneralBranchHeterogeneousCharEvoModel_H
+//
+//  GeneralTreeHistoryCtmc.h
+//  rb_mlandis
+//
+//  Created by Michael Landis on 3/29/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
+//
 
-#include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
+#ifndef __rb_mlandis__GeneralTreeHistoryCtmc__
+#define __rb_mlandis__GeneralTreeHistoryCtmc__
+
+#include "AbstractTreeHistoryCtmc.h"
 #include "DnaState.h"
-#include "RateValueMatrix.h"
+#include "RateMatrix.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
@@ -13,43 +21,44 @@
 namespace RevBayesCore {
     
     template<class charType, class treeType>
-    class GeneralBranchHeterogeneousCharEvoModel : public AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType> {
+    class GeneralTreeHistoryCtmc : public AbstractTreeHistoryCtmc<charType, treeType> {
         
     public:
-        GeneralBranchHeterogeneousCharEvoModel(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
-        GeneralBranchHeterogeneousCharEvoModel(const GeneralBranchHeterogeneousCharEvoModel &n);                                                                                                //!< Copy constructor
-        virtual                                            ~GeneralBranchHeterogeneousCharEvoModel(void);                                                                   //!< Virtual destructor
+        GeneralTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
+        GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                                                //!< Copy constructor
+        virtual                                            ~GeneralTreeHistoryCtmc(void);                                                                   //!< Virtual destructor
         
         // public member functions
-        GeneralBranchHeterogeneousCharEvoModel*             clone(void) const;                                                                          //!< Create an independent clone
+        GeneralTreeHistoryCtmc*                                 clone(void) const;                                                                          //!< Create an independent clone
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
-        void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
-        void                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
+        void                                                setRateMatrix(const TypedDagNode< RateValueMatrix > *rm);
+        void                                                setRateMatrix(const TypedDagNode< RbVector< RateValueMatrix > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                    //!< Implementation of swaping parameters
         
     protected:
         
-        void                                                computeRootLikelihood(size_t root, size_t l, size_t r);
-        void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
-        void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
-        const std::vector<double>&                          getRootFrequencies(void);
-// (not needed)        void                                                keepSpecialization(DagNode* affecter);
-// (not needed)        void                                                restoreSpecialization(DagNode *restorer);
-        void                                                touchSpecialization(DagNode *toucher);
-        void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
+        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
+        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+        virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
+        virtual const std::vector<double>&                  getRootFrequencies(void);
+        // (not needed)        void                         keepSpecialization(DagNode* affecter);
+        // (not needed)        void                         restoreSpecialization(DagNode *restorer);
+        virtual void                                        touchSpecialization(DagNode *toucher);
+        virtual void                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         
         
-    private:        
+    private:
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
         const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
-        const TypedDagNode< RateMatrix >*                   homogeneousRateMatrix;
-        const TypedDagNode< RbVector< RateMatrix > >*       heterogeneousRateMatrices;
+        const TypedDagNode< RateValueMatrix >*              homogeneousRateMatrix;
+        const TypedDagNode< RbVector< RateValueMatrix > >*  heterogeneousRateMatrices;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
+        //const TypedDagNode< RateMap >*                      homogeneousRateMap;
         
         
         // flags specifying which model variants we use
@@ -72,7 +81,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::GeneralBranchHeterogeneousCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>(  t, nChars, 1, c, nSites ) {
+RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, 1, c, nSites ) {
     
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -93,12 +102,12 @@ RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::Genera
     this->addParameter( homogeneousRateMatrix );
     
     this->redrawValue();
-
+    
 }
 
 
 template<class charType, class treeType>
-RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::GeneralBranchHeterogeneousCharEvoModel(const GeneralBranchHeterogeneousCharEvoModel &d) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>( d ) {
+RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &d) : AbstractTreeHistoryCtmc<charType, treeType>( d ) {
     // parameters are automatically copied
     // initialize with default parameters
     homogeneousClockRate        = d.homogeneousClockRate;
@@ -113,27 +122,27 @@ RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::Genera
     branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;
-
+    
 }
 
 
 template<class charType, class treeType>
-RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::~GeneralBranchHeterogeneousCharEvoModel( void ) {
+RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::~GeneralTreeHistoryCtmc( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
     
 }
 
 
 template<class charType, class treeType>
-RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>* RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::clone( void ) const {
+RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>* RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::clone( void ) const {
     
-    return new GeneralBranchHeterogeneousCharEvoModel<charType, treeType>( *this );
+    return new GeneralTreeHistoryCtmc<charType, treeType>( *this );
 }
 
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right) 
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
     
     // reset the likelihood
@@ -156,7 +165,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture) 
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         
         // get pointers to the likelihood for this mixture category
@@ -173,7 +182,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
             const double* p_site_left_j   = p_site_mixture_left;
             const double* p_site_right_j  = p_site_mixture_right;
             // iterate over all starting states
-            for (; f_j != f_end; ++f_j) 
+            for (; f_j != f_end; ++f_j)
             {
                 // add the probability of starting from this state
                 tmp += *p_site_left_j * *p_site_right_j * *f_j;
@@ -207,8 +216,8 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) 
-{   
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+{
     
     // compute the transition probability matrix
     updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -236,17 +245,17 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
             // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1) 
+            for (size_t c1 = 0; c1 < this->numChars; ++c1)
             {
                 // temporary variable
                 double sum = 0.0;
                 
                 // iterate over all possible terminal states
-                for (size_t c2 = 0; c2 < this->numChars; ++c2 ) 
+                for (size_t c2 = 0; c2 < this->numChars; ++c2 )
                 {
                     sum += p_site_mixture_left[c2] * p_site_mixture_right[c2] * tp_a[c2];
                     
-                } // end-for over all distination character 
+                } // end-for over all distination character
                 
                 // store the likelihood for this starting state
                 p_site_mixture[c1] = sum;
@@ -267,8 +276,8 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
-{    
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
+{
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     
@@ -290,23 +299,23 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
         double*     p_site_mixture      = p_mixture;
         
         // iterate over all sites
-        for (size_t site = 0; site != this->numPatterns; ++site) 
+        for (size_t site = 0; site != this->numPatterns; ++site)
         {
             
             // is this site a gap?
-            if ( gap_node[site] ) 
+            if ( gap_node[site] )
             {
                 // since this is a gap we need to assume that the actual state could have been any state
                 
                 // iterate over all initial states for the transitions
-                for (size_t c1 = 0; c1 < this->numChars; ++c1) 
+                for (size_t c1 = 0; c1 < this->numChars; ++c1)
                 {
                     
                     // store the likelihood
                     p_site_mixture[c1] = 1.0;
                     
                 }
-            } 
+            }
             else // we have observed a character
             {
                 
@@ -314,7 +323,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
                 unsigned long org_val = char_node[site];
                 
                 // iterate over all possible initial states
-                for (size_t c1 = 0; c1 < this->numChars; ++c1) 
+                for (size_t c1 = 0; c1 < this->numChars; ++c1)
                 {
                     
                     if ( this->usingAmbiguousCharacters )
@@ -331,7 +340,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
                         while ( val != 0 ) // there are still observed states left
                         {
                             // check whether we observed this state
-                            if ( (val & 1) == 1 ) 
+                            if ( (val & 1) == 1 )
                             {
                                 // add the probability
                                 tmp += *d;
@@ -361,7 +370,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
             } // end-if a gap state
             
             // increment the pointers to next site
-            p_site_mixture+=this->siteOffset; 
+            p_site_mixture+=this->siteOffset;
             
         } // end-for over all sites/patterns in the sequence
         
@@ -375,54 +384,55 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
 
 
 template<class charType, class treeType>
-const std::vector<double>& RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::getRootFrequencies( void ) {
+const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::getRootFrequencies( void ) {
     
-    if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL ) 
+    if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
     {
         return rootFrequencies->getValue();
-    } 
-    else 
-    {
-        return static_cast<const RateValueMatrix&>(homogeneousRateMatrix->getValue()).getStationaryFrequencies();
     }
+    else
+    {
+        return static_cast<const TypedDagNode<RateValueMatrix>* >(homogeneousRateMatrix)->getValue().getStationaryFrequencies();
+    }
+    
 }
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
     
     // first, get the rate matrix for this branch
-    const RateValueMatrix *rm;
-    if ( this->branchHeterogeneousSubstitutionMatrices == true ) 
+    const RateMatrix *rm;
+    if ( this->branchHeterogeneousSubstitutionMatrices == true )
     {
         rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
-    } 
-    else 
+    }
+    else
     {
         rm = &this->homogeneousRateMatrix->getValue();
     }
     
     // second, get the clock rate for the branch
     double branchTime;
-    if ( this->branchHeterogeneousClockRates == true ) 
+    if ( this->branchHeterogeneousClockRates == true )
     {
         branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
-    } 
-    else 
+    }
+    else
     {
         branchTime = this->homogeneousClockRate->getValue() * brlen;
     }
     
     // and finally compute the per site rate transition probability matrix
-    if ( this->rateVariationAcrossSites == true ) 
+    if ( this->rateVariationAcrossSites == true )
     {
         const std::vector<double> &r = this->siteRates->getValue();
         for (size_t i = 0; i < this->numSiteRates; ++i)
         {
             static_cast<const RateValueMatrix*>(rm)->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
         }
-    } 
-    else 
+    }
+    else
     {
         static_cast<const RateValueMatrix*>(rm)->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
     }
@@ -432,10 +442,10 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::u
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< double > *r) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< double > *r) {
     
     // remove the old parameter first
-    if ( homogeneousClockRate != NULL ) 
+    if ( homogeneousClockRate != NULL )
     {
         this->removeParameter( homogeneousClockRate );
         homogeneousClockRate = NULL;
@@ -454,7 +464,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     this->addParameter( homogeneousClockRate );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -464,10 +474,10 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r) {
     
     // remove the old parameter first
-    if ( homogeneousClockRate != NULL ) 
+    if ( homogeneousClockRate != NULL )
     {
         this->removeParameter( homogeneousClockRate );
         homogeneousClockRate = NULL;
@@ -486,7 +496,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     this->addParameter( heterogeneousClockRates );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -495,10 +505,10 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(const TypedDagNode< RateValueMatrix > *rm) {
     
     // remove the old parameter first
-    if ( homogeneousRateMatrix != NULL ) 
+    if ( homogeneousRateMatrix != NULL )
     {
         this->removeParameter( homogeneousRateMatrix );
         homogeneousRateMatrix = NULL;
@@ -517,7 +527,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     this->addParameter( homogeneousRateMatrix );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -526,10 +536,10 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateValueMatrix > > *rm) {
     
     // remove the old parameter first
-    if ( homogeneousRateMatrix != NULL ) 
+    if ( homogeneousRateMatrix != NULL )
     {
         this->removeParameter( homogeneousRateMatrix );
         homogeneousRateMatrix = NULL;
@@ -548,7 +558,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     this->addParameter( heterogeneousRateMatrices );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -557,10 +567,10 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f) {
     
     // remove the old parameter first
-    if ( rootFrequencies != NULL ) 
+    if ( rootFrequencies != NULL )
     {
         this->removeParameter( rootFrequencies );
         rootFrequencies = NULL;
@@ -569,9 +579,9 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     if ( f != NULL )
     {
         // set the value
-//        branchHeterogeneousSubstitutionMatrices = true;
+        //        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
-    
+        
         // add the parameter
         this->addParameter( rootFrequencies );
     }
@@ -581,7 +591,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     }
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -589,16 +599,16 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
     
     // remove the old parameter first
-    if ( siteRates != NULL ) 
+    if ( siteRates != NULL )
     {
         this->removeParameter( siteRates );
         siteRates = NULL;
     }
     
-    if ( r != NULL ) 
+    if ( r != NULL )
     {
         // set the value
         rateVariationAcrossSites = true;
@@ -620,7 +630,7 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
     this->addParameter( siteRates );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -630,61 +640,61 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::s
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
-    if (oldP == homogeneousClockRate) 
+    if (oldP == homogeneousClockRate)
     {
         homogeneousClockRate = static_cast<const TypedDagNode< double >* >( newP );
     }
-    else if (oldP == heterogeneousClockRates) 
+    else if (oldP == heterogeneousClockRates)
     {
         heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
-    else if (oldP == homogeneousRateMatrix) 
+    else if (oldP == homogeneousRateMatrix)
     {
         homogeneousRateMatrix = static_cast<const TypedDagNode< RateMatrix >* >( newP );
     }
-    else if (oldP == heterogeneousRateMatrices) 
+    else if (oldP == heterogeneousRateMatrices)
     {
         heterogeneousRateMatrices = static_cast<const TypedDagNode< RbVector< RateMatrix > >* >( newP );
     }
-    else if (oldP == rootFrequencies) 
+    else if (oldP == rootFrequencies)
     {
         rootFrequencies = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
-    else if (oldP == siteRates) 
+    else if (oldP == siteRates)
     {
         siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
-    else 
+    else
     {
-        AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(oldP,newP);
+        AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(oldP,newP);
     }
     
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter == heterogeneousClockRates ) 
+    if ( affecter == heterogeneousClockRates )
     {
         const std::set<size_t> &indices = heterogeneousClockRates->getTouchedElementIndices();
         
         // maybe all of them have been touched or the flags haven't been set properly
-        if ( indices.size() == 0 ) 
+        if ( indices.size() == 0 )
         {
             // just delegate the call
-            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
-        } 
-        else 
+            AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
+        }
+        else
         {
             const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
             // flag recomputation only for the nodes
-            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
             {
                 this->recursivelyFlagNodeDirty( *nodes[*it] );
-            } 
+            }
         }
     }
     else if ( affecter == heterogeneousRateMatrices )
@@ -693,19 +703,19 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::t
         const std::set<size_t> &indices = heterogeneousRateMatrices->getTouchedElementIndices();
         
         // maybe all of them have been touched or the flags haven't been set properly
-        if ( indices.size() == 0 ) 
+        if ( indices.size() == 0 )
         {
             // just delegate the call
-            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
-        } 
-        else 
+            AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
+        }
+        else
         {
             const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
             // flag recomputation only for the nodes
-            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
             {
                 this->recursivelyFlagNodeDirty( *nodes[*it] );
-            } 
+            }
         }
     }
     else if ( affecter == rootFrequencies )
@@ -716,10 +726,9 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::t
     }
     else
     {
-        AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+        AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
     }
     
 }
 
-
-#endif
+#endif /* defined(__rb_mlandis__GeneralTreeHistoryCtmc__) */
