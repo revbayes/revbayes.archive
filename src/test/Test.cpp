@@ -437,7 +437,7 @@ bool Test::performTests(void) {
                 TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "small.Modern_Saqqaq_Clovis.genotypes.polymorphic.txt.noMayanAleutsTsimshianAltai.TreeMixInput.txt", 2000, "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "Modern_Saqqaq_Clovis_Malta.fix_haploid.txt", 2000, "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "hgdp_humans.txt", 2000, "/Users/mlandis/data/admix/input/", "");
-        testAG.run();
+        //testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -447,7 +447,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-//        testDdm.run();
+        testDdm.run();
     }
     catch (RbException &e)
     {

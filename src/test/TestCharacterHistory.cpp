@@ -12,6 +12,7 @@
 #include "AreaSizeRateModifier.h"
 #include "BetaSimplexMove.h"
 #include "BetaDistribution.h"
+#include "BiogeographicTreeHistoryCtmc.h"
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
 #include "CharacterHistoryNodeMonitor.h"
@@ -106,7 +107,7 @@ bool TestCharacterHistory::run( void ) {
     
     //////////
     // test
-    int maxGen = 10000;//(int)((double)mcmcGenerations / 10);
+    int maxGen = 1000;//(int)((double)mcmcGenerations / 10);
     std::vector<unsigned int> seed;
     //seed.push_back(3); seed.push_back(3); GLOBAL_RNG->setSeed(seed);
     
@@ -120,7 +121,7 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(10,2);
+    size_t numCharacters = pow(5,2);
     size_t numStates = 2;
     
     // assign area coordinates
@@ -244,8 +245,6 @@ bool TestCharacterHistory::run( void ) {
     areaStationaryFrequency->setValue(new double(0.2));
     areaPower->setValue(new double(0.5));
 
-//    rateGain->setValue(new double(.3));
-//    rateLoss->setValue(new double(3.0));
     rateGain->setValue(new double(0.2));
     rateLoss->setValue(new double(3.0));
 
