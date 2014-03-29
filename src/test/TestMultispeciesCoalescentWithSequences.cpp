@@ -206,7 +206,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     ConstantNode<double> *shape = new ConstantNode<double>("shapeGamma", new double(2.0));
     // rate of the gamma distribution. we use rate = 1.0/scale and a hyperprior on the P(scale) = 1.0 / scale, which is the infamous OneOverX prior distribution 
     ConstantNode<double> *min = new ConstantNode<double>("minScaleGamma", new double(1));
-    ConstantNode<double> *max = new ConstantNode<double>("maxScaleGamma", new double(1E-10));
+    //ConstantNode<double> *max = new ConstantNode<double>("maxScaleGamma", new double(1E-10));
     StochasticNode<double> *scale = new StochasticNode<double>("scaleGamma", new ExponentialDistribution(min));
     ConstantNode<double> *one = new ConstantNode<double>("one", new double(1.0) );
     DeterministicNode<double> *rate = new DeterministicNode<double>("rate", new BinaryDivision<double, double, double>(one,scale));
