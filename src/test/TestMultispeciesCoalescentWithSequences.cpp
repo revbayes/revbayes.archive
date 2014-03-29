@@ -41,6 +41,12 @@
 
 #include <sstream>
 
+//#if defined (USE_LIB_OPENMP)
+//    #include <omp.h>
+//#endif
+
+
+
 using namespace RevBayesCore;
 
 TestMultispeciesCoalescentWithSequences::TestMultispeciesCoalescentWithSequences(const std::string &tfn) : treeFilename( tfn ) {
@@ -89,6 +95,24 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     size_t nGeneTrees = 50;
     size_t individualsPerSpecies = 10;
     
+//    #if defined (USE_LIB_OPENMP)
+//        omp_set_num_threads(numProcesses);
+//    #endif
+//    numProcesses = 4;
+//    if (nGeneTrees < numProcesses)
+//        numProcesses = nGeneTrees;
+//    
+//    genesPerProcess.resize(numProcesses);
+//    for (size_t i = 0, j = 0; i < nGeneTrees; i++, j++)
+//    {
+//        if (j >= numProcesses)
+//            j = 0;
+//        genesPerProcess[j].push_back(i);
+//    }
+//    
+   
+
+    
     /* First, we read in the species tree */
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
@@ -119,7 +143,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     //Simulating gene trees
     std::vector<const TimeTree*> simTrees;
     for (size_t i = 0; i < nGeneTrees; ++i) {
-        simTrees.push_back(&tauCPC->getValue());
+        simTrees.push_back(tauCPC->getValue().clone());
         // write the simulated tree
         stringstream ss; //create a stringstream
         ss << i;
@@ -130,14 +154,13 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         tauCPC->redraw();
         //	std::cerr << *simTrees[i]  << std::endl;
     }
+        std::cout << "\t\tGene trees simulated."<<std::endl;
+
     
 //    std::cerr << tauCPC->getValue() << std::endl;
 //    std::cout << tauCPC->getValue().getRoot().getAge() << std::endl;
  //   std::cerr << *simTrees[0] << "\n\n\n" << std::endl;
     
-
-    std::vector<Move*> moves;
-
     //Now we have the gene trees.
     //We want to simulate sequences along these.
     size_t nStates= 4;
@@ -157,52 +180,55 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     ConstantNode<double> *simClockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     std::vector<StochasticNode< AbstractCharacterData > *> simSeqs;
     for (size_t i = 0; i < nGeneTrees; ++i) {
+        std::stringstream o;
+        o << "SimulatedSequences_" << i;
         // and the character model
         NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(new ConstantNode<TimeTree> ("tau", new TimeTree(*(simTrees[i]))), true, 100);
         phyloCTMC->setClockRate(simClockRate);
         phyloCTMC->setRateMatrix(simQ);
         //StochasticNode< AbstractCharacterData > *charactermodel = 
-        simSeqs.push_back(new StochasticNode< AbstractCharacterData >("S", phyloCTMC));
+        simSeqs.push_back(new StochasticNode< AbstractCharacterData >(o.str(), phyloCTMC));
 
         // write the simulated sequence
         FastaWriter writer;
         stringstream ss; //create a stringstream
         ss << i;
         //  writer.writeData( "primatesSimulated_" + ss.str() + ".fas", charactermodel->getValue() );
-        writer.writeData("primatesSimulatedSequences_" + ss.str() + ".fas", simSeqs[i]->getValue());
+        writer.writeData(o.str() + ".fas", simSeqs[i]->getValue());
     }
     
     //NOW THE DATA HAS BEEN SIMULATED
-    std::cout << "\t\tData simulated."<<std::endl;
+    std::cout << "\t\tSequence data simulated."<<std::endl;
     //We set up the model for inference
     
     // construct the parameters for the gamma prior of the population sizes
     // shape of the gamma (we fix it to 2.0)
-    ConstantNode<double> *shape = new ConstantNode<double>("shape", new double(2.0));
+    ConstantNode<double> *shape = new ConstantNode<double>("shapeGamma", new double(2.0));
     // rate of the gamma distribution. we use rate = 1.0/scale and a hyperprior on the P(scale) = 1.0 / scale, which is the infamous OneOverX prior distribution 
-    ConstantNode<double> *min = new ConstantNode<double>("min", new double(1E6));
-    ConstantNode<double> *max = new ConstantNode<double>("max", new double(1E-10));
-    StochasticNode<double> *scale = new StochasticNode<double>("scale", new OneOverXDistribution(min,max));
+    ConstantNode<double> *min = new ConstantNode<double>("minScaleGamma", new double(1));
+    //ConstantNode<double> *max = new ConstantNode<double>("maxScaleGamma", new double(1E-10));
+    StochasticNode<double> *scale = new StochasticNode<double>("scaleGamma", new ExponentialDistribution(min));
     ConstantNode<double> *one = new ConstantNode<double>("one", new double(1.0) );
     DeterministicNode<double> *rate = new DeterministicNode<double>("rate", new BinaryDivision<double, double, double>(one,scale));
  
+    std::vector<Move*> moves;
     //Move on population size prior distribution scale
     moves.push_back( new ScaleMove(scale, 1.0, true, 2.0) );
 
     std::cout << "\t\tParameters for the gamma prior on population sizes set."<<std::endl;
 
     
-
-    std::vector<const TypedDagNode<double> *> ne_nodes;
+    //Setting branch-wise Nes
+    std::vector< const TypedDagNode<double> *> ne_nodes;
     for (size_t i = 0; i < nNodes; ++i) 
     {
         std::stringstream o;
         o << "Ne_" << i;
         StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new GammaDistribution(shape,rate) );
         ne_nodes.push_back( NePerNode );
-        moves.push_back( new ScaleMove(NePerNode, 1.0, true, 2.0) );
+        moves.push_back( new ScaleMove( NePerNode, 1.0, true, 2.0) );
     }
-    DeterministicNode< std::vector<double> > *Ne_inf = new DeterministicNode< std::vector<double > >("Ne", new VectorFunction<double>( ne_nodes ) );
+    DeterministicNode< std::vector<double> > *Ne_inf = new DeterministicNode< std::vector<double > >("Nes", new VectorFunction<double>( ne_nodes ) );
 //    ConstantNode< std::vector<double> > *Ne_inf = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
 
     
@@ -210,7 +236,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(2.5) );
     ConstantNode<double> *sampling = new ConstantNode<double>("rho", new double(1.0) );
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "SpeciesTree", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
 	
     // If we want to initialize the species tree to the starting tree
     TimeTree *startingTree = spTree_inf->getValue().clone();
@@ -232,22 +258,22 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
     //Clock rate:
     ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
-    ContinuousStochasticNode* clockRate = new ContinuousStochasticNode( "rate", new ExponentialDistribution( a ));
+    ContinuousStochasticNode* clockRate = new ContinuousStochasticNode( "rateOfEvolution", new ExponentialDistribution( a ));
     
     std::vector< StochasticNode<TimeTree> *> geneTrees_inf;
     std::vector < NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree> * > charModels; 
-    std::vector <StochasticNode< AbstractCharacterData > * > charactermodels;
-
+    std::vector < StochasticNode< AbstractCharacterData > * > charactermodels;
+    std::vector < MultispeciesCoalescent* > multiCoals ;
     for (size_t i = 0; i < nGeneTrees; ++i) {
         std::stringstream o;
-        o << "G_" << i;
-        MultispeciesCoalescent* m = new MultispeciesCoalescent(spTree_inf, indiv2species);
-        m->setNes(Ne_inf);
-        geneTrees_inf.push_back(new StochasticNode<TimeTree>(o.str(), m));
+        o << "GeneTree_" << i;
+        multiCoals.push_back( new MultispeciesCoalescent(spTree_inf, indiv2species) );
+        multiCoals[i]->setNes(Ne_inf);
+        geneTrees_inf.push_back( new StochasticNode<TimeTree>(o.str(), multiCoals[i]) );
         // the following line is useful if we want to use the simulated gene trees as data
         // geneTrees_inf[i]->clamp( const_cast<TimeTree*>(simTrees[i]) );
 
-        // and the character model
+        // Build the character model
         // GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel =
         charModels.push_back(new NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree>( geneTrees_inf[i], true, simSeqs[i]->getValue().getNumberOfCharacters() ) );
         // set the branch heterogeneous substitution matrices
@@ -262,7 +288,9 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         // charModels[i]->setSiteRates( site_rates_norm );
 
         //StochasticNode< AbstractCharacterData > *charactermodel = 
-        charactermodels.push_back( new StochasticNode< AbstractCharacterData >("S", charModels[i]) );
+        std::stringstream o2;
+        o2 << "characterModel_" << i;
+        charactermodels.push_back( new StochasticNode< AbstractCharacterData >(o2.str(), charModels[i]) );
         charactermodels[i]->clamp(simSeqs[i]->getValue().clone() );
     }
     
@@ -306,7 +334,15 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     monitoredNodes2.insert( spTree_inf );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, "\t", false, false, false ) );
+    for (unsigned int i = 0; i < nGeneTrees; i++) {
+        std::stringstream o;
+        o << "estimatedGeneTree_" << i << ".trees";
 
+        std::set<DagNode*> monitoredNodesi;
+        monitoredNodesi.insert( geneTrees_inf[i] );
+        monitors.push_back( new FileMonitor( monitoredNodesi, 10, o.str(), "\t", false, false, false ) );
+
+    }
     
     /* instantiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );

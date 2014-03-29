@@ -20,11 +20,17 @@ using namespace RevBayesCore;
  * \param[in]    t   If auto tuning should be used.
  */
 MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) : AbstractMove(w,t),
+    affectedNodes(),
     nodes(),
     numAccepted( 0 ),
     proposal( p )
 {
     nodes = proposal->getNodes();
+    
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    {
+        (*it)->getAffectedNodes( affectedNodes );
+    }
 }
 
 
@@ -68,7 +74,23 @@ void MetropolisHastingsMove::performMove( void )
 {
     // Propose a new value
     proposal->prepareProposal();
-    double lnAcceptanceRatio = proposal->doProposal();
+    double lnHastingsRatio = proposal->doProposal();
+    
+    double lnAcceptanceRatio = 0.0;
+    
+    // first we touch all the nodes
+    // that will set the flags for recomputation
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    {
+        (*it)->touch();
+    }
+    // then we recompute the probability for all the affected nodes
+    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    {
+        lnAcceptanceRatio += (*it)->getLnProbabilityRatio();
+    }
+    // finally add the Hastings ratio
+    lnAcceptanceRatio += lnHastingsRatio;
     
     if (lnAcceptanceRatio >= 0.0)
     {
@@ -199,6 +221,12 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
         {
             nodes[i] = newN;
         }
+    }
+    
+    affectedNodes.clear();
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    {
+        (*it)->getAffectedNodes( affectedNodes );
     }
     
     proposal->swapNode(oldN, newN);

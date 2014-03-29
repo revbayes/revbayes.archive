@@ -7,12 +7,12 @@
         <html>
             <head>
                 <title>RevBayes Manual Pages :: <xsl:value-of select="//name" /></title>
-                <link rel="stylesheet" type="text/css" href="help.css"/>
+                <link rel="stylesheet" type="text/css" href="lib/help.css"/>
             </head>
             <body>
                 
                 <div class="header">
-                    <a href="index.html">[Index]</a>
+                    <a href="html/index.html">[Index]</a>
                 </div>
                 
                 <h1>RevBayes Manual Pages :: <xsl:value-of select="//name" /></h1>
