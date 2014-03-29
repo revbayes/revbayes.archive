@@ -91,7 +91,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     seed.push_back(42);
     GLOBAL_RNG->setSeed(seed);
     
-    double trueNE = 0.001;
+    double trueNE = 100;
     size_t nGeneTrees = 50;
     size_t individualsPerSpecies = 10;
     
