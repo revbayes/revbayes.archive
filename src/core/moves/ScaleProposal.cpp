@@ -29,7 +29,7 @@ ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(),
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of the proposal. 
  */
 ScaleProposal* ScaleProposal::clone( void ) const 
 {

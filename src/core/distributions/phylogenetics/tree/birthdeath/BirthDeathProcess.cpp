@@ -147,6 +147,7 @@ void BirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) 
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
+ * \return   The log-transformed probability density.
  */
 double BirthDeathProcess::computeLnProbability( void ) {
     
@@ -435,6 +436,13 @@ void BirthDeathProcess::simulateTree( void ) {
 
 
 
+/**
+ * Swap the parameters held by this distribution.
+ *
+ * 
+ * \param[in]    oldP      Pointer to the old parameter.
+ * \param[in]    newP      Pointer to the new parameter.
+ */
 void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
 {
     
