@@ -39,7 +39,7 @@ namespace RevBayesCore {
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
 		
-        std::vector<std::set<int>>							getTableSeating(void); // maybe unnecessary
+        std::vector<std::set<int> >							getTableSeating(void); // maybe unnecessary
 		std::vector<valueType>								getTableParameters(void);
 		std::vector<int>									getElementAllocationVec(void);
 		void												createRestaurantVectors(void);
@@ -236,9 +236,9 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameter(c
 }
 
 template <class valueType>
-std::vector<std::set<int>> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getTableSeating(void){
+std::vector<std::set<int> > RevBayesCore::DirichletProcessPriorDistribution<valueType>::getTableSeating(void){
 	
-	std::vector<std::set<int>> rest(numTables);
+	std::vector<std::set<int> > rest(numTables);
 	for(int i=0; i<numElements; i++){
 		rest[allocationVector[i]].insert(i);
 	}
