@@ -25,7 +25,6 @@ RateMultiplierPhyloFunction::RateMultiplierPhyloFunction(const TypedDagNode< Tim
 }
 
 
-
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
@@ -39,30 +38,26 @@ RateMultiplierPhyloFunction* RateMultiplierPhyloFunction::clone(void) const
 }
 
 
-
 /**
  * Recursively update the branch rates for the children of this node and 
  * call recursiveUpdate for its children.
  *
  * \param[in]    n   The node below which we need to update the branch rates.
  */
-void RateMultiplierPhyloFunction::recursiveUpdate(const RevBayesCore::TopologyNode &n)    
+void RateMultiplierPhyloFunction::recursiveUpdate(const RevBayesCore::TopologyNode &n, double parentValue)    
 {
-    
-    size_t index = n.getIndex();
-    
-    double parentValue = (*value)[index];
     
     for (size_t i = 0; i < n.getNumberOfChildren(); ++i) 
     {
         const TopologyNode& child = n.getChild( i );
         size_t childIndex = child.getIndex();
-        (*value)[childIndex] = parentValue * rateMultipliers->getValue()[childIndex];
+        double v = parentValue * rateMultipliers->getValue()[childIndex];
+        (*value)[childIndex] = v;
         
         // only if the child is not a tip we continue the recursion
         if ( !child.isTip() ) 
         {
-            recursiveUpdate( n );
+            recursiveUpdate( child, v );
         }
     }
         
@@ -79,19 +74,21 @@ void RateMultiplierPhyloFunction::recursiveUpdate(const RevBayesCore::TopologyNo
 void RateMultiplierPhyloFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
 {
     
-    if ( oldP == tau ) {
+    if ( oldP == tau ) 
+    {
         tau = static_cast< const TypedDagNode< TimeTree > * >( newP );
     }
     
-    if ( oldP == rateMultipliers ) {
+    if ( oldP == rateMultipliers ) 
+    {
         rateMultipliers = static_cast< const TypedDagNode< std::vector<double> >* >( newP );
     }
     
-    if ( oldP == baseRate ) {
+    if ( oldP == baseRate ) 
+    {
         baseRate = static_cast< const TypedDagNode< double > * >( newP );
     }
 }
-
 
 
 /**
@@ -103,7 +100,7 @@ void RateMultiplierPhyloFunction::update( void )
     
     // get the root
     const TopologyNode& root = tau->getValue().getRoot();
-    recursiveUpdate(root);
+    recursiveUpdate(root, baseRate->getValue());
     
 }
 
