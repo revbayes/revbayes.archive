@@ -98,19 +98,22 @@ bool TestDPPRelClock::run( void ) {
     std::cout << "er:\t" << er->getValue() << std::endl;
 	
 	
-	//size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
+	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
+	
+	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
+	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
+	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
+	
+	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
 
 	//ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
 //	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution() );
 //	cp->setValue( new double( RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
 	
-    ConstantNode<double> *a = new ConstantNode<double>("a", new double(2.0) );
-    ConstantNode<double> *b = new ConstantNode<double>("b", new double(4.0) );
-	std::vector< DagNode * > g_params;
-	g_params.push_back( a );
-	g_params.push_back( b );
-//	DeterministicNode< TypedDistribution<double> > *g = new DeterministicNode< TypedDistribution<double> >("g0", new DistributionConstructorFunction< double >( GammaDistribution(), g_params ) );
-//	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, new ConstantNode<int>("customers", new int(numBranches) )) );
+    ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
+
+	TypedDistribution<double> *g = new ExponentialDistribution(a);
+	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, numBranches) );
 	
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
     std::cout << "Q:\t" << q->getValue() << std::endl;

@@ -46,7 +46,7 @@ numNodes <- tau.nnodes()
 nBranches <- numNodes - 1
 
 # define the concentration parameter, w/ gamma hyperprior
-expected_dpp_alpha <- dppConcParamFromNumTables(expected=3, numcustomers=nBranches)
+expected_dpp_alpha <- dppConcParamFromNumTables(expected=3, numcustomers=nBranches) ## need to add this function to RB language
 dp_a <- 2.0
 dp_b <- dp_a / expected_dpp_alpha
 dpp_alpha ~ gamma(dp_a, dp_b)
@@ -55,10 +55,11 @@ dpp_alpha ~ gamma(dp_a, dp_b)
 dpp_g0_lam <- 1.0  
 
 g0 <- exponential(dpp_g0_lam)
-branch_rate_vector ~ DPPDistribution(g0,dpp_alpha,nBranches)
+branch_rate_vector ~ DPPDistribution(g0,dpp_alpha,nBranches) ## this would return a vector of rates of size nBranches, 
 
-moves[8] <- mDPPAlg8(branch_rate_vector,weight=1)
-moves[9] <- mDPPConcParam(dpp_alpha,lambda=1,tune=true,weight=1)
+moves[8] <- mDPPScaleCatValsMove(branch_rate_vector,lambda=log(2.0),weight=1)
+moves[9] <- mDPPAllocateAuxGibbsMove(branch_rate_vector,weight=1)
+moves[10] <- mDPPConcParamGammaMove(dpp_alpha,lambda=1,tune=true,weight=1)
 
 # the sequence evolution model
 seq ~ substModel(tree=tau, Q=Q, branchRates=branch_rate_vector, nSites=nSites, type="DNA")

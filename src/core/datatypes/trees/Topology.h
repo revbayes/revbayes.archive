@@ -36,7 +36,7 @@ namespace RevBayesCore {
         virtual Topology*                                   clone(void) const;                                                      //!< Clone object
         
         
-        std::vector<std::string>                            getNames() const;
+        std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getNode(size_t idx);                                                    //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                              //!< Get the node at index
         std::vector<TopologyNode*>                          getNodes(void) const;                                                   //!< Get a pointer to the nodes in the BranchLengthTree
