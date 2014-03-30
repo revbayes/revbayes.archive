@@ -32,7 +32,7 @@ namespace RevBayesCore {
         void                                                update(void);                                                                                                   //!< Update
         
     protected:
-        void                                                recursiveUpdate(const TopologyNode& n);
+        void                                                recursiveUpdate(const TopologyNode& n, double parentValue);
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Implementation of swaping parameters
         
         

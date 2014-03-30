@@ -1,5 +1,5 @@
-#ifndef AutocorrelatedRateMultiplierJumpProcess_H
-#define AutocorrelatedRateMultiplierJumpProcess_H
+#ifndef BranchRateJumpProcess_H
+#define BranchRateJumpProcess_H
 
 #include "RbVector.h"
 #include "TypedDagNode.h"
@@ -12,8 +12,12 @@ namespace RevBayesCore {
      * This class implements the random local clock process with branch length dependent jump probabilities.
      *
      * The random local clock process is a simple jump process where jumps can occur at a branch.
-     * The probability of no jump is    p = 1 - exp( -lambda * t )        where t is the branch length.
-     * If no jump occurs than the rate is 1.0. Otherwise, the rate is drawn from the procided distribution.
+     * The probability of no jump is    
+     *       p = rho + ( 1 - exp( -lambda * t ) ) * (1-rho)        
+     * where t is the branch length and rho the instantaneous jump probability.
+     * If rho == 0.0 then this process is only defined by the branch length and 
+     * if lambda == 0 then this process is only defined by the instantaneous jump probability (rho).
+     * If no jump occurs then the rate is 1.0. Otherwise, the rate is drawn from the procided distribution.
      * Generally, it makes sense if the distribution has mean = 1.0. 
      * These value of this distribution is a rate multiplier for each branch. The actual values should be computed
      * by a deterministic function that multiplies the parent rate with the branch rate multiplier for each branch.
@@ -23,14 +27,14 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-03-28, version 1.0
      */
-    class AutocorrelatedRateMultiplierJumpProcess : public TypedDistribution< std::vector<double> > {
+    class BranchRateJumpProcess : public TypedDistribution< std::vector<double> > {
         
     public:
         // constructor(s)
-        AutocorrelatedRateMultiplierJumpProcess(TypedDistribution<double> *d, const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* l);
+        BranchRateJumpProcess(TypedDistribution<double> *d, const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* l, const TypedDagNode< double >* r);
         
         // public member functions
-        AutocorrelatedRateMultiplierJumpProcess*                clone(void) const;                                                                      //!< Create an independent clone
+        BranchRateJumpProcess*                                  clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
@@ -42,6 +46,7 @@ namespace RevBayesCore {
         TypedDistribution<double>*                              valueDistribution;
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< double >*                           lambda;
+        const TypedDagNode< double >*                           instantaneousJumpProbability;
         
     };
     
