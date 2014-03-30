@@ -1,6 +1,8 @@
 
 #include <set>
 #include "ConditionalCladeProbabilityDistribution.h"
+#include <boost/math/special_functions/binomial.hpp>
+#include <boost/math/special_functions/factorials.hpp>
 
 
 using namespace RevBayesCore;
@@ -20,57 +22,56 @@ ConditionalCladeProbabilityDistribution::ConditionalCladeProbabilityDistribution
   construct(*constructorTree);
 }
 
-//
-//void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
-//{
-//  //  t=new boost::timer();
-//
-//  last_leafset_id = 0;
-//  numberOfObservedTrees = 0;
-//  // ? name_separator="+";
-//  vector <string > leaves = tree.getTipNames();//del-loc
-//
-//  int id=0;
-//  for (vector <string >::iterator it=leaves.begin();it!=leaves.end();it++ )
-//    {      
-//
-//      id++;
-//      string leaf_name=(*it);
-//      leaf_ids[leaf_name]=id;
-//      Gamma_s.insert(id);
-//      id_leaves[id]=leaf_name;
-//    }
-//  alpha=0;
-//  beta=0;
-//  Gamma_size=Gamma_s.size();
-//  /*  size_t lword  = BipartitionTools::LWORD;
-//    nbint = (Gamma_size + lword - 1) / lword;*/
-//  //  size_t nbword = (Gamma_size + lword - 1) / lword;
-//  //  nbint  = nbword * lword / (CHAR_BIT * sizeof(int));
-//    
-//    Gamma = boost::dynamic_bitset<> (Gamma_size + 1) ;//new int[nbint];
-//    //All leaves are present in Gamma:
-//    for (auto i = 0; i < Gamma_size + 1; i++)
-//    {
-//        Gamma[i] = 1;
-//    }
-//
-//  //maybe should use boost pow
-//  //number of bipartitions of Gamma
-//  K_Gamma=pow(2.,(int)Gamma_size-1)-1;
-//  //number of unrooted trees on Gamma_size leaves
-//  if (Gamma_size==2)
-//    N_Gamma=1;
-//  else
-//    N_Gamma=boost::math::double_factorial<scalar_type>(2*Gamma_size-5);
-//
-//  //del-locs
-//  leaves.clear();
-//  delete tree;
-//}
-//
-//
-//
+
+void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
+{
+  //  t=new boost::timer();
+
+  last_leafset_id = 0;
+  numberOfObservedTrees = 0;
+  // ? name_separator="+";
+  std::vector < std::string > leaves = tree.getTipNames();//del-loc
+
+  int id=0;
+  for (std::vector <std::string >::iterator it=leaves.begin();it!=leaves.end();it++ )
+    {      
+      id++;
+      std::string leaf_name=(*it);
+      //Taxon tax (leaf_name, "");
+      leaf_ids[leaf_name]=id;
+      setOfAllLeafIds.insert(id);
+      id_leaves[id]=leaf_name;
+    }
+  alpha=0;
+  beta=0;
+  numTaxons=taxons.size();
+  /*  size_t lword  = BipartitionTools::LWORD;
+    nbint = (numTaxons + lword - 1) / lword;*/
+  //  size_t nbword = (numTaxons + lword - 1) / lword;
+  //  nbint  = nbword * lword / (CHAR_BIT * sizeof(int));
+    
+    completeBitVector = boost::dynamic_bitset<> (numTaxons + 1) ;//new int[nbint];
+    //All leaves are present in completeBitVector:
+    for (size_t i = 0; i < numTaxons + 1; i++)
+    {
+        completeBitVector[i] = 1;
+    }
+
+  //maybe should use boost pow
+  //number of bipartitions of completeBitVector
+  K_Gamma=pow(2.,(int)numTaxons-1)-1;
+  //number of unrooted trees on numTaxons leaves
+  if (numTaxons==2)
+    numberOfPossibleTreeTopologies=1;
+  else
+    numberOfPossibleTreeTopologies=boost::math::double_factorial<double>(2*numTaxons-5);
+
+  //del-locs
+  leaves.clear();
+}
+
+
+
 
 
 

@@ -9,7 +9,7 @@
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
 
-#include "Taxon.h"
+//#include "Taxon.h"
 #include "Tree.h"
 
 
@@ -44,11 +44,14 @@ namespace RevBayesCore {
     private:    
         
         // members
+        double alpha;
+        double beta;
+
         Tree*                                           constructorTree;
         size_t                                    numberOfObservedTrees;
-        std::vector <Taxon>                                      taxons;
+        std::vector <std::string>                                taxons;                               //The string could be replaced by a Taxon.
         std::vector < boost::dynamic_bitset<> >            biPartitions;
-        std::map < Tree*, size_t >                           tree_counts;
+        std::map < Tree*, size_t >                          tree_counts;
         std::set<int>                                   setOfAllLeafIds;                        //Set containing all leaf ids, i.e. ~Clade of all leaves in the tree.
         boost::dynamic_bitset<>                       completeBitVector;                      //bit vector with all bits to 1 (all species present)
         size_t                                                numTaxons;
@@ -61,8 +64,8 @@ namespace RevBayesCore {
         std::map <size_t, std::vector < size_t > >    size_ordered_bips;                        //Map between bipartition size, and the ids of all bipartitions of this size.
 
         size_t                                          last_leafset_id;                                                          //Total number of sets of leaves (=bipartitions) observed in the posterior.
-        std::map< Taxon,int >                                  leaf_ids;                                                //Map between taxon and leaf id. Leaf ids go from 1 to Gamma_size.
-        std::map<int,Taxon>                                   id_leaves;                                               //Map between leaf id and taxon. Dual from above.
+        std::map< std::string,int >                            leaf_ids;                                                //Map between taxon and leaf id. Leaf ids go from 1 to Gamma_size. The string could be replaced by a Taxon.
+        std::map< int, std::string >                          id_leaves;                                               //Map between leaf id and taxon. Dual from above. The string could be replaced by a Taxon.
         std::map <size_t, size_t>                     BipartitionCounts;                                        //For each bipartition, gives the number of times it was observed.
         std::map <size_t,std::vector<double> > BipartitionBranchLengths;                                           //vector of the branch lengths associated to the bipartitions.
         
