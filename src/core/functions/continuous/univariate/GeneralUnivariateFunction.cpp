@@ -11,7 +11,7 @@
 using namespace RevBayesCore;
 
 
-GeneralUnivariateFunction::GeneralUnivariateFunction(double *v, const TypedDagNode<double> *x, TypedDagNode<double> *result, const std::set<DagNode*> &n) : UnivariateFunction(v,x), y(result), nodes( n ) {
+GeneralUnivariateFunction::GeneralUnivariateFunction(double *v, const TypedDagNode<double> *x, TypedDagNode<double> *result, const std::set<DagNode*> &n) : UnivariateFunction(v,x), nodes( n ), y(result)  {
     // We need to exchange the actual parameter by a dummy variable so that we can use the evaluate function
     parameter = new ConstantNode<double>("", new double(x->getValue()));
     const std::set<DagNode *> &x_children = x->getChildren();
