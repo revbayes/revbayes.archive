@@ -40,7 +40,8 @@ namespace RevBayesCore {
         
         double getProbability(Tree& tree) const;                                                  //Computes the probability of a string tree. Calls recompose on the tree, and then uses the map returned by recompose to compute the probability of the whole tree.
         std::pair<Tree ,double> getMapTree() const;                                    //Returns the maximum a posteriori tree that can be amalgamated from the ConditionalCladeProbabilityDistribution object. Uses a double-recursive traversal of all bipartitions.
-                
+        const std::string& getAleRepresentation( ) const ;                                           //Writes the object to a stream.
+
     private:    
         
         // members
@@ -48,7 +49,7 @@ namespace RevBayesCore {
         double beta;
 
         Tree*                                           constructorTree;
-        size_t                                    numberOfObservedTrees;
+        size_t                                    numberOfObservedTrees;                               //Number of trees observed to build the object.
         std::vector <std::string>                                taxons;                               //The string could be replaced by a Taxon.
         std::vector < boost::dynamic_bitset<> >            biPartitions;
         std::map < Tree*, size_t >                          tree_counts;
@@ -67,7 +68,7 @@ namespace RevBayesCore {
         std::map< std::string,int >                            leaf_ids;                                                //Map between taxon and leaf id. Leaf ids go from 1 to Gamma_size. The string could be replaced by a Taxon.
         std::map< int, std::string >                          id_leaves;                                               //Map between leaf id and taxon. Dual from above. The string could be replaced by a Taxon.
         std::map <size_t, size_t>                     BipartitionCounts;                                        //For each bipartition, gives the number of times it was observed.
-        std::map <size_t,std::vector<double> > BipartitionBranchLengths;                                           //vector of the branch lengths associated to the bipartitions.
+        std::map < size_t, std::vector<double> >    BipartitionBranchLengths;                                           //vector of the branch lengths associated to the bipartitions.
         
         //VECTORIZED BELOW  std::map <long int, std::map< std::set<long int>,scalar_type> > Dip_counts;        // Contains the frequency of triplets: mother clade and its two daughter clades. Map between the bipartition id of the mother clade and another map containing a set of bipartition ids (couldn't it be just a pair, in the case of bifurcating trees?) and the frequency of the associated triplet of bipartitions. 
 
@@ -76,14 +77,13 @@ namespace RevBayesCore {
         //    std::map< long int, std::set <int> > id_sets;                                      // Dual from above. Map between a bipartition index and the corresponding leaf ids.
 
         std::map < boost::dynamic_bitset<>, size_t>             set_ids;                                   // Map between a bit vector of leaf ids and the corresponding bipartition index.
-        std::vector< boost::dynamic_bitset<> >                  id_sets;                                      // Dual from above. Vector linking a bipartition index and the corresponding leaf id bit vector.
+        std::map< size_t, boost::dynamic_bitset<> >             id_sets;                                      // Dual from above. Vector linking a bipartition index and the corresponding leaf id bit vector.
 
         
         //Functions
         void construct(Tree& tree);                                          //Constructs a basic instance.
 
-        //  void save_state(std::string fname) ;                                               //Writes the object to a file.
-        //  void load_state(std::string fname);
+        void readFromFile(std::string fname);                                                          //Reads the object from a stream.
 
         void construct(std::vector<Tree>& trees,bool count_topologies=false);     //Given a vector of trees, fills an approx_posterior object by recursively calling decompose, and then doing some more counts.
         //  scalar_type nbipp(std::string tree) const;                                              //Computes the proportion of bipartitions already in the approx_posterior object that are present in the tree
@@ -138,7 +138,9 @@ namespace RevBayesCore {
         
     
     };
-        
+          // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const ConditionalCladeProbabilityDistribution& x);                                         //!< Overloaded output operator
+  
 }
 
 
