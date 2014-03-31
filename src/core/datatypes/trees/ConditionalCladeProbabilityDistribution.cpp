@@ -1,6 +1,11 @@
 
 #include <set>
+#include <fstream>
 #include "ConditionalCladeProbabilityDistribution.h"
+#include "NewickConverter.h"
+#include "BranchLengthTree.h"
+
+#include <boost/algorithm/string.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/math/special_functions/factorials.hpp>
 
@@ -70,9 +75,264 @@ void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
   leaves.clear();
 }
 
+const std::string& ConditionalCladeProbabilityDistribution::getAleRepresentation( ) const                                            //Writes the object to a stream.
+
+{
+    // create the newick string
+    std::stringstream ou;
+
+  
+  //must be first!
+  ou<< "#constructor_string" << std::endl;
+  std::string constructor_string = constructorTree->getNewickRepresentation();
+  boost::trim(constructor_string);
+  ou<< constructor_string << std::endl;
+
+  ou<< "#observations" <<std::endl;
+  ou<< numberOfObservedTrees << std::endl;
+
+  ou<< "#Bip_counts" << std::endl;
+  for (std::map <size_t, size_t>::const_iterator it=BipartitionCounts.begin();it!=BipartitionCounts.end();it++)
+    ou<<(*it).first<<"\t"<<(*it).second<< std::endl;
+
+    ou << "#Bip_bls" << std::endl;
+    for (std::map <size_t, std::vector<double> >::const_iterator it = BipartitionBranchLengths.begin(); it != BipartitionBranchLengths.end(); ++it) {
+        ou << it->first;
+        for (size_t j = 0; j < it->second.size(); ++j) {
+            ou << "\t" << it->second[j];
+        }
+        ou << std::endl;
+    }
+    
+  ou<< "#Dip_counts" << std::endl;
+
+  size_t index=0;
+  for ( std::vector < boost::unordered_map< std::pair<size_t, size_t>, double> >::const_iterator it=tripletFrequencies.begin();it!=tripletFrequencies.end();it++ )
+    {
+      for (boost::unordered_map< std::pair<size_t, size_t>, double>::const_iterator jt=(*it).begin();jt!=(*it).end();jt++)
+	{
+	  ou<< index <<"\t";
+	  ou<<(*jt).first.first<<"\t";
+	  ou<<(*jt).first.second<<"\t";
+	  ou<<(*jt).second<<std::endl;
+	}
+      ++index;
+    }
+  
+  ou<< "#last_leafset_id" <<std::endl;
+  ou<< last_leafset_id << std::endl;
+
+  ou<< "#leaf-id" <<std::endl;
+  for ( std::map< std::string,int >::const_iterator it=leaf_ids.begin();it!=leaf_ids.end();it++)
+    ou<<(*it).first<<"\t"<<(*it).second<< std::endl;
+
+  ou<< "#set-id" <<std::endl;
+  for ( std::map < boost::dynamic_bitset<>, size_t>::const_iterator it=set_ids.begin();it!=set_ids.end();it++)
+    {
+      ou << (*it).second;
+      ou << "\t:";
+        for (size_t i = 0; i<  numTaxons + 1; ++i) {
+            //if (BipartitionTools::testBit((*it).first, i))
+               if ( (*it).first[i] ) //if the leaf is present, we print it
+                   ou << "\t" << i;
+        }
+        
+   /*   for (set< int>::iterator  jt=(*it).first.begin();jt!=(*it).first.end();jt++)
+	ou << "\t" << (*jt);*/
+      ou << std::endl;
+    }
+
+  ou<< "#END" << std::endl;
+
+  return ou.str();
+  
+}
+
+
+void ConditionalCladeProbabilityDistribution::readFromFile(std::string fname)
+{
+  std::string tree_string;
+  std::ifstream file_stream;
+  file_stream.open(fname.c_str());
+  std::string reading="#nothing";
+  if (file_stream.is_open())  //  ########## read state ############
+  {
+      while (! file_stream.eof())
+      {
+          std::string line;
+          getline (file_stream,line);
+          
+          if (boost::find_first(line, "#"))
+          {
+              boost::trim(line);
+              reading=line;
+          }
+          else if (reading=="#constructor_string")
+          {
+              //cout << reading << std::endl;
+              boost::trim(line);
+              NewickConverter c;
+              BranchLengthTree *blTree = c.convertFromNewick(line);
+              constructorTree = new BranchLengthTree( *blTree );
+              construct(*constructorTree);
+              reading="#nothing";
+          }
+          else if (reading=="#observations")
+          {
+              boost::trim(line);
+              numberOfObservedTrees=atof(line.c_str());
+          }
+          else if (reading=="#Bip_counts")
+          {
+              //cout << reading << std::endl;
+              std::vector<std::string> tokens;
+              boost::trim(line);
+              boost::split(tokens,line,boost::is_any_of("\t "),boost::token_compress_on);
+              BipartitionCounts[atol(tokens[0].c_str())]=atof(tokens[1].c_str());
+          }
+          else if (reading=="#Bip_bls")
+          {
+              //cout << reading << std::endl;
+              std::vector<std::string> tokens;
+              boost::trim(line);
+              boost::split(tokens,line,boost::is_any_of("\t "),boost::token_compress_on);
+              std::vector< double > branchLengths;
+              for (size_t i = 1; i < tokens.size(); ++i) {
+                  branchLengths.push_back( atof(tokens[i].c_str()) );
+              }
+              BipartitionBranchLengths[atol(tokens[0].c_str())] = branchLengths;
+          }
+          else if (reading=="#Dip_counts")
+          {
+              //cout << reading << std::endl;
+              std::vector<std::string> tokens;
+              boost::trim(line);
+              boost::split(tokens,line,boost::is_any_of("\t "),boost::token_compress_on);
+              std::pair<long int, long int> parts;
+              /*PREVECTORIZATION CODE
+               set<long int> parts;
+               parts.insert(atoi(tokens[1].c_str()));
+               parts.insert(atoi(tokens[2].c_str()));
+               tripletFrequencies[atol(tokens[0].c_str())][parts]=atof(tokens[3].c_str());
+               */
+              
+              parts.first = atoi(tokens[1].c_str());
+              parts.second = atoi(tokens[2].c_str());
+              if ( atol(tokens[0].c_str()) >= (long int) ( tripletFrequencies.size() ) )
+              {
+                  boost::unordered_map< std::pair<size_t, size_t>,double> temp ;
+                  while (atol(tokens[0].c_str()) >  (int) tripletFrequencies.size() ) {
+                      tripletFrequencies.push_back(temp);
+                  }
+                  
+                  temp[parts]=atof(tokens[3].c_str());
+                  tripletFrequencies.push_back(temp);
+              }
+              else
+              {
+                  tripletFrequencies[atol(tokens[0].c_str())][parts]=atof(tokens[3].c_str());
+              }
+          }
+          else if (reading=="#last_leafset_id")
+          {
+              //cout << reading << std::endl;
+              boost::trim(line);
+              last_leafset_id=atol(line.c_str());
+          }
+          else if (reading=="#leaf-id")
+          {
+              //cout << reading << std::endl;
+              std::vector<std::string> tokens;
+              boost::trim(line);
+              boost::split(tokens,line,boost::is_any_of("\t "),boost::token_compress_on);
+              int id=atoi(tokens[1].c_str());
+              std::string leaf_name=tokens[0];
+              leaf_ids[leaf_name]=id;
+              id_leaves[id]=leaf_name;
+          }
+          else if (reading=="#set-id")
+          {
+              //cout << reading << std::endl;
+              std::vector<std::string> fields;
+              boost::trim(line);
+              boost::split(fields,line,boost::is_any_of(":"),boost::token_compress_on);
+              boost::trim(fields[0]);
+              long int set_id=atol(fields[0].c_str());
+              std::vector<std::string> tokens;
+              boost::trim(fields[1]);
+              boost::split(tokens,fields[1],boost::is_any_of("\t "),boost::token_compress_on);
+              boost::dynamic_bitset<> temp( numTaxons + 1 );
+              
+              for (std::vector<std::string>::iterator it=tokens.begin();it!=tokens.end();it++) { //Setting the proper bits to 1
+                  temp[static_cast<int>(atoi((*it).c_str()))] = 1;
+              }
+
+             // std::cout <<"setid : "<< set_id << " READING: " << temp << std::endl;
+              set_ids[temp]=set_id;
+              id_sets[set_id]=temp;
+          }
+      }
+  }
+    //Attempt adding something for the root bipartition:
+    boost::dynamic_bitset<> temp (numTaxons +1);
+    for (size_t i = 1 ; i<numTaxons +1; ++i) {
+        temp[i] = 1;
+    }
+    id_sets[-1] = temp;
+    set_ids[temp] = -1;
+
+  for ( std::map< size_t,  boost::dynamic_bitset<> >::const_iterator  it = id_sets.begin(); it != id_sets.end(); it++ )
+    {
+        size_t size = 0;
+        for (size_t i=0; i< numTaxons + 1; ++i) {
+         //   if (BipartitionTools::testBit( (*it).second, static_cast<int>(i) ) ) {
+                if ( (*it).second[i] ) {
+                size+=1;
+            }
+        }
+        set_sizes[ (*it).first ] = size;
+        size_ordered_bips[size].push_back( (*it).first );
+        // std::cout << size << " AND "<< (*it).first <<std::endl;
+        /*  set_sizes[(*it).first]=(*it).second.size();
+      size_ordered_bips[(*it).second.size()].push_back((*it).first);*/
+    }
+/*    for ( auto it = size_ordered_bips.begin(); it != size_ordered_bips.end(); it++ )
+    {
+        VectorTools::print ( (*it).second );
+    }*/
+    
+}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ // Global functions using the class
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const ConditionalCladeProbabilityDistribution& x) {
+    o << x.getAleRepresentation();
+    
+    return o;
+}
 
 
 //Utilitary functions
