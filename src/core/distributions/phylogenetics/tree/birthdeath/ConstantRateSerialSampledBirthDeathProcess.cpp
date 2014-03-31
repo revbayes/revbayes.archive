@@ -58,6 +58,7 @@ ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathP
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
+ * \return    The log-probability density.
  */
 double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( void ) const
 {

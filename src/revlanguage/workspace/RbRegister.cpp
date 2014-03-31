@@ -51,6 +51,7 @@
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
+#include "RlBranchRateJumpProcess.h"
 #include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
 #include "RlExponentialBranchTree.h"
@@ -193,6 +194,8 @@
 #include "RlCpRevRateMatrixFunction.h"
 #include "RlVtRateMatrixFunction.h"
 #include "RlBlosum62RateMatrixFunction.h"
+
+#include "RlRateMultiplierPhyloFunction.h"
 
 
 
@@ -344,25 +347,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dirichlet", new DirichletDistribution() );
         
-        // dirichlet distribution
+        // wishart distribution
         addDistribution( "wishart", new WishartDistribution() );
-        
-        // white noise process
-        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
-        
-        // white noise process
-        addDistribution( "brownian", new BrownianPhyloProcess() );
         
         // gamma distribution
         addDistribution( "gamma", new GammaDistribution() );
         
-        
         // geometric distribution
         addDistribution( "geom", new GeometricDistribution() );
         
-        // geometric distribution
+        // poisson distribution
         addDistribution( "poisson", new PoissonDistribution() );
-        
         
         // exponential distribution
         addDistribution( "exponential", new ExponentialDistribution() );
@@ -385,6 +380,23 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         // Phylogenetic distributions
+
+        // branch-rate jump process
+        addDistribution( "branchRateJumpProcess", new BranchRateJumpProcess() );
+
+        // brownian motion
+        addDistribution( "brownian", new BrownianPhyloProcess() );
+
+        // white noise process
+        addDistribution( "whitenoise", new WhiteNoisePhyloProcess() );
+        
+        // character state evolution model (DNA|RNA|AA)
+        addDistribution( "substModel", new CharacterStateEvolutionAlongTree<TimeTree>() );
+        addDistribution( "substModel", new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
+
+        
+        
+        // Tree priors
         
         // constant rate birth-death process
         addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
@@ -415,11 +427,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
         // uniform time tree distribution
         addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
-        
-        // character state evolution model (DNA|RNA|AA)
-        addDistribution( "substModel", new CharacterStateEvolutionAlongTree<TimeTree>() );
-        addDistribution( "substModel", new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
-        
         
         // uniform topology distribution
         addDistribution( "uniformTopology", new UniformTopologyDistribution() );
@@ -673,6 +680,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
         addFunction( "writeNexus",                  new Func_writeNexus()                  );
         
+        addFunction( "rateMultiplierPhyloFunction", new RateMultiplierPhyloFunction()      );
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
         addFunction( "treeHeight",                  new TreeHeightStatistic()              );
