@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
 
-<revbayes-help>
+<revbayes-help
+    xmlns="http://www.revbayes.org/schema/help-entry"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
     <function-help-entry>
 
         <name>powermix</name>
