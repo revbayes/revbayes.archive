@@ -93,7 +93,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     // first the priors
     size_t nNodes = t->getNumberOfNodes();
     ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
-    std::vector<std::string> speciesNames = t->getNames();
+    std::vector<std::string> speciesNames = t->getTipNames();
     map<std::string, std::string> indiv2species;
     for (std::vector<std::string>::iterator s = speciesNames.begin(); s != speciesNames.end(); ++s) {
         for (size_t i = 1; i <= individualsPerSpecies; ++i)
@@ -156,7 +156,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(2.5) );
     ConstantNode<double> *sampling = new ConstantNode<double>("rho", new double(1.0) );
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "S", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
 	
     // If we want to initialize the species tree to the true tree
     TimeTree *startingTree = spTree_inf->getValue().clone();

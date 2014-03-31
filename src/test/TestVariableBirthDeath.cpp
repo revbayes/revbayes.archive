@@ -78,7 +78,7 @@ bool TestVariableBirthDeath::run( void ) {
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0) );
     
     TimeTree* t = trees[0];
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new TimeDependentBirthDeathProcess(lambda, mu, rho, int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new TimeDependentBirthDeathProcess(lambda, mu, rho, int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // attach the data

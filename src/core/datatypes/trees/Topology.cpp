@@ -94,7 +94,7 @@ Topology* Topology::clone(void) const
 }
 
 
-std::vector<std::string> Topology::getNames( void ) const 
+std::vector<std::string> Topology::getTipNames( void ) const 
 {
     std::vector<std::string> names;
     for (size_t i = 0; i < getNumberOfTips(); ++i) 
