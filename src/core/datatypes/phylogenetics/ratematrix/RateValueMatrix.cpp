@@ -91,8 +91,8 @@ std::vector<double>& RateValueMatrix::operator[]( const size_t i ) {
     return (*theRateMatrix)[i];
 }
 
-double RateValueMatrix::getRate(size_t i, size_t j) const {
-    return (*theRateMatrix)[i][j];
+double RateValueMatrix::getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const {
+    return (*theRateMatrix)[ fromState->getStateIndex() ][ toState->getStateIndex() ];
 }
 
 

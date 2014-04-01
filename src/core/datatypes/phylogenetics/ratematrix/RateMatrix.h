@@ -18,6 +18,7 @@
 
 #include "Cloneable.h"
 #include "MatrixReal.h"
+#include "DiscreteCharacterState.h"
 #include <vector>
 
 
@@ -30,7 +31,7 @@ namespace RevBayesCore {
     public:
 
         // pure virtual methods you have to overwrite
-        virtual double                      getRate(size_t i, size_t j) const = 0;
+        virtual double                      getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const = 0;
         virtual RateMatrix*                 clone(void) const = 0;
         virtual void                        updateMatrix(void);
         

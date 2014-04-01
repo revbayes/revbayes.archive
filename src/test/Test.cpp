@@ -85,7 +85,7 @@ bool Test::performTests(void) {
     /* The transition probability test */
     try {
         TestTransitionProbabilities test = TestTransitionProbabilities();
-//        test.run();
+        //test.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -343,9 +343,10 @@ bool Test::performTests(void) {
     /* A ACLN relaxed model test */
     try {
         //        TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
-        TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("data/primates.nex", "trees/primates.tree", 1000);
+        //TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("data/primates.nex", "trees/primates.tree", 1000);
+        TestACLNRelaxedClock testACLNRC = TestACLNRelaxedClock("/Users/mlandis/Documents/code/revbayes-code/examples/data/Primates.nex", "/Users/mlandis/Documents/code/revbayes-code/examples/data/primates.tree", 1000);
 		
-		//testACLNRC.run();
+		testACLNRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -447,7 +448,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run();
+        //testDdm.run();
     }
     catch (RbException &e)
     {

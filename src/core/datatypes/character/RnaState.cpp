@@ -19,13 +19,13 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-RnaState::RnaState(void) : DiscreteCharacterState(), state(0xFF) {
+RnaState::RnaState(void) : DiscreteCharacterState(), state(0xFF), stateIndex( 0xFF ) {
     
 }
 
 
 /** Copy constructor */
-RnaState::RnaState(const RnaState& s) : DiscreteCharacterState(), state( s.state ) {
+RnaState::RnaState(const RnaState& s) : DiscreteCharacterState(), state( s.state ), stateIndex( s.stateIndex ) {
     
 }
 
@@ -135,6 +135,10 @@ unsigned long RnaState::getState( void ) const {
     return state;
 }
 
+unsigned int RnaState::getStateIndex(void) const {
+    return stateIndex;
+}
+
 
 const std::string& RnaState::getStateLabels( void ) const {
     
@@ -209,10 +213,19 @@ void RnaState::setGapState(bool tf) {
 void RnaState::setState(size_t pos, bool val) {
     
     state &= val << pos;
+    stateIndex = pos;
 }
 
 void RnaState::setState(char symbol) {
     state = computeState( symbol );
+    switch ( state )
+    {
+        case 0x1: stateIndex = 0;
+        case 0x2: stateIndex = 1;
+        case 0x4: stateIndex = 2;
+        case 0x8: stateIndex = 3;
+        default: stateIndex = -1;
+    }
 }
 
 unsigned int RnaState::computeState(char symbol) const {
