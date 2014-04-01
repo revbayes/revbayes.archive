@@ -100,11 +100,12 @@ bool TestDPPRelClock::run( void ) {
 	
 	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
 	
-	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
-	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
-	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
+//	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
+//	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
+//	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
 	
-	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
+//	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
+	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
 
 	//ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
 //	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution() );
