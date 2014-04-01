@@ -81,7 +81,7 @@ RevLanguage::RbLanguageObject* TimeTree::executeMethod(std::string const &name, 
     } 
     else if (name == "names") 
     {
-        const std::vector<std::string>& n = this->value->getValue().getNames();
+        const std::vector<std::string>& n = this->value->getValue().getTipNames();
         return new Vector<RlString>( n );
     } 
     else if (name == "rescale")
