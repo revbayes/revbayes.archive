@@ -98,7 +98,6 @@ namespace RevBayesCore {
         void addTreeToDistribution(std::string G_string,std::set<int> * bip_ids=NULL );                //Parses a tree in string format and updates the ConditionalCladeProbabilityDistribution object accordingly (notably updates the Bip_bls, Bip_counts, Dip_counts, and set_ids + id_sets through set2id)
         std::map < boost::dynamic_bitset<> , double> recompose(Tree& tree) const;              //For a given input tree, returns a map between all sets of leaves contained in the tree and their corresponding conditional clade probability.
         void register_leafset(std::string);
-        size_t set2id( boost::dynamic_bitset<>  leaf_set) ;                                           //If the set of leaves exists, returns the set id, otherwise creates a new set id for this set and returns it.
 
         //numeric
         double Bi(int n2) const;                                                            //Returns the total number of binary tree topologies possible given a fixed bipartition between n2 leaves on one side and numTaxons-n2 leaves on the other side.
@@ -120,6 +119,7 @@ namespace RevBayesCore {
 
 
         //nuisance
+        size_t set2id( boost::dynamic_bitset<>  leaf_set) ;                                           //If the set of leaves exists, returns the set id, otherwise creates a new set id for this set and returns it.
         std::string set2name( boost::dynamic_bitset<> leafSet) const;                                      //Prints the leaf names of leaves contained in a leaf set
         Tree* random_split( boost::dynamic_bitset<> leafSet) const;                                     //Recursive function that returns a random subtree given a leaf set as input and given the approx_posterior object. Can return clades never observed in the posterior sample.
         std::vector< Tree* >  all_trees( boost::dynamic_bitset<> leafSet) const;                        //del-loc. Builds all rooted trees that can be built with leaf set gamma.
