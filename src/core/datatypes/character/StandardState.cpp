@@ -20,26 +20,26 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-StandardState::StandardState(void) : DiscreteCharacterState(), state(0x1), labels( "01" ) {
+StandardState::StandardState(void) : DiscreteCharacterState(), state(0x1), stateIndex(0xFFFF), labels( "01" ) {
     
 }
 
 
 /** Default constructor */
-StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), state(), labels( s ) {
+StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), state(), stateIndex(), labels( s ) {
     
 }
 
-StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), state(), labels( l ) {
+StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), state(), stateIndex(), labels( l ) {
     setState(s);
 }
 
-StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), state(), labels( l ) {
+StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), state(), stateIndex(), labels( l ) {
     setState(s);
 }
 
 /** Copy constructor */
-StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), state( s.state ), labels( s.labels ) {
+StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), state( s.state ), stateIndex( s.stateIndex ), labels( s.labels ) {
     
 }
 
@@ -148,6 +148,9 @@ unsigned long StandardState::getState( void ) const {
     return state;
 }
 
+unsigned int StandardState::getStateIndex( void ) const {
+    return stateIndex;
+}
 
 const std::string& StandardState::getStateLabels( void ) const {
     
@@ -198,6 +201,7 @@ void StandardState::setGapState(bool tf) {
 void StandardState::setState(size_t pos, bool val) {
     
     state &= val << pos;
+    stateIndex = pos;
 }
 
 
@@ -205,6 +209,7 @@ void StandardState::setState(char symbol) {
     
     size_t pos = labels.find(symbol);
     state = (unsigned int)( 1 ) << pos;
+    stateIndex = pos;
 }
 
 void StandardState::setState(std::string s) {

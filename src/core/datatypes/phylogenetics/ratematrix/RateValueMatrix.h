@@ -43,7 +43,7 @@ namespace RevBayesCore {
         // public methods
         size_t                              getNumberOfStates(void) const;                                                          //!< Return the number of states
         size_t                              size(void) const;                                                                       //!< Get the size of the rate matrix, which is the same as the number of states
-        double                              getRate(size_t i, size_t j) const;
+        double                              getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const;
         void                                rescaleToAverageRate(double r);                                                         //!< Rescale the rate matrix such that the average rate is "r"
         void                                setDiagonal(void);                                                                      //!< Set the diagonal such that each row sums to zero
         

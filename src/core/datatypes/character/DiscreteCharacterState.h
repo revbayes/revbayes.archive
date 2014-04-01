@@ -44,6 +44,7 @@ namespace RevBayesCore {
         virtual std::string                     getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
         virtual size_t                          getNumberOfStates(void) const = 0;                  //!< Get the number of discrete states for the character
         virtual unsigned long                   getState(void) const = 0;                           //!< Get the discrete observation
+        virtual unsigned int                    getStateIndex(void) const = 0;
         virtual bool                            isGapState(void) const = 0;                         //!< Get whether this is a gapped character state
         virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
         virtual void                            setGapState(bool tf) = 0;                           //!< Set whether this is a gapped character

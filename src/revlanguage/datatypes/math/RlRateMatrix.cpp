@@ -40,7 +40,7 @@ RateMatrix* RateMatrix::clone() const {
 /* Map calls to member methods */
 RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "[]") {
+    if (name == "getRate") {
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
         
@@ -54,10 +54,6 @@ RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::
             elementVector.push_back( element[i] );
         }
         return new Vector<RealPos>( elementVector );
-    }
-    else if (name == "size") {
-        int n = (int)this->value->getValue().getNumberOfStates();
-        return new Natural(n);
     }
     
     return RlModelVariableWrapper<RevBayesCore::RateMatrix>::executeMethod( name, args );

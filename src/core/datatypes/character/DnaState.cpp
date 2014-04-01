@@ -22,13 +22,13 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState(void) : DiscreteCharacterState(), state(0xFF) {
+DnaState::DnaState(void) : DiscreteCharacterState(), state(0xFF), stateIndex(0xFF) {
     
 }
 
 
 /** Copy constructor */
-DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(), state( s.state ) {
+DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(), state( s.state ), stateIndex( s.stateIndex ) {
     
 }
 
@@ -205,6 +205,10 @@ unsigned long DnaState::getState( void ) const {
     return state;
 }
 
+unsigned int DnaState::getStateIndex(void) const {
+    return stateIndex;
+}
+
 
 const std::string& DnaState::getStateLabels( void ) const {
     
@@ -285,12 +289,20 @@ void DnaState::setGapState(bool tf) {
 void DnaState::setState(size_t pos, bool val) {
     
     state &= val << pos;
-    
+    stateIndex = pos;
 }
 
 void DnaState::setState(char symbol) 
 {
     state = computeState( symbol );
+    switch ( state )
+    {
+        case 0x1: stateIndex = 0;
+        case 0x2: stateIndex = 1;
+        case 0x4: stateIndex = 2;
+        case 0x8: stateIndex = 3;
+        default: stateIndex = -1;
+    }
 }
 
 void DnaState::setToFirstState( void ) {
