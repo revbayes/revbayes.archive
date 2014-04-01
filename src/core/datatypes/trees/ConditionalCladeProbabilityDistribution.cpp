@@ -307,6 +307,49 @@ void ConditionalCladeProbabilityDistribution::readFromFile(std::string fname)
 
 
 
+std::string ConditionalCladeProbabilityDistribution::set2name(boost::dynamic_bitset<> leaf_set) const
+{
+    std::string name="";
+    for (size_t i = 0; i< numTaxons + 1; ++i) {
+       // if ( BipartitionTools::testBit(leaf_set, static_cast<int>(i)) ) {
+      if ( leaf_set[i] )  {
+	//stringstream tmp;
+	//tmp<<i;
+	name += id_leaves.at(i) + name_separator;
+		//XX
+	    }
+    }
+    //std::cout << name.substr(0,name.size()-1) <<std::endl;
+    //return name.substr(0,name.size()-1);
+    return name.substr(0,name.size());
+}
+
+size_t ConditionalCladeProbabilityDistribution::set2id(boost::dynamic_bitset<> leaf_set)
+{
+    size_t id=set_ids[leaf_set];
+    if (!id)
+    {
+        last_leafset_id++;
+        set_ids[leaf_set]=last_leafset_id;
+        // TMP for debug
+        //Dip_levels[leaf_set.size()].push_back(last_leafset_id);
+        //id2name[last_leafset_id]=set2name(leaf_set);
+        //VEC
+        boost::unordered_map< std::pair<size_t, size_t>, double > tmp ;
+        tripletFrequencies.push_back(tmp);
+        //VEC
+        id_sets[last_leafset_id]=leaf_set;
+        BipartitionBranchLengths[last_leafset_id]= std::vector<double> (0.0, 0); //default value
+       // std::cout << "notid: "<< last_leafset_id <<std::endl;
+        return last_leafset_id;
+    }
+    else
+    {
+       // std::cout << "id: "<< id <<std::endl;
+        return id;
+    }
+}
+
 
 
 
