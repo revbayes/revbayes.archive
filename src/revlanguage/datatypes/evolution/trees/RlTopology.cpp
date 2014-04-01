@@ -73,7 +73,7 @@ RevLanguage::RbLanguageObject* Topology::executeMethod(std::string const &name, 
         return new Natural( n );
     }
     else if (name == "names") {
-        const std::vector<std::string>& n = this->value->getValue().getNames();
+        const std::vector<std::string>& n = this->value->getValue().getTipNames();
         return new Vector<RlString>( n );
     } 
     
