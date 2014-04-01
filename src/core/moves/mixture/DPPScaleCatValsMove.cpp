@@ -94,11 +94,11 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 			lnProbRatio += (*it)->getLnProbabilityRatio();
 		}
 		
-		double r = safeExpo(priorRatio + lnProbRatio + scalingFactor);
+		double r = safeExponentiation(priorRatio + lnProbRatio + scalingFactor);
 		u = rng->uniform01();
-		if ( u < r )
+		if ( u < r ) //accept
 			variable->keep();
-		else{
+		else{ // reject
 			for(int j=0; j<numElements; j++){
 				if(allocVec[j] == i)
 					elementVals[j] = storedValue;
@@ -120,7 +120,7 @@ void RevBayesCore::DPPScaleCatValsMove::swapNode(DagNode *oldN, DagNode *newN) {
 
 
 
-double RevBayesCore::DPPScaleCatValsMove::safeExpo(double x) {
+double RevBayesCore::DPPScaleCatValsMove::safeExponentiation(double x) {
 	
 	if (x < -300.0)
 		return 0.0;
