@@ -11,6 +11,7 @@
 #include "Natural.h"
 #include "RlJcRateMatrixFunction.h"
 #include "RateMatrix_JC.h"
+#include "RateValueMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -36,7 +37,7 @@ RbLanguageObject* JcRateMatrixFunction::execute() {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getValue() ).getValue();
     RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( ns );
-    RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix>("", f);
+    RevBayesCore::DeterministicNode<RevBayesCore::RateValueMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateValueMatrix>("", f);
     
     RateMatrix* value = new RateMatrix( detNode );
     

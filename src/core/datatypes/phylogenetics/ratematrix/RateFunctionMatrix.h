@@ -25,8 +25,7 @@ namespace RevBayesCore {
         // public methods
         size_t                              getNumberOfStates(void) const;                                                          //!< Return the number of states
         size_t                              getNumberOfCharacters(void) const;                                                      //!< Return the number of characters
-        size_t                              size(void) const;                                                                       //!< Get the size of the rate matrix, which is the same as the number of states
-        double                              getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const;
+        virtual double                      getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const = 0;
         
         // pure virtual methods you have to overwrite
         virtual RateFunctionMatrix*         clone(void) const = 0;
@@ -35,7 +34,7 @@ namespace RevBayesCore {
     protected:
         // prevent instantiation
         RateFunctionMatrix(const  RateFunctionMatrix& m);                                                                           //!< Copy constructor
-        RateFunctionMatrix(size_t n);                                                                                               //!< Construct rate matrix with n states
+        RateFunctionMatrix(size_t ns, size_t nc);                                                                                               //!< Construct rate matrix with n states
         RateFunctionMatrix&                 operator=(const RateFunctionMatrix& r);
         
         // protected members available for derived classes

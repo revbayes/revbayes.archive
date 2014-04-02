@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode<std::vector<double> > *bf) : TypedFunction<RateMatrix>( new RateMatrix_F81(bf->getValue().size()) ), baseFrequencies( bf ) {
+F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode<std::vector<double> > *bf) : TypedFunction<RateValueMatrix>( new RateMatrix_F81(bf->getValue().size()) ), baseFrequencies( bf ) {
     // add the lambda parameter as a parent
     addParameter( baseFrequencies );
     
@@ -11,7 +11,7 @@ F81RateMatrixFunction::F81RateMatrixFunction(const TypedDagNode<std::vector<doub
 }
 
 
-F81RateMatrixFunction::F81RateMatrixFunction(const F81RateMatrixFunction &n) : TypedFunction<RateMatrix>( n ), baseFrequencies( n.baseFrequencies ) {
+F81RateMatrixFunction::F81RateMatrixFunction(const F81RateMatrixFunction &n) : TypedFunction<RateValueMatrix>( n ), baseFrequencies( n.baseFrequencies ) {
     // no need to add parameters, happens automatically
 }
 

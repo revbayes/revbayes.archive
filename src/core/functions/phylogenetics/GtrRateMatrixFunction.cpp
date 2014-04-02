@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode<std::vector<double> > *er, const TypedDagNode<std::vector<double> > *bf) : TypedFunction<RateMatrix>( new RateMatrix_GTR(bf->getValue().size()) ), exchangeabilityRates( er ), baseFrequencies( bf ) {
+GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode<std::vector<double> > *er, const TypedDagNode<std::vector<double> > *bf) : TypedFunction<RateValueMatrix>( new RateMatrix_GTR(bf->getValue().size()) ), exchangeabilityRates( er ), baseFrequencies( bf ) {
     // add the lambda parameter as a parent
     addParameter( baseFrequencies );
     addParameter( exchangeabilityRates );
@@ -13,7 +13,7 @@ GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode<std::vector<doub
 }
 
 
-GtrRateMatrixFunction::GtrRateMatrixFunction(const GtrRateMatrixFunction &n) : TypedFunction<RateMatrix>( n ), baseFrequencies( n.baseFrequencies ), exchangeabilityRates( n.exchangeabilityRates ) {
+GtrRateMatrixFunction::GtrRateMatrixFunction(const GtrRateMatrixFunction &n) : TypedFunction<RateValueMatrix>( n ), baseFrequencies( n.baseFrequencies ), exchangeabilityRates( n.exchangeabilityRates ) {
     // no need to add parameters, happens automatically
 }
 
