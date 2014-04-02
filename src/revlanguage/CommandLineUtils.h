@@ -1,6 +1,7 @@
 #ifndef COMMANDLINEUTILS_H
 #define	COMMANDLINEUTILS_H
 
+
 #include <string>
 std::string nonblankSeparators = "+->~()[]{}.,\"";
 std::string separators = nonblankSeparators + " ";

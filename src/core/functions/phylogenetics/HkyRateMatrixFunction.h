@@ -47,8 +47,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<double>*                         kappa;
         const TypedDagNode<std::vector<double> >*           baseFrequencies;
+        const TypedDagNode<double>*                         kappa;
         
     };
     

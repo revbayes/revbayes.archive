@@ -629,7 +629,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     this->addParameter( homogeneousClockRate );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
         this->redrawValue();
     }
@@ -661,7 +661,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     this->addParameter( heterogeneousClockRates );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
         this->redrawValue();
     }
@@ -692,7 +692,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     this->addParameter( homogeneousRateMatrix );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
         this->redrawValue();
     }
@@ -723,7 +723,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     this->addParameter( heterogeneousRateMatrices );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
         this->redrawValue();
     }
@@ -756,7 +756,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     }
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
         this->redrawValue();
     }
@@ -795,7 +795,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     this->addParameter( siteRates );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() ) 
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
         this->redrawValue();
     }
