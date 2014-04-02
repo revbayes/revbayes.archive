@@ -13,3 +13,4 @@ boost_1_55_0/bin.v2
 boost_1_55_0/stage/lib/
 boost_1_55_0/project
 projects/xcode/revbayes.xcodeproj
+.DS_Store
