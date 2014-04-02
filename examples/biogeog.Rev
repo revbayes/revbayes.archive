@@ -1,0 +1,3 @@
+D <- readCharacterData("/Users/mlandis/Documents/code/revbayes-code/examples/data/vireya.data.nex")
+G <- readGeographyData("/Users/mlandis/Documents/code/revbayes-code/examples/data/vireya.geography.txt")
+T <- readTree("/Users/mlandis/Documents/code/revbayes-code/examples/data/vireya.trees")

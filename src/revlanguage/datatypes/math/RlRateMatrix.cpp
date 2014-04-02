@@ -17,17 +17,17 @@
 
 using namespace RevLanguage;
 
-RateMatrix::RateMatrix(void) : RlModelVariableWrapper<RevBayesCore::RateMatrix>() {
+RateMatrix::RateMatrix(void) : RlModelVariableWrapper<RevBayesCore::RateValueMatrix>() {
     
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RlModelVariableWrapper<RevBayesCore::RateMatrix>( v ) {
+RateMatrix::RateMatrix( RevBayesCore::RateValueMatrix *v) : RlModelVariableWrapper<RevBayesCore::RateValueMatrix>( v ) {
     
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *m) : RlModelVariableWrapper<RevBayesCore::RateMatrix>( m ) {
+RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix> *m) : RlModelVariableWrapper<RevBayesCore::RateValueMatrix>( m ) {
     
 }
 
@@ -55,8 +55,13 @@ RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::
         }
         return new Vector<RealPos>( elementVector );
     }
+    else if (name == "size") {
+        int n = (int)this->value->getValue().getNumberOfStates();
+        return new Natural(n);
+    }
     
-    return RlModelVariableWrapper<RevBayesCore::RateMatrix>::executeMethod( name, args );
+    
+    return RlModelVariableWrapper<RevBayesCore::RateValueMatrix>::executeMethod( name, args );
 }
 
 
@@ -97,7 +102,7 @@ const MethodTable& RateMatrix::getMethods(void) const {
         methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::RateMatrix>::getMethods() );
+        methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::RateValueMatrix>::getMethods() );
         methodsSet = true;
     }
     

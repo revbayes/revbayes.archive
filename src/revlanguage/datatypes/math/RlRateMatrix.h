@@ -18,7 +18,7 @@
 #ifndef RlRateMatrix_H
 #define RlRateMatrix_H
 
-#include "RateMatrix.h"
+#include "RateValueMatrix.h"
 #include "RlModelVariableWrapper.h"
 #include "TypedDagNode.h"
 
@@ -27,13 +27,13 @@
 
 namespace RevLanguage {
     
-    class RateMatrix : public RlModelVariableWrapper<RevBayesCore::RateMatrix> {
+    class RateMatrix : public RlModelVariableWrapper<RevBayesCore::RateValueMatrix> {
         
     public:
         
         RateMatrix(void);                                                                                                        //!< Default constructor
-        RateMatrix(RevBayesCore::RateMatrix *m);                                                                                                        //!< Default constructor
-        RateMatrix(RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *d);                                                                                                        //!< Default constructor
+        RateMatrix(RevBayesCore::RateValueMatrix *m);                                                                                                        //!< Default constructor
+        RateMatrix(RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix> *d);                                                                                                        //!< Default constructor
         
         // Basic utility functions
         RateMatrix*                         clone(void) const;                                                                                  //!< Clone object

@@ -12,6 +12,7 @@
 #include "AbstractTreeHistoryCtmc.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
+#include "RateFunctionMatrix.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         virtual                                            ~GeneralTreeHistoryCtmc(void);                                                                   //!< Virtual destructor
         
         // public member functions
-        GeneralTreeHistoryCtmc*                                 clone(void) const;                                                                          //!< Create an independent clone
+        GeneralTreeHistoryCtmc*                             clone(void) const;                                                                          //!< Create an independent clone
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setRateMatrix(const TypedDagNode< RateValueMatrix > *rm);
@@ -58,7 +59,7 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< RateValueMatrix > >*  heterogeneousRateMatrices;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
-        //const TypedDagNode< RateMap >*                      homogeneousRateMap;
+        const TypedDagNode< RateFunctionMatrix >*           homogeneousRateMap;
         
         
         // flags specifying which model variants we use

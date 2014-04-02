@@ -50,6 +50,7 @@ namespace RevLanguage {
 #include "OptionRule.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "NucleotideBranchHeterogeneousCharEvoModel.h"
+#include "RateValueMatrix.h"
 #include "RbNullObject.h"
 #include "RlRateMatrix.h"
 #include "RlString.h"
@@ -128,7 +129,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the rate matrix
         if ( q->getValueTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) ) 
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -140,7 +141,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         } 
         else 
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
             dist->setRateMatrix( rm );
         }
         
@@ -179,7 +180,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the rate matrix
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -191,7 +192,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         } 
         else 
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
             dist->setRateMatrix( rm );
         }
         
@@ -230,7 +231,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the rate matrix
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -238,12 +239,15 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
             
-            dist->setRateMatrix( rm );
+            //dist->setRateMatrix( rm );
+            dist->setRateMatrix( dynamic_cast<const RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >*>(rm) );
         } 
         else 
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
-            dist->setRateMatrix( rm );
+            RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            
+            //dist->setRateMatrix( rm );
+            dist->setRateMatrix( dynamic_cast<const RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* >(rm) );
         }
         
         if ( siteRatesNode->getValue().size() > 0 ) 
@@ -260,12 +264,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         size_t nChars = 1;
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             nChars = rm->getValue()[0].getNumberOfStates();
         } 
         else 
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
             nChars = rm->getValue().getNumberOfStates();
         }
         
@@ -295,7 +299,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the rate matrix
         if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
             // sanity check
             if ( (nNodes-1) != rm->getValue().size() ) 
@@ -303,12 +307,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
                 throw RbException( "The number of substitution matrices does not match the number of branches" );
             }
             
-            dist->setRateMatrix( rm );
+            //dist->setRateMatrix( rm );
+            dist->setRateMatrix( dynamic_cast<const RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* >(rm) );
         } 
         else 
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
-            dist->setRateMatrix( rm );
+            RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix>* rm = static_cast<const RateMatrix &>( q->getValue() ).getValueNode();
+            //dist->setRateMatrix( rm );
+            dist->setRateMatrix( dynamic_cast<const RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* >(rm) );
         }
         
         if ( siteRatesNode->getValue().size() > 0 ) 
