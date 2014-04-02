@@ -178,7 +178,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        if ( q->getValueTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
@@ -229,7 +229,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        if ( q->getValueTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
@@ -262,7 +262,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
-        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        if ( q->getValueTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             nChars = rm->getValue()[0].getNumberOfStates();
@@ -297,7 +297,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         }
         
         // set the rate matrix
-        if ( q->getValueTypeSpec().isDerivedOf( Vector<RateMatrix>::getClassTypeSpec() ) ) 
+        if ( q->getValueTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) ) 
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateValueMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getValue() ).getValueNode();
             
@@ -365,7 +365,7 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<tr
         
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
-        rateMatrixTypes.push_back( Vector<RateMatrix>::getClassTypeSpec() );
+        rateMatrixTypes.push_back( VectorAbstractElement<RateMatrix>::getClassTypeSpec() );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
         
         // optional argument for the root frequencies

@@ -85,8 +85,8 @@ int main(int argc, const char * argv[]) {
     }
 
     // read html templates
-    fs::path entry_tpl_file = helpDir / "html-template/entry.tpl.html";
-    fs::path index_tpl_file = helpDir / "html-template/index.tpl.html";
+    fs::path entry_tpl_file = helpDir / "lib/html-template/entry.tpl.html";
+    fs::path index_tpl_file = helpDir / "lib/html-template/index.tpl.html";
     
     if(!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file)){
         std::cout << "Error: One or more of the html template files in help/html directory is missing." 
@@ -138,7 +138,7 @@ int main(int argc, const char * argv[]) {
 
     // write out new file content
     fstream fs;   
-    fs.open((helpDir.string() + "/index.html").c_str(), fstream::out | fstream::trunc);
+    fs.open((helpDir.string() + "/html/index.html").c_str(), fstream::out | fstream::trunc);
     fs << index_result;
     fs.close();
     

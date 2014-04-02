@@ -61,7 +61,7 @@ bool TestBirthDeathModelImplementations::run( void ) {
     turnover->setValue( new double(1.0) );
     TimeTree* t = trees[0];
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *tauCBD = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess( origin, div, turnover, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>()) );
+    StochasticNode<TimeTree> *tauCBD = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess( origin, div, turnover, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     
     // attach the data
@@ -75,10 +75,10 @@ bool TestBirthDeathModelImplementations::run( void ) {
     double MAX = trees[0]->getRoot().getAge();
     std::vector<double> r;
     r.push_back(2.0);
-    ConstantNode<UnivariateFunction> *lambda = new ConstantNode<UnivariateFunction>("lambda(t)", new ConstantStepFunction( new ConstantNode<double>("", new double(0.0) ), r, 0, MAX ) );
-    r[0] = 1.0;
-    ConstantNode<UnivariateFunction> *mu = new ConstantNode<UnivariateFunction>("mu(t)", new ConstantStepFunction( new ConstantNode<double>("", new double(0.0) ), r, 0, MAX ) );
-    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0) );
+//    ConstantNode<UnivariateFunction> *lambda = new ConstantNode<UnivariateFunction>("lambda(t)", new ConstantStepFunction( new ConstantNode<double>("", new double(0.0) ), r, 0, MAX ) );
+//    r[0] = 1.0;
+//    ConstantNode<UnivariateFunction> *mu = new ConstantNode<UnivariateFunction>("mu(t)", new ConstantStepFunction( new ConstantNode<double>("", new double(0.0) ), r, 0, MAX ) );
+//    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0) );
 
 
 //    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new TimeDependentBirthDeathProcess(lambda, mu, rho, int(t->getNumberOfTips()), t->getNames(), std::vector<Clade>() ) );

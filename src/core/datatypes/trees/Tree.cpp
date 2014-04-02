@@ -139,9 +139,9 @@ void Tree::clearBranchParameters() {
 
 }
 
-std::vector<std::string> Tree::getNames() const {
+std::vector<std::string> Tree::getTipNames() const {
 
-    return topology->getNames();
+    return topology->getTipNames();
 }
 
 TopologyNode& Tree::getNode(size_t idx) {
