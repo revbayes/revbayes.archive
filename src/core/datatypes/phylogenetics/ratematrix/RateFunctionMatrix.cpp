@@ -18,20 +18,20 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateFunctionMatrix::RateFunctionMatrix(size_t ns, size_t nc) : needsUpdate( true ) {
+RateFunctionMatrix::RateFunctionMatrix(size_t ns, size_t nc) {
     
     numStates            = ns;
     numCharacters        = nc;
+    needsUpdate          = true;
 }
 
 /** Copy constructor */
-RateFunctionMatrix::RateFunctionMatrix(const RateFunctionMatrix& m) : needsUpdate( true ){
+RateFunctionMatrix::RateFunctionMatrix(const RateFunctionMatrix& m) {
     
     numStates            = m.numStates;
     numCharacters        = m.numCharacters;
-    
+    needsUpdate          = true;
 }
-
 
 /** Destructor */
 RateFunctionMatrix::~RateFunctionMatrix(void) {
@@ -45,7 +45,6 @@ RateFunctionMatrix& RateFunctionMatrix::operator=(const RateFunctionMatrix &r) {
         numStates           = r.numStates;
         numCharacters       = r.numCharacters;
         needsUpdate         = true;
-        
     }
     
     return *this;
