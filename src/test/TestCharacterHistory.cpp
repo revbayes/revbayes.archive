@@ -55,6 +55,7 @@
 // experimental RateMap setup
 #include "RateMap_Biogeography.h"
 #include "BiogeographyRateMapFunction.h"
+#include "BiogeographicTreeHistoryCtmc.h"
 
 
 //#define USE_DDBD
@@ -96,17 +97,16 @@ bool TestCharacterHistory::run_exp(void) {
     
 //    // First, we read in the data
 //    // the matrix
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices("");
+    std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
+    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     std::cout << data[0] << std::endl;
-//    
-//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
-//    std::cout << "Read " << trees.size() << " trees." << std::endl;
-//    std::cout << trees[0]->getNewickRepresentation() << std::endl;
+    size_t numAreas = data[0]->getNumberOfCharacters();;
+
+    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.tre" );
+    std::cout << "Read " << trees.size() << " trees." << std::endl;
+    std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
-    size_t numAreas = 10;
-
-
     // birth-death process priors
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
@@ -123,20 +123,20 @@ bool TestCharacterHistory::run_exp(void) {
     // create distance matrix, q
     DeterministicNode<RateMap> *q = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
     
+    // instantiate tree object
+    std::vector<std::string> names = data[0]->getTaxonNames();
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    tau->setValue( trees[0] );
+    std::cout << "tau:\t" << tau->getValue() << std::endl;
     
-    
-//    std::vector<std::string> names = data[0]->getTaxonNames();
-//    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
-//    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
-//    
-//    //    tau->setValue( trees[0] );
-//    std::cout << "tau:\t" << tau->getValue() << std::endl;
-//    
-//    ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
-//    
-//    // and the character model
-//    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
+    // and the character model
+    ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
+//    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
 //    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
+
+    BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas);
+    
 //    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
 //    phyloCTMC->setClockRate( clockRate );
 //    phyloCTMC->setRateMatrix( q );

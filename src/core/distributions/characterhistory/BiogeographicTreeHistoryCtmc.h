@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class BiogeographicTreeHistoryCtmc : public GeneralTreeHistoryCtmc<charType, treeType> {
         
     public:
-        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
+        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites);
         BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &n);                                                                                                //!< Copy constructor
         virtual                                            ~BiogeographicTreeHistoryCtmc(void);                                                                   //!< Virtual destructor
         
@@ -65,7 +65,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : GeneralTreeHistoryCtmc<charType, treeType>(  t, nChars, 1, c, nSites ) {
+RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites) : GeneralTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites ) {
     
     // initialize with default parameters
     distancePower               = NULL;
