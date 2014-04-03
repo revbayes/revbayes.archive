@@ -27,7 +27,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites);
+        AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites);
         AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                                   //!< Copy constructor
         virtual                                                            ~AbstractTreeHistoryCtmc(void);                                       //!< Virtual destructor
         
@@ -119,18 +119,18 @@ namespace RevBayesCore {
 #include <cmath>
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
 numSites( nSites ),
 numChars( nChars ),
 tau( t ),
 transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
 partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
-activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) )      ,
+activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
 charMatrix(),
 gapMatrix(),
 patternCounts(),
 numPatterns( numSites ),
-compressed( c ),
+compressed( false ),
 changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
 dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
 usingAmbiguousCharacters( true ),
@@ -412,6 +412,41 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
     }
     
     return this->lnProb;
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex)
+{
+    
+    // check for recomputation
+    if ( dirtyNodes[nodeIndex] )
+    {
+        // mark as computed
+        dirtyNodes[nodeIndex] = false;
+        
+        if ( node.isTip() )
+        {
+            // this is a tip node
+            // compute the likelihood for the tip and we are done
+            computeTipLikelihood(node, nodeIndex);
+        }
+        else
+        {
+            // this is an internal node
+            
+            // start by filling the likelihood vector for the two children of this node
+            const TopologyNode &left = node.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = node.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            
+            // now compute the likelihoods of this internal node
+            computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
+        }
+    }
 }
 
 

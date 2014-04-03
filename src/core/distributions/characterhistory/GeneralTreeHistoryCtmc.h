@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class GeneralTreeHistoryCtmc : public AbstractTreeHistoryCtmc<charType, treeType> {
         
     public:
-        GeneralTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites);
+        GeneralTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites);
         GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                                                //!< Copy constructor
         virtual                                            ~GeneralTreeHistoryCtmc(void);                                                                   //!< Virtual destructor
         
@@ -32,8 +32,8 @@ namespace RevBayesCore {
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                                          //!< Create an independent clone
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
-        void                                                setRateMatrix(const TypedDagNode< RateValueMatrix > *rm);
-        void                                                setRateMatrix(const TypedDagNode< RbVector< RateValueMatrix > > *rm);
+        void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
+        void                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                    //!< Implementation of swaping parameters
@@ -58,7 +58,7 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< RateMatrix > >*  heterogeneousRateMatrices;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
-//        const TypedDagNode< RateFunctionMatrix >*           homogeneousRateMap;
+        const TypedDagNode< RateMap >*           homogeneousRateMap;
         
         
         // flags specifying which model variants we use
@@ -81,7 +81,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, 1, c, nSites ) {
+RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites ) {
     
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -392,7 +392,7 @@ const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType, treeTy
     }
     else
     {
-        return static_cast<const TypedDagNode<RateValueMatrix>* >(homogeneousRateMatrix)->getValue().getStationaryFrequencies();
+        return homogeneousRateMatrix->getValue().getStationaryFrequencies();
     }
     
 }
@@ -429,12 +429,12 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::updateTransitionP
         const std::vector<double> &r = this->siteRates->getValue();
         for (size_t i = 0; i < this->numSiteRates; ++i)
         {
-            static_cast<const RateValueMatrix*>(rm)->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
+            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
         }
     }
     else
     {
-        static_cast<const RateValueMatrix*>(rm)->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
+        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
     }
     
 }
@@ -505,7 +505,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setClockRate(cons
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(const TypedDagNode< RateValueMatrix > *rm) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -536,7 +536,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(con
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateValueMatrix > > *rm) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
