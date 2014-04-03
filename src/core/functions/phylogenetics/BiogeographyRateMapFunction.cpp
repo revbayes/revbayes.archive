@@ -1,0 +1,55 @@
+//
+//  BiogeographyRateMapFunction.cpp
+//  rb_mlandis
+//
+//  Created by Michael Landis on 4/3/14.
+//  Copyright (c) 2014 Michael Landis. All rights reserved.
+//
+
+#include "BiogeographyRateMapFunction.h"
+#include "RbException.h"
+
+using namespace RevBayesCore;
+
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<double> *dp, size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography(ns, nc) ), distancePower( dp ) {
+    // add the lambda parameter as a parent
+    addParameter( distancePower );
+    
+    update();
+}
+
+
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n) : TypedFunction<RateMap>( n ), distancePower( n.distancePower ) {
+    // no need to add parameters, happens automatically
+}
+
+
+BiogeographyRateMapFunction::~BiogeographyRateMapFunction( void ) {
+    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
+}
+
+
+
+BiogeographyRateMapFunction* BiogeographyRateMapFunction::clone( void ) const {
+    return new BiogeographyRateMapFunction( *this );
+}
+
+
+void BiogeographyRateMapFunction::update( void ) {
+    // get the information from the arguments for reading the file
+    double dp = distancePower->getValue();
+    
+    // set the base frequencies
+    static_cast< RateMap_Biogeography* >(value)->setDistancePower(dp);
+    
+    //value->updateMatrix();
+}
+
+
+
+void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+    if (oldP == distancePower) {
+        distancePower = static_cast<const TypedDagNode<double>* >( newP );
+    }
+}
+
