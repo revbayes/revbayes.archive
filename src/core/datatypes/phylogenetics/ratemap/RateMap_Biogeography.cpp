@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-RateMap_Biogeography::RateMap_Biogeography(size_t ns, size_t nc) : RateMap(ns, nc)
+RateMap_Biogeography::RateMap_Biogeography(size_t nc) : RateMap(2, nc)
 {
     
 }
@@ -57,6 +57,11 @@ double RateMap_Biogeography::getTransitionProbability(CharacterState* from, Char
 double RateMap_Biogeography::getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const
 {
     return 0.0;
+}
+
+void RateMap_Biogeography::updateMap(void)
+{
+    ; // do nothing
 }
 
 

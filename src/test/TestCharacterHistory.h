@@ -28,6 +28,7 @@ namespace RevBayesCore {
         virtual                                ~TestCharacterHistory(void);                                                            //!< Virtual destructor
         
         bool                                    run(void);
+        bool                                    run_exp(void);
         
     private:
         void tokenizeArgv(void);

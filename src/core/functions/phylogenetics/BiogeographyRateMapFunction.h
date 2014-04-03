@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class BiogeographyRateMapFunction : public TypedFunction<RateMap> {
         
     public:
-        BiogeographyRateMapFunction(const TypedDagNode<double> *dp, size_t ns, size_t nc); // pass in geography object??
+        BiogeographyRateMapFunction(const TypedDagNode<std::vector<double> > *glr, const TypedDagNode<double> *dp, size_t nc); // pass in geography object??
         BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n);                                                                  //!< Copy constructor
         virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
         
@@ -34,6 +34,7 @@ namespace RevBayesCore {
     private:
         
         // members
+        const TypedDagNode<std::vector<double> >*           gainLossRates;
         const TypedDagNode<double>*                         distancePower;
         
     };
