@@ -22,7 +22,6 @@ using namespace RevBayesCore;
 AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
     
     setState('?');
-    stateIndex=0xFFFFF;
 }
 
 
@@ -30,7 +29,6 @@ AminoAcidState::AminoAcidState(void) : DiscreteCharacterState() {
 AminoAcidState::AminoAcidState(const AminoAcidState& s) : DiscreteCharacterState() {
     
     state = s.state;
-    stateIndex = s.stateIndex;
 }
 
 
@@ -181,9 +179,6 @@ unsigned long AminoAcidState::getState( void ) const {
     return state;
 }
 
-unsigned int AminoAcidState::getStateIndex( void ) const {
-    return stateIndex;
-}
 
 const std::string& AminoAcidState::getStateLabels( void ) const {
     
@@ -266,36 +261,11 @@ void AminoAcidState::setGapState(bool tf) {
 void AminoAcidState::setState(size_t pos, bool val) {
     
     state &= val << pos;
-    stateIndex = pos;
 }
 
 
 void AminoAcidState::setState(char symbol) {
     state = computeState( symbol );
-    switch ( state )
-    {
-        case 0x00001: stateIndex = 0;
-        case 0x00002: stateIndex = 1;
-        case 0x00004: stateIndex = 2;
-        case 0x00008: stateIndex = 3;
-        case 0x00010: stateIndex = 4;
-        case 0x00020: stateIndex = 5;
-        case 0x00040: stateIndex = 6;
-        case 0x00080: stateIndex = 7;
-        case 0x00100: stateIndex = 8;
-        case 0x00200: stateIndex = 9;
-        case 0x00400: stateIndex = 10;
-        case 0x00800: stateIndex = 11;
-        case 0x01000: stateIndex = 12;
-        case 0x02000: stateIndex = 13;
-        case 0x04000: stateIndex = 14;
-        case 0x08000: stateIndex = 15;
-        case 0x10000: stateIndex = 16;
-        case 0x20000: stateIndex = 17;
-        case 0x40000: stateIndex = 18;
-        case 0x80000: stateIndex = 19;
-        default: stateIndex = -1;
-    }
 }
 
 

@@ -3,7 +3,7 @@
 
 #include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
 #include "DnaState.h"
-#include "RateValueMatrix.h"
+#include "RateMatrix.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
@@ -24,8 +24,8 @@ namespace RevBayesCore {
         NucleotideBranchHeterogeneousCharEvoModel*          clone(void) const;                                                                          //!< Create an independent clone
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
-        void                                                setRateMatrix(const TypedDagNode< RateValueMatrix > *rm);
-        void                                                setRateMatrix(const TypedDagNode< RbVector< RateValueMatrix > > *rm);
+        void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
+        void                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                    //!< Implementation of swaping parameters
@@ -46,8 +46,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
         const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
-        const TypedDagNode< RateValueMatrix >*                   homogeneousRateMatrix;
-        const TypedDagNode< RbVector< RateValueMatrix > >*       heterogeneousRateMatrices;
+        const TypedDagNode< RateMatrix >*                   homogeneousRateMatrix;
+        const TypedDagNode< RbVector< RateMatrix > >*       heterogeneousRateMatrices;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
         
@@ -87,7 +87,7 @@ RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::Nuc
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates     = NULL;
-    homogeneousRateMatrix       = new ConstantNode<RateValueMatrix>("rateMatrix", new RateMatrix_JC( 4 ) );
+    homogeneousRateMatrix       = new ConstantNode<RateMatrix>("rateMatrix", new RateMatrix_JC( 4 ) );
     heterogeneousRateMatrices   = NULL;
     rootFrequencies             = NULL;
     siteRates                   = NULL;
@@ -567,7 +567,7 @@ template<class charType, class treeType>
 void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
     
     // first, get the rate matrix for this branch
-    const RateValueMatrix *rm;
+    const RateMatrix *rm;
     if ( this->branchHeterogeneousSubstitutionMatrices == true ) 
     {
         rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
@@ -670,7 +670,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
 
 
 template<class charType, class treeType>
-void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RateValueMatrix > *rm) {
+void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL ) 
@@ -701,7 +701,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
 
 
 template<class charType, class treeType>
-void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateValueMatrix > > *rm) {
+void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL ) 
@@ -817,11 +817,11 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     }
     else if (oldP == homogeneousRateMatrix) 
     {
-        homogeneousRateMatrix = static_cast<const TypedDagNode< RateValueMatrix >* >( newP );
+        homogeneousRateMatrix = static_cast<const TypedDagNode< RateMatrix >* >( newP );
     }
     else if (oldP == heterogeneousRateMatrices) 
     {
-        heterogeneousRateMatrices = static_cast<const TypedDagNode< RbVector< RateValueMatrix > >* >( newP );
+        heterogeneousRateMatrices = static_cast<const TypedDagNode< RbVector< RateMatrix > >* >( newP );
     }
     else if (oldP == rootFrequencies) 
     {

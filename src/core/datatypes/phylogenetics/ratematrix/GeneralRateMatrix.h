@@ -16,7 +16,7 @@
 #ifndef GeneralRateMatrix_H
 #define GeneralRateMatrix_H
 
-#include "RateValueMatrix.h"
+#include "RateMatrix.h"
 #include <complex>
 #include <vector>
 
@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix;
     
     
-    class GeneralRateMatrix : public RateValueMatrix {
+    class GeneralRateMatrix : public RateMatrix {
         
     public:
         GeneralRateMatrix(size_t n);                                                             //!< Construct rate matrix with n states

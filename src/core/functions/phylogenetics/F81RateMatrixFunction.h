@@ -30,7 +30,7 @@
 
 namespace RevBayesCore {
     
-    class F81RateMatrixFunction : public TypedFunction<RateValueMatrix> {
+    class F81RateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
         F81RateMatrixFunction(const TypedDagNode<std::vector<double> > *bf);

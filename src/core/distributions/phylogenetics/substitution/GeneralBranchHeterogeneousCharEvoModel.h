@@ -3,7 +3,7 @@
 
 #include "AbstractSiteHomogeneousMixtureCharEvoModel.h"
 #include "DnaState.h"
-#include "RateValueMatrix.h"
+#include "RateMatrix.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
@@ -383,8 +383,9 @@ const std::vector<double>& RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<
     } 
     else 
     {
-        return static_cast<const RateValueMatrix&>(homogeneousRateMatrix->getValue()).getStationaryFrequencies();
+        return homogeneousRateMatrix->getValue().getStationaryFrequencies();
     }
+
 }
 
 
@@ -392,7 +393,7 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
     
     // first, get the rate matrix for this branch
-    const RateValueMatrix *rm;
+    const RateMatrix *rm;
     if ( this->branchHeterogeneousSubstitutionMatrices == true ) 
     {
         rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
@@ -419,12 +420,12 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::u
         const std::vector<double> &r = this->siteRates->getValue();
         for (size_t i = 0; i < this->numSiteRates; ++i)
         {
-            static_cast<const RateValueMatrix*>(rm)->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
+            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
         }
     } 
     else 
     {
-        static_cast<const RateValueMatrix*>(rm)->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
+        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
     }
     
 }
