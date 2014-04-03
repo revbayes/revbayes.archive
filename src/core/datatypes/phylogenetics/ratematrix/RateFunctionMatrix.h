@@ -25,12 +25,11 @@ namespace RevBayesCore {
         // public methods
         size_t                              getNumberOfStates(void) const;                                                          //!< Return the number of states
         size_t                              getNumberOfCharacters(void) const;                                                      //!< Return the number of characters
-               
+        virtual double                      getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const = 0;
+        
         // pure virtual methods you have to overwrite
         virtual RateFunctionMatrix*         clone(void) const = 0;
         virtual void                        updateMatrix(void) = 0;                                                                 //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
-        virtual double                      getRate(DiscreteCharacterState* fromState, DiscreteCharacterState* toState) const = 0;
-        virtual double                      getSumOfRates(DiscreteCharacterState* fromState) const = 0;
         
     protected:
         // prevent instantiation
