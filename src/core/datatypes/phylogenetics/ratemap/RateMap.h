@@ -30,6 +30,7 @@ namespace RevBayesCore {
         virtual double                      getSumOfRates(CharacterState* from) const = 0;
         virtual double                      getTransitionProbability(CharacterState* from, CharacterState* to, double t) const = 0;
         virtual double                      getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const = 0;
+        virtual void                        updateMap(void) = 0;
         
     protected:
         // prevent instantiation

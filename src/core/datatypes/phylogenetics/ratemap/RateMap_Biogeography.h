@@ -17,7 +17,7 @@ namespace RevBayesCore {
     class RateMap_Biogeography : public RateMap {
         
     public:
-        RateMap_Biogeography(size_t ns, size_t nc);                                                                    //!< Construct rate matrix with n states
+        RateMap_Biogeography(size_t nc);                                                                    //!< Construct rate matrix with n states
         RateMap_Biogeography(const RateMap_Biogeography& m);                                                           //!< Copy constructor
         virtual                                     ~RateMap_Biogeography(void);                                       //!< Destructor
         
@@ -30,6 +30,7 @@ namespace RevBayesCore {
         double                                      getSumOfRates(CharacterState* from) const;
         double                                      getTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
         double                                      getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
+        void                                        updateMap(void);
         
         // public methods
         double                                      getDistancePower(void) const;

@@ -32,6 +32,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "NclReader.h"
 #include "PhylowoodNhxMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -49,6 +50,12 @@
 // unsorted test headers
 #include "RateMatrix_GTR.h"
 #include "GtrRateMatrixFunction.h"
+
+
+// experimental RateMap setup
+#include "RateMap_Biogeography.h"
+#include "BiogeographyRateMapFunction.h"
+
 
 //#define USE_DDBD
 
@@ -83,6 +90,61 @@ void TestCharacterHistory::tokenizeArgv(void)
 
 TestCharacterHistory::~TestCharacterHistory() {
     // nothing to do
+}
+
+bool TestCharacterHistory::run_exp(void) {
+    
+//    // First, we read in the data
+//    // the matrix
+    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices("");
+    std::cout << "Read " << data.size() << " matrices." << std::endl;
+    std::cout << data[0] << std::endl;
+//    
+//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+//    std::cout << "Read " << trees.size() << " trees." << std::endl;
+//    std::cout << trees[0]->getNewickRepresentation() << std::endl;
+    
+    size_t numAreas = 10;
+
+
+    // birth-death process priors
+    StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
+    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
+    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
+
+    // gain loss rates
+    ConstantNode<std::vector<double> > *glrp = new ConstantNode<std::vector<double> >( "gainLossRatePrior", new std::vector<double>(2,1.0) );
+    StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new DirichletDistribution(glrp) );
+
+    // distance powers
+    ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
+    StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
+    
+    // create distance matrix, q
+    DeterministicNode<RateMap> *q = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
+    
+    
+    
+//    std::vector<std::string> names = data[0]->getTaxonNames();
+//    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+//    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+//    
+//    //    tau->setValue( trees[0] );
+//    std::cout << "tau:\t" << tau->getValue() << std::endl;
+//    
+//    ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
+//    
+//    // and the character model
+//    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
+//    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
+//    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+//    phyloCTMC->setClockRate( clockRate );
+//    phyloCTMC->setRateMatrix( q );
+//    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
+//    charactermodel->clamp( data[0] );
+//
+    
+    return true;
 }
 
 bool TestCharacterHistory::run( void ) {
@@ -120,7 +182,7 @@ bool TestCharacterHistory::run( void ) {
         taxonNames.push_back("p" + ss.str());
     }
     
-    size_t numCharacters = pow(10,2);
+    size_t numCharacters = std::pow(10,2.0);
     size_t numStates = 2;
     
     // assign area coordinates

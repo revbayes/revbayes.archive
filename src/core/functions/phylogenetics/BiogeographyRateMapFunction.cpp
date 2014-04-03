@@ -11,15 +11,16 @@
 
 using namespace RevBayesCore;
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<double> *dp, size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography(ns, nc) ), distancePower( dp ) {
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<std::vector<double> > *glr, const TypedDagNode<double> *dp, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography( nc ) ), distancePower( dp ), gainLossRates( glr ) {
     // add the lambda parameter as a parent
     addParameter( distancePower );
+    addParameter( gainLossRates );
     
     update();
 }
 
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n) : TypedFunction<RateMap>( n ), distancePower( n.distancePower ) {
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n) : TypedFunction<RateMap>( n ), distancePower( n.distancePower ), gainLossRates( n.gainLossRates ) {
     // no need to add parameters, happens automatically
 }
 
@@ -36,19 +37,26 @@ BiogeographyRateMapFunction* BiogeographyRateMapFunction::clone( void ) const {
 
 
 void BiogeographyRateMapFunction::update( void ) {
-    // get the information from the arguments for reading the file
-    double dp = distancePower->getValue();
     
-    // set the base frequencies
+    // set the gainLossRate
+    const std::vector<double>& glr = gainLossRates->getValue();
+    static_cast< RateMap_Biogeography* >(value)->setGainLossRates(glr);
+    
+    // set the distancePower
+    double dp = distancePower->getValue();
     static_cast< RateMap_Biogeography* >(value)->setDistancePower(dp);
     
-    //value->updateMatrix();
+    value->updateMap();
 }
 
 
 
 void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == distancePower) {
+    if (oldP == gainLossRates)
+    {
+        gainLossRates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+    }
+    else if (oldP == distancePower) {
         distancePower = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
