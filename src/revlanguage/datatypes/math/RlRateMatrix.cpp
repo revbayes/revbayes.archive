@@ -17,17 +17,17 @@
 
 using namespace RevLanguage;
 
-RateMatrix::RateMatrix(void) : RlModelVariableWrapper<RevBayesCore::RateValueMatrix>() {
+RateMatrix::RateMatrix(void) : RlModelVariableWrapper<RevBayesCore::RateMatrix>() {
     
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::RateValueMatrix *v) : RlModelVariableWrapper<RevBayesCore::RateValueMatrix>( v ) {
+RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RlModelVariableWrapper<RevBayesCore::RateMatrix>( v ) {
     
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateValueMatrix> *m) : RlModelVariableWrapper<RevBayesCore::RateValueMatrix>( m ) {
+RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *m) : RlModelVariableWrapper<RevBayesCore::RateMatrix>( m ) {
     
 }
 
@@ -40,7 +40,7 @@ RateMatrix* RateMatrix::clone() const {
 /* Map calls to member methods */
 RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "getRate") {
+    if (name == "[]") {
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
         
@@ -60,8 +60,7 @@ RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::
         return new Natural(n);
     }
     
-    
-    return RlModelVariableWrapper<RevBayesCore::RateValueMatrix>::executeMethod( name, args );
+    return RlModelVariableWrapper<RevBayesCore::RateMatrix>::executeMethod( name, args );
 }
 
 
@@ -102,7 +101,7 @@ const MethodTable& RateMatrix::getMethods(void) const {
         methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::RateValueMatrix>::getMethods() );
+        methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::RateMatrix>::getMethods() );
         methodsSet = true;
     }
     

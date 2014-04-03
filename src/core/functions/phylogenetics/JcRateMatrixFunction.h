@@ -30,7 +30,7 @@
 
 namespace RevBayesCore {
     
-    class JcRateMatrixFunction : public TypedFunction<RateValueMatrix> {
+    class JcRateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
         JcRateMatrixFunction(int ns);

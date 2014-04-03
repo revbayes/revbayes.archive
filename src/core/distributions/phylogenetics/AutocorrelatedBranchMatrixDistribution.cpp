@@ -72,9 +72,7 @@ double AutocorrelatedBranchMatrixDistribution::computeLnProbability(void) {
             // probability of change
             lnProb += log( changeProbability->getValue() );
             
-            // static_cast<const RateValueMatrix&>(homogeneousRateMatrix->getValue())
-            
-            const std::vector<double>& descendant = static_cast<const RateValueMatrix&>( (*value)[childIndex] ).getStationaryFrequencies();
+            const std::vector<double>& descendant = (*value)[childIndex].getStationaryFrequencies();
 //            const std::vector<double>& descendant = uniqueMatrices[ matrixIndex[childIndex] ].getStationaryFrequencies();
             
             // probability of new descendant values
@@ -99,7 +97,7 @@ double AutocorrelatedBranchMatrixDistribution::recursiveLnProb( const TopologyNo
     size_t numChildren = n.getNumberOfChildren();
     
     if ( numChildren > 0 ) {
-        std::vector<double> parent = static_cast<const RateValueMatrix&>( (*value)[nodeIndex] ).getStationaryFrequencies();
+        std::vector<double> parent = (*value)[nodeIndex].getStationaryFrequencies();
 
         std::vector<double>::iterator end = parent.end();
         for (std::vector<double>::iterator it = parent.begin(); it != end; ++it) {
@@ -123,7 +121,7 @@ double AutocorrelatedBranchMatrixDistribution::recursiveLnProb( const TopologyNo
                 // probability of change
                 lnProb += log( changeProbability->getValue() );
                 
-                const std::vector<double>& descendant = static_cast<const RateValueMatrix&>( (*value)[nodeIndex] ).getStationaryFrequencies();
+                const std::vector<double>& descendant = (*value)[childIndex].getStationaryFrequencies();
         //            const std::vector<double>& descendant = uniqueMatrices[ matrixIndex[childIndex] ].getStationaryFrequencies();
                 
                 // probability of new descendant values

@@ -3,13 +3,13 @@
 
 using namespace RevBayesCore;
 
-JcRateMatrixFunction::JcRateMatrixFunction(int ns) : TypedFunction<RateValueMatrix>( new RateMatrix_JC(ns) ) {
+JcRateMatrixFunction::JcRateMatrixFunction(int ns) : TypedFunction<RateMatrix>( new RateMatrix_JC(ns) ) {
     
     update();
 }
 
 
-JcRateMatrixFunction::JcRateMatrixFunction(const JcRateMatrixFunction &n) : TypedFunction<RateValueMatrix>( n ) {
+JcRateMatrixFunction::JcRateMatrixFunction(const JcRateMatrixFunction &n) : TypedFunction<RateMatrix>( n ) {
     // no need to add parameters, happens automatically
 }
 

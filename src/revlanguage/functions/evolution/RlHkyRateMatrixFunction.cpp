@@ -10,7 +10,6 @@
 #include "HkyRateMatrixFunction.h"
 #include "RlHkyRateMatrixFunction.h"
 #include "RateMatrix_HKY.h"
-#include "RateValueMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -37,7 +36,7 @@ RbLanguageObject* HkyRateMatrixFunction::execute() {
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getValue() ).getValueNode();
     RevBayesCore::HkyRateMatrixFunction* f = new RevBayesCore::HkyRateMatrixFunction( ka, bf );
-    RevBayesCore::DeterministicNode<RevBayesCore::RateValueMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateValueMatrix>("", f);
+    RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix>("", f);
     
     RateMatrix* value = new RateMatrix( detNode );
     
