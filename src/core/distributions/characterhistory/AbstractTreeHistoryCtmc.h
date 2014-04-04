@@ -42,7 +42,7 @@ namespace RevBayesCore {
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
-        void                                                                redrawValue(void);
+        virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         
     protected:
@@ -82,6 +82,7 @@ namespace RevBayesCore {
         size_t                                                              numPatterns;
         bool                                                                compressed;
         std::vector<BranchHistory>                                          histories;
+//        std::vector<
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
@@ -100,9 +101,13 @@ namespace RevBayesCore {
         
     private:
         // private methods
-        void                                                                compress(void);
+        // void                                                                compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
-        void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+        
+        virtual void                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual void                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual void                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         
         
     };
@@ -122,6 +127,7 @@ template<class charType, class treeType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
 numSites( nSites ),
 numChars( nChars ),
+numSiteRates( 1 ),
 tau( t ),
 transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
 partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
@@ -210,175 +216,175 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>* RevBayesCore::Abstrac
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::compress( void )
-{
-    
-    //    compressed = false;
-    
-    charMatrix.clear();
-    gapMatrix.clear();
-    patternCounts.clear();
-    numPatterns = 0;
-    
-    // resize the matrices
-    size_t tips = tau->getValue().getNumberOfTips();
-    charMatrix.resize(tips);
-    gapMatrix.resize(tips);
-    
-    // check whether there are ambiguous characters (besides gaps)
-    bool ambiguousCharacters = false;
-    // find the unique site patterns and compute their respective frequencies
-    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
-    for (size_t site = 0; site < numSites; ++site)
-    {
-        for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-        {
-            if ( (*it)->isTip() )
-            {
-                // \todo modify this so that the distribution is actually defined on discrete character data
-                AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(site) );
-                
-                // if we treat unknown characters as gaps and this is an unknown character then we change it
-                // because we might then have a pattern more
-                if ( treatAmbiguousAsGaps && c.isAmbiguous() )
-                {
-                    c.setGapState( true );
-                }
-                else if ( treatUnknownAsGap && c.getNumberOfStates() == c.getNumberObservedStates() )
-                {
-                    c.setGapState( true );
-                }
-                else if ( !c.isGapState() && c.isAmbiguous() )
-                {
-                    ambiguousCharacters = true;
-                    break;
-                }
-            }
-        }
-        
-        // break the loop if there was an ambiguous character
-        if ( ambiguousCharacters )
-        {
-            break;
-        }
-    }
-    
-    // set the global variable if we use ambiguous characters
-    usingAmbiguousCharacters = ambiguousCharacters;
-    
-    
-    std::vector<bool> unique(numSites, true);
-    // compress the character matrix if we're asked to
-    if ( compressed )
-    {
-        // find the unique site patterns and compute their respective frequencies
-        std::map<std::string,size_t> patterns;
-        for (size_t site = 0; site < numSites; ++site)
-        {
-            // create the site pattern
-            std::string pattern = "";
-            for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-            {
-                if ( (*it)->isTip() )
-                {
-                    AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                    CharacterState &c = taxon.getCharacter(site);
-                    pattern += c.getStringValue();
-                }
-            }
-            // check if we have already seen this site pattern
-            std::map<std::string, size_t>::const_iterator index = patterns.find( pattern );
-            if ( index != patterns.end() )
-            {
-                // we have already seen this pattern
-                // increase the frequency counter
-                patternCounts[ index->second ]++;
-                
-                // obviously this site isn't unique nor the first encounter
-                unique[site] = false;
-            }
-            else
-            {
-                // create a new pattern frequency counter for this pattern
-                patternCounts.push_back(1);
-                
-                // insert this pattern with the corresponding index in the map
-                patterns.insert( std::pair<std::string,size_t>(pattern,numPatterns) );
-                
-                // increase the pattern counter
-                numPatterns++;
-                
-                // flag that this site is unique (or the first occurence of this pattern)
-                unique[site] = true;
-            }
-        }
-    }
-    else
-    {
-        // we do not compress
-        numPatterns = numSites;
-        patternCounts = std::vector<size_t>(numSites,1);
-    }
-    
-    
-    // allocate and fill the cells of the matrices
-    for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        if ( (*it)->isTip() )
-        {
-            size_t nodeIndex = (*it)->getIndex();
-            AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-            
-            // resize the column
-            charMatrix[nodeIndex].resize(numPatterns);
-            gapMatrix[nodeIndex].resize(numPatterns);
-            size_t patternIndex = 0;
-            for (size_t site = 0; site < numSites; ++site)
-            {
-                // only add this site if it is unique
-                if ( unique[site] )
-                {
-                    charType &c = static_cast<charType &>( taxon.getCharacter(site) );
-                    gapMatrix[nodeIndex][patternIndex] = c.isGapState();
-                    
-                    if ( ambiguousCharacters )
-                    {
-                        // we use the actual state
-                        charMatrix[nodeIndex][patternIndex] = c.getState();
-                    }
-                    else
-                    {
-                        // we use the index of the state
-                        size_t index = 0;
-                        unsigned long state = c.getState();
-                        state >>= 1;
-                        
-                        while ( state != 0 ) // there are still observed states left
-                        {
-                            
-                            // remove this state from the observed states
-                            state >>= 1;
-                            
-                            // increment the index
-                            ++index;
-                        } // end-while over all observed states for this character
-                        
-                        charMatrix[nodeIndex][patternIndex] = index;
-                    }
-                    
-                    // increase the pattern index
-                    patternIndex++;
-                }
-            }
-        }
-    }
-    
-    // finally we resize the partial likelihood vectors to the new pattern counts
-    this->resizeLikelihoodVectors();
-    
-}
+//template<class charType, class treeType>
+//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::compress( void )
+//{
+//    
+//    //    compressed = false;
+//    
+//    charMatrix.clear();
+//    gapMatrix.clear();
+//    patternCounts.clear();
+//    numPatterns = 0;
+//    
+//    // resize the matrices
+//    size_t tips = tau->getValue().getNumberOfTips();
+//    charMatrix.resize(tips);
+//    gapMatrix.resize(tips);
+//    
+//    // check whether there are ambiguous characters (besides gaps)
+//    bool ambiguousCharacters = false;
+//    // find the unique site patterns and compute their respective frequencies
+//    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+//    for (size_t site = 0; site < numSites; ++site)
+//    {
+//        for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+//        {
+//            if ( (*it)->isTip() )
+//            {
+//                // \todo modify this so that the distribution is actually defined on discrete character data
+//                AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+//                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(site) );
+//                
+//                // if we treat unknown characters as gaps and this is an unknown character then we change it
+//                // because we might then have a pattern more
+//                if ( treatAmbiguousAsGaps && c.isAmbiguous() )
+//                {
+//                    c.setGapState( true );
+//                }
+//                else if ( treatUnknownAsGap && c.getNumberOfStates() == c.getNumberObservedStates() )
+//                {
+//                    c.setGapState( true );
+//                }
+//                else if ( !c.isGapState() && c.isAmbiguous() )
+//                {
+//                    ambiguousCharacters = true;
+//                    break;
+//                }
+//            }
+//        }
+//        
+//        // break the loop if there was an ambiguous character
+//        if ( ambiguousCharacters )
+//        {
+//            break;
+//        }
+//    }
+//    
+//    // set the global variable if we use ambiguous characters
+//    usingAmbiguousCharacters = ambiguousCharacters;
+//    
+//    
+//    std::vector<bool> unique(numSites, true);
+//    // compress the character matrix if we're asked to
+//    if ( compressed )
+//    {
+//        // find the unique site patterns and compute their respective frequencies
+//        std::map<std::string,size_t> patterns;
+//        for (size_t site = 0; site < numSites; ++site)
+//        {
+//            // create the site pattern
+//            std::string pattern = "";
+//            for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+//            {
+//                if ( (*it)->isTip() )
+//                {
+//                    AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+//                    CharacterState &c = taxon.getCharacter(site);
+//                    pattern += c.getStringValue();
+//                }
+//            }
+//            // check if we have already seen this site pattern
+//            std::map<std::string, size_t>::const_iterator index = patterns.find( pattern );
+//            if ( index != patterns.end() )
+//            {
+//                // we have already seen this pattern
+//                // increase the frequency counter
+//                patternCounts[ index->second ]++;
+//                
+//                // obviously this site isn't unique nor the first encounter
+//                unique[site] = false;
+//            }
+//            else
+//            {
+//                // create a new pattern frequency counter for this pattern
+//                patternCounts.push_back(1);
+//                
+//                // insert this pattern with the corresponding index in the map
+//                patterns.insert( std::pair<std::string,size_t>(pattern,numPatterns) );
+//                
+//                // increase the pattern counter
+//                numPatterns++;
+//                
+//                // flag that this site is unique (or the first occurence of this pattern)
+//                unique[site] = true;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        // we do not compress
+//        numPatterns = numSites;
+//        patternCounts = std::vector<size_t>(numSites,1);
+//    }
+//    
+//    
+//    // allocate and fill the cells of the matrices
+//    for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+//    {
+//        if ( (*it)->isTip() )
+//        {
+//            size_t nodeIndex = (*it)->getIndex();
+//            AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
+//            
+//            // resize the column
+//            charMatrix[nodeIndex].resize(numPatterns);
+//            gapMatrix[nodeIndex].resize(numPatterns);
+//            size_t patternIndex = 0;
+//            for (size_t site = 0; site < numSites; ++site)
+//            {
+//                // only add this site if it is unique
+//                if ( unique[site] )
+//                {
+//                    charType &c = static_cast<charType &>( taxon.getCharacter(site) );
+//                    gapMatrix[nodeIndex][patternIndex] = c.isGapState();
+//                    
+//                    if ( ambiguousCharacters )
+//                    {
+//                        // we use the actual state
+//                        charMatrix[nodeIndex][patternIndex] = c.getState();
+//                    }
+//                    else
+//                    {
+//                        // we use the index of the state
+//                        size_t index = 0;
+//                        unsigned long state = c.getState();
+//                        state >>= 1;
+//                        
+//                        while ( state != 0 ) // there are still observed states left
+//                        {
+//                            
+//                            // remove this state from the observed states
+//                            state >>= 1;
+//                            
+//                            // increment the index
+//                            ++index;
+//                        } // end-while over all observed states for this character
+//                        
+//                        charMatrix[nodeIndex][patternIndex] = index;
+//                    }
+//                    
+//                    // increase the pattern index
+//                    patternIndex++;
+//                }
+//            }
+//        }
+//    }
+//    
+//    // finally we resize the partial likelihood vectors to the new pattern counts
+//    this->resizeLikelihoodVectors();
+//    
+//}
 
 
 template<class charType, class treeType>
@@ -458,7 +464,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEv
     
 }
 
-
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::keepSpecialization( DagNode* affecter ) {
     
@@ -509,70 +514,23 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::recursivelyFlagN
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::redrawValue( void ) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::redrawValue( void )
+{
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < numChars; i++)
+        indexSet.insert(i);
     
-    // delete the old value first
-    delete this->value;
-    
-    // create a new character data object
-    this->value = new DiscreteCharacterData<charType>();
-    
-    // create a vector of taxon data
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>() );
-    
-    // first, simulate the per site rates
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    std::vector<size_t> perSiteRates;
-    for ( size_t i = 0; i < numSites; ++i )
+    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
     {
-        // draw the state
-        double u = rng->uniform01();
-        size_t rateIndex = (int)(u*numSiteRates);
-        perSiteRates.push_back( rateIndex );
+        samplePathStart(*nodes[i], indexSet);
+        if (nodes[i]->isTip() == false)
+            samplePathEnd(nodes[i]->getParent(), indexSet);
     }
     
-    // simulate the root sequence
-    const std::vector< double > &stationaryFreqs = getRootFrequencies();
-    DiscreteTaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
-    for ( size_t i = 0; i < numSites; ++i )
-    {
-        // create the character
-        charType c;
-        c.setToFirstState();
-        // draw the state
-        double u = rng->uniform01();
-        std::vector< double >::const_iterator freq = stationaryFreqs.begin();
-        while ( true )
-        {
-            u -= *freq;
-            
-            if ( u > 0.0 )
-            {
-                ++c;
-                ++freq;
-            }
-            else
-            {
-                break;
-            }
-            
-        }
-        
-        // add the character to the sequence
-        root.addCharacter( c );
-    }
-    
-    // recursively simulate the sequences
-    simulate( tau->getValue().getRoot(), taxa, perSiteRates );
-    
-    // add the taxon data to the character data
-    for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
-    {
-        this->value->addTaxonData( taxa[i] );
-    }
-    
-    // compress the data and initialize internal variables
-    this->compress();
+    // sample paths
+    for (size_t i = 0; i < nodes.size(); i++)
+        samplePathHistory(*nodes[i], indexSet);
     
 }
 
@@ -581,7 +539,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::reInitialized( void ) {
     
     // we need to recompress because the tree may have changed
-    compress();
+    // compress();
 }
 
 
@@ -628,14 +586,13 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecializ
     
 }
 
-
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractCharacterData *v) {
     
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
     
-    this->compress();
+    // this->compress();
 }
 
 

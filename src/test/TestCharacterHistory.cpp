@@ -100,10 +100,10 @@ bool TestCharacterHistory::run_exp(void) {
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
-    std::cout << data[0] << std::endl;
-    size_t numAreas = data[0]->getNumberOfCharacters();;
+    size_t numAreas = data[0]->getNumberOfCharacters();
+    size_t numTaxa = data[0]->getNumberOfTaxa();
 
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.tre" );
+    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.nex" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
@@ -112,37 +112,38 @@ bool TestCharacterHistory::run_exp(void) {
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
 
-    // gain loss rates
-    ConstantNode<std::vector<double> > *glrp = new ConstantNode<std::vector<double> >( "gainLossRatePrior", new std::vector<double>(2,1.0) );
-    StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new DirichletDistribution(glrp) );
-
-    // distance powers
+    // create biogeo rate map (to compute likelihoods)
     ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
+    ConstantNode<std::vector<double> > *glrp = new ConstantNode<std::vector<double> >( "gainLossRatePrior", new std::vector<double>(2,1.0) );
+    StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new DirichletDistribution(glrp) );
+    DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
     
-    // create distance matrix, q
-    DeterministicNode<RateMap> *q = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
+//    // create biogeo rate matrix (to sample histories)
+//    ConstantNode<std::vector<double> > *sglrp = new ConstantNode<std::vector<double> >( "sampleGainLossRatePrior", new std::vector<double>(2,1.0) );
+//    StochasticNode<std::vector<double> > *sglr = new StochasticNode<std::vector<double> >( "sampleGainLossRate", new DirichletDistribution(sglrp) );
+//    DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMatrix>( "sQ", new GeneralRFunction(glr, dp, numAreas) );
     
     // instantiate tree object
     std::vector<std::string> names = data[0]->getTaxonNames();
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     tau->setValue( trees[0] );
-    std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // and the character model
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
-//    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-//    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas);
+    biogeoCtmc->setClockRate(clockRate);
+    //biogeoCtmc->setRateMatrix(qmat);
+    biogeoCtmc->setRateMap(qmap);
     
-//    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
-//    phyloCTMC->setClockRate( clockRate );
-//    phyloCTMC->setRateMatrix( q );
-//    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
-//    charactermodel->clamp( data[0] );
-//
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", biogeoCtmc );
+    charactermodel->clamp( data[0] );
+    charactermodel->getDistribution();
+
+    
+    // do stuff...
+    
     
     return true;
 }

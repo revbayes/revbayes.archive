@@ -206,8 +206,8 @@ bool TestAdmixtureGraph::run(void) {
     // BM diffusion rate
     ConstantNode<double>* a_bm = new ConstantNode<double>( "bm_a", new double(3));
     ConstantNode<double>* b_bm = new ConstantNode<double>( "bm_b", new double(100));
-    ConstantNode<double>* c_bm = new ConstantNode<double>( "bm_c", new double(0));
-    ConstantNode<double>* d_bm = new ConstantNode<double>( "bm_d", new double(100));
+    //ConstantNode<double>* c_bm = new ConstantNode<double>( "bm_c", new double(0));
+    //ConstantNode<double>* d_bm = new ConstantNode<double>( "bm_d", new double(100));
     StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new ExponentialDistribution(b_bm));
     //StochasticNode<double>* diffusionRate = new StochasticNode<double> ("rate_BM", new UniformDistribution(c_bm, d_bm));
 
@@ -252,7 +252,7 @@ bool TestAdmixtureGraph::run(void) {
     ConstantNode<double>* branchRateB = new ConstantNode<double>( "branchRateB", new double(2));
     ConstantNode<double>* branchRateC = new ConstantNode<double>( "branchRateC", new double(0));
     ConstantNode<double>* branchRateD = new ConstantNode<double>( "branchRateD", new double(.01));
-    ConstantNode<double>* branchRateE = new ConstantNode<double>( "branchRateE", new double(10));
+    //ConstantNode<double>* branchRateE = new ConstantNode<double>( "branchRateE", new double(10));
 	for( int i=0; i<numBranches; i++){
 
         std::ostringstream br_name;
