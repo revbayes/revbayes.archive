@@ -8,11 +8,13 @@
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "DirichletProcessPriorDistribution.h"
-//#include "DistributionConstructorFunction.h"
+#include "DPPAllocateAuxGibbsMove.h"
+#include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
+#include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
@@ -64,20 +66,6 @@ bool TestDPPRelClock::run( void ) {
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
     
-    
-    
-    // first the priors
-	
-    
-    // then the parameters
-	//    ContinuousStochasticNode *expectLN = new ContinuousStochasticNode( "UCLN.expectation", new ExponentialDistribution(a) ); // the expectation of the LN dist so mu = log(expectLN) - (sigLN^2)/2
-	//    ContinuousStochasticNode *sigLN = new ContinuousStochasticNode("UCLN.variance", new ExponentialDistribution(b) );
-	//    
-	//	DeterministicNode<double> *logExpLN = new DeterministicNode<double>("logUCLN.exp", new LnFunction(expectLN) );
-	//	DeterministicNode<double> *squareSigLN = new DeterministicNode<double>("squareSigLN", new BinaryMultiplication<double, double, double>(sigLN, sigLN) );
-	//	DeterministicNode<double> *divSqSigLN = new DeterministicNode<double>("divSqSigLN", new BinaryDivision<double, double, double>(squareSigLN, new ConstantNode<double>( "2", new double (2.0))) );
-	//	DeterministicNode<double> *muValLN = new DeterministicNode<double>("MuValLN", new BinarySubtraction<double, double, double>(logExpLN, divSqSigLN) );
-		
     // birth-death process priors
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
@@ -103,18 +91,17 @@ bool TestDPPRelClock::run( void ) {
 //	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
 //	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
 //	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
-	
+	// The move for the concentration parameter hasn't been written yet...
 //	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
+
 	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
-
-	//ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
-//	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution() );
-//	cp->setValue( new double( RbStatistics::Helper::dppConcParamFromNumTables(4, numBranches) ) );
 	
+	// G_0 is an exponential distribution
     ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
-
 	TypedDistribution<double> *g = new ExponentialDistribution(a);
-	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, numBranches) );
+	
+	// Branch rates
+	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
 	
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
     std::cout << "Q:\t" << q->getValue() << std::endl;
@@ -125,16 +112,19 @@ bool TestDPPRelClock::run( void ) {
 	
 	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
-//	
-//    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleGTRBranchRateTimeCharEvoModel<DnaState, TimeTree>(tau, q, branchRates, true, data[0]->getNumberOfCharacters()) );
-//	charactermodel->clamp( static_cast<CharacterData<DnaState> *>( data[0] ) );
+
+    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+	phyloCTMC->setClockRate( branchRates );
+    phyloCTMC->setRateMatrix( q );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
+	charactermodel->clamp( data[0] );
 	
 	/* add the moves */
     std::vector<Move*> moves;
     moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
-	//    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
-	//    moves.push_back( new NarrowExchange( tau, 10.0 ) );
-	//    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
+//    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
+//    moves.push_back( new NarrowExchange( tau, 10.0 ) );
+//    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
     moves.push_back( new SubtreeScale( tau, 5.0 ) );
     moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
@@ -143,6 +133,8 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
+    moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 20.0 ) );
+//    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 20.0 ) );
 	
 	
 	
