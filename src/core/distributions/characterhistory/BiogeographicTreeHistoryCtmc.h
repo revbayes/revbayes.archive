@@ -10,9 +10,10 @@
 #define __rb_mlandis__BiogeographicTreeHistoryCtmc__
 
 #include "AbstractTreeHistoryCtmc.h"
-#include "StandardState.h"
+#include "DistributionExponential.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
+#include "StandardState.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "TreeChangeEventListener.h"
@@ -29,9 +30,14 @@ namespace RevBayesCore {
         virtual                                            ~BiogeographicTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
         // public member functions
+        
         BiogeographicTreeHistoryCtmc*                       clone(void) const;                                                           //!< Create an independent clone
         void                                                initializeValue(void);
         void                                                redrawValue(void);
+        double                                              samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
+        
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
@@ -57,10 +63,7 @@ namespace RevBayesCore {
         
     private:
         
-        // implemented pure virtuals
-        double                                              samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
-        double                                              samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
-        double                                              samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
+
         
         // helper function
         size_t                                              numOn(const std::vector<CharacterEvent*>& s);
@@ -482,14 +485,14 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
         }
     }
     
+    // sample paths
+    for (size_t i = 0; i < nodes.size(); i++)
+        samplePathHistory(*nodes[i], indexSet);
+    
     for (size_t i = 0; i < nodes.size(); i++)
     {
         this->histories[i].print();
     }
-    
-    // sample paths
-    for (size_t i = 0; i < nodes.size(); i++)
-        samplePathHistory(*nodes[i], indexSet);
     
 }
 
@@ -556,26 +559,48 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
         else
             br[0] = br[1] = br[2] = homogeneousClockRate->getValue();
             
-        const RateMatrix* rm;
+        const RateMatrix* rm0;
+        const RateMatrix* rm1;
+        const RateMatrix* rm2;
         if (branchHeterogeneousSubstitutionMatrices)
-            rm = &heterogeneousRateMatrices->getValue()[nodeIdx];
+        {
+            rm0 = &heterogeneousRateMatrices->getValue()[nodeIdx];
+            rm1 = &heterogeneousRateMatrices->getValue()[leftIdx];
+            rm2 = &heterogeneousRateMatrices->getValue()[rightIdx];
+        }
         else
-            rm = &homogeneousRateMatrix->getValue();
+            rm0 = rm1 = rm2 = &homogeneousRateMatrix->getValue();
         
         double bs0 = br[0] * bt[0];
         double bs1 = br[1] * bt[1];
         double bs2 = br[2] * bt[2];
         
         // compute transition probabilities
-        double r[2] = { (*rm)[1][0], (*rm)[0][1] };
-        double expPart0 = exp( - (r[0] + r[1]) * bs0);
-        double expPart1 = exp( - (r[0] + r[1]) * bs1);
-        double expPart2 = exp( - (r[0] + r[1]) * bs2);
-        double pi0 = r[0] / (r[0] + r[1]);
-        double pi1 = 1.0 - pi0;
-        double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
-        double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
-        double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
+        //double r[2] = { (*rm)[1][0], (*rm)[0][1] };
+//        double expPart0 = exp( - (r[0] + r[1]) * bs0);
+//        double expPart1 = exp( - (r[0] + r[1]) * bs1);
+//        double expPart2 = exp( - (r[0] + r[1]) * bs2);
+//        double pi0 = r[0] / (r[0] + r[1]);
+//        double pi1 = 1.0 - pi0;
+
+//        double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
+//        double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
+//        double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
+
+        
+        double expPart0 = exp( -((*rm0)[1][0] + (*rm0)[0][1]) * bs0);
+        double expPart1 = exp( -((*rm1)[1][0] + (*rm1)[0][1]) * bs1);
+        double expPart2 = exp( -((*rm2)[1][0] + (*rm2)[0][1]) * bs2);
+        double p0 = (*rm0)[1][0] / ((*rm0)[1][0] + (*rm0)[0][1]);
+        double q0 = 1.0 - p0;
+        double p1 = (*rm1)[1][0] / ((*rm1)[1][0] + (*rm1)[0][1]);
+        double q1 = 1.0 - p1;
+        double p2 = (*rm2)[1][0] / ((*rm2)[1][0] + (*rm2)[0][1]);
+        double q2 = 1.0 - p2;
+
+        double tp0[2][2] = { { p0 + q0 * expPart0, q0 - q0 * expPart0 }, { p0 - p0 * expPart0, q0 + p0 * expPart0 } };
+        double tp1[2][2] = { { p1 + q1 * expPart1, q1 - q1 * expPart1 }, { p1 - p1 * expPart1, q1 + p1 * expPart1 } };
+        double tp2[2][2] = { { p2 + q2 * expPart2, q2 - q2 * expPart2 }, { p2 - p2 * expPart2, q2 + p2 * expPart2 } };
         
         //    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
         //    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
@@ -617,7 +642,92 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
 template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
-    ; // Rao-Teh ??
+
+    // get model parameters
+    size_t nodeIdx = node.getIndex();
+    const treeType& tree = this->tau->getValue();
+    double bt = tree.getBranchLength(nodeIdx);
+    if (node.isRoot())
+        bt = node.getAge() * 2;
+    
+    double br = 1.0;
+    if (branchHeterogeneousClockRates)
+        br = heterogeneousClockRates->getValue()[nodeIdx];
+    else
+        br = homogeneousClockRate->getValue();
+    
+    const RateMatrix* rm;
+    if (branchHeterogeneousSubstitutionMatrices)
+        rm = &heterogeneousRateMatrices->getValue()[nodeIdx];
+    else
+        rm = &homogeneousRateMatrix->getValue();
+    
+    double bs = br * bt;
+    double r[2] = { (*rm)[1][0], (*rm)[0][1] };
+    
+    // begin update
+    BranchHistory& h = this->histories[ node.getIndex() ];
+    h.clearEvents( indexSet );
+    
+    // reject sample path history
+    std::vector<CharacterEvent*> parentVector = h.getParentCharacters();
+    std::vector<CharacterEvent*> childVector = h.getChildCharacters();
+    std::multiset<CharacterEvent*,CharacterEventCompare> history;
+    
+    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+    {
+        size_t i = *it;
+        std::set<CharacterEvent*> tmpHistory;
+        
+        unsigned int currState = parentVector[i]->getState();
+        unsigned int endState = childVector[i]->getState();
+        do
+        {
+            tmpHistory.clear();
+            currState = parentVector[i]->getState();
+            double t = 0.0;
+            do
+            {
+                unsigned int nextState = (currState == 1 ? 0 : 1);
+                t += RbStatistics::Exponential::rv( r[nextState] * bs, *GLOBAL_RNG );
+                //std::cout << i << " " << t << " " << currState << " " << r[currState] * bs << "\n";
+                if (t < 1.0)
+                {
+                    currState = nextState;
+                    CharacterEvent* evt = new CharacterEvent(i , nextState, t);
+                    tmpHistory.insert(evt);
+                }
+                else
+                {
+                    ;//std::cout << "------\n";
+                }
+            }
+            while(t < 1.0);
+        }
+        while (currState != endState);
+        
+        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
+            history.insert(*it);
+    }
+    
+    /*
+     if (historyContainsExtinction(parentVector, history) == true)
+     {
+     std::cout << "contains extinction\n";
+     samplePath(indexSet);
+     return;
+     }
+     */
+    //else
+    h.updateHistory(history,indexSet);
+    
+    //value->print();
+    //
+    //std::cout << value->getHistory().size() << "\n";
+    //std::cout << bt << "\n";
+    //std::cout << bt * (double)value->getHistory().size() << "\n";
+    
+    ;
 }
 
 template<class charType, class treeType>
