@@ -123,7 +123,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     if (false)
         this->addParameter( homogeneousRateMap );
     
-    this->redrawValue();
+    // Uncomment this to draw the initial state
+    // this->redrawValue();
     
 }
 
