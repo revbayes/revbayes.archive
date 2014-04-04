@@ -30,6 +30,7 @@ namespace RevBayesCore {
         
         // public member functions
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
+        void                                                initializeValue(void);
         void                                                redrawValue(void);
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
@@ -411,12 +412,13 @@ const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType, treeTy
 }
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeHistory(void)
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeValue(void)
 {
     // sample all node states
     // sample all path states
     ; // implement later
 }
+
 
 
 template<class charType, class treeType>

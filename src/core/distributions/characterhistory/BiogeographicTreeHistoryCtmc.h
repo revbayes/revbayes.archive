@@ -436,20 +436,16 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
             if (nodes[i]->isTip())
             {
                 size_t idx = nodes[i]->getIndex();
-                DiscreteTaxonData<StandardState> d = this->value->getAbstractTaxonData(i);
+                DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData(i) );
                 std::vector<CharacterEvent*> tipState;
                 
                 for (size_t j = 0; j < d.size(); j++)
                 {
                     CharacterEvent* evt = new CharacterEvent(j, d[j].getStateIndex(), 1.0);
-                   // tipState.push_back(
+                    tipState.push_back( evt );
                 }
-        
-
-        
-
-
-//                this->histories[i]
+                
+                this->histories[i].setChildCharacters(tipState);
             }
         }
     }
@@ -458,6 +454,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
 {
+    if (this->tipsInitialized == false)
+        initializeValue();
+    
     std::set<size_t> indexSet;
     for (size_t i = 0; i < this->numChars; i++)
         indexSet.insert(i);
@@ -465,7 +464,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
     {
-        std::cout << i << "\n";
         samplePathEnd(*nodes[i], indexSet);
         
         if (nodes[i]->isTip() == false)
@@ -476,6 +474,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
                 samplePathStart(child, indexSet);
             }
         }
+    }
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        std::cout << i << "  ";
+        this->histories[i].print();
     }
     
     // sample paths
@@ -520,10 +524,16 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
 {
     double lnP = 0.0;
     
-    if (node.isTip() && imperfectTipData)
+    if (node.isTip())
     {
-        
-        
+        if (imperfectTipData)
+        {
+            ;
+        }
+        else
+        {
+            ;
+        }
     }
     else
     {
