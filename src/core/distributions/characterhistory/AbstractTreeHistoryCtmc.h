@@ -28,12 +28,13 @@ namespace RevBayesCore {
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites);
-        AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                                   //!< Copy constructor
-        virtual                                                            ~AbstractTreeHistoryCtmc(void);                                       //!< Virtual destructor
+        AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                           //!< Copy constructor
+        virtual                                                            ~AbstractTreeHistoryCtmc(void);                                   //!< Virtual destructor
         
         // public member functions
         // pure virtual
-        virtual AbstractTreeHistoryCtmc*                                        clone(void) const = 0;                                           //!< Create an independent clone
+        virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
+        virtual void                                                        redrawValue(void) = 0;
         
         // virtual (you need to overwrite this method if you have additional parameters)
         virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);         //!< Implementation of swaping paramoms
@@ -42,7 +43,6 @@ namespace RevBayesCore {
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
-        virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
         
     protected:
@@ -105,9 +105,9 @@ namespace RevBayesCore {
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
         
-        virtual void                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
-        virtual void                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
-        virtual void                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual double                                                      samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual double                                                      samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual double                                                      samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         
         
     };
@@ -508,29 +508,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::recursivelyFlagN
         }
         
     }
-    
-}
-
-
-
-template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::redrawValue( void )
-{
-    std::set<size_t> indexSet;
-    for (size_t i = 0; i < numChars; i++)
-        indexSet.insert(i);
-    
-    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        samplePathStart(*nodes[i], indexSet);
-        if (nodes[i]->isTip() == false)
-            samplePathEnd(nodes[i]->getParent(), indexSet);
-    }
-    
-    // sample paths
-    for (size_t i = 0; i < nodes.size(); i++)
-        samplePathHistory(*nodes[i], indexSet);
     
 }
 
