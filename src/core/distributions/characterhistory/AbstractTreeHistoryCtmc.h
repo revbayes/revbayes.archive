@@ -36,6 +36,9 @@ namespace RevBayesCore {
         virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
         virtual void                                                        initializeValue(void) = 0;
+        virtual double                                                      samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual double                                                      samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual double                                                      samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         
         // virtual (you need to overwrite this method if you have additional parameters)
         virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);         //!< Implementation of swaping paramoms
@@ -75,6 +78,7 @@ namespace RevBayesCore {
         double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
         std::vector<size_t>                                                 activeHistory;
+        std::vector<double>                                                 historyLikelihoods;
         
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
@@ -107,9 +111,7 @@ namespace RevBayesCore {
         void                                                                initializeHistoriesVector(void);
         virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
         
-        virtual double                                                      samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
-        virtual double                                                      samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
-        virtual double                                                      samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+
         
         
     };
@@ -410,7 +412,6 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
         // mark as computed
         dirtyNodes[rootIndex] = false;
         
-        
         // start by filling the likelihood vector for the two children of the root
         const TopologyNode &left = root.getChild(0);
         size_t leftIndex = left.getIndex();
@@ -430,34 +431,30 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex)
 {
+    // mark as computed
+    dirtyNodes[nodeIndex] = false;
     
-    // check for recomputation
-    if ( dirtyNodes[nodeIndex] )
+    if ( node.isTip() )
     {
-        // mark as computed
-        dirtyNodes[nodeIndex] = false;
-        
-        if ( node.isTip() )
-        {
-            // this is a tip node
-            // compute the likelihood for the tip and we are done
+        // this is a tip node
+        //if (dirtyNodes[nodeIndex])
             computeTipLikelihood(node, nodeIndex);
-        }
-        else
-        {
-            // this is an internal node
-            
-            // start by filling the likelihood vector for the two children of this node
-            const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            fillLikelihoodVector( left, leftIndex );
-            const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            fillLikelihoodVector( right, rightIndex );
-            
-            // now compute the likelihoods of this internal node
+    }
+    else
+    {
+        // this is an internal node
+        
+        // start by filling the likelihood vector for the two children of this node
+        const TopologyNode &left = node.getChild(0);
+        size_t leftIndex = left.getIndex();
+        fillLikelihoodVector( left, leftIndex );
+        const TopologyNode &right = node.getChild(1);
+        size_t rightIndex = right.getIndex();
+        fillLikelihoodVector( right, rightIndex );
+        
+        // now compute the likelihoods of this internal node
+        //if (dirtyNodes[nodeIndex])
             computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
-        }
     }
 }
 
@@ -466,7 +463,8 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
-    recursivelyFlagNodeDirty( n );
+    // recursivelyFlagNodeDirty( n );
+    dirtyNodes[n.getIndex()] = true;
     
 }
 
@@ -480,6 +478,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::initializeHistor
         BranchHistory h(numSites, numChars, i);
         histories.push_back(h);
     }
+    
+    historyLikelihoods.resize(nodes.size(), 0.0);
 }
 
 

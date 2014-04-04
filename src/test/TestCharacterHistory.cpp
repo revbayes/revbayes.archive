@@ -96,8 +96,11 @@ TestCharacterHistory::~TestCharacterHistory() {
 
 bool TestCharacterHistory::run_exp(void) {
     
-//    // First, we read in the data
-//    // the matrix
+
+    ////////////
+    // io
+    ////////////
+    
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -108,11 +111,11 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
-    // birth-death process priors
-    StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
-    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
-    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
-
+    
+    ////////////
+    // model
+    ////////////
+    
     // create biogeo rate map (to compute likelihoods)
     ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
@@ -126,13 +129,19 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "sQ", new FreeBinaryRateMatrixFunction(sglr) );
     
     // instantiate tree object
+    StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
+    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
+    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     std::vector<std::string> names = data[0]->getTaxonNames();
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     tau->setValue( trees[0] );
+
+    // global clock
+    ConstantNode<double> *clockPrior = new ConstantNode<double>("clockPrior", new double(20.0));
+    StochasticNode<double> *clockRate = new StochasticNode<double>("clockRate", new ExponentialDistribution(clockPrior) );
     
     // and the character model
-    ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas);
     biogeoCtmc->setClockRate(clockRate);
     biogeoCtmc->setRateMatrix(qmat);
@@ -141,10 +150,17 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", biogeoCtmc );
     charactermodel->clamp( data[0] );
     charactermodel->redraw();
-
+    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
-    // do stuff...
+    ////////////
+    // moves
+    ////////////
     
+    
+    
+    ////////////
+    // monitors
+    ////////////
     
     return true;
 }
