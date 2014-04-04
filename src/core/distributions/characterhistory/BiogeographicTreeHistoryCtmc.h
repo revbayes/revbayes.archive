@@ -12,6 +12,7 @@
 #include "AbstractTreeHistoryCtmc.h"
 #include "DistributionExponential.h"
 #include "RateMatrix.h"
+#include "RbConstants.h"
 #include "RbVector.h"
 #include "StandardState.h"
 #include "TopologyNode.h"
@@ -175,134 +176,168 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>* RevBayesCore::Bi
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
-    
-    // reset the likelihood
     this->lnProb = 0.0;
     
-    // get the root frequencies
-    const std::vector<double> &f                    = getRootFrequencies();
-    std::vector<double>::const_iterator f_end       = f.end();
-    std::vector<double>::const_iterator f_begin     = f.begin();
+    for (size_t i = 0; i < this->historyLikelihoods.size(); i++)
+        this->lnProb += this->historyLikelihoods[i];
     
-    // get the pointers to the partial likelihoods of the left and right subtree
-    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
-    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
-    
-    // create a vector for the per mixture likelihoods
-    // we need this vector to sum over the different mixture likelihoods
-    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
-    
-    // get pointers the likelihood for both subtrees
-    const double*   p_mixture_left     = p_left;
-    const double*   p_mixture_right    = p_right;
-    // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-    {
-        
-        // get pointers to the likelihood for this mixture category
-        const double*   p_site_mixture_left     = p_mixture_left;
-        const double*   p_site_mixture_right    = p_mixture_right;
-        // iterate over all sites
-        for (size_t site = 0; site < this->numPatterns; ++site)
-        {
-            // temporary variable storing the likelihood
-            double tmp = 0.0;
-            // get the pointer to the stationary frequencies
-            std::vector<double>::const_iterator f_j             = f_begin;
-            // get the pointers to the likelihoods for this site and mixture category
-            const double* p_site_left_j   = p_site_mixture_left;
-            const double* p_site_right_j  = p_site_mixture_right;
-            // iterate over all starting states
-            for (; f_j != f_end; ++f_j)
-            {
-                // add the probability of starting from this state
-                tmp += *p_site_left_j * *p_site_right_j * *f_j;
-                
-                // increment pointers
-                ++p_site_left_j; ++p_site_right_j;
-            }
-            // add the likelihood for this mixture category
-            per_mixture_Likelihoods[site] += tmp;
-            
-            // increment the pointers to the next site
-            p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset;
-            
-        } // end-for over all sites (=patterns)
-        
-        // increment the pointers to the next mixture category
-        p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset;
-        
-    } // end-for over all mixtures (=rate categories)
-    
-    // sum the log-likelihoods for all sites together
-    std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
-    for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
-    {
-        this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
-    }
-    // normalize the log-probability
-    this->lnProb -= log( this->numSiteRates ) * this->numSites;
-    
+//    // reset the likelihood
+//    this->lnProb = 0.0;
+//    
+//    // get the root frequencies
+//    const std::vector<double> &f                    = getRootFrequencies();
+//    std::vector<double>::const_iterator f_end       = f.end();
+//    std::vector<double>::const_iterator f_begin     = f.begin();
+//    
+//    // get the pointers to the partial likelihoods of the left and right subtree
+//    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
+//    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+//    
+//    // create a vector for the per mixture likelihoods
+//    // we need this vector to sum over the different mixture likelihoods
+//    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
+//    
+//    // get pointers the likelihood for both subtrees
+//    const double*   p_mixture_left     = p_left;
+//    const double*   p_mixture_right    = p_right;
+//    // iterate over all mixture categories
+//    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+//    {
+//        
+//        // get pointers to the likelihood for this mixture category
+//        const double*   p_site_mixture_left     = p_mixture_left;
+//        const double*   p_site_mixture_right    = p_mixture_right;
+//        // iterate over all sites
+//        for (size_t site = 0; site < this->numPatterns; ++site)
+//        {
+//            // temporary variable storing the likelihood
+//            double tmp = 0.0;
+//            // get the pointer to the stationary frequencies
+//            std::vector<double>::const_iterator f_j             = f_begin;
+//            // get the pointers to the likelihoods for this site and mixture category
+//            const double* p_site_left_j   = p_site_mixture_left;
+//            const double* p_site_right_j  = p_site_mixture_right;
+//            // iterate over all starting states
+//            for (; f_j != f_end; ++f_j)
+//            {
+//                // add the probability of starting from this state
+//                tmp += *p_site_left_j * *p_site_right_j * *f_j;
+//                
+//                // increment pointers
+//                ++p_site_left_j; ++p_site_right_j;
+//            }
+//            // add the likelihood for this mixture category
+//            per_mixture_Likelihoods[site] += tmp;
+//            
+//            // increment the pointers to the next site
+//            p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset;
+//            
+//        } // end-for over all sites (=patterns)
+//        
+//        // increment the pointers to the next mixture category
+//        p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset;
+//        
+//    } // end-for over all mixtures (=rate categories)
+//    
+//    // sum the log-likelihoods for all sites together
+//    std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
+//    for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+//    {
+//        this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
+//    }
+//    // normalize the log-probability
+//    this->lnProb -= log( this->numSiteRates ) * this->numSites;
+//    
 }
 
 
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
+    double lnL = 0.0;
+    BranchHistory& bh = this->histories[nodeIndex];
+    std::vector<CharacterEvent*> currState = bh.getParentCharacters();
+    unsigned int n = numOn(currState);
     
-    // compute the transition probability matrix
-    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
-    
-    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
-    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
-    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
-    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-    
-    // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    if (node.isRoot())
     {
-        // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
+        this->historyLikelihoods[nodeIndex] = RbConstants::Double::neginf;
+    }
+    else if (n == 0)
+    {
+        // reject extinction cfgs
+        if (n == 0)
+            this->historyLikelihoods[nodeIndex] = RbConstants::Double::neginf;
+    }
+    else
+    {
         
-        // get the pointers to the likelihood for this mixture category
-        size_t offset = mixture*this->mixtureOffset;
-        double*          p_site_mixture          = p_node + offset;
-        const double*    p_site_mixture_left     = p_left + offset;
-        const double*    p_site_mixture_right    = p_right + offset;
-        // compute the per site probabilities
-        for (size_t site = 0; site < this->numPatterns ; ++site)
+        std::multiset<CharacterEvent*,CharacterEventCompare> history = bh.getHistory();
+        std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+        
+        const treeType& tree = this->tau->getValue();
+        double bt = tree.getBranchLength(nodeIndex);
+        double br = 1.0;
+        if (branchHeterogeneousClockRates)
+            br = heterogeneousClockRates->getValue()[nodeIndex];
+        else
+            br = homogeneousClockRate->getValue();
+        double bs = br * bt;
+        
+        const RateMap* rm;
+        if (branchHeterogeneousSubstitutionMatrices)
+            rm = &heterogeneousRateMaps->getValue()[nodeIndex];
+        else
+            rm = &homogeneousRateMap->getValue();
+        
+        // stepwise events
+        double t = 0.0;
+        double dt = 0.0;
+        for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
+            // next event time
+            double idx = (*it_h)->getIndex();
+            dt = (*it_h)->getTime() - t;
             
-            // get the pointers for this mixture category and this site
-            const double*       tp_a    = tp_begin;
-            // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1)
+            // rescale time
+            dt *= bs;
+            
+            // reject extinction cfgs
+            if ((*it_h)->getState() == 0)
+                n--;
+            else
+                n++;
+            
+            if (n == 0)
             {
-                // temporary variable
-                double sum = 0.0;
-                
-                // iterate over all possible terminal states
-                for (size_t c2 = 0; c2 < this->numChars; ++c2 )
-                {
-                    sum += p_site_mixture_left[c2] * p_site_mixture_right[c2] * tp_a[c2];
-                    
-                } // end-for over all distination character
-                
-                // store the likelihood for this starting state
-                p_site_mixture[c1] = sum;
-                
-                // increment the pointers to the next starting state
-                tp_a+=this->numChars;
-                
-            } // end-for over all initial characters
+                this->historyLikelihoods[nodeIndex] = RbConstants::Double::neginf;
+                break;
+            }
             
-            // increment the pointers to the next site
-            p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset; p_site_mixture+=this->siteOffset;
+//            double tr = transitionRate(currState, *it_h);
+//            double sr = sumOfRates(currState);
+            double tr = 1.0;
+            double sr = 2.0;
             
-        } // end-for over all sites (=patterns)
+            // lnL for stepwise events for p(x->y)
+            lnL += log(tr) - sr * dt;
+            
+            // update state
+            currState[idx] = *it_h;
+            t += dt;
+            //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bs << " = " << bt << " * " << br << "; " << dt/bs << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
+        }
         
-    } // end-for over all mixtures (=rate-categories)
-    
+        // lnL for final non-event
+//        double sr = sumOfRates(currState);
+        double sr = 2.0;
+        lnL += -sr * (1.0 * bs - t);
+        
+        //std::cout << "lnL " << lnL << "\n";
+        
+        this->historyLikelihoods[nodeIndex] = lnL;
+        
+    }
 }
 
 
@@ -310,105 +345,108 @@ template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
     
-    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    // add support for ambig. characters later...
+    this->historyLikelihoods[nodeIndex] = 0.0;
     
-    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
-    
-    // compute the transition probabilities
-    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
-    
-    double*   p_mixture      = p_node;
-    
-    // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-    {
-        // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
-        
-        // get the pointer to the likelihoods for this site and mixture category
-        double*     p_site_mixture      = p_mixture;
-        
-        // iterate over all sites
-        for (size_t site = 0; site != this->numPatterns; ++site)
-        {
-            
-            // is this site a gap?
-            if ( gap_node[site] )
-            {
-                // since this is a gap we need to assume that the actual state could have been any state
-                
-                // iterate over all initial states for the transitions
-                for (size_t c1 = 0; c1 < this->numChars; ++c1)
-                {
-                    
-                    // store the likelihood
-                    p_site_mixture[c1] = 1.0;
-                    
-                }
-            }
-            else // we have observed a character
-            {
-                
-                // get the original character
-                unsigned long org_val = char_node[site];
-                
-                // iterate over all possible initial states
-                for (size_t c1 = 0; c1 < this->numChars; ++c1)
-                {
-                    
-                    if ( this->usingAmbiguousCharacters )
-                    {
-                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
-                        // note, the observed state could be ambiguous!
-                        unsigned long val = org_val;
-                        
-                        // get the pointer to the transition probabilities for the terminal states
-                        const double* d  = tp_begin+(this->numChars*c1);
-                        
-                        double tmp = 0.0;
-                        
-                        while ( val != 0 ) // there are still observed states left
-                        {
-                            // check whether we observed this state
-                            if ( (val & 1) == 1 )
-                            {
-                                // add the probability
-                                tmp += *d;
-                            }
-                            
-                            // remove this state from the observed states
-                            val >>= 1;
-                            
-                            // increment the pointer to the next transition probability
-                            ++d;
-                        } // end-while over all observed states for this character
-                        
-                        // store the likelihood
-                        p_site_mixture[c1] = tmp;
-                        
-                    }
-                    else // no ambiguous characters in use
-                    {
-                        
-                        // store the likelihood
-                        p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
-                        
-                    }
-                    
-                } // end-for over all possible initial character for the branch
-                
-            } // end-if a gap state
-            
-            // increment the pointers to next site
-            p_site_mixture+=this->siteOffset;
-            
-        } // end-for over all sites/patterns in the sequence
-        
-        // increment the pointers to next mixture category
-        p_mixture+=this->mixtureOffset;
-        
-    } // end-for over all mixture categories
+//    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+//    
+//    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+//    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+//    
+//    // compute the transition probabilities
+//    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+//    
+//    double*   p_mixture      = p_node;
+//    
+//    // iterate over all mixture categories
+//    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+//    {
+//        // the transition probability matrix for this mixture category
+//        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
+//        
+//        // get the pointer to the likelihoods for this site and mixture category
+//        double*     p_site_mixture      = p_mixture;
+//        
+//        // iterate over all sites
+//        for (size_t site = 0; site != this->numPatterns; ++site)
+//        {
+//            
+//            // is this site a gap?
+//            if ( gap_node[site] )
+//            {
+//                // since this is a gap we need to assume that the actual state could have been any state
+//                
+//                // iterate over all initial states for the transitions
+//                for (size_t c1 = 0; c1 < this->numChars; ++c1)
+//                {
+//                    
+//                    // store the likelihood
+//                    p_site_mixture[c1] = 1.0;
+//                    
+//                }
+//            }
+//            else // we have observed a character
+//            {
+//                
+//                // get the original character
+//                unsigned long org_val = char_node[site];
+//                
+//                // iterate over all possible initial states
+//                for (size_t c1 = 0; c1 < this->numChars; ++c1)
+//                {
+//                    
+//                    if ( this->usingAmbiguousCharacters )
+//                    {
+//                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
+//                        // note, the observed state could be ambiguous!
+//                        unsigned long val = org_val;
+//                        
+//                        // get the pointer to the transition probabilities for the terminal states
+//                        const double* d  = tp_begin+(this->numChars*c1);
+//                        
+//                        double tmp = 0.0;
+//                        
+//                        while ( val != 0 ) // there are still observed states left
+//                        {
+//                            // check whether we observed this state
+//                            if ( (val & 1) == 1 )
+//                            {
+//                                // add the probability
+//                                tmp += *d;
+//                            }
+//                            
+//                            // remove this state from the observed states
+//                            val >>= 1;
+//                            
+//                            // increment the pointer to the next transition probability
+//                            ++d;
+//                        } // end-while over all observed states for this character
+//                        
+//                        // store the likelihood
+//                        p_site_mixture[c1] = tmp;
+//                        
+//                    }
+//                    else // no ambiguous characters in use
+//                    {
+//                        
+//                        // store the likelihood
+//                        p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
+//                        
+//                    }
+//                    
+//                } // end-for over all possible initial character for the branch
+//                
+//            } // end-if a gap state
+//            
+//            // increment the pointers to next site
+//            p_site_mixture+=this->siteOffset;
+//            
+//        } // end-for over all sites/patterns in the sequence
+//        
+//        // increment the pointers to next mixture category
+//        p_mixture+=this->mixtureOffset;
+//        
+//    } // end-for over all mixture categories
     
 }
 
