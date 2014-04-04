@@ -28,14 +28,14 @@ namespace RevBayesCore {
     class DPPAllocateAuxGibbsMove : public Move {
     
     public:
-        DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> >* node, double weight);                                                                      //!< Internal constructor
+        DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
     
         // Basic utility functions
         DPPAllocateAuxGibbsMove<valueType>*						clone(void) const;                                                                  //!< Clone object
         void                                                    swapNode(DagNode *oldN, DagNode *newN);
-    
+		const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+
     protected:
-        const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         void													performGibbsMove(void);                                                            //!< Perform move
         void													acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
         double													performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
@@ -45,6 +45,7 @@ namespace RevBayesCore {
 		double													getLnProbabilityForMove(void);
 		
         StochasticNode<std::vector<valueType> >*				variable;
+		int														numAuxCat;
 		
  
     };
