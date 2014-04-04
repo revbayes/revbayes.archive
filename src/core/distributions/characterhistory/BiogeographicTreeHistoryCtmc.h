@@ -616,7 +616,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
 template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
-    ; // Rao-Teh ??
+    return 0.0; // Rao-Teh ??
 }
 
 template<class charType, class treeType>
