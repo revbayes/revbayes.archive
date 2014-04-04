@@ -30,6 +30,7 @@ namespace RevBayesCore {
         
         // public member functions
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
+        void                                                redrawValue(void);
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
@@ -54,9 +55,9 @@ namespace RevBayesCore {
         
     private:
         
-        void                                                samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
-        void                                                samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
-        void                                                samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
         
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
@@ -417,6 +418,33 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeHistory
     ; // implement later
 }
 
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::redrawValue( void )
+{
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < this->numChars; i++)
+        indexSet.insert(i);
+    
+    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        samplePathEnd(*nodes[i], indexSet);
+        if (nodes[i]->isTip() == false)
+        {
+            for (size_t i = 0; i < nodes[i]->getNumberOfChildren(); i++)
+            {
+                TopologyNode& child = nodes[i]->getChild(i);
+                this->histories[child.getIndex()].setParentCharacters( this->histories[ nodes[i]->getIndex() ].getChildCharacters() );
+            }
+        }
+    }
+    
+    // sample paths
+    for (size_t i = 0; i < nodes.size(); i++)
+        samplePathHistory(*nodes[i], indexSet);
+    
+}
 
 template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::sampleNodeHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
