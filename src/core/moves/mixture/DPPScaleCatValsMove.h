@@ -28,14 +28,14 @@ namespace RevBayesCore {
     class DPPScaleCatValsMove : public Move {
     
     public:
-        DPPScaleCatValsMove(StochasticNode<std::vector<double> >* node, double l, double weight);                                                                      //!< Internal constructor
+        DPPScaleCatValsMove(StochasticNode<std::vector<double> >* v, double l, double w);                                                                      //!< Internal constructor
     
         // Basic utility functions
         DPPScaleCatValsMove*									clone(void) const;                                                                  //!< Clone object
         void                                                    swapNode(DagNode *oldN, DagNode *newN);
-    
-    protected:
         const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+
+    protected:
         void													performGibbsMove(void);                                                            //!< Perform move
         void													acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
         double													performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
