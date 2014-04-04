@@ -101,3 +101,7 @@ void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double
 const std::vector<double>& TimeReversibleRateMatrix::getStationaryFrequencies( void ) const {
     return stationaryFreqs;
 }
+
+const std::vector<double>& TimeReversibleRateMatrix::getExchangeabilityRates( void ) const {
+    return exchangeabilityRates;
+}

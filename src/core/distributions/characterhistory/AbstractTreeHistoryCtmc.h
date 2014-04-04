@@ -35,6 +35,7 @@ namespace RevBayesCore {
         // pure virtual
         virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
+        virtual void                                                        initializeValue(void) = 0;
         
         // virtual (you need to overwrite this method if you have additional parameters)
         virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);         //!< Implementation of swaping paramoms
@@ -82,7 +83,6 @@ namespace RevBayesCore {
         size_t                                                              numPatterns;
         bool                                                                compressed;
         std::vector<BranchHistory>                                          histories;
-//        std::vector<
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
@@ -98,11 +98,13 @@ namespace RevBayesCore {
         bool                                                                usingAmbiguousCharacters;
         bool                                                                treatUnknownAsGap;
         bool                                                                treatAmbiguousAsGaps;
+        bool                                                                tipsInitialized;
         
     private:
         // private methods
         // void                                                                compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
+        void                                                                initializeHistoriesVector(void);
         virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
         
         virtual double                                                      samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
@@ -141,13 +143,16 @@ changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
 dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
 usingAmbiguousCharacters( true ),
 treatUnknownAsGap( true ),
-treatAmbiguousAsGaps( true )
+treatAmbiguousAsGaps( true ),
+tipsInitialized( false )
 {
     
     // add the paramoms to the parents list
     this->addParameter( tau );
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
+    // initialize histories
+    initializeHistoriesVector();
     
     activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -175,7 +180,8 @@ changedNodes( n.changedNodes ),
 dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
 treatUnknownAsGap( n.treatUnknownAsGap ),
-treatAmbiguousAsGaps( n.treatAmbiguousAsGaps )
+treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
+tipsInitialized( n.tipsInitialized )
 {
     // parameters are automatically copied
     
@@ -463,6 +469,19 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEv
     recursivelyFlagNodeDirty( n );
     
 }
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::initializeHistoriesVector( void ) {
+    
+    std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        BranchHistory h(numSites, numChars, i);
+        histories.push_back(h);
+    }
+}
+
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::keepSpecialization( DagNode* affecter ) {

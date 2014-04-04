@@ -56,6 +56,7 @@
 #include "RateMap_Biogeography.h"
 #include "BiogeographyRateMapFunction.h"
 #include "BiogeographicTreeHistoryCtmc.h"
+#include "FreeBinaryRateMatrixFunction.h"
 
 
 //#define USE_DDBD
@@ -119,10 +120,10 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new DirichletDistribution(glrp) );
     DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
     
-//    // create biogeo rate matrix (to sample histories)
-//    ConstantNode<std::vector<double> > *sglrp = new ConstantNode<std::vector<double> >( "sampleGainLossRatePrior", new std::vector<double>(2,1.0) );
-//    StochasticNode<std::vector<double> > *sglr = new StochasticNode<std::vector<double> >( "sampleGainLossRate", new DirichletDistribution(sglrp) );
-//    DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMatrix>( "sQ", new GeneralRFunction(glr, dp, numAreas) );
+    // create biogeo rate matrix (to sample histories)
+    ConstantNode<std::vector<double> > *sglrp = new ConstantNode<std::vector<double> >( "sampleGainLossRatePrior", new std::vector<double>(2,1.0) );
+    StochasticNode<std::vector<double> > *sglr = new StochasticNode<std::vector<double> >( "sampleGainLossRate", new DirichletDistribution(sglrp) );
+    DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "sQ", new FreeBinaryRateMatrixFunction(sglr) );
     
     // instantiate tree object
     std::vector<std::string> names = data[0]->getTaxonNames();
@@ -134,12 +135,12 @@ bool TestCharacterHistory::run_exp(void) {
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas);
     biogeoCtmc->setClockRate(clockRate);
-    //biogeoCtmc->setRateMatrix(qmat);
+    biogeoCtmc->setRateMatrix(qmat);
     biogeoCtmc->setRateMap(qmap);
     
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", biogeoCtmc );
     charactermodel->clamp( data[0] );
-    charactermodel->getDistribution();
+    charactermodel->redraw();
 
     
     // do stuff...
