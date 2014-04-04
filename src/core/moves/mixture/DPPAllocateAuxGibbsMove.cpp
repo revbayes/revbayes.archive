@@ -26,9 +26,10 @@
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode<std::vector<valueType> > *v, double w) : Move( v, w ), variable( v ) {
+RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> > *v, int na, double w) : Move( v, w, false ), variable( v ) {
     
 	// set isGibbs to true
+	numAuxCat = na;
 }
 
 
@@ -43,7 +44,7 @@ RevBayesCore::DPPAllocateAuxGibbsMove<valueType>* RevBayesCore::DPPAllocateAuxGi
 
 template <class valueType>
 const std::string& RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getMoveName( void ) const {
-    static std::string name = "DPP Move";
+    static std::string name = "DPPAllocateAuxGibbsMove";
     
     return name;
 }
