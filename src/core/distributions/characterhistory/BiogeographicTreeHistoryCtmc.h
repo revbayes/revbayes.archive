@@ -30,6 +30,7 @@ namespace RevBayesCore {
         
         // public member functions
         BiogeographicTreeHistoryCtmc*                       clone(void) const;                                                           //!< Create an independent clone
+        void                                                initializeValue(void);
         void                                                redrawValue(void);
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
@@ -80,6 +81,7 @@ namespace RevBayesCore {
         bool                                                branchHeterogeneousSubstitutionMatrices;
         bool                                                rateVariationAcrossSites;
         bool                                                cladogenicEvents;
+        bool                                                imperfectTipData;
     };
     
 }
@@ -115,6 +117,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
     cladogenicEvents                            = false;
+    imperfectTipData                            = false;
     
     // add the parameters to the parents list
     this->addParameter( homogeneousClockRate );
@@ -146,6 +149,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;
     cladogenicEvents                            = d.cladogenicEvents;
+    imperfectTipData                            = d.imperfectTipData;
     
 }
 
@@ -422,6 +426,36 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
 }
 
 template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeValue( void )
+{
+    if (this->dagNode->isClamped())
+    {
+        std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+            if (nodes[i]->isTip())
+            {
+                size_t idx = nodes[i]->getIndex();
+                DiscreteTaxonData<StandardState> d = this->value->getAbstractTaxonData(i);
+                std::vector<CharacterEvent*> tipState;
+                
+                for (size_t j = 0; j < d.size(); j++)
+                {
+                    CharacterEvent* evt = new CharacterEvent(j, d[j].getStateIndex(), 1.0);
+                   // tipState.push_back(
+                }
+        
+
+        
+
+
+//                this->histories[i]
+            }
+        }
+    }
+}
+
+template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
 {
     std::set<size_t> indexSet;
@@ -431,7 +465,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
     {
+        std::cout << i << "\n";
         samplePathEnd(*nodes[i], indexSet);
+        
         if (nodes[i]->isTip() == false)
         {
             for (size_t i = 0; i < nodes[i]->getNumberOfChildren(); i++)
@@ -482,86 +518,89 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
 template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
-    if (node.isTip())
-        return 0.0;
+    double lnP = 0.0;
     
-    // get model settings
-    size_t nodeIdx = node.getIndex();
-    size_t leftIdx = node.getChild(0).getIndex();
-    size_t rightIdx = node.getChild(1).getIndex();
-    
-    std::vector<CharacterEvent*> states = this->histories[nodeIdx].getChildCharacters();
-    const treeType& tree = this->tau->getValue();
-    double bt[3] = { tree.getBranchLength(nodeIdx), tree.getBranchLength( leftIdx ), tree.getBranchLength( rightIdx ) };
-    if (node.isRoot())
-        bt[0] = node.getAge() * 2;
+    if (node.isTip() && imperfectTipData)
+    {
+        
+        
+    }
+    else
+    {
+        // get model settings
+        size_t nodeIdx = node.getIndex();
+        size_t leftIdx = node.getChild(0).getIndex();
+        size_t rightIdx = node.getChild(1).getIndex();
+        
+        std::vector<CharacterEvent*> states = this->histories[nodeIdx].getChildCharacters();
+        const treeType& tree = this->tau->getValue();
+        double bt[3] = { tree.getBranchLength(nodeIdx), tree.getBranchLength( leftIdx ), tree.getBranchLength( rightIdx ) };
+        if (node.isRoot())
+            bt[0] = node.getAge() * 2;
 
-    double br[3] = { 1.0, 1.0, 1.0 };
-    if (branchHeterogeneousClockRates)
-    {
-        br[0] = heterogeneousClockRates->getValue()[nodeIdx];
-        br[1] = heterogeneousClockRates->getValue()[leftIdx];
-        br[2] = heterogeneousClockRates->getValue()[rightIdx];
+        double br[3] = { 1.0, 1.0, 1.0 };
+        if (branchHeterogeneousClockRates)
+        {
+            br[0] = heterogeneousClockRates->getValue()[nodeIdx];
+            br[1] = heterogeneousClockRates->getValue()[leftIdx];
+            br[2] = heterogeneousClockRates->getValue()[rightIdx];
+        }
+        else
+            br[0] = br[1] = br[2] = homogeneousClockRate->getValue();
+            
+        const RateMatrix* rm;
+        if (branchHeterogeneousSubstitutionMatrices)
+            rm = &heterogeneousRateMatrices->getValue()[nodeIdx];
+        else
+            rm = &homogeneousRateMatrix->getValue();
+        
+        double bs0 = br[0] * bt[0];
+        double bs1 = br[1] * bt[1];
+        double bs2 = br[2] * bt[2];
+        
+        // compute transition probabilities
+        double r[2] = { (*rm)[1][0], (*rm)[0][1] };
+        double expPart0 = exp( - (r[0] + r[1]) * bs0);
+        double expPart1 = exp( - (r[0] + r[1]) * bs1);
+        double expPart2 = exp( - (r[0] + r[1]) * bs2);
+        double pi0 = r[0] / (r[0] + r[1]);
+        double pi1 = 1.0 - pi0;
+        double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
+        double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
+        double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
+        
+        //    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
+        //    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
+        //    std::cout << tp2[0][0] << " " << tp2[0][1] << "\n" << tp2[1][0] << " " << tp2[1][1] << "\n";
+        
+        std::vector<CharacterEvent*> parentState = this->histories[nodeIdx].getParentCharacters();
+        std::vector<CharacterEvent*> childState = this->histories[nodeIdx].getChildCharacters();
+        const std::vector<CharacterEvent*> leftState = this->histories[ leftIdx ].getChildCharacters();
+        const std::vector<CharacterEvent*> rightState = this->histories[ rightIdx ].getChildCharacters();
+        for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+        {
+            unsigned int ancS = parentState[*it]->getState();
+            //unsigned int thisS = childState[*it]->getState();
+            unsigned int desS1 = leftState[*it]->getState();
+            unsigned int desS2 = rightState[*it]->getState();
+            
+            double u = GLOBAL_RNG->uniform01();
+            double g0 = tp0[ancS][0] * tp1[0][desS1] * tp2[0][desS2];
+            double g1 = tp0[ancS][1] * tp1[1][desS1] * tp2[1][desS2];
+            
+            unsigned int s = 0;
+            if (u < g1 / (g0 + g1))
+                s = 1;
+            
+            //        std::cout << "\t" << *it << " " << s << " : " << ancS << " -> (" << g0 << "," << g1 << ") -> (" << desS1 << "," << desS2 << ")\n";
+            
+            childState[*it] = new CharacterEvent(*it, s, 1.0);
+        }
+        
+        //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
+        this->histories[nodeIdx].setChildCharacters(childState);
     }
-    else
-        br[0] = br[1] = br[2] = homogeneousClockRate->getValue();
-        
-    const RateMatrix* rm;
-    if (branchHeterogeneousSubstitutionMatrices)
-        rm = &heterogeneousRateMatrices->getValue()[nodeIdx];
-    else
-        rm = &homogeneousRateMatrix->getValue();
-    
-    double bs0 = br[0] * bt[0];
-    double bs1 = br[1] * bt[1];
-    double bs2 = br[2] * bt[2];
-    
-    // compute transition probabilities
-  
-     
-    double r[2] = { (*rm)[1][0], (*rm)[0][1] };
-    double expPart0 = exp( - (r[0] + r[1]) * bs0);
-    double expPart1 = exp( - (r[0] + r[1]) * bs1);
-    double expPart2 = exp( - (r[0] + r[1]) * bs2);
-    double pi0 = r[0] / (r[0] + r[1]);
-    double pi1 = 1.0 - pi0;
-    double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
-    double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
-    double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
-    
-    //    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
-    //    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
-    //    std::cout << tp2[0][0] << " " << tp2[0][1] << "\n" << tp2[1][0] << " " << tp2[1][1] << "\n";
-    
-    std::vector<CharacterEvent*> parentState = this->histories[nodeIdx].getParentCharacters();
-    std::vector<CharacterEvent*> childState = this->histories[nodeIdx].getChildCharacters();
-    const std::vector<CharacterEvent*> leftState = this->histories[ leftIdx ].getChildCharacters();
-    const std::vector<CharacterEvent*> rightState = this->histories[ rightIdx ].getChildCharacters();
-    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-    {
-        unsigned int ancS = parentState[*it]->getState();
-        //unsigned int thisS = childState[*it]->getState();
-        unsigned int desS1 = leftState[*it]->getState();
-        unsigned int desS2 = rightState[*it]->getState();
-        
-        double u = GLOBAL_RNG->uniform01();
-        double g0 = tp0[ancS][0] * tp1[0][desS1] * tp2[0][desS2];
-        double g1 = tp0[ancS][1] * tp1[1][desS1] * tp2[1][desS2];
-        
-        unsigned int s = 0;
-        if (u < g1 / (g0 + g1))
-            s = 1;
-        
-        //        std::cout << "\t" << *it << " " << s << " : " << ancS << " -> (" << g0 << "," << g1 << ") -> (" << desS1 << "," << desS2 << ")\n";
-        
-        childState[*it] = new CharacterEvent(*it, s, 1.0);
-    }
-    
-    //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
-    this->histories[nodeIdx].setChildCharacters(childState);
-    
-    return 0.0;
-    //return lnP;
+    return lnP;
 }
 
 template<class charType, class treeType>
