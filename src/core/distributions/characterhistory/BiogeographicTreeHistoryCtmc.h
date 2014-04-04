@@ -452,43 +452,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
 }
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
-{
-    if (this->tipsInitialized == false)
-        initializeValue();
-    
-    std::set<size_t> indexSet;
-    for (size_t i = 0; i < this->numChars; i++)
-        indexSet.insert(i);
-    
-    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        samplePathEnd(*nodes[i], indexSet);
-        
-        if (nodes[i]->isTip() == false)
-        {
-            for (size_t i = 0; i < nodes[i]->getNumberOfChildren(); i++)
-            {
-                TopologyNode& child = nodes[i]->getChild(i);
-                samplePathStart(child, indexSet);
-            }
-        }
-    }
-    
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        std::cout << i << "  ";
-        this->histories[i].print();
-    }
-    
-    // sample paths
-    for (size_t i = 0; i < nodes.size(); i++)
-        samplePathHistory(*nodes[i], indexSet);
-    
-}
-
-template<class charType, class treeType>
 size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::numOn(const std::vector<CharacterEvent*>& s)
 {
     size_t n = 0;
@@ -496,6 +459,38 @@ size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::numOn(con
         if (s[i]->getState() == 1)
             n++;
     return n;
+}
+
+template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
+{
+    if (this->tipsInitialized == false)
+        initializeValue();
+    
+    std::set<size_t> indexSet;
+    for (size_t i = 0; i < this->numSites; i++)
+        indexSet.insert(i);
+    
+    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        samplePathEnd(*nodes[i], indexSet);
+        for (size_t j = 0; j < nodes[i]->getNumberOfChildren(); j++)
+        {
+            TopologyNode& child = nodes[i]->getChild(j);
+            samplePathStart(child, indexSet);
+        }
+    }
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        this->histories[i].print();
+    }
+    
+    // sample paths
+    for (size_t i = 0; i < nodes.size(); i++)
+        samplePathHistory(*nodes[i], indexSet);
+    
 }
 
 template<class charType, class treeType>
@@ -509,7 +504,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     else // iid inheritance
     {
         if (node.isRoot() == false)
+        {
+            true;
             this->histories[ node.getIndex() ].setParentCharacters( this->histories[ node.getParent().getIndex() ].getChildCharacters() );
+        }
         else
         {
             ; // sample root tail state
@@ -542,7 +540,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
         size_t leftIdx = node.getChild(0).getIndex();
         size_t rightIdx = node.getChild(1).getIndex();
         
-        std::vector<CharacterEvent*> states = this->histories[nodeIdx].getChildCharacters();
+        //std::vector<CharacterEvent*> states = this->histories[nodeIdx].getChildCharacters();
         const treeType& tree = this->tau->getValue();
         double bt[3] = { tree.getBranchLength(nodeIdx), tree.getBranchLength( leftIdx ), tree.getBranchLength( rightIdx ) };
         if (node.isRoot())
@@ -590,7 +588,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
             unsigned int ancS = parentState[*it]->getState();
-            //unsigned int thisS = childState[*it]->getState();
             unsigned int desS1 = leftState[*it]->getState();
             unsigned int desS2 = rightState[*it]->getState();
             
@@ -602,13 +599,17 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             if (u < g1 / (g0 + g1))
                 s = 1;
             
-            //        std::cout << "\t" << *it << " " << s << " : " << ancS << " -> (" << g0 << "," << g1 << ") -> (" << desS1 << "," << desS2 << ")\n";
+            //std::cout << "\t" << *it << " : " << ancS << " -> " << s << " -> (" << desS1 << "," << desS2 << ") wp " << (s == 0 ? g0/(g0+g1) : g1/(g0+g1)) << "\n";
             
             childState[*it] = new CharacterEvent(*it, s, 1.0);
         }
+    
+        // forbid extinction
+        if (numOn(childState) == 0)
+            samplePathEnd(node, indexSet);
+        else
+            this->histories[nodeIdx].setChildCharacters(childState);
         
-        //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
-        this->histories[nodeIdx].setChildCharacters(childState);
     }
     return lnP;
 }
