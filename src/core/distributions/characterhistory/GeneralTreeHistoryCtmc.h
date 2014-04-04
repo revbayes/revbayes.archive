@@ -32,6 +32,10 @@ namespace RevBayesCore {
         GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
         void                                                initializeValue(void);
         void                                                redrawValue(void);
+        double                                              samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
+        double                                              samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
+        
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
@@ -55,10 +59,6 @@ namespace RevBayesCore {
         
         
     private:
-        
-        double                                              samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
-        double                                              samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
-        double                                              samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
         
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
