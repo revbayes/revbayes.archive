@@ -135,6 +135,9 @@ unsigned long RnaState::getState( void ) const {
     return state;
 }
 
+unsigned int RnaState::getStateIndex(void) const {
+    return ;
+}
 
 const std::string& RnaState::getStateLabels( void ) const {
     
