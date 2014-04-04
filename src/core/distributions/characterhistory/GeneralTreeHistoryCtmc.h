@@ -25,18 +25,20 @@ namespace RevBayesCore {
         
     public:
         GeneralTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites);
-        GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                                                //!< Copy constructor
-        virtual                                            ~GeneralTreeHistoryCtmc(void);                                                                   //!< Virtual destructor
+        GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &n);                                                                         //!< Copy constructor
+        virtual                                            ~GeneralTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
         // public member functions
-        GeneralTreeHistoryCtmc*                             clone(void) const;                                                                          //!< Create an independent clone
+        GeneralTreeHistoryCtmc*                             clone(void) const;                                                           //!< Create an independent clone
         void                                                setClockRate(const TypedDagNode< double > *r);
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
         void                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
+        void                                                setRateMap(const TypedDagNode< RateMap > *rm);
+        void                                                setRateMap(const TypedDagNode< RbVector< RateMap > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                    //!< Implementation of swaping parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         
     protected:
         
@@ -51,14 +53,20 @@ namespace RevBayesCore {
         
         
     private:
+        
+        void                                                samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet);
+        void                                                samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
+        void                                                samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
+        
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
         const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
-        const TypedDagNode< RateMatrix >*              homogeneousRateMatrix;
-        const TypedDagNode< RbVector< RateMatrix > >*  heterogeneousRateMatrices;
+        const TypedDagNode< RateMatrix >*                   homogeneousRateMatrix;
+        const TypedDagNode< RbVector< RateMatrix > >*       heterogeneousRateMatrices;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
-        const TypedDagNode< RateMap >*           homogeneousRateMap;
+        const TypedDagNode< RateMap >*                      homogeneousRateMap;
+        const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         
         
         // flags specifying which model variants we use
@@ -90,6 +98,8 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc
     heterogeneousRateMatrices   = NULL;
     rootFrequencies             = NULL;
     siteRates                   = NULL;
+    homogeneousRateMap          = NULL; // Define a good standard JC RateMap
+    heterogeneousRateMaps       = NULL;
     
     
     // flags specifying which model variants we use
@@ -100,6 +110,8 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc
     // add the parameters to the parents list
     this->addParameter( homogeneousClockRate );
     this->addParameter( homogeneousRateMatrix );
+    if (false)
+        this->addParameter( homogeneousRateMap );
     
     this->redrawValue();
     
@@ -397,49 +409,26 @@ const std::vector<double>& RevBayesCore::GeneralTreeHistoryCtmc<charType, treeTy
     
 }
 
-
 template<class charType, class treeType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
-    
-    // first, get the rate matrix for this branch
-    const RateMatrix *rm;
-    if ( this->branchHeterogeneousSubstitutionMatrices == true )
-    {
-        rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
-    }
-    else
-    {
-        rm = &this->homogeneousRateMatrix->getValue();
-    }
-    
-    // second, get the clock rate for the branch
-    double branchTime;
-    if ( this->branchHeterogeneousClockRates == true )
-    {
-        branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
-    }
-    else
-    {
-        branchTime = this->homogeneousClockRate->getValue() * brlen;
-    }
-    
-    // and finally compute the per site rate transition probability matrix
-    if ( this->rateVariationAcrossSites == true )
-    {
-        const std::vector<double> &r = this->siteRates->getValue();
-        for (size_t i = 0; i < this->numSiteRates; ++i)
-        {
-            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
-        }
-    }
-    else
-    {
-        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
-    }
-    
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::initializeHistory(void)
+{
+    // sample all node states
+    // sample all path states
+    ; // implement later
 }
 
 
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::sampleNodeHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
+{
+    ; // Rao-Teh ??
+}
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
+{
+    ; // Rao-Teh ??
+}
 
 template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< double > *r) {
@@ -565,6 +554,67 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMatrix(con
     
 }
 
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMap(const TypedDagNode< RateMap > *rm) {
+    
+    // remove the old parameter first
+    if ( homogeneousRateMap != NULL )
+    {
+        this->removeParameter( homogeneousRateMap );
+        homogeneousRateMap = NULL;
+    }
+    else // heterogeneousRateMatrix != NULL
+    {
+        this->removeParameter( heterogeneousRateMaps );
+        heterogeneousRateMaps = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousSubstitutionMatrices = false;
+    homogeneousRateMap = rm;
+    
+    // add the parameter
+    this->addParameter( homogeneousRateMap );
+    
+    // redraw the current value
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRateMap(const TypedDagNode< RbVector< RateMap > > *rm) {
+    
+    // remove the old parameter first
+    if ( homogeneousRateMap != NULL )
+    {
+        this->removeParameter( homogeneousRateMatrix );
+        homogeneousRateMap = NULL;
+    }
+    else // heterogeneousRateMatrix != NULL
+    {
+        this->removeParameter( heterogeneousRateMaps );
+        heterogeneousRateMaps = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousSubstitutionMatrices = true;
+    heterogeneousRateMaps = rm;
+    
+    // add the parameter
+    this->addParameter( heterogeneousRateMaps );
+    
+    // redraw the current value
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
 
 template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f) {
@@ -635,9 +685,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
         this->redrawValue();
     }
 }
-
-
-
 
 template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
@@ -727,6 +774,47 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::touchSpecializati
     else
     {
         AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
+    }
+    
+}
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
+    
+    // first, get the rate matrix for this branch
+    const RateMatrix *rm;
+    if ( this->branchHeterogeneousSubstitutionMatrices == true )
+    {
+        rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
+    }
+    else
+    {
+        rm = &this->homogeneousRateMatrix->getValue();
+    }
+    
+    // second, get the clock rate for the branch
+    double branchTime;
+    if ( this->branchHeterogeneousClockRates == true )
+    {
+        branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
+    }
+    else
+    {
+        branchTime = this->homogeneousClockRate->getValue() * brlen;
+    }
+    
+    // and finally compute the per site rate transition probability matrix
+    if ( this->rateVariationAcrossSites == true )
+    {
+        const std::vector<double> &r = this->siteRates->getValue();
+        for (size_t i = 0; i < this->numSiteRates; ++i)
+        {
+            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
+        }
+    }
+    else
+    {
+        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
     }
     
 }
