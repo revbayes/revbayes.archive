@@ -135,8 +135,7 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 20.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 20.0 ) );
-	
-	
+		
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
@@ -147,19 +146,18 @@ bool TestDPPRelClock::run( void ) {
 	//    monitoredNodes.insert( er );
 	//    monitoredNodes.insert( pi );
     monitoredNodes.insert( div );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestUCLNModel.log", "\t" ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestDPPRelClockModel.log", "\t" ) );
     std::set<DagNode*> monitoredNodes1;
     monitoredNodes1.insert( er );
     monitoredNodes1.insert( pi );
     monitoredNodes1.insert( q );
     monitoredNodes1.insert( treeHeight );
-	//    monitoredNodes1.insert( muValLN );
 	
-    monitors.push_back( new FileMonitor( monitoredNodes1, 10, "TestUCLNGtrModelSubstRates.log", "\t" ) );
+    monitors.push_back( new FileMonitor( monitoredNodes1, 10, "TestDPPRelClockGtrModelSubstRates.log", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes1, 10, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestUCLNGtrModel.tree", "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestDPPRelClockGtrModel.tree", "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);

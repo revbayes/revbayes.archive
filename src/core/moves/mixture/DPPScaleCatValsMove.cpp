@@ -44,6 +44,10 @@ const std::string& RevBayesCore::DPPScaleCatValsMove::getMoveName( void ) const 
     return name;
 }
 
+bool RevBayesCore::DPPScaleCatValsMove::isGibbs( void ) const {
+    
+    return true;
+}
 
 
 /** Perform the move */

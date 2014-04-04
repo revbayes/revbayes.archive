@@ -34,6 +34,7 @@ namespace RevBayesCore {
         DPPAllocateAuxGibbsMove<valueType>*						clone(void) const;                                                                  //!< Clone object
         void                                                    swapNode(DagNode *oldN, DagNode *newN);
 		const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+		bool													isGibbs(void) const;
 
     protected:
         void													performGibbsMove(void);                                                            //!< Perform move
@@ -84,6 +85,12 @@ const std::string& RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getMoveName
     return name;
 }
 
+template <class valueType>
+bool RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::isGibbs( void ) const {
+    
+    return true;
+}
+
 
 
 /** Perform the move */
@@ -105,7 +112,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	double cp = dist.getConcentrationParam();
 	TypedDistribution<valueType>* g0 = dist.getBaseDistribution();
     
-	int numAuxiliary = 4; // this should probably be treated like the tuning parameter
+	int numAuxiliary = numAuxCat; 
 	double lnCPOverNumAux = log(cp/numAuxiliary);
 	// loop over elements, remove i from current table, and try in all others
 	for(int i=0; i<numElements; i++){
