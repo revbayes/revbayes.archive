@@ -74,7 +74,7 @@ namespace RevBayesCore {
         bool changed;
         bool failed;
         bool allowSisterAdmixture;
-        int activeGen;
+        unsigned long activeGen;
     };
     
 }
