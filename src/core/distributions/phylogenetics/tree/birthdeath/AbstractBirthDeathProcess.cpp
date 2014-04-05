@@ -27,12 +27,13 @@ using namespace RevBayesCore;
  * \param[in]    c         Clade constraints.
  */
 AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt,  
-                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
+                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ),
+    condition( cdt ),
+    constraints( c ),
     origin( o ),
-    condition( cdt ), 
     numTaxa( tn.size() ), 
-    taxa( tn ), 
-    constraints( c ) 
+    taxa( tn )
+
 {
     
     addParameter( origin );
