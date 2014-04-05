@@ -128,11 +128,11 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new SubtreeScale( tau, 5.0 ) );
     moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
+//    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 20.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 20.0 ) );
 		
