@@ -222,9 +222,9 @@ double AdmixtureEdgeReplaceFNPR::performSimpleMove( void ) {
 
 
     // draw new admixture edges
-    double fwdProposal = 1.0;
+    //double fwdProposal = 1.0;
     //int numEvents = storedAdmixtureEdges.size();
-    for (int i = 0; i < storedAdmixtureEdges.size(); i++)
+    for (size_t i = 0; i < storedAdmixtureEdges.size(); i++)
     {
         residuals->touch();
         storedResiduals = residuals->getValue();
@@ -437,7 +437,7 @@ double AdmixtureEdgeReplaceFNPR::performSimpleMove( void ) {
         double a = 1.0;
         double b = 2.0;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
-        double lnW = 0.0;
+        //double lnW = 0.0;
         admixtureWeight /= 2;
         
         // add nodes to tree
@@ -593,7 +593,7 @@ void AdmixtureEdgeReplaceFNPR::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeReplaceFNPR::isActive(int g) const {
+bool AdmixtureEdgeReplaceFNPR::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

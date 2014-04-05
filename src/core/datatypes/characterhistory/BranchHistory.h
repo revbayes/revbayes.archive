@@ -98,8 +98,9 @@ namespace RevBayesCore {
         //std::vector<std::vector<unsigned int> > childCharacterCounts;
         
         //
-        bool redrawParentCharacters;
+        
         bool redrawChildCharacters;
+        bool redrawParentCharacters;
         bool redrawHistory;
         bool clampChildCharacters;
         

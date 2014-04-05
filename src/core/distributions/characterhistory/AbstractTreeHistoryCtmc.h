@@ -129,8 +129,8 @@ namespace RevBayesCore {
 
 template<class charType, class treeType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
-numSites( nSites ),
 numChars( nChars ),
+numSites( nSites ),
 numSiteRates( 1 ),
 tau( t ),
 transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
@@ -166,8 +166,8 @@ tipsInitialized( false )
 
 template<class charType, class treeType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractCharacterData >( n ),
-numSites( n.numSites ),
 numChars( n.numChars ),
+numSites( n.numSites ),
 numSiteRates( n.numSiteRates ),
 tau( n.tau ),
 transitionProbMatrices( n.transitionProbMatrices ),

@@ -27,7 +27,7 @@ namespace RevBayesCore {
         // Basic utility functions
         AdmixtureEdgeReweight*          clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
-        bool                            isActive(int g) const;
+        bool                            isActive(unsigned long g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -45,7 +45,7 @@ namespace RevBayesCore {
         double                          storedWeight;
 
         bool failed;
-        int activeGen;
+        unsigned long activeGen;
         
     };
     

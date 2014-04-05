@@ -34,7 +34,7 @@ namespace RevBayesCore
         std::vector<GeographicArea*> gridAreas;
         
         // helper variables
-        int numAreas;
+        unsigned numAreas;
         int index;
     };
 }

@@ -41,13 +41,13 @@
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-AdmixtureNode::AdmixtureNode(int indx) : TopologyNode( indx ), parent( NULL ), topology( NULL ), admixtureNode(false), outgroup(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0), age(0.0) {
+AdmixtureNode::AdmixtureNode(int indx) : TopologyNode( indx ), parent( NULL ), topology( NULL ), age(0.0), admixtureNode(false), outgroup(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0) {
     
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-AdmixtureNode::AdmixtureNode(const std::string& n, int indx) : TopologyNode( n, indx ), parent( NULL ), topology( NULL ), admixtureNode(false), outgroup(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0), age(0.0) {
+AdmixtureNode::AdmixtureNode(const std::string& n, int indx) : TopologyNode( n, indx ), parent( NULL ), topology( NULL ), age(0.0), admixtureNode(false), outgroup(false), admixtureParent(NULL), admixtureChild(NULL), weight(1.0) {
     
 }
 

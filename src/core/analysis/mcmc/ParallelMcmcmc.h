@@ -52,7 +52,7 @@ namespace RevBayesCore {
         unsigned int                                        currentGeneration;
         unsigned int                                        swapInterval;
         
-        int                                                 activeIndex;  // index of coldest chain, i.e. which one samples the posterior
+        size_t                                              activeIndex;  // index of coldest chain, i.e. which one samples the posterior
         double                                              delta;        // delta-T, temperature increment for computeBeta
         double                                              sigma;        // scales power in heating schedule
         double                                              startingHeat; // default 1.0

@@ -12,7 +12,7 @@ using namespace RevBayesCore;
 
 double SnpData::getSnpFrequencies(std::string a, int b) const
 {
-    for (size_t i = 0; i < numPopulations; i++)
+    for (unsigned i = 0; i < numPopulations; i++)
     {
         if (populationNames[i] == a)
         {
@@ -25,7 +25,7 @@ double SnpData::getSnpFrequencies(std::string a, int b) const
 
 const std::vector<double>& SnpData::getSnpFrequencies(std::string a) const
 {
-    for (size_t i = 0; i < numPopulations; i++)
+    for (unsigned i = 0; i < numPopulations; i++)
     {
         if (populationNames[i] == a)
         {

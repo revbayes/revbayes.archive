@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReversePolarity::AdmixtureEdgeReversePolarity(StochasticNode<AdmixtureTree> *v, int ag, double l, double w) : SimpleMove( v, w), variable( v ), failed(false), lambda(l), activeGen(ag) {
+AdmixtureEdgeReversePolarity::AdmixtureEdgeReversePolarity(StochasticNode<AdmixtureTree> *v, int ag, double l, double w) : SimpleMove( v, w), variable( v ), lambda(l), failed(false), activeGen(ag) {
     
 }
 
@@ -128,7 +128,7 @@ void AdmixtureEdgeReversePolarity::rejectSimpleMove( void ) {
     }
 }
 
-bool AdmixtureEdgeReversePolarity::isActive(int g) const {
+bool AdmixtureEdgeReversePolarity::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

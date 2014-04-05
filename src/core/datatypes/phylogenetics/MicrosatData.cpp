@@ -12,7 +12,7 @@ using namespace RevBayesCore;
 
 double MicrosatData::getMicrosatMeans(std::string a, int b) const
 {
-    for (size_t i = 0; i < numPopulations; i++)
+    for (unsigned i = 0; i < numPopulations; i++)
     {
         if (populationNames[i] == a)
         {
@@ -25,7 +25,7 @@ double MicrosatData::getMicrosatMeans(std::string a, int b) const
 
 const std::vector<double>& MicrosatData::getMicrosatMeans(std::string a) const
 {
-    for (size_t i = 0; i < numPopulations; i++)
+    for (unsigned i = 0; i < numPopulations; i++)
     {
         if (populationNames[i] == a)
         {
