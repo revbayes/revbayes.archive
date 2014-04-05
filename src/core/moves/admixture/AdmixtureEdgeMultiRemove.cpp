@@ -213,7 +213,7 @@ void AdmixtureEdgeMultiRemove::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeMultiRemove::isActive(int g) const {
+bool AdmixtureEdgeMultiRemove::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

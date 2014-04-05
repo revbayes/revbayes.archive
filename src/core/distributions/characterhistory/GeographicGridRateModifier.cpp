@@ -57,7 +57,7 @@ double GeographicGridRateModifier::computeRateModifier(std::vector<CharacterEven
     // determine which areas are present and which are absent
     std::set<CharacterEvent*> present;
     std::set<CharacterEvent*> absent;
-    for (size_t i = 0; i < numAreas; i++)
+    for (unsigned i = 0; i < numAreas; i++)
     {
         if (currState[i]->getState() == 0)
             absent.insert(currState[i]);

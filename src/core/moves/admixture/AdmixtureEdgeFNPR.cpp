@@ -75,8 +75,8 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
     else
     {
         // proposal densities
-        double fwdProposal = 1.0;
-        double bwdProposal = 1.0;
+        //double fwdProposal = 1.0;
+        //double bwdProposal = 1.0;
         
         failed = false;
         
@@ -91,8 +91,8 @@ double AdmixtureEdgeFNPR::performSimpleMove( void ) {
         storedAdmixtureParentChild = &storedAdmixtureParent->getChild(0);
         
         // get old branch idx
-        int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
-        int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+        //int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
+        //int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
         
         // find new attach point
         std::vector<AdmixtureNode*> brothers;
@@ -287,7 +287,7 @@ void AdmixtureEdgeFNPR::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeFNPR::isActive(int g) const {
+bool AdmixtureEdgeFNPR::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

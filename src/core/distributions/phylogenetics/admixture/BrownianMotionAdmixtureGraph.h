@@ -136,11 +136,11 @@ namespace RevBayesCore {
         double                                                          regularizationFactor;
         
         // data dimensions
-        size_t numSites;
-        size_t numNodes;
-        size_t numTaxa;
-        size_t numBlocks;
-        size_t blockSize;
+        unsigned int numSites;
+        unsigned int numNodes;
+        unsigned int numTaxa;
+        unsigned int numBlocks;
+        unsigned int blockSize;
         
         // model settings
         bool useWishart;

@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReplaceSubtreeRegraft::AdmixtureEdgeReplaceSubtreeRegraft(StochasticNode<AdmixtureTree> *v, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), residuals(res), changed(false), failed(false), activeGen(ag), delta(d), maxEvents(me), allowSisterAdmixture(asa) {
+AdmixtureEdgeReplaceSubtreeRegraft::AdmixtureEdgeReplaceSubtreeRegraft(StochasticNode<AdmixtureTree> *v, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), residuals(res), changed(false), failed(false), activeGen(ag), maxEvents(me), allowSisterAdmixture(asa), delta(d) {
     
     //nodes.insert(rate);
     nodes.insert(residuals);
@@ -231,9 +231,9 @@ double AdmixtureEdgeReplaceSubtreeRegraft::performSimpleMove( void ) {
 //    std::cout << maxRegraftAge << " > " << newPruneAge << " > " << minRegraftAge << "\n";
     
     // draw new admixture edges
-    double fwdProposal = 1.0;
+    //double fwdProposal = 1.0;
     //int numEvents = storedAdmixtureEdges.size();
-    for (int i = 0; i < storedAdmixtureEdges.size(); i++)
+    for (size_t i = 0; i < storedAdmixtureEdges.size(); i++)
     {
         residuals->touch();
         storedResiduals = residuals->getValue();
@@ -446,7 +446,7 @@ double AdmixtureEdgeReplaceSubtreeRegraft::performSimpleMove( void ) {
         double a = 1.0;
         double b = 2.0;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
-        double lnW = 0.0;
+        //double lnW = 0.0;
         admixtureWeight /= 2;
         
         // add nodes to tree
@@ -603,7 +603,7 @@ void AdmixtureEdgeReplaceSubtreeRegraft::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeReplaceSubtreeRegraft::isActive(int g) const {
+bool AdmixtureEdgeReplaceSubtreeRegraft::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

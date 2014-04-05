@@ -18,12 +18,12 @@ CharacterEvent::CharacterEvent(void)
     
 }
 
-CharacterEvent::CharacterEvent(size_t i, unsigned int s, double t) : time(t), state(s), index(i)
+CharacterEvent::CharacterEvent(size_t i, unsigned int s, double t) :  index(i), state(s), time(t)
 {
     
 }
 
-CharacterEvent::CharacterEvent(const CharacterEvent& c) : time(c.time), state(c.state), index(c.index)
+CharacterEvent::CharacterEvent(const CharacterEvent& c) : index(c.index), state(c.state), time(c.time)
 {
     
 }

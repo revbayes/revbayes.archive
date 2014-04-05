@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT, int nc, int np, int si, double dt, double st, double sh) : Cloneable( ), sigma(st), delta(dt), numChains(nc), numProcesses(np), swapInterval(si), currentGeneration(0), startingHeat(sh), scheduleType(sT)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT, int nc, int np, int si, double dt, double st, double sh) : Cloneable( ), numChains(nc), numProcesses(np),  scheduleType(sT), currentGeneration(0), swapInterval(si), delta(dt),  sigma(st), startingHeat(sh)
 {
     activeIndex = 0;
     

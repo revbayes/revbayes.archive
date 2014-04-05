@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<std::vector<double> > *glr, const TypedDagNode<double> *dp, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography( nc ) ), distancePower( dp ), gainLossRates( glr ) {
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<std::vector<double> > *glr, const TypedDagNode<double> *dp, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography( nc ) ), gainLossRates( glr ), distancePower( dp ) {
     // add the lambda parameter as a parent
     addParameter( distancePower );
     addParameter( gainLossRates );
@@ -20,7 +20,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<std:
 }
 
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n) : TypedFunction<RateMap>( n ), distancePower( n.distancePower ), gainLossRates( n.gainLossRates ) {
+BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateMapFunction &n) : TypedFunction<RateMap>( n ), gainLossRates( n.gainLossRates ), distancePower( n.distancePower ) {
     // no need to add parameters, happens automatically
 }
 

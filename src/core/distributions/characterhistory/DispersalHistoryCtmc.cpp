@@ -21,7 +21,7 @@
 
 using namespace RevBayesCore;
 
-DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm) : AbstractCharacterHistoryCtmc(rm,r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), lossRangeSizePower(lrsp), gainRangeSizePower(grsp), rangeSizeFrequency(rsf), areaSizePower(asp), areaSizeRateModifier(asrm)
+DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm) : AbstractCharacterHistoryCtmc(rm,r,t,br,nc,ns,idx), distancePower(dp), gainRangeSizePower(grsp), lossRangeSizePower(lrsp), rangeSizeFrequency(rsf), areaSizePower(asp), geographicDistances(gd), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs),areaSizeRateModifier(asrm)
 
 
 {
@@ -51,7 +51,7 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::ve
     }
 }
 
-DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm, std::vector<GeographicGridRateModifier*> ggrmv) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), geographicDistances(gd), distancePower(dp), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), lossRangeSizePower(lrsp), gainRangeSizePower(grsp), rangeSizeFrequency(rsf), areaSizePower(asp), areaSizeRateModifier(asrm), geographicGrids(ggrmv)
+DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, const TypedDagNode<double>* dp,  const TypedDagNode<double>* grsp, const TypedDagNode<double>* lrsp, const TypedDagNode<double>* rsf, const TypedDagNode<double>* asp, size_t nc, size_t ns, size_t idx, GeographicDistanceRateModifier* gd, RangeSizeRateModifier* grs, RangeSizeRateModifier* lrs, AreaSizeRateModifier* asrm, std::vector<GeographicGridRateModifier*> ggrmv) : AbstractCharacterHistoryCtmc(r,t,br,nc,ns,idx), distancePower(dp), gainRangeSizePower(grsp), lossRangeSizePower(lrsp), rangeSizeFrequency(rsf), areaSizePower(asp), geographicDistances(gd), gainRangeSizeRateModifier(grs), lossRangeSizeRateModifier(lrs), areaSizeRateModifier(asrm), geographicGrids(ggrmv)
 
 {
     addParameter(distancePower);

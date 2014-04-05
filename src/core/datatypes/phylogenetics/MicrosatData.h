@@ -48,8 +48,8 @@ namespace RevBayesCore {
         void setOutgroup(std::vector<bool> a)                               { outgroup = a; }
         
     private:
-        int numMicrosats;
-        int numPopulations;
+        unsigned numMicrosats;
+        unsigned numPopulations;
         std::vector<std::string> populationNames;
         std::vector<int> numChromosomes; // max N per population
         std::vector<std::vector<double> > microsatVars;

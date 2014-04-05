@@ -134,7 +134,7 @@ double AdmixtureEdgeReweight::performSimpleMove( void ) {
    
 }
 
-bool AdmixtureEdgeReweight::isActive(int g) const {
+bool AdmixtureEdgeReweight::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

@@ -476,7 +476,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
         {
             if (nodes[i]->isTip())
             {
-                size_t idx = nodes[i]->getIndex();
                 DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData(i) );
                 std::vector<CharacterEvent*> tipState;
                 
@@ -546,7 +545,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     {
         if (node.isRoot() == false)
         {
-            true;
             this->histories[ node.getIndex() ].setParentCharacters( this->histories[ node.getParent().getIndex() ].getChildCharacters() );
         }
         else
@@ -765,7 +763,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     //std::cout << bt << "\n";
     //std::cout << bt * (double)value->getHistory().size() << "\n";
     
-    ;
+    return 0.0;
 }
 
 template<class charType, class treeType>
