@@ -34,6 +34,7 @@ namespace RevBayesCore {
         DPPScaleCatValsMove*									clone(void) const;                                                                  //!< Clone object
         void                                                    swapNode(DagNode *oldN, DagNode *newN);
         const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+		bool													isGibbs(void) const;
 
     protected:
         void													performGibbsMove(void);                                                            //!< Perform move
