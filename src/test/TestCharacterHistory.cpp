@@ -58,7 +58,6 @@
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "FreeBinaryRateMatrixFunction.h"
 
-
 //#define USE_DDBD
 
 using namespace RevBayesCore;
@@ -105,7 +104,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
-    size_t numTaxa = data[0]->getNumberOfTaxa();
+//    size_t numTaxa = data[0]->getNumberOfTaxa();
 
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.nex" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
@@ -152,6 +151,11 @@ bool TestCharacterHistory::run_exp(void) {
     charactermodel->redraw();
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
+    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
+    std::cout << GLOBAL_RNG->getSeed()[1] << "\n";
+    
+    int a = 1;
+    size_t t = a;
     ////////////
     // moves
     ////////////
