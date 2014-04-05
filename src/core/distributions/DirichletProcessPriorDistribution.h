@@ -77,7 +77,7 @@ template <class valueType>
 RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp,
 																							  int n) :
 																							  TypedDistribution< std::vector<valueType> >( new std::vector<valueType>() ), baseDistribution( g ), concentration( cp ),
-																							  numElements( n ), numTables( 0 ), concentrationHasChanged( true ), denominator( 0.0 ) {
+																							  numElements( n ), numTables( 0 ), denominator( 0.0 ), concentrationHasChanged( true ) {
     
     this->addParameter( concentration );
 //    this->addParameter( baseDistribution );
@@ -95,7 +95,7 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
 template <class valueType>
 RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(const DirichletProcessPriorDistribution<valueType> &n) : TypedDistribution<std::vector<valueType> >( n ),
 																								baseDistribution( n.baseDistribution ), concentration( n.concentration ), 
-																								numElements( n.numElements ), numTables( n.numTables ), concentrationHasChanged( true ), denominator( 0.0 ) {
+																								numElements( n.numElements ), numTables( n.numTables ), denominator( 0.0 ), concentrationHasChanged( true ) {
     // parameters are added automatically
     delete this->value;
     this->value = simulate();
@@ -198,7 +198,7 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 		else{
 			double sum = 0.0;
 			double m = rng->uniform01();
-			for(int j=0; j<numCustomerPerTable.size(); j++){
+			for(unsigned j=0; j<numCustomerPerTable.size(); j++){
 				sum += (double)numCustomerPerTable[j] / i;
 				if(m < sum){
 					numCustomerPerTable[j] += 1;

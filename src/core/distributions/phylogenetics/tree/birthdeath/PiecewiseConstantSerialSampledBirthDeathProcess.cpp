@@ -386,7 +386,7 @@ std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciat
 {
     
     // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    // RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
 //    double birth = lambda->getValue();

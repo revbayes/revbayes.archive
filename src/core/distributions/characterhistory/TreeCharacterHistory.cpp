@@ -216,7 +216,7 @@ void TreeCharacterHistory::redrawValue(void)
     
     ;
     // enable redraw for parent/child/path
-    for (int i = 0; i < branchHistories.size(); i++)
+    for (size_t i = 0; i < branchHistories.size(); i++)
     {
         const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
         StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);
@@ -289,7 +289,7 @@ void TreeCharacterHistory::simulate(void)
     ;
     
     // enable redraw for parent/child/path
-    for (int i = 0; i < branchHistories.size(); i++)
+    for (size_t i = 0; i < branchHistories.size(); i++)
     {
         const StochasticNode<BranchHistory>* cbh = static_cast<const StochasticNode<BranchHistory>* >(branchHistories[i]);
         StochasticNode<BranchHistory>* bh = const_cast<StochasticNode<BranchHistory>* >(cbh);

@@ -31,11 +31,11 @@ FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std:
 
 
 /* Constructor */
-FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
-FileMonitor::FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 

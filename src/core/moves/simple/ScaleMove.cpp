@@ -15,9 +15,9 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the move object.
  */
 ScaleMove::ScaleMove( StochasticNode<double> *n, double l, bool t, double w ) : SimpleMove( n, w, t ), 
-        variable( n ), 
-        storedValue( 0.0 ), 
-        lambda( l ) 
+        lambda( l ),
+        variable( n ),
+        storedValue( 0.0 )
 {
     // we need to allocate memory for the stored value
     
