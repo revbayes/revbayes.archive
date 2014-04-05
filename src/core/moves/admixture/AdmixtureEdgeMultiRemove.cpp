@@ -106,8 +106,8 @@ double AdmixtureEdgeMultiRemove::performSimpleMove( void ) {
         }
         
         // update count
-        numEvents = (int)tau.getNumberOfAdmixtureChildren();
-        admixtureCount->setValue(new int(numEvents));
+        numEvents = tau.getNumberOfAdmixtureChildren();
+        admixtureCount->setValue(numEvents);
         
         return 0.0;
     }
@@ -140,7 +140,7 @@ void AdmixtureEdgeMultiRemove::rejectSimpleMove( void ) {
         }
         
         numEvents = tau.getNumberOfAdmixtureChildren();
-        admixtureCount->setValue(new int(numEvents));
+        admixtureCount->setValue(numEvents);
         
         
         //std::cout << "reject\n";

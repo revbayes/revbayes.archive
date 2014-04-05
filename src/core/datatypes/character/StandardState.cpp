@@ -201,7 +201,7 @@ void StandardState::setGapState(bool tf) {
 void StandardState::setState(size_t pos, bool val) {
     
     state &= val << pos;
-    stateIndex = pos;
+    stateIndex = (unsigned)pos;
 }
 
 
@@ -209,7 +209,7 @@ void StandardState::setState(char symbol) {
     
     size_t pos = labels.find(symbol);
     state = (unsigned int)( 1 ) << pos;
-    stateIndex = pos;
+    stateIndex = (unsigned)pos;
 }
 
 void StandardState::setState(std::string s) {
@@ -220,7 +220,7 @@ void StandardState::setState(std::string s) {
     {
         size_t pos = labels.find(tmp[i]);
         state = (unsigned int)( 1 ) << pos;
-        stateIndex = pos;
+        stateIndex = (unsigned)pos;
     }
 }
 

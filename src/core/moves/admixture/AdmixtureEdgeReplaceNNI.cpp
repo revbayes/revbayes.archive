@@ -104,16 +104,16 @@ double AdmixtureEdgeReplaceNNI::performSimpleMove( void ) {
     AdmixtureTree& tau = variable->getValue();
     
     // stage NNI pointers
-    int numIntNodes = tau.getNumberOfInteriorNodes();
-    int numTaxa = tau.getNumberOfTips();
+    size_t numIntNodes = tau.getNumberOfInteriorNodes();
+    size_t numTaxa = tau.getNumberOfTips();
     pruneNode = NULL;
     while (pruneNode == NULL || pruneNode == &tau.getRoot() || pruneNode->getNumberOfChildren() != 2)
     {
         pruneNode = &tau.getNode(rng->uniform01() * numIntNodes + numTaxa - 1);
     }
     pruneParent = &pruneNode->getTopologyParent();
-    int chIdx = rng->uniform01() * 2;
-    int nphIdx = (chIdx == 0 ? 1 : 0);
+    size_t chIdx = rng->uniform01() * 2;
+    size_t nphIdx = (chIdx == 0 ? 1 : 0);
     pruneChild = &pruneNode->getTopologyChild(chIdx);
     pruneNephew = &pruneNode->getChild(nphIdx);
     int uncIdx = 0;
