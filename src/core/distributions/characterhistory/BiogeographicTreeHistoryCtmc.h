@@ -316,8 +316,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             
 //            double tr = transitionRate(currState, *it_h);
 //            double sr = sumOfRates(currState);
-            double tr = 1.0;
-            double sr = 2.0;
+            double tr = rm->getRate(currState, *it_h);
+            double sr = rm->getSumOfRates(currState);
             
             // lnL for stepwise events for p(x->y)
             lnL += log(tr) - sr * dt;
