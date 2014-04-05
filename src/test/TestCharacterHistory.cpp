@@ -151,8 +151,8 @@ bool TestCharacterHistory::run_exp(void) {
     charactermodel->redraw();
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
-    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
-    std::cout << GLOBAL_RNG->getSeed()[1] << "\n";
+//    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
+//    std::cout << GLOBAL_RNG->getSeed()[1] << "\n";
     
     ////////////
     // moves
