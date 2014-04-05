@@ -61,7 +61,7 @@ namespace RevBayesCore {
         bool                            failed;
         bool                            allowSisterAdmixture;
         int                             delay;
-        int                             activeGen;
+        unsigned long                   activeGen;
         int numEvents;
         
         // stored objects to undo proposal
