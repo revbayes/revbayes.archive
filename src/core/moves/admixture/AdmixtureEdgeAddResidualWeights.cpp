@@ -274,7 +274,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     
     // update no of adm evts
     numEvents = (int)tau.getNumberOfAdmixtureChildren();
-    admixtureCount->setValue(new int(numEvents));
+    admixtureCount->setValue(numEvents);
     
     // bombs away
     double lnP = 0.0;
@@ -345,7 +345,7 @@ void AdmixtureEdgeAddResidualWeights::rejectSimpleMove( void ) {
         delete storedAdmixtureParent;
         delete storedAdmixtureChild;
         
-        admixtureCount->setValue(new int(numEvents-1));
+        admixtureCount->setValue(numEvents-1);
     
     }
     

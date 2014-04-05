@@ -37,7 +37,7 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
     
     // assign chains to processors
 #if defined (USE_LIB_OPENMP)
-    omp_set_num_threads(numProcesses);
+    omp_set_num_threads((unsigned)numProcesses);
 #endif
     
     if (numChains < numProcesses)
@@ -103,7 +103,7 @@ void ParallelMcmcmc::initialize(void)
     
 }
 
-double ParallelMcmcmc::computeBeta(double d, double s, int idx)
+double ParallelMcmcmc::computeBeta(double d, double s, size_t idx)
 {
     // MJL: May want other distributions of beta in the future
     return pow(1 + d, -pow(idx,s));

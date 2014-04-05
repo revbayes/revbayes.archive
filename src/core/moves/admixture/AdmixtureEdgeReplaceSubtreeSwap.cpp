@@ -147,8 +147,8 @@ double AdmixtureEdgeReplaceSubtreeSwap::performSimpleMove( void ) {
         size_t index = numTips + std::floor(numNodes * u);
         regraftNode = &tau.getNode(index);
         regraftParent = &regraftNode->getParent();
-        int chIdxA = rng->uniform01() * regraftNode->getNumberOfChildren();
-        int chIdxB = (chIdxA == 0 ? 1 : 0);
+        size_t chIdxA = rng->uniform01() * regraftNode->getNumberOfChildren();
+        size_t chIdxB = (chIdxA == 0 ? 1 : 0);
         regraftChild = &regraftNode->getTopologyChild(chIdxA);
         regraftNephew = &regraftNode->getChild(chIdxB);
         chAge = regraftChild->getAge();

@@ -125,8 +125,8 @@ double AdmixtureEdgeReplaceFNPR::performSimpleMove( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     // stage FNPR pointers
-    int numIntNodes = tau.getNumberOfInteriorNodes();
-    int numTaxa = tau.getNumberOfTips();
+    size_t numIntNodes = tau.getNumberOfInteriorNodes();
+    size_t numTaxa = tau.getNumberOfTips();
     pruneNode = NULL;
     while (pruneNode == NULL || pruneNode == &tau.getRoot() || pruneNode->getNumberOfChildren() != 2)
     {

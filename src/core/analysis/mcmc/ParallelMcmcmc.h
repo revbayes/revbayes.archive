@@ -41,7 +41,7 @@ namespace RevBayesCore {
     private:
         void                                                initialize(void);
         void                                                swapChains(void);
-        double                                              computeBeta(double d, double s, int i);   // incremental temperature schedule
+        double                                              computeBeta(double d, double s, size_t i);   // incremental temperature schedule
         
         size_t                                              numChains;
         size_t                                              numProcesses;

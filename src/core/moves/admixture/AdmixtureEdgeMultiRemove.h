@@ -76,7 +76,7 @@ namespace RevBayesCore {
         bool failed;
         unsigned long activeGen;
         double delta;
-        int numEvents;
+        size_t numEvents;
         double pRemove;
         
         // stored objects to undo proposal
