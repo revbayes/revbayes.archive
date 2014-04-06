@@ -91,6 +91,7 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 		g0->getValue() = storedValue; // old
 		priorRatio -= g0->computeLnProbability();
 		
+		variable->touch();
 		std::set<DagNode*> affected;
 		variable->getAffectedNodes( affected );
 		double lnProbRatio = 0.0;
