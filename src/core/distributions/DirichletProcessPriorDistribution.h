@@ -136,15 +136,20 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     // lnP = K * ln( alpha ) + sum^K_{i=1}( ln( factorial( n_i - 1 ) ) ) - sum^N_{i=1} ln( alpha + i - 1 )
     
     // reset the lnProb and set it to log( alpha^K )
-    double lnProb = log( concentration->getValue() ) * numTables;
+	
+	int nt = numTables;
+	int ne = numElements;
+    double lnProb = log( concentration->getValue() ) * nt;
     
     if ( concentrationHasChanged == true ){
         computeDenominator();
     }
 	
-	lnProb += log(RbMath::stirlingFirst(numElements, numTables));
+//	int sn = RbMath::stirlingFirst(ne, nt);
+	
+//	lnProb += log(sn);
     
-    for (int i = 0; i < numTables; ++i){
+    for (int i = 0; i < nt; ++i){
 		// compute the probability of having n_i customers per at table i
 		lnProb += RbMath::lnFactorial( numCustomerPerTable[i] - 1 );
         
@@ -209,6 +214,7 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 			}
 		}		
 	}
+	createRestaurantVectors();
 	return rv ;
 }
 
@@ -264,7 +270,7 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
 			numCustomerPerTable.push_back(1);
 			numTables++;
 		}
-	allocationVector[i] = (int)tID;
+		allocationVector[i] = (int)tID;
 	}
 }
 
