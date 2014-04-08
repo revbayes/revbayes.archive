@@ -1,9 +1,8 @@
-#include "BranchRateJumpProcess.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbMathVector.h"
-#include "SwitchRateJumpMove.h"
+#include "RlcRateScaleMove.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
@@ -17,18 +16,17 @@ using namespace RevBayesCore;
  * The default constructor does nothing except allocating the object.
  *
  * \param[in]   v    The variable on which this move operates.
+ * \param[in]   w    The scaling factor.
+ * \param[in]   t    If the parameter should be tuned.
  * \param[in]   w    The weight how often the move will be used.
  */
-SwitchRateJumpMove::SwitchRateJumpMove(StochasticNode<std::vector<double> > *v, double w) : SimpleMove( v, w, false ), 
+RlcRateScaleMove::RlcRateScaleMove(StochasticNode<std::vector<double> > *v, double l, bool t, double w) : SimpleMove( v, w, t ), 
     variable(v),
     index( 0 ),
-    storedValue( 1.0 ),
-    valueDistribution( NULL )
+    lambda( l ),
+    storedValue( 1.0 )
 {
     
-    // we need to get the distribution object
-    valueDistribution = static_cast<BranchRateJumpProcess&>( variable->getDistribution() ).getValueDistribution();
-
 }
 
 
@@ -36,11 +34,11 @@ SwitchRateJumpMove::SwitchRateJumpMove(StochasticNode<std::vector<double> > *v, 
  * Accept the move and reset flags/states.
  * We only need to reset the touched element indices of the variable.
  */
-void SwitchRateJumpMove::acceptSimpleMove( void )   
+void RlcRateScaleMove::acceptSimpleMove( void )   
 {
     
     variable->clearTouchedElementIndices();
-
+    
 }
 
 
@@ -50,10 +48,10 @@ void SwitchRateJumpMove::acceptSimpleMove( void )
  *
  * \return A new copy of the model. 
  */
-SwitchRateJumpMove* SwitchRateJumpMove::clone( void ) const 
+RlcRateScaleMove* RlcRateScaleMove::clone( void ) const 
 {
     
-    return new SwitchRateJumpMove( *this );
+    return new RlcRateScaleMove( *this );
 }
 
 
@@ -62,9 +60,9 @@ SwitchRateJumpMove* SwitchRateJumpMove::clone( void ) const
  *
  * \return The moves' name.
  */
-const std::string& SwitchRateJumpMove::getMoveName( void ) const 
+const std::string& RlcRateScaleMove::getMoveName( void ) const 
 {
-    static std::string name = "SwitchRateJumpMove";
+    static std::string name = "RlcRateScaleMove";
     
     return name;
 }
@@ -80,7 +78,7 @@ const std::string& SwitchRateJumpMove::getMoveName( void ) const
  *
  * \return The hastings ratio.
  */
-double SwitchRateJumpMove::performSimpleMove( void ) 
+double RlcRateScaleMove::performSimpleMove( void ) 
 {
     
     // Get random number generator    
@@ -89,7 +87,7 @@ double SwitchRateJumpMove::performSimpleMove( void )
     std::vector<double>& v = variable->getValue();
     // choose an index (do not propose a jump for the root)
     index = int(rng->uniform01() * v.size());
-
+    
     // copy value
     storedValue = v[index];
     
@@ -99,34 +97,16 @@ double SwitchRateJumpMove::performSimpleMove( void )
     double lnHastingsratio = 0.0;
     
     // now we need to check if we add a jump a remove one
-    if ( storedValue == 1.0 ) 
+    if ( storedValue != 1.0 ) 
     {
-        // add a jump
-        
-        // draw a new value from the value distribution
-        valueDistribution->redrawValue();
-        
-        // store the proposal ratio
-        lnHastingsratio = - valueDistribution->computeLnProbability();
-        
-        // get the new value
-        double newVal = valueDistribution->getValue();
-        
-        // set the value
-        v[index] = newVal;
+        // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
+        double u = rng->uniform01();
+        double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+        v[index] *= scalingFactor;
     }
     else
     {
-        // remove the jump
-        
-        // we need to set the value of the value distribution so that we can compute the log probability density
-        valueDistribution->setValue( storedValue );
-        
-        // store the proposal ratio
-        lnHastingsratio = valueDistribution->computeLnProbability();
-        
-        // set the value
-        v[index] = 1.0;
+        lnHastingsratio = RbConstants::Double::neginf;
     }
     
     
@@ -142,7 +122,7 @@ double SwitchRateJumpMove::performSimpleMove( void )
  * the value of the variable/DAG-node to its original value.
  * We additionally need to reset the touched element indices of the variable.
  */
-void SwitchRateJumpMove::rejectSimpleMove( void ) 
+void RlcRateScaleMove::rejectSimpleMove( void ) 
 {
     
     std::vector<double>& v = variable->getValue();
@@ -153,19 +133,34 @@ void SwitchRateJumpMove::rejectSimpleMove( void )
 
 
 /**
+ * Tune the move to achieve the target acceptance probability of 0.44.
+ */
+void RlcRateScaleMove::tune( void ) 
+{
+    double rate = numAccepted / double(numTried);
+    
+    if ( rate > 0.44 ) 
+    {
+        lambda *= (1.0 + ((rate-0.44)/0.56) );
+    }
+    else 
+    {
+        lambda /= (2.0 - rate/0.44 );
+    }
+}
+
+
+/**
  * Swap the current variable for a new one.
  *
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new variable.
  */
-void SwitchRateJumpMove::swapNode(DagNode *oldN, DagNode *newN) 
+void RlcRateScaleMove::swapNode(DagNode *oldN, DagNode *newN) 
 {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
     variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
-    
-    // we need to get the distribution object
-    valueDistribution = static_cast<BranchRateJumpProcess&>( variable->getDistribution() ).getValueDistribution();
-    
+        
 }
