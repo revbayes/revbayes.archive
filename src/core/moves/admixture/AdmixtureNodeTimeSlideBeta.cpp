@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureNodeTimeSlideBeta::AdmixtureNodeTimeSlideBeta(StochasticNode<AdmixtureTree> *v, int ni, double d, bool t, double w) : SimpleMove( v, w, t), nodeIndex(ni), delta(d), variable( v ) {
+AdmixtureNodeTimeSlideBeta::AdmixtureNodeTimeSlideBeta(StochasticNode<AdmixtureTree> *v, int ni, double d, bool t, double w) : SimpleMove( v, w, t), nodeIndex(ni), variable( v ), delta(d) {
     
 }
 

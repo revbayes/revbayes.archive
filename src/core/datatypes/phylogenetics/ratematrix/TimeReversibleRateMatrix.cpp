@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-TimeReversibleRateMatrix::TimeReversibleRateMatrix(size_t n) : RateMatrix(n), stationaryFreqs( std::vector<double>(numStates,1.0/n) ), exchangeabilityRates( std::vector<double>(numStates*(numStates-1)/2,1.0) ) {
+TimeReversibleRateMatrix::TimeReversibleRateMatrix(size_t n) : RateMatrix(n), exchangeabilityRates( std::vector<double>(numStates*(numStates-1)/2,1.0) ), stationaryFreqs( std::vector<double>(numStates,1.0/n) ) {
     
 }
 

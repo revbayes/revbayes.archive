@@ -20,7 +20,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureDivergenceSwap::AdmixtureDivergenceSwap(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : Move( v, w), variable( v ), rate(r), branchRates(br), residuals(res), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa), activeGen(ag) {
+AdmixtureDivergenceSwap::AdmixtureDivergenceSwap(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : Move( v, w), variable( v ), rate(r), residuals(res), branchRates(br), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa), activeGen(ag) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -69,8 +69,8 @@ double AdmixtureDivergenceSwap::performSimpleMove( void ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     AdmixtureTree& tau = variable->getValue();
-    AdmixtureNode* root = &tau.getRoot();
-    size_t numTaxa = tau.getNumberOfTips();
+    //AdmixtureNode* root = &tau.getRoot();
+    //size_t numTaxa = tau.getNumberOfTips();
     
     std::vector<AdmixtureNode*> admixtureParents = tau.getAdmixtureParents();
     size_t numAdmixtureEdges = admixtureParents.size();
@@ -92,8 +92,8 @@ double AdmixtureDivergenceSwap::performSimpleMove( void ) {
         failed = false;
 
         // proposal densities
-        double fwdProposal = 1.0;
-        double bwdProposal = 1.0;
+        //double fwdProposal = 1.0;
+        //double bwdProposal = 1.0;
         
         // sample a random admixture parent node
         size_t index = std::floor(numAdmixtureEdges * rng->uniform01());
@@ -135,7 +135,7 @@ double AdmixtureDivergenceSwap::performSimpleMove( void ) {
             minRegraftAge = storedRegraftChild->getAge();
         
         // sample new divergence age
-        double newRegraftAge = minRegraftAge + (maxRegraftAge - minRegraftAge) * rng->uniform01();
+        //double newRegraftAge = minRegraftAge + (maxRegraftAge - minRegraftAge) * rng->uniform01();
         
         // regraft
         tau.subtreePruneRegraft(storedPruneParent, storedPruneChild, storedRegraftChild, false);
@@ -364,7 +364,7 @@ void AdmixtureDivergenceSwap::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureDivergenceSwap::isActive(int g) const {
+bool AdmixtureDivergenceSwap::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

@@ -35,7 +35,7 @@ AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const Typ
     
 }
 
-AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<bool>& o) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), taxonNames( tn ), outgroup(o), numOutgroup(0) {
+AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const TypedDagNode<double> *d, const TypedDagNode<double> *t, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<bool>& o) : TypedDistribution<AdmixtureTree>( new AdmixtureTree() ), diversification( d ), turnover( t ), numTaxa( nTaxa ), numOutgroup(0), taxonNames( tn ), outgroup(o) {
   
     addParameter( diversification );
     addParameter( turnover );
@@ -59,7 +59,7 @@ AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const Typ
 
 
 
-AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &v) : TypedDistribution<AdmixtureTree>( v ), diversification( v.diversification ), turnover( v.turnover ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ), outgroup(v.outgroup), numOutgroup(v.numOutgroup) {
+AdmixtureConstantBirthDeathProcess::AdmixtureConstantBirthDeathProcess(const AdmixtureConstantBirthDeathProcess &v) : TypedDistribution<AdmixtureTree>( v ), diversification( v.diversification ), turnover( v.turnover ), numTaxa( v.numTaxa ), numOutgroup(v.numOutgroup), taxonNames( v.taxonNames ), outgroup(v.outgroup), logTreeTopologyProb( v.logTreeTopologyProb ) {
     // parameters are automatically copied
 }
 
@@ -72,7 +72,7 @@ AdmixtureConstantBirthDeathProcess::~AdmixtureConstantBirthDeathProcess() {
 
 void AdmixtureConstantBirthDeathProcess::attachTimes(std::vector<AdmixtureNode *> &tips, int index, const std::vector<double> &times, double T) {
     
-    if (index < numTaxa-1) {
+    if (index < (int)numTaxa-1) {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
@@ -152,7 +152,7 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     // retrieved the speciation times
     double lnPrior = 0.0;
     std::vector<double> times;
-    for (int i = numTaxa; i < value->getNumberOfNodes(); ++i) {
+    for (unsigned i = numTaxa; i < value->getNumberOfNodes(); ++i) {
         AdmixtureNode* p = &value->getNode(i);
         if (p->getNumberOfChildren() == 2)
             times.push_back(p->getTime());
@@ -189,7 +189,7 @@ double AdmixtureConstantBirthDeathProcess::computeLnProbability( void ) {
     lnProbTimes = numInitialSpecies * ( p1(0,T) - log(pSurvival(0,T,T)) );
     
     
-    for (int i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
+    for (unsigned i = (numInitialSpecies-1); i < numTaxa-1; ++i) {
 
         if ( lnProbTimes == RbConstants::Double::nan || lnProbTimes == RbConstants::Double::inf || lnProbTimes == RbConstants::Double::neginf) {
             return RbConstants::Double::nan;
@@ -310,7 +310,7 @@ void AdmixtureConstantBirthDeathProcess::simulateTree( void ) {
     
     // set tip names
     //outgroup = std::vector<bool>(numTaxa, false);
-    for (int i=0; i<numTaxa; i++) {
+    for (unsigned i=0; i<numTaxa; i++) {
         
         // std::cout << i << "\t";
         

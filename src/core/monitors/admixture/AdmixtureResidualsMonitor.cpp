@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< std::vector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,r), outStream(), residuals(r), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), taxonNames(tn)
+AdmixtureResidualsMonitor::AdmixtureResidualsMonitor(TypedDagNode< std::vector< double > >* r, std::vector<std::string> tn, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,r), outStream(), residuals(r), taxonNames(tn), filename( fname ), separator( del ), posterior( pp ),  prior( pr ), likelihood( l ), append(ap)
 {
 
 }

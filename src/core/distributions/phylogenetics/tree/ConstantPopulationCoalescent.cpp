@@ -15,8 +15,8 @@
 using namespace RevBayesCore;
 
 ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double> *N, unsigned int nTaxa, 
-                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( NULL ), 
-Ne( N ), numTaxa( nTaxa ), taxonNames( tn ), constraints( c ) {
+                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( NULL ), constraints( c ), 
+Ne( N ), numTaxa( nTaxa ), taxonNames( tn ) {
     
     addParameter( Ne );
     

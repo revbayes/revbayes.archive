@@ -53,11 +53,7 @@ class CharacterHistoryCtmcNodeUpdate : public Move {
         
     private:
         // parameters
-        double                          lambda;
-        size_t                          numCharacters;
-        size_t                          numStates;
-        size_t                          index;
-        
+               
         StochasticNode<BranchHistory>*  variable;
         StochasticNode<TimeTree>*       tree;
         std::vector< StochasticNode<BranchHistory>* > bh_vector;
@@ -65,6 +61,12 @@ class CharacterHistoryCtmcNodeUpdate : public Move {
         std::set<size_t>                storedIndexes;
         std::map<size_t,BranchHistory*>  storedValue;
         std::set<BranchHistory>         storedSet;
+    
+        double                          lambda;
+        size_t                          numCharacters;
+        size_t                          numStates;
+        size_t                          index;
+
     
     };
 

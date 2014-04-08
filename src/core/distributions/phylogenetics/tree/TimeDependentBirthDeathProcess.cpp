@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-TimeDependentBirthDeathProcess::TimeDependentBirthDeathProcess(const TypedDagNode<UnivariateFunction> *b, const TypedDagNode<UnivariateFunction> *d, const TypedDagNode<double> *r, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), lambda( b ), mu( d ), rho( r ), numTaxa( nTaxa ), taxonNames( tn ), init( false ), approximate( true ), constraints( c ) {
+TimeDependentBirthDeathProcess::TimeDependentBirthDeathProcess(const TypedDagNode<UnivariateFunction> *b, const TypedDagNode<UnivariateFunction> *d, const TypedDagNode<double> *r, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), constraints( c ), lambda( b ), mu( d ), rho( r ), numTaxa( nTaxa ), taxonNames( tn ), approximate( true ), init( false ) {
     
     // NULL settings
     diversificationRateIntegral = NULL;

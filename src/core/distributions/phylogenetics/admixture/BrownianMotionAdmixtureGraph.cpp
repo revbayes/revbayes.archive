@@ -39,31 +39,32 @@ using namespace RevBayesCore;
 
 BrownianMotionAdmixtureGraph::BrownianMotionAdmixtureGraph(const TypedDagNode<AdmixtureTree> *t, const TypedDagNode<double> *dr, const TypedDagNode<double> *ar, const TypedDagNode< std::vector< double > >* br, SnpData* s, bool uw, bool uc, bool ub, bool dnpdm, int bs, double ls) :
 TypedDistribution<ContinuousCharacterData >( new ContinuousCharacterData() ),
+snps(s),
 tau(t),
 diffusionRate(dr),
 admixtureRate(ar),
 branchRates(br),
-snps(s),
-numSites(s->getNumSnps()),
-numTaxa(s->getNumPopulations()),
-numNodes(2 * s->getNumPopulations() -1),
-blockSize(bs), // humans == 500
-//numBlocks(numSites/blockSize),
-//tipData(snps->getSnpFrequencies()),
 rbCovariance(s->getNumPopulations(),s->getNumPopulations()),
 rbCovarianceInverse(s->getNumPopulations(),s->getNumPopulations()),
 rbCovarianceEigensystem(&rbCovariance),
 rbMeanSampleCovariance(s->getNumPopulations(),s->getNumPopulations()),
 rbMeanSampleCovarianceEigensystem(&rbMeanSampleCovariance),
-lnDetX(0.0),
-lnZWishart(0.0),
 regularizationFactor(1e-9),
-cloned(false),
+numSites(s->getNumSnps()),
+numNodes(2 * s->getNumPopulations() -1),
+numTaxa(s->getNumPopulations()),
+blockSize(bs), // humans == 500
 useWishart(uw),
 useContrasts(uc),
 useBias(ub),
 discardNonPosDefMtx(dnpdm),
-likelihoodScaler(ls)
+likelihoodScaler(ls),
+lnZWishart(0.0),
+lnDetX(0.0),
+//numBlocks(numSites/blockSize),
+//tipData(snps->getSnpFrequencies()),
+cloned(false)
+
 {
     numBlocks = numSites / blockSize;
     
@@ -92,33 +93,33 @@ likelihoodScaler(ls)
 
 BrownianMotionAdmixtureGraph::BrownianMotionAdmixtureGraph(const BrownianMotionAdmixtureGraph &n) :
 TypedDistribution<ContinuousCharacterData > ( new ContinuousCharacterData() ),
+snps(n.snps),
+pathsToRoot(n.pathsToRoot),
+tipNodesByIndex(n.tipNodesByIndex),
 tau(n.tau),
 diffusionRate(n.diffusionRate),
 admixtureRate(n.admixtureRate),
 branchRates(n.branchRates),
-//residualsFn(n.residualsFn),
-snps(n.snps),
-numSites(n.numSites),
-numTaxa(n.numTaxa),
-numNodes(n.numNodes),
-blockSize(n.blockSize),
-numBlocks(n.numBlocks),
-tipNodesByIndex(n.tipNodesByIndex),
-pathsToRoot(n.pathsToRoot),
 rbCovariance(n.rbCovariance),
 rbCovarianceInverse(n.rbCovarianceInverse),
 rbCovarianceEigensystem(n.rbCovarianceEigensystem),
 rbMeanSampleCovariance(n.rbMeanSampleCovariance),
 rbMeanSampleCovarianceEigensystem(n.rbMeanSampleCovarianceEigensystem),
-lnDetX(n.lnDetX),
-lnZWishart(n.lnZWishart),
 regularizationFactor(n.regularizationFactor),
-cloned(n.cloned),
+//residualsFn(n.residualsFn),
+numSites(n.numSites),
+numNodes(n.numNodes),
+numTaxa(n.numTaxa),
+numBlocks(n.numBlocks),
+blockSize(n.blockSize),
 useWishart(n.useWishart),
 useContrasts(n.useContrasts),
 useBias(n.useBias),
 discardNonPosDefMtx(n.discardNonPosDefMtx),
-likelihoodScaler(n.likelihoodScaler)
+likelihoodScaler(n.likelihoodScaler),
+lnZWishart(n.lnZWishart),
+lnDetX(n.lnDetX),
+cloned(n.cloned)
 //usePopulationSizeLimitedWeights(n.usePopulationSizeLimitedWeights)
 {
     // calling this method again is required despite the constructor initializer -- interacts poorly w/ vector<MatrixReal>, I reckon
@@ -326,10 +327,10 @@ void BrownianMotionAdmixtureGraph::initializeData(void)
 //    for (int i = 0; i < numTaxa; i++)
 //        std::cout << "check match " << snps->getPopulationNames(i) << " " << tau->getValue().getNode(i).getName() << "\n";
     
-    for (int i = 0; i < blockSize*numBlocks; i++)
+    for (unsigned i = 0; i < blockSize*numBlocks; i++)
     {
         data[i].resize(numTaxa,0.0);
-        for (int j = 0; j < numTaxa; j++)
+        for (unsigned j = 0; j < numTaxa; j++)
         {
             double v = snps->getSnpFrequencies(j,i);
             data[i][j] = v;
@@ -351,14 +352,14 @@ void BrownianMotionAdmixtureGraph::initializeMissingDataCorrection(void)
         missingDataCorrection[i].resize(numTaxa,0.0);
     
     
-    for (int i = 0; i < blockSize*numBlocks; i++)
+    for (unsigned i = 0; i < blockSize*numBlocks; i++)
     {
-        for (int j = 0; j < numTaxa; j++)
+        for (unsigned j = 0; j < numTaxa; j++)
         {
             if (snps->getNumSamples(j,i) == 0)
                 continue;
             
-            for (int k = 0; k < numTaxa; k++)
+            for (unsigned k = 0; k < numTaxa; k++)
             {
                 if (snps->getNumSamples(k,i) != 0)
                     missingDataCorrection[j][k] += 1.0;
@@ -418,10 +419,10 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
     //std::cout << "sample mean bias:   ";
     // use sample size for N_i,j, and mean N_i,j for bias
     std::vector<double> meanNumSamples(numTaxa,0.0);
-    for (int i =0; i < numTaxa; i++)
+    for (unsigned i =0; i < numTaxa; i++)
     {
         int ns = 0;
-        for (int j = 0; j < blockSize*numBlocks; j++)
+        for (unsigned j = 0; j < blockSize*numBlocks; j++)
         {
             double mns = (double)snps->getNumSamples(i,j);
             if (mns > 0)
@@ -433,11 +434,11 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceBias(void)
         //std::cout << meanNumSamples[i] << "\n";
     }
     
-    for (int i = 0; i < numTaxa; i++)
+    for (unsigned i = 0; i < numTaxa; i++)
     {
         int ns = 0;
         // compute bias
-        for (int j = 0; j < blockSize*numBlocks; j++)
+        for (unsigned j = 0; j < blockSize*numBlocks; j++)
         {
             // exclude missing data
             if (snps->getNumSamples(i,j) > 0)
@@ -499,19 +500,19 @@ void BrownianMotionAdmixtureGraph::initializeSampleCovarianceEstimator(void)
     sampleCovarianceEstimator.clear();
     sampleCovarianceEstimator.resize(numBlocks);
     
-    for (size_t k = 0; k < numBlocks; k++)
+    for (unsigned k = 0; k < numBlocks; k++)
     {
         sampleCovarianceEstimator[k].resize(numTaxa);
         for (size_t m = 0; m < numTaxa; m++)
             sampleCovarianceEstimator[k][m].resize(numTaxa,0.0);
         
-        for (int m = 0; m < numTaxa; m++)
+        for (unsigned m = 0; m < numTaxa; m++)
         {
-            for (int n = m; n < numTaxa; n++)
+            for (unsigned n = m; n < numTaxa; n++)
             {
                 double v = 0.0;
                 int ns = 0;
-                for (int j = (int)(k * blockSize); j < (k+1) * blockSize; j++)
+                for (unsigned j = (k * blockSize); j < (k+1) * blockSize; j++)
                 {
                     if (snps->getNumSamples(n,j) > 0 && snps->getNumSamples(m,j) > 0)
                     {
@@ -893,7 +894,7 @@ double BrownianMotionAdmixtureGraph::computeLnProbWishart(void)
     evalx += eps;
     evalw += eps;
     
-    for (unsigned int i = 0; i < p; i++)
+    for (unsigned i = 0; i < (unsigned)p; i++)
     {
         if (evalx.at(i) < 0.0)
         {
@@ -1126,14 +1127,14 @@ void BrownianMotionAdmixtureGraph::svd(arma::mat& A, arma::mat& B, int idx)
 int BrownianMotionAdmixtureGraph::findFirstDuplicateIndex(arma::mat A)
 {
     double eps = 1e-5;
-    for (int i = 0; i < numTaxa-1; i++)
+    for (unsigned i = 0; i < numTaxa-1; i++)
     {
-        for (int j = i+1; j < numTaxa; j++)
+        for (unsigned j = i+1; j < numTaxa; j++)
         {
             bool duplicate = true;
             int ki = 0;
             int kj = 0;
-            for (int k = 0; k < numTaxa-1; k++)
+            for (unsigned k = 0; k < numTaxa-1; k++)
             {
                 if (k == i) ki = 1;
                 if (k == j) kj = 1;
@@ -1484,7 +1485,7 @@ void BrownianMotionAdmixtureGraph::updateNodeToIndexContrastData(void)
     // So, we only need to remap AdmixtureNode* -> int for nodes in (numNodes,t.getNumberOfNodes.size()-1).
     
     AdmixtureTree t = tau->getValue();
-    for (int i = (int)numNodes; i < t.getNumberOfNodes(); i++)
+    for (unsigned i = numNodes; i < t.getNumberOfNodes(); i++)
     {
         AdmixtureNode* p = &t.getNode(i);
         p->setIndex(i); // can I just do this? ...

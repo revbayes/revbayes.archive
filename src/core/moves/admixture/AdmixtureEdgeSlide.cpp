@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeSlide::AdmixtureEdgeSlide(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, int ag, bool asa, double l, double w) : Move( v, w), variable( v ), branchRates(br), lambda(l), changed(false), failed(false), allowSisterAdmixture(asa), activeGen(ag) {
+AdmixtureEdgeSlide::AdmixtureEdgeSlide(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, int ag, bool asa, double l, double w) : Move( v, w), variable( v ), branchRates(br), lambda(l), failed(false), changed(false), allowSisterAdmixture(asa), activeGen(ag) {
     
     for (size_t i = 0; i < branchRates.size(); i++)
         nodes.insert(branchRates[i]);
@@ -469,7 +469,7 @@ void AdmixtureEdgeSlide::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeSlide::isActive(int g) const {
+bool AdmixtureEdgeSlide::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

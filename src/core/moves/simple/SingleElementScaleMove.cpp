@@ -18,7 +18,7 @@ using namespace RevBayesCore;
  * \param[in]    t    Should this move be tuned.
  * \param[in]    w    Weight of the proposal.
  */
-SingleElementScaleMove::SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), changed(false), variable( n ), storedValue( 0.0 ), lambda( l ) {
+SingleElementScaleMove::SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), changed(false), lambda( l ), storedValue( 0.0 ), variable( n ) {
     
     for (std::vector< StochasticNode<double> *>::const_iterator it = n.begin(); it != n.end(); it++)
         nodes.insert( *it );

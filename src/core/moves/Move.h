@@ -72,9 +72,10 @@ namespace RevBayesCore {
         double                                                  weight;
     
         // Hidden member variables
-        bool                                                    autoTuning;
+       
         unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
         unsigned int                                            numTried;                                                                               //!< Number of times tried
+         bool                                                    autoTuning;
     
         std::set<DagNode*>                                      nodes;
         

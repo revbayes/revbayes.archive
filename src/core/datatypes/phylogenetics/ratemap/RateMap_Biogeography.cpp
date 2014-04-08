@@ -7,6 +7,7 @@
 //
 
 #include "RateMap_Biogeography.h"
+#include <cmath>
 
 using namespace RevBayesCore;
 
@@ -49,6 +50,41 @@ double RateMap_Biogeography::getSumOfRates(CharacterState* from) const
     return 1.0;
 }
 
+double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to) const
+{
+    double rate = 0.0;
+    int s = to->getState();
+    int n1 = numOn(from);
+    
+    // rate to extinction cfg is 0
+    if (n1 == 1 && s == 0)
+        return 0.0;
+    
+    // rate according to binary rate matrix Q
+    rate = gainLossRates[s];
+    
+    return rate;
+
+}
+
+double RateMap_Biogeography::getSumOfRates(std::vector<CharacterEvent*> from) const
+{
+    // get rate away away from currState
+    size_t n1 = numOn(from);
+    size_t n0 = numCharacters - n1;
+    
+    // forbid extinction events
+    if (n1 == 1)
+        n1 = 0;
+    
+    double r0 = n1 * gainLossRates[0];
+    double r1 = n0 * gainLossRates[1];
+    double sum = r0 + r1;
+    
+    return sum;
+}
+
+
 double RateMap_Biogeography::getTransitionProbability(CharacterState* from, CharacterState* to, double t) const
 {
     return 1.0;
@@ -57,6 +93,12 @@ double RateMap_Biogeography::getTransitionProbability(CharacterState* from, Char
 double RateMap_Biogeography::getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const
 {
     return 0.0;
+}
+
+double RateMap_Biogeography::getLnTransitionProbability(std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const
+{
+    double lnP = log(getRate(from, to)) - getSumOfRates(from) * t;
+    return lnP;
 }
 
 void RateMap_Biogeography::updateMap(void)
@@ -84,3 +126,13 @@ void RateMap_Biogeography::setDistancePower(double d)
 {
     distancePower = d;
 }
+
+size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
+{
+    size_t n = 0;
+    for (size_t i = 0; i < s.size(); i++)
+        if (s[i]->getState() == 1)
+            n++;
+    return n;
+}
+

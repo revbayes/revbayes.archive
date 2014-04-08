@@ -39,7 +39,7 @@ namespace RevBayesCore
         std::vector<std::vector<size_t> > geographicDistanceOrder;
         
         // helper variables
-        int numAreas;
+        unsigned numAreas;
         double threshhold;
         double distancePower;
         

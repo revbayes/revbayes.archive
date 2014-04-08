@@ -316,8 +316,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             
 //            double tr = transitionRate(currState, *it_h);
 //            double sr = sumOfRates(currState);
-            double tr = 1.0;
-            double sr = 2.0;
+            double tr = rm->getRate(currState, *it_h);
+            double sr = rm->getSumOfRates(currState);
             
             // lnL for stepwise events for p(x->y)
             lnL += log(tr) - sr * dt;
@@ -476,7 +476,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
         {
             if (nodes[i]->isTip())
             {
-                size_t idx = nodes[i]->getIndex();
                 DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData(i) );
                 std::vector<CharacterEvent*> tipState;
                 
@@ -521,6 +520,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
             TopologyNode& child = nodes[i]->getChild(j);
             samplePathStart(child, indexSet);
         }
+        
+        if (nodes[i]->isRoot())
+            samplePathStart(*nodes[i], indexSet);
     }
     
     // sample paths
@@ -546,12 +548,49 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     {
         if (node.isRoot() == false)
         {
-            true;
             this->histories[ node.getIndex() ].setParentCharacters( this->histories[ node.getParent().getIndex() ].getChildCharacters() );
         }
         else
         {
-            ; // sample root tail state
+            // get model settings
+            size_t nodeIdx = node.getIndex();
+            
+            const RateMatrix* rm;
+            if (branchHeterogeneousSubstitutionMatrices)
+                rm = &heterogeneousRateMatrices->getValue()[nodeIdx];
+            else
+                rm = &homogeneousRateMatrix->getValue();
+            double bs = node.getAge() * 2;
+            
+            // compute transition probabilities
+            double expPart = exp( -((*rm)[1][0] + (*rm)[0][1]) * bs);
+            double p = (*rm)[1][0] / ((*rm)[1][0] + (*rm)[0][1]);
+            double q = 1.0 - p;
+            double tp[2][2] = { { p + q * expPart, q - q * expPart }, { p - p * expPart, q + p * expPart } };
+            
+            std::vector<CharacterEvent*> parentState = this->histories[nodeIdx].getParentCharacters();
+            std::vector<CharacterEvent*> childState = this->histories[nodeIdx].getChildCharacters();
+            for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+            {
+                unsigned int decS = childState[*it]->getState();
+                
+                double u = GLOBAL_RNG->uniform01();
+                double g0 = tp[0][decS];
+                double g1 = tp[1][decS];
+                
+                unsigned int s = 0;
+                if (u < g1 / (g0 + g1))
+                    s = 1;
+                
+                parentState[*it] = new CharacterEvent(*it, s, 1.0);
+            }
+            
+            // forbid extinction
+            if (numOn(parentState) == 0)
+                samplePathStart(node, indexSet);
+            else
+                this->histories[nodeIdx].setParentCharacters(parentState);
+
         }
     }
     
@@ -765,7 +804,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     //std::cout << bt << "\n";
     //std::cout << bt * (double)value->getHistory().size() << "\n";
     
-    ;
+    return 0.0;
 }
 
 template<class charType, class treeType>

@@ -127,7 +127,7 @@ bool TestAdmixtureGraph::run(void) {
     // read in data
     std::string fn = snpFilepath + snpFilename;
     int snpThinBy = 100;
-    SnpData* snps = PopulationDataReader().readSnpData(fn,1);
+    SnpData* snps = PopulationDataReader().readSnpData(fn,snpThinBy);
     
     // read in tree
     std::vector<AdmixtureTree*> trees;
@@ -253,7 +253,7 @@ bool TestAdmixtureGraph::run(void) {
     ConstantNode<double>* branchRateC = new ConstantNode<double>( "branchRateC", new double(0));
     ConstantNode<double>* branchRateD = new ConstantNode<double>( "branchRateD", new double(.01));
     //ConstantNode<double>* branchRateE = new ConstantNode<double>( "branchRateE", new double(10));
-	for( int i=0; i<numBranches; i++){
+	for( size_t i=0; i<numBranches; i++){
 
         std::ostringstream br_name;
         br_name << "br_" << i;
@@ -327,7 +327,7 @@ bool TestAdmixtureGraph::run(void) {
     if (useBranchRates)
     {
         // branch rate multipliers
-        for( int i=0; i < numBranches; i++)
+        for( size_t i=0; i < numBranches; i++)
         {
             moves.push_back( new ScaleMove(branchRates_nonConst[i], 0.1, false, 1.0) );
             moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, false, 0.5) );
@@ -405,7 +405,7 @@ bool TestAdmixtureGraph::run(void) {
     
     if (useBranchRates)
     {
-        for( int i=0; i<numBranches; i++){
+        for( size_t i=0; i<numBranches; i++){
             monitoredNodes.push_back( branchRates_nonConst[i] );
         }
     }

@@ -43,8 +43,8 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(
 UniformTimeTreeDistribution::UniformTimeTreeDistribution(const UniformTimeTreeDistribution &x)
     :   TypedDistribution<TimeTree>( x ),
         originTime( x.originTime ),
-        taxonNames( x.taxonNames ),
-        numTaxa( x.numTaxa )
+        numTaxa( x.numTaxa ),
+        taxonNames( x.taxonNames )
 {
     // parameters are automatically copied
 }
