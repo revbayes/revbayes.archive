@@ -39,7 +39,7 @@ TransitionProbabilityMatrix::TransitionProbabilityMatrix(size_t n) : nElements( 
 }
 
 /** Construct rate matrix with n states */
-TransitionProbabilityMatrix::TransitionProbabilityMatrix( const TransitionProbabilityMatrix &tpm ) : nElements( tpm.nElements ), numStates( tpm.numStates ) {
+TransitionProbabilityMatrix::TransitionProbabilityMatrix( const TransitionProbabilityMatrix &tpm ) : numStates( tpm.numStates ), nElements( tpm.nElements ) {
     
     theMatrix = new double[ nElements ];
     for ( size_t i = 0; i < nElements; ++i) 

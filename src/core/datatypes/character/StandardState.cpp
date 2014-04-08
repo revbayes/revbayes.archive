@@ -20,26 +20,26 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-StandardState::StandardState(void) : DiscreteCharacterState(), state(0x1), stateIndex(0xFFFFF), labels( "01" ) {
+StandardState::StandardState(void) : DiscreteCharacterState(), labels( "01" ), state(0x1), stateIndex(0xFFFFF) {
     
 }
 
 
 /** Default constructor */
-StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), state(), stateIndex(), labels( s ) {
+StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), labels( s ), state(), stateIndex() {
     
 }
 
-StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), state(), stateIndex(), labels( l ) {
+StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state(), stateIndex() {
     setState(s);
 }
 
-StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), state(), stateIndex(), labels( l ) {
+StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state(), stateIndex() {
     setState(s);
 }
 
 /** Copy constructor */
-StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), state( s.state ), stateIndex( s.stateIndex ), labels( s.labels ) {
+StandardState::StandardState(const StandardState& s) : DiscreteCharacterState(), labels( s.labels ), state( s.state ), stateIndex( s.stateIndex ) {
     
 }
 
@@ -201,7 +201,7 @@ void StandardState::setGapState(bool tf) {
 void StandardState::setState(size_t pos, bool val) {
     
     state &= val << pos;
-    stateIndex = pos;
+    stateIndex = (unsigned)pos;
 }
 
 
@@ -209,7 +209,7 @@ void StandardState::setState(char symbol) {
     
     size_t pos = labels.find(symbol);
     state = (unsigned int)( 1 ) << pos;
-    stateIndex = pos;
+    stateIndex = (unsigned)pos;
 }
 
 void StandardState::setState(std::string s) {
@@ -220,7 +220,7 @@ void StandardState::setState(std::string s) {
     {
         size_t pos = labels.find(tmp[i]);
         state = (unsigned int)( 1 ) << pos;
-        stateIndex = pos;
+        stateIndex = (unsigned)pos;
     }
 }
 

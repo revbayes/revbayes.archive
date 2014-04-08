@@ -54,8 +54,8 @@ namespace RevBayesCore {
         void setOutgroup(std::vector<bool> a)                               { outgroup = a; }
         
     private:
-        int numSnps;
-        int numPopulations;
+        unsigned numSnps;
+        unsigned numPopulations;
         std::vector<std::string> populationNames;
         std::vector<int> numChromosomes; // max N per population
         std::vector<std::vector<double> > snpFrequencies;

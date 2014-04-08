@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeAddResidualWeights::AdmixtureEdgeAddResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), maxEvents(me), allowSisterAdmixture(asa), delta(d) {
+AdmixtureEdgeAddResidualWeights::AdmixtureEdgeAddResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), allowSisterAdmixture(asa), maxEvents(me), delta(d) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -274,7 +274,7 @@ double AdmixtureEdgeAddResidualWeights::performSimpleMove( void ) {
     
     // update no of adm evts
     numEvents = (int)tau.getNumberOfAdmixtureChildren();
-    admixtureCount->setValue(new int(numEvents));
+    admixtureCount->setValue(numEvents);
     
     // bombs away
     double lnP = 0.0;
@@ -345,7 +345,7 @@ void AdmixtureEdgeAddResidualWeights::rejectSimpleMove( void ) {
         delete storedAdmixtureParent;
         delete storedAdmixtureChild;
         
-        admixtureCount->setValue(new int(numEvents-1));
+        admixtureCount->setValue(numEvents-1);
     
     }
     
@@ -409,7 +409,7 @@ void AdmixtureEdgeAddResidualWeights::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeAddResidualWeights::isActive(int g) const {
+bool AdmixtureEdgeAddResidualWeights::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

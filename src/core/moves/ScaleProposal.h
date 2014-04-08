@@ -40,10 +40,10 @@ namespace RevBayesCore {
         
     private:
         // parameters
-        double                          lambda;                                                                             //!< The scaling parameter of the Proposal  
         
         StochasticNode<double>*         variable;                                                                           //!< The variable the Proposal is working on
         double                          storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
+        double                          lambda;                                                                             //!< The scaling parameter of the Proposal
         std::vector<DagNode*>           nodes;
         double                          proposedValue;                                                                      //!< The value we propose.
     };

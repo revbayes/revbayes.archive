@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureSubtreePruneRegraft::AdmixtureSubtreePruneRegraft(StochasticNode<AdmixtureTree> *v, double d, double w) : SimpleMove( v, w), delta(d), variable( v ) {
+AdmixtureSubtreePruneRegraft::AdmixtureSubtreePruneRegraft(StochasticNode<AdmixtureTree> *v, double d, double w) : SimpleMove( v, w), variable( v ), delta(d) {
     
 }
 

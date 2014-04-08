@@ -216,7 +216,7 @@ bool Test::performTests(void) {
     try {
         TestMultispeciesCoalescentWithSequences testCoal = TestMultispeciesCoalescentWithSequences("../../examples/data/primates.tree");
 //        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
-       testCoal.run();
+       //testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

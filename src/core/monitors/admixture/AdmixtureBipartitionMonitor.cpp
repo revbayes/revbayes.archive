@@ -19,7 +19,7 @@ using namespace RevBayesCore;
 /* Constructor */
 //AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
 
-AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode<double>* dr, TypedDagNode< std::vector< double > >* br, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,t), outStream(), tree( t ), branchRates(br), driftRate(dr), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0), chainIdx(ci), chainHeat(ch) {
+AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode<double>* dr, TypedDagNode< std::vector< double > >* br, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,t), outStream(), tree( t ), branchRates(br), driftRate(dr), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch), numTaxa(0), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar) {
     
     nodes.push_back(branchRates);
     nodes.push_back(driftRate);
@@ -28,7 +28,7 @@ AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(TypedDagNode<AdmixtureT
     initializeTaxonBipartition();
 }
 
-AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(const AdmixtureBipartitionMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), driftRate(m.driftRate), branchRates(m.branchRates), nodeVariables( m.nodeVariables ), numSamples(m.numSamples), numTreeResults(m.numTreeResults), numAdmixtureResults(m.numAdmixtureResults), numTaxa(m.numTaxa) {
+AdmixtureBipartitionMonitor::AdmixtureBipartitionMonitor(const AdmixtureBipartitionMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates(m.branchRates), driftRate(m.driftRate), nodeVariables( m.nodeVariables ), numTaxa(m.numTaxa), numSamples(m.numSamples), numTreeResults(m.numTreeResults), numAdmixtureResults(m.numAdmixtureResults) {
     
     filename    = m.filename;
     separator   = m.separator;
@@ -59,7 +59,7 @@ void AdmixtureBipartitionMonitor::initializeTaxonBipartition(void)
 
 void AdmixtureBipartitionMonitor::flipTaxonBipartitionToMinor(std::vector<bool>& b)
 {
-    int m = 0;
+    unsigned m = 0;
     for (size_t i = 0; i < b.size(); i++)
         if (b[i])
             m++;
@@ -85,7 +85,7 @@ std::string AdmixtureBipartitionMonitor::buildBipartitionString(void)
     // get tree object
     AdmixtureTree* tau = &tree->getValue();
     std::vector<AdmixtureNode*> nodes;
-    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+    for (unsigned i = 0; i < tree->getValue().getNumberOfNodes(); i++)
         nodes.push_back(&tau->getNode(i));
     
    // bool firstRootHit = false; // necessary?
@@ -299,7 +299,7 @@ void AdmixtureBipartitionMonitor::printHeader() {
     // get tree object names
     AdmixtureTree* tau = &tree->getValue();
     std::vector<AdmixtureNode*> nodes;
-    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+    for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
         nodes.push_back(&tau->getNode(i));
     
     for (size_t i = 0; i < nodes.size(); i++)

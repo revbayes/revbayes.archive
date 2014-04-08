@@ -18,7 +18,7 @@ using namespace RevBayesCore;
 
 //BranchHistory::BranchHistory(void) : numCharacters(0), numStates(0), isTip(false), isRoot(false) { }
 
-BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), index(idx), clampChildCharacters(false)
+BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(nc), numStates(ns), index(idx), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), clampChildCharacters(false)
 {
     parentCharacters.resize(numCharacters);
     childCharacters.resize(numCharacters);
@@ -30,7 +30,7 @@ BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx) : numCharacters(n
     }
 }
 
-BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc) : numCharacters(nc), numStates(ns), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true), index(idx), clampChildCharacters(false), sampleChildCharacters(sc)
+BranchHistory::BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc) : numCharacters(nc), numStates(ns), index(idx), redrawChildCharacters(true), redrawParentCharacters(true), redrawHistory(true),  clampChildCharacters(false), sampleChildCharacters(sc)
 {
     parentCharacters.resize(numCharacters);
     childCharacters.resize(numCharacters);

@@ -14,20 +14,20 @@
 
 using namespace RevBayesCore;
 
-GeographicDistanceRateModifier::GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp, double th, std::string dt) : geographicCoordinates(gc), threshhold(th), numAreas((int)gc.size()), distancePower(dp), distanceType(dt)
+GeographicDistanceRateModifier::GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp, double th, std::string dt) : distanceType(dt), geographicCoordinates(gc), numAreas((int)gc.size()), threshhold(th), distancePower(dp)
 {
     
     geographicDistances.resize(numAreas);
     geographicDistancePowers.resize(numAreas);
     
-    for (int i = 0; i < numAreas; i++)
+    for (unsigned i = 0; i < numAreas; i++)
     {
         geographicDistances[i].resize(numAreas,0.0);
         geographicDistancePowers[i].resize(numAreas,0.0);
     }
-    for (int i = 0; i < numAreas; i++)
+    for (unsigned i = 0; i < numAreas; i++)
     {
-        for (int j = i; j < numAreas; j++)
+        for (unsigned j = i; j < numAreas; j++)
         {
             geographicDistances[i][j] = computePairwiseDistances(i,j);
             geographicDistances[j][i] = geographicDistances[i][j];
@@ -48,7 +48,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     // determine which areas are present and which are absent
     std::set<CharacterEvent*> present;
     std::set<CharacterEvent*> absent;
-    for (size_t i = 0; i < numAreas; i++)
+    for (unsigned i = 0; i < numAreas; i++)
     {
         if (currState[i]->getState() == 0)
             absent.insert(currState[i]);

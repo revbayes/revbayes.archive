@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureSubtreePruneRegraftAndRateShift::AdmixtureSubtreePruneRegraftAndRateShift(std::vector<DagNode*> v, int ni, double d, double w) : CompoundMove(v, w), delta(d), nodeIdx(ni) {
+AdmixtureSubtreePruneRegraftAndRateShift::AdmixtureSubtreePruneRegraftAndRateShift(std::vector<DagNode*> v, int ni, double d, double w) : CompoundMove(v, w), nodeIdx(ni), delta(d) {
     tree = static_cast<StochasticNode<AdmixtureTree>* > (v[0]);
     rate = static_cast<ContinuousStochasticNode* > (v[1]);
 
