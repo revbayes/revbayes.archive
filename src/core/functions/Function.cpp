@@ -1,18 +1,13 @@
-//
-//  Function.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 9/4/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DagNode.h"
 #include "Function.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-Function::Function(void)  : parameters( std::set<const DagNode*>() ) {
+
+
+Function::Function(void)  : parameters() 
+{
     
 }
 

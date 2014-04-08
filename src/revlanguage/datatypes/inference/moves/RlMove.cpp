@@ -84,10 +84,12 @@ const MethodTable& Move::getMethods(void) const {
 /** Set a member variable */
 void Move::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "weight" ) {
+    if ( name == "weight" ) 
+    {
         weight = var;
     }
-    else {
+    else 
+    {
         RbLanguageObject::setConstMemberVariable(name, var);
     }
 }

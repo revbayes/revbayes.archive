@@ -101,6 +101,7 @@
 
 /* Moves on real valued vectors */
 #include "RlSingleElementScale.h"
+#include "RlSwitchRateJumpMove.h"
 #include "RlVectorSingleElementScaleMove.h"
 #include "RlVectorSingleElementSlidingMove.h"
 #include "RlVectorScale.h"
@@ -312,6 +313,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         /* Moves on vectors of real values */
         addTypeWithConstructor("mSingleElementScale",   new SingleElementScale() );
+        addTypeWithConstructor("mSwitchRateJump",       new SwitchRateJumpMove() );
         addTypeWithConstructor("mVectorSingleElementScale",   new VectorSingleElementScaleMove() );
         addTypeWithConstructor("mVectorScale",          new VectorScale() );
         

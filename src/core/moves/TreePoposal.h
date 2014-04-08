@@ -1,27 +1,27 @@
-#ifndef Proposal_H
-#define Proposal_H
+#ifndef TreeProposal_H
+#define TreeProposal_H
 
-#include "Cloneable.h"
+#include "Proposal.h"
 
 #include <vector>
 
 namespace RevBayesCore {
     
     class DagNode;
+    class TopologyNode;
     
     /**
-     * Base class for all proposal distribution. 
+     * Base class for all tree proposals. 
      *
-     * The base class of all moves only provides the interface for the call to propose a new move.
-     * Here the perform methods actually does the accept/reject step.
-     * All specifics are implemented in the derived classes.
+     * The base class of all tree proposal only provides and interface so that moves and other proposals
+     * can be used joint with any tree proposal.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-03-27, version 1.0
+     * @since 2014-04-08, version 1.0
      *
      */
-    class Proposal : public Cloneable {
+    class TreeProposal : public Proposal {
         
     public:
         virtual                                                ~Proposal(void) {}                                                                       //!< Destructor
@@ -29,6 +29,7 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual Proposal*                                       clone(void) const = 0;                                                                  //!< Make a deep copy
         virtual double                                          doProposal(void) = 0;                                                                   //!< Actually do the proposal.
+        virtual std::vector<TopologyNode*>                      getChosenTopologyNodes(void) const = 0;                                                 //!< Get the vector of chosen topology nodes that will be pruned.
         virtual const std::vector<DagNode*>&                    getNodes(void) const = 0;                                                               //!< Get the vector of nodes for which the proposal is drawing new values.
         virtual const std::string&                              getProposalName(void) const = 0;                                                        //!< Get the name of this proposal used for printing out info.
         virtual void                                            prepareProposal(void) = 0;                                                              //!< Propose a new state
