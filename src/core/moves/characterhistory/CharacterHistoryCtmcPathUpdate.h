@@ -40,15 +40,17 @@ namespace RevBayesCore {
         void                            tune(void);
         
     private:
-        // parameters
-        double                          lambda;
-        size_t                          numCharacters;
-        size_t                          numStates;
         
         StochasticNode<BranchHistory>*  variable;
         BranchHistory                   storedValue;
         
         std::set<size_t>                storedIndexes;
+        
+        // parameters
+        double                          lambda;
+        size_t                          numCharacters;
+        size_t                          numStates;
+
         
     };
     

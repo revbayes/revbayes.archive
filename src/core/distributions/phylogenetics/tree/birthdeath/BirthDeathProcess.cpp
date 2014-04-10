@@ -30,13 +30,13 @@ using namespace RevBayesCore;
 BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *r, 
                                      const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
                                      const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
-        origin( o ), 
-        rho( r ), 
-        samplingStrategy( ss ), 
-        condition( cdt ), 
-        numTaxa( nTaxa ), 
-        taxonNames( tn ), 
-        constraints( c ) 
+        condition( cdt ),
+        constraints( c ),
+        origin( o ),
+        rho( r ),
+        numTaxa( nTaxa ),
+        samplingStrategy( ss ),
+        taxonNames( tn )
 {
     
     addParameter( origin );

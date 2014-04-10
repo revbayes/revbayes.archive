@@ -77,7 +77,7 @@ template <class valueType>
 RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(TypedDistribution<valueType> *g, const TypedDagNode< double > *cp,
 																							  int n) :
 																							  TypedDistribution< std::vector<valueType> >( new std::vector<valueType>() ), baseDistribution( g ), concentration( cp ),
-																							  numElements( n ), numTables( 0 ), concentrationHasChanged( true ), denominator( 0.0 ) {
+																							  numElements( n ), numTables( 0 ), denominator( 0.0 ), concentrationHasChanged( true ) {
     
     this->addParameter( concentration );
 //    this->addParameter( baseDistribution );
@@ -95,7 +95,7 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
 template <class valueType>
 RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPriorDistribution(const DirichletProcessPriorDistribution<valueType> &n) : TypedDistribution<std::vector<valueType> >( n ),
 																								baseDistribution( n.baseDistribution ), concentration( n.concentration ), 
-																								numElements( n.numElements ), numTables( n.numTables ), concentrationHasChanged( true ), denominator( 0.0 ) {
+																								numElements( n.numElements ), numTables( n.numTables ), denominator( 0.0 ), concentrationHasChanged( true ) {
     // parameters are added automatically
     delete this->value;
     this->value = simulate();
@@ -136,15 +136,20 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     // lnP = K * ln( alpha ) + sum^K_{i=1}( ln( factorial( n_i - 1 ) ) ) - sum^N_{i=1} ln( alpha + i - 1 )
     
     // reset the lnProb and set it to log( alpha^K )
-    double lnProb = log( concentration->getValue() ) * numTables;
+	
+	int nt = numTables;
+	int ne = numElements;
+    double lnProb = log( concentration->getValue() ) * nt;
     
     if ( concentrationHasChanged == true ){
         computeDenominator();
     }
 	
-	lnProb += log(RbMath::stirlingFirst(numElements, numTables));
+//	int sn = RbMath::stirlingFirst(ne, nt);
+	
+//	lnProb += log(sn);
     
-    for (int i = 0; i < numTables; ++i){
+    for (int i = 0; i < nt; ++i){
 		// compute the probability of having n_i customers per at table i
 		lnProb += RbMath::lnFactorial( numCustomerPerTable[i] - 1 );
         
@@ -198,7 +203,7 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 		else{
 			double sum = 0.0;
 			double m = rng->uniform01();
-			for(int j=0; j<numCustomerPerTable.size(); j++){
+			for(unsigned j=0; j<numCustomerPerTable.size(); j++){
 				sum += (double)numCustomerPerTable[j] / i;
 				if(m < sum){
 					numCustomerPerTable[j] += 1;
@@ -209,6 +214,7 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 			}
 		}		
 	}
+	createRestaurantVectors();
 	return rv ;
 }
 
@@ -264,7 +270,7 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
 			numCustomerPerTable.push_back(1);
 			numTables++;
 		}
-	allocationVector[i] = (int)tID;
+		allocationVector[i] = (int)tID;
 	}
 }
 

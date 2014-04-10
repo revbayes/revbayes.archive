@@ -72,7 +72,7 @@ bool TestBirthDeathModelImplementations::run( void ) {
     
     
     // then the parameters
-    double MAX = trees[0]->getRoot().getAge();
+    //double MAX = trees[0]->getRoot().getAge();
     std::vector<double> r;
     r.push_back(2.0);
 //    ConstantNode<UnivariateFunction> *lambda = new ConstantNode<UnivariateFunction>("lambda(t)", new ConstantStepFunction( new ConstantNode<double>("", new double(0.0) ), r, 0, MAX ) );

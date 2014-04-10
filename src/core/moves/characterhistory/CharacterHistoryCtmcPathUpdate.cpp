@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-CharacterHistoryCtmcPathUpdate::CharacterHistoryCtmcPathUpdate( StochasticNode<BranchHistory> *n, double l, bool tuning, double w) : SimpleMove(n, w, tuning), variable(n), lambda(l), storedValue(0,0,0), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates())
+CharacterHistoryCtmcPathUpdate::CharacterHistoryCtmcPathUpdate( StochasticNode<BranchHistory> *n, double l, bool tuning, double w) : SimpleMove(n, w, tuning), variable(n), storedValue(0,0,0), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates())
 {
     ; // storedValue(n->getValue().getNumCharacters(),n->getValue().getNumStates(), n->getValue().getIndex()),
 }

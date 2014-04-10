@@ -23,7 +23,7 @@ AreaSizeRateModifier::AreaSizeRateModifier(std::vector<double> asz, unsigned int
     update();
 }
 
-AreaSizeRateModifier::AreaSizeRateModifier(const AreaSizeRateModifier& m) : areaSizes(m.areaSizes), stateModified(m.stateModified), numAreas(m.numAreas), areaPowers(m.areaPowers)
+AreaSizeRateModifier::AreaSizeRateModifier(const AreaSizeRateModifier& m) : areaSizes(m.areaSizes), areaPowers(m.areaPowers), stateModified(m.stateModified), numAreas(m.numAreas)
 {
     ;
 }

@@ -50,7 +50,7 @@ namespace RevBayesCore {
         // Basic utility functions
         AdmixtureEdgeMultiRemove*       clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
-        bool                            isActive(int g) const;
+        bool                            isActive(unsigned long g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -71,15 +71,15 @@ namespace RevBayesCore {
         StochasticNode<double>*         rate;
         StochasticNode<int>*            admixtureCount;
         DeterministicNode<std::vector<double> >* residuals;
-        //ConstantNode<int>*              delayTimer;
+
         bool changed;
-        int activeGen;
-        int numEvents;
+        bool failed;
+        unsigned long activeGen;
         double delta;
+        size_t numEvents;
         double pRemove;
         
         // stored objects to undo proposal
-        bool                            failed;
         AdmixtureNode*                  storedAdmixtureChild;
         AdmixtureNode*                  storedAdmixtureParent;
         AdmixtureNode*                  storedAdmixtureChildChild;

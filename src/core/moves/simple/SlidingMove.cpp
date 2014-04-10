@@ -27,7 +27,7 @@
 using namespace RevBayesCore;
 
 /* Constructor with value */
-SlidingMove::SlidingMove( ContinuousStochasticNode *n, double d, bool t, double w ) : SimpleMove( n, w, t ), variable( n ), delta( d ), storedValue( 0.0 ) {
+SlidingMove::SlidingMove( ContinuousStochasticNode *n, double d, bool t, double w ) : SimpleMove( n, w, t ), delta( d ), variable( n ),storedValue( 0.0 ) {
     
     // we need to allocate memory for the stored value
 }

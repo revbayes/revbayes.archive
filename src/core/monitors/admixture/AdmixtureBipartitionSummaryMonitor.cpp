@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar), numTaxa(0) {
+AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), numTaxa(0), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar) {
     
     nodes.push_back(branchRates);
     nodes.push_back(delayTimer); // ????
@@ -24,7 +24,7 @@ AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(TypedDagN
     initializeTaxonBipartition();
 }
 
-AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(const AdmixtureBipartitionSummaryMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates( m.branchRates), delayTimer(m.delayTimer), nodeVariables( m.nodeVariables ), numSamples(m.numSamples), numTreeResults(m.numTreeResults), numAdmixtureResults(m.numAdmixtureResults), numTaxa(m.numTaxa) {
+AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(const AdmixtureBipartitionSummaryMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchRates( m.branchRates), delayTimer(m.delayTimer), nodeVariables( m.nodeVariables ), numTaxa(m.numTaxa), numSamples(m.numSamples), numTreeResults(m.numTreeResults), numAdmixtureResults(m.numAdmixtureResults) {
     
     filename    = m.filename;
     separator   = m.separator;
@@ -53,7 +53,7 @@ void AdmixtureBipartitionSummaryMonitor::initializeTaxonBipartition(void)
 
 void AdmixtureBipartitionSummaryMonitor::flipTaxonBipartitionToMinor(std::vector<bool>& b)
 {
-    int m = 0;
+    unsigned m = 0;
     for (size_t i = 0; i < b.size(); i++)
         if (b[i])
             m++;
@@ -80,7 +80,7 @@ void AdmixtureBipartitionSummaryMonitor::updateBipartitions(void)
         // get tree object
         AdmixtureTree* tau = &tree->getValue();
         std::vector<AdmixtureNode*> nodes;
-        for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+        for (unsigned i = 0; i < tree->getValue().getNumberOfNodes(); i++)
             nodes.push_back(&tau->getNode(i));
         
         // map key iterator used for find()

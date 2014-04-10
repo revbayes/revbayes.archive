@@ -36,6 +36,7 @@ namespace RevBayesCore {
         // public member functions
         BranchRateJumpProcess*                                  clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
+        TypedDistribution<double>*                              getValueDistribution(void) const;                                                       //!< Get the distribution of the values when a jump occurred.
         void                                                    redrawValue(void);
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
                 

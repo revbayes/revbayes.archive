@@ -176,7 +176,7 @@ double AdmixtureEdgeRemoveResidualWeights::performSimpleMove( void ) {
         bwdProposal *= (residualWeights_b[k_b] / sumResidualWeights_b);
         
         // prior & propsal admixture weights cancel...
-        double lnW = 0.0;
+        //double lnW = 0.0;
         
         // prior * proposal ratio
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
@@ -276,7 +276,7 @@ void AdmixtureEdgeRemoveResidualWeights::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeRemoveResidualWeights::isActive(int g) const {
+bool AdmixtureEdgeRemoveResidualWeights::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

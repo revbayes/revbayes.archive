@@ -51,8 +51,8 @@ namespace RevBayesCore {
         
         StochasticNode<UnivariateFunction>*     variable;
         int                                     index;
-        double                                  lambda;
         int                                     nBlocks;
+        double                                  lambda;
         std::vector<double>                     storedValue;
         
     };

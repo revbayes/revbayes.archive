@@ -13,7 +13,7 @@ GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode<std::vector<doub
 }
 
 
-GtrRateMatrixFunction::GtrRateMatrixFunction(const GtrRateMatrixFunction &n) : TypedFunction<RateMatrix>( n ), baseFrequencies( n.baseFrequencies ), exchangeabilityRates( n.exchangeabilityRates ) {
+GtrRateMatrixFunction::GtrRateMatrixFunction(const GtrRateMatrixFunction &n) : TypedFunction<RateMatrix>( n ), exchangeabilityRates( n.exchangeabilityRates ), baseFrequencies( n.baseFrequencies ) {
     // no need to add parameters, happens automatically
 }
 

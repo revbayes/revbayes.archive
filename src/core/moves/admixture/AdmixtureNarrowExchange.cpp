@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureNarrowExchange::AdmixtureNarrowExchange(StochasticNode<AdmixtureTree> *v, double d, double w) : SimpleMove( v, w), delta(d), variable( v ) {
+AdmixtureNarrowExchange::AdmixtureNarrowExchange(StochasticNode<AdmixtureTree> *v, double d, double w) : SimpleMove( v, w), variable( v ), delta(d) {
     
 }
 

@@ -45,12 +45,12 @@ namespace RevBayesCore {
             }
             template <class T> void		randomlySelectFromVectorWithoutReplacement(std::vector<T>& sourceV, std::vector<T>& destV, size_t k, RandomNumberGenerator& rng) {
             
-                if ( (int)sourceV.size() < k )
+                if ( (size_t)sourceV.size() < k )
                     throw (RbException("Attempting to sample too many elements from source vector"));
                 destV.clear();
                 std::vector<T> tmpV = sourceV;
                 size_t n = tmpV.size();
-                for (int i=0; i<k; i++) {
+                for (size_t i=0; i<k; i++) {
                     int whichElement = (int)(rng.uniform01()*(n-i));
                     destV.push_back( tmpV[whichElement] );
                     tmpV[whichElement] = tmpV[n-i-1];

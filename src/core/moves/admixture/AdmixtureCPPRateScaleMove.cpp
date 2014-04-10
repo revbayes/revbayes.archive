@@ -20,7 +20,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureCPPRateScaleMove::AdmixtureCPPRateScaleMove( StochasticNode<AdmixtureTree>* n, StochasticNode<double> *r, double hp, double l, bool t, double w ) : SimpleMove( r, w, t ), variable( n ), rate( r ), storedRate( 0.0 ), lambda( l ), cpp_prior(hp) {
+AdmixtureCPPRateScaleMove::AdmixtureCPPRateScaleMove( StochasticNode<AdmixtureTree>* n, StochasticNode<double> *r, double hp, double l, bool t, double w ) : SimpleMove( r, w, t ), lambda( l ), cpp_prior(hp), variable( n ), rate( r ), storedRate( 0.0 ) {
     // we need to allocate memory for the stored value
     
     nodes.insert(variable);

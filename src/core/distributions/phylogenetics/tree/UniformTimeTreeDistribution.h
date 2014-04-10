@@ -45,7 +45,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                         originTime;
-        int                                                 numTaxa;
+        size_t                                              numTaxa;
         std::vector<std::string>                            taxonNames;
     };
     

@@ -40,8 +40,8 @@ namespace RevBayesCore {
         void                            rescaleSubtree(AdmixtureNode *n, double factor);
         
         // member variables
+        StochasticNode<AdmixtureTree>*  variable;
         double                          delta;
-        StochasticNode<AdmixtureTree>*       variable;
         
         // stored objects to undo proposal
         double                          storedRescale_0;

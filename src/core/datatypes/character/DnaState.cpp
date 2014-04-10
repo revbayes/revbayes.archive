@@ -289,7 +289,7 @@ void DnaState::setGapState(bool tf) {
 void DnaState::setState(size_t pos, bool val) {
     
     state &= val << pos;
-    stateIndex = pos;
+    stateIndex = (unsigned)pos;
     
 }
 
