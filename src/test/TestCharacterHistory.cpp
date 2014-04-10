@@ -110,6 +110,15 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
+    // how to read in geographic characters?
+    TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
+    TimeAtlas ta(&tsdr);
+    int numTimes = (int)ta.getTimes().size();
+    
+    // geographic grid timeatlas
+    std::vector<GeographicGridRateModifier*> ggrmv;
+    for (size_t i = 0; i < (size_t)numTimes; i++)
+        ggrmv.push_back(new GeographicGridRateModifier(&ta, i));
     
     ////////////
     // model
@@ -172,12 +181,10 @@ bool TestCharacterHistory::run( void ) {
     //////////
     // io
     //////////
-    
     filepath = "/Users/mlandis/data/bayarea/output/";
     geoFilename = "rb.geo.txt";
     areaFilename = "rb.areas.txt";
     treeFilename = "rb.tree.txt";
-    
     
     areaNodeFilename = "area_node.txt";
     areaEdgeFilename = "area_edge.txt";
@@ -365,7 +372,6 @@ bool TestCharacterHistory::run( void ) {
     }
 
     // branch histories
-    
     int maskMod = 2;
     std::set<int> maskSet;
     for (size_t i = 0; i < numCharacters; i++)
