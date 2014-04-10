@@ -92,7 +92,7 @@ double BranchRateJumpProcess::computeLnProbability(void) {
         
         // check if the root rate matches 1.0
         // the move could have changed this
-        if ( rootIndex != i )
+        if ( rootIndex == i )
         {
             throw RbException("We should not have a rate multiplier for the root branch!!!");
         }
@@ -100,6 +100,18 @@ double BranchRateJumpProcess::computeLnProbability(void) {
     }
     
     return lnProb;
+}
+
+
+/**
+ * Get the distribution of the values if a jump occurred.
+ *
+ * \return    The pointer to the value distribution.
+ */
+TypedDistribution<double>* BranchRateJumpProcess::getValueDistribution( void ) const
+{
+    
+    return valueDistribution;
 }
 
 
