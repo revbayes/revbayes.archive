@@ -30,7 +30,7 @@ namespace RevBayesCore {
         // Basic utility functions
         AdmixtureEdgeSlide*             clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
-        bool                            isActive(int g) const;
+        bool                            isActive(unsigned long g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -50,8 +50,6 @@ namespace RevBayesCore {
         StochasticNode<AdmixtureTree>*  variable;
         std::vector<ContinuousStochasticNode*> branchRates;
         
-        // tuning parameter
-        double                          lambda;
         
         // stored objects to undo proposal
         AdmixtureNode*                  storedAdmixtureChildParent;
@@ -69,11 +67,13 @@ namespace RevBayesCore {
         double                          storedAge;
         double                          storedWeight;
         std::map<int,double>            storedBranchRates;
-        
+
+        // tuning parameter
+        double lambda;
         bool failed;
         bool changed;
         bool allowSisterAdmixture;
-        int activeGen;
+        unsigned long activeGen;
     };
     
 }

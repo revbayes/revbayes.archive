@@ -318,13 +318,11 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         }
     }
     
-    // We should never reach this, but to make the compiler happy ...
-//    return RbNullObject::getInstance();
 }
 
 
 
-/* Get function */
+///* Get function */
 const Function& FunctionTable::getFunction( const std::string& name ) {
     
     // find the template function

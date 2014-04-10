@@ -104,16 +104,16 @@ double AdmixtureEdgeReplaceNNI::performSimpleMove( void ) {
     AdmixtureTree& tau = variable->getValue();
     
     // stage NNI pointers
-    int numIntNodes = tau.getNumberOfInteriorNodes();
-    int numTaxa = tau.getNumberOfTips();
+    size_t numIntNodes = tau.getNumberOfInteriorNodes();
+    size_t numTaxa = tau.getNumberOfTips();
     pruneNode = NULL;
     while (pruneNode == NULL || pruneNode == &tau.getRoot() || pruneNode->getNumberOfChildren() != 2)
     {
         pruneNode = &tau.getNode(rng->uniform01() * numIntNodes + numTaxa - 1);
     }
     pruneParent = &pruneNode->getTopologyParent();
-    int chIdx = rng->uniform01() * 2;
-    int nphIdx = (chIdx == 0 ? 1 : 0);
+    size_t chIdx = rng->uniform01() * 2;
+    size_t nphIdx = (chIdx == 0 ? 1 : 0);
     pruneChild = &pruneNode->getTopologyChild(chIdx);
     pruneNephew = &pruneNode->getChild(nphIdx);
     int uncIdx = 0;
@@ -157,9 +157,9 @@ double AdmixtureEdgeReplaceNNI::performSimpleMove( void ) {
     
     // draw new admixture edges
 
-    double fwdProposal = 1.0;
+    //double fwdProposal = 1.0;
     //int numEvents = storedAdmixtureEdges.size();
-    for (int i = 0; i < storedAdmixtureEdges.size(); i++)
+    for (size_t i = 0; i < storedAdmixtureEdges.size(); i++)
     {
         residuals->touch();
         storedResiduals = residuals->getValue();
@@ -372,7 +372,7 @@ double AdmixtureEdgeReplaceNNI::performSimpleMove( void ) {
         double a = 1.0;
         double b = 2.0;
         double admixtureWeight = RbStatistics::Beta::rv(a, b, *rng);
-        double lnW = 0.0;
+//        double lnW = 0.0;
         admixtureWeight /= 2;
         
         // add nodes to tree
@@ -503,7 +503,7 @@ void AdmixtureEdgeReplaceNNI::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeReplaceNNI::isActive(int g) const {
+bool AdmixtureEdgeReplaceNNI::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

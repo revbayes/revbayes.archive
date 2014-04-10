@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-LengthTree::LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > *v) : TypedFunction< std::vector<double> >( new std::vector<double>(v->getValue().size(), 1.0) ), tree( t ), vals( v ) {
+LengthTree::LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > *v) : TypedFunction< std::vector<double> >( new std::vector<double>(v->getValue().size(), 1.0) ), vals( v ), tree( t ) {
     // add the parameters as parents
     this->addParameter( vals );
     this->addParameter( tree );
@@ -19,7 +19,7 @@ LengthTree::LengthTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std
 }
 
 
-LengthTree::LengthTree(const LengthTree& l) : TypedFunction<std::vector<double> >(l), tree(l.tree), vals(l.vals) {}
+LengthTree::LengthTree(const LengthTree& l) : TypedFunction<std::vector<double> >(l), vals(l.vals), tree(l.tree) {}
 
 
 LengthTree* LengthTree::clone( void ) const {

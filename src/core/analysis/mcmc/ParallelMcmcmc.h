@@ -41,7 +41,7 @@ namespace RevBayesCore {
     private:
         void                                                initialize(void);
         void                                                swapChains(void);
-        double                                              computeBeta(double d, double s, int i);   // incremental temperature schedule
+        double                                              computeBeta(double d, double s, size_t i);   // incremental temperature schedule
         
         size_t                                              numChains;
         size_t                                              numProcesses;
@@ -52,7 +52,7 @@ namespace RevBayesCore {
         unsigned int                                        currentGeneration;
         unsigned int                                        swapInterval;
         
-        int                                                 activeIndex;  // index of coldest chain, i.e. which one samples the posterior
+        size_t                                              activeIndex;  // index of coldest chain, i.e. which one samples the posterior
         double                                              delta;        // delta-T, temperature increment for computeBeta
         double                                              sigma;        // scales power in heating schedule
         double                                              startingHeat; // default 1.0

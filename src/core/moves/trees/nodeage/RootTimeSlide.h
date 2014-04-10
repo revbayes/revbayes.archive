@@ -48,8 +48,8 @@ namespace RevBayesCore {
     private:   
         
         // member variables
-        double                          delta;
         StochasticNode<TimeTree>*       variable;
+        double                          delta;
         
         // stored objects to undo proposal
         double                          storedAge;

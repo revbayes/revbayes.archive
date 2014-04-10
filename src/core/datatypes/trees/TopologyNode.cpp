@@ -30,32 +30,32 @@
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) : 
+TopologyNode::TopologyNode(int indx) :
+    parent( NULL ),
+    tree( NULL ),
     name(""), 
-    index(indx), 
-    rootNode( true ), 
-    tipNode( true ), 
-    interiorNode( false ), 
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
     newick(""), 
-    newickNeedsRefreshing( true ), 
-    parent( NULL ), 
-    tree( NULL ) 
+    newickNeedsRefreshing( true )
 {
     
 }
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) : 
+TopologyNode::TopologyNode(const std::string& n, int indx) :
+    parent( NULL ),
+    tree( NULL ),
     name(n), 
-    index(indx), 
-    rootNode( true ), 
-    tipNode( true ), 
-    interiorNode( false ), 
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
     newick(""), 
-    newickNeedsRefreshing( true ), 
-    parent( NULL ), 
-    tree( NULL ) 
+    newickNeedsRefreshing( true )
 {
     
 }

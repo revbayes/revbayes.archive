@@ -34,13 +34,14 @@ namespace RevBayesCore {
         void tokenizeArgv(void);
         
         // members
+        std::string                             filepath;
         std::string                             areaFilename;
         std::string                             treeFilename;
         std::string                             geoFilename;
         std::string                             areaNodeFilename;
         std::string                             areaEdgeFilename;
         std::string                             timeatlasFilename;
-        std::string                             filepath;
+        
         int                                     mcmcGenerations;
         int                                     argc;
         const char**                            argv;

@@ -30,7 +30,7 @@ namespace RevBayesCore {
         // Basic utility functions
         AdmixtureEdgeFNPR*             clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
-        bool                            isActive(int g) const;
+        bool                            isActive(unsigned long g) const;
         
     protected:
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -70,10 +70,11 @@ namespace RevBayesCore {
         double                          storedWeight;
         std::map<int,double>            storedBranchRates;
         
-        bool failed;
+
         bool changed;
+        bool failed;
         bool allowSisterAdmixture;
-        int activeGen;
+        unsigned long activeGen;
     };
     
 }

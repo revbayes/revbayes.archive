@@ -23,7 +23,7 @@ AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, Ty
 }
 */
 
-AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), rateMatrix(rateMtx), numStates(ns), numCharacters(nc), rates(r), branchRate(br), tree(t), index(idx)
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), rateMatrix(rateMtx), rates(r), branchRate(br), tree(t), numStates(ns), numCharacters(nc), index(idx)
 {
     for (size_t i = 0; i < r.size(); i++)
         addParameter(rates[i]);
@@ -35,7 +35,7 @@ AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatr
     //redrawValue();
 }
 
-AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), numStates(ns), numCharacters(nc), rates(r), branchRate(br), tree(t), index(idx)
+AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), rates(r), branchRate(br), tree(t), numStates(ns), numCharacters(nc), index(idx)
 {
     for (size_t i = 0; i < r.size(); i++)
         addParameter(rates[i]);

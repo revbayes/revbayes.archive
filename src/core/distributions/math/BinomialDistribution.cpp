@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), p( q ), n( m ) {
+BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), n( m ), p( q ) {
     // add the lambda parameter as a parent
     addParameter( p );
     addParameter( n );
@@ -14,7 +14,7 @@ BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const Typ
 }
 
 
-BinomialDistribution::BinomialDistribution(const BinomialDistribution &d) : TypedDistribution<int>( d ), p( d.p ), n( d.n ) {
+BinomialDistribution::BinomialDistribution(const BinomialDistribution &d) : TypedDistribution<int>( d ), n( d.n ), p( d.p ) {
     // parameters are automatically copied
 }
 

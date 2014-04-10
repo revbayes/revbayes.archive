@@ -44,11 +44,12 @@ namespace RevBayesCore {
         void                            tune(void);
         
     private:   
-        // parameters
-        double                          lambda;
         
         // member variables
         StochasticNode<TimeTree>*       variable;
+        
+        // parameters
+        double                          lambda;
         
         // stored objects to undo proposal
         double                          storedAge;

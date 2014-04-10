@@ -17,7 +17,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, std::vector<std::vector<double> > gc, int g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh), filename( fname ), separator( del ), posterior( pp ), likelihood( l ), prior( pr ), append(ap), showMetadata(sm), showRates(sr), numSamples(0), geographicCoordinates(gc), maxGen(mg), burn(b) {
+PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, std::vector<std::vector<double> > gc, int g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh),  geographicCoordinates(gc), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr), numSamples(0), maxGen(mg), burn(b) {
     
     std::cout << g << " " << mg << "\n";
     
@@ -36,7 +36,7 @@ PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector
     }
 }
 
-PhylowoodNhxMonitor::PhylowoodNhxMonitor(const PhylowoodNhxMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchHistories( m.branchHistories), nodeVariables( m.nodeVariables ), showMetadata(m.showMetadata), showRates(m.showRates), numSamples(m.numSamples), parentCharacterCounts(m.parentCharacterCounts), childCharacterCounts(m.childCharacterCounts), geographicCoordinates(m.geographicCoordinates), maxGen(m.maxGen), numCharacters(m.numCharacters), numHistories(m.numHistories), burn(m.burn) {
+PhylowoodNhxMonitor::PhylowoodNhxMonitor(const PhylowoodNhxMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchHistories( m.branchHistories), nodeVariables( m.nodeVariables ), geographicCoordinates(m.geographicCoordinates), parentCharacterCounts(m.parentCharacterCounts), childCharacterCounts(m.childCharacterCounts), numHistories(m.numHistories), numCharacters(m.numCharacters), showMetadata(m.showMetadata), showRates(m.showRates), numSamples(m.numSamples), maxGen(m.maxGen), burn(m.burn) {
     
     filename    = m.filename;
     separator   = m.separator;
@@ -211,7 +211,7 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
     nhxStrm << "\tminareaval\t0.15\n";
     nhxStrm << "\tareacolors black\n";
     nhxStrm << "\tareatypes";
-    for (int i = 0; i < numCharacters; i++)
+    for (unsigned i = 0; i < numCharacters; i++)
         nhxStrm << " 1";
     nhxStrm << "\n";
     nhxStrm << "\tareanames Default\n";
@@ -221,7 +221,7 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
     nhxStrm << "Begin taxa;\n";
     nhxStrm << "\tDimensions ntax=" << tree->getValue().getNumberOfTips() << ";\n";
     nhxStrm << "\tTaxlabels\n";
-    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+    for (unsigned i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
         TopologyNode* p = &tree->getValue().getNode(i);
         if (p->isTip())
@@ -237,7 +237,7 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
     nhxStrm << "\tDimensions ngeo=" << numCharacters << ";\n";
     nhxStrm << "\tCoords\n";
     
-    for (int i = 0; i < numCharacters; i++)
+    for (unsigned i = 0; i < numCharacters; i++)
     {
         nhxStrm << "\t\t" << i << "\t" << geographicCoordinates[i][0] << "\t" << geographicCoordinates[i][1];
         if (i < (numCharacters - 1))
@@ -250,7 +250,7 @@ std::string PhylowoodNhxMonitor::buildNhxString(void)
     // tree block
     nhxStrm << "Begin trees;\n";
     nhxStrm << "\tTranslate\n";
-    for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+    for (unsigned i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
         TopologyNode* p = &tree->getValue().getNode(i);
         if (p->isTip())

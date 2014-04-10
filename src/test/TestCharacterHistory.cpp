@@ -58,18 +58,17 @@
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "FreeBinaryRateMatrixFunction.h"
 
-
 //#define USE_DDBD
 
 using namespace RevBayesCore;
 
 
-TestCharacterHistory::TestCharacterHistory(const std::string &afn,  const std::string &tfn, const std::string &gfn, int gen, const std::string &fp) : areaFilename( afn ), filepath(fp), treeFilename(tfn), geoFilename(gfn), mcmcGenerations( gen )
+TestCharacterHistory::TestCharacterHistory(const std::string &afn,  const std::string &tfn, const std::string &gfn, int gen, const std::string &fp) : filepath(fp), areaFilename( afn ), treeFilename(tfn),  geoFilename(gfn), mcmcGenerations( gen )
 {
     ;
 }
 
-TestCharacterHistory::TestCharacterHistory(int ac, const char* av[], const std::string &afn, const std::string &tfn, const std::string &gfn, int gen, const std::string &fp) : areaFilename( afn ), filepath(fp), treeFilename(tfn), geoFilename(gfn), mcmcGenerations( gen ), argc(ac), argv(av)
+TestCharacterHistory::TestCharacterHistory(int ac, const char* av[], const std::string &afn, const std::string &tfn, const std::string &gfn, int gen, const std::string &fp) : filepath(fp), areaFilename( afn ), treeFilename(tfn),  geoFilename(gfn), mcmcGenerations( gen ), argc(ac), argv(av)
 {
     ;
 }
@@ -105,7 +104,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
-    size_t numTaxa = data[0]->getNumberOfTaxa();
+//    size_t numTaxa = data[0]->getNumberOfTaxa();
 
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.nex" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
@@ -151,6 +150,9 @@ bool TestCharacterHistory::run_exp(void) {
     charactermodel->clamp( data[0] );
     charactermodel->redraw();
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
+    
+//    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
+//    std::cout << GLOBAL_RNG->getSeed()[1] << "\n";
     
     ////////////
     // moves
@@ -285,7 +287,7 @@ bool TestCharacterHistory::run( void ) {
     
     // geographic grid timeatlas
     std::vector<GeographicGridRateModifier*> ggrmv;
-    for (size_t i = 0; i < numTimes; i++)
+    for (size_t i = 0; i < (size_t)numTimes; i++)
     {
         ggrmv.push_back(new GeographicGridRateModifier(&ta, i));
     }

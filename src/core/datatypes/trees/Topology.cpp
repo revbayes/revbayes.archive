@@ -18,11 +18,11 @@ using namespace RevBayesCore;
 
 /* Default constructor */
 Topology::Topology(void) : 
-    root( NULL ), 
+    root( NULL ),
+    binary( true ),
+    rooted( false ),
     numTips( 0 ), 
-    numNodes( 0 ), 
-    rooted( false ), 
-    binary( true ) 
+    numNodes( 0 )
 {
     
 }

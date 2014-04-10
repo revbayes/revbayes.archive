@@ -265,7 +265,7 @@ void AminoAcidState::setGapState(bool tf) {
 void AminoAcidState::setState(size_t pos, bool val) {
     
     state &= val << pos;
-    stateIndex = pos;
+    stateIndex = (unsigned)pos;
 }
 
 

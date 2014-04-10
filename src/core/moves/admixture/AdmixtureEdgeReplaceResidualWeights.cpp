@@ -102,8 +102,8 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
 //        }
         
         // proposal densities
-        double fwdProposal = 1.0;
-        double bwdProposal = 1.0;
+//        double fwdProposal = 1.0;
+//        double bwdProposal = 1.0;
         
         failed = false;
         failedAdd = false;
@@ -111,7 +111,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         // sample a random admixture parent node
         double u = rng->uniform01();
         size_t index = std::floor(admixtureParents.size() * u);
-        size_t numAdmixtureEdges = admixtureParents.size();
+//        size_t numAdmixtureEdges = admixtureParents.size();
         
         // store admixture edge position
         storedAdmixtureParent = admixtureParents[index];
@@ -124,8 +124,8 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
 
 //        std::cout << "rem " << tau.getAdmixtureEdgeStr(storedAdmixtureParent, storedAdmixtureChild) << "\n";
        
-        int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
-        int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
+//        int oldChildBranchIdx = (int)storedAdmixtureChild->getTopologyChild(0).getIndex();
+//        int oldParentBranchIdx = (int)storedAdmixtureParent->getTopologyChild(0).getIndex();
         
         // remove admixture edge from graph
         storedAdmixtureChild->removeChild(storedAdmixtureChildChild);
@@ -182,7 +182,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
         size_t k_b = 0;
        // std::cout << "numTaxa\t" << numTaxa << "\n";
         
-        double v = rng->uniform01();
+        //double v = rng->uniform01();
         
 //        if (v < 0.5)
 //        if (true)
@@ -476,7 +476,7 @@ double AdmixtureEdgeReplaceResidualWeights::performSimpleMove( void ) {
 
         
         // update branch rates
-        double lnBwdPropRates = 0.0;
+        //double lnBwdPropRates = 0.0;
         
         
         /*
@@ -690,7 +690,7 @@ void AdmixtureEdgeReplaceResidualWeights::acceptMove( void ) {
     acceptSimpleMove();
 }
 
-bool AdmixtureEdgeReplaceResidualWeights::isActive(int g) const {
+bool AdmixtureEdgeReplaceResidualWeights::isActive(unsigned long g) const {
     
     return g > activeGen;
 }

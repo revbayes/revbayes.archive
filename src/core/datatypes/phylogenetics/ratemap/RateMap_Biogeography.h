@@ -28,8 +28,12 @@ namespace RevBayesCore {
         RateMap_Biogeography*                       clone(void) const;
         double                                      getRate(CharacterState* from, CharacterState* to) const;
         double                                      getSumOfRates(CharacterState* from) const;
+        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to) const;
+        double                                      getSumOfRates(std::vector<CharacterEvent*> from) const;
+
         double                                      getTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
         double                                      getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
+        double                                      getLnTransitionProbability(std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const;
         void                                        updateMap(void);
         
         // public methods
@@ -39,7 +43,7 @@ namespace RevBayesCore {
         void                                        setGainLossRates(const std::vector<double>& r);
         
     private:
-        
+        size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
         std::vector<double>                         gainLossRates;
         double                                      distancePower;
         
