@@ -62,7 +62,8 @@ BranchRateJumpProcess* BranchRateJumpProcess::clone(void) const
  *
  * \return   The log-transformed probability density.
  */
-double BranchRateJumpProcess::computeLnProbability(void) {
+double BranchRateJumpProcess::computeLnProbability(void) 
+{
     
     // get the root
     const TopologyNode& root = tau->getValue().getRoot();
