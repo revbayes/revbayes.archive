@@ -92,6 +92,15 @@ namespace RevBayesCore {
 //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_GTR>& x);                      //!< Overloaded output operator
 //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_JC>& x);                      //!< Overloaded output operator
 
+    std::vector<int>                    operator+(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded addition operator
+    std::vector<double>                 operator+(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded addition operator
+    std::vector<int>                    operator-(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded subtraction operator
+    std::vector<double>                 operator-(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded subtraction operator
+    std::vector<int>                    operator*(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded multiplication operator
+    std::vector<double>                 operator*(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded multiplication operator
+    std::vector<double>                 operator/(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded division operator
+    std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded division operator
+    
 }
 
 #endif

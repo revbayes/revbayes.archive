@@ -98,12 +98,11 @@ const TypeSpec& BranchRateJumpProcess::getClassTypeSpec(void)
 }
 
 
-
 /** 
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the branch rate jump process are:
- * (2) the distribution from which new values are drawn if a jump occurred.
+ * (1) the distribution from which new values are drawn if a jump occurred.
  * (2) the time tree.
  * (3) the scale parameter for the branch lengths.
  * (4) the instantaneous jump probability.

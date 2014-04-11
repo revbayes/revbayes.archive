@@ -110,13 +110,16 @@ void OffsetExponentialDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void OffsetExponentialDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "lambda" ) {
+    if ( name == "lambda" ) 
+    {
         lambda = var;
     }
-    else if ( name == "offset" ) {
+    else if ( name == "offset" ) 
+    {
         offset = var;
     }
-    else {
+    else 
+    {
         Distribution::setConstMemberVariable(name, var);
     }
 }
