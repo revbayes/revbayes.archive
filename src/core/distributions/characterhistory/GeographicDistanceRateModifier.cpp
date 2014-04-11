@@ -86,6 +86,53 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     return r;
 }
 
+double GeographicDistanceRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+{
+    if (newState->getState() == 0)
+        return 1.0;
+    
+    // determine which areas are present and which are absent
+    std::set<CharacterEvent*> present;
+    std::set<CharacterEvent*> absent;
+    for (unsigned i = 0; i < numAreas; i++)
+    {
+        if (currState[i]->getState() == 0)
+            absent.insert(currState[i]);
+        else
+            present.insert(currState[i]);
+    }
+    
+    // get sum of distances_ij^beta
+    double rate = 0.0;
+    double sum = 0.0;
+    std::set<CharacterEvent*>::iterator it_p;
+    std::set<CharacterEvent*>::iterator it_a;
+    for (it_p = present.begin(); it_p != present.end(); it_p++)
+    {
+        size_t idx_p = (*it_p)->getIndex();
+        
+        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+        {
+            size_t idx_a = (*it_a)->getIndex();
+            
+            double d = geographicDistancePowers[idx_p][idx_a];
+            sum += d;
+            
+            if (idx_a == newState->getIndex())
+                rate += d;
+        }
+        
+    }
+    
+    // get sum-normalized rate-modifier
+    double r = absent.size() * rate / sum;
+    
+    //    std::cout << "drm   " << r << " = " << absent.size() << " * " << rate << " / " << sum <<  "\n";
+    
+    return r;
+}
+
+
 GeographicDistanceRateModifier* GeographicDistanceRateModifier::clone(void) const
 {
     return new GeographicDistanceRateModifier(*this);
