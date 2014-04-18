@@ -188,6 +188,9 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	numTables = 0;
 	
+	allocationVector.clear();
+	numCustomerPerTable.clear();
+	valuePerTable.clear();
 	for( int i=0; i<numElements; i++){
 		double probNewCat = cp / (i + cp);
 		double u = rng->uniform01();
@@ -261,11 +264,12 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
 	numTables = 0;
 	for(int i=0; i<numElements; i++){
 		valueType v = pv[i];
-		size_t tID = std::find (valuePerTable.begin(), valuePerTable.end(), v) - valuePerTable.begin();
+		size_t tID = std::find (valuePerTable.begin(), valuePerTable.end(), v) - valuePerTable.begin(); // Maybe something wrong here
 		if(tID < valuePerTable.size()){
 			numCustomerPerTable[tID] += 1;
 		}
 		else{
+//			std::cout << valuePerTable.size() << " - " << valuePerTable[tID] << std::endl;
 			valuePerTable.push_back(v);
 			numCustomerPerTable.push_back(1);
 			numTables++;
