@@ -105,10 +105,12 @@ void DirichletDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void DirichletDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "alpha" ) {
+    if ( name == "alpha" ) 
+    {
         alpha = var;
     }
-    else {
+    else 
+    {
         Distribution::setConstMemberVariable(name, var);
     }
 }

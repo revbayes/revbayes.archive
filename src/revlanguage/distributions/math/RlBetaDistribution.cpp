@@ -122,24 +122,16 @@ void BetaDistribution::printValue(std::ostream& o) const {
 
 /** Set a member variable */
 void BetaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
-    
-    // it is important to consider that both alpha and beta could be the same variable (DAG node)
-    // flag if we found the variable to set it
-    bool found = false;
-    
+        
     if ( name == "alpha" ) 
     {
         alpha = var;
-        found = true;
     }
-    
-    if ( name == "beta" ) 
+    else if ( name == "beta" ) 
     {
         beta = var;
-        found = true;
     }
-    
-    if ( !found ) 
+    else
     {
         TypedDistribution<Probability>::setConstMemberVariable(name, var);
     }

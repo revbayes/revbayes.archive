@@ -10,6 +10,7 @@
 #define __rb_mlandis__RateMap_Biogeography__
 
 #include "RateMap.h"
+#include "GeographicDistanceRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -26,14 +27,14 @@ namespace RevBayesCore {
         
         // virtual RateMap functions
         RateMap_Biogeography*                       clone(void) const;
-        double                                      getRate(CharacterState* from, CharacterState* to) const;
-        double                                      getSumOfRates(CharacterState* from) const;
-        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to) const;
-        double                                      getSumOfRates(std::vector<CharacterEvent*> from) const;
+//        double                                      getRate(CharacterState* from, CharacterState* to) const;
+//        double                                      getSumOfRates(CharacterState* from) const;
+        double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to) const;
+        double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from) const;
 
-        double                                      getTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
-        double                                      getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
-        double                                      getLnTransitionProbability(std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const;
+//        double                                      getTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
+//        double                                      getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
+        double                                      getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const;
         void                                        updateMap(void);
         
         // public methods
@@ -42,10 +43,16 @@ namespace RevBayesCore {
         const std::vector<double>&                  getGainLossRates(void) const;
         void                                        setGainLossRates(const std::vector<double>& r);
         
+        void                                        setGeographicDistanceRateModifier(GeographicDistanceRateModifier* gdrm);
+        GeographicDistanceRateModifier*             getGeographicDistanceRateModifier(void);
+        
     private:
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
         std::vector<double>                         gainLossRates;
         double                                      distancePower;
+        
+        bool                                        useGeographicDistanceRateModifier;
+        GeographicDistanceRateModifier*             geographicDistanceRateModifier;
         
     };
     

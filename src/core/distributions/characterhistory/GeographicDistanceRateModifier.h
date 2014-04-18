@@ -20,6 +20,7 @@ namespace RevBayesCore
     public:
         GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
         double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value to computeRateModifier
+        double computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value
         void updateGeographicDistancePowers(double dp=1.0, bool upd=true);
         void update(void);
         GeographicDistanceRateModifier* clone(void) const;

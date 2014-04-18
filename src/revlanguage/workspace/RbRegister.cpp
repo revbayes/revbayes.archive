@@ -51,6 +51,8 @@
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
+#include "RlBimodalLognormalDistribution.h"
+#include "RlBimodalNormalDistribution.h"
 #include "RlBranchRateJumpProcess.h"
 #include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
@@ -100,7 +102,9 @@
 #include "RlSimplexSingleElementScale.h"
 
 /* Moves on real valued vectors */
+#include "RlRlcRateScaleMove.h"
 #include "RlSingleElementScale.h"
+#include "RlSwitchRateJumpMove.h"
 #include "RlVectorSingleElementScaleMove.h"
 #include "RlVectorSingleElementSlidingMove.h"
 #include "RlVectorScale.h"
@@ -311,7 +315,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor("mSimplexElementScale",  new SimplexSingleElementScale() );
         
         /* Moves on vectors of real values */
+        addTypeWithConstructor("mRlcRateScale",         new RlcRateScaleMove() );
         addTypeWithConstructor("mSingleElementScale",   new SingleElementScale() );
+        addTypeWithConstructor("mSwitchRateJump",       new SwitchRateJumpMove() );
         addTypeWithConstructor("mVectorSingleElementScale",   new VectorSingleElementScaleMove() );
         addTypeWithConstructor("mVectorScale",          new VectorScale() );
         
@@ -337,45 +343,49 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Pure statistical distributions
         
         // Bernoulli distribution
-        addDistribution( "bernoulli", new BernoulliDistribution() );
-        
+        addDistribution( "bernoulli",       new BernoulliDistribution() );
         
         // beta distribution
-        addDistribution( "beta", new BetaDistribution() );
+        addDistribution( "beta",            new BetaDistribution() );
         
-        
-        // dirichlet distribution
-        addDistribution( "dirichlet", new DirichletDistribution() );
-        
-        // wishart distribution
-        addDistribution( "wishart", new WishartDistribution() );
-        
-        // gamma distribution
-        addDistribution( "gamma", new GammaDistribution() );
-        
-        // geometric distribution
-        addDistribution( "geom", new GeometricDistribution() );
-        
-        // poisson distribution
-        addDistribution( "poisson", new PoissonDistribution() );
-        
-        // exponential distribution
-        addDistribution( "exponential", new ExponentialDistribution() );
-        addDistribution( "exponential", new OffsetExponentialDistribution() );
-        
-        // lognormal distribution
-        addDistribution( "lnorm", new LognormalDistribution() );
-        addDistribution( "lnorm", new OffsetLognormalDistribution() );
+        // bimodal lognormal distribution
+        addDistribution( "blnorm",          new BimodalLognormalDistribution() );
         
         // normal distribution
-        addDistribution( "norm", new NormalDistribution() );
+        addDistribution( "bnorm",           new BimodalNormalDistribution() );
+        
+        // dirichlet distribution
+        addDistribution( "dirichlet",       new DirichletDistribution() );
+        
+        // gamma distribution
+        addDistribution( "gamma",           new GammaDistribution() );
+        
+        // geometric distribution
+        addDistribution( "geom",            new GeometricDistribution() );
+        
+        // poisson distribution
+        addDistribution( "poisson",         new PoissonDistribution() );
+        
+        // exponential distribution
+        addDistribution( "exponential",     new ExponentialDistribution() );
+        addDistribution( "exponential",     new OffsetExponentialDistribution() );
+        
+        // lognormal distribution
+        addDistribution( "lnorm",           new LognormalDistribution() );
+        addDistribution( "lnorm",           new OffsetLognormalDistribution() );
+        
+        // normal distribution
+        addDistribution( "norm",            new NormalDistribution() );
                 
         // 1/x distribution
-        addDistribution( "oneOverX", new OneOverXDistribution() );
+        addDistribution( "oneOverX",        new OneOverXDistribution() );
         
         // uniform distribution
-        addDistribution( "unif", new UniformDistribution() );
-        addDistribution( "unif", new PositiveUniformDistribution() );
+        addDistribution( "unif",            new UniformDistribution() );
+        addDistribution( "unif",            new PositiveUniformDistribution() );
+        
+        // wishart distribution
+        addDistribution( "wishart",         new WishartDistribution() );
         
         
         
@@ -412,8 +422,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
         // piecewise constant rate fossilized birth-death process with serially sampled fossils
-        addDistribution( "FossilizedBirthDeath"          , new PiecewiseConstantFossilizedBirthDeathProcess() );
-        addDistribution( "FBD"                           , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "FossilizedBirthDeath"         , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "FBD"                          , new PiecewiseConstantFossilizedBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
         addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
@@ -422,14 +432,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "MultispCoal", new MultispeciesCoalescentConstantPopulationProcess() );
+        addDistribution( "MultispCoal"                  , new MultispeciesCoalescentConstantPopulationProcess() );
         addDistribution( "MultispeciesCoalescentConstantPopulationProcess", new MultispeciesCoalescentConstantPopulationProcess() );
 
         // uniform time tree distribution
-        addDistribution( "uniformTimeTree", new UniformTimeTreeDistribution() );
+        addDistribution( "uniformTimeTree"              , new UniformTimeTreeDistribution() );
         
         // uniform topology distribution
-        addDistribution( "uniformTopology", new UniformTopologyDistribution() );
+        addDistribution( "uniformTopology"              , new UniformTopologyDistribution() );
         
         
         
@@ -569,30 +579,44 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add basic arithmetic templated functions */
         
         // addition (e.g. a+b )
-        addFunction( "_add",      new Func_add<Natural, Natural, Natural>(  ) );
-        addFunction( "_add",      new Func_add<Integer, Integer, Integer>(  ) );
-        addFunction( "_add",      new Func_add<Real, Real, Real>(  ) );
-        addFunction( "_add",      new Func_add<RealPos, RealPos, RealPos>(  ) );
-        addFunction( "_add",      new Func_add<RlString, RlString, RlString>(  ) );
-        addFunction( "_add",      new Func_add<RlString, Real, RlString>(  ) );
-        addFunction( "_add",      new Func_add<RlString, Integer, RlString>(  ) );
+        addFunction( "_add",      new Func_add< Natural         , Natural           , Natural           >(  ) );
+        addFunction( "_add",      new Func_add< Integer         , Integer           , Integer           >(  ) );
+        addFunction( "_add",      new Func_add< Real            , Real              , Real              >(  ) );
+        addFunction( "_add",      new Func_add< RealPos         , RealPos           , RealPos           >(  ) );
+        addFunction( "_add",      new Func_add< RlString        , RlString          , RlString          >(  ) );
+        addFunction( "_add",      new Func_add< RlString        , Real              , RlString          >(  ) );
+        addFunction( "_add",      new Func_add< RlString        , Integer           , RlString          >(  ) );
+        addFunction( "_add",      new Func_add< Vector<Natural> , Vector<Natural>   , Vector<Natural>   >(  ) );
+        addFunction( "_add",      new Func_add< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  ) );
+        addFunction( "_add",      new Func_add< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  ) );
+        addFunction( "_add",      new Func_add< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  ) );
         
         
         // division
-        addFunction( "_div",      new Func_div<Natural, Natural, RealPos>(  ) );
-        addFunction( "_div",      new Func_div<Integer, Integer, Real>(  ) );
-        addFunction( "_div",      new Func_div<Real, Real, Real>(  ) );
-        addFunction( "_div",      new Func_div<RealPos, RealPos, RealPos>(  ) );
+        addFunction( "_div",      new Func_div< Natural         , Natural           , RealPos           >(  ) );
+        addFunction( "_div",      new Func_div< Integer         , Integer           , Real              >(  ) );
+        addFunction( "_div",      new Func_div< Real            , Real              , Real              >(  ) );
+        addFunction( "_div",      new Func_div< RealPos         , RealPos           , RealPos           >(  ) );
+        addFunction( "_div",      new Func_div< Vector<Natural> , Vector<Natural>   , Vector<RealPos>   >(  ) );
+        addFunction( "_div",      new Func_div< Vector<Integer> , Vector<Integer>   , Vector<Real>      >(  ) );
+        addFunction( "_div",      new Func_div< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  ) );
+        addFunction( "_div",      new Func_div< Vector<Real>    , Vector<Real>      , Vector<RealPos>   >(  ) );
         
         // multiplication
-        addFunction( "_mul",      new Func_mult<Natural, Natural, Natural>(  ) );
-        addFunction( "_mul",      new Func_mult<Integer, Integer, Integer>(  ) );
-        addFunction( "_mul",      new Func_mult<Real, Real, Real>(  ) );
-        addFunction( "_mul",      new Func_mult<RealPos, RealPos, RealPos>(  ) );
+        addFunction( "_mul",      new Func_mult< Natural            , Natural           , Natural           >(  ) );
+        addFunction( "_mul",      new Func_mult< Integer            , Integer           , Integer           >(  ) );
+        addFunction( "_mul",      new Func_mult< Real               , Real              , Real              >(  ) );
+        addFunction( "_mul",      new Func_mult< RealPos            , RealPos           , RealPos           >(  ) );
+        addFunction( "_mul",      new Func_mult< Vector<Natural>    , Vector<Natural>   , Vector<Natural>   >(  ) );
+        addFunction( "_mul",      new Func_mult< Vector<Integer>    , Vector<Integer>   , Vector<Integer>   >(  ) );
+        addFunction( "_mul",      new Func_mult< Vector<RealPos>    , Vector<RealPos>   , Vector<RealPos>   >(  ) );
+        addFunction( "_mul",      new Func_mult< Vector<Real>       , Vector<Real>      , Vector<Real>      >(  ) );
         
         // subtraction
-        addFunction( "_sub",      new Func_sub<Integer, Integer, Integer>(  ) );
-        addFunction( "_sub",      new Func_sub<Real, Real, Real>(  ) );
+        addFunction( "_sub",      new Func_sub< Integer         , Integer           , Integer           >(  ) );
+        addFunction( "_sub",      new Func_sub< Real            , Real              , Real              >(  ) );
+        addFunction( "_sub",      new Func_sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  ) );
+        addFunction( "_sub",      new Func_sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  ) );
         
         
         addFunction( "_exp",      new Func_power() );

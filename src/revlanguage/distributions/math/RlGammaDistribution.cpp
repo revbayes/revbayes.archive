@@ -117,20 +117,15 @@ void GammaDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void GammaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    bool set = false;
     if ( name == "shape" ) 
     {
         shape = var;
-        set = true;
     }
-    
-    if ( name == "rate" ) 
+    else if ( name == "rate" ) 
     {
         rate = var;
-        set = true;
     }
-    
-    if ( !set ) 
+    else  
     {
         Distribution::setConstMemberVariable(name, var);
     }
