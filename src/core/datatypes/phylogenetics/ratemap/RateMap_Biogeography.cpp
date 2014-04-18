@@ -13,12 +13,15 @@ using namespace RevBayesCore;
 
 RateMap_Biogeography::RateMap_Biogeography(size_t nc) : RateMap(2, nc)
 {
+    geographicDistanceRateModifier = NULL;
+    useGeographicDistanceRateModifier = false;
     
 }
 
 RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : RateMap( m )
 {
-    
+    geographicDistanceRateModifier = m.geographicDistanceRateModifier;
+    useGeographicDistanceRateModifier = m.useGeographicDistanceRateModifier;
 }
 
 RateMap_Biogeography::~RateMap_Biogeography(void)
@@ -40,17 +43,17 @@ RateMap_Biogeography* RateMap_Biogeography::clone(void) const
     return new RateMap_Biogeography( *this );
 }
 
-double RateMap_Biogeography::getRate(CharacterState* from, CharacterState* to) const
-{
-    return 1.0;
-}
+//double RateMap_Biogeography::getRate(CharacterState* from, CharacterState* to) const
+//{
+//    return 1.0;
+//}
+//
+//double RateMap_Biogeography::getSumOfRates(CharacterState* from) const
+//{
+//    return 1.0;
+//}
 
-double RateMap_Biogeography::getSumOfRates(CharacterState* from) const
-{
-    return 1.0;
-}
-
-double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to) const
+double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to) const
 {
     double rate = 0.0;
     int s = to->getState();
@@ -63,11 +66,15 @@ double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, Characte
     // rate according to binary rate matrix Q
     rate = gainLossRates[s];
     
+    // apply rate modifiers
+    if (useGeographicDistanceRateModifier) // want this to take in age as an argument...
+        rate *= geographicDistanceRateModifier->computeRateModifier(node, from, to);
+    
     return rate;
 
 }
 
-double RateMap_Biogeography::getSumOfRates(std::vector<CharacterEvent*> from) const
+double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from) const
 {
     // get rate away away from currState
     size_t n1 = numOn(from);
@@ -85,19 +92,19 @@ double RateMap_Biogeography::getSumOfRates(std::vector<CharacterEvent*> from) co
 }
 
 
-double RateMap_Biogeography::getTransitionProbability(CharacterState* from, CharacterState* to, double t) const
-{
-    return 1.0;
-}
+//double RateMap_Biogeography::getTransitionProbability(CharacterState* from, CharacterState* to, double t) const
+//{
+//    return 1.0;
+//}
+//
+//double RateMap_Biogeography::getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const
+//{
+//    return 0.0;
+//}
 
-double RateMap_Biogeography::getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const
+double RateMap_Biogeography::getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const
 {
-    return 0.0;
-}
-
-double RateMap_Biogeography::getLnTransitionProbability(std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const
-{
-    double lnP = log(getRate(from, to)) - getSumOfRates(from) * t;
+    double lnP = log(getRate(node, from, to)) - getSumOfRates(node, from) * t;
     return lnP;
 }
 
@@ -126,6 +133,18 @@ void RateMap_Biogeography::setDistancePower(double d)
 {
     distancePower = d;
 }
+
+void RateMap_Biogeography::setGeographicDistanceRateModifier(GeographicDistanceRateModifier* gdrm)
+{
+    useGeographicDistanceRateModifier = true;
+    geographicDistanceRateModifier = gdrm;
+}
+
+GeographicDistanceRateModifier* RateMap_Biogeography::getGeographicDistanceRateModifier(void)
+{
+    return geographicDistanceRateModifier;
+}
+
 
 size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
 {

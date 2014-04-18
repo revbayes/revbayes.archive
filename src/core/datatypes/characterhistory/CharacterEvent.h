@@ -39,7 +39,7 @@ namespace RevBayesCore {
     private:
         size_t index;   // from 0 to N "sites"
         unsigned int state;  // from statespace -- possibly make a set of state/positions...
-        double time;    // from 0 to 1
+        double time; // from 0 to 1
       
 
     };

@@ -110,13 +110,16 @@ void UniformDistribution::printValue(std::ostream& o) const {
 /** Set a member variable */
 void UniformDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
-    if ( name == "lower" ) {
+    if ( name == "lower" ) 
+    {
         lower = var;
     }
-    else if ( name == "upper" ) {
+    else if ( name == "upper" ) 
+    {
         upper = var;
     }
-    else {
+    else 
+    {
         ContinuousDistribution::setConstMemberVariable(name, var);
     }
 }
