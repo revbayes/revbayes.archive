@@ -39,7 +39,7 @@ RevBayesCore::DPPScaleCatValsMove* RevBayesCore::DPPScaleCatValsMove::clone( voi
 
 
 const std::string& RevBayesCore::DPPScaleCatValsMove::getMoveName( void ) const {
-    static std::string name = "DPP Move";
+    static std::string name = "DPP Scale Cat Values Move (double)";
     
     return name;
 }

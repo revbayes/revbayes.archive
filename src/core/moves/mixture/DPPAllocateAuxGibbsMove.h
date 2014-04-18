@@ -44,6 +44,7 @@ namespace RevBayesCore {
     
     private:
 		double													getLnProbabilityForMove(void);
+		int														findTableIDForVal(std::vector<valueType> tvs, valueType val);
 		
         StochasticNode<std::vector<valueType> >*				variable;
 		int														numAuxCat;
@@ -114,6 +115,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
     
 	int numAuxiliary = numAuxCat; 
 	double lnCPOverNumAux = log(cp/numAuxiliary);
+//	std::cout << cp << std::endl;
 	// loop over elements, remove i from current table, and try in all others
 	for(int i=0; i<numElements; i++){
 		std::vector<valueType> tempTables;
@@ -133,9 +135,6 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 			}
 			else{
 				emptyTab = j;
-//				lnProb.push_back( RbConstants::Double::neginf ); // this should be a value that will be prob=0
-//				valueType dummy;
-//				tempTables.push_back(dummy); // just wanted a place-holder so that the vectors are the same size
 				tableVals[j] = NULL;
 				numPerTab[j] = 0;
 			}
@@ -172,21 +171,21 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 		}
 		else{
 			// this is an existing table, need to find the right one and increment the num elements
-			for (int j=0; j<tableVals.size(); j++){
-				if(tableVals[j] == elementVals[i]){
-					numPerTab[j] += 1;
-					break;
-				}
-			}
+			int tID = findTableIDForVal(tableVals, elementVals[i]);
+			numPerTab[tID] += 1;
 		}
+		variable->keep();
 		lnProb.clear();
 		tempTables.clear();
 //		std::cout << elementVals[i] << std::endl;
 	}
 	dist.createRestaurantVectors();
+//	std::cout << dist.getNumberOfCategories() << std::endl;
+//	for(int j=0; j<elementVals.size(); j++){
+//		std::cout << elementVals[j] << " -- ";
+//	}
+//	std::cout << std::endl;
 }
-
-
 
 template <class valueType>
 void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::swapNode(DagNode *oldN, DagNode *newN) {
@@ -208,6 +207,17 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
 	}
 	return lnProb;
 	
+}
+
+template <class valueType>
+int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findTableIDForVal(std::vector<valueType> tvs, valueType val) {
+	
+	for (int j=0; j<tvs.size(); j++){
+		if(tvs[j] == val){
+			return j;
+		}
+	}
+	return -1;
 }
 
 template <class valueType>

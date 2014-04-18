@@ -155,7 +155,7 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes1.insert( treeHeight );
 	
     monitors.push_back( new FileMonitor( monitoredNodes1, 10, "data/TestDPPRelClockGtrModelSubstRates.log", "\t" ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 5, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "data/TestDPPRelClockGtrModel.tree", "\t", false, false, false ) );
