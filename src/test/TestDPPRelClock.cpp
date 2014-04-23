@@ -9,6 +9,7 @@
 #include "DirichletDistribution.h"
 #include "DirichletProcessPriorDistribution.h"
 #include "DPPAllocateAuxGibbsMove.h"
+#include "DppMeanContinuousValStatistic.h"
 #include "DppNumTablesStatistic.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
@@ -51,10 +52,6 @@ TestDPPRelClock::~TestDPPRelClock() {
     // nothing to do
 }
 
-// todo:
-/*   - need a RateNode
- - need NodeRate move (or just do a simple sliding move on the rate at each branch)
- */
 bool TestDPPRelClock::run( void ) {
 	
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
@@ -68,13 +65,13 @@ bool TestDPPRelClock::run( void ) {
     
     
     // birth-death process priors
-    StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
-    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
+    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(0.05));
+    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
+	
     // gtr model priors
     ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(4,1.0) );
     ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(6,1.0) );
-	
 	
     std::cout << "bf:\t" << bf->getValue() << std::endl;
     std::cout << "e:\t" << e->getValue() << std::endl;
@@ -122,9 +119,11 @@ bool TestDPPRelClock::run( void ) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
 	charactermodel->clamp( data[0] );
 	
+	std::cout << " branch rates: " << branchRates->getValue() << std::endl;
+
 	/* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
+//    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 //    moves.push_back( new NarrowExchange( tau, 10.0 ) );
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -132,38 +131,35 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 //    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 //    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
-    moves.push_back( new DPPScaleCatValsMove( branchRates, log(1.25), 2.0 ) );
+//    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) ); // this move seemed to cause lots of problems...
+//    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) ); 
+    moves.push_back( new SimplexMove( er, 800.0, 6, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( pi, 800.0, 4, 0, true, 2.0 ) );
+    moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
 		
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
     DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
-    
+	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new DppMeanContinuousValStatistic(branchRates) );
+
     /* add the monitors */
     std::vector<Monitor*> monitors;
     std::set<DagNode*> monitoredNodes;
-	//    monitoredNodes.insert( er );
-	//    monitoredNodes.insert( pi );
-    monitoredNodes.insert( branchRates );
-    monitoredNodes.insert( treeHeight );
+	monitoredNodes.insert( er );
+	monitoredNodes.insert( treeHeight );
     monitoredNodes.insert( numCats );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "data/TestDPPRelClockModel.log", "\t" ) );
-    std::set<DagNode*> monitoredNodes1;
-    monitoredNodes1.insert( er );
-    monitoredNodes1.insert( pi );
-    monitoredNodes1.insert( q );
-    monitoredNodes1.insert( treeHeight );
-	
-    monitors.push_back( new FileMonitor( monitoredNodes1, 10, "data/TestDPPRelClockGtrModelSubstRates.log", "\t" ) );
+    monitoredNodes.insert( meanBrRate );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+ 
+	monitoredNodes.insert( branchRates );
+    monitoredNodes.insert( pi );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, "data/test_dpp_clock_run.log", "\t" ) );
+
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "data/TestDPPRelClockGtrModel.tree", "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "data/test_dpp_clock_run.tree", "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
@@ -175,15 +171,6 @@ bool TestDPPRelClock::run( void ) {
     myMcmc.printOperatorSummary();
 	
     
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
-
 	/* clean up */
 //	delete div;
 //	delete turn;
@@ -197,15 +184,17 @@ bool TestDPPRelClock::run( void ) {
 //	delete phyloCTMC;
 //	delete charactermodel;
 //	delete treeHeight;
+
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+        const Move *theMove = *it;
+        delete theMove;
+    }
+    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
+        const Monitor *theMonitor = *it;
+        delete theMonitor;
+	}
 	
-//    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-//        const Move *theMove = *it;
-//        delete theMove;
-//    }
-//    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-//        const Monitor *theMonitor = *it;
-//        delete theMonitor;
-//    }
+	
 	monitors.clear();
 	moves.clear();
 	
