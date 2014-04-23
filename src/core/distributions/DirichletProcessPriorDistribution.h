@@ -257,7 +257,7 @@ std::vector<int> RevBayesCore::DirichletProcessPriorDistribution<valueType>::get
 }
 
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestaurantVectors(void){
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestaurantVectors(void) {
 	
 	std::vector<valueType>& pv = *this->value;
 	valuePerTable.clear();
