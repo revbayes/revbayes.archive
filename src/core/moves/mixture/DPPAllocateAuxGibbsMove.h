@@ -45,6 +45,8 @@ namespace RevBayesCore {
     private:
 		double													getLnProbabilityForMove(void);
 		int														findTableIDForVal(std::vector<valueType> tvs, valueType val);
+		void													dppNormalizeVector(std::vector<double> &v);
+		int														findElementNewTable(double u, std::vector<double> lnProb);
 		
         StochasticNode<std::vector<valueType> >*				variable;
 		int														numAuxCat;
@@ -105,6 +107,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	
 	dist.createRestaurantVectors();
 	int numTables = dist.getNumberOfCategories();
+//	int numOldTables = numTables;
 	int numElements = dist.getNumberOfElements();
 	std::vector<valueType> tableVals = dist.getTableParameters();
 	std::vector<int> allocVec = dist.getElementAllocationVec();
@@ -112,16 +115,15 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	std::vector<valueType>& elementVals = variable->getValue();
 	double cp = dist.getConcentrationParam();
 	TypedDistribution<valueType>* g0 = dist.getBaseDistribution();
-    
+	    
 	int numAuxiliary = numAuxCat; 
-	double lnCPOverNumAux = log(cp/numAuxiliary);
+	double lnCPOverNumAux = log(cp/((double)numAuxiliary));
 //	std::cout << cp << std::endl;
 	// loop over elements, remove i from current table, and try in all others
 	for(int i=0; i<numElements; i++){
 		std::vector<valueType> tempTables;
 		std::vector<double> lnProb;
 		int currentTable = allocVec[i];
-		int emptyTab = -1;
 		numPerTab[currentTable] -= 1;
 		for(int j=0; j<numTables; j++){
 			int numSeated = numPerTab[j];
@@ -134,7 +136,6 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 				lnProb.push_back( log(numSeated) + tabLnL );
 			}
 			else{
-				emptyTab = j;
 				tableVals[j] = NULL;
 				numPerTab[j] = 0;
 			}
@@ -148,39 +149,42 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 			double auxLnL = getLnProbabilityForMove(); // get lnL after changing value
 			lnProb.push_back( lnCPOverNumAux + auxLnL );
 		}
+
+//		std::cout << "--" << lnProb << std::endl;
 		
-		// Normalize lnProb vector RbMathVector
-		RbMath::normalize(lnProb, 1.0);
+		// Normalize lnProb vector 		
+		dppNormalizeVector(lnProb);
+		
+//		std::cout << "++" << lnProb << std::endl;
 		
 		//choose new table for element i
 		double u = rng->uniform01();
-		int reseat = -1;
-		for (int j = 0; j < lnProb.size(); j++){
-			u -= lnProb[j];
-			if (u < 0.0){
-				reseat = j;
-				break;
-			}
-		}
-		elementVals[i] = tempTables[reseat];
-		if(reseat >= tempTables.size() - numAuxiliary){
-			// this is a new table
+		int reseat = findElementNewTable(u, lnProb);
+
+		valueType afterValue = tempTables[reseat];
+		elementVals[i] = afterValue;
+		int tID = findTableIDForVal(tableVals, afterValue);
+		if(tID == -1){
 			numTables += 1;
 			numPerTab.push_back(1);
-			tableVals.push_back(tempTables[reseat]);
+			tableVals.push_back(afterValue);
 		}
 		else{
 			// this is an existing table, need to find the right one and increment the num elements
-			int tID = findTableIDForVal(tableVals, elementVals[i]);
 			numPerTab[tID] += 1;
 		}
 		variable->keep();
 		lnProb.clear();
 		tempTables.clear();
+//		std::cout << tableVals << std::endl;
+//		std::cout << numPerTab << std::endl;
 //		std::cout << elementVals[i] << std::endl;
 	}
+	allocVec.clear();
+	tableVals.clear();
+	numPerTab.clear();
 	dist.createRestaurantVectors();
-//	std::cout << dist.getNumberOfCategories() << std::endl;
+//	std::cout << " * " << numOldTables << " --> " << dist.getNumberOfCategories() << std::endl;
 //	for(int j=0; j<elementVals.size(); j++){
 //		std::cout << elementVals[j] << " -- ";
 //	}
@@ -203,7 +207,9 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
 	variable->getAffectedNodes( affected );
 	double lnProb = 0.0;
 	for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
-		lnProb += (*it)->getLnProbability();
+		double lp = (*it)->getLnProbability();
+		lnProb += lp;
+//		std::cout << (*it)->getName() << " lp = " << lp << ", lnProb = " << lnProb << std::endl;
 	}
 	return lnProb;
 	
@@ -234,6 +240,44 @@ template <class valueType>
 void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::rejectMove( void ) {
     
 }
+
+template <class valueType>
+void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::dppNormalizeVector(std::vector<double> &v) {
+
+	int n = v.size();
+	double lnC = v[0];
+	for (int i=1; i<n; i++){
+		if (v[i] > lnC)
+			lnC = v[i];
+	}
+	
+	for (int i=0; i<n; i++)
+		v[i] -= lnC;
+	
+	double sum = 0.0;
+	for (int i=0; i<n; i++){
+		if ( v[i] < -300.0 )
+			v[i] = 0.0;
+		else
+			v[i] = exp( v[i] );
+		sum += v[i];
+	}
+	
+	for (int i=0; i<n; i++)
+		v[i] /= sum;    
+}
+
+template <class valueType>
+int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double u, std::vector<double> lnProb) {
+	for (int j = 0; j < lnProb.size(); j++){
+		u -= lnProb[j];
+		if (u < 0.0){
+			return j;
+		}
+	}
+	return -1;
+}
+
 
 
 #endif

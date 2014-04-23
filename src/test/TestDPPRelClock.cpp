@@ -94,10 +94,10 @@ bool TestDPPRelClock::run( void ) {
 	// The move for the concentration parameter hasn't been written yet...
 //	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
 
-	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(2.0, (double)numBranches)) );
+	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(1.05, (double)numBranches)) );
 	
 	// G_0 is an exponential distribution
-    ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
+    ConstantNode<double> *a = new ConstantNode<double>("a", new double(2.0) );
 	TypedDistribution<double> *g = new ExponentialDistribution(a);
 	
 	// Branch rates
@@ -107,11 +107,13 @@ bool TestDPPRelClock::run( void ) {
     std::cout << "Q:\t" << q->getValue() << std::endl;
     
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.5 ) );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
 	
 	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
+	
+	std::cout << " ** " << origin->getValue() << std::endl;
 
     GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
 	phyloCTMC->setClockRate( branchRates );
@@ -125,16 +127,16 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 //    moves.push_back( new NarrowExchange( tau, 10.0 ) );
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
-    moves.push_back( new SubtreeScale( tau, 5.0 ) );
-    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
+//    moves.push_back( new SubtreeScale( tau, 5.0 ) );
+//    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+//    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
+//    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
-    moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 4.0 ) );
-    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 4.0 ) );
+    moves.push_back( new DPPScaleCatValsMove( branchRates, log(1.25), 2.0 ) );
+    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
 		
 	
     // add some tree stats to monitor
@@ -155,7 +157,7 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes1.insert( treeHeight );
 	
     monitors.push_back( new FileMonitor( monitoredNodes1, 10, "data/TestDPPRelClockGtrModelSubstRates.log", "\t" ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 5, "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "data/TestDPPRelClockGtrModel.tree", "\t", false, false, false ) );
@@ -168,17 +170,8 @@ bool TestDPPRelClock::run( void ) {
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();
+	
     
-    /* clean up */
-    //    for (size_t i = 0; i < 10; ++i) {
-    //        delete x[i];
-    //    }
-    //    delete [] x;
-    delete div;
-    //    delete sigma;
-    //    delete a;
-    //    delete b;
-    //    delete c;
     for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
         const Move *theMove = *it;
         delete theMove;
@@ -187,6 +180,31 @@ bool TestDPPRelClock::run( void ) {
         const Monitor *theMonitor = *it;
         delete theMonitor;
 	}
+
+	/* clean up */
+//	delete div;
+//	delete turn;
+//	delete rho;
+//	delete cp;
+//	delete a;
+//	delete g;
+//	delete branchRates;
+//	delete q;
+//	delete tau;
+//	delete phyloCTMC;
+//	delete charactermodel;
+//	delete treeHeight;
+	
+//    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+//        const Move *theMove = *it;
+//        delete theMove;
+//    }
+//    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
+//        const Monitor *theMonitor = *it;
+//        delete theMonitor;
+//    }
+	monitors.clear();
+	moves.clear();
 	
     return true;
 }

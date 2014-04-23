@@ -48,8 +48,9 @@ namespace RevBayesCore {
 
     private:
         // helper methods
-        void                                                computeDenominator();
-		std::vector<valueType>*                             simulate();
+        void                                                computeDenominator(void);
+		std::vector<valueType>*                             simulate(void);
+		size_t												findValueinValuePerTable(valueType v);
 		      
         // private members
 		TypedDistribution<valueType>*						baseDistribution;
@@ -264,18 +265,23 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
 	numTables = 0;
 	for(int i=0; i<numElements; i++){
 		valueType v = pv[i];
-		size_t tID = std::find (valuePerTable.begin(), valuePerTable.end(), v) - valuePerTable.begin(); // Maybe something wrong here
+		size_t tID = findValueinValuePerTable(v);
 		if(tID < valuePerTable.size()){
 			numCustomerPerTable[tID] += 1;
+//			std::cout << valuePerTable[tID] << " -- " << v << std::endl;
 		}
 		else{
-//			std::cout << valuePerTable.size() << " - " << valuePerTable[tID] << std::endl;
 			valuePerTable.push_back(v);
+//			std::cout << "*" << valuePerTable.size() << " - " << valuePerTable[tID] << " * " << v << std::endl;
 			numCustomerPerTable.push_back(1);
 			numTables++;
 		}
 		allocationVector[i] = (int)tID;
 	}
+//	for(int i=0; i<numElements; i++){
+//		std::cout << allocationVector[i] << ".";
+//	}
+//	std::cout << std::endl;
 }
 
 template <class valueType>
@@ -294,6 +300,22 @@ template <class valueType>
 RevBayesCore::TypedDistribution<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::getBaseDistribution(void) {
 
 	return baseDistribution;
+}
+
+template <class valueType>
+size_t RevBayesCore::DirichletProcessPriorDistribution<valueType>::findValueinValuePerTable(valueType v){
+	
+	size_t tID = valuePerTable.size(); //= std::find(valuePerTable.begin(), valuePerTable.end(), v) - valuePerTable.begin(); 
+	if(tID == 0)
+		return tID;
+	else{
+		for(size_t i=0; i<valuePerTable.size(); i++){
+			if(valuePerTable[i] == v){
+				return i;
+			}
+		}
+	}
+	return tID;
 }
 
 
