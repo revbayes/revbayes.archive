@@ -50,10 +50,7 @@ namespace RevBayesCore {
 		
         StochasticNode<std::vector<valueType> >*				variable;
 		int														numAuxCat;
-		
- 
     };
-    
 }
 
 #include "NormalizeVectorFunction.h"
@@ -67,7 +64,6 @@ namespace RevBayesCore {
 template <class valueType>
 RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> > *v, int na, double w) : Move( v, w, false ), variable( v ) {
     
-	// set isGibbs to true
 	numAuxCat = na;
 }
 
@@ -78,8 +74,6 @@ RevBayesCore::DPPAllocateAuxGibbsMove<valueType>* RevBayesCore::DPPAllocateAuxGi
     
     return new DPPAllocateAuxGibbsMove<valueType>( *this );
 }
-
-
 
 template <class valueType>
 const std::string& RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getMoveName( void ) const {
@@ -93,7 +87,6 @@ bool RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::isGibbs( void ) const {
     
     return true;
 }
-
 
 
 /** Perform the move */
@@ -196,7 +189,6 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
 		lnProb += lp;
 	}
 	return lnProb;
-	
 }
 
 template <class valueType>
@@ -229,7 +221,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::rejectMove( void ) {
 template <class valueType>
 void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::dppNormalizeVector(std::vector<double> &v) {
 
-	int n = v.size();
+	size_t n = v.size();
 	double lnC = v[0];
 	for (int i=1; i<n; i++){
 		if (v[i] > lnC)
