@@ -376,7 +376,8 @@ bool Test::performTests(void) {
     
     /* A DPP relaxed model test */
     try {
-        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 1000);
+//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_clock_gtr.nex", "data/test_clock_2_new_sc.tre", 300000);
 		
 		testDPPRC.run();
     } catch (RbException &e) {
