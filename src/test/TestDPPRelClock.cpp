@@ -9,6 +9,7 @@
 #include "DirichletDistribution.h"
 #include "DirichletProcessPriorDistribution.h"
 #include "DPPAllocateAuxGibbsMove.h"
+#include "DppNumTablesStatistic.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -141,6 +142,7 @@ bool TestDPPRelClock::run( void ) {
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
+    DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;
@@ -149,6 +151,7 @@ bool TestDPPRelClock::run( void ) {
 	//    monitoredNodes.insert( pi );
     monitoredNodes.insert( branchRates );
     monitoredNodes.insert( treeHeight );
+    monitoredNodes.insert( numCats );
     monitors.push_back( new FileMonitor( monitoredNodes, 10, "data/TestDPPRelClockModel.log", "\t" ) );
     std::set<DagNode*> monitoredNodes1;
     monitoredNodes1.insert( er );
