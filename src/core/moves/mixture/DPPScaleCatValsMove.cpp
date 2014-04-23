@@ -108,7 +108,8 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 				if(allocVec[j] == i)
 					elementVals[j] = storedValue;
 			}
-			variable->restore();
+			tableVals[i] = storedValue;
+			variable->keep();
 		}
 	}
     dist.createRestaurantVectors();
