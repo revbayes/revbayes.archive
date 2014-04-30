@@ -62,3 +62,13 @@ void GammaDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
         rate = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
+
+// TAH: I need to get the shape and rate parameters of the gamma. How do I do that?
+double GammaDistribution::getShapeValue(void){
+	return shape->getValue();
+}
+
+double GammaDistribution::getRateValue(void){
+	return rate->getValue();
+}
+
