@@ -168,6 +168,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	tableVals.clear();
 	numPerTab.clear();
 	dist.createRestaurantVectors();
+
 }
 
 template <class valueType>
