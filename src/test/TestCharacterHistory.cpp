@@ -38,6 +38,7 @@
 #include "RandomNumberGenerator.h"
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
+#include "SimplexMove.h"
 #include "StochasticNode.h"
 #include "TimeAtlas.h"
 #include "TimeTree.h"
@@ -178,10 +179,90 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     
     
+    std::cout << "Adding moves\n";
+    std::vector<Move*> moves;
+    moves.push_back( new ScaleMove(dp, 1.0, true, 5.0) );
+    
+//    moves.push_back( new Simplex
+    moves.push_back( new SimplexMove(glr, 10.0, 2, 0, true, 2.0 ));
+    moves.push_back( new SimplexMove(sglr, 10.0, 2, 0, true, 2.0 ));
+    moves.push_back( new ScaleMove(dp, 1.0, true, 5.0) );
+
+    // need character history proposals
+    
+//    for (size_t i = 0; i < bh_vector.size(); i++)
+//    {
+//        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
+//        StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
+//        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.1, true, 2.0) );
+//        if (i >= numTaxa || i == 0 || i == 1)
+//            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.1, true, 5.0));
+//    }
+    
+    
     
     ////////////
     // monitors
     ////////////
+    
+    
+    std::cout << "Adding monitors\n";
+    std::vector<Monitor*> monitors;
+    
+    std::set<DagNode*> monitoredNodes;
+    monitoredNodes.insert( glr );
+    monitoredNodes.insert( sglr );
+    monitoredNodes.insert( dp );
+    
+//    for (size_t i = 0; i < bh_vector.size(); i++)
+//    {
+//        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
+//        monitoredNodes.insert( bh_tdn );
+//    }
+    
+    
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
+//    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
+//    unsigned int burn = (unsigned int)(mcmcGenerations * .2);
+//    PhylowoodNhxMonitor* phwnm = new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" );
+//    monitors.push_back(phwnm);
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+
+    
+    //////////
+    // model
+    //////////
+    std::cout << "Instantiating model\n";
+    Model myModel = Model(charactermodel);
+    
+    
+    //////////
+    // mcmc
+    //////////
+    std::cout << "Instantiating mcmc\n";
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+    myMcmc.run(mcmcGenerations/100);
+    myMcmc.printOperatorSummary();
+    
+
+    //////////
+    // clean-up
+    //////////
+    std::cout << "Cleaning up objects\n";
+//    delete dp;
+//    delete glr;
+//    delete sglr;
+    
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+        const Move *theMove = *it;
+        delete theMove;
+    }
+    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
+        const Monitor *theMonitor = *it;
+        delete theMonitor;
+    }
+    
+    std::cout << "Finished CharacterHistory model test." << std::endl;
     
     return true;
 }

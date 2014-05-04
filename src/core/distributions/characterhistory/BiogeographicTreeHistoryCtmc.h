@@ -149,6 +149,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     heterogeneousRateMatrices   = d.heterogeneousRateMatrices;
     rootFrequencies             = d.rootFrequencies;
     siteRates                   = d.siteRates;
+    homogeneousRateMap          = d.homogeneousRateMap;
+    heterogeneousRateMaps       = d.heterogeneousRateMaps;
     distancePower               = d.distancePower;
     tipProbs                    = d.tipProbs;
     
@@ -529,7 +531,9 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             std::vector<CharacterEvent*> childState = this->histories[nodeIdx].getChildCharacters();
             for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
             {
-                unsigned s = ( tipProbs[nodeIdx][*it] < GLOBAL_RNG->uniform01() ? 0 : 1);
+                double u = GLOBAL_RNG->uniform01();
+                unsigned s = ( tipProbs[nodeIdx][*it] < u ? 0 : 1);
+                //std::cout << nodeIdx << " " << *it << " " << " " << tipProbs[nodeIdx][*it] << " " << u << " " << s << "\n";
                 childState[*it] = new CharacterEvent(*it, s, 1.0);
             }
       
