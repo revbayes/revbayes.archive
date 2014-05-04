@@ -36,6 +36,7 @@
 #include "PhylowoodNhxMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "SamplePathHistoryCtmcMove.h"
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
@@ -184,9 +185,10 @@ bool TestCharacterHistory::run_exp(void) {
     moves.push_back( new ScaleMove(dp, 1.0, true, 5.0) );
     
 //    moves.push_back( new Simplex
-    moves.push_back( new SimplexMove(glr, 10.0, 2, 0, true, 2.0 ));
-    moves.push_back( new SimplexMove(sglr, 10.0, 2, 0, true, 2.0 ));
-    moves.push_back( new ScaleMove(dp, 1.0, true, 5.0) );
+    moves.push_back(new SimplexMove(glr, 10.0, 2, 0, true, 2.0));
+    moves.push_back(new SimplexMove(sglr, 10.0, 2, 0, true, 2.0));
+    moves.push_back(new ScaleMove(dp, 1.0, true, 5.0));
+    moves.push_back(new SamplePathHistoryCtmcMove(charactermodel, 0.2, false, 10.0));
 
     // need character history proposals
     
