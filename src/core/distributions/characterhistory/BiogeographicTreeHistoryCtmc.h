@@ -10,7 +10,9 @@
 #define __rb_mlandis__BiogeographicTreeHistoryCtmc__
 
 #include "AbstractTreeHistoryCtmc.h"
+#include "ContinuousCharacterData.h"
 #include "DistributionExponential.h"
+#include "RateMap.h"
 #include "RateMatrix.h"
 #include "RbConstants.h"
 #include "RbVector.h"
