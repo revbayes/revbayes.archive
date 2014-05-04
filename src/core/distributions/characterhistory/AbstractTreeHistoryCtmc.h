@@ -136,11 +136,14 @@ tau( t ),
 transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
 partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
 activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
+activeHistory(),
+historyLikelihoods(),
 charMatrix(),
 gapMatrix(),
 patternCounts(),
 numPatterns( numSites ),
 compressed( false ),
+histories(),
 changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
 dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
 usingAmbiguousCharacters( true ),
@@ -173,11 +176,14 @@ tau( n.tau ),
 transitionProbMatrices( n.transitionProbMatrices ),
 partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
 activeLikelihood( n.activeLikelihood ),
+activeHistory( n.activeHistory ),
+historyLikelihoods( n.historyLikelihoods ),
 charMatrix( n.charMatrix ),
 gapMatrix( n.gapMatrix ),
 patternCounts( n.patternCounts ),
 numPatterns( n.numPatterns ),
 compressed( n.compressed ),
+histories( n.histories ),
 changedNodes( n.changedNodes ),
 dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
@@ -266,7 +272,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVe
     {
         // this is a tip node
         //if (dirtyNodes[nodeIndex])
-            computeTipLikelihood(node, nodeIndex);
+        computeTipLikelihood(node, nodeIndex);
     }
     else
     {
