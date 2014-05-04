@@ -48,6 +48,7 @@ namespace RevBayesCore {
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
         void                                                setDistancePower(const TypedDagNode<double>* dp);
+        void                                                setTipProbs(const AbstractCharacterData* d);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         
     protected:
@@ -79,6 +80,7 @@ namespace RevBayesCore {
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         const TypedDagNode< double >*                       distancePower;
+        std::vector<std::vector<double> >                   tipProbs;
         
         // flags specifying which model variants we use
         bool                                                branchHeterogeneousClockRates;
@@ -114,6 +116,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
     distancePower               = new ConstantNode<double>("distancePower", new double(0.0));
+    tipProbs.clear();
     
     
     // flags specifying which model variants we use
@@ -147,6 +150,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     rootFrequencies             = d.rootFrequencies;
     siteRates                   = d.siteRates;
     distancePower               = d.distancePower;
+    tipProbs                    = d.tipProbs;
     
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
@@ -344,109 +348,18 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
-    
-    // add support for ambig. characters later...
-    this->historyLikelihoods[nodeIndex] = 0.0;
-    
-//    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-//    
-//    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-//    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
-//    
-//    // compute the transition probabilities
-//    updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
-//    
-//    double*   p_mixture      = p_node;
-//    
-//    // iterate over all mixture categories
-//    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
-//    {
-//        // the transition probability matrix for this mixture category
-//        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
-//        
-//        // get the pointer to the likelihoods for this site and mixture category
-//        double*     p_site_mixture      = p_mixture;
-//        
-//        // iterate over all sites
-//        for (size_t site = 0; site != this->numPatterns; ++site)
-//        {
-//            
-//            // is this site a gap?
-//            if ( gap_node[site] )
-//            {
-//                // since this is a gap we need to assume that the actual state could have been any state
-//                
-//                // iterate over all initial states for the transitions
-//                for (size_t c1 = 0; c1 < this->numChars; ++c1)
-//                {
-//                    
-//                    // store the likelihood
-//                    p_site_mixture[c1] = 1.0;
-//                    
-//                }
-//            }
-//            else // we have observed a character
-//            {
-//                
-//                // get the original character
-//                unsigned long org_val = char_node[site];
-//                
-//                // iterate over all possible initial states
-//                for (size_t c1 = 0; c1 < this->numChars; ++c1)
-//                {
-//                    
-//                    if ( this->usingAmbiguousCharacters )
-//                    {
-//                        // compute the likelihood that we had a transition from state c1 to the observed state org_val
-//                        // note, the observed state could be ambiguous!
-//                        unsigned long val = org_val;
-//                        
-//                        // get the pointer to the transition probabilities for the terminal states
-//                        const double* d  = tp_begin+(this->numChars*c1);
-//                        
-//                        double tmp = 0.0;
-//                        
-//                        while ( val != 0 ) // there are still observed states left
-//                        {
-//                            // check whether we observed this state
-//                            if ( (val & 1) == 1 )
-//                            {
-//                                // add the probability
-//                                tmp += *d;
-//                            }
-//                            
-//                            // remove this state from the observed states
-//                            val >>= 1;
-//                            
-//                            // increment the pointer to the next transition probability
-//                            ++d;
-//                        } // end-while over all observed states for this character
-//                        
-//                        // store the likelihood
-//                        p_site_mixture[c1] = tmp;
-//                        
-//                    }
-//                    else // no ambiguous characters in use
-//                    {
-//                        
-//                        // store the likelihood
-//                        p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
-//                        
-//                    }
-//                    
-//                } // end-for over all possible initial character for the branch
-//                
-//            } // end-if a gap state
-//            
-//            // increment the pointers to next site
-//            p_site_mixture+=this->siteOffset;
-//            
-//        } // end-for over all sites/patterns in the sequence
-//        
-//        // increment the pointers to next mixture category
-//        p_mixture+=this->mixtureOffset;
-//        
-//    } // end-for over all mixture categories
+    double lnL = 0.0;
+    if (this->usingAmbiguousCharacters == true)
+    {
+        BranchHistory& bh = this->histories[nodeIndex];
+        std::vector<CharacterEvent*> currState = bh.getChildCharacters();
+        
+        for (size_t i = 0; i < currState.size(); i++)
+        {
+            lnL += log(tipProbs[nodeIndex][ currState[i]->getState() ]);
+        }
+    }
+    this->historyLikelihoods[nodeIndex] = lnL;
     
 }
 
@@ -481,7 +394,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
                 
                 for (size_t j = 0; j < d.size(); j++)
                 {
-                    CharacterEvent* evt = new CharacterEvent(j, d[j].getStateIndex(), 1.0);
+                    unsigned s = 0;
+                    if (this->usingAmbiguousCharacters && GLOBAL_RNG->uniform01() < tipProbs[i][j])
+                        s = 1;
+                    else
+                        s = d[j].getStateIndex();
+                        
+                    CharacterEvent* evt = new CharacterEvent(j, s, 1.0);
                     tipState.push_back( evt );
                 }
                 
@@ -604,13 +523,25 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     
     if (node.isTip())
     {
-        if (imperfectTipData)
+        if (this->usingAmbiguousCharacters)
         {
-            ;
+            size_t nodeIdx = node.getIndex();
+            std::vector<CharacterEvent*> childState = this->histories[nodeIdx].getChildCharacters();
+            for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+            {
+                unsigned s = ( tipProbs[nodeIdx][*it] < GLOBAL_RNG->uniform01() ? 0 : 1);
+                childState[*it] = new CharacterEvent(*it, s, 1.0);
+            }
+      
+            // forbid extinction
+            if (numOn(childState) == 0)
+                samplePathEnd(node, indexSet);
+            else
+                this->histories[nodeIdx].setChildCharacters(childState);
         }
         else
         {
-            ;
+            return 0.0;
         }
     }
     else
@@ -1082,6 +1013,26 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
         this->redrawValue();
+    }
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
+{
+    tipProbs.clear();
+    
+    size_t numTaxa = tp->getNumberOfTaxa();
+    size_t numCharacters = tp->getNumberOfCharacters();
+    
+    tipProbs.resize(numTaxa);
+    for (size_t i = 0; i < numTaxa; i++)
+    {
+        for (size_t j = 0; j < numCharacters; j++)
+        {
+            double v = static_cast<const ContinuousCharacterData*>(tp)->getCharacter(i,j).getMean();
+            tipProbs[i].push_back(v);
+        }
     }
 }
 

@@ -8,11 +8,58 @@
 
 #include <cmath>
 #include "CharacterEvent.h"
+#include "GeographicArea.h"
 #include "GeographicDistanceRateModifier.h"
 #include "RbConstants.h"
+#include "TimeAtlas.h"
 #define EARTHRADIUSKM 6371
 
 using namespace RevBayesCore;
+
+GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, int idx, double dp, double th, std::string dt )
+
+{
+    // initialize
+    atlas = ta;
+    index = idx;
+    distancePower = dp;
+    threshhold = th;
+    distanceType = dt;
+    
+    // assign areas for timeslice
+    areas.clear();
+    std::vector<GeographicArea*> tmpAreas = atlas->getAreas()[index];
+    for (size_t i = 0; i < tmpAreas.size(); i++)
+    {
+        areas.push_back(new GeographicArea(*tmpAreas[i]));
+        std::vector<double> gc;
+        gc.push_back(tmpAreas[i]->getLatitude());
+        gc.push_back(tmpAreas[i]->getLongitude());
+        geographicCoordinates.push_back(gc);
+    }
+
+    geographicDistances.resize(numAreas);
+    geographicDistancePowers.resize(numAreas);
+    
+    for (unsigned i = 0; i < numAreas; i++)
+    {
+        geographicDistances[i].resize(numAreas,0.0);
+        geographicDistancePowers[i].resize(numAreas,0.0);
+    }
+    for (unsigned i = 0; i < numAreas; i++)
+    {
+        for (unsigned j = i; j < numAreas; j++)
+        {
+            geographicDistances[i][j] = computePairwiseDistances(i,j);
+            geographicDistances[j][i] = geographicDistances[i][j];
+        }
+    }
+
+    
+    computeAllPairwiseDistanceOrder();
+    updateGeographicDistancePowers(1.0, true);
+    update();
+}
 
 GeographicDistanceRateModifier::GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp, double th, std::string dt) : distanceType(dt), geographicCoordinates(gc), numAreas((int)gc.size()), threshhold(th), distancePower(dp)
 {
@@ -38,6 +85,34 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(std::vector<std::
     update();
     
     //printAll();
+}
+
+GeographicDistanceRateModifier::GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g)
+{
+    
+    if (&g != this)
+    {
+        for (size_t i = 0; i < areas.size(); i++)
+        {
+            areas[i] = g.areas[i];
+        }
+        atlas = g.atlas;
+        index = g.index;
+        
+        distanceType = g.distanceType;
+        geographicCoordinates = g.geographicCoordinates;
+        geographicDistances = g.geographicDistances;
+        geographicDistancePowers = g.geographicDistancePowers;
+        geographicDistanceOrder = g.geographicDistanceOrder;
+        
+        numAreas = g.numAreas;
+        threshhold = g.threshhold;
+        distancePower = g.distancePower;
+        
+        computeAllPairwiseDistanceOrder();
+        updateGeographicDistancePowers(distancePower, true);
+        update();
+    }
 }
 
 double GeographicDistanceRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)

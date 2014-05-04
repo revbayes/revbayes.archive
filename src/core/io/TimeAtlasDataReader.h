@@ -24,6 +24,7 @@ namespace RevBayesCore {
         
         std::vector<double> getTimes(void);
         std::vector<std::vector<GeographicArea*> > getAreas(void);
+        void readJson(void);
         
     protected:
         

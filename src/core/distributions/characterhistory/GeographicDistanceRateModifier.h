@@ -10,6 +10,8 @@
 #define __rb_mlandis__GeographicDistanceRateModifier__
 
 #include "AbstractCharacterHistoryRateModifier.h"
+#include "TimeAtlas.h"
+#include "GeographicArea.h"
 #include "StochasticNode.h"
 #include <string>
 
@@ -18,7 +20,10 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
+        GeographicDistanceRateModifier( TimeAtlas* ta, int index, double dp=1.0, double threshhold=1e-6, std::string dt="haversine" );
         GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
+        GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g);
+        
         double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value to computeRateModifier
         double computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value
         void updateGeographicDistancePowers(double dp=1.0, bool upd=true);
@@ -33,6 +38,13 @@ namespace RevBayesCore
         void computeAllPairwiseDistanceOrder(void);
         
     private:
+        
+        // map objects
+        TimeAtlas* atlas;
+        std::vector<GeographicArea*> areas;
+        int index;
+        
+        // distance values
         std::string distanceType;
         std::vector<std::vector<double> > geographicCoordinates;
         std::vector<std::vector<double> > geographicDistances;
