@@ -100,25 +100,32 @@ bool TestCharacterHistory::run_exp(void) {
     // io
     ////////////
     
+    // binary characters
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
-//    size_t numTaxa = data[0]->getNumberOfTaxa();
-
+    
+    // binary probs ...
+    std::vector<AbstractCharacterData*> data_prob = NclReader::getInstance().readMatrices(in_fp + "vireya.prob.nex");
+    std::cout << "Read " << data_prob.size() << " matrices." << std::endl;
+    
+    // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.nex" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
-    // how to read in geographic characters?
-    TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
-    TimeAtlas ta(&tsdr);
-    int numTimes = (int)ta.getTimes().size();
-    
-    // geographic grid timeatlas
-    std::vector<GeographicGridRateModifier*> ggrmv;
-    for (size_t i = 0; i < (size_t)numTimes; i++)
-        ggrmv.push_back(new GeographicGridRateModifier(&ta, i));
+//    // how to read in geographic characters?
+//    filepath = "/Users/mlandis/data/bayarea/input/";
+//    timeatlasFilename = "timeatlas.txt";
+//    TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
+//    TimeAtlas ta(&tsdr);
+//    int numTimes = (int)ta.getTimes().size();
+//    
+//    // geographic grid timeatlas
+//    std::vector<GeographicDistanceRateModifier*> ggrmv;
+//    for (size_t i = 0; i < (size_t)numTimes; i++)
+//        ggrmv.push_back(new GeographicDistanceRateModifier(&ta, i));
     
     ////////////
     // model
@@ -154,10 +161,13 @@ bool TestCharacterHistory::run_exp(void) {
     biogeoCtmc->setClockRate(clockRate);
     biogeoCtmc->setRateMatrix(qmat);
     biogeoCtmc->setRateMap(qmap);
+    biogeoCtmc->setTipProbs( data_prob[0] );
     
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", biogeoCtmc );
     charactermodel->clamp( data[0] );
     charactermodel->redraw();
+    
+    
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
 //    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
