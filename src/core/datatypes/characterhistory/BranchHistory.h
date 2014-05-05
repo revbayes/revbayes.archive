@@ -41,7 +41,7 @@ namespace RevBayesCore {
         const std::vector<CharacterEvent*>& getChildCharacters(void);
         const std::vector<CharacterEvent*>& getParentCharacters(void) const;
         const std::vector<CharacterEvent*>& getChildCharacters(void) const;
-        const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void);
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void) const;
 
         
         void addEvent(CharacterEvent* evt);
