@@ -26,7 +26,7 @@ then
     
     cd ../../boost_1_55_0
     rm ./project-config.jam*  # clean up from previous runs
-    ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math
+    ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
     ./b2
     
 else
@@ -98,11 +98,11 @@ add_subdirectory(revlanguage)
 ############# executables #################
 # basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
-target_link_libraries(rb rb-parser rb-core )
+target_link_libraries(rb rb-parser rb-core)
 
 # extended rev-bayes binary
 add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
-target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l)
+target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l boost_iostreams boost_serialization)
 
 # utility for generating help html files.
 add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/HelpHtmlGenerator.cpp)
@@ -111,6 +111,18 @@ target_link_libraries(help-html-generator rb-parser rb-core libs boost_filesyste
 
 
 ########## boost section ##############
+
+add_library(boost_signals SHARED IMPORTED)
+set_target_properties(boost_signals PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/boost_signals.a")
+
+add_library(boost_context SHARED IMPORTED)
+set_target_properties(boost_context PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_context.a")
+
+add_library(boost_serialization SHARED IMPORTED)
+set_target_properties(boost_serialization PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_serialization.a")
+
+add_library(boost_iostreams SHARED IMPORTED)
+set_target_properties(boost_iostreams PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_iostreams.a")
 
 add_library(boost_system SHARED IMPORTED)
 set_target_properties(boost_system PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_system.a")

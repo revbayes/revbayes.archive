@@ -6,7 +6,7 @@
    
     <xs:element name="revbayes-help">
         <xs:annotation>
-            <xs:documentation>Each help file consists of either a "function section" or "type-section". In the rare case when a lowercase 
+            <xs:documentation>Each help file typically consists of either a "function section" or "type-section". In the rare case when a lowercase 
                 function name is equal to a lowercase type name, both sections have to be specified in the same file. 
                 
                 Fill in with more help documentation ...
@@ -16,7 +16,11 @@
             <xs:sequence>
                 <xs:element name="function-help-entry" minOccurs="0">
                     <xs:annotation>
-                        <xs:documentation>Help entry describing a function.</xs:documentation>
+                        <xs:documentation>Each help file typically consists of either a "function section" or "type-section". In the rare case when a lowercase 
+                            function name is equal to a lowercase type name, both sections have to be specified in the same file. 
+                
+                            Fill in with more help documentation ...
+                        </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>
@@ -97,7 +101,11 @@
                 
                 <xs:element name="type-help-entry" minOccurs="0">
                     <xs:annotation>
-                        <xs:documentation>Help entry describing a typetype.</xs:documentation>
+                        <xs:documentation>Each help file typically consists of either a "function section" or "type-section". In the rare case when a lowercase 
+                            function name is equal to a lowercase type name, both sections have to be specified in the same file. 
+                
+                            Fill in with more help documentation ...
+                        </xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                         <xs:sequence>

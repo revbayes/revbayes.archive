@@ -15,7 +15,6 @@ extern "C" {
 #include "lineedit/EditorState.h"
 #include "lineedit/lineeditUtils.h"
 
-
 #define ctrl(C) ((C) - '@')
 
 bool debug = true;
@@ -25,7 +24,8 @@ enum modeOption {
 };
 modeOption mode = MODE_DEFAULT;
 
-const char* default_prompt = (char*) "hello, enter some code > ";
+const char* default_prompt = (char*) "RevBayes > ";
+const char* incomplete_prompt = (char*) "RevBayes + ";
 const char* esc_prompt = (char*) "> ";
 const char* prompt = default_prompt;
 
