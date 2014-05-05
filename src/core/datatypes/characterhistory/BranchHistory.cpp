@@ -113,7 +113,7 @@ const std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void) cons
     return childCharacters;
 }
 
-const std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void)
+const std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void) const
 {
     return history;
 }

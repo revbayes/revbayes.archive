@@ -28,26 +28,26 @@ namespace RevBayesCore {
         SampleNodeHistoryCtmcMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, double l, bool tuning, double w);                                    //!<  constructor
         
         // Basic utility functions
-        SampleNodeHistoryCtmcMove* clone(void) const;                                                                  //!< Clone object
-        void                            swapNode(DagNode *oldN, DagNode *newN);
+        SampleNodeHistoryCtmcMove*              clone(void) const;                                                                  //!< Clone object
+        void                                    swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
-        void                            acceptSimpleMove(void);
-        const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-        double                          performSimpleMove(void);                                                            //!< Perform move
-        void                            printParameterSummary(std::ostream &o) const;
-        void                            rejectSimpleMove(void);
-        void                            tune(void);
+        void                                    acceptSimpleMove(void);
+        const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        double                                  performSimpleMove(void);                                                            //!< Perform move
+        void                                    printParameterSummary(std::ostream &o) const;
+        void                                    rejectSimpleMove(void);
+        void                                    tune(void);
         
     private:
         
         StochasticNode<AbstractCharacterData>*  variable;
         StochasticNode<treeType>*               tree;
 
-        TopologyNode*                   storedNode;
-        std::vector<TopologyNode*>      storedAdjNodes;
-        BranchHistory*                  storedValue;
-        std::vector<BranchHistory*>     storedAdjValues;
+        TopologyNode*                           storedNode;
+        std::vector<TopologyNode*>              storedAdjNodes;
+        BranchHistory*                          storedValue;
+        std::vector<BranchHistory*>             storedAdjValues;
         
         
         // parameters
@@ -56,11 +56,8 @@ namespace RevBayesCore {
         size_t                                  numCharacters;
         size_t                                  numStates;
         
-        
     };
-    
 }
-
 
 #include "DiscreteCharacterData.h"
 #include "DistributionBinomial.h"

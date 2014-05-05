@@ -36,8 +36,6 @@
 #include "PhylowoodNhxMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "SamplePathHistoryCtmcMove.h"
-#include "SampleNodeHistoryCtmcMove.h"
 #include "ScaleMove.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
@@ -60,6 +58,9 @@
 #include "BiogeographyRateMapFunction.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "FreeBinaryRateMatrixFunction.h"
+#include "SamplePathHistoryCtmcMove.h"
+#include "SampleNodeHistoryCtmcMove.h"
+#include "TreeCharacterHistoryNodeMonitor.h"
 
 //#define USE_DDBD
 
@@ -102,6 +103,9 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     // io
     ////////////
+    
+    filepath="/Users/mlandis/data/bayarea/output/";
+    
     
     // binary characters
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
@@ -180,30 +184,14 @@ bool TestCharacterHistory::run_exp(void) {
     // moves
     ////////////
     
-    
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
     moves.push_back( new ScaleMove(dp, 1.0, true, 5.0) );
-    
-//    moves.push_back( new Simplex
-    moves.push_back(new SimplexMove(glr, 10.0, 2, 0, true, 2.0));
-    moves.push_back(new SimplexMove(sglr, 10.0, 2, 0, true, 2.0));
-    moves.push_back(new ScaleMove(dp, 1.0, true, 5.0));
+    moves.push_back(new SimplexMove(glr, 50.0, 2, 0, true, 2.0));
+    moves.push_back(new SimplexMove(sglr, 50.0, 2, 0, true, 2.0));
     moves.push_back(new SamplePathHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 10.0));
-    moves.push_back(new SampleNodeHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 10.0));
+    //moves.push_back(new SampleNodeHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 10.0));
 
-    // need character history proposals
-    
-//    for (size_t i = 0; i < bh_vector.size(); i++)
-//    {
-//        TypedDagNode<BranchHistory>* bh_tdn = const_cast<TypedDagNode<BranchHistory>* >(bh_vector[i]);
-//        StochasticNode<BranchHistory>* bh_sn = static_cast<StochasticNode<BranchHistory>* >(bh_tdn);
-//        moves.push_back( new CharacterHistoryCtmcPathUpdate(bh_sn, 0.1, true, 2.0) );
-//        if (i >= numTaxa || i == 0 || i == 1)
-//            moves.push_back( new CharacterHistoryCtmcNodeUpdate(bh_sn, bh_vector_stochastic, tau, 0.1, true, 5.0));
-//    }
-    
-    
     
     ////////////
     // monitors
@@ -225,12 +213,13 @@ bool TestCharacterHistory::run_exp(void) {
 //    }
     
     
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t"));
 //    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
 //    unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 //    PhylowoodNhxMonitor* phwnm = new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" );
 //    monitors.push_back(phwnm);
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 50, filepath + "rb.tree_chars.txt", "\t"));
 
     
     //////////
