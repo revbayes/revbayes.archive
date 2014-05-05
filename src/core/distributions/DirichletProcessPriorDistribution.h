@@ -138,6 +138,8 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     
     // reset the lnProb and set it to log( alpha^K )
 	
+//	return 0.0;
+	
 	int nt = numTables;
 	int ne = numElements;
     double lnProb = log( concentration->getValue() ) * nt;
