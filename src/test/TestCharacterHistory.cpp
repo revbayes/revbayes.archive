@@ -141,15 +141,21 @@ bool TestCharacterHistory::run_exp(void) {
     // create biogeo rate map (to compute likelihoods)
     ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
-    ConstantNode<std::vector<double> > *glrp = new ConstantNode<std::vector<double> >( "gainLossRatePrior", new std::vector<double>(2,1.0) );
-    StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new DirichletDistribution(glrp) );
-//    StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new MultinomialDistribution(glrp) );
-    DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
+    ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(1.0));
+    std::vector<const TypedDagNode<double> *> gainLossRates;
+	std::vector< ContinuousStochasticNode *> gainLossRates_nonConst;
+	for( size_t i=0; i<2; i++){
+        std::ostringstream glr_name;
+        glr_name << "r(" << i << ")";
+		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
+		gainLossRates.push_back( tmp_glr );
+		gainLossRates_nonConst.push_back( tmp_glr );
+	}
+    DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( gainLossRates ) );
+    DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr_vector, dp, numAreas) );
     
     // create biogeo rate matrix (to sample histories)
-    ConstantNode<std::vector<double> > *sglrp = new ConstantNode<std::vector<double> >( "sampleGainLossRatePrior", new std::vector<double>(2,1.0) );
-    StochasticNode<std::vector<double> > *sglr = new StochasticNode<std::vector<double> >( "sampleGainLossRate", new DirichletDistribution(sglrp) );
-    DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "sQ", new FreeBinaryRateMatrixFunction(sglr) );
+    DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "sQ", new FreeBinaryRateMatrixFunction(glr_vector) );
     
     // instantiate tree object
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(new ConstantNode<double>("", new double(0.0)), new ConstantNode<double>("", new double(100.0)) ));
@@ -188,8 +194,10 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
     moves.push_back( new ScaleMove(dp, 1.0, true, 5.0) );
-    moves.push_back(new SimplexMove(glr, 50.0, 2, 0, true, 2.0));
-    moves.push_back(new SimplexMove(sglr, 50.0, 2, 0, true, 2.0));
+    for( size_t i=0; i<2; i++){
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 1.0, true, 2.0) );
+	}
+	
     moves.push_back(new SamplePathHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 10.0));
     //moves.push_back(new SampleNodeHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 10.0));
 
@@ -203,8 +211,8 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<Monitor*> monitors;
     
     std::set<DagNode*> monitoredNodes;
-    monitoredNodes.insert( glr );
-    monitoredNodes.insert( sglr );
+    monitoredNodes.insert( glr_vector );
+//    monitoredNodes.insert( sglr );
     monitoredNodes.insert( dp );
     
 //    for (size_t i = 0; i < bh_vector.size(); i++)
