@@ -143,6 +143,7 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
     ConstantNode<std::vector<double> > *glrp = new ConstantNode<std::vector<double> >( "gainLossRatePrior", new std::vector<double>(2,1.0) );
     StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new DirichletDistribution(glrp) );
+//    StochasticNode<std::vector<double> > *glr = new StochasticNode<std::vector<double> >( "gainLossRate", new MultinomialDistribution(glrp) );
     DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(glr, dp, numAreas) );
     
     // create biogeo rate matrix (to sample histories)
@@ -155,7 +156,7 @@ bool TestCharacterHistory::run_exp(void) {
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge() ) );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     tau->setValue( trees[0] );
 
