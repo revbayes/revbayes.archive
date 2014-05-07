@@ -19,11 +19,6 @@ extern "C" {
 
 bool debug = true;
 
-enum modeOption {
-    MODE_DEFAULT, MODE_CHOOSE, MODE_NEW_FILE, MODE_EDIT_FILE
-};
-modeOption mode = MODE_DEFAULT;
-
 const char* default_prompt = (char*) "RevBayes > ";
 const char* incomplete_prompt = (char*) "RevBayes + ";
 const char* esc_prompt = (char*) "> ";
@@ -44,32 +39,7 @@ typedef std::vector<std::string> StringVector;
 /* callback for 'ESC' */
 int escapeCallback(const char *buf, size_t len, char c) {
 
-    if (mode == MODE_DEFAULT) {
-        mode = MODE_CHOOSE;
-
-
-        printf("\n\rEnter your choise, ESC again to exit this menu:\n\r%s", esc_prompt);
-        printf("\n\r'n' : Create a new file\n\r%s", esc_prompt);
-
-
-        char c = getchar();
-        switch (c) {
-            case 'n':
-                mode = MODE_NEW_FILE;
-                printf("\n\rPlease enter the name of new file: ");
-        }
-
-    } else {
-        if (mode == MODE_EDIT_FILE) {
-            fprintf(stdout, "\n\rSave: y/n\n\r");
-            if (tolower(getchar()) == 'y') {
-                fprintf(stdout, "Saving file...");
-            } else {
-                fprintf(stdout, "Discarding file ...");
-            }
-        }
-
-    }
+    
 
     fflush(stdout);
 
@@ -121,12 +91,7 @@ void RbClient::startInterpretor() {
         linenoiseHistoryAdd(line); /* Add to the history. */
         linenoiseHistorySave("history.txt"); /* Save the history on disk. */
 
-        if (mode == MODE_NEW_FILE) {
-            settings.newFilename = line;
-            printf("\n\rNew file name = %s\n\r", line);
-            fflush(stdout);
-            mode = MODE_EDIT_FILE;
-        }
+        
 
         
         free(line);

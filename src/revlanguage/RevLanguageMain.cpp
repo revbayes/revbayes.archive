@@ -19,6 +19,11 @@ RevLanguageMain::RevLanguageMain() {
 
 }
 
+void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles, std::string helpDir) {
+    this->helpDir = helpDir;
+    startRevLanguageEnvironment(sourceFiles);
+}
+
 void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles) {
 
     // Print a nifty message
@@ -27,7 +32,8 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     RevLanguage::UserInterface::userInterface().output("", false);
 
     // Initialize help singleton
-    Help::getHelp().initializeHelp();
+    Help::getHelp().initializeHelp(this->helpDir);
+    
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
     // Print an extra line to separate prompt from possible output from help call
