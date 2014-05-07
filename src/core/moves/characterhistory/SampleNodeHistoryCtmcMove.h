@@ -181,7 +181,7 @@ void RevBayesCore::SampleNodeHistoryCtmcMove<charType, treeType>::rejectSimpleMo
     p->setHistory(*storedValue, storedNode->getIndex());
     for (size_t i = 0; i < storedAdjNodes.size(); i++)
     {
-        p->samplePathStart(*storedAdjValues[i], storedAdjNodes[i].getIndex());
+        p->setHistory(*storedAdjValues[i], storedAdjNodes[i]->getIndex());
     }
     
 }
