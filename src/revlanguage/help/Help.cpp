@@ -39,7 +39,6 @@
 #include <iterator>
 #include <list>
 
-#include "../constants.h"
 
 /** Default constructor */
 Help::Help(void)
@@ -291,14 +290,14 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
 }
 
 /** Initialize the help from an XML file */
-void Help::initializeHelp()
+void Help::initializeHelp(std::string helpDir)
 {
 
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
     //pathToHelpDir = fMngr.getCurrentDirectory();
 
-    pathToHelpDir = HELP_DIR;
+    pathToHelpDir = helpDir;
     fMngr.setFilePath(pathToHelpDir);
     if (fMngr.testDirectory() == false)
     {

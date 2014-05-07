@@ -89,7 +89,7 @@ class Parser {
             static Parser theParser;
             return theParser;
         }
-
+        
    private:
                             Parser(void) {}                                         //!< Prevent construction
                             Parser(const Parser& x) {}                              //!< Prevent copy construction
