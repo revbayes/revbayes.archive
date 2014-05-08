@@ -98,8 +98,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         size_t index = l(t);
         if (t == 0.0 || find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end())
         {
-            if (sampling[index] > 0.0)
-                lnProbTimes += log( sampling[index] );
+            lnProbTimes += log( sampling[index] );
             if (t > 0.0)
                 lnProbTimes += log( p(index, rateChangeTimes[index]));
         }
@@ -114,7 +113,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+            lnProbTimes == RbConstants::Double::neginf) 
         {
             return RbConstants::Double::nan;
         }
@@ -130,7 +129,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf ||
-            lnProbTimes == RbConstants::Double::neginf )
+            lnProbTimes == RbConstants::Double::neginf)
         {
             return RbConstants::Double::nan;
         }
@@ -139,10 +138,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         size_t index = l(t);
         if (find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end())
         {
-            if (sampling[index] > 0.0)
-                lnProbTimes += log( sampling[index] );
-            if (sampling[index] < 1.0)
-                lnProbTimes -= log( 1 - sampling[index] );
+            lnProbTimes += log( sampling[index] ) - log( 1 - sampling[index] );
         }
         else
         {
@@ -155,16 +151,14 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+            lnProbTimes == RbConstants::Double::neginf)
         {
             return RbConstants::Double::nan;
         }
         
         double t = rateChangeTimes[i];
         int div = survivors(t);
-        lnProbTimes += div * log( q(i, t) );
-        if (sampling[i+1] < 1.0)
-            lnProbTimes += div * log( 1.0 - sampling[i+1] );
+        lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
     }
     
     lnProbTimes += log( q(rateChangeTimes.size(), org ) );
