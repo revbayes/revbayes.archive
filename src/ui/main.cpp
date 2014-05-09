@@ -21,6 +21,8 @@
 #include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
 #include "libs/filesystem.h"
+#include "IHelp.h"
+#include "Help.h"
 
 #include <boost/filesystem.hpp>
 #include "boost/filesystem/operations.hpp"
@@ -28,7 +30,7 @@
 
 namespace fs = boost::filesystem;
 
-const std::string inifile = expandUserDir("~") + directorySeparator() + "revbayes.ini";
+std::string inifile = expandUserDir("~") + directorySeparator() + "revbayes.ini";
 
 
 
@@ -49,7 +51,8 @@ int main(int argc, const char* argv[]) {
     
 
     /* initialize environment */
-    RevLanguageMain rl;
+    Help help;
+    RevLanguageMain rl(&help);
     // pass input files to Rev
     rl.startRevLanguageEnvironment(options.getInputFiles());
     // exit after processing the input files if not interactive

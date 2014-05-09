@@ -26,11 +26,15 @@
 #include <string>
 #include <vector>
 #include "pugixml.hpp"
+#include "IHelp.h"
 
-class Help {
+class Help : public IHelp {
 public:
-    ~Help(void); //!< Destructor
-    std::string formatHelpString(const std::string& qs, size_t columnWidth); //!< Format the help information for printing to the terminal
+ 
+    void initializeHelp(std::string helpDir); //!< Initialize the help from an XML file
+    //~Help(void); //!< Destructor
+    std::string getHelp(std::string qs, int columnWidth); //!< Format the help information for printing to the terminal
+    bool isHelpAvailableForQuery(std::string query);
 
 //    static Help& getHelp(void) //!< Return a reference to the singleton help
 //    {
@@ -48,6 +52,8 @@ private:
 //    Help(void); //!< Default constructor
 //    Help(const Help&); //!< Copy constructor (hidden away as this is a singleton class)
 //    Help& operator=(const Help&); //!< Assignment operator (hidden away as this is a singleton class)
+    
+    
     std::string wrapText(const std::string s, std::string padding, size_t w); //!< Used for formatting a string for printing to the screen
     pugi::xml_parse_result loadHelpFile(const std::string& qs); //!< loads the help xml file, name of file is expected to be <query>.xml
     std::string formatOutString(std::string s, size_t columnWidth, int indentLevel, int numLineBreaks);
@@ -57,9 +63,7 @@ private:
     std::string stripConsecutiveSpace(std::string subject);
 
 
-    
-    bool isHelpInitialized; //!< Flag indicating whether the help has been initialized
-    std::string pathToHelpDir; //!< Where the help xml files are located
+    std::string helpDir;
     pugi::xml_document doc; //!< the (parsed) xml help file
 
 };

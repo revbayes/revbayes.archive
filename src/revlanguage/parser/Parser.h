@@ -22,6 +22,7 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include "IHelp.h"
 
 namespace RevLanguage {
 
@@ -89,8 +90,13 @@ class Parser {
             static Parser theParser;
             return theParser;
         }
+        /* inject help class */
+        void setHelp(IHelp *help){
+            this->helpEntity = help;
+        }
         
    private:
+                            IHelp *helpEntity;
                             Parser(void) {}                                         //!< Prevent construction
                             Parser(const Parser& x) {}                              //!< Prevent copy construction
 

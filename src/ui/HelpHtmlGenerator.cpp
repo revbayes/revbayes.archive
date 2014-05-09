@@ -7,18 +7,21 @@
 #include <boost/filesystem/fstream.hpp>
 #include "boost/algorithm/string_regex.hpp"
 
-#include "pugixml.cpp"
+#include "pugixml.hpp"
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
+#include "Configuration.h"
+#include "libs/filesystem.h"
 
-#include "constants.h"
 
 namespace fs = boost::filesystem;
 using namespace std;
+
+std::string inifile = expandUserDir("~") + directorySeparator() + "revbayes.ini";
 
 // read file content
 
@@ -43,8 +46,14 @@ struct compare_path {
 };
 
 int main(int argc, const char * argv[]) {
+    
+    // read / create settings file
+    Configuration configuration(inifile);
+    configuration.parseInifile();
+    std::cout << configuration.getMessage() << std::endl;
+    
 
-    fs::path helpDir(HELP_DIR);
+    fs::path helpDir(configuration.getHelpDir());
 
     cout << endl << "This tool will automatically generate the index.html page in:" << endl
             << helpDir.string() << " - directory" << endl
