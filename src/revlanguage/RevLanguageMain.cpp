@@ -5,7 +5,7 @@
  */
 
 #include "RevLanguageMain.h"
-#include "Help.h"
+#include "IHelp.h"
 #include "Parser.h"
 #include "RbSettings.h"
 #include "Workspace.h"
@@ -15,14 +15,10 @@
 #include <string>
 #include <cstdlib>
 
-RevLanguageMain::RevLanguageMain() {
-
+RevLanguageMain::RevLanguageMain(IHelp *help) {
+    this->help = help;  
 }
 
-void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles, std::string helpDir) {
-    this->helpDir = helpDir;
-    startRevLanguageEnvironment(sourceFiles);
-}
 
 void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles) {
 
@@ -30,9 +26,6 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     RbVersion version = RbVersion();
     RevLanguage::UserInterface::userInterface().output(version.getHeader(), false);
     RevLanguage::UserInterface::userInterface().output("", false);
-
-    // Initialize help singleton
-    Help::getHelp().initializeHelp(this->helpDir);
     
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 

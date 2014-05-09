@@ -8,20 +8,25 @@
 #ifndef IHELP_H
 #define	IHELP_H
 
+
+#include <string>
+#include "RbHelpEntry.h"
+
 class IHelp {
-public:
-    IHelp();
-    IHelp(std::string helpDir){
-        this->helpDir = helpDir;
+public:   
+    virtual std::string getHelp(std::string query, int columnWidth) = 0;    
+    virtual bool isHelpAvailableForQuery(std::string query) = 0;
+
+    void setRbHelpEntry(RbHelpEntry rbHelp) {
+        this->rbHelpEntry = rbHelp;
     }
-    virtual std::string getHelp(std::string query, int columnWidth) = 0;
-    
-    void setHelpDir(std::string helpDir){
-        this->helpDir = helpDir;
+
+    RbHelpEntry getRbHelpEntry() const {
+        return rbHelpEntry;
     }
-    
+  
 private:
-    std::string helpDir;
+    RbHelpEntry rbHelpEntry;
 };
 
 #endif	/* IHELP_H */

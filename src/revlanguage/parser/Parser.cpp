@@ -14,7 +14,7 @@
  */
 
 
-#include "Help.h"
+#include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"
 #include "RbNullObject.h"
@@ -238,17 +238,15 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 #	endif
 
     // Get some help
-    Help& userHelp = Help::getHelp();
-    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( symbol ) == true )
+    std::string qs(symbol);
+    if ( this->helpEntity->isHelpAvailableForQuery(qs))
         {
-        std::string hStr = userHelp.formatHelpString( symbol, 100);
+        std::string hStr = this->helpEntity->getHelp( qs, 100);
         UserInterface::userInterface().output(hStr, false);
         }
     else {
-        if (userHelp.isUserHelpAvailable() == false)
-            RBOUT("User help is unavailable");
-        else if ( userHelp.isHelpAvailableForQuery( symbol ) == false )
-            RBOUT("Help unavailable for \"" + symbol + "\"");
+        
+        RBOUT("Help unavailable for \"" + symbol + "\"");
 
         std::vector<Function *> functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol );
         if ( functions.size() != 0 ) {

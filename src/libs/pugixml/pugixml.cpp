@@ -3520,8 +3520,8 @@ PUGI__NS_BEGIN
 			if (stream.bad() || (!stream.eof() && stream.fail())) return status_io_error;
 
 			// guard against huge files (chunk size is small enough to make this overflow check work)
-			if (total + chunk->size < total) return status_out_of_memory;
-			total += chunk->size;
+//			if (total + chunk->size < total) return status_out_of_memory;
+//			total += chunk->size;
 		}
 
 		// copy chunk list to a contiguous buffer
