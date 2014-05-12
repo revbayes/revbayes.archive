@@ -21,14 +21,14 @@ fi
 
 if [ "$boost" = "true" ]
 then
-    echo 'Building boost libraries'    
+    echo 'Building boost libraries'
     echo 'you can turn this of with argument "-boost false"'
     
     cd ../../boost_1_55_0
     rm ./project-config.jam*  # clean up from previous runs
     ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
-    ./b2
-    
+    ./b2 cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+
 else
     echo 'not building boost libraries'
 fi
@@ -51,7 +51,6 @@ fi
 #echo "static const char* INSTALL_DIR = \"$HERE\";" >> constants.h
 #echo "static const char* HELP_DIR = \"$HELP\";" >> constants.h
 
-
 #################
 # 3) generate cmake configuration
 cd $HERE
@@ -70,11 +69,16 @@ project(RevBayes)
 # Default compiler flags
 if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg -static")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
 else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -pg")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
 endif ()
+
+# SET(GCC_COVERAGE_LINK_FLAGS    "-stdlib=libstdc++")
+# SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
+# SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
+# SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
 
 # Add extra CMake libraries into ./CMake
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
@@ -93,8 +97,6 @@ add_subdirectory(libs)
 add_subdirectory(core)   
 add_subdirectory(revlanguage)
 
-
-
 ############# executables #################
 # basic rev-bayes binary
 add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
@@ -108,12 +110,10 @@ target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boos
 add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/HelpHtmlGenerator.cpp)
 target_link_libraries(help-html-generator rb-parser rb-core libs boost_filesystem boost_system boost_regex)
 
-
-
 ########## boost section ##############
 
 add_library(boost_signals SHARED IMPORTED)
-set_target_properties(boost_signals PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/boost_signals.a")
+set_target_properties(boost_signals PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_signals.a")
 
 add_library(boost_context SHARED IMPORTED)
 set_target_properties(boost_context PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_context.a")
@@ -154,10 +154,7 @@ set_target_properties(boost_math_tr1f PROPERTIES IMPORTED_LOCATION "../../boost_
 add_library(boost_math_tr1l SHARED IMPORTED)
 set_target_properties(boost_math_tr1l PROPERTIES IMPORTED_LOCATION "../../boost_1_55_0/stage/lib/libboost_math_tr1l.a")
 
-
 ######## end of boost #################
-
-
 
 ' >> $HERE/CMakeLists.txt
 
@@ -179,7 +176,6 @@ find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CM
 echo ')
 add_library(libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
 
-
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"
 fi
@@ -188,7 +184,6 @@ find core | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/core/CM
 echo ')
 add_library(rb-core ${CORE_FILES})'  >> "$HERE/core/CMakeLists.txt"
 
-
 if [ ! -d "$HERE/revlanguage" ]; then
 mkdir "$HERE/revlanguage"
 fi
@@ -196,5 +191,4 @@ echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
-
 
