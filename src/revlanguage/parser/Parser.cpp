@@ -246,7 +246,7 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
         }
     else {
         
-        RBOUT("Help unavailable for \"" + symbol + "\"");
+        RBOUT("Help is not available for \"" + symbol + "\"");
 
         std::vector<Function *> functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol );
         if ( functions.size() != 0 ) {

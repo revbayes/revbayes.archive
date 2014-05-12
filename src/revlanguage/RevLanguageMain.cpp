@@ -28,6 +28,9 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     RevLanguage::UserInterface::userInterface().output("", false);
     
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
+    
+    // inject help class
+    RevLanguage::Parser::getParser().setHelp(this->help);
 
     // Print an extra line to separate prompt from possible output from help call
     // RevLanguage::UserInterface::userInterface().output("\n");

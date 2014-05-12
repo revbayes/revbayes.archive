@@ -1,24 +1,158 @@
 <html>
     <head>
         <title>RevBayes Manual Pages :: Index Page</title>
-        <link rel="stylesheet" type="text/css" href="../lib/help.css"/>        
+        <link rel="stylesheet" type="text/css" href="../lib/help.css"/>     
+
+        <script src="../lib/jquery.js"></script>
+
+        <script>
+            var showFunctions, showTypes, filter;
+            var manualEntries, functionEntries, typeEntries;
+            var showMore;
+            $(document).ready(function() {
+                showFunctions = $("#showFunctions");
+                showTypes = $("#showTypes");
+                filter = $("#filter");
+
+                manualEntries = $("#manualEntries");
+                functionEntries = $("#functionEntries");
+                typeEntries = $("#typeEntries");
+
+                showFunctions.on('click', function() {
+                    functionEntries.slideToggle();
+                });
+
+                showTypes.on('click', function() {
+                    typeEntries.slideToggle();
+                });
+
+                filter.on('input', function() {
+                    doFilter(functionEntries, $(this).val());
+                    doFilter(typeEntries, $(this).val());
+                });
+                
+                manualEntries.find("[id$=less-label]").each(function(){
+                    $(this).hide();
+                });
+                manualEntries.find("[id$=more-content]").each(function(){
+                    $(this).hide();
+                });
+            });
+
+            function doFilter(section, filterString) {
+                section.children().each(function() {
+                    if (filterString.length == 0) {
+                        $(this).fadeIn();
+                    }
+                    else {
+                        $(this).hide();
+                    }
+                });
+                if (filterString.length > 0) {
+                    section.children("[id^=" + filterString + "]").each(function() {
+                        $(this).fadeIn();
+                    });
+                }
+            }
+            
+            function showMore(entry){
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                
+                $("#" + entry + "-more-content").slideDown();
+                
+                return false;
+            }
+            
+            function showLess(entry){
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                
+                $("#" + entry + "-more-content").slideUp();
+                
+                return false;
+            }
+
+        </script>
+
     </head>
     <body>
+        <div style="text-align: right;">
+            <label for="showFunctions">Functions</label>
+            <input type="checkbox" id="showFunctions" checked="checked" />
+
+            <label for="showTypes">Types</label>
+            <input type="checkbox" id="showTypes" checked="checked" />
+
+            <input type="text" id="filter" placeholder="Filter..."/>
+        </div>
         <h1>RevBayes Manual Pages :: Index</h1>
 
-        <h2></h2><a href="../cbdp.xml">View</a>
-<div class="indent"></div>
-<h2></h2><p class="indent"></p>
+        <div id="manualEntries">
+            <div id="functionEntries"><div id="cBDP">
+    <h2>cBDP - Function</h2>
+    <input type="hidden" id="entry-type" value="Function" />
+    
+    <!--<a href="#entry-file#">View</a>-->
+    <div class="indent"><p>
+                The constant-rate birth-death process species a prior probability distribution on time trees. The birth (speciation) and death (extinction)
+                rates are assumed to be constant over time. Unlike some implementations, cBDP does not constrain the birth rate to be larger than the death
+                rate.
+            </p></div>    
+    <a href="" onClick="return showMore('cBDP');" class="indent more-label" id="cBDP-more-label" >Show more...</a>
+    <a href="" onClick="return showLess('cBDP');" class="indent more-label" id="cBDP-less-label" >Show less...</a>
+    <div class="indent" id="cBDP-more-content">More content here ...</div>
+</div>
 
-<h2></h2><a href="../mcmc.xml">View</a>
-<div class="indent"></div>
-<h2></h2><p class="indent"></p>
+<div id="mcmc">
+    <h2>mcmc - Function</h2>
+    <input type="hidden" id="entry-type" value="Function" />
+    
+    <!--<a href="#entry-file#">View</a>-->
+    <div class="indent"><p>
+                This function is used to create an MCMC analysis object from a model and associated
+                monitors and moves.
+            </p></div>    
+    <a href="" onClick="return showMore('mcmc');" class="indent more-label" id="mcmc-more-label" >Show more...</a>
+    <a href="" onClick="return showLess('mcmc');" class="indent more-label" id="mcmc-less-label" >Show less...</a>
+    <div class="indent" id="mcmc-more-content">More content here ...</div>
+</div>
 
-<h2></h2><a href="../powermix.xml">View</a>
-<div class="indent"></div>
-<h2></h2><p class="indent"></p>
+<div id="powermix">
+    <h2>powermix - Function</h2>
+    <input type="hidden" id="entry-type" value="Function" />
+    
+    <!--<a href="#entry-file#">View</a>-->
+    <div class="indent"><p>
+                This function takes two simplex parameters "a" and "b", and computes a mixture of them by using a simplex parameter "prop"
+                with two components as exponents. Each component x[i] in the mixture is computed as:
+            </p><p>
+                The vector x is then normalized to produce the simplex representing the mixture.
+            </p></div>    
+    <a href="" onClick="return showMore('powermix');" class="indent more-label" id="powermix-more-label" >Show more...</a>
+    <a href="" onClick="return showLess('powermix');" class="indent more-label" id="powermix-less-label" >Show less...</a>
+    <div class="indent" id="powermix-more-content">More content here ...</div>
+</div>
 
+</div>
+            <div id="typeEntries"><div id="MCMC">
+    <h2>MCMC - Type</h2>
+    <input type="hidden" id="entry-type" value="Type" />
+    
+    <!--<a href="#entry-file#">View</a>-->
+    <div class="indent"><p>
+                The MCMC analysis object keeps a model and the associated moves and monitors.
+                The object is used to run Markov chain Monte Carlo (MCMC) simulation on
+                the model, using the provided moves, to obtain a sample of the posterior probability
+                distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.
+            </p></div>    
+    <a href="" onClick="return showMore('MCMC');" class="indent more-label" id="MCMC-more-label" >Show more...</a>
+    <a href="" onClick="return showLess('MCMC');" class="indent more-label" id="MCMC-less-label" >Show less...</a>
+    <div class="indent" id="MCMC-more-content">More content here ...</div>
+</div>
 
+</div>
+        </div>
 
         <br />
         <br />

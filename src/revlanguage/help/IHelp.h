@@ -16,7 +16,7 @@ class IHelp {
 public:   
     virtual std::string getHelp(std::string query, int columnWidth) = 0;    
     virtual bool isHelpAvailableForQuery(std::string query) = 0;
-
+    
     void setRbHelpEntry(RbHelpEntry rbHelp) {
         this->rbHelpEntry = rbHelp;
     }

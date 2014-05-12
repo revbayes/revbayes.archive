@@ -22,7 +22,7 @@
 #include "CommandLineUtils.h"
 #include "libs/filesystem.h"
 #include "IHelp.h"
-#include "Help.h"
+#include "HelpParser.h"
 
 #include <boost/filesystem.hpp>
 #include "boost/filesystem/operations.hpp"
@@ -32,35 +32,35 @@ namespace fs = boost::filesystem;
 
 std::string inifile = expandUserDir("~") + directorySeparator() + "revbayes.ini";
 
-
-
 int main(int argc, const char* argv[]) {
-    
+
     // parse command line arguments
     Options options;
-    options.parseOptions(argc, argv);    
+    options.parseOptions(argc, argv);
     std::cout << options.getMessage() << std::endl;
-    if(options.isHelp()){
+    if (options.isHelp()) {
         exit(0);
     }
-    
+
     // read / create settings file
     Configuration configuration(inifile);
     configuration.parseInifile();
     std::cout << configuration.getMessage() << std::endl;
-    
 
-    /* initialize environment */
-    Help help;
-    RevLanguageMain rl(&help);
+
+    /* initialize environment */    
+    HelpParser *help = new HelpParser();
+    help->setHelpDir(configuration.getHelpDir());    
+    RevLanguageMain rl(help);
+
     // pass input files to Rev
     rl.startRevLanguageEnvironment(options.getInputFiles());
     // exit after processing the input files if not interactive
     if (!options.isInteractive()) {
         exit(0);
-    }   
-    
-    if (!options.isDisableReadline()) {        
+    }
+
+    if (!options.isDisableReadline()) {
         RbClient c;
         c.startInterpretor();
         return 0;
@@ -76,7 +76,7 @@ int main(int argc, const char* argv[]) {
     std::string commandLine;
     std::string line;
 
-    while(true) {
+    while (true) {
 
         std::cout << prompt;
         std::istream& retStream = getline(std::cin, line);

@@ -57,12 +57,12 @@ public:
         return defaultValue;
     }
 
-    void SetOption(std::vector<std::string> option) {
-        this->option = option;
+    void SetOptions(std::vector<std::string> options) {
+        this->options = options;
     }
 
-    std::vector<std::string> GetOption() const {
-        return option;
+    std::vector<std::string> GetOptions() const {
+        return options;
     }
 
     void SetValueType(std::string valueType) {
@@ -104,7 +104,7 @@ private:
     std::string description;
     std::string argumentType;
     std::string valueType;
-    std::vector<std::string> option;
+    std::vector<std::string> options;
     std::string defaultValue;
 };
 
@@ -191,6 +191,14 @@ public:
         return name;
     }
 
+    void SetReferences(std::vector<ReferenceHelpEntry> references) {
+        this->references = references;
+    }
+
+    std::vector<ReferenceHelpEntry> GetReferences() const {
+        return references;
+    }
+
 private:
     std::string name;
     std::string title;
@@ -200,6 +208,7 @@ private:
     std::string returnValue;
     std::vector<std::string> details;
     std::string example;
+    std::vector<ReferenceHelpEntry> references;
     std::string author;
     std::vector<std::string> seeAlso;
 
@@ -208,7 +217,7 @@ private:
 
 ///////////////////////////// POCOS representing Rev type help entry /////////////////////////////////////
 
-class MemberMethodHelpEntry {
+class MethodMemberHelpEntry {
 public:
 
     void SetArguments(std::vector<ArgumentHelpEntry> arguments) {
@@ -250,12 +259,21 @@ public:
     std::string GetMethodName() const {
         return methodName;
     }
+
+    void SetReturnValue(std::string returnValue) {
+        this->returnValue = returnValue;
+    }
+
+    std::string GetReturnValue() const {
+        return returnValue;
+    }
 private:
     std::string methodName;
     std::string description;
     std::string usage;
     std::string methodType;
     std::vector<ArgumentHelpEntry> arguments;
+    std::string returnValue;
 };
 
 class TypeHelpEntry {
@@ -285,20 +303,12 @@ public:
         return details;
     }
 
-    void SetReturnValue(std::string returnValue) {
-        this->returnValue = returnValue;
+    void SetMethodMembers(std::vector<MethodMemberHelpEntry> methodMembers) {
+        this->methodMembers = methodMembers;
     }
 
-    std::string GetReturnValue() const {
-        return returnValue;
-    }
-
-    void SetArguments(std::vector<ArgumentHelpEntry> arguments) {
-        this->arguments = arguments;
-    }
-
-    std::vector<ArgumentHelpEntry> GetArguments() const {
-        return arguments;
+    std::vector<MethodMemberHelpEntry> GetMethodMembers() const {
+        return methodMembers;
     }
 
     void SetUsage(std::string usage) {
@@ -337,8 +347,7 @@ private:
     std::string title;
     std::vector<std::string> description;
     std::string usage;
-    std::vector<ArgumentHelpEntry> arguments;
-    std::string returnValue;
+    std::vector<MethodMemberHelpEntry> methodMembers;
     std::vector<std::string> details;
     std::string author;
     std::vector<std::string> citation;
