@@ -1,12 +1,96 @@
 <html>
     <head>
         <title>RevBayes Manual Pages :: Index Page</title>
-        <link rel="stylesheet" type="text/css" href="../lib/help.css"/>        
+        <link rel="stylesheet" type="text/css" href="../lib/help.css"/>     
+
+        <script src="../lib/jquery.js"></script>
+
+        <script>
+            var showFunctions, showTypes, filter;
+            var manualEntries, functionEntries, typeEntries;
+            var showMore;
+            $(document).ready(function() {
+                showFunctions = $("#showFunctions");
+                showTypes = $("#showTypes");
+                filter = $("#filter");
+
+                manualEntries = $("#manualEntries");
+                functionEntries = $("#functionEntries");
+                typeEntries = $("#typeEntries");
+
+                showFunctions.on('click', function() {
+                    functionEntries.slideToggle();
+                });
+
+                showTypes.on('click', function() {
+                    typeEntries.slideToggle();
+                });
+
+                filter.on('input', function() {
+                    doFilter(functionEntries, $(this).val());
+                    doFilter(typeEntries, $(this).val());
+                });
+                
+                manualEntries.find("[id$=less-label]").each(function(){
+                    $(this).hide();
+                });
+                manualEntries.find("[id$=more-content]").each(function(){
+                    $(this).hide();
+                });
+            });
+
+            function doFilter(section, filterString) {
+                section.children().each(function() {
+                    if (filterString.length == 0) {
+                        $(this).fadeIn();
+                    }
+                    else {
+                        $(this).hide();
+                    }
+                });
+                if (filterString.length > 0) {
+                    section.children("[id^=" + filterString + "]").each(function() {
+                        $(this).fadeIn();
+                    });
+                }
+            }
+            
+            function showMore(entry){
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                
+                $("#" + entry + "-more-content").slideDown();
+                
+                return false;
+            }
+            
+            function showLess(entry){
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();                
+                $("#" + entry + "-more-content").slideUp();
+                
+                return false;
+            }
+
+        </script>
+
     </head>
     <body>
+        <div style="text-align: right;">
+            <label for="showFunctions">Functions</label>
+            <input type="checkbox" id="showFunctions" checked="checked" />
+
+            <label for="showTypes">Types</label>
+            <input type="checkbox" id="showTypes" checked="checked" />
+
+            <input type="text" id="filter" placeholder="Filter..."/>
+        </div>
         <h1>RevBayes Manual Pages :: Index</h1>
 
-        #manual-entries#
+        <div id="manualEntries">
+            <div id="functionEntries">#manual-function-entries#</div>
+            <div id="typeEntries">#manual-type-entries#</div>
+        </div>
 
         <br />
         <br />

@@ -1,10 +1,10 @@
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
+#include <boost/filesystem/fstream.hpp>
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>    
-#include <boost/filesystem/fstream.hpp>
 #include "boost/algorithm/string_regex.hpp"
 
 #include "pugixml.hpp"
@@ -16,6 +16,9 @@
 #include <errno.h>
 #include "Configuration.h"
 #include "libs/filesystem.h"
+#include "IHelp.h"
+#include "HelpParser.h"
+#include "RbHelpEntry.h"
 
 
 namespace fs = boost::filesystem;
@@ -46,12 +49,12 @@ struct compare_path {
 };
 
 int main(int argc, const char * argv[]) {
-    
+
     // read / create settings file
     Configuration configuration(inifile);
     configuration.parseInifile();
     std::cout << configuration.getMessage() << std::endl;
-    
+
 
     fs::path helpDir(configuration.getHelpDir());
 
@@ -96,61 +99,71 @@ int main(int argc, const char * argv[]) {
     // read html templates
     fs::path entry_tpl_file = helpDir / "lib/html-template/entry.tpl.html";
     fs::path index_tpl_file = helpDir / "lib/html-template/index.tpl.html";
-    
-    if(!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file)){
-        std::cout << "Error: One or more of the html template files in help/html directory is missing." 
+
+    if (!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file)) {
+        std::cout << "Error: One or more of the html template files in help/html directory is missing."
                 << std::endl << "The index html cannot be constructed and program will exit." << std::endl;
         exit(-1);
     }
-    
+
     string entry_tpl = load_file(entry_tpl_file.string());
     string index_tpl = load_file(index_tpl_file.string());
 
-    string entry_result, tmp, tmp1;
-    pugi::xml_document xml_doc;
-    pugi::xml_parse_result parse_result;
-    pugi::xpath_node_set nodeSet;
-    
+    string function_entry_result, type_entry_result, tmp, tmp1;
+
+    HelpParser *help = new HelpParser();
+    //RbHelpEntry *helpEntry = *help->getRbHelpEntry();
+    //    TypeHelpEntry *typeHelp = new TypeHelpEntry();
+    //    *typeHelp = help->getRbHelpEntry().GetTypeHelpEntry();
+    //    
+    //    FunctionHelpEntry functionHelp = help->getRbHelpEntry().GetFunctionHelpEntry();
 
     BOOST_FOREACH(fs::path file, files) {
 
-        // try to load and parse the xml file
-        parse_result = xml_doc.load_file((helpDir.string() + "/" + file.string()).c_str(), pugi::parse_default);
-        if (parse_result.status != pugi::status_ok) {
-            cout << "Warning: failed to parse " << file.string() << ": " << endl << parse_result.description() << endl
-                    << "offset: " << parse_result.offset << std::endl;
+        if (!help->setHelp(fs::path(helpDir / file).string())) {
+            cout << "Warning: failed to parse " << file.string() << ": " << endl << help->getMessage();
             continue;
         }
+        if (help->getRbHelpEntry().GetFunctionHelpEntry().GetName().size() > 0) {
+            tmp1 = boost::regex_replace(entry_tpl, boost::regex("#entry-name#"), help->getRbHelpEntry().GetFunctionHelpEntry().GetName());
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-type#"), "Function");
+            tmp = "";
 
-        // parse values from xml and replace the place holders in template
-        tmp = xml_doc.child("help_entry").child("name").child_value();
-        tmp1 = boost::regex_replace(entry_tpl, boost::regex("#function-name#"), tmp);
-                
+            BOOST_FOREACH(std::string desc, help->getRbHelpEntry().GetFunctionHelpEntry().GetDescription()) {
+                tmp.append("<p>").append(desc).append("</p>");
+            }
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-description#"), tmp);
+            //tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-file#"), file.string());
 
-        // description consists of one or more paragraph that need to be looped
-        tmp = "";
-        nodeSet = xml_doc.select_nodes("/help_entry/description/p");
-        for (pugi::xpath_node_set::const_iterator it = nodeSet.begin(); it != nodeSet.end(); ++it) {
-            pugi::xpath_node node = *it;
-            tmp += "<p>" + string(node.node().child_value()) + "</p>";
+            function_entry_result += tmp1 + "\n";
         }
         
-        tmp1 = boost::regex_replace(tmp1, boost::regex("#function-description#"), tmp);
-        
-        tmp1 = boost::regex_replace(tmp1, boost::regex("#function-file#"), file.string());
-        
-        entry_result += tmp1 + "\n";
+        if (help->getRbHelpEntry().GetTypeHelpEntry().GetName().size() > 0) {
+            tmp1 = boost::regex_replace(entry_tpl, boost::regex("#entry-name#"), help->getRbHelpEntry().GetTypeHelpEntry().GetName());
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-type#"), "Type");
+            tmp = "";
+
+            BOOST_FOREACH(std::string desc, help->getRbHelpEntry().GetTypeHelpEntry().GetDescription()) {
+                tmp.append("<p>").append(desc).append("</p>");
+            }
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-description#"), tmp);
+            //tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-file#"), file.string());
+
+            type_entry_result += tmp1 + "\n";
+        }
+
     }
-    
+
     // insert entries into main html page
-    string index_result(boost::regex_replace(index_tpl, boost::regex("#manual-entries#"), entry_result));
+    string index_result = boost::regex_replace(index_tpl, boost::regex("#manual-function-entries#"), function_entry_result);
+    index_result = boost::regex_replace(index_result, boost::regex("#manual-type-entries#"), type_entry_result);
 
     // write out new file content
-    fstream fs;   
-    fs.open((helpDir.string() + "/html/index.html").c_str(), fstream::out | fstream::trunc);
+    fstream fs;
+    fs.open(fs::path(helpDir / "html/index.html").string().c_str(), fstream::out | fstream::trunc);
     fs << index_result;
     fs.close();
-    
+
     cout << "The index.html file is now updated." << endl;
 
     return 0;

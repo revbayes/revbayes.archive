@@ -83,3 +83,15 @@ a:active  { text-decoration: underline; background-color: #FFD0D0; }
 .header {
     text-align: center;
 }
+
+.hidden{
+    visibility: hidden;
+}
+
+.visible{
+    visibility: visible;
+}
+
+.more-label{
+    font-style: italic;
+}
