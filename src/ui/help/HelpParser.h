@@ -14,6 +14,7 @@
 #include <sstream>
 #include "pugixml.hpp"
 #include "RbHelpEntry.h"
+#include "IHelpRenderer.h"
 
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/operations.hpp"
@@ -31,20 +32,20 @@ int w = 80;
 
 class HelpParser : public IHelp {
 public:
-    
+
     /**
      * Load help from a specific file
      * @param helpFile
      */
-    bool setHelp(std::string helpFile){
+    bool setHelp(std::string helpFile) {
         this->message = "";
-        
+
         pugi::xml_parse_result result = doc.load_file(helpFile.c_str(), pugi::parse_default);
         if (result.status != pugi::status_ok) {
             this->message.append(result.description()).append("\n");
             return false;
         }
-        
+
         mapHelpEntity();
         return true;
     }
@@ -71,10 +72,10 @@ public:
         TypeHelpEntry th = help.GetTypeHelpEntry();
 
         if (fh.GetName() == query) {
-            return assembleFunctionHelp(fh);
+            return renderFunctionHelp(fh);
         }
 
-        return assembleTypeHelp(th);
+        return renderTypeHelp(th);
     }
 
     /**
@@ -109,9 +110,21 @@ public:
         return message;
     }
 
+    void setRenderer(IHelpRenderer *renderer) {
+        this->renderer = renderer;
+    }
+
+    std::string renderTypeHelp(TypeHelpEntry th) {
+        return renderer->renderTypeHelp(th);
+    }
+
+    std::string renderFunctionHelp(FunctionHelpEntry fh) {
+        return renderer->renderFunctionHelp(fh);
+    }
 
 
 private:
+    IHelpRenderer *renderer;
     std::string message;
     std::string helpDir;
 
@@ -319,249 +332,6 @@ private:
         entry->SetCitation(*citation);
 
         return entry;
-    }
-
-    /**
-     * Formats a string representation of the help entity
-     * @param fh
-     * @return 
-     */
-    std::string assembleFunctionHelp(FunctionHelpEntry fh) {
-        std::string result = "";
-
-        // name
-        result.append(fh.GetName()).append(sectionBreak);
-        // title
-        result.append(fh.GetTitle()).append(sectionBreak);
-        // description
-        result.append("Description").append(sectionBreak);
-
-        BOOST_FOREACH(std::string desc, fh.GetDescription()) {
-            result.append(formatTabWrap(desc, 1, w)).append(sectionBreak);
-        }
-
-        // usage
-        if (fh.GetUsage().size() > 0) {
-            result.append("Usage").append(sectionBreak).append(formatTabWrap(fh.GetUsage(), 1, w)).append(sectionBreak);
-        }
-
-        // argument
-        if (fh.GetArguments().size() > 0) {
-            result.append("Arguments").append(sectionBreak);
-
-            BOOST_FOREACH(ArgumentHelpEntry arg, fh.GetArguments()) {
-
-                result.append(formatTabWrap(arg.GetLabel(), 1, w)).append(lineBreak);
-                result.append(formatTabWrap(arg.GetDescription(), 2, w)).append(sectionBreak);
-
-                result.append(formatTabWrap("Argument type", 2, w)).append(lineBreak);
-                result.append(formatTabWrap(arg.GetArgumentType(), 3, w)).append(sectionBreak);
-
-                result.append(formatTabWrap("Value type", 2, w)).append(lineBreak);
-                result.append(formatTabWrap(arg.GetValueType(), 3, w)).append(sectionBreak);
-
-                if (arg.GetOptions().size() > 0) {
-                    result.append(formatTabWrap("Options", 2, w)).append(lineBreak);
-
-                    BOOST_FOREACH(std::string option, arg.GetOptions()) {
-                        result.append(formatTabWrap(option, 3, w)).append(lineBreak);
-                    }
-                    result.append(lineBreak);
-                }
-                if (arg.GetDefaultValue().size() > 0) {
-                    result.append(formatTabWrap("Default value", 2, w)).append(lineBreak);
-                    result.append(formatTabWrap(arg.GetDefaultValue(), 3, w)).append(sectionBreak);
-                }
-            }
-        }
-
-        // details
-        if (fh.GetDetails().size() > 0) {
-            result.append("Details").append(sectionBreak);
-
-            BOOST_FOREACH(std::string det, fh.GetDetails()) {
-                result.append(formatTabWrap(det, 1, w)).append(sectionBreak);
-            }
-        }
-
-        // example
-        result.append("Example").append(sectionBreak).append(formatTabWrap(fh.GetExample(), 1, w, false)).append(sectionBreak);
-
-        // reference
-        if (fh.GetReferences().size() > 0) {
-            result.append("Reference").append(sectionBreak);
-
-            BOOST_FOREACH(ReferenceHelpEntry ref, fh.GetReferences()) {
-                result.append(formatTabWrap(ref.GetCitation(), 1, w)).append(lineBreak);
-                result.append(formatTabWrap(ref.GetUrl(), 1, w)).append(lineBreak);
-                result.append(formatTabWrap(ref.GetDoi(), 1, w)).append(sectionBreak);
-            }
-        }
-
-        // author
-        result.append("Author").append(sectionBreak).append(formatTabWrap(fh.GetAuthor(), 1, w, false)).append(sectionBreak);
-
-        // see also        
-        if (fh.GetSeeAlso().size() > 0) {
-            result.append("See also").append(sectionBreak);
-
-            BOOST_FOREACH(std::string see, fh.GetSeeAlso()) {
-                result.append(formatTabWrap(see, 1, w)).append(lineBreak);
-            }
-            result.append(lineBreak);
-        }
-
-
-        return result;
-    }
-
-    /**
-     * Formats a string representation of the help entity
-     * @param th
-     * @return 
-     */
-    std::string assembleTypeHelp(TypeHelpEntry th) {
-        std::string result = "";
-
-        // name
-        result.append(th.GetName()).append(sectionBreak);
-        // title
-        result.append(th.GetTitle()).append(sectionBreak);
-
-        // description
-        result.append("Description").append(sectionBreak);
-
-        BOOST_FOREACH(std::string desc, th.GetDescription()) {
-            result.append(formatTabWrap(desc, 1, w)).append(sectionBreak);
-        }
-        
-        // member metho
-        if (th.GetMethodMembers().size() > 0) {
-            result.append("Member methods").append(sectionBreak);
-
-            BOOST_FOREACH(MethodMemberHelpEntry mm, th.GetMethodMembers()) {
-                result.append(formatTabWrap(mm.GetMethodName(), 1, w)).append(lineBreak);
-                result.append(formatTabWrap(mm.GetDescription(), 2, w)).append(sectionBreak);
-                result.append(formatTabWrap("Usage", 2, w)).append(lineBreak).append(formatTabWrap(mm.GetUsage(), 3, w)).append(sectionBreak);
-                result.append(formatTabWrap("Method type", 2, w)).append(lineBreak).append(formatTabWrap(mm.GetMethodType(), 3, w)).append(sectionBreak);
-
-                if (mm.GetArguments().size() > 0) {
-                    result.append(formatTabWrap("Arguments", 2, w)).append(sectionBreak);
-
-                    BOOST_FOREACH(ArgumentHelpEntry arg, mm.GetArguments()) {
-
-                        result.append(formatTabWrap(arg.GetLabel(), 3, w)).append(lineBreak);
-                        result.append(formatTabWrap(arg.GetDescription(), 4, w)).append(sectionBreak);
-
-                        result.append(formatTabWrap("Argument type", 4, w)).append(lineBreak);
-                        result.append(formatTabWrap(arg.GetArgumentType(), 5, w)).append(sectionBreak);
-
-                        result.append(formatTabWrap("Value type", 4, w)).append(lineBreak);
-                        result.append(formatTabWrap(arg.GetValueType(), 5, w)).append(sectionBreak);
-
-                        if (arg.GetDefaultValue().size() > 0) {
-                            result.append(formatTabWrap("Default value", 4, w)).append(lineBreak);
-                            result.append(formatTabWrap(arg.GetDefaultValue(), 5, w)).append(sectionBreak);
-                        }
-                    }
-                }
-
-                result.append(formatTabWrap("Return value", 2, w)).append(lineBreak).append(formatTabWrap(mm.GetReturnValue(), 3, w)).append(sectionBreak);
-            }
-        }
-
-        // details
-        if (th.GetDetails().size() > 0) {
-            result.append("Details").append(sectionBreak);
-
-            BOOST_FOREACH(std::string det, th.GetDetails()) {
-                result.append(formatTabWrap(det, 1, w)).append(sectionBreak);
-            }
-        }
-
-        // author
-        result.append("Author").append(sectionBreak).append(formatTabWrap(th.GetAuthor(), 1, w, false)).append(sectionBreak);
-
-        // citation        
-        if (th.GetCitation().size() > 0) {
-            result.append("Citation").append(sectionBreak);
-
-            BOOST_FOREACH(std::string cit, th.GetCitation()) {
-                result.append(formatTabWrap(cit, 1, w)).append(lineBreak);
-            }
-            result.append(lineBreak);
-        }
-        return result;
-    }
-
-    /**
-     * Wraps text so that each line doesn't exceeds column width.
-     * Prepends tabs to each line.
-     * 
-     * @param s             string to format
-     * @param tabs          number of tabs to prepend to each line
-     * @param width         column width
-     * @param removeFormat  strips newline, tab etc if set to true
-     * @return              formatted text
-     */
-    std::string formatTabWrap(std::string s, int tabs, int width, bool removeFormat = true) {
-
-        std::string tabbing = "";
-        for (int i = 0; i < tabs * 4; i++) {
-            tabbing.append(" ");
-        }
-
-        std::string result = tabbing;
-        int w = width - tabbing.size();
-        int cc = 0; // character count
-        char lastChar;
-
-        for (unsigned int i = 0; i < s.size(); i++) {
-            if (result.size() > 0) {
-                lastChar = result[result.size() - 1];
-            }
-
-            // strip consecutive spaces
-            if (!(lastChar == ' ' && s[i] == ' ')) {
-                if (!removeFormat) {
-                    result += s[i];
-                    lastChar = s[i];
-                    cc++;
-                } else if (!isFormattingChar(s[i])) {
-                    result += s[i];
-                    lastChar = s[i];
-                    cc++;
-                }
-            }
-
-            if (lastChar == '\n') {
-                cc = 0;
-                result.append(tabbing);
-            }
-
-            if (lastChar == ' ') {
-                // we now have a possible point where to wrap the line.
-                // peek ahead and see where next possible wrap point is:
-                int next = s.substr(i).find_first_of(" ", 1);
-
-                // if next wrap point is beyond the width, then wrap line now
-                if (cc + next >= w) {
-                    result.append("\n").append(tabbing);
-                    // reset char count for next line
-                    cc = 0;
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Indicates if a char is affecting text formatting
-     * @param c
-     * @return 
-     */
-    bool isFormattingChar(char c) {
-        return c == '\n' || c == '\t' || c == '\r';
     }
 
     /**

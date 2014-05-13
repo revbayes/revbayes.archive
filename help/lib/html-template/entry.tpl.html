@@ -4,7 +4,7 @@
     
     <!--<a href="#entry-file#">View</a>-->
     <div class="indent">#entry-description#</div>    
-    <a href="" onClick="return showMore('#entry-name#');" class="indent more-label" id="#entry-name#-more-label" >Show more...</a>
-    <a href="" onClick="return showLess('#entry-name#');" class="indent more-label" id="#entry-name#-less-label" >Show less...</a>
-    <div class="indent" id="#entry-name#-more-content">More content here ...</div>
+    <a href="" onClick="showMore('#entry-name#'); return false;" class="indent more-label" id="#entry-name#-more-label" >Show more... >></a>
+    <a href="" onClick="showLess('#entry-name#'); return false;" class="indent more-label" id="#entry-name#-less-label" ><< Show less</a>
+    <div class="indent more-content" id="#entry-name#-more-content">#more-content#</div>
 </div>

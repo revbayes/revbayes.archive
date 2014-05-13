@@ -70,6 +70,7 @@ pre  {
     background: #dddddd;
     border-style: dashed;
     border-width: 1px;
+    padding: 20px;
 }
 
 a:link    { text-decoration: none; color: blue; }
@@ -94,4 +95,31 @@ a:active  { text-decoration: underline; background-color: #FFD0D0; }
 
 .more-label{
     font-style: italic;
+}
+.filter-bar{
+    background-color: white;
+    text-align: right;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    border-bottom: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: gray;
+}
+
+.filter-controls{
+    padding-right: 30px;
+}
+
+.more-content{
+    border-width: 1px;
+    border-style: dotted;
+    border-color: gray;
+    padding: 25px;
+}
+
+.argument{
+    float: left;
+    width: 130px;
 }
