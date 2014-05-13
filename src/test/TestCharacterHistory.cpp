@@ -120,7 +120,7 @@ bool TestCharacterHistory::run_exp(void) {
     // binary characters
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     //std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "vireya.nex");
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "bg.short.nex");
+    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + "bg.test.nex");
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
     
@@ -130,7 +130,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     // tree
     //std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "vireya.nex" );
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "bg.short.nex" );
+    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + "bg.test.nex" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
 
