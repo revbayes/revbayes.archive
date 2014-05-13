@@ -150,14 +150,20 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
     const BranchHistory& bh = p->getHistory(n->getIndex());
     std::stringstream ss;
     
-    if (infoStr=="child" || infoStr=="parent")
+    if (infoStr=="child")
     {
-        std::vector<CharacterEvent*> characters;
-        if (infoStr=="child")
-            characters = bh.getChildCharacters();
-        else
-            characters = bh.getParentCharacters();
+        std::vector<CharacterEvent*> characters = bh.getChildCharacters();
         
+        for (size_t i = 0; i < characters.size(); i++)
+        {
+            if (i != 0)
+                ss << ",";
+            ss << characters[i]->getState();
+        }
+    }
+    else if (infoStr=="parent")
+    {
+        std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
         {
             if (i != 0)

@@ -28,6 +28,7 @@ namespace RevBayesCore {
         ScaleProposal( StochasticNode<double> *n, double l);                                                                //!<  constructor
         
         // Basic utility functions
+        void                            cleanProposal(void);                                                                //!< Clean up proposal
         ScaleProposal*                  clone(void) const;                                                                  //!< Clone object
         double                          doProposal(void);                                                                   //!< Perform proposal
         const std::vector<DagNode*>&    getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on

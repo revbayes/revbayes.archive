@@ -26,6 +26,16 @@ ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(),
 
 
 /**
+ * The cleanProposal function may be called to clean up memory allocations after AbstractMove
+ * decides whether to accept, reject, etc. the proposed value.
+ *
+ */
+void ScaleProposal::cleanProposal( void )
+{
+    ; // do nothing
+}
+
+/**
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *

@@ -38,11 +38,20 @@ void Function::keep( DagNode* affecter ) {
 }
 
 
+void Function::removeParameter(const RevBayesCore::DagNode *p)
+{
+    std::set<const DagNode *>::iterator it = parameters.find( p );
+    if ( it != parameters.end() )
+    {
+        parameters.erase( it );
+    }
+}
+
+
 /* Method stumb that can be overwritten for specialized treatment. */
 void Function::restore( DagNode *restorer ) {
     // do nothing
 }
-
 
 void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
     

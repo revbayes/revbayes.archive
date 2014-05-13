@@ -183,7 +183,7 @@ bool TestAdmixtureGraph::run(void) {
     int numChains = 4;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 2;
+    int swapInterval = 1;
     double deltaTemp = .1;
     double sigmaTemp = 1.0;
     double hottestTemp = 0.001;
@@ -410,7 +410,7 @@ bool TestAdmixtureGraph::run(void) {
         }
     }
     
-    monitors.push_back( new FileMonitor( monitoredNodes, 1, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 1, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, useParallelMcmcmc, useParallelMcmcmc, useParallelMcmcmc ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
     monitors.push_back( new AdmixtureBipartitionMonitor(tau, diffusionRate, br_vector, numTreeResults, numAdmixtureResults, 1, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
