@@ -1,4 +1,4 @@
-//
+ ///
 //  TreeHistory.h
 //  rb_mlandis
 //
@@ -12,13 +12,19 @@
 #include "AbstractCharacterData.h"
 #include "BranchHistory.h"
 #include "DiscreteTaxonData.h"
+#include "DiscreteCharacterData.h"
+#include "DiscreteCharacterState.h"
 #include "DnaState.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RateMatrix.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
+
+#include <cmath>
 
 namespace RevBayesCore {
 
@@ -27,7 +33,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites);
+        AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
         AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                           //!< Copy constructor
         virtual                                                            ~AbstractTreeHistoryCtmc(void);                                   //!< Virtual destructor
         
@@ -46,12 +52,15 @@ namespace RevBayesCore {
         // non-virtual
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
-        const BranchHistory&                                                getHistory(size_t idx);
-        const std::vector<BranchHistory>&                                   getHistories(void);
+        BranchHistory&                                                      getHistory(size_t idx);
+        const BranchHistory&                                                getHistory(size_t idx) const;
+        std::vector<BranchHistory*>                                         getHistories(void);
+        const std::vector<BranchHistory*>&                                  getHistories(void) const;
         void                                                                reInitialized(void);
         void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistories(const std::vector<BranchHistory>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                                                        simulate(void);
 
         
     protected:
@@ -65,8 +74,8 @@ namespace RevBayesCore {
         virtual void                                                        touchSpecialization(DagNode *toucher);
         
         // pure virtual methods
-        virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r) = 0;
-        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
+        virtual void                                                        computeRootLikelihood(const TopologyNode &n, size_t root) = 0;
+        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
         virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
@@ -91,7 +100,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                                 patternCounts;
         size_t                                                              numPatterns;
         bool                                                                compressed;
-        std::vector<BranchHistory>                                          histories;
+        std::vector<BranchHistory*>                                          histories;
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
@@ -114,7 +123,8 @@ namespace RevBayesCore {
         // void                                                                compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                initializeHistoriesVector(void);
-        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+//        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t);
+        virtual void                                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
         
 
         
@@ -123,17 +133,8 @@ namespace RevBayesCore {
 
 }
 
-
-#include "DiscreteCharacterState.h"
-#include "DiscreteCharacterData.h"
-#include "RandomNumberFactory.h"
-#include "RandomNumberGenerator.h"
-#include "TopologyNode.h"
-
-#include <cmath>
-
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
 numChars( nChars ),
 numSites( nSites ),
 numSiteRates( 1 ),
@@ -151,7 +152,7 @@ compressed( false ),
 histories(),
 changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
 dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
-usingAmbiguousCharacters( true ),
+usingAmbiguousCharacters( useAmbigChar ),
 treatUnknownAsGap( true ),
 treatAmbiguousAsGaps( true ),
 tipsInitialized( false )
@@ -237,31 +238,17 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>* RevBayesCore::Abstrac
 template<class charType, class treeType>
 double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProbability( void )
 {
+    this->lnProb = 0.0;
     
-    // compute the ln probability by recursively calling the probability calculation for each node
-    const TopologyNode &root = tau->getValue().getRoot();
+    const std::vector<TopologyNode*>& nodes = tau->getValue().getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        dirtyNodes[i] = true;
+        fillLikelihoodVector(*nodes[i], nodes[i]->getIndex());
+        this->lnProb += historyLikelihoods[i];
+    }
     
-    // we start with the root and then traverse down the tree
-    size_t rootIndex = root.getIndex();
-    
-    // only necessary if the root is actually dirty
-    //if ( dirtyNodes[rootIndex] )
-    //{
-        
-        // mark as computed
-        dirtyNodes[rootIndex] = false;
-        
-        // start by filling the likelihood vector for the two children of the root
-        const TopologyNode &left = root.getChild(0);
-        size_t leftIndex = left.getIndex();
-        fillLikelihoodVector( left, leftIndex );
-        const TopologyNode &right = root.getChild(1);
-        size_t rightIndex = right.getIndex();
-        fillLikelihoodVector( right, rightIndex );
-        
-        // compute the likelihood of the root
-        computeRootLikelihood( rootIndex, leftIndex, rightIndex );
-    //}
+    //std::cout << "computeLnProbability " << this->lnProb << "\n";
     
     return this->lnProb;
 }
@@ -270,31 +257,19 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex)
 {
+    if (dirtyNodes[nodeIndex] == false)
+        return;
+    
     // mark as computed
     dirtyNodes[nodeIndex] = false;
     
-    if ( node.isTip() )
-    {
-        // this is a tip node
-        //if (dirtyNodes[nodeIndex])
-        computeTipLikelihood(node, nodeIndex);
-    }
-    else
-    {
-        // this is an internal node
-        
-        // start by filling the likelihood vector for the two children of this node
-        const TopologyNode &left = node.getChild(0);
-        size_t leftIndex = left.getIndex();
-        fillLikelihoodVector( left, leftIndex );
-        const TopologyNode &right = node.getChild(1);
-        size_t rightIndex = right.getIndex();
-        fillLikelihoodVector( right, rightIndex );
-        
-        // now compute the likelihoods of this internal node
-        //if (dirtyNodes[nodeIndex])
-            computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
-    }
+//    if ( node.isTip() )
+//        computeTipLikelihood(node, nodeIndex);
+//    else
+//    if (node.isRoot())
+//        computeRootLikelihood(node, nodeIndex);
+//    else
+        computeInternalNodeLikelihood(node,nodeIndex);
 }
 
 
@@ -309,13 +284,25 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEv
 
 
 template<class charType, class treeType>
-const RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx)
+const RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx) const
 {
     return histories[idx];
 }
 
 template<class charType, class treeType>
-const std::vector<RevBayesCore::BranchHistory>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistories(void)
+RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx)
+{
+    return *histories[idx];
+}
+
+template<class charType, class treeType>
+const std::vector<RevBayesCore::BranchHistory*>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistories(void) const
+{
+    return histories;
+}
+
+template<class charType, class treeType>
+std::vector<RevBayesCore::BranchHistory*> RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistories(void)
 {
     return histories;
 }
@@ -328,8 +315,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::initializeHistor
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
     {
-        BranchHistory h(numSites, numChars, i);
-        histories.push_back(h);
+        histories.push_back(new BranchHistory(numSites, numChars, i));
     }
     
     historyLikelihoods.resize(nodes.size(), 0.0);
@@ -439,7 +425,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecializ
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistory(const BranchHistory& bh, size_t idx)
 {
-    histories[idx] = bh;
+    histories[idx] = new BranchHistory(bh);
 }
 
 template<class charType, class treeType>
@@ -461,75 +447,83 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates) {
-    
-    // get the children of the node
-    const std::vector<TopologyNode*>& children = node.getChildren();
-    
-    // get the sequence of this node
-    size_t nodeIndex = node.getIndex();
-    const DiscreteTaxonData< charType > &parent = taxa[ nodeIndex ];
-    
-    // simulate the sequence for each child
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
-    {
-        const TopologyNode &child = *(*it);
-        
-        // update the transition probability matrix
-        updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
-        
-        DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
-        for ( size_t i = 0; i < numSites; ++i )
-        {
-            // get the ancestral character for this site
-            unsigned long parentState = parent.getCharacter( i ).getState();
-            size_t p = 0;
-            while ( parentState != 1 )
-            {
-                // shift to the next state
-                parentState >>= 1;
-                // increase the index
-                ++p;
-            }
-            
-            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
-            
-            // create the character
-            charType c;
-            c.setToFirstState();
-            // draw the state
-            double u = rng->uniform01();
-            while ( true )
-            {
-                u -= *freqs;
-                
-                if ( u > 0.0 )
-                {
-                    ++c;
-                    ++freqs;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            
-            // add the character to the sequence
-            taxon.addCharacter( c );
-        }
-        
-        if ( child.isTip() )
-        {
-            taxon.setTaxonName( child.getName() );
-        }
-        else
-        {
-            // recursively simulate the sequences
-            simulate( child, taxa, perSiteRates );
-        }
-        
-    }
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
+{
+    ;
+}
+
+template<class charType, class treeType>
+//void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa)
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const TopologyNode &node, DiscreteCharacterData< charType > &taxa)
+{
+//    
+//    // get the children of the node
+//    const std::vector<TopologyNode*>& children = node.getChildren();
+//    
+//    // get the sequence of this node
+//    size_t nodeIndex = node.getIndex();
+//    const DiscreteTaxonData< charType > &parent = taxa[ nodeIndex ];
+//    
+//    // simulate the sequence for each child
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
+//    {
+//        const TopologyNode &child = *(*it);
+//        
+//        // update the transition probability matrix
+//        updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+//        
+//        DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
+//        for ( size_t i = 0; i < numSites; ++i )
+//        {
+//            // get the ancestral character for this site
+//            unsigned long parentState = parent.getCharacter( i ).getState();
+//            size_t p = 0;
+//            while ( parentState != 1 )
+//            {
+//                // shift to the next state
+//                parentState >>= 1;
+//                // increase the index
+//                ++p;
+//            }
+//            
+//            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ p ];
+//            
+//            // create the character
+//            charType c;
+//            c.setToFirstState();
+//            // draw the state
+//            double u = rng->uniform01();
+//            while ( true )
+//            {
+//                u -= *freqs;
+//                
+//                if ( u > 0.0 )
+//                {
+//                    ++c;
+//                    ++freqs;
+//                }
+//                else
+//                {
+//                    break;
+//                }
+//            }
+//            
+//            // add the character to the sequence
+//            taxon.addCharacter( c );
+//        }
+//        
+//        if ( child.isTip() )
+//        {
+//            taxon.setTaxonName( child.getName() );
+//        }
+//        else
+//        {
+//            // recursively simulate the sequences
+//            simulate( child, taxa, perSiteRates );
+//        }
+//        
+//    }
     
 }
 
