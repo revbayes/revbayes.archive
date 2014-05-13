@@ -39,23 +39,9 @@
 #include <iterator>
 #include <list>
 
-#include "../constants.h"
-
-/** Default constructor */
-Help::Help(void)
-{
-
-    isHelpInitialized = false;
-}
-
-/** Destructor */
-Help::~Help(void)
-{
-
-}
 
 /** This is what turn up in terminal window */
-std::string Help::formatHelpString(const std::string& qs, size_t columnWidth)
+std::string Help::getHelp(std::string qs, int columnWidth)
 {
 
     this->loadHelpFile(qs);
@@ -291,30 +277,24 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
 }
 
 /** Initialize the help from an XML file */
-void Help::initializeHelp()
+void Help::initializeHelp(std::string helpDir)
 {
 
     // find the path to the directory containing the help files
     RevBayesCore::RbFileManager fMngr = RevBayesCore::RbFileManager();
     //pathToHelpDir = fMngr.getCurrentDirectory();
 
-    pathToHelpDir = HELP_DIR;
-    fMngr.setFilePath(pathToHelpDir);
+   
+    fMngr.setFilePath(this->helpDir);
     if (fMngr.testDirectory() == false)
     {
-        RBOUT("Warning: Cannot find directory containing help files. User help is unavailable. Path = " + pathToHelpDir);
+        RBOUT("Warning: Cannot find directory containing help files. User help is unavailable. Path = " + this->helpDir);
         return;
     }
-
-    isHelpInitialized = true;
+    
+    
 }
 
-/** Returns whether there is help available for a query */
-bool Help::isHelpAvailableForQuery(const std::string& qs)
-{
-    pugi::xml_parse_result result = loadHelpFile(qs);
-    return pugi::status_ok == result.status;
-}
 
 /** Loads (parses) the xml help file into the pugi::doc*/
 pugi::xml_parse_result Help::loadHelpFile(const std::string& qs)
@@ -322,7 +302,7 @@ pugi::xml_parse_result Help::loadHelpFile(const std::string& qs)
     // the help file should be all lowercase if to be found
     std::string command = qs;
     std::transform(command.begin(), command.end(), command.begin(), ::tolower);
-    std::string helpfile = pathToHelpDir + command + ".xml";
+    std::string helpfile = this->helpDir + command + ".xml";
     
     // try to load the corresponding xml file
     pugi::xml_parse_result result = doc.load_file(helpfile.c_str(), pugi::parse_default);
@@ -344,6 +324,12 @@ std::string Help::replaceString(std::string subject, const std::string& search, 
     }
     return subject;
 }
+
+
+bool Help::isHelpAvailableForQuery(std::string query) {
+    return false;
+}
+
 
 std::string Help::stripConsecutiveSpace(std::string subject)
 {
