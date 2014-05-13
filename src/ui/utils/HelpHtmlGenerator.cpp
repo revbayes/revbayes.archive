@@ -19,6 +19,7 @@
 #include "IHelp.h"
 #include "HelpParser.h"
 #include "RbHelpEntry.h"
+#include "HelpHtmlRenderer.h"
 
 
 namespace fs = boost::filesystem;
@@ -71,7 +72,7 @@ int main(int argc, const char * argv[]) {
         exit(0);
     }
 
-    cout << endl << "Generating index.html..." << endl;
+    cout << endl << "Generating index.html and separate html manual pages..." << endl;
 
     if (!fs::exists(helpDir)) {
         cout << "Error: Cannot find help directory: " << helpDir.string() << endl;
@@ -112,12 +113,8 @@ int main(int argc, const char * argv[]) {
     string function_entry_result, type_entry_result, tmp, tmp1;
 
     HelpParser *help = new HelpParser();
-    //RbHelpEntry *helpEntry = *help->getRbHelpEntry();
-    //    TypeHelpEntry *typeHelp = new TypeHelpEntry();
-    //    *typeHelp = help->getRbHelpEntry().GetTypeHelpEntry();
-    //    
-    //    FunctionHelpEntry functionHelp = help->getRbHelpEntry().GetFunctionHelpEntry();
-
+    HelpHtmlRenderer *renderer = new HelpHtmlRenderer();
+    
     BOOST_FOREACH(fs::path file, files) {
 
         if (!help->setHelp(fs::path(helpDir / file).string())) {
@@ -125,29 +122,32 @@ int main(int argc, const char * argv[]) {
             continue;
         }
         if (help->getRbHelpEntry().GetFunctionHelpEntry().GetName().size() > 0) {
+            // add section to index.html
             tmp1 = boost::regex_replace(entry_tpl, boost::regex("#entry-name#"), help->getRbHelpEntry().GetFunctionHelpEntry().GetName());
-            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-type#"), "Function");
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-type#"), "function");
             tmp = "";
 
             BOOST_FOREACH(std::string desc, help->getRbHelpEntry().GetFunctionHelpEntry().GetDescription()) {
                 tmp.append("<p>").append(desc).append("</p>");
             }
             tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-description#"), tmp);
-            //tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-file#"), file.string());
-
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#more-content#"), renderer->renderFunctionHelp(help->getRbHelpEntry().GetFunctionHelpEntry()));
+            
             function_entry_result += tmp1 + "\n";
+            
+            // 
         }
         
         if (help->getRbHelpEntry().GetTypeHelpEntry().GetName().size() > 0) {
             tmp1 = boost::regex_replace(entry_tpl, boost::regex("#entry-name#"), help->getRbHelpEntry().GetTypeHelpEntry().GetName());
-            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-type#"), "Type");
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-type#"), "type");
             tmp = "";
 
             BOOST_FOREACH(std::string desc, help->getRbHelpEntry().GetTypeHelpEntry().GetDescription()) {
                 tmp.append("<p>").append(desc).append("</p>");
             }
             tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-description#"), tmp);
-            //tmp1 = boost::regex_replace(tmp1, boost::regex("#entry-file#"), file.string());
+            tmp1 = boost::regex_replace(tmp1, boost::regex("#more-content#"), renderer->renderTypeHelp(help->getRbHelpEntry().GetTypeHelpEntry()));
 
             type_entry_result += tmp1 + "\n";
         }

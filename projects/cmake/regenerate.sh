@@ -105,7 +105,7 @@ add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
 target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l boost_iostreams boost_serialization)
 
 # utility for generating help html files.
-add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/HelpHtmlGenerator.cpp)
+add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenerator.cpp)
 target_link_libraries(help-html-generator rb-parser rb-core libs boost_filesystem boost_system boost_regex)
 
 

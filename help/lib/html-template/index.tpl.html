@@ -10,6 +10,8 @@
             var manualEntries, functionEntries, typeEntries;
             var showMore;
             $(document).ready(function() {
+                
+                // assign variables
                 showFunctions = $("#showFunctions");
                 showTypes = $("#showTypes");
                 filter = $("#filter");
@@ -17,7 +19,16 @@
                 manualEntries = $("#manualEntries");
                 functionEntries = $("#functionEntries");
                 typeEntries = $("#typeEntries");
+                
+                // hide per default
+                manualEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                manualEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
 
+                // configure events
                 showFunctions.on('click', function() {
                     functionEntries.slideToggle();
                 });
@@ -30,13 +41,8 @@
                     doFilter(functionEntries, $(this).val());
                     doFilter(typeEntries, $(this).val());
                 });
+
                 
-                manualEntries.find("[id$=less-label]").each(function(){
-                    $(this).hide();
-                });
-                manualEntries.find("[id$=more-content]").each(function(){
-                    $(this).hide();
-                });
             });
 
             function doFilter(section, filterString) {
@@ -54,37 +60,37 @@
                     });
                 }
             }
-            
-            function showMore(entry){
+
+            function showMore(entry) {
                 $("#" + entry + "-more-label").toggle();
                 $("#" + entry + "-less-label").toggle();
-                
+
                 $("#" + entry + "-more-content").slideDown();
-                
-                return false;
             }
-            
-            function showLess(entry){
+
+            function showLess(entry) {
                 $("#" + entry + "-more-label").toggle();
-                $("#" + entry + "-less-label").toggle();                
+                $("#" + entry + "-less-label").toggle();
                 $("#" + entry + "-more-content").slideUp();
-                
-                return false;
             }
 
         </script>
 
     </head>
     <body>
-        <div style="text-align: right;">
-            <label for="showFunctions">Functions</label>
-            <input type="checkbox" id="showFunctions" checked="checked" />
+        <div class="filter-bar">
+            <div class="filter-controls">
+                <label for="showFunctions"> || Show functions</label>
+                <input type="checkbox" id="showFunctions" checked="checked" />
 
-            <label for="showTypes">Types</label>
-            <input type="checkbox" id="showTypes" checked="checked" />
+                <label for="showTypes"> || Show types</label>
+                <input type="checkbox" id="showTypes" checked="checked" />
 
-            <input type="text" id="filter" placeholder="Filter..."/>
+                <label for="filter"> || Name</label>
+                <input type="text" id="filter" placeholder="Filter by name..."/>
+            </div>
         </div>
+        <br />
         <h1>RevBayes Manual Pages :: Index</h1>
 
         <div id="manualEntries">

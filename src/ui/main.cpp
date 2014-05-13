@@ -22,7 +22,10 @@
 #include "CommandLineUtils.h"
 #include "libs/filesystem.h"
 #include "IHelp.h"
-#include "HelpParser.h"
+#include "help/HelpParser.h"
+#include "help/IHelpRenderer.h"
+#include "help/HelpConsoleRenderer.h"
+
 
 #include <boost/filesystem.hpp>
 #include "boost/filesystem/operations.hpp"
@@ -47,10 +50,13 @@ int main(int argc, const char* argv[]) {
     configuration.parseInifile();
     std::cout << configuration.getMessage() << std::endl;
 
-
-    /* initialize environment */    
+    // set up help
+    IHelpRenderer *helpRenderer = new HelpConsoleRenderer();
     HelpParser *help = new HelpParser();
+    help->setRenderer(helpRenderer);
     help->setHelpDir(configuration.getHelpDir());    
+    
+    /* initialize environment */    
     RevLanguageMain rl(help);
 
     // pass input files to Rev
