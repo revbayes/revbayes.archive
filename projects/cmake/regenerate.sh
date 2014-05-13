@@ -3,18 +3,37 @@ HERE=$(pwd)
 echo $HERE
 
 #################
+# command line options
+# set default values
+boost="true"
+mavericks="false"
+win="false"
+
+
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
     eval $( echo $1 | sed 's/-//g' | tr -d '\012')=$2
     shift
+    # intercept help while parsing "-key value" pairs
+    if [ -n "$help" ] || [ -n "$-help" ] || [ -n "$h" ]
+    then 
+        echo '
+        The minimum steps to build RevBayes after running this script is:
+            cmake .
+            make
+        
+        Command line options are: 
+            -h | --help                 : print this help and exit
+            -boost      <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
+            -mavericks  <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
+            -win        <true|false>    : set to true if you are building on a Windows system. Defaults to false.
+            '
+        exit
+    fi
+    
     shift
 done
 
-# set default values
-if [ ! -n "$boost" ] # not is set
-then 
-    boost="true"
-fi
 
 #################
 # 1) build boost libraries separately
@@ -27,7 +46,10 @@ then
     cd ../../boost_1_55_0
     rm ./project-config.jam*  # clean up from previous runs
     ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
-    ./b2 cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+    if [ "$mavericks" = "true" ]
+    then
+        ./b2 cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+    fi
 
 else
     echo 'not building boost libraries'
@@ -67,19 +89,36 @@ project(RevBayes)
 # -D_GLIBCXX_DEBUG
 
 # Default compiler flags
-if (WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
-else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
-endif ()
+#if (WIN32)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
+#else ()
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
+#endif ()
 
-# SET(GCC_COVERAGE_LINK_FLAGS    "-stdlib=libstdc++")
-# SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
-# SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
-# SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
+' > "$HERE/CMakeLists.txt"
 
+if [ "$mavericks" = "true" ]
+then
+    echo '
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
+    '  >> "$HERE/CMakeLists.txt"
+elif [ "$win" = "true" ]
+then
+    echo '
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
+    '  >> "$HERE/CMakeLists.txt"
+else
+    echo '
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
+    '  >> "$HERE/CMakeLists.txt"
+fi  
+
+echo '
 # Add extra CMake libraries into ./CMake
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 
@@ -87,7 +126,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
 # TODO Split these up based on sub-package dependency
-include_directories(' > "$HERE/CMakeLists.txt"
+include_directories(' >> "$HERE/CMakeLists.txt"
 find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ')
 
