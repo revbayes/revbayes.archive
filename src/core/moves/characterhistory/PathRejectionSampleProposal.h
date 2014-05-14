@@ -190,7 +190,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         // update state
         currState[idx] = *it_h;
         t += dt;
-        currAge = t * branchLength;
+        currAge += dt * branchLength;
         //std::cout << t << " " << dt << " " << tr << " " << sr << " " << lnL << "; " << bs << " = " << bt << " * " << br << "; " << dt/bs << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
     }
     // lnL for final non-event
@@ -309,6 +309,10 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     
     // return hastings ratio
     proposedLnProb = computeLnProposal(*proposedValue);
+    
+    if (node.isRoot())
+        return 0.0;
+    
     return storedLnProb - proposedLnProb;
 }
 
