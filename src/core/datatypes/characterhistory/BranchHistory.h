@@ -37,11 +37,12 @@ namespace RevBayesCore {
         const size_t getNumEvents(void) const;
         const size_t getIndex(void) const;
         
-        const std::vector<CharacterEvent*>& getParentCharacters(void);
-        const std::vector<CharacterEvent*>& getChildCharacters(void);
+        std::vector<CharacterEvent*>& getParentCharacters(void);
         const std::vector<CharacterEvent*>& getParentCharacters(void) const;
+        std::vector<CharacterEvent*>& getChildCharacters(void);
         const std::vector<CharacterEvent*>& getChildCharacters(void) const;
-        const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void);
+        std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void);
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void) const;
 
         
         void addEvent(CharacterEvent* evt);
@@ -63,7 +64,7 @@ namespace RevBayesCore {
         void setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
 
         
-        void print(void);
+        void print(void) const;
         const std::set<size_t>& getDirtyCharacters(void);
         void setDirtyCharacters(const std::set<size_t>& s);
         

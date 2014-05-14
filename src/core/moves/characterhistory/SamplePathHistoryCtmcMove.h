@@ -110,6 +110,7 @@ double RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::SamplePathHi
     
     // sample branch to update and store values
     storedIndex = GLOBAL_RNG->uniform01() * numNodes;
+    //storedIndex = 10;
     storedValue = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(variable->getDistribution()).getHistory(storedIndex);
     
     // sample characters to update
@@ -125,24 +126,20 @@ double RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::SamplePathHi
     
     // propose new value
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    const TopologyNode& nd = tree->getValue().getNode(storedIndex);
     
-    //std::cout << "OLD P\n";
-    //p->getValue().print();
-    //std::cout << "OLD P (stored)\n";
-    //storedValue.print();
+    // std::cout << "OLD P\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
     
     //    double lnProposalBwd = p->computeLnProposal();
+    double lnProposalRatio = 0.0;
     p->samplePathHistory(tree->getValue().getNode(storedIndex), updateSet);
+    p->fireTreeChangeEvent(nd);
     //    double lnProposalFwd = p->computeLnProposal();
-    
-    //std::cout << "NEW P (stored)\n";
-    //storedValue.print();
-    //std::cout << "NEW P\n";
-    //p->getValue().print();
-    
-    //return 0.0;
+
+    //    std::cout << "NEW P\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n";  p->getHistory(storedIndex).print();
+       
     //    return lnProposalBwd - lnProposalFwd;
-    return 0.0;
+    return lnProposalRatio;
 }
 
 template<class charType, class treeType>
@@ -155,7 +152,9 @@ template<class charType, class treeType>
 void RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::rejectSimpleMove(void)
 {
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    const TopologyNode& nd = tree->getValue().getNode(storedIndex);
     p->setHistory(storedValue, storedIndex);
+    p->fireTreeChangeEvent(nd);
     // variable->setValue( new BranchHistory(storedValue) );
 }
 

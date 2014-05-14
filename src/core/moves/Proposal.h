@@ -27,6 +27,7 @@ namespace RevBayesCore {
         virtual                                                ~Proposal(void) {}                                                                       //!< Destructor
         
         // pure virtual public methods
+        virtual void                                            cleanProposal(void) = 0;                                                                //!< Cleanup proposal
         virtual Proposal*                                       clone(void) const = 0;                                                                  //!< Make a deep copy
         virtual double                                          doProposal(void) = 0;                                                                   //!< Actually do the proposal.
         virtual const std::vector<DagNode*>&                    getNodes(void) const = 0;                                                               //!< Get the vector of nodes for which the proposal is drawing new values.
