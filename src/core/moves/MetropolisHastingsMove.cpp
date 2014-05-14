@@ -109,6 +109,7 @@ void MetropolisHastingsMove::performMove( void )
         if (u < r) 
         {
             numAccepted++;
+            proposal->cleanProposal();
 //            lnProbability += lnProbabilityRatio;
         }
         else 

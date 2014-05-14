@@ -92,12 +92,12 @@ BranchHistory* BranchHistory::clone(void) const
     return new BranchHistory(*this);
 }
 
-const std::vector<CharacterEvent*>& BranchHistory::getParentCharacters(void)
+std::vector<CharacterEvent*>& BranchHistory::getParentCharacters(void)
 {
     return parentCharacters;
 }
 
-const std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void)
+std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void)
 {
     return childCharacters;
 }
@@ -113,7 +113,12 @@ const std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void) cons
     return childCharacters;
 }
 
-const std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void)
+std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void)
+{
+    return history;
+}
+
+const std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void) const
 {
     return history;
 }
@@ -238,7 +243,7 @@ void BranchHistory::setHistory(const std::multiset<CharacterEvent*,CharacterEven
 }
 
 
-void BranchHistory::print(void)
+void BranchHistory::print(void) const
 {
     std::set<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*>::iterator it_v;
