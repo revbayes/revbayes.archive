@@ -1,0 +1,131 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Create an MCMC analysis object</title>
+        <link rel="stylesheet" type="text/css" href="../../lib/help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Create an MCMC analysis object</h1>
+
+        <h2>Function mcmc</h2>
+
+        <span onClick="navigateHelp('mcmc');"><br />
+<h2>Name</h2>
+<p class="indent">mcmc</p>
+</span><h2>Description</h2>
+<p class="indent"><p class="indent">
+                This function is used to create an MCMC analysis object from a model and associated
+                monitors and moves.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+            MCMC mcmc (Model model, Monitor[] monitors, Move[] moves)
+        </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >model</b>
+<div class="indent">
+
+                The model to use in the analysis. The function makes an independent copy of the model
+                and stores it internally in the MCMC object.
+            <br />
+<br />
+<span class="argument">Argument type: </span>
+fixed<br />
+<span class="argument">Value type: </span>
+Model<br />
+</div>
+<br />
+<b >monitors</b>
+<div class="indent">
+
+                The monitors to use in the analysis. The function makes an independent copy of the monitors
+                and stores them internally in the MCMC object.
+            <br />
+<br />
+<span class="argument">Argument type: </span>
+fixed<br />
+<span class="argument">Value type: </span>
+Vector of monitors<br />
+</div>
+<br />
+<b >moves</b>
+<div class="indent">
+
+                The moves to use in the analysis. The function makes an independent copy of the moves
+                and stores them internally in the MCMC object.
+            <br />
+<br />
+<span class="argument">Argument type: </span>
+fixed<br />
+<span class="argument">Value type: </span>
+Vector of moves<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The MCMC analysis object produced by a call to this function keeps copies of the model and the associated moves and monitors.
+                The MCMC analysis object is used to run Markov chain Monte Carlo (MCMC) simulation on the model, using the provided moves,
+                to obtain a sample of the posterior probability distribution. During the analysis, the monitors are responsible for sampling
+                model parameters of interest.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+            # Create a simple model (unclamped)
+            a ~ exponential(1)
+            mymodel <- model(a)
+            
+            # Create a move vector and a monitor vector
+            moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+            monitors[1] <- modelmonitor("out.txt")
+            
+            # Create an mcmc object
+            mymcmcObject <- mcmc( mymodel, monitors, moves)
+            
+            # Run a short analysis
+            mymcmcObject.run( generations = 100)
+        </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('MCMC'); return false;">MCMC</a><br />
+<a href="" onClick="navigateHelp('model'); return false;">model</a><br />
+<a href="" onClick="navigateHelp('Model'); return false;">Model</a><br />
+<a href="" onClick="navigateHelp('Move'); return false;">Move</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

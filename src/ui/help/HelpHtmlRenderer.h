@@ -18,6 +18,20 @@ const std::string br = "<br />\n";
 class HelpHtmlRenderer : public IHelpRenderer {
 public:
 
+    std::string renderTypeHelp(TypeHelpEntry typeHelp, bool applyTemplate) {
+        if (!applyTemplate) {
+            return renderTypeHelp(typeHelp);
+        }
+        std::string title = typeHelp.GetTitle();
+        std::string name = typeHelp.GetName();
+        
+        std::string tmp = boost::regex_replace(typeTemplate, boost::regex("#title#"), title);
+        tmp = boost::regex_replace(tmp, boost::regex("#name#"), name);
+        tmp = boost::regex_replace(tmp, boost::regex("#content#"), renderTypeHelp(typeHelp));
+
+        return tmp;
+    }
+
     std::string renderTypeHelp(TypeHelpEntry typeHelp) {
         std::string result = "";
         std::string tmp = "";
@@ -26,7 +40,9 @@ public:
         //result.append(typeHelp.GetTitle()).append(sectionBreak);
 
         // name
+        //result.append("<span onClick=\"navigateHelp('"+typeHelp.GetName()+"');\">");
         result.append(br).append(h2Entry("Name", typeHelp.GetName()));
+        //result.append("</span>");
 
         // description
         result.append(h2Entry("Description", pEntries(typeHelp.GetDescription())));
@@ -36,6 +52,7 @@ public:
         if (typeHelp.GetMethodMembers().size() > 0) {
             result.append(tag("Member methods", "h2"));
             result.append(divIndent());
+
             BOOST_FOREACH(MethodMemberHelpEntry mm, typeHelp.GetMethodMembers()) {
                 result.append(tag(mm.GetMethodName(), "b"));
                 result.append(divIndent());
@@ -86,11 +103,27 @@ public:
         return result;
     }
 
+    std::string renderFunctionHelp(FunctionHelpEntry functionHelp, bool applyTemplate) {
+        if (!applyTemplate) {
+            return renderFunctionHelp(functionHelp);
+        }
+        std::string title = functionHelp.GetTitle();
+        std::string name = functionHelp.GetName();
+
+        std::string tmp = boost::regex_replace(functionTemplate, boost::regex("#title#"), title);
+        tmp = boost::regex_replace(tmp, boost::regex("#name#"), name);
+        tmp = boost::regex_replace(tmp, boost::regex("#content#"), renderFunctionHelp(functionHelp));
+
+        return tmp;
+    }
+
     std::string renderFunctionHelp(FunctionHelpEntry functionHelp) {
         std::string result = "";
 
         // name
-        result.append(h2Entry("Name", functionHelp.GetName()));
+        //result.append("<span onClick=\"navigateHelp('"+functionHelp.GetName()+"');\">");
+        result.append(br).append(h2Entry("Name", functionHelp.GetName()));
+        //result.append("</span>");
 
         // title
         //result.append(functionHelp.GetTitle()).append(sectionBreak);
@@ -105,6 +138,7 @@ public:
 
         // argument
         if (functionHelp.GetArguments().size() > 0) {
+
             result.append(tag("Arguments", "h2"));
             result.append(divIndent());
 
@@ -118,6 +152,7 @@ public:
                 result.append(tag("Value type: ", "span", "argument")).append(arg.GetValueType()).append(br);
 
                 if (arg.GetOptions().size() > 0) {
+
                     result.append(br);
                     result.append(tag("Options", "b")).append(br);
                     result.append(divIndent());
@@ -148,11 +183,12 @@ public:
         if (functionHelp.GetReferences().size() > 0) {
 
             result.append(tag("Reference", "h2"));
-                    result.append("<p class=\"indent\">");
-                    BOOST_FOREACH(ReferenceHelpEntry ref, functionHelp.GetReferences()) {
+            result.append("<p class=\"indent\">");
+
+            BOOST_FOREACH(ReferenceHelpEntry ref, functionHelp.GetReferences()) {
                 result.append(ref.GetCitation()).append(br);
-                        result.append(ref.GetUrl()).append(br);
-                        result.append(ref.GetDoi()).append(br);
+                result.append(ref.GetUrl()).append(br);
+                result.append(ref.GetDoi()).append(br);
             }
             result.append("</p>").append(br);
         }
@@ -160,15 +196,16 @@ public:
         // author
         result.append(h2Entry("Author", functionHelp.GetAuthor())).append(br);
 
-                // see also        
+        // see also        
         if (functionHelp.GetSeeAlso().size() > 0) {
 
             result.append(tag("See also", "h2"));
-                    result.append("<p class=\"indent\">");
+            result.append("<p class=\"indent\">");
 
-                    BOOST_FOREACH(std::string see, functionHelp.GetSeeAlso()) {
+            BOOST_FOREACH(std::string see, functionHelp.GetSeeAlso()) {
 
-                result.append("<a href=\"pages/" + see + ".html\">" + see + "</a>").append(br);
+                //result.append("<a href=\"pages/" + see + ".html\">" + see + "</a>").append(br);
+                result.append("<a href=\"\" onClick=\"navigateHelp('" + see + "'); return false;\">" + see + "</a>").append(br);
             }
             result.append("</p>").append(br);
         }
@@ -177,27 +214,22 @@ public:
         return result;
     }
 
-    void setPageTemplate(std::string pageTemplate) {
+    void setTypeTemplate(std::string typeTemplate) {
 
-        this->pageTemplate = pageTemplate;
+        this->typeTemplate = typeTemplate;
     }
 
-    void setTypeEntryTemplate(std::string typeEntryTemplate) {
+    void setFunctionTemplate(std::string functionTemplate) {
 
-        this->typeEntryTemplate = typeEntryTemplate;
-    }
-
-    void setFunctionEntryTemplate(std::string functionEntryTemplate) {
-
-        this->functionEntryTemplate = functionEntryTemplate;
+        this->functionTemplate = functionTemplate;
     }
 
 private:
-    std::string pageTemplate;
-            std::string typeEntryTemplate;
-            std::string functionEntryTemplate;
 
-            std::string h2Entry(std::string name, std::string value) {
+    std::string typeTemplate;
+    std::string functionTemplate;
+
+    std::string h2Entry(std::string name, std::string value) {
 
         return "<h2>" + name + "</h2>\n<p class=\"indent\">" + value + "</p>\n";
     }
@@ -210,7 +242,7 @@ private:
 
         std::string tmp = "";
 
-                BOOST_FOREACH(std::string p, pList) {
+        BOOST_FOREACH(std::string p, pList) {
             if (indent) {
                 tmp.append("<p class=\"indent\">").append(p).append("</p>\n");
             } else {
@@ -231,10 +263,11 @@ private:
 
     std::string tag(std::string s, std::string t, std::string clazz = "") {
         std::string tmp = "";
-        if(clazz != ""){
+        if (clazz != "") {
+
             tmp = "class=\"" + clazz + "\"";
         }
-      
+
         return "<" + t + " " + tmp + ">" + s + "</" + t + ">\n";
     }
 
