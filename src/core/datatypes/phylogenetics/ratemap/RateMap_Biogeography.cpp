@@ -17,6 +17,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc) : RateMap(2, nc)
     useGeographicDistanceRateModifier = false;
     branchHeterogeneousClockRates = false;
     branchHeterogeneousGainLossRates = false;
+    distancePower = 0.0;
     
     branchOffset=1;
     epochOffset=1;
@@ -51,6 +52,21 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
     if (this != &r)
     {
         RateMap::operator=( r );
+        
+        homogeneousClockRate = r.homogeneousClockRate;
+        heterogeneousClockRates = r.heterogeneousClockRates;
+        homogeneousGainLossRates = r.homogeneousGainLossRates;
+        heterogeneousGainLossRates = r.heterogeneousGainLossRates;
+        distancePower = r.distancePower;
+        
+        geographicDistanceRateModifier = r.geographicDistanceRateModifier;
+        useGeographicDistanceRateModifier = r.useGeographicDistanceRateModifier;
+        
+        branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
+        branchHeterogeneousGainLossRates = r.branchHeterogeneousClockRates;
+        
+        branchOffset = r.branchOffset;
+        epochOffset = r.epochOffset;
     }
     return *this;
 }
@@ -60,7 +76,12 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     
     double r = ( branchHeterogeneousClockRates ? heterogeneousClockRates[node.getIndex()] : homogeneousClockRate );
     const std::vector<double>& glr = ( branchHeterogeneousGainLossRates ? heterogeneousGainLossRates[node.getIndex()] : homogeneousGainLossRates );
-    double expPart = exp( -(glr[0] + glr[1]) * r * node.getBranchLength());
+    double l = node.getBranchLength();
+    
+    
+    if (node.isRoot())
+        l = 1000.0;
+    double expPart = exp( -(glr[0] + glr[1]) * r * l);
     double p = glr[0] / (glr[0] + glr[1]);
     double q = 1.0 - p;
     
@@ -68,78 +89,9 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     P[0][1] = q - q * expPart;
     P[1][0] = p - p * expPart;
     P[1][1] = q + p * expPart;
-    
-//    double tp0[2][2] = { { p0 + q0 * expPart0, q0 - q0 * expPart0 }, { p0 - p0 * expPart0, q0 + p0 * expPart0 } };
-    
-    
-//    // get model settings
-//    size_t nodeIdx = node.getIndex();
-//    size_t leftIdx = node.getChild(0).getIndex();
-//    size_t rightIdx = node.getChild(1).getIndex();
-//    
-//    //std::vector<CharacterEvent*> states = this->histories[nodeIdx].getChildCharacters();
-//    
-//    double bt[3] = { tree.getBranchLength(nodeIdx), tree.getBranchLength( leftIdx ), tree.getBranchLength( rightIdx ) };
-//    if (node.isRoot())
-//        bt[0] = node.getAge() * 2;
-//    
-//    double br[3] = { 1.0, 1.0, 1.0 };
-//    if (branchHeterogeneousClockRates)
-//    {
-//        br[0] = heterogeneousClockRates->getValue()[nodeIdx];
-//        br[1] = heterogeneousClockRates->getValue()[leftIdx];
-//        br[2] = heterogeneousClockRates->getValue()[rightIdx];
-//    }
-//    else
-//        br[0] = br[1] = br[2] = homogeneousClockRate->getValue();
-//    
-//    const RateMatrix* rm0;
-//    const RateMatrix* rm1;
-//    const RateMatrix* rm2;
-//    if (branchHeterogeneousSubstitutionMatrices)
-//    {
-//        rm0 = &heterogeneousRateMatrices->getValue()[nodeIdx];
-//        rm1 = &heterogeneousRateMatrices->getValue()[leftIdx];
-//        rm2 = &heterogeneousRateMatrices->getValue()[rightIdx];
-//    }
-//    else
-//        rm0 = rm1 = rm2 = &homogeneousRateMatrix->getValue();
-//    
-//    double bs0 = br[0] * bt[0];
-//    double bs1 = br[1] * bt[1];
-//    double bs2 = br[2] * bt[2];
-//    
-//    // compute transition probabilities
-//    //double r[2] = { (*rm)[1][0], (*rm)[0][1] };
-//    //        double expPart0 = exp( - (r[0] + r[1]) * bs0);
-//    //        double expPart1 = exp( - (r[0] + r[1]) * bs1);
-//    //        double expPart2 = exp( - (r[0] + r[1]) * bs2);
-//    //        double pi0 = r[0] / (r[0] + r[1]);
-//    //        double pi1 = 1.0 - pi0;
-//    
-//    //        double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
-//    //        double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
-//    //        double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
-//    
-//    
-//    double expPart0 = exp( -((*rm0)[1][0] + (*rm0)[0][1]) * bs0);
-//    double expPart1 = exp( -((*rm1)[1][0] + (*rm1)[0][1]) * bs1);
-//    double expPart2 = exp( -((*rm2)[1][0] + (*rm2)[0][1]) * bs2);
-//    double p0 = (*rm0)[1][0] / ((*rm0)[1][0] + (*rm0)[0][1]);
-//    double q0 = 1.0 - p0;
-//    double p1 = (*rm1)[1][0] / ((*rm1)[1][0] + (*rm1)[0][1]);
-//    double q1 = 1.0 - p1;
-//    double p2 = (*rm2)[1][0] / ((*rm2)[1][0] + (*rm2)[0][1]);
-//    double q2 = 1.0 - p2;
-//    
-//    double tp0[2][2] = { { p0 + q0 * expPart0, q0 - q0 * expPart0 }, { p0 - p0 * expPart0, q0 + p0 * expPart0 } };
-//    double tp1[2][2] = { { p1 + q1 * expPart1, q1 - q1 * expPart1 }, { p1 - p1 * expPart1, q1 + p1 * expPart1 } };
-//    double tp2[2][2] = { { p2 + q2 * expPart2, q2 - q2 * expPart2 }, { p2 - p2 * expPart2, q2 + p2 * expPart2 } };
-//    
-//    //    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
-//    //    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
-//    //    std::cout << tp2[0][0] << " " << tp2[0][1] << "\n" << tp2[1][0] << " " << tp2[1][1] << "\n";
-    
+
+    //std::cout << node.getIndex() << " " << P[0][0] << " " << P[0][1] << " " << P[1][0] << " " << P[1][1] << "   " << glr[0] << " " << glr[1] << "\n";
+    ;
 }
 
 RateMap_Biogeography* RateMap_Biogeography::clone(void) const
@@ -264,7 +216,12 @@ double RateMap_Biogeography::getLnTransitionProbability(const TopologyNode& node
 
 void RateMap_Biogeography::updateMap(void)
 {
-    ; // do nothing
+    if (needsUpdate)
+    {
+        ; // do nothing ...
+        
+        needsUpdate = false;
+    }
 }
 
 double RateMap_Biogeography::getDistancePower(void) const
@@ -284,7 +241,12 @@ const std::vector<double>& RateMap_Biogeography::getHomogeneousGainLossRates(voi
 
 void RateMap_Biogeography::setHomogeneousGainLossRates(const std::vector<double> &r)
 {
+    
+    branchHeterogeneousGainLossRates = false;
     homogeneousGainLossRates = r;
+    
+    
+    ;
 }
 
 const std::vector<std::vector<double> >& RateMap_Biogeography::getHeterogeneousGainLossRates(void) const
@@ -294,6 +256,7 @@ const std::vector<std::vector<double> >& RateMap_Biogeography::getHeterogeneousG
 
 void RateMap_Biogeography::setHeterogeneousGainLossRates(const std::vector<std::vector<double> > &r)
 {
+    branchHeterogeneousGainLossRates = true;
     heterogeneousGainLossRates = r;
 }
 
@@ -304,6 +267,7 @@ double RateMap_Biogeography::getHomogeneousClockRate(void) const
 
 void RateMap_Biogeography::setHomogeneousClockRate(double r)
 {
+    branchHeterogeneousClockRates = false;
     homogeneousClockRate = r;
 }
 
@@ -314,6 +278,7 @@ const std::vector<double>& RateMap_Biogeography::getHeterogeneousClockRates(void
 
 void RateMap_Biogeography::setHeterogeneousClockRates(const std::vector<double> &r)
 {
+    branchHeterogeneousClockRates = true;
     heterogeneousClockRates = r;
 }
 

@@ -15,7 +15,7 @@ using namespace RevBayesCore;
 //BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<std::vector<double> > *glr, const TypedDagNode<double> *dp, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography( nc ) ),
 BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography( nc ) )
 {
-    homogeneousGainLossRates    = new ConstantNode<std::vector<double> >("homogeneousGainLossRates", new std::vector<double>(2,0.5));
+    homogeneousGainLossRates    = new ConstantNode<std::vector<double> >("homogeneousGainLossRates", new std::vector<double>(2,0.3333));
     heterogeneousGainLossRates  = NULL;
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates     = NULL;
@@ -43,7 +43,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateM
     branchHeterogeneousClockRates = n.branchHeterogeneousClockRates;
     branchHeterogeneousGainLossRates = n.branchHeterogeneousGainLossRates;
     
-    update();
+    //update();
 }
 
 
@@ -59,6 +59,8 @@ BiogeographyRateMapFunction* BiogeographyRateMapFunction::clone( void ) const {
 
 
 void BiogeographyRateMapFunction::update( void ) {
+    
+    // touch specialization for granular updates?
     
     // set the gainLossRate
     if (branchHeterogeneousGainLossRates)
@@ -84,7 +86,7 @@ void BiogeographyRateMapFunction::update( void ) {
     }
     
     // set the distancePower
-    double dp = distancePower->getValue();
+    const double& dp = distancePower->getValue();
     static_cast< RateMap_Biogeography* >(value)->setDistancePower(dp);
     
     value->updateMap();
@@ -202,6 +204,8 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
     if (oldP == homogeneousGainLossRates)
     {
         homogeneousGainLossRates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        
+        ;
     }
     else if (oldP == heterogeneousGainLossRates)
     {
@@ -220,4 +224,3 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
         distancePower = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
-
