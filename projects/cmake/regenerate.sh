@@ -105,6 +105,7 @@ then
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
     '  >> "$HERE/CMakeLists.txt"
+
 elif [ "$win" = "true" ]
 then
     echo '

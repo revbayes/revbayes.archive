@@ -4,6 +4,12 @@
         <link rel="stylesheet" type="text/css" href="../lib/help.css"/>     
 
         <script src="../lib/jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open("pages/" + entry + ".html");
+            }
+        </script>
 
         <script>
             var showFunctions, showTypes, filter;
@@ -95,7 +101,9 @@
 
         <div id="manualEntries">
             <div id="functionEntries"><div id="cBDP">
+    <span onClick="navigateHelp('cBDP');">
     <h2>cBDP - function</h2>
+    </span> 
     <input type="hidden" id="entry-type" value="function" />
     
     <!--<a href="#entry-file#">View</a>-->
@@ -106,9 +114,10 @@
             </p></div>    
     <a href="" onClick="showMore('cBDP'); return false;" class="indent more-label" id="cBDP-more-label" >Show more... >></a>
     <a href="" onClick="showLess('cBDP'); return false;" class="indent more-label" id="cBDP-less-label" ><< Show less</a>
-    <div class="indent more-content" id="cBDP-more-content"><h2>Name</h2>
+    <div class="indent more-content" id="cBDP-more-content"><span onClick="navigateHelp('cBDP');"><br />
+<h2>Name</h2>
 <p class="indent">cBDP</p>
-<h2>Description</h2>
+</span><h2>Description</h2>
 <p class="indent"><p class="indent">
                 The constant-rate birth-death process species a prior probability distribution on time trees. The birth (speciation) and death (extinction)
                 rates are assumed to be constant over time. Unlike some implementations, cBDP does not constrain the birth rate to be larger than the death
@@ -193,6 +202,7 @@ Conditioning of the process. For details, see below.<br />
 fixed<br />
 <span class="argument">Value type: </span>
 String<br />
+<br />
 <b >Options</b>
 <br />
 <div class="indent">
@@ -212,6 +222,7 @@ The number of taxa. This is only needed for simulation/initialization purposes w
 fixed<br />
 <span class="argument">Value type: </span>
 Natural number<br />
+<br />
 <b >Options</b>
 <br />
 <div class="indent">
@@ -315,13 +326,15 @@ http://mbe.oxfordjournals.org/content/28/9/2577.short<br />
 <p class="indent">Sebastian Hoehna</p>
 <br />
 <h2 >See also</h2>
-<p class="indent"><a href="pages/diversityDependentBirthDeathProcess.html">diversityDependentBirthDeathProcess</a><br />
+<p class="indent"><a href="" onClick="navigateHelp('diversityDependentBirthDeathProcess'); return false;">diversityDependentBirthDeathProcess</a><br />
 </p><br />
 </div>
 </div>
 
 <div id="mcmc">
+    <span onClick="navigateHelp('mcmc');">
     <h2>mcmc - function</h2>
+    </span> 
     <input type="hidden" id="entry-type" value="function" />
     
     <!--<a href="#entry-file#">View</a>-->
@@ -331,9 +344,10 @@ http://mbe.oxfordjournals.org/content/28/9/2577.short<br />
             </p></div>    
     <a href="" onClick="showMore('mcmc'); return false;" class="indent more-label" id="mcmc-more-label" >Show more... >></a>
     <a href="" onClick="showLess('mcmc'); return false;" class="indent more-label" id="mcmc-less-label" ><< Show less</a>
-    <div class="indent more-content" id="mcmc-more-content"><h2>Name</h2>
+    <div class="indent more-content" id="mcmc-more-content"><span onClick="navigateHelp('mcmc');"><br />
+<h2>Name</h2>
 <p class="indent">mcmc</p>
-<h2>Description</h2>
+</span><h2>Description</h2>
 <p class="indent"><p class="indent">
                 This function is used to create an MCMC analysis object from a model and associated
                 monitors and moves.
@@ -414,16 +428,18 @@ Vector of moves<br />
 <p class="indent">Sebastian Hoehna</p>
 <br />
 <h2 >See also</h2>
-<p class="indent"><a href="pages/MCMC.html">MCMC</a><br />
-<a href="pages/model.html">model</a><br />
-<a href="pages/Model.html">Model</a><br />
-<a href="pages/Move.html">Move</a><br />
+<p class="indent"><a href="" onClick="navigateHelp('MCMC'); return false;">MCMC</a><br />
+<a href="" onClick="navigateHelp('model'); return false;">model</a><br />
+<a href="" onClick="navigateHelp('Model'); return false;">Model</a><br />
+<a href="" onClick="navigateHelp('Move'); return false;">Move</a><br />
 </p><br />
 </div>
 </div>
 
 <div id="powermix">
+    <span onClick="navigateHelp('powermix');">
     <h2>powermix - function</h2>
+    </span> 
     <input type="hidden" id="entry-type" value="function" />
     
     <!--<a href="#entry-file#">View</a>-->
@@ -435,9 +451,10 @@ Vector of moves<br />
             </p></div>    
     <a href="" onClick="showMore('powermix'); return false;" class="indent more-label" id="powermix-more-label" >Show more... >></a>
     <a href="" onClick="showLess('powermix'); return false;" class="indent more-label" id="powermix-less-label" ><< Show less</a>
-    <div class="indent more-content" id="powermix-more-content"><h2>Name</h2>
+    <div class="indent more-content" id="powermix-more-content"><span onClick="navigateHelp('powermix');"><br />
+<h2>Name</h2>
 <p class="indent">powermix</p>
-<h2>Description</h2>
+</span><h2>Description</h2>
 <p class="indent"><p class="indent">
                 This function takes two simplex parameters "a" and "b", and computes a mixture of them by using a simplex parameter "prop"
                 with two components as exponents. Each component x[i] in the mixture is computed as:
@@ -518,7 +535,9 @@ Simplex<br />
 
 </div>
             <div id="typeEntries"><div id="MCMC">
+    <span onClick="navigateHelp('MCMC');">
     <h2>MCMC - type</h2>
+    </span> 
     <input type="hidden" id="entry-type" value="type" />
     
     <!--<a href="#entry-file#">View</a>-->
@@ -530,10 +549,10 @@ Simplex<br />
             </p></div>    
     <a href="" onClick="showMore('MCMC'); return false;" class="indent more-label" id="MCMC-more-label" >Show more... >></a>
     <a href="" onClick="showLess('MCMC'); return false;" class="indent more-label" id="MCMC-less-label" ><< Show less</a>
-    <div class="indent more-content" id="MCMC-more-content"><br />
+    <div class="indent more-content" id="MCMC-more-content"><span onClick="navigateHelp('MCMC');"><br />
 <h2>Name</h2>
 <p class="indent">MCMC</p>
-<h2>Description</h2>
+</span><h2>Description</h2>
 <p class="indent"><p class="indent">
                 The MCMC analysis object keeps a model and the associated moves and monitors.
                 The object is used to run Markov chain Monte Carlo (MCMC) simulation on
