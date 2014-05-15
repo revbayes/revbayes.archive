@@ -80,7 +80,6 @@ namespace RevBayesCore {
         // (not needed)        void                         keepSpecialization(DagNode* affecter);
         // (not needed)        void                         restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher);
-        virtual void                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         
         
     private:
@@ -195,11 +194,11 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>* RevBayesCore::Bi
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n, size_t nIdx)
 {
-    this->lnProb = 0.0;
-    
-    for (size_t i = 0; i < this->historyLikelihoods.size(); i++)
-        this->lnProb += this->historyLikelihoods[i];
-    
+//    this->lnProb = 0.0;
+//    
+//    for (size_t i = 0; i < this->historyLikelihoods[0].size(); i++)
+//        this->lnProb += this->historyLikelihoods[ this->activeLikelihood[i] ][i];
+//    
 }
 
 template<class charType, class treeType>
@@ -212,13 +211,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
     
     if (node.isRoot())
     {
-        this->historyLikelihoods[nodeIndex] = 0.0;
+        this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = 0.0;
     }
     else if (n == 0)
     {
         // reject extinction cfgs
         if (n == 0)
-            this->historyLikelihoods[nodeIndex] = RbConstants::Double::neginf;
+            this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
     }
     else
     {
@@ -271,7 +270,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             
             if (n == 0)
             {
-                this->historyLikelihoods[nodeIndex] = RbConstants::Double::neginf;
+                this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
                 break;
             }
             
@@ -295,7 +294,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
         
         //if (nodeIndex == 5) std::cout << t << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << numOn(currState) << "\n\n";
         
-        this->historyLikelihoods[nodeIndex] = lnL;
+        this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     }
 }
 
@@ -304,18 +303,18 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
-    double lnL = 0.0;
-    if (this->usingAmbiguousCharacters == true)
-    {
-        BranchHistory& bh = *(this->histories[nodeIndex]);
-        std::vector<CharacterEvent*> currState = bh.getChildCharacters();
-        
-        for (size_t i = 0; i < currState.size(); i++)
-        {
-            lnL += log(tipProbs[nodeIndex][ currState[i]->getState() ]);
-        }
-    }
-    this->historyLikelihoods[nodeIndex] = lnL;
+//    double lnL = 0.0;
+//    if (this->usingAmbiguousCharacters == true)
+//    {
+//        BranchHistory& bh = *(this->histories[nodeIndex]);
+//        std::vector<CharacterEvent*> currState = bh.getChildCharacters();
+//        
+//        for (size_t i = 0; i < currState.size(); i++)
+//        {
+//            lnL += log(tipProbs[nodeIndex][ currState[i]->getState() ]);
+//        }
+//    }
+//    this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     
 }
 
@@ -989,9 +988,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(void)
 {
-    const treeType& tree = this->tau->getValue();
-    DiscreteCharacterData<charType>* v = static_cast<DiscreteCharacterData<charType>* >(this->value);
-    //simulate(tree.getRoot(), this->value);
+    ;
+//    const treeType& tree = this->tau->getValue();
+//    DiscreteCharacterData<charType>* v = static_cast<DiscreteCharacterData<charType>* >(this->value);
+//    simulate(tree.getRoot(), this->value);
 }
 
 template<class charType, class treeType>
@@ -1239,47 +1239,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecia
     else
     {
         AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
-    }
-    
-}
-
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
-    
-    // first, get the rate matrix for this branch
-    const RateMatrix *rm;
-    if ( this->branchHeterogeneousSubstitutionMatrices == true )
-    {
-        rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
-    }
-    else
-    {
-        rm = &this->homogeneousRateMatrix->getValue();
-    }
-    
-    // second, get the clock rate for the branch
-    double branchTime;
-    if ( this->branchHeterogeneousClockRates == true )
-    {
-        branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
-    }
-    else
-    {
-        branchTime = this->homogeneousClockRate->getValue() * brlen;
-    }
-    
-    // and finally compute the per site rate transition probability matrix
-    if ( this->rateVariationAcrossSites == true )
-    {
-        const std::vector<double> &r = this->siteRates->getValue();
-        for (size_t i = 0; i < this->numSiteRates; ++i)
-        {
-            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
-        }
-    }
-    else
-    {
-        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
     }
     
 }

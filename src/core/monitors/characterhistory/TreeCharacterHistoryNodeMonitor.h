@@ -205,7 +205,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
             size_t idx = (*it)->getIndex();
             unsigned from = characters[idx]->getState();
             unsigned to = (*it)->getState();
-            v[ (numStates-1)*from + to ] += 1;
+            v[ numStates*from + to ] += 1;
             characters[idx] = (*it);
         }
         
@@ -219,7 +219,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
             {
                 if (j != 0)
                     ss << ",";
-                ss << j << ":" << v[(numStates-1)*i + j];
+                ss << j << ":" << v[numStates*i + j];
             }
             ss << "}";
         }
@@ -400,15 +400,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::swapNode
     {
         variable = static_cast<StochasticNode<AbstractCharacterData>* >(newN);
     }
-//    for (size_t i = 0; i < branchHistories.size(); i++)
-//    {
-//        if (oldN == branchHistories[i])
-//        {
-//            branchHistories[i] = static_cast<StochasticNode<BranchHistory>* >(newN);
-//            found = true;
-//        }
-//    }
-//    
+
     /*
      if (found == false)
      {

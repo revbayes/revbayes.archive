@@ -69,7 +69,7 @@ namespace RevBayesCore {
     protected:
         
         // parameters
-        StochasticNode<AbstractCharacterData>*  variable;
+        StochasticNode<AbstractCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
         std::vector<DagNode*>                   nodes;
@@ -116,7 +116,7 @@ namespace RevBayesCore {
  */
 template<class charType, class treeType>
 RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::NodeRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l) : Proposal(),
-variable(n),
+ctmc(n),
 tau(t),
 qmap(q),
 numNodes(t->getValue().getNumberOfNodes()),
@@ -124,9 +124,6 @@ numCharacters(n->getValue().getNumberOfCharacters()),
 numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
 storedValue(NULL),
 proposedValue(NULL),
-//nodeProposal(new PathRejectionSampleProposal<charType,treeType>(n,t,q,l)),
-//leftProposal(new PathRejectionSampleProposal<charType,treeType>(n,t,q,l)),
-//rightProposal(new PathRejectionSampleProposal<charType,treeType>(n,t,q,l)),
 nodeTpMatrix(numStates),
 leftTpMatrix(numStates),
 rightTpMatrix(numStates),
@@ -135,7 +132,7 @@ sampleNodeIndex(true),
 sampleSiteIndexSet(true)
 
 {
-    nodes.push_back(variable);
+    nodes.push_back(ctmc);
     nodes.push_back(tau);
     nodes.push_back(qmap);
 
@@ -260,9 +257,10 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     storedLnProb = 0.0;
     storedValues.clear();
     
+    size_t numTaxa = tau->getValue().getNumberOfTips();
     if (sampleNodeIndex)
     {
-        nodeIndex = GLOBAL_RNG->uniform01() * numNodes;
+        nodeIndex = numTaxa + GLOBAL_RNG->uniform01() * (numNodes-numTaxa);
     }
     
     if (sampleSiteIndexSet)
@@ -325,7 +323,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
     }
     else
     {
-        AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+        AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
         
         qmap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix);
         qmap->getValue().calculateTransitionProbabilities(node.getChild(0), leftTpMatrix);
@@ -387,7 +385,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
 {
     double lnP = 0.0;
     
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
 
     BranchHistory* bh = &p->getHistory(node.getIndex());
     std::vector<CharacterEvent*> parentState = bh->getParentCharacters();
@@ -433,7 +431,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
  *
  * Since the Proposal stores the previous value and it is the only place
  * where complex undo operations are known/implement, we need to revert
- * the value of the variable/DAG-node to its original value.
+ * the value of the ctmc/DAG-node to its original value.
  */
 template<class charType, class treeType>
 void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::undoProposal( void )
@@ -455,18 +453,18 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::undoProposal
 
 
 /**
- * Swap the current variable for a new one.
+ * Swap the current ctmc for a new one.
  *
- * \param[in]     oldN     The old variable that needs to be replaced.
- * \param[in]     newN     The new variable.
+ * \param[in]     oldN     The old ctmc that needs to be replaced.
+ * \param[in]     newN     The new ctmc.
  */
 template<class charType, class treeType>
 void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN)
 {
     
-    if (oldN == variable)
+    if (oldN == ctmc)
     {
-        variable = static_cast<StochasticNode<AbstractCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {
