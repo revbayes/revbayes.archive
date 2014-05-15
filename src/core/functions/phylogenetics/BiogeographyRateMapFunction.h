@@ -33,7 +33,7 @@ namespace RevBayesCore {
         void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setDistancePower(const TypedDagNode<double>* dp);
         void                                                setGainLossRates(const TypedDagNode<std::vector<double> >* glr);
-        void                                                setGainLossRates(const TypedDagNode<std::vector<std::vector<double> > >* glr);
+//        void                                                setGainLossRates(const TypedDagNode<std::vector<std::vector<double> > >* glr);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                update(void);
         
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         const TypedDagNode< double >*                           homogeneousClockRate;
         const TypedDagNode< std::vector< double > >*            heterogeneousClockRates;
         const TypedDagNode<std::vector<double> >*               homogeneousGainLossRates;
-        const TypedDagNode<std::vector<std::vector<double> > >* heterogeneousGainLossRates;
+        const TypedDagNode<std::vector<double> >*               heterogeneousGainLossRates;
         const TypedDagNode<double>*                             distancePower;
         const TypedDagNode<TimeTree>*                           tau;
         
