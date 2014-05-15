@@ -59,6 +59,8 @@ namespace RevBayesCore {
         
     };
     
+    std::ostream& operator<<(std::ostream& o, const std::vector<std::vector<double> >& x);
+    
 }
 
 #endif /* defined(__rb_mlandis__BiogeographyRateMapFunction__) */
