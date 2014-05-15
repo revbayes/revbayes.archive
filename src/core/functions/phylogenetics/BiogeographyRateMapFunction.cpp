@@ -224,3 +224,9 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
         distancePower = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
+
+std::ostream& operator<<(std::ostream& o, const std::vector<std::vector<double> >& x)
+{
+    o << "";
+    return o;
+}
