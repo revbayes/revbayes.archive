@@ -212,6 +212,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex)
 {
+    
     if (!dirtyNodes[nodeIndex])
         return;
 
@@ -483,6 +484,12 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecializat
                 changedNodes[index] = true;
             }
         }
+    }
+    else
+    {
+        
+        true;
+        ;
     }
 }
 

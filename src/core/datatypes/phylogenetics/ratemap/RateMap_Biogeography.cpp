@@ -99,14 +99,13 @@ RateMap_Biogeography* RateMap_Biogeography::clone(void) const
     return new RateMap_Biogeography( *this );
 }
 
-double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age) const
+double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double age) const
 {
     double rate = 0.0;
     int s = to->getState();
-    int n1 = numOn(from);
     
     // rate to extinction cfg is 0
-    if (n1 == 1 && s == 0)
+    if (count[1] <= 1 && s == 0)
         return 0.0;
     
     // rate according to binary rate matrix Q(node)
@@ -126,6 +125,14 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     
     return rate;
 
+}
+
+double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age) const
+{
+    unsigned n1 = numOn(from);
+    unsigned n0 = numCharacters - n1;
+    unsigned counts[2] = { n0, n1 };
+    return getRate(node, from, to, counts, age);
 }
 
 double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age) const
@@ -166,16 +173,16 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
     return rate;
 }
 
-double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
+double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age) const
 {
     size_t nodeIndex = node.getIndex();
     
     // get rate away away from currState
-    size_t n1 = numOn(from);
-    size_t n0 = numCharacters - n1;
-    
+    unsigned n0 = counts[0];
+    unsigned n1 = counts[1];
+
     // forbid extinction events
-    if (n1 == 1)
+    if (counts[1] == 1)
         n1 = 0;
     
     // get characters in each state
@@ -206,6 +213,14 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     }
     
     return sum;
+}
+
+double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
+{
+    unsigned n1 = numOn(from);
+    unsigned n0 = numCharacters - n1;
+    unsigned counts[2] = {n0,n1};
+    return getSumOfRates(node, from, counts, age);
 }
 
 double RateMap_Biogeography::getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t, double age) const

@@ -244,8 +244,8 @@ bool TestCharacterHistory::run_exp(void) {
     //    moves.push_back( new ScaleMove(dp, 1.0, true, 2.0) );
     
     for( size_t i=0; i<2; i++)
-		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, true, 1) );
-//
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, true, 2) );
+
     PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.25);
     moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 2*numNodes));
 

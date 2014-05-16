@@ -65,7 +65,7 @@ namespace RevBayesCore {
         
     protected:
         
-        
+        void                            fillStateCounts(std::vector<CharacterEvent*> s, unsigned* counts);
         
         // parameters
         StochasticNode<AbstractCharacterData>*  ctmc;
@@ -161,6 +161,11 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();    
     std::multiset<CharacterEvent*,CharacterEventCompare> history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+
+    unsigned counts[numStates];
+    for (size_t i = 0; i < numStates; i++)
+        counts[0] = 0;
+    fillStateCounts(currState, counts);
     
     const treeType& tree = tau->getValue();
     const TopologyNode& node = tree.getNode(bh.getIndex());
@@ -182,9 +187,9 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         // next event time
         double idx = (*it_h)->getIndex();
         dt = (*it_h)->getTime() - t;
-        
-        double tr = rm.getRate(node, currState, *it_h, currAge);
-        double sr = rm.getSumOfRates(node, currState, currAge);
+    
+        double tr = rm.getRate(node, currState, *it_h, counts, currAge);
+        double sr = rm.getSumOfRates(node, currState, counts, currAge);
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
@@ -193,15 +198,26 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         currState[idx] = *it_h;
         t += dt;
         currAge += dt * branchLength;
+        
+        // update counts
+        counts[ currState[idx]->getState() ] -= 1;
+        counts[ (*it_h)->getState() ] += 1;
     }
     // lnL for final non-event
-    double sr = rm.getSumOfRates(node, currState, currAge);
+    double sr = rm.getSumOfRates(node, currState, counts, currAge);
     lnP += -sr * (1.0 - t) * branchLength;
     
     if (node.isRoot())
         return 0.0;
     
     return lnP;
+}
+
+template<class charType, class treeType>
+void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::fillStateCounts(std::vector<CharacterEvent*> s, unsigned int *counts)
+{
+    for (size_t i = 0; i < s.size(); i++)
+        counts[ s[i]->getState() ] += 1;
 }
 
 
