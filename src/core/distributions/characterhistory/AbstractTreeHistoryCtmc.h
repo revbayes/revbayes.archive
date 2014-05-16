@@ -59,6 +59,10 @@ namespace RevBayesCore {
         void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistories(const std::vector<BranchHistory>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
+        
+        virtual const std::vector<double>&                                  getTipProbs(size_t nodeIndex) = 0;
+        virtual const std::vector<std::vector<double> >&                    getTipProbs(void) = 0;
+        
         virtual void                                                        simulate(void);
 
         

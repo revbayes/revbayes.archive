@@ -67,6 +67,8 @@ namespace RevBayesCore {
         void                                                setDistancePower(const TypedDagNode<double>* dp);
 
         
+        const std::vector<double>&                          getTipProbs(size_t nodeIndex);
+        const std::vector<std::vector<double> >&            getTipProbs(void);
         void                                                setTipProbs(const AbstractCharacterData* d);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
@@ -996,6 +998,18 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
     }
 }
 
+template<class charType, class treeType>
+const std::vector<std::vector<double> >& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(void)
+{
+    return tipProbs;
+}
+
+template<class charType, class treeType>
+const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(size_t nodeIndex)
+{
+    return tipProbs[nodeIndex];
+}
+
 
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
@@ -1014,6 +1028,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs
             tipProbs[i].push_back(v);
         }
     }
+    
+    ;
 }
 
 template<class charType, class treeType>

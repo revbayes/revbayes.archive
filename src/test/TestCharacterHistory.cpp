@@ -65,6 +65,7 @@
 #include "MetropolisHastingsMove.h"
 #include "PathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
+#include "TipRejectionSampleProposal.h"
 #include "PathRejectionSampleMove.h"
 #include "UniformTimeTreeDistribution.h"
 
@@ -127,8 +128,8 @@ bool TestCharacterHistory::run_exp(void) {
     size_t numAreas = data[0]->getNumberOfCharacters();
     
     // binary probs ...
-    std::vector<AbstractCharacterData*> data_prob = NclReader::getInstance().readMatrices(in_fp + "vireya.prob.nex");
-    std::cout << "Read " << data_prob.size() << " matrices." << std::endl;
+    //std::vector<AbstractCharacterData*> data_prob = NclReader::getInstance().readMatrices(in_fp + "vireya.prob.nex");
+    //std::cout << "Read " << data_prob.size() << " matrices." << std::endl;
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
@@ -211,7 +212,11 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters);
     biogeoCtmc->setRateMatrix(qmat);
     biogeoCtmc->setRateMap(q_likelihood);
-    biogeoCtmc->setTipProbs( data_prob[0] );
+    if (data.size() == 2)
+    {
+        
+        biogeoCtmc->setTipProbs( data[1] );
+    }
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
 
@@ -252,6 +257,9 @@ bool TestCharacterHistory::run_exp(void) {
 
     NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1);
     moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, 2*numNodes));
+    
+    TipRejectionSampleProposal<StandardState,TimeTree>* tipSampleProposal = new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1);
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, tipSampleProposal, 0.1, false, 1*numNodes));
 
     
     ////////////
