@@ -202,7 +202,14 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 //        if (dirtyNodes[i]) std::cout << i << " dirty\n";
 //        if (changedNodes[i]) std::cout << i << " changed\n";
         fillLikelihoodVector(*nodes[i], nodes[i]->getIndex());
+        
         this->lnProb += historyLikelihoods[ activeLikelihood[i] ][i];
+        
+        ;
+        true;
+        
+        
+        ;
     }
     
     return this->lnProb;

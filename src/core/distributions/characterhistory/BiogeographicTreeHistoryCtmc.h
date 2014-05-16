@@ -89,6 +89,7 @@ namespace RevBayesCore {
         
         // helper function
         size_t                                              numOn(const std::vector<CharacterEvent*>& s);
+        bool                                                historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history);
         
         // members
         const TypedDagNode< double >*                       homogeneousClockRate;
@@ -211,6 +212,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
     unsigned int n = numOn(currState);
     unsigned counts[2] = { this->numSites - n, n };
     
+//    std::cout << "nodeIndex " << nodeIndex << "\n";
+
     if (node.isRoot())
     {
         this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = 0.0;
@@ -218,8 +221,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
     else if (counts[1] == 0)
     {
         // reject extinction cfgs
-        if (counts[1] == 0)
-            this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
+        this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
     }
     else
     {
@@ -266,13 +268,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             double idx = (*it_h)->getIndex();
             dt = (*it_h)->getTime() - t;
             
-            // reject extinction cfgs
-            if ((*it_h)->getState() == 0)
-                counts[1] -= 1;
-            else
-                counts[1] += 1;
-            
-            if (counts[1] == 0)
+            // reject extinction
+            unsigned s = (*it_h)->getState();
+            if (counts[1] == 1 && s == 0)
             {
                 this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
                 break;
@@ -283,7 +281,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             double tr = rm.getRate(node, currState, *it_h, counts, currAge);
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
 
-            
             // lnL for stepwise events for p(x->y)
             lnL += log(tr) - sr * dt * branchLength;
             
@@ -292,7 +289,20 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             t += dt;
             currAge += dt * branchLength;
             
-            //if (nodeIndex == 5) std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
+            // update counts
+            if (s == 0)
+            {
+                counts[0] += 1;
+                counts[1] -= 1;
+            }
+            else
+            {
+                counts[0] -= 1;
+                counts[1] += 1;
+            }
+            
+            //            if (nodeIndex == 5)
+//                std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
         }
         
         // lnL for final non-event
@@ -301,7 +311,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
         lnL += -sr * (1.0 - t) * branchLength;
         
         //if (nodeIndex == 5) std::cout << t << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << numOn(currState) << "\n\n";
-        
+//        std::cout << "lnL " << nodeIndex << " " << lnL << "\n";
         this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     }
 }
@@ -619,7 +629,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     const treeType& tree = this->tau->getValue();
     double bt = tree.getBranchLength(nodeIdx);
     if (node.isRoot())
-        bt = node.getAge() * 2;
+        bt = 1000.0;
     
     double br = 1.0;
     if (branchHeterogeneousClockRates)
@@ -637,12 +647,12 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     double r[2] = { (*rm)[1][0], (*rm)[0][1] };
     
     // begin update
-    BranchHistory& h = *(this->histories[ node.getIndex() ]);
-    h.clearEvents( indexSet );
+    BranchHistory* h = this->histories[ node.getIndex() ];
+    //h.clearEvents( indexSet );
     
     // reject sample path history
-    std::vector<CharacterEvent*> parentVector = h.getParentCharacters();
-    std::vector<CharacterEvent*> childVector = h.getChildCharacters();
+    std::vector<CharacterEvent*> parentVector = h->getParentCharacters();
+    std::vector<CharacterEvent*> childVector = h->getChildCharacters();
     std::multiset<CharacterEvent*,CharacterEventCompare> history;
     
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
@@ -681,18 +691,45 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             history.insert(*it);
     }
     
-    /*
-     if (historyContainsExtinction(parentVector, history) == true)
-     {
-     std::cout << "contains extinction\n";
-     samplePath(indexSet);
-     return;
-     }
-     */
-    //else
-    h.updateHistory(history,indexSet);
-    
+    if (historyContainsExtinction(parentVector, history) == true)
+    {
+//        std::cout << "contains extinction\n";
+//        std::cout << node.getIndex() << " " << history.size() << "\n";
+        history.clear();
+        samplePathHistory(node, indexSet);
+    }
+    else
+    {
+        
+        h->updateHistory(history,indexSet);
+        computeInternalNodeLikelihood(node,node.getIndex());
+        //this->histories[ node.getIndex() ]->print();
+    }
     return 0.0;
+}
+
+template<class charType, class treeType>
+bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history)
+{
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    unsigned n = numOn(currState);
+    if (n == 0)
+        return true;
+    
+    for (it_h = history.begin(); it_h != history.end(); it_h++)
+    {
+//        std::cout << n << "\n";
+        
+        if ( (*it_h)->getState() == 0 )
+            n--;
+        else if ( (*it_h)->getState() == 1 )
+            n++;
+        
+        if (n <= 0)
+            return true;
+    }
+    
+    return false;
 }
 
 template<class charType, class treeType>

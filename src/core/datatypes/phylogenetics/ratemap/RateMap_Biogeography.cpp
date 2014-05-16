@@ -105,7 +105,7 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     int s = to->getState();
     
     // rate to extinction cfg is 0
-    if (count[1] <= 1 && s == 0)
+    if (count[1] == 1 && s == 0)
         return 0.0;
     
     // rate according to binary rate matrix Q(node)

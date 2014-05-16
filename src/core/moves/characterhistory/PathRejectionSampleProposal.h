@@ -171,7 +171,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
     const TopologyNode& node = tree.getNode(bh.getIndex());
     double branchLength = tree.getBranchLength(bh.getIndex());
     if (node.isRoot())
-        branchLength = 100.0;
+        branchLength = 1000.0;
     
     // TODO: Get from TimeTree once BTHC is non-templated
     double currAge = 0.0;
