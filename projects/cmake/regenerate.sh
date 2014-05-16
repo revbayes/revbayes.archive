@@ -46,9 +46,12 @@ then
     cd ../../boost_1_55_0
     rm ./project-config.jam*  # clean up from previous runs
     ./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
+
     if [ "$mavericks" = "true" ]
     then
         ./b2 cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+    else
+        ./b2
     fi
 
 else
