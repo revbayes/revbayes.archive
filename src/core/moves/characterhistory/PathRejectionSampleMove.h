@@ -152,7 +152,8 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
     tau->touch();
     
     // calculate the probability ratio for the node we just changed
-    probRatio = tau->getLnProbabilityRatio();
+    // don't need this probability quite yet...
+    probRatio = 0.0; // tau->getLnProbabilityRatio();
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
     {
@@ -166,6 +167,16 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
+
+    if (fabs(probRatio + hr) > 0.5)
+    {
+        
+        ;//std::cout << hr << " " << probRatio << "\n";
+    }
+    else
+    {
+        ;// std::cout << "ok\n";
+    }
     
     return hr;
 }
@@ -175,8 +186,6 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionS
 {
     proposal->prepareProposal();
     double lnProposalRatio = proposal->doProposal();
-    
-    
     return lnProposalRatio;
 }
 

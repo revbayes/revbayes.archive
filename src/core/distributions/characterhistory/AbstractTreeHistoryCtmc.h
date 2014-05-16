@@ -197,19 +197,8 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
     const std::vector<TopologyNode*>& nodes = tau->getValue().getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
     {
-        //dirtyNodes[i] = true; // comment line to use dirty flags
-//        activeLikelihood[i] = 0;
-//        if (dirtyNodes[i]) std::cout << i << " dirty\n";
-//        if (changedNodes[i]) std::cout << i << " changed\n";
         fillLikelihoodVector(*nodes[i], nodes[i]->getIndex());
-        
         this->lnProb += historyLikelihoods[ activeLikelihood[i] ][i];
-        
-        ;
-        true;
-        
-        
-        ;
     }
     
     return this->lnProb;
