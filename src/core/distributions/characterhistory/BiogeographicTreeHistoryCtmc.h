@@ -10,6 +10,7 @@
 #define __rb_mlandis__BiogeographicTreeHistoryCtmc__
 
 #include "AbstractTreeHistoryCtmc.h"
+#include "RateMap_Biogeography.h"
 #include "ContinuousCharacterData.h"
 #include "DistributionExponential.h"
 #include "RateMap.h"
@@ -208,15 +209,16 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
     BranchHistory& bh = *(this->histories[nodeIndex]);
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
     unsigned int n = numOn(currState);
+    unsigned counts[2] = { this->numSites - n, n };
     
     if (node.isRoot())
     {
         this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = 0.0;
     }
-    else if (n == 0)
+    else if (counts[1] == 0)
     {
         // reject extinction cfgs
-        if (n == 0)
+        if (counts[1] == 0)
             this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
     }
     else
@@ -247,11 +249,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
         double currAge = 0.0;
 
         // TODO: BTHC will soon have only one RateMap
-        const RateMap* rm;
-        if (branchHeterogeneousSubstitutionMatrices)
-            rm = &heterogeneousRateMaps->getValue()[nodeIndex];
-        else
-            rm = &homogeneousRateMap->getValue();
+        const RateMap_Biogeography* rm2;
+//        if (branchHeterogeneousSubstitutionMatrices)
+//            rm = static_cast<const RateMap_Biogeography>(heterogeneousRateMaps->getValue()[nodeIndex]);
+//        else
+//            rm = static_cast<const RateMap_Biogeography>(homogeneousRateMap->getValue());
+//        
+        const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
        
         // stepwise events
         double t = 0.0;
@@ -264,18 +268,21 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             
             // reject extinction cfgs
             if ((*it_h)->getState() == 0)
-                n--;
+                counts[1] -= 1;
             else
-                n++;
+                counts[1] += 1;
             
-            if (n == 0)
+            if (counts[1] == 0)
             {
                 this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
                 break;
             }
-            
-            double tr = rm->getRate(node, currState, *it_h, currAge);
-            double sr = rm->getSumOfRates(node, currState, currAge);
+
+//            double tr = rm->getRate(node, currState, *it_h, n, currAge);
+//            double sr = rm->getSumOfRates(node, currState, n, currAge);
+            double tr = rm.getRate(node, currState, *it_h, counts, currAge);
+            double sr = rm.getSumOfRates(node, currState, counts, currAge);
+
             
             // lnL for stepwise events for p(x->y)
             lnL += log(tr) - sr * dt * branchLength;
@@ -289,7 +296,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
         }
         
         // lnL for final non-event
-        double sr = rm->getSumOfRates(node, currState, currAge);
+//        double sr = rm->getSumOfRates(node, currState, n, currAge);
+        double sr = rm.getSumOfRates(node, currState, counts, currAge);
         lnL += -sr * (1.0 - t) * branchLength;
         
         //if (nodeIndex == 5) std::cout << t << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << numOn(currState) << "\n\n";
