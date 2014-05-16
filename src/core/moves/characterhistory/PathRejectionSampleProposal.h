@@ -159,14 +159,19 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
     double lnP = 0.0;
 
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();    
-    std::multiset<CharacterEvent*,CharacterEventCompare> history = bh.getHistory();
+    const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
 
     unsigned counts[numStates];
     for (size_t i = 0; i < numStates; i++)
-        counts[0] = 0;
+        counts[i] = 0;
     fillStateCounts(currState, counts);
-    
+//    for (size_t i = 0; i < numStates; i++)
+//         std::cout << counts[i] << " ";
+//     std::cout << "\n";
+//    
+//    counts;
+//    ;
     const treeType& tree = tau->getValue();
     const TopologyNode& node = tree.getNode(bh.getIndex());
     double branchLength = tree.getBranchLength(bh.getIndex());
@@ -194,14 +199,14 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
         
+        // update counts
+        counts[ currState[idx]->getState() ] -= 1;
+        counts[ (*it_h)->getState() ] += 1;
+        
         // update state
         currState[idx] = *it_h;
         t += dt;
         currAge += dt * branchLength;
-        
-        // update counts
-        counts[ currState[idx]->getState() ] -= 1;
-        counts[ (*it_h)->getState() ] += 1;
     }
     // lnL for final non-event
     double sr = rm.getSumOfRates(node, currState, counts, currAge);

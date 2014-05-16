@@ -419,7 +419,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
     double p0 = 1.0 - p1;
     
     lnP = n1_old * log(p1) + n0_old * log(p0) - n1_new * log(p1) - n0_new * log(p0);
-//    lnP = 0.0;
+    lnP = 0.0;
     //lnP = (n1_old - n1_new) * log(p1) + (n1_new - n1_old) * log(1.0 - p1);
     
     return lnP;

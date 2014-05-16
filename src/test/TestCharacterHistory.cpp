@@ -66,6 +66,7 @@
 #include "PathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
 #include "PathRejectionSampleMove.h"
+#include "UniformTimeTreeDistribution.h"
 
 //#define USE_DDBD
 
@@ -114,7 +115,7 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     // io
     ////////////
-    
+    bool simulate = false;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
@@ -161,11 +162,12 @@ bool TestCharacterHistory::run_exp(void) {
 
     // tree
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(0.05));
-    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
-    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
-    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.5 ) );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+//    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(0.05));
+//    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
+//    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
+    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.0 ) );
+//    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>("tau", new UniformTimeTreeDistribution(origin, names));
     tau->setValue( trees[0] );
     
     // create biogeo rate map (to compute likelihoods)
@@ -180,7 +182,7 @@ bool TestCharacterHistory::run_exp(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        tmp_glr->setValue(new double(0.05));
+        tmp_glr->setValue(new double(0.1));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -202,33 +204,32 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_s", brmf_sample);
     
     // Soon to be deleted...
-    //  DeterministicNode<RateMap> *qmap = new DeterministicNode<RateMap>( "Q", new BiogeographyRateMapFunction(numAreas));
     DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "Q_mtx", new FreeBinaryRateMatrixFunction(glr_vector) );
        
     // and the character model
     bool usingAmbiguousCharacters = !true;
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters);
-    //biogeoCtmc->setClockRate(clockRate);
     biogeoCtmc->setRateMatrix(qmat);
     biogeoCtmc->setRateMap(q_likelihood);
     biogeoCtmc->setTipProbs( data_prob[0] );
-    
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
-    
-    // real data
-    if (true)
-    {
-        charactermodel->clamp( data[0] );
-    }
+
     // simulated data
-    else
+    if (simulate)
     {
         //AbstractTreeHistoryCtmc<StandardState, TimeTree>* p = static_cast< AbstractTreeHistoryCtmc<StandardState, TimeTree>* >(charactermodel->getDistribution());
         //p->simulate();
         biogeoCtmc->simulate();
     }
+
+    // real data
+    else
+    {
+        charactermodel->clamp( data[0] );
+    }
     
+    // initialize mapping
     charactermodel->redraw();
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
@@ -242,15 +243,15 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
     //    moves.push_back( new ScaleMove(dp, 1.0, true, 2.0) );
-    
+    //    moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
     for( size_t i=0; i<2; i++)
 		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, true, 2) );
 
     PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.25);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 2*numNodes));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 4*numNodes));
 
     NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, numNodes));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, 2*numNodes));
 
     
     ////////////
@@ -265,8 +266,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     //monitoredNodes.insert( dp );
 
-    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb.mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 100, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb.mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb.tree_chars.txt", "\t"));
     // monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, geo_coords, 50, mcmcGenerations, burn, filepath + "rb.phylowood.txt", "\t"));
     //    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
