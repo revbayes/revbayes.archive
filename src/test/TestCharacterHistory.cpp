@@ -180,7 +180,7 @@ bool TestCharacterHistory::run_exp(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        tmp_glr->setValue(new double(0.25));
+        tmp_glr->setValue(new double(0.05));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -265,9 +265,9 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     //monitoredNodes.insert( dp );
 
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb.mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 50, filepath + "rb.tree_chars.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb.mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 100, "\t" ) );
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb.tree_chars.txt", "\t"));
     // monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, geo_coords, 50, mcmcGenerations, burn, filepath + "rb.phylowood.txt", "\t"));
     //    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
     
