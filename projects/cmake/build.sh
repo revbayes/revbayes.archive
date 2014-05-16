@@ -1,4 +1,4 @@
 #!/bin/sh
-./regenerate
+./regenerate.sh
 cmake .
 make -j 4

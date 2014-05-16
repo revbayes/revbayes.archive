@@ -17,24 +17,29 @@
 
 #include "AbstractTreeHistoryCtmc.h"
 #include "BranchHistory.h"
-//#include "PathRejectionSampleProposal.h"
+#include "DeterministicNode.h"
 #include "Proposal.h"
-#include "SimpleMove.h"
+#include "RateMap.h"
+#include "Move.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
     
     template<class charType, class treeType>
-    class PathRejectionSampleMove : public SimpleMove {
+    class PathRejectionSampleMove : public Move {
         
     public:
-        PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
+        PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
         
         // Basic utility functions
         PathRejectionSampleMove* clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
+        void                                    acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
+        double                                  performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
+        void                                    rejectMove(void);
+        
         void                            acceptSimpleMove(void);
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
         double                          performSimpleMove(void);                                                            //!< Perform move
@@ -45,9 +50,10 @@ namespace RevBayesCore {
         
     private:
         
-        // variables
-        StochasticNode<AbstractCharacterData>*  variable;
-        StochasticNode<treeType>*               tree;
+        // ctmcs
+        StochasticNode<AbstractCharacterData>*  ctmc;
+        StochasticNode<treeType>*               tau;
+        DeterministicNode<RateMap>*             qmap;
         
         // parameters
         double                          lambda;
@@ -57,6 +63,8 @@ namespace RevBayesCore {
         
         // proposal
         Proposal*                       proposal;
+        
+        bool changed;
     };
     
 }
@@ -67,14 +75,25 @@ namespace RevBayesCore {
 #include "RandomNumberGenerator.h"
 
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, Proposal* p, double l, bool tuning, double w) :
-    SimpleMove(n, w, tuning),
+RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
+    Move(t, w, tuning),
+    ctmc(n),
+    tau(t),
+    qmap(q),
     lambda(l),
     proposal(p)
 {
     numNodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
     numStates = static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates();
+    
+    nodes.insert(ctmc);
+    nodes.insert(qmap);
+    nodes.insert(tau);
+
+    changed = false;
+
+    ;
 }
 
 // Basic utility functions
@@ -87,15 +106,19 @@ RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRej
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN)
 {
-    SimpleMove::swapNode(oldN, newN);
+    Move::swapNode(oldN, newN);
     
-    if (oldN == variable)
+    if (oldN == ctmc)
     {
-        variable = static_cast<StochasticNode<AbstractCharacterData>* >( newN );
+        ctmc = static_cast<StochasticNode<AbstractCharacterData>* >( newN );
     }
-    else if (oldN == tree)
+    else if (oldN == tau)
     {
-        tree = static_cast<StochasticNode<TimeTree>* >( newN );
+        tau = static_cast<StochasticNode<TimeTree>* >( newN );
+    }
+    else if (oldN == qmap)
+    {
+        qmap = static_cast<DeterministicNode<RateMap>* >(newN);
     }
     
     proposal->swapNode(oldN, newN);
@@ -106,6 +129,45 @@ const std::string& RevBayesCore::PathRejectionSampleMove<charType, treeType>::ge
 {
     static std::string name = "PathRejectionSampleMove";
     return name;
+}
+
+
+template<class charType, class treeType>
+double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( double &probRatio ) {
+    
+    if (changed)
+    {
+        throw RbException("Trying to execute a simple move twice without accept/reject in the meantime.");
+    }
+    changed = true;
+    
+    double hr = performSimpleMove();
+    
+    if ( hr != hr || hr == RbConstants::Double::inf )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
+    // touch the node
+    tau->touch();
+    
+    // calculate the probability ratio for the node we just changed
+    probRatio = tau->getLnProbabilityRatio();
+    
+    if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
+    {
+        
+        std::set<DagNode* > affectedNodes;
+        tau->getAffectedNodes(affectedNodes);
+        for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
+        {
+            DagNode* theAffectedNode = *i;
+            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
+            probRatio += theAffectedNode->getLnProbabilityRatio();
+        }
+    }
+    
+    return hr;
 }
 
 template<class charType, class treeType>
@@ -124,10 +186,31 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::printParameterSu
     o << "lambda = " << lambda;
 }
 
+
+template<class charType, class treeType>
+void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectMove( void ) {
+    
+    changed = false;
+    
+    // delegate to the derived class. The derived class needs to restore the value(s).
+    rejectSimpleMove();
+    
+    // touch the node
+    tau->touch();
+}
+
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectSimpleMove(void)
 {
     proposal->undoProposal();
+}
+
+template<class charType, class treeType>
+void RevBayesCore::PathRejectionSampleMove<charType, treeType>::acceptMove( void ) {
+    // nothing to do
+    changed = false;
+    
+    acceptSimpleMove();
 }
 
 template<class charType, class treeType>

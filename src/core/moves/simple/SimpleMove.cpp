@@ -67,10 +67,7 @@ double SimpleMove::performMove( double &probRatio ) {
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
-    
-    //std::cout << probRatio << "\n";
-    
-        
+
     return hr;
 }
 

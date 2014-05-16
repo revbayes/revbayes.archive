@@ -56,7 +56,6 @@ namespace RevBayesCore {
         const BranchHistory&                                                getHistory(size_t idx) const;
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
-        void                                                                reInitialized(void);
         void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistories(const std::vector<BranchHistory>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
@@ -66,7 +65,6 @@ namespace RevBayesCore {
     protected:
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
-        void                                                                resizeLikelihoodVectors(void);
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
@@ -77,7 +75,6 @@ namespace RevBayesCore {
         virtual void                                                        computeRootLikelihood(const TopologyNode &n, size_t root) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
-        virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
         virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
         
         // members
@@ -86,31 +83,19 @@ namespace RevBayesCore {
         size_t                                                              numSites;
         size_t                                                              numSiteRates;
         const TypedDagNode<treeType>*                                       tau;
-        std::vector<TransitionProbabilityMatrix>                            transitionProbMatrices;
         
         // the likelihoods
-        double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
-        std::vector<size_t>                                                 activeHistory;
-        std::vector<double>                                                 historyLikelihoods;
+        std::vector<std::vector<double> >                                   historyLikelihoods;
         
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
-        std::vector<size_t>                                                 patternCounts;
-        size_t                                                              numPatterns;
-        bool                                                                compressed;
-        std::vector<BranchHistory*>                                          histories;
+        std::vector<BranchHistory*>                                         histories;
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changedNodes;
         std::vector<bool>                                                   dirtyNodes;
-        
-        // offsets for nodes
-        size_t                                                              activeLikelihoodOffset;
-        size_t                                                              nodeOffset;
-        size_t                                                              mixtureOffset;
-        size_t                                                              siteOffset;
         
         // flags
         bool                                                                usingAmbiguousCharacters;
@@ -120,10 +105,8 @@ namespace RevBayesCore {
         
     private:
         // private methods
-        // void                                                                compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                initializeHistoriesVector(void);
-//        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t);
         virtual void                                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
         
 
@@ -139,16 +122,10 @@ numChars( nChars ),
 numSites( nSites ),
 numSiteRates( 1 ),
 tau( t ),
-transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
-partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
 activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
-activeHistory(),
 historyLikelihoods(),
 charMatrix(),
 gapMatrix(),
-patternCounts(),
-numPatterns( numSites ),
-compressed( false ),
 histories(),
 changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
 dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
@@ -165,11 +142,6 @@ tipsInitialized( false )
     // initialize histories
     initializeHistoriesVector();
     
-    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
-    nodeOffset                  =  numSiteRates*numPatterns*numChars;
-    mixtureOffset               =  numPatterns*numChars;
-    siteOffset                  =  numChars;
-    
 }
 
 
@@ -179,16 +151,10 @@ numChars( n.numChars ),
 numSites( n.numSites ),
 numSiteRates( n.numSiteRates ),
 tau( n.tau ),
-transitionProbMatrices( n.transitionProbMatrices ),
-partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
 activeLikelihood( n.activeLikelihood ),
-activeHistory( n.activeHistory ),
 historyLikelihoods( n.historyLikelihoods ),
 charMatrix( n.charMatrix ),
 gapMatrix( n.gapMatrix ),
-patternCounts( n.patternCounts ),
-numPatterns( n.numPatterns ),
-compressed( n.compressed ),
 histories( n.histories ),
 changedNodes( n.changedNodes ),
 dirtyNodes( n.dirtyNodes ),
@@ -198,16 +164,7 @@ treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
 tipsInitialized( n.tipsInitialized )
 {
     // parameters are automatically copied
-    
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    
-    // copy the partial likelihoods
-    memcpy(partialLikelihoods, n.partialLikelihoods, 2*tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars*sizeof(double));
-    
-    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
-    nodeOffset                  =  numSiteRates*numPatterns*numChars;
-    mixtureOffset               =  numPatterns*numChars;
-    siteOffset                  =  numChars;
     
 }
 
@@ -222,9 +179,6 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::~AbstractTreeHistoryC
         // TODO: this needs to be implemented (Sebastian)
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
     }
-    
-    // free the partial likelihoods
-    delete [] partialLikelihoods;
 }
 
 
@@ -243,12 +197,13 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
     const std::vector<TopologyNode*>& nodes = tau->getValue().getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
     {
-        dirtyNodes[i] = true;
+        //dirtyNodes[i] = true; // comment line to use dirty flags
+//        activeLikelihood[i] = 0;
+//        if (dirtyNodes[i]) std::cout << i << " dirty\n";
+//        if (changedNodes[i]) std::cout << i << " changed\n";
         fillLikelihoodVector(*nodes[i], nodes[i]->getIndex());
-        this->lnProb += historyLikelihoods[i];
+        this->lnProb += historyLikelihoods[ activeLikelihood[i] ][i];
     }
-    
-    //std::cout << "computeLnProbability " << this->lnProb << "\n";
     
     return this->lnProb;
 }
@@ -257,19 +212,16 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex)
 {
-    if (dirtyNodes[nodeIndex] == false)
+    
+    if (!dirtyNodes[nodeIndex])
         return;
+
+    // compute
+    computeInternalNodeLikelihood(node,nodeIndex);
     
     // mark as computed
     dirtyNodes[nodeIndex] = false;
-    
-//    if ( node.isTip() )
-//        computeTipLikelihood(node, nodeIndex);
-//    else
-//    if (node.isRoot())
-//        computeRootLikelihood(node, nodeIndex);
-//    else
-        computeInternalNodeLikelihood(node,nodeIndex);
+
 }
 
 
@@ -277,9 +229,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
-    // recursivelyFlagNodeDirty( n );
-    dirtyNodes[n.getIndex()] = true;
-    
+    recursivelyFlagNodeDirty(n);
 }
 
 
@@ -318,7 +268,10 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::initializeHistor
         histories.push_back(new BranchHistory(numSites, numChars, i));
     }
     
-    historyLikelihoods.resize(nodes.size(), 0.0);
+    historyLikelihoods.resize(2);
+    for (size_t i = 0; i < 2; i++)
+        historyLikelihoods[i].resize(nodes.size(), 0.0);
+
 }
 
 
@@ -349,52 +302,20 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::recursivelyFlagN
     // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
     if ( !dirtyNodes[index] )
     {
-        // the root doesn't have an ancestor
-        if ( !n.isRoot() )
-        {
-            recursivelyFlagNodeDirty( n.getParent() );
-        }
-        
         // set the flag
         dirtyNodes[index] = true;
         
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
         if ( !changedNodes[index] )
         {
-            activeLikelihood[index] ^= 1;
+            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+            //activeLikelihood[index] = 0;
             changedNodes[index] = true;
         }
         
     }
     
 }
-
-
-template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::reInitialized( void ) {
-    
-    // we need to recompress because the tree may have changed
-    // compress();
-}
-
-
-
-template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::resizeLikelihoodVectors( void ) {
-    
-    // we resize the partial likelihood vectors to the new dimensions
-    delete [] partialLikelihoods;
-    partialLikelihoods = new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars];
-    
-    transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
-    
-    // set the offsets for easier iteration through the likelihood vector
-    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
-    nodeOffset                  =  numSiteRates*numPatterns*numChars;
-    mixtureOffset               =  numPatterns*numChars;
-    siteOffset                  =  numChars;
-}
-
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecialization( DagNode* affecter ) {
@@ -413,6 +334,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecializ
         if ( changedNodes[index] )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+            //activeLikelihood[index] = 0;
         }
         
         // set all flags to false
@@ -441,8 +363,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
     
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
-    
-    // this->compress();
 }
 
 
@@ -548,6 +468,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecializat
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter != tau )
     {
+        
         for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
         {
             (*it) = true;
@@ -559,11 +480,17 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecializat
             if ( !changedNodes[index] )
             {
                 activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+                //activeLikelihood[index] = 0; //(activeLikelihood[index] == 0 ? 1 : 0);
                 changedNodes[index] = true;
             }
         }
     }
-    
+    else
+    {
+        
+        true;
+        ;
+    }
 }
 
 #endif /* defined(__rb_mlandis__TreeHistory__) */
