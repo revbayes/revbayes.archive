@@ -27,11 +27,17 @@ namespace RevBayesCore {
         std::vector<std::vector<GeographicArea*> > getAreas(void);
         
     protected:
-        
         std::vector<std::vector<GeographicArea*> > areas;
         std::vector<double> times;
         
+    private:
+        unsigned numAreas;
+        unsigned numEpochs;
+        unsigned numTimes;
+        
     };
+    
+    std::ostream& operator<<(std::ostream& o, const TimeAtlas& x);
 }
 
 
