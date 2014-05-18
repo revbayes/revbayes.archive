@@ -114,7 +114,7 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::swapNode(DagNode
     }
     else if (oldN == tau)
     {
-        tau = static_cast<StochasticNode<TimeTree>* >( newN );
+        tau = static_cast<StochasticNode<treeType>* >( newN );
     }
     else if (oldN == qmap)
     {

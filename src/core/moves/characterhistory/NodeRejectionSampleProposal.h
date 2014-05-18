@@ -358,9 +358,12 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
             if (u < g1 / (g0 + g1))
                 s = 1;
             
-            nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
-            leftParentState[*it] = new CharacterEvent(*it, s, 1.0);
-            rightParentState[*it] = new CharacterEvent(*it, s, 1.0);
+//            nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
+//            leftParentState[*it] = new CharacterEvent(*it, s, 1.0);
+//            rightParentState[*it] = new CharacterEvent(*it, s, 1.0);
+            nodeChildState[*it]->setState(s);
+            leftParentState[*it]->setState(s);
+            rightParentState[*it]->setState(s);
         }
 
         histories[node.getIndex()]->setChildCharacters(nodeChildState);
@@ -409,7 +412,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
             n1_old++;
         }
         
-        parentState[*it] = new CharacterEvent(*it,s,0.0);
+        parentState[*it]->setState(s); //new CharacterEvent(*it,s,0.0);
     }
     bh->setParentCharacters(parentState);
     
@@ -482,7 +485,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::swapNode(Dag
 
 
 /**
- * Tune the Proposal to accept the desired acceptance ratio.
+ * Tune the Proposal to accept the desired acceptance ratio. 
  */
 template<class charType, class treeType>
 void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::tune( double rate )

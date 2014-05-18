@@ -406,8 +406,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal
 {
     // swap current value and stored value
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    //p->getHistory(nodeIndex)->clearEvents(indexSet());
+    p->getHistory(nodeIndex).clearEvents(siteIndexSet);
     p->setHistory(*storedValue, nodeIndex);
-    delete proposedValue;
+    //delete proposedValue;
     
     //const TopologyNode& nd = tau->getValue().getNode(nodeIndex);
     //p->fireTreeChangeEvent(nd);
