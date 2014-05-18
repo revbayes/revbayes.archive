@@ -308,7 +308,8 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipChar
         if (u < g1 / (g0 + g1))
             s = 1;
         
-        nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
+        //nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
+        nodeChildState[*it]->setState(s);
     }
     
     histories[node.getIndex()]->setChildCharacters(nodeChildState);
@@ -325,7 +326,7 @@ template<class charType, class treeType>
 void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::undoProposal( void )
 {
     // swap current value and stored value
-    const TopologyNode& node = tau->getValue().getNode(nodeIndex);
+    //const TopologyNode& node = tau->getValue().getNode(nodeIndex);
     nodeProposal->undoProposal();
 }
 
