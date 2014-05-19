@@ -12,7 +12,7 @@
 #include <boost/filesystem.hpp>
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
-#include "filesystem.h"
+#include "Filesystem.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -26,6 +26,8 @@ const std::string rbExecutable = "rb-extended";
 
 class Configuration {
 public:
+    
+    Configuration() {}
 
     Configuration(std::string inifile) {
         fs::path i(inifile);
@@ -115,7 +117,7 @@ private:
     void validate() {
 
         // validate and give the user a hint if something is wrong
-        fs::path revBin(this->revHome + directorySeparator() + rbExecutable);
+        fs::path revBin(this->revHome + Filesystem::directorySeparator() + rbExecutable);
         this->revHomeOk = fs::exists(revBin);
         this->helpDirOk = fs::exists(this->helpDir);
 

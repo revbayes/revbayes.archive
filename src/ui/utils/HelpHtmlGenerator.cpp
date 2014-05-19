@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "Configuration.h"
-#include "libs/filesystem.h"
+#include "libs/Filesystem.h"
 #include "IHelp.h"
 #include "HelpParser.h"
 #include "RbHelpEntry.h"
@@ -25,7 +25,7 @@
 namespace fs = boost::filesystem;
 using namespace std;
 
-std::string inifile = expandUserDir("~") + directorySeparator() + "revbayes.ini";
+std::string inifile = Filesystem::expandUserDir("~") + Filesystem::directorySeparator() + "revbayes.ini";
 
 // read file content
 

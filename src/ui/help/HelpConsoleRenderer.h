@@ -10,6 +10,7 @@
 
 #include "IHelpRenderer.h"
 #include <boost/foreach.hpp>
+#include "TerminalFormatter.h"
 
 class HelpConsoleRenderer : public IHelpRenderer {
 public:
@@ -18,12 +19,12 @@ public:
         std::string result = "";
 
         // name
-        result.append(typeHelp.GetName()).append(sectionBreak);
+        result.append(TerminalFormatter::makeBold(typeHelp.GetName())).append(sectionBreak);
         // title
         result.append(typeHelp.GetTitle()).append(sectionBreak);
 
         // description
-        result.append("Description").append(sectionBreak);
+        result.append(TerminalFormatter::makeUnderlined("Description")).append(sectionBreak);
 
         BOOST_FOREACH(std::string desc, typeHelp.GetDescription()) {
             result.append(formatTabWrap(desc, 1, w)).append(sectionBreak);
@@ -31,7 +32,7 @@ public:
 
         // method members
         if (typeHelp.GetMethodMembers().size() > 0) {
-            result.append("Method members").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Method members")).append(sectionBreak);
 
             BOOST_FOREACH(MethodMemberHelpEntry mm, typeHelp.GetMethodMembers()) {
                 result.append(formatTabWrap(mm.GetMethodName(), 1, w)).append(lineBreak);
@@ -66,7 +67,7 @@ public:
 
         // details
         if (typeHelp.GetDetails().size() > 0) {
-            result.append("Details").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Details")).append(sectionBreak);
 
             BOOST_FOREACH(std::string det, typeHelp.GetDetails()) {
                 result.append(formatTabWrap(det, 1, w)).append(sectionBreak);
@@ -74,14 +75,14 @@ public:
         }
 
         // author
-        result.append("Author").append(sectionBreak).append(formatTabWrap(typeHelp.GetAuthor(), 1, w, false)).append(sectionBreak);
+        result.append(TerminalFormatter::makeUnderlined("Author")).append(sectionBreak).append(formatTabWrap(typeHelp.GetAuthor(), 1, w, false)).append(sectionBreak);
 
         // citation        
         if (typeHelp.GetCitation().size() > 0) {
-            result.append("Citation").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Citation")).append(sectionBreak);
 
             BOOST_FOREACH(std::string cit, typeHelp.GetCitation()) {
-                result.append(formatTabWrap(cit, 1, w)).append(lineBreak);
+                result.append(formatTabWrap(cit, 1, w)).append(sectionBreak);
             }
             result.append(lineBreak);
         }
@@ -94,11 +95,11 @@ public:
         std::string result = "";
 
         // name
-        result.append(functionHelp.GetName()).append(sectionBreak);
+        result.append(TerminalFormatter::makeBold(functionHelp.GetName())).append(sectionBreak);
         // title
         result.append(functionHelp.GetTitle()).append(sectionBreak);
         // description
-        result.append("Description").append(sectionBreak);
+        result.append(TerminalFormatter::makeUnderlined("Description")).append(sectionBreak);
 
         BOOST_FOREACH(std::string desc, functionHelp.GetDescription()) {
             result.append(formatTabWrap(desc, 1, w)).append(sectionBreak);
@@ -106,12 +107,12 @@ public:
 
         // usage
         if (functionHelp.GetUsage().size() > 0) {
-            result.append("Usage").append(sectionBreak).append(formatTabWrap(functionHelp.GetUsage(), 1, w)).append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Usage")).append(sectionBreak).append(formatTabWrap(functionHelp.GetUsage(), 1, w)).append(sectionBreak);
         }
 
         // argument
         if (functionHelp.GetArguments().size() > 0) {
-            result.append("Arguments").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Arguments")).append(sectionBreak);
 
             BOOST_FOREACH(ArgumentHelpEntry arg, functionHelp.GetArguments()) {
 
@@ -141,7 +142,7 @@ public:
 
         // details
         if (functionHelp.GetDetails().size() > 0) {
-            result.append("Details").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Details")).append(sectionBreak);
 
             BOOST_FOREACH(std::string det, functionHelp.GetDetails()) {
                 result.append(formatTabWrap(det, 1, w)).append(sectionBreak);
@@ -149,11 +150,11 @@ public:
         }
 
         // example
-        result.append("Example").append(sectionBreak).append(formatTabWrap(functionHelp.GetExample(), 1, w, false)).append(sectionBreak);
+        result.append(TerminalFormatter::makeUnderlined("Example")).append(sectionBreak).append(formatTabWrap(functionHelp.GetExample(), 1, w, false)).append(sectionBreak);
 
         // reference
         if (functionHelp.GetReferences().size() > 0) {
-            result.append("Reference").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("Reference")).append(sectionBreak);
 
             BOOST_FOREACH(ReferenceHelpEntry ref, functionHelp.GetReferences()) {
                 result.append(formatTabWrap(ref.GetCitation(), 1, w)).append(lineBreak);
@@ -163,11 +164,11 @@ public:
         }
 
         // author
-        result.append("Author").append(sectionBreak).append(formatTabWrap(functionHelp.GetAuthor(), 1, w, false)).append(sectionBreak);
+        result.append(TerminalFormatter::makeUnderlined("Author")).append(sectionBreak).append(formatTabWrap(functionHelp.GetAuthor(), 1, w, false)).append(sectionBreak);
 
         // see also        
         if (functionHelp.GetSeeAlso().size() > 0) {
-            result.append("See also").append(sectionBreak);
+            result.append(TerminalFormatter::makeUnderlined("See also")).append(sectionBreak);
 
             BOOST_FOREACH(std::string see, functionHelp.GetSeeAlso()) {
                 result.append(formatTabWrap(see, 1, w)).append(lineBreak);
