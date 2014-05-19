@@ -113,6 +113,11 @@
 #define strdup _strdup
 #define snprintf _snprintf
 #endif
+
+//    #define	STDIN_FILENO	0	/* Standard input.  */
+//    #define	STDOUT_FILENO	1	/* Standard output.  */
+//    #define	STDERR_FILENO	2	/* Standard error output.  */
+
 #else
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -120,10 +125,10 @@
 #define USE_TERMIOS
 #define HAVE_UNISTD_H
 #endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -138,6 +143,7 @@
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 #define LINENOISE_MAX_LINE 4096
 #define _USE_UTF8
+
 
 static linenoiseCharacterCallback *characterCallback[256] = {NULL};
 
@@ -185,8 +191,17 @@ struct current {
 #endif
 };
 
+static struct current *_current;
+
 static int fd_read(struct current *current);
 static int getWindowSize(struct current *current);
+
+/* Clear the screen. Used to handle ctrl+l */
+void linenoiseClearScreen(void) {
+    if (write(STDOUT_FILENO, "\x1b[H\x1b[2J", 7) <= 0) {
+        /* nothing to do, just to avoid warning. */
+    }
+}
 
 void linenoiseHistoryFree(void) {
     if (history) {
@@ -863,12 +878,12 @@ static void refreshLine(const char *prompt, struct current *current) {
     setCursorPos(current, pos + pchars + backup);
 }
 
-
 static void set_current(struct current *current, const char *str) {
     strncpy(current->buf, str, current->bufmax);
     current->buf[current->bufmax - 1] = 0;
     current->len = strlen(current->buf);
     current->pos = current->chars = utf8_strlen(current->buf, current->len);
+    _current = current;
 }
 
 static int has_room(struct current *current, int bytes) {
@@ -1137,6 +1152,9 @@ process_char:
             case ctrl('H'):
                 if (remove_char(current, current->pos - 1) == 1) {
                     refreshLine(current->prompt, current);
+                }
+                if (characterCallback[(int) c]) {
+                    characterCallback[(int) c](current->buf, current->len, c);
                 }
                 break;
             case ctrl('D'): /* ctrl-d */
@@ -1594,4 +1612,20 @@ char **linenoiseHistory(int *len) {
         *len = history_len;
     }
     return history;
+}
+
+struct current *linenoiceGetcurrent() {
+    return _current;
+}
+
+void linenoiceCursorToLeft() {
+    cursorToLeft(_current);
+}
+
+void linenoiceSetCursorPos(int x) {
+    setCursorPos(_current, x);
+}
+
+void linenoiceAppendCommand(const char *cmd) {
+    insert_chars(_current, _current->pos, cmd);
 }

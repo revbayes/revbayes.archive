@@ -13,14 +13,10 @@
 #include "Configuration.h"
 #include "RbClient.h"
 #include "RevLanguageMain.h"
-#include "RbOptions.h"
 #include "Parser.h"
 #include "Workspace.h"
-#include "FunctionTable.h"
-#include "RlFunction.h"
-#include "WorkspaceUtils.h"
-#include "CommandLineUtils.h"
-#include "libs/filesystem.h"
+
+#include "libs/Filesystem.h"
 #include "IHelp.h"
 #include "help/HelpParser.h"
 #include "help/IHelpRenderer.h"
@@ -33,9 +29,10 @@
 
 namespace fs = boost::filesystem;
 
-std::string inifile = expandUserDir("~") + directorySeparator() + "revbayes.ini";
+std::string inifile = Filesystem::expandUserDir("~") + Filesystem::directorySeparator() + "revbayes.ini";
 
 int main(int argc, const char* argv[]) {
+    
 
     // parse command line arguments
     Options options;
@@ -68,7 +65,7 @@ int main(int argc, const char* argv[]) {
 
     if (!options.isDisableReadline()) {
         RbClient c;
-        c.startInterpretor();
+        c.startInterpretor(help, options, configuration);
         return 0;
     }
 

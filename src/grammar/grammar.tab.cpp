@@ -1,24 +1,21 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 2.5.  */
 
-/* Skeleton implementation for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+/* Bison implementation for Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,7 +26,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -47,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.3"
+#define YYBISON_VERSION "2.5"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -55,9 +52,118 @@
 /* Pure parsers.  */
 #define YYPURE 0
 
+/* Push parsers.  */
+#define YYPUSH 0
+
+/* Pull parsers.  */
+#define YYPULL 1
+
 /* Using locations.  */
 #define YYLSP_NEEDED 1
 
+
+
+/* Copy the first part of user declarations.  */
+
+/* Line 268 of yacc.c  */
+#line 1 "./grammar.y"
+
+/**
+ * @file
+ * Grammar specification in bison format for RevBayes, a computing environment 
+ * for evolutionary analysis, particularly Bayesian phylogenetic inference. The
+ * language used by RevBayes is referred to as Rev.
+ *
+ * The grammar borrows heavily from the R grammar specification in the gram.y 
+ * file of the R source code but deviates significantly in many respects, being
+ * more similar to object-oriented languages like C++ or Java. The model description
+ * syntax is inspired by the language used originally by BUGS to describe complex 
+ * stochastic models. Unlike BUGS and similar programs, such as JAGS, RevBayes
+ * allows models to be built in an interpreted (interactive) environment.
+ *
+ * @brief Grammar specification in bison format
+ *
+ * @author Fredrik Ronquist and Sebastian Hoehna
+ * @date Last modified: $Date$
+ *
+ * $Id$
+ */
+
+/* The following statements go into the resulting C code */
+
+#include "Environment.h"
+#include "Integer.h"
+#include "Natural.h"
+#include "Parser.h"
+#include "RlBoolean.h"
+#include "RlString.h"
+#include "Real.h"
+#include "RealPos.h"
+#include "SyntaxElement.h"
+#include "SyntaxAdditionAssignment.h"
+#include "SyntaxBinaryExpr.h"
+#include "SyntaxClassDef.h"
+#include "SyntaxConstant.h"
+#include "SyntaxConstantAssignment.h"
+#include "SyntaxDecrement.h"
+#include "SyntaxDeterministicAssignment.h"
+#include "SyntaxDivisionAssignment.h"
+#include "SyntaxForLoop.h"
+#include "SyntaxFormal.h"
+#include "SyntaxFunctionCall.h"
+#include "SyntaxFunctionDef.h"
+#include "SyntaxIncrement.h"
+#include "SyntaxLabeledExpr.h"
+#include "SyntaxMultiplicationAssignment.h"
+#include "SyntaxStatement.h"
+#include "SyntaxStochasticAssignment.h"
+#include "SyntaxSubtractionAssignment.h"
+#include "SyntaxUnaryExpr.h"
+#include "SyntaxVariableDecl.h"
+#include "SyntaxVariable.h"
+#include "Workspace.h"
+
+#include <iostream>
+#include <list>
+#include <sstream>
+#include <string>
+
+using namespace RevLanguage;
+
+extern int yylex(void);
+extern char *yytext;
+extern Environment *executionEnvironment;
+
+/* The function yyerror handles errors. It is defined below. */
+int yyerror(const char *);
+
+/* We use the global parser to execute the syntax tree */
+Parser& parser = Parser::getParser();
+
+
+#define YY_NEVER_INTERACTIVE
+
+
+/* Line 268 of yacc.c  */
+#line 149 "./grammar.tab.c"
+
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+
+/* Enabling verbose error messages.  */
+#ifdef YYERROR_VERBOSE
+# undef YYERROR_VERBOSE
+# define YYERROR_VERBOSE 1
+#else
+# define YYERROR_VERBOSE 0
+#endif
+
+/* Enabling the token table.  */
+#ifndef YYTOKEN_TABLE
+# define YYTOKEN_TABLE 0
+#endif
 
 
 /* Tokens.  */
@@ -157,107 +263,13 @@
 
 
 
-/* Copy the first part of user declarations.  */
-#line 1 "./grammar.y"
-
-/**
- * @file
- * Grammar specification in bison format for RevBayes, a computing environment 
- * for evolutionary analysis, particularly Bayesian phylogenetic inference. The
- * language used by RevBayes is referred to as Rev.
- *
- * The grammar borrows heavily from the R grammar specification in the gram.y 
- * file of the R source code but deviates significantly in many respects, being
- * more similar to object-oriented languages like C++ or Java. The model description
- * syntax is inspired by the language used originally by BUGS to describe complex 
- * stochastic models. Unlike BUGS and similar programs, such as JAGS, RevBayes
- * allows models to be built in an interpreted (interactive) environment.
- *
- * @brief Grammar specification in bison format
- *
- * @author Fredrik Ronquist and Sebastian Hoehna
- * @date Last modified: $Date$
- *
- * $Id$
- */
-
-/* The following statements go into the resulting C code */
-
-#include "Environment.h"
-#include "Integer.h"
-#include "Natural.h"
-#include "Parser.h"
-#include "RlBoolean.h"
-#include "RlString.h"
-#include "Real.h"
-#include "RealPos.h"
-#include "SyntaxElement.h"
-#include "SyntaxAdditionAssignment.h"
-#include "SyntaxBinaryExpr.h"
-#include "SyntaxClassDef.h"
-#include "SyntaxConstant.h"
-#include "SyntaxConstantAssignment.h"
-#include "SyntaxDecrement.h"
-#include "SyntaxDeterministicAssignment.h"
-#include "SyntaxDivisionAssignment.h"
-#include "SyntaxForLoop.h"
-#include "SyntaxFormal.h"
-#include "SyntaxFunctionCall.h"
-#include "SyntaxFunctionDef.h"
-#include "SyntaxIncrement.h"
-#include "SyntaxLabeledExpr.h"
-#include "SyntaxMultiplicationAssignment.h"
-#include "SyntaxStatement.h"
-#include "SyntaxStochasticAssignment.h"
-#include "SyntaxSubtractionAssignment.h"
-#include "SyntaxUnaryExpr.h"
-#include "SyntaxVariableDecl.h"
-#include "SyntaxVariable.h"
-#include "Workspace.h"
-
-#include <iostream>
-#include <list>
-#include <sstream>
-#include <string>
-
-using namespace RevLanguage;
-
-extern int yylex(void);
-extern char *yytext;
-extern Environment *executionEnvironment;
-
-/* The function yyerror handles errors. It is defined below. */
-int yyerror(const char *);
-
-/* We use the global parser to execute the syntax tree */
-Parser& parser = Parser::getParser();
-
-
-#define YY_NEVER_INTERACTIVE
-
-
-/* Enabling traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 0
-#endif
-
-/* Enabling the token table.  */
-#ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 0
-#endif
-
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 79 "./grammar.y"
 {
+
+/* Line 293 of yacc.c  */
+#line 79 "./grammar.y"
+
     char*                                           c_string;
     std::string*                                    string;
     double                                          realValue;
@@ -271,13 +283,15 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxElement*>*         syntaxElementList;
     std::list<RevLanguage::SyntaxLabeledExpr*>*     argumentList;
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
-}
-/* Line 193 of yacc.c.  */
-#line 277 "./grammar.tab.c"
-	YYSTYPE;
+
+
+
+/* Line 293 of yacc.c  */
+#line 291 "./grammar.tab.c"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 #if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
@@ -297,8 +311,8 @@ typedef struct YYLTYPE
 /* Copy the second part of user declarations.  */
 
 
-/* Line 216 of yacc.c.  */
-#line 302 "./grammar.tab.c"
+/* Line 343 of yacc.c  */
+#line 316 "./grammar.tab.c"
 
 #ifdef short
 # undef short
@@ -373,14 +387,14 @@ typedef short int yytype_int16;
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static int
-YYID (int i)
+YYID (int yyi)
 #else
 static int
-YYID (i)
-    int i;
+YYID (yyi)
+    int yyi;
 #endif
 {
-  return i;
+  return yyi;
 }
 #endif
 
@@ -401,11 +415,11 @@ YYID (i)
 #    define alloca _alloca
 #   else
 #    define YYSTACK_ALLOC alloca
-#    if ! defined _ALLOCA_H && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#    if ! defined _ALLOCA_H && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 #     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#     ifndef _STDLIB_H
-#      define _STDLIB_H 1
+#     ifndef EXIT_SUCCESS
+#      define EXIT_SUCCESS 0
 #     endif
 #    endif
 #   endif
@@ -428,24 +442,24 @@ YYID (i)
 #  ifndef YYSTACK_ALLOC_MAXIMUM
 #   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
 #  endif
-#  if (defined __cplusplus && ! defined _STDLIB_H \
+#  if (defined __cplusplus && ! defined EXIT_SUCCESS \
        && ! ((defined YYMALLOC || defined malloc) \
 	     && (defined YYFREE || defined free)))
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   ifndef _STDLIB_H
-#    define _STDLIB_H 1
+#   ifndef EXIT_SUCCESS
+#    define EXIT_SUCCESS 0
 #   endif
 #  endif
 #  ifndef YYMALLOC
 #   define YYMALLOC malloc
-#   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#   if ! defined malloc && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifndef YYFREE
 #   define YYFREE free
-#   if ! defined free && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#   if ! defined free && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
@@ -462,9 +476,9 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
-  YYSTYPE yyvs;
-    YYLTYPE yyls;
+  yytype_int16 yyss_alloc;
+  YYSTYPE yyvs_alloc;
+  YYLTYPE yyls_alloc;
 };
 
 /* The size of the maximum gap between one aligned stack and the next.  */
@@ -476,6 +490,27 @@ union yyalloc
      ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE) + sizeof (YYLTYPE)) \
       + 2 * YYSTACK_GAP_MAXIMUM)
 
+# define YYCOPY_NEEDED 1
+
+/* Relocate STACK from its old location to the new one.  The
+   local variables YYSIZE and YYSTACKSIZE give the old and new number of
+   elements in the stack, and YYPTR gives the new location of the
+   stack.  Advance YYPTR to a properly aligned location for the next
+   stack.  */
+# define YYSTACK_RELOCATE(Stack_alloc, Stack)				\
+    do									\
+      {									\
+	YYSIZE_T yynewbytes;						\
+	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);			\
+	Stack = &yyptr->Stack_alloc;					\
+	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
+	yyptr += yynewbytes / sizeof (*yyptr);				\
+      }									\
+    while (YYID (0))
+
+#endif
+
+#if defined YYCOPY_NEEDED && YYCOPY_NEEDED
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
@@ -493,24 +528,7 @@ union yyalloc
       while (YYID (0))
 #  endif
 # endif
-
-/* Relocate STACK from its old location to the new one.  The
-   local variables YYSIZE and YYSTACKSIZE give the old and new number of
-   elements in the stack, and YYPTR gives the new location of the
-   stack.  Advance YYPTR to a properly aligned location for the next
-   stack.  */
-# define YYSTACK_RELOCATE(Stack)					\
-    do									\
-      {									\
-	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack, Stack, yysize);				\
-	Stack = &yyptr->Stack;						\
-	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
-	yyptr += yynewbytes / sizeof (*yyptr);				\
-      }									\
-    while (YYID (0))
-
-#endif
+#endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  79
@@ -746,8 +764,8 @@ static const yytype_uint8 yyr2[] =
        1,     3,     3,     1,     1,     1,     1,     1,     1,     1
 };
 
-/* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
-   STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
+/* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
@@ -834,8 +852,7 @@ static const yytype_int16 yypgoto[] =
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
-   number is the opposite.  If zero, do what YYDEFACT says.
-   If YYTABLE_NINF, syntax error.  */
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -101
 static const yytype_int16 yytable[] =
 {
@@ -908,6 +925,12 @@ static const yytype_int16 yytable[] =
        0,    95,  -101,  -101,  -101,  -101,  -101,  -101,     0,     0,
        0,    90,    91,    92,    93,    94,     0,     0,    95
 };
+
+#define yypact_value_is_default(yystate) \
+  ((yystate) == (-148))
+
+#define yytable_value_is_error(yytable_value) \
+  ((yytable_value) == (-101))
 
 static const yytype_int16 yycheck[] =
 {
@@ -1025,9 +1048,18 @@ static const yytype_uint8 yystos[] =
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  */
+   Once GCC version 2 has supplanted version 1, this can go.  However,
+   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
+   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
+   discussed.  */
 
 #define YYFAIL		goto yyerrlab
+#if defined YYFAIL
+  /* This is here to suppress warnings from the GCC cpp's
+     -Wunused-macros.  Normally we don't worry about that warning, but
+     some users do, and we want to make it easy for users to remove
+     YYFAIL uses, which will produce warnings from Bison 2.5.  */
+#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
@@ -1037,7 +1069,6 @@ do								\
     {								\
       yychar = (Token);						\
       yylval = (Value);						\
-      yytoken = YYTRANSLATE (yychar);				\
       YYPOPSTACK (1);						\
       goto yybackup;						\
     }								\
@@ -1200,17 +1231,20 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
 #else
 static void
-yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+yy_stack_print (yybottom, yytop)
+    yytype_int16 *yybottom;
+    yytype_int16 *yytop;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; bottom <= top; ++bottom)
-    YYFPRINTF (stderr, " %d", *bottom);
+  for (; yybottom <= yytop; yybottom++)
+    {
+      int yybot = *yybottom;
+      YYFPRINTF (stderr, " %d", yybot);
+    }
   YYFPRINTF (stderr, "\n");
 }
 
@@ -1245,11 +1279,11 @@ yy_reduce_print (yyvsp, yylsp, yyrule)
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
-      fprintf (stderr, "   $%d = ", yyi + 1);
+      YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
 		       , &(yylsp[(yyi + 1) - (yynrhs)])		       );
-      fprintf (stderr, "\n");
+      YYFPRINTF (stderr, "\n");
     }
 }
 
@@ -1286,7 +1320,6 @@ int yydebug;
 # define YYMAXDEPTH 10000
 #endif
 
-
 
 #if YYERROR_VERBOSE
 
@@ -1389,115 +1422,142 @@ yytnamerr (char *yyres, const char *yystr)
 }
 # endif
 
-/* Copy into YYRESULT an error message about the unexpected token
-   YYCHAR while in state YYSTATE.  Return the number of bytes copied,
-   including the terminating null byte.  If YYRESULT is null, do not
-   copy anything; just return the number of bytes that would be
-   copied.  As a special case, return 0 if an ordinary "syntax error"
-   message will do.  Return YYSIZE_MAXIMUM if overflow occurs during
-   size calculation.  */
-static YYSIZE_T
-yysyntax_error (char *yyresult, int yystate, int yychar)
+/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
+   about the unexpected token YYTOKEN for the state stack whose top is
+   YYSSP.
+
+   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
+   not large enough to hold the message.  In that case, also set
+   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
+   required number of bytes is too large to store.  */
+static int
+yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
+                yytype_int16 *yyssp, int yytoken)
 {
-  int yyn = yypact[yystate];
+  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytoken]);
+  YYSIZE_T yysize = yysize0;
+  YYSIZE_T yysize1;
+  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
+  /* Internationalized format string. */
+  const char *yyformat = 0;
+  /* Arguments of yyformat. */
+  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+  /* Number of reported tokens (one for the "unexpected", one per
+     "expected"). */
+  int yycount = 0;
 
-  if (! (YYPACT_NINF < yyn && yyn <= YYLAST))
-    return 0;
-  else
+  /* There are many possibilities here to consider:
+     - Assume YYFAIL is not used.  It's too flawed to consider.  See
+       <http://lists.gnu.org/archive/html/bison-patches/2009-12/msg00024.html>
+       for details.  YYERROR is fine as it does not invoke this
+       function.
+     - If this state is a consistent state with a default action, then
+       the only way this function was invoked is if the default action
+       is an error action.  In that case, don't check for expected
+       tokens because there are none.
+     - The only way there can be no lookahead present (in yychar) is if
+       this state is a consistent state with a default action.  Thus,
+       detecting the absence of a lookahead is sufficient to determine
+       that there is no unexpected or expected token to report.  In that
+       case, just report a simple "syntax error".
+     - Don't assume there isn't a lookahead just because this state is a
+       consistent state with a default action.  There might have been a
+       previous inconsistent state, consistent state with a non-default
+       action, or user semantic action that manipulated yychar.
+     - Of course, the expected token list depends on states to have
+       correct lookahead information, and it depends on the parser not
+       to perform extra reductions after fetching a lookahead from the
+       scanner and before detecting a syntax error.  Thus, state merging
+       (from LALR or IELR) and default reductions corrupt the expected
+       token list.  However, the list is correct for canonical LR with
+       one exception: it will still contain any token that will not be
+       accepted due to an error action in a later state.
+  */
+  if (yytoken != YYEMPTY)
     {
-      int yytype = YYTRANSLATE (yychar);
-      YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
-      YYSIZE_T yysize = yysize0;
-      YYSIZE_T yysize1;
-      int yysize_overflow = 0;
-      enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-      char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-      int yyx;
+      int yyn = yypact[*yyssp];
+      yyarg[yycount++] = yytname[yytoken];
+      if (!yypact_value_is_default (yyn))
+        {
+          /* Start YYX at -YYN if negative to avoid negative indexes in
+             YYCHECK.  In other words, skip the first -YYN actions for
+             this state because they are default actions.  */
+          int yyxbegin = yyn < 0 ? -yyn : 0;
+          /* Stay within bounds of both yycheck and yytname.  */
+          int yychecklim = YYLAST - yyn + 1;
+          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+          int yyx;
 
-# if 0
-      /* This is so xgettext sees the translatable formats that are
-	 constructed on the fly.  */
-      YY_("syntax error, unexpected %s");
-      YY_("syntax error, unexpected %s, expecting %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
-# endif
-      char *yyfmt;
-      char const *yyf;
-      static char const yyunexpected[] = "syntax error, unexpected %s";
-      static char const yyexpecting[] = ", expecting %s";
-      static char const yyor[] = " or %s";
-      char yyformat[sizeof yyunexpected
-		    + sizeof yyexpecting - 1
-		    + ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
-		       * (sizeof yyor - 1))];
-      char const *yyprefix = yyexpecting;
-
-      /* Start YYX at -YYN if negative to avoid negative indexes in
-	 YYCHECK.  */
-      int yyxbegin = yyn < 0 ? -yyn : 0;
-
-      /* Stay within bounds of both yycheck and yytname.  */
-      int yychecklim = YYLAST - yyn + 1;
-      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-      int yycount = 1;
-
-      yyarg[0] = yytname[yytype];
-      yyfmt = yystpcpy (yyformat, yyunexpected);
-
-      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-	if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	  {
-	    if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-	      {
-		yycount = 1;
-		yysize = yysize0;
-		yyformat[sizeof yyunexpected - 1] = '\0';
-		break;
-	      }
-	    yyarg[yycount++] = yytname[yyx];
-	    yysize1 = yysize + yytnamerr (0, yytname[yyx]);
-	    yysize_overflow |= (yysize1 < yysize);
-	    yysize = yysize1;
-	    yyfmt = yystpcpy (yyfmt, yyprefix);
-	    yyprefix = yyor;
-	  }
-
-      yyf = YY_(yyformat);
-      yysize1 = yysize + yystrlen (yyf);
-      yysize_overflow |= (yysize1 < yysize);
-      yysize = yysize1;
-
-      if (yysize_overflow)
-	return YYSIZE_MAXIMUM;
-
-      if (yyresult)
-	{
-	  /* Avoid sprintf, as that infringes on the user's name space.
-	     Don't have undefined behavior even if the translation
-	     produced a string with the wrong number of "%s"s.  */
-	  char *yyp = yyresult;
-	  int yyi = 0;
-	  while ((*yyp = *yyf) != '\0')
-	    {
-	      if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
-		{
-		  yyp += yytnamerr (yyp, yyarg[yyi++]);
-		  yyf += 2;
-		}
-	      else
-		{
-		  yyp++;
-		  yyf++;
-		}
-	    }
-	}
-      return yysize;
+          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
+                && !yytable_value_is_error (yytable[yyx + yyn]))
+              {
+                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+                  {
+                    yycount = 1;
+                    yysize = yysize0;
+                    break;
+                  }
+                yyarg[yycount++] = yytname[yyx];
+                yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+                if (! (yysize <= yysize1
+                       && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+                  return 2;
+                yysize = yysize1;
+              }
+        }
     }
+
+  switch (yycount)
+    {
+# define YYCASE_(N, S)                      \
+      case N:                               \
+        yyformat = S;                       \
+      break
+      YYCASE_(0, YY_("syntax error"));
+      YYCASE_(1, YY_("syntax error, unexpected %s"));
+      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+# undef YYCASE_
+    }
+
+  yysize1 = yysize + yystrlen (yyformat);
+  if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+    return 2;
+  yysize = yysize1;
+
+  if (*yymsg_alloc < yysize)
+    {
+      *yymsg_alloc = 2 * yysize;
+      if (! (yysize <= *yymsg_alloc
+             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
+        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
+      return 1;
+    }
+
+  /* Avoid sprintf, as that infringes on the user's name space.
+     Don't have undefined behavior even if the translation
+     produced a string with the wrong number of "%s"s.  */
+  {
+    char *yyp = *yymsg;
+    int yyi = 0;
+    while ((*yyp = *yyformat) != '\0')
+      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
+        {
+          yyp += yytnamerr (yyp, yyarg[yyi++]);
+          yyformat += 2;
+        }
+      else
+        {
+          yyp++;
+          yyformat++;
+        }
+  }
+  return 0;
 }
 #endif /* YYERROR_VERBOSE */
-
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
@@ -1527,234 +1587,409 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
   switch (yytype)
     {
       case 66: /* "expression" */
+
+/* Line 1391 of yacc.c  */
 #line 136 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1533 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1597 "./grammar.tab.c"
 	break;
       case 67: /* "arrowAssign" */
+
+/* Line 1391 of yacc.c  */
 #line 137 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1538 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1606 "./grammar.tab.c"
 	break;
       case 68: /* "tildeAssign" */
+
+/* Line 1391 of yacc.c  */
 #line 137 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1543 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1615 "./grammar.tab.c"
 	break;
       case 69: /* "equationAssign" */
+
+/* Line 1391 of yacc.c  */
 #line 137 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1548 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1624 "./grammar.tab.c"
 	break;
       case 70: /* "additionAssign" */
+
+/* Line 1391 of yacc.c  */
 #line 138 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1553 "./grammar.tab.c"
-	break;
-      case 71: /* "subtractionAssign" */
-#line 138 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1558 "./grammar.tab.c"
-	break;
-      case 72: /* "multiplicationAssign" */
-#line 138 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1563 "./grammar.tab.c"
-	break;
-      case 73: /* "divisionAssign" */
-#line 138 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1568 "./grammar.tab.c"
-	break;
-      case 74: /* "variable" */
-#line 135 "./grammar.y"
-	{ delete ((yyvaluep->syntaxVariable)); };
-#line 1573 "./grammar.tab.c"
-	break;
-      case 75: /* "optElements" */
-#line 131 "./grammar.y"
-	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1578 "./grammar.tab.c"
-	break;
-      case 76: /* "elementList" */
-#line 131 "./grammar.y"
-	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1583 "./grammar.tab.c"
-	break;
-      case 77: /* "fxnCall" */
-#line 135 "./grammar.y"
-	{ delete ((yyvaluep->syntaxFunctionCall)); };
-#line 1588 "./grammar.tab.c"
-	break;
-      case 78: /* "functionCall" */
-#line 135 "./grammar.y"
-	{ delete ((yyvaluep->syntaxFunctionCall)); };
-#line 1593 "./grammar.tab.c"
-	break;
-      case 79: /* "optArguments" */
-#line 132 "./grammar.y"
-	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1598 "./grammar.tab.c"
-	break;
-      case 80: /* "argumentList" */
-#line 132 "./grammar.y"
-	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1603 "./grammar.tab.c"
-	break;
-      case 81: /* "argument" */
-#line 135 "./grammar.y"
-	{ delete ((yyvaluep->syntaxLabeledExpr)); };
-#line 1608 "./grammar.tab.c"
-	break;
-      case 82: /* "functionDef" */
-#line 140 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1613 "./grammar.tab.c"
-	break;
-      case 83: /* "optFormals" */
-#line 133 "./grammar.y"
-	{ for (std::list<SyntaxFormal*>::iterator it=(yyvaluep->formalList)->begin(); it != (yyvaluep->formalList)->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ((yyvaluep->formalList)); };
-#line 1618 "./grammar.tab.c"
-	break;
-      case 84: /* "formalList" */
-#line 133 "./grammar.y"
-	{ for (std::list<SyntaxFormal*>::iterator it=(yyvaluep->formalList)->begin(); it != (yyvaluep->formalList)->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ((yyvaluep->formalList)); };
-#line 1623 "./grammar.tab.c"
-	break;
-      case 85: /* "formal" */
-#line 135 "./grammar.y"
-	{ delete ((yyvaluep->syntaxFormal)); };
-#line 1628 "./grammar.tab.c"
-	break;
-      case 86: /* "typeSpec" */
-#line 134 "./grammar.y"
-	{ delete ((yyvaluep->string)); };
+
+/* Line 1391 of yacc.c  */
 #line 1633 "./grammar.tab.c"
 	break;
-      case 87: /* "optDims" */
-#line 134 "./grammar.y"
-	{ delete ((yyvaluep->string)); };
-#line 1638 "./grammar.tab.c"
+      case 71: /* "subtractionAssign" */
+
+/* Line 1391 of yacc.c  */
+#line 138 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1642 "./grammar.tab.c"
 	break;
-      case 88: /* "dimList" */
-#line 134 "./grammar.y"
-	{ delete ((yyvaluep->string)); };
-#line 1643 "./grammar.tab.c"
+      case 72: /* "multiplicationAssign" */
+
+/* Line 1391 of yacc.c  */
+#line 138 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1651 "./grammar.tab.c"
 	break;
-      case 89: /* "optRef" */
-#line 134 "./grammar.y"
-	{ delete ((yyvaluep->string)); };
-#line 1648 "./grammar.tab.c"
+      case 73: /* "divisionAssign" */
+
+/* Line 1391 of yacc.c  */
+#line 138 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1660 "./grammar.tab.c"
 	break;
-      case 90: /* "stmts" */
+      case 74: /* "variable" */
+
+/* Line 1391 of yacc.c  */
+#line 135 "./grammar.y"
+	{ delete ((yyvaluep->syntaxVariable)); };
+
+/* Line 1391 of yacc.c  */
+#line 1669 "./grammar.tab.c"
+	break;
+      case 75: /* "optElements" */
+
+/* Line 1391 of yacc.c  */
 #line 131 "./grammar.y"
 	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1653 "./grammar.tab.c"
-	break;
-      case 91: /* "stmtList" */
-#line 131 "./grammar.y"
-	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
-#line 1658 "./grammar.tab.c"
-	break;
-      case 92: /* "statement" */
-#line 136 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1663 "./grammar.tab.c"
-	break;
-      case 93: /* "stmt_or_expr" */
-#line 136 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1668 "./grammar.tab.c"
-	break;
-      case 94: /* "declaration" */
-#line 139 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1673 "./grammar.tab.c"
-	break;
-      case 95: /* "memberDefs" */
-#line 131 "./grammar.y"
-	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
+
+/* Line 1391 of yacc.c  */
 #line 1678 "./grammar.tab.c"
 	break;
-      case 96: /* "memberDef" */
-#line 139 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1683 "./grammar.tab.c"
+      case 76: /* "elementList" */
+
+/* Line 1391 of yacc.c  */
+#line 131 "./grammar.y"
+	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1687 "./grammar.tab.c"
 	break;
-      case 97: /* "classDef" */
-#line 139 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1688 "./grammar.tab.c"
+      case 77: /* "fxnCall" */
+
+/* Line 1391 of yacc.c  */
+#line 135 "./grammar.y"
+	{ delete ((yyvaluep->syntaxFunctionCall)); };
+
+/* Line 1391 of yacc.c  */
+#line 1696 "./grammar.tab.c"
 	break;
-      case 98: /* "ifStatement" */
-#line 141 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1693 "./grammar.tab.c"
+      case 78: /* "functionCall" */
+
+/* Line 1391 of yacc.c  */
+#line 135 "./grammar.y"
+	{ delete ((yyvaluep->syntaxFunctionCall)); };
+
+/* Line 1391 of yacc.c  */
+#line 1705 "./grammar.tab.c"
 	break;
-      case 99: /* "cond" */
-#line 142 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1698 "./grammar.tab.c"
+      case 79: /* "optArguments" */
+
+/* Line 1391 of yacc.c  */
+#line 132 "./grammar.y"
+	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1714 "./grammar.tab.c"
 	break;
-      case 100: /* "forStatement" */
-#line 141 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1703 "./grammar.tab.c"
-	break;
-      case 101: /* "forCond" */
-#line 142 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1708 "./grammar.tab.c"
-	break;
-      case 102: /* "whileStatement" */
-#line 141 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1713 "./grammar.tab.c"
-	break;
-      case 103: /* "nextStatement" */
-#line 143 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1718 "./grammar.tab.c"
-	break;
-      case 104: /* "breakStatement" */
-#line 143 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
+      case 80: /* "argumentList" */
+
+/* Line 1391 of yacc.c  */
+#line 132 "./grammar.y"
+	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
+
+/* Line 1391 of yacc.c  */
 #line 1723 "./grammar.tab.c"
 	break;
-      case 105: /* "returnStatement" */
-#line 142 "./grammar.y"
-	{ delete ((yyvaluep->syntaxElement)); };
-#line 1728 "./grammar.tab.c"
+      case 81: /* "argument" */
+
+/* Line 1391 of yacc.c  */
+#line 135 "./grammar.y"
+	{ delete ((yyvaluep->syntaxLabeledExpr)); };
+
+/* Line 1391 of yacc.c  */
+#line 1732 "./grammar.tab.c"
 	break;
-      case 106: /* "identifier" */
+      case 82: /* "functionDef" */
+
+/* Line 1391 of yacc.c  */
+#line 140 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1741 "./grammar.tab.c"
+	break;
+      case 83: /* "optFormals" */
+
+/* Line 1391 of yacc.c  */
+#line 133 "./grammar.y"
+	{ for (std::list<SyntaxFormal*>::iterator it=(yyvaluep->formalList)->begin(); it != (yyvaluep->formalList)->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ((yyvaluep->formalList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1750 "./grammar.tab.c"
+	break;
+      case 84: /* "formalList" */
+
+/* Line 1391 of yacc.c  */
+#line 133 "./grammar.y"
+	{ for (std::list<SyntaxFormal*>::iterator it=(yyvaluep->formalList)->begin(); it != (yyvaluep->formalList)->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ((yyvaluep->formalList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1759 "./grammar.tab.c"
+	break;
+      case 85: /* "formal" */
+
+/* Line 1391 of yacc.c  */
+#line 135 "./grammar.y"
+	{ delete ((yyvaluep->syntaxFormal)); };
+
+/* Line 1391 of yacc.c  */
+#line 1768 "./grammar.tab.c"
+	break;
+      case 86: /* "typeSpec" */
+
+/* Line 1391 of yacc.c  */
 #line 134 "./grammar.y"
 	{ delete ((yyvaluep->string)); };
-#line 1733 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1777 "./grammar.tab.c"
+	break;
+      case 87: /* "optDims" */
+
+/* Line 1391 of yacc.c  */
+#line 134 "./grammar.y"
+	{ delete ((yyvaluep->string)); };
+
+/* Line 1391 of yacc.c  */
+#line 1786 "./grammar.tab.c"
+	break;
+      case 88: /* "dimList" */
+
+/* Line 1391 of yacc.c  */
+#line 134 "./grammar.y"
+	{ delete ((yyvaluep->string)); };
+
+/* Line 1391 of yacc.c  */
+#line 1795 "./grammar.tab.c"
+	break;
+      case 89: /* "optRef" */
+
+/* Line 1391 of yacc.c  */
+#line 134 "./grammar.y"
+	{ delete ((yyvaluep->string)); };
+
+/* Line 1391 of yacc.c  */
+#line 1804 "./grammar.tab.c"
+	break;
+      case 90: /* "stmts" */
+
+/* Line 1391 of yacc.c  */
+#line 131 "./grammar.y"
+	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1813 "./grammar.tab.c"
+	break;
+      case 91: /* "stmtList" */
+
+/* Line 1391 of yacc.c  */
+#line 131 "./grammar.y"
+	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1822 "./grammar.tab.c"
+	break;
+      case 92: /* "statement" */
+
+/* Line 1391 of yacc.c  */
+#line 136 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1831 "./grammar.tab.c"
+	break;
+      case 93: /* "stmt_or_expr" */
+
+/* Line 1391 of yacc.c  */
+#line 136 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1840 "./grammar.tab.c"
+	break;
+      case 94: /* "declaration" */
+
+/* Line 1391 of yacc.c  */
+#line 139 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1849 "./grammar.tab.c"
+	break;
+      case 95: /* "memberDefs" */
+
+/* Line 1391 of yacc.c  */
+#line 131 "./grammar.y"
+	{ for (std::list<SyntaxElement*>::iterator it=(yyvaluep->syntaxElementList)->begin(); it != (yyvaluep->syntaxElementList)->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ((yyvaluep->syntaxElementList)); };
+
+/* Line 1391 of yacc.c  */
+#line 1858 "./grammar.tab.c"
+	break;
+      case 96: /* "memberDef" */
+
+/* Line 1391 of yacc.c  */
+#line 139 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1867 "./grammar.tab.c"
+	break;
+      case 97: /* "classDef" */
+
+/* Line 1391 of yacc.c  */
+#line 139 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1876 "./grammar.tab.c"
+	break;
+      case 98: /* "ifStatement" */
+
+/* Line 1391 of yacc.c  */
+#line 141 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1885 "./grammar.tab.c"
+	break;
+      case 99: /* "cond" */
+
+/* Line 1391 of yacc.c  */
+#line 142 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1894 "./grammar.tab.c"
+	break;
+      case 100: /* "forStatement" */
+
+/* Line 1391 of yacc.c  */
+#line 141 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1903 "./grammar.tab.c"
+	break;
+      case 101: /* "forCond" */
+
+/* Line 1391 of yacc.c  */
+#line 142 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1912 "./grammar.tab.c"
+	break;
+      case 102: /* "whileStatement" */
+
+/* Line 1391 of yacc.c  */
+#line 141 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1921 "./grammar.tab.c"
+	break;
+      case 103: /* "nextStatement" */
+
+/* Line 1391 of yacc.c  */
+#line 143 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1930 "./grammar.tab.c"
+	break;
+      case 104: /* "breakStatement" */
+
+/* Line 1391 of yacc.c  */
+#line 143 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1939 "./grammar.tab.c"
+	break;
+      case 105: /* "returnStatement" */
+
+/* Line 1391 of yacc.c  */
+#line 142 "./grammar.y"
+	{ delete ((yyvaluep->syntaxElement)); };
+
+/* Line 1391 of yacc.c  */
+#line 1948 "./grammar.tab.c"
+	break;
+      case 106: /* "identifier" */
+
+/* Line 1391 of yacc.c  */
+#line 134 "./grammar.y"
+	{ delete ((yyvaluep->string)); };
+
+/* Line 1391 of yacc.c  */
+#line 1957 "./grammar.tab.c"
 	break;
       case 107: /* "vector" */
+
+/* Line 1391 of yacc.c  */
 #line 132 "./grammar.y"
 	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1738 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1966 "./grammar.tab.c"
 	break;
       case 108: /* "vectorList" */
+
+/* Line 1391 of yacc.c  */
 #line 132 "./grammar.y"
 	{ for (std::list<SyntaxLabeledExpr*>::iterator it=(yyvaluep->argumentList)->begin(); it != (yyvaluep->argumentList)->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ((yyvaluep->argumentList)); };
-#line 1743 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1975 "./grammar.tab.c"
 	break;
       case 109: /* "constant" */
+
+/* Line 1391 of yacc.c  */
 #line 135 "./grammar.y"
 	{ delete ((yyvaluep->syntaxElement)); };
-#line 1748 "./grammar.tab.c"
+
+/* Line 1391 of yacc.c  */
+#line 1984 "./grammar.tab.c"
 	break;
 
       default:
 	break;
     }
 }
-
+
 
 /* Prevent warnings from -Wmissing-prototypes.  */
-
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -1770,18 +2005,17 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-/* The look-ahead symbol.  */
+/* The lookahead symbol.  */
 int yychar;
 
-/* The semantic value of the look-ahead symbol.  */
+/* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
+
+/* Location data for the lookahead symbol.  */
+YYLTYPE yylloc;
 
 /* Number of syntax errors so far.  */
 int yynerrs;
-/* Location data for the look-ahead symbol.  */
-YYLTYPE yylloc;
-
 
 
 /*----------.
@@ -1810,14 +2044,47 @@ yyparse ()
 #endif
 #endif
 {
-  
-  int yystate;
+    int yystate;
+    /* Number of tokens to shift before error messages enabled.  */
+    int yyerrstatus;
+
+    /* The stacks and their tools:
+       `yyss': related to states.
+       `yyvs': related to semantic values.
+       `yyls': related to locations.
+
+       Refer to the stacks thru separate pointers, to allow yyoverflow
+       to reallocate them elsewhere.  */
+
+    /* The state stack.  */
+    yytype_int16 yyssa[YYINITDEPTH];
+    yytype_int16 *yyss;
+    yytype_int16 *yyssp;
+
+    /* The semantic value stack.  */
+    YYSTYPE yyvsa[YYINITDEPTH];
+    YYSTYPE *yyvs;
+    YYSTYPE *yyvsp;
+
+    /* The location stack.  */
+    YYLTYPE yylsa[YYINITDEPTH];
+    YYLTYPE *yyls;
+    YYLTYPE *yylsp;
+
+    /* The locations where the error started and ended.  */
+    YYLTYPE yyerror_range[3];
+
+    YYSIZE_T yystacksize;
+
   int yyn;
   int yyresult;
-  /* Number of tokens to shift before error messages enabled.  */
-  int yyerrstatus;
-  /* Look-ahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead token as an internal (translated) token number.  */
+  int yytoken;
+  /* The variables used to return semantic value and location from the
+     action routines.  */
+  YYSTYPE yyval;
+  YYLTYPE yyloc;
+
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -1825,63 +2092,37 @@ yyparse ()
   YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
 #endif
 
-  /* Three stacks and their tools:
-     `yyss': related to states,
-     `yyvs': related to semantic values,
-     `yyls': related to locations.
-
-     Refer to the stacks thru separate pointers, to allow yyoverflow
-     to reallocate them elsewhere.  */
-
-  /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
-
-  /* The semantic value stack.  */
-  YYSTYPE yyvsa[YYINITDEPTH];
-  YYSTYPE *yyvs = yyvsa;
-  YYSTYPE *yyvsp;
-
-  /* The location stack.  */
-  YYLTYPE yylsa[YYINITDEPTH];
-  YYLTYPE *yyls = yylsa;
-  YYLTYPE *yylsp;
-  /* The locations where the error started and ended.  */
-  YYLTYPE yyerror_range[2];
-
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N), yylsp -= (N))
-
-  YYSIZE_T yystacksize = YYINITDEPTH;
-
-  /* The variables used to return semantic value and location from the
-     action routines.  */
-  YYSTYPE yyval;
-  YYLTYPE yyloc;
 
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
+
+  yytoken = 0;
+  yyss = yyssa;
+  yyvs = yyvsa;
+  yyls = yylsa;
+  yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yystate = 0;
   yyerrstatus = 0;
   yynerrs = 0;
-  yychar = YYEMPTY;		/* Cause a token to be read.  */
+  yychar = YYEMPTY; /* Cause a token to be read.  */
 
   /* Initialize stack pointers.
      Waste one element of value and location stack
      so that they stay on the same level as the state stack.
      The wasted elements are never initialized.  */
-
   yyssp = yyss;
   yyvsp = yyvs;
   yylsp = yyls;
+
 #if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
   /* Initialize the default location before parsing starts.  */
   yylloc.first_line   = yylloc.last_line   = 1;
-  yylloc.first_column = yylloc.last_column = 0;
+  yylloc.first_column = yylloc.last_column = 1;
 #endif
 
   goto yysetstate;
@@ -1920,6 +2161,7 @@ yyparse ()
 		    &yyvs1, yysize * sizeof (*yyvsp),
 		    &yyls1, yysize * sizeof (*yylsp),
 		    &yystacksize);
+
 	yyls = yyls1;
 	yyss = yyss1;
 	yyvs = yyvs1;
@@ -1941,9 +2183,9 @@ yyparse ()
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
 	  goto yyexhaustedlab;
-	YYSTACK_RELOCATE (yyss);
-	YYSTACK_RELOCATE (yyvs);
-	YYSTACK_RELOCATE (yyls);
+	YYSTACK_RELOCATE (yyss_alloc, yyss);
+	YYSTACK_RELOCATE (yyvs_alloc, yyvs);
+	YYSTACK_RELOCATE (yyls_alloc, yyls);
 #  undef YYSTACK_RELOCATE
 	if (yyss1 != yyssa)
 	  YYSTACK_FREE (yyss1);
@@ -1964,6 +2206,9 @@ yyparse ()
 
   YYDPRINTF ((stderr, "Entering state %d\n", yystate));
 
+  if (yystate == YYFINAL)
+    YYACCEPT;
+
   goto yybackup;
 
 /*-----------.
@@ -1972,16 +2217,16 @@ yyparse ()
 yybackup:
 
   /* Do appropriate processing given the current state.  Read a
-     look-ahead token if we need one and don't already have one.  */
+     lookahead token if we need one and don't already have one.  */
 
-  /* First try to decide what to do without reference to look-ahead token.  */
+  /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
-  if (yyn == YYPACT_NINF)
+  if (yypact_value_is_default (yyn))
     goto yydefault;
 
-  /* Not known => get a look-ahead token if don't already have one.  */
+  /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -2007,26 +2252,22 @@ yybackup:
   yyn = yytable[yyn];
   if (yyn <= 0)
     {
-      if (yyn == 0 || yyn == YYTABLE_NINF)
-	goto yyerrlab;
+      if (yytable_value_is_error (yyn))
+        goto yyerrlab;
       yyn = -yyn;
       goto yyreduce;
     }
-
-  if (yyn == YYFINAL)
-    YYACCEPT;
 
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
-  /* Shift the look-ahead token.  */
+  /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
-  /* Discard the shifted token unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
 
   yystate = yyn;
   *++yyvsp = yylval;
@@ -2067,6 +2308,8 @@ yyreduce:
   switch (yyn)
     {
         case 2:
+
+/* Line 1806 of yacc.c  */
 #line 217 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2077,6 +2320,8 @@ yyreduce:
     break;
 
   case 3:
+
+/* Line 1806 of yacc.c  */
 #line 224 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2087,6 +2332,8 @@ yyreduce:
     break;
 
   case 4:
+
+/* Line 1806 of yacc.c  */
 #line 231 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2098,6 +2345,8 @@ yyreduce:
     break;
 
   case 5:
+
+/* Line 1806 of yacc.c  */
 #line 239 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2109,6 +2358,8 @@ yyreduce:
     break;
 
   case 6:
+
+/* Line 1806 of yacc.c  */
 #line 247 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2120,6 +2371,8 @@ yyreduce:
     break;
 
   case 7:
+
+/* Line 1806 of yacc.c  */
 #line 255 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2131,6 +2384,8 @@ yyreduce:
     break;
 
   case 8:
+
+/* Line 1806 of yacc.c  */
 #line 263 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2143,6 +2398,8 @@ yyreduce:
     break;
 
   case 9:
+
+/* Line 1806 of yacc.c  */
 #line 272 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2155,6 +2412,8 @@ yyreduce:
     break;
 
   case 10:
+
+/* Line 1806 of yacc.c  */
 #line 281 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2167,6 +2426,8 @@ yyreduce:
     break;
 
   case 11:
+
+/* Line 1806 of yacc.c  */
 #line 290 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2179,6 +2440,8 @@ yyreduce:
     break;
 
   case 12:
+
+/* Line 1806 of yacc.c  */
 #line 299 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2189,6 +2452,8 @@ yyreduce:
     break;
 
   case 13:
+
+/* Line 1806 of yacc.c  */
 #line 306 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2199,186 +2464,260 @@ yyreduce:
     break;
 
   case 14:
+
+/* Line 1806 of yacc.c  */
 #line 314 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 15:
+
+/* Line 1806 of yacc.c  */
 #line 316 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxFunctionCall("v", (yyvsp[(1) - (1)].argumentList)); }
     break;
 
   case 16:
+
+/* Line 1806 of yacc.c  */
 #line 318 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(2) - (3)].syntaxElement); }
     break;
 
   case 17:
+
+/* Line 1806 of yacc.c  */
 #line 320 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UMinus, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 18:
+
+/* Line 1806 of yacc.c  */
 #line 321 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UPlus, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 19:
+
+/* Line 1806 of yacc.c  */
 #line 322 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UNot, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 20:
+
+/* Line 1806 of yacc.c  */
 #line 323 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxUnaryExpr(SyntaxUnaryExpr::UAnd, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 21:
+
+/* Line 1806 of yacc.c  */
 #line 325 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxDecrement( (yyvsp[(2) - (2)].syntaxVariable) ); }
     break;
 
   case 22:
+
+/* Line 1806 of yacc.c  */
 #line 326 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxDecrement( (yyvsp[(1) - (2)].syntaxVariable) ); }
     break;
 
   case 23:
+
+/* Line 1806 of yacc.c  */
 #line 327 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxIncrement( (yyvsp[(2) - (2)].syntaxVariable) ); }
     break;
 
   case 24:
+
+/* Line 1806 of yacc.c  */
 #line 328 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxIncrement( (yyvsp[(1) - (2)].syntaxVariable) ); }
     break;
 
   case 25:
+
+/* Line 1806 of yacc.c  */
 #line 330 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Range, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 26:
+
+/* Line 1806 of yacc.c  */
 #line 332 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Add, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 27:
+
+/* Line 1806 of yacc.c  */
 #line 333 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Sub, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 28:
+
+/* Line 1806 of yacc.c  */
 #line 334 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 29:
+
+/* Line 1806 of yacc.c  */
 #line 335 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 30:
+
+/* Line 1806 of yacc.c  */
 #line 336 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 31:
+
+/* Line 1806 of yacc.c  */
 #line 338 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 32:
+
+/* Line 1806 of yacc.c  */
 #line 339 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 33:
+
+/* Line 1806 of yacc.c  */
 #line 340 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Eq, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 34:
+
+/* Line 1806 of yacc.c  */
 #line 341 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ne, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 35:
+
+/* Line 1806 of yacc.c  */
 #line 342 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Ge, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 36:
+
+/* Line 1806 of yacc.c  */
 #line 343 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Gt, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 37:
+
+/* Line 1806 of yacc.c  */
 #line 345 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::And, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 38:
+
+/* Line 1806 of yacc.c  */
 #line 346 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 39:
+
+/* Line 1806 of yacc.c  */
 #line 347 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::And2, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 40:
+
+/* Line 1806 of yacc.c  */
 #line 348 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxBinaryExpr(SyntaxBinaryExpr::Or2, (yyvsp[(1) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElement)); }
     break;
 
   case 41:
+
+/* Line 1806 of yacc.c  */
 #line 350 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 42:
+
+/* Line 1806 of yacc.c  */
 #line 351 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 43:
+
+/* Line 1806 of yacc.c  */
 #line 352 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 44:
+
+/* Line 1806 of yacc.c  */
 #line 354 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 45:
+
+/* Line 1806 of yacc.c  */
 #line 355 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 46:
+
+/* Line 1806 of yacc.c  */
 #line 356 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 47:
+
+/* Line 1806 of yacc.c  */
 #line 357 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 48:
+
+/* Line 1806 of yacc.c  */
 #line 359 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxFunctionCall); }
     break;
 
   case 49:
+
+/* Line 1806 of yacc.c  */
 #line 361 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxVariable); }
     break;
 
   case 50:
+
+/* Line 1806 of yacc.c  */
 #line 365 "./grammar.y"
     { 
 #ifdef DEBUG_BISON_FLEX
@@ -2389,6 +2728,8 @@ yyreduce:
     break;
 
   case 51:
+
+/* Line 1806 of yacc.c  */
 #line 372 "./grammar.y"
     { 
 #ifdef DEBUG_BISON_FLEX
@@ -2399,6 +2740,8 @@ yyreduce:
     break;
 
   case 52:
+
+/* Line 1806 of yacc.c  */
 #line 381 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2409,6 +2752,8 @@ yyreduce:
     break;
 
   case 53:
+
+/* Line 1806 of yacc.c  */
 #line 388 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2419,6 +2764,8 @@ yyreduce:
     break;
 
   case 54:
+
+/* Line 1806 of yacc.c  */
 #line 397 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2429,6 +2776,8 @@ yyreduce:
     break;
 
   case 55:
+
+/* Line 1806 of yacc.c  */
 #line 404 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2439,6 +2788,8 @@ yyreduce:
     break;
 
   case 56:
+
+/* Line 1806 of yacc.c  */
 #line 413 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2449,6 +2800,8 @@ yyreduce:
     break;
 
   case 57:
+
+/* Line 1806 of yacc.c  */
 #line 420 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2459,6 +2812,8 @@ yyreduce:
     break;
 
   case 58:
+
+/* Line 1806 of yacc.c  */
 #line 429 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2469,6 +2824,8 @@ yyreduce:
     break;
 
   case 59:
+
+/* Line 1806 of yacc.c  */
 #line 436 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2479,6 +2836,8 @@ yyreduce:
     break;
 
   case 60:
+
+/* Line 1806 of yacc.c  */
 #line 445 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2489,6 +2848,8 @@ yyreduce:
     break;
 
   case 61:
+
+/* Line 1806 of yacc.c  */
 #line 452 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2499,6 +2860,8 @@ yyreduce:
     break;
 
   case 62:
+
+/* Line 1806 of yacc.c  */
 #line 461 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2509,6 +2872,8 @@ yyreduce:
     break;
 
   case 63:
+
+/* Line 1806 of yacc.c  */
 #line 468 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2519,6 +2884,8 @@ yyreduce:
     break;
 
   case 64:
+
+/* Line 1806 of yacc.c  */
 #line 477 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2530,6 +2897,8 @@ yyreduce:
     break;
 
   case 65:
+
+/* Line 1806 of yacc.c  */
 #line 485 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2541,6 +2910,8 @@ yyreduce:
     break;
 
   case 66:
+
+/* Line 1806 of yacc.c  */
 #line 493 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2552,6 +2923,8 @@ yyreduce:
     break;
 
   case 67:
+
+/* Line 1806 of yacc.c  */
 #line 501 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2563,36 +2936,50 @@ yyreduce:
     break;
 
   case 68:
+
+/* Line 1806 of yacc.c  */
 #line 510 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 69:
+
+/* Line 1806 of yacc.c  */
 #line 511 "./grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(1) - (1)].syntaxElementList); }
     break;
 
   case 70:
+
+/* Line 1806 of yacc.c  */
 #line 514 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(1, (yyvsp[(2) - (3)].syntaxElement)); }
     break;
 
   case 71:
+
+/* Line 1806 of yacc.c  */
 #line 515 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 72:
+
+/* Line 1806 of yacc.c  */
 #line 516 "./grammar.y"
     { (yyvsp[(1) - (4)].syntaxElementList)->push_back((yyvsp[(3) - (4)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(1) - (4)].syntaxElementList); }
     break;
 
   case 73:
+
+/* Line 1806 of yacc.c  */
 #line 517 "./grammar.y"
     { (yyvsp[(1) - (3)].syntaxElementList)->push_back( NULL ); (yyval.syntaxElementList) = (yyvsp[(1) - (3)].syntaxElementList); }
     break;
 
   case 74:
+
+/* Line 1806 of yacc.c  */
 #line 521 "./grammar.y"
     {
                     (yyval.syntaxFunctionCall) = new SyntaxFunctionCall(*(yyvsp[(1) - (4)].string), (yyvsp[(3) - (4)].argumentList));
@@ -2601,6 +2988,8 @@ yyreduce:
     break;
 
   case 75:
+
+/* Line 1806 of yacc.c  */
 #line 528 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2611,6 +3000,8 @@ yyreduce:
     break;
 
   case 76:
+
+/* Line 1806 of yacc.c  */
 #line 535 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2622,26 +3013,36 @@ yyreduce:
     break;
 
   case 77:
+
+/* Line 1806 of yacc.c  */
 #line 544 "./grammar.y"
     { (yyval.argumentList) = new std::list<SyntaxLabeledExpr*>(); }
     break;
 
   case 78:
+
+/* Line 1806 of yacc.c  */
 #line 545 "./grammar.y"
     { (yyval.argumentList) = (yyvsp[(1) - (1)].argumentList); }
     break;
 
   case 79:
+
+/* Line 1806 of yacc.c  */
 #line 548 "./grammar.y"
     { (yyval.argumentList) = new std::list<SyntaxLabeledExpr*>(1,(yyvsp[(1) - (1)].syntaxLabeledExpr)); }
     break;
 
   case 80:
+
+/* Line 1806 of yacc.c  */
 #line 549 "./grammar.y"
     { (yyvsp[(1) - (3)].argumentList)->push_back((yyvsp[(3) - (3)].syntaxLabeledExpr)); (yyval.argumentList) = (yyvsp[(1) - (3)].argumentList); }
     break;
 
   case 81:
+
+/* Line 1806 of yacc.c  */
 #line 553 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2652,6 +3053,8 @@ yyreduce:
     break;
 
   case 82:
+
+/* Line 1806 of yacc.c  */
 #line 560 "./grammar.y"
     { 
 #ifdef DEBUG_BISON_FLEX
@@ -2663,6 +3066,8 @@ yyreduce:
     break;
 
   case 83:
+
+/* Line 1806 of yacc.c  */
 #line 570 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2674,6 +3079,8 @@ yyreduce:
     break;
 
   case 84:
+
+/* Line 1806 of yacc.c  */
 #line 579 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2686,26 +3093,36 @@ yyreduce:
     break;
 
   case 85:
+
+/* Line 1806 of yacc.c  */
 #line 589 "./grammar.y"
     { (yyval.formalList) = new std::list<SyntaxFormal*>(); }
     break;
 
   case 86:
+
+/* Line 1806 of yacc.c  */
 #line 590 "./grammar.y"
     { (yyval.formalList) = (yyvsp[(1) - (1)].formalList); }
     break;
 
   case 87:
+
+/* Line 1806 of yacc.c  */
 #line 593 "./grammar.y"
     { (yyval.formalList) = new std::list<SyntaxFormal*>(1, (yyvsp[(1) - (1)].syntaxFormal)); }
     break;
 
   case 88:
+
+/* Line 1806 of yacc.c  */
 #line 594 "./grammar.y"
     { (yyvsp[(1) - (3)].formalList)->push_back((yyvsp[(3) - (3)].syntaxFormal)); (yyval.formalList) = (yyvsp[(1) - (3)].formalList); }
     break;
 
   case 89:
+
+/* Line 1806 of yacc.c  */
 #line 598 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2717,6 +3134,8 @@ yyreduce:
     break;
 
   case 90:
+
+/* Line 1806 of yacc.c  */
 #line 606 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2728,6 +3147,8 @@ yyreduce:
     break;
 
   case 91:
+
+/* Line 1806 of yacc.c  */
 #line 614 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2740,6 +3161,8 @@ yyreduce:
     break;
 
   case 92:
+
+/* Line 1806 of yacc.c  */
 #line 623 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2752,26 +3175,36 @@ yyreduce:
     break;
 
   case 93:
+
+/* Line 1806 of yacc.c  */
 #line 633 "./grammar.y"
     { (yyvsp[(1) - (3)].string)->append(*((yyvsp[(2) - (3)].string))); (yyvsp[(1) - (3)].string)->append(*((yyvsp[(3) - (3)].string))); delete (yyvsp[(2) - (3)].string); delete (yyvsp[(3) - (3)].string); (yyval.string) = (yyvsp[(1) - (3)].string); }
     break;
 
   case 94:
+
+/* Line 1806 of yacc.c  */
 #line 636 "./grammar.y"
     { (yyval.string) = new std::string(""); }
     break;
 
   case 95:
+
+/* Line 1806 of yacc.c  */
 #line 637 "./grammar.y"
     { (yyval.string) = (yyvsp[(1) - (1)].string); }
     break;
 
   case 96:
+
+/* Line 1806 of yacc.c  */
 #line 640 "./grammar.y"
     { (yyval.string) = new std::string("[]"); }
     break;
 
   case 97:
+
+/* Line 1806 of yacc.c  */
 #line 641 "./grammar.y"
     { 
                                                 (yyval.string) = new std::string("["); 
@@ -2783,11 +3216,15 @@ yyreduce:
     break;
 
   case 98:
+
+/* Line 1806 of yacc.c  */
 #line 648 "./grammar.y"
     { (yyvsp[(1) - (3)].string)->append("[]"); (yyval.string) = (yyvsp[(1) - (3)].string); }
     break;
 
   case 99:
+
+/* Line 1806 of yacc.c  */
 #line 649 "./grammar.y"
     { 
                                                 (yyvsp[(1) - (4)].string)->append("["); 
@@ -2800,21 +3237,29 @@ yyreduce:
     break;
 
   case 100:
+
+/* Line 1806 of yacc.c  */
 #line 659 "./grammar.y"
     { (yyval.string) = new std::string(""); }
     break;
 
   case 101:
+
+/* Line 1806 of yacc.c  */
 #line 660 "./grammar.y"
     { (yyval.string) = new std::string("&"); }
     break;
 
   case 102:
+
+/* Line 1806 of yacc.c  */
 #line 663 "./grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(2) - (3)].syntaxElementList); }
     break;
 
   case 103:
+
+/* Line 1806 of yacc.c  */
 #line 665 "./grammar.y"
     {
                     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
@@ -2824,86 +3269,120 @@ yyreduce:
     break;
 
   case 104:
+
+/* Line 1806 of yacc.c  */
 #line 672 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 105:
+
+/* Line 1806 of yacc.c  */
 #line 673 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(1, (yyvsp[(1) - (1)].syntaxElement)); }
     break;
 
   case 106:
+
+/* Line 1806 of yacc.c  */
 #line 674 "./grammar.y"
     { (yyvsp[(1) - (3)].syntaxElementList)->push_back((yyvsp[(3) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(1) - (3)].syntaxElementList); }
     break;
 
   case 107:
+
+/* Line 1806 of yacc.c  */
 #line 675 "./grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(1) - (2)].syntaxElementList); }
     break;
 
   case 108:
+
+/* Line 1806 of yacc.c  */
 #line 676 "./grammar.y"
     { (yyvsp[(1) - (3)].syntaxElementList)->push_back((yyvsp[(3) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(1) - (3)].syntaxElementList); }
     break;
 
   case 109:
+
+/* Line 1806 of yacc.c  */
 #line 677 "./grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(1) - (2)].syntaxElementList); }
     break;
 
   case 110:
+
+/* Line 1806 of yacc.c  */
 #line 680 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 111:
+
+/* Line 1806 of yacc.c  */
 #line 681 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 112:
+
+/* Line 1806 of yacc.c  */
 #line 682 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 113:
+
+/* Line 1806 of yacc.c  */
 #line 683 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 114:
+
+/* Line 1806 of yacc.c  */
 #line 684 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 115:
+
+/* Line 1806 of yacc.c  */
 #line 685 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 116:
+
+/* Line 1806 of yacc.c  */
 #line 688 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 117:
+
+/* Line 1806 of yacc.c  */
 #line 689 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 118:
+
+/* Line 1806 of yacc.c  */
 #line 692 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 119:
+
+/* Line 1806 of yacc.c  */
 #line 693 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 120:
+
+/* Line 1806 of yacc.c  */
 #line 695 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2917,46 +3396,64 @@ yyreduce:
     break;
 
   case 121:
+
+/* Line 1806 of yacc.c  */
 #line 706 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(); }
     break;
 
   case 122:
+
+/* Line 1806 of yacc.c  */
 #line 707 "./grammar.y"
     { (yyval.syntaxElementList) = new std::list<SyntaxElement*>(1, (yyvsp[(1) - (1)].syntaxElement)); }
     break;
 
   case 123:
+
+/* Line 1806 of yacc.c  */
 #line 708 "./grammar.y"
     { (yyvsp[(1) - (3)].syntaxElementList)->push_back((yyvsp[(3) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(1) - (3)].syntaxElementList); }
     break;
 
   case 124:
+
+/* Line 1806 of yacc.c  */
 #line 709 "./grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(1) - (2)].syntaxElementList); }
     break;
 
   case 125:
+
+/* Line 1806 of yacc.c  */
 #line 710 "./grammar.y"
     { (yyvsp[(1) - (3)].syntaxElementList)->push_back((yyvsp[(3) - (3)].syntaxElement)); (yyval.syntaxElementList) = (yyvsp[(1) - (3)].syntaxElementList); }
     break;
 
   case 126:
+
+/* Line 1806 of yacc.c  */
 #line 711 "./grammar.y"
     { (yyval.syntaxElementList) = (yyvsp[(1) - (2)].syntaxElementList); }
     break;
 
   case 127:
+
+/* Line 1806 of yacc.c  */
 #line 714 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxFormal); }
     break;
 
   case 128:
+
+/* Line 1806 of yacc.c  */
 #line 715 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(1) - (1)].syntaxElement); }
     break;
 
   case 129:
+
+/* Line 1806 of yacc.c  */
 #line 719 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -2969,71 +3466,99 @@ yyreduce:
     break;
 
   case 130:
+
+/* Line 1806 of yacc.c  */
 #line 729 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::If, (yyvsp[(2) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElementList)); }
     break;
 
   case 131:
+
+/* Line 1806 of yacc.c  */
 #line 730 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::IfElse, (yyvsp[(2) - (5)].syntaxElement), (yyvsp[(3) - (5)].syntaxElementList), (yyvsp[(5) - (5)].syntaxElementList)); }
     break;
 
   case 132:
+
+/* Line 1806 of yacc.c  */
 #line 732 "./grammar.y"
     { (yyval.syntaxElement) = (yyvsp[(2) - (3)].syntaxElement); }
     break;
 
   case 133:
+
+/* Line 1806 of yacc.c  */
 #line 735 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::For, (yyvsp[(2) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElementList)); }
     break;
 
   case 134:
+
+/* Line 1806 of yacc.c  */
 #line 738 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxForLoop(*(yyvsp[(2) - (5)].string), (yyvsp[(4) - (5)].syntaxElement)); delete (yyvsp[(2) - (5)].string); }
     break;
 
   case 135:
+
+/* Line 1806 of yacc.c  */
 #line 741 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::While, (yyvsp[(2) - (3)].syntaxElement), (yyvsp[(3) - (3)].syntaxElementList)); }
     break;
 
   case 136:
+
+/* Line 1806 of yacc.c  */
 #line 744 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Next); }
     break;
 
   case 137:
+
+/* Line 1806 of yacc.c  */
 #line 747 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Break); }
     break;
 
   case 138:
+
+/* Line 1806 of yacc.c  */
 #line 750 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Return); }
     break;
 
   case 139:
+
+/* Line 1806 of yacc.c  */
 #line 751 "./grammar.y"
     { (yyval.syntaxElement) = new SyntaxStatement(SyntaxStatement::Return, (yyvsp[(2) - (2)].syntaxElement)); }
     break;
 
   case 140:
+
+/* Line 1806 of yacc.c  */
 #line 754 "./grammar.y"
     { (yyval.string) = new std::string((yyvsp[(1) - (1)].c_string)); }
     break;
 
   case 141:
+
+/* Line 1806 of yacc.c  */
 #line 758 "./grammar.y"
     { (yyval.argumentList) = (yyvsp[(2) - (3)].argumentList); }
     break;
 
   case 142:
+
+/* Line 1806 of yacc.c  */
 #line 761 "./grammar.y"
     { (yyvsp[(1) - (3)].argumentList)->push_back(new SyntaxLabeledExpr( "", (yyvsp[(3) - (3)].syntaxElement)) ); (yyval.argumentList) = (yyvsp[(1) - (3)].argumentList); }
     break;
 
   case 143:
+
+/* Line 1806 of yacc.c  */
 #line 763 "./grammar.y"
     {
                 (yyval.argumentList) = new std::list<SyntaxLabeledExpr*>(1, new SyntaxLabeledExpr("", (yyvsp[(1) - (1)].syntaxElement)) );
@@ -3041,6 +3566,8 @@ yyreduce:
     break;
 
   case 144:
+
+/* Line 1806 of yacc.c  */
 #line 769 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -3051,6 +3578,8 @@ yyreduce:
     break;
 
   case 145:
+
+/* Line 1806 of yacc.c  */
 #line 776 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -3061,6 +3590,8 @@ yyreduce:
     break;
 
   case 146:
+
+/* Line 1806 of yacc.c  */
 #line 783 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -3071,6 +3602,8 @@ yyreduce:
     break;
 
   case 147:
+
+/* Line 1806 of yacc.c  */
 #line 790 "./grammar.y"
     {
                     if ( (yyvsp[(1) - (1)].intValue) < 0 ) {
@@ -3089,6 +3622,8 @@ yyreduce:
     break;
 
   case 148:
+
+/* Line 1806 of yacc.c  */
 #line 805 "./grammar.y"
     {
 #ifdef DEBUG_BISON_FLEX
@@ -3099,6 +3634,8 @@ yyreduce:
     break;
 
   case 149:
+
+/* Line 1806 of yacc.c  */
 #line 812 "./grammar.y"
     {
                     /* This code records and preserves input format of the real */
@@ -3154,10 +3691,22 @@ yyreduce:
     break;
 
 
-/* Line 1267 of yacc.c.  */
-#line 3159 "./grammar.tab.c"
+
+/* Line 1806 of yacc.c  */
+#line 3697 "./grammar.tab.c"
       default: break;
     }
+  /* User semantic actions sometimes alter yychar, and that requires
+     that yytoken be updated with the new translation.  We take the
+     approach of translating immediately before every use of yytoken.
+     One alternative is translating here after every semantic action,
+     but that translation would be missed if the semantic action invokes
+     YYABORT, YYACCEPT, or YYERROR immediately after altering yychar or
+     if it invokes YYBACKUP.  In the case of YYABORT or YYACCEPT, an
+     incorrect destructor might then be invoked immediately.  In the
+     case of YYERROR or YYBACKUP, subsequent parser actions might lead
+     to an incorrect destructor call or verbose syntax error message
+     before the lookahead is translated.  */
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
@@ -3186,6 +3735,10 @@ yyreduce:
 | yyerrlab -- here on detecting error |
 `------------------------------------*/
 yyerrlab:
+  /* Make sure we have latest lookahead translation.  See comments at
+     user semantic actions for why this is necessary.  */
+  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
+
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -3193,45 +3746,44 @@ yyerrlab:
 #if ! YYERROR_VERBOSE
       yyerror (YY_("syntax error"));
 #else
+# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
+                                        yyssp, yytoken)
       {
-	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
-	if (yymsg_alloc < yysize && yymsg_alloc < YYSTACK_ALLOC_MAXIMUM)
-	  {
-	    YYSIZE_T yyalloc = 2 * yysize;
-	    if (! (yysize <= yyalloc && yyalloc <= YYSTACK_ALLOC_MAXIMUM))
-	      yyalloc = YYSTACK_ALLOC_MAXIMUM;
-	    if (yymsg != yymsgbuf)
-	      YYSTACK_FREE (yymsg);
-	    yymsg = (char *) YYSTACK_ALLOC (yyalloc);
-	    if (yymsg)
-	      yymsg_alloc = yyalloc;
-	    else
-	      {
-		yymsg = yymsgbuf;
-		yymsg_alloc = sizeof yymsgbuf;
-	      }
-	  }
-
-	if (0 < yysize && yysize <= yymsg_alloc)
-	  {
-	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (yymsg);
-	  }
-	else
-	  {
-	    yyerror (YY_("syntax error"));
-	    if (yysize != 0)
-	      goto yyexhaustedlab;
-	  }
+        char const *yymsgp = YY_("syntax error");
+        int yysyntax_error_status;
+        yysyntax_error_status = YYSYNTAX_ERROR;
+        if (yysyntax_error_status == 0)
+          yymsgp = yymsg;
+        else if (yysyntax_error_status == 1)
+          {
+            if (yymsg != yymsgbuf)
+              YYSTACK_FREE (yymsg);
+            yymsg = (char *) YYSTACK_ALLOC (yymsg_alloc);
+            if (!yymsg)
+              {
+                yymsg = yymsgbuf;
+                yymsg_alloc = sizeof yymsgbuf;
+                yysyntax_error_status = 2;
+              }
+            else
+              {
+                yysyntax_error_status = YYSYNTAX_ERROR;
+                yymsgp = yymsg;
+              }
+          }
+        yyerror (yymsgp);
+        if (yysyntax_error_status == 2)
+          goto yyexhaustedlab;
       }
+# undef YYSYNTAX_ERROR
 #endif
     }
 
-  yyerror_range[0] = yylloc;
+  yyerror_range[1] = yylloc;
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse look-ahead token after an
+      /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
@@ -3248,7 +3800,7 @@ yyerrlab:
 	}
     }
 
-  /* Else will try to reuse look-ahead token after shifting the error
+  /* Else will try to reuse lookahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -3264,7 +3816,7 @@ yyerrorlab:
   if (/*CONSTCOND*/ 0)
      goto yyerrorlab;
 
-  yyerror_range[0] = yylsp[1-yylen];
+  yyerror_range[1] = yylsp[1-yylen];
   /* Do not reclaim the symbols of the rule which action triggered
      this YYERROR.  */
   YYPOPSTACK (yylen);
@@ -3283,7 +3835,7 @@ yyerrlab1:
   for (;;)
     {
       yyn = yypact[yystate];
-      if (yyn != YYPACT_NINF)
+      if (!yypact_value_is_default (yyn))
 	{
 	  yyn += YYTERROR;
 	  if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
@@ -3298,7 +3850,7 @@ yyerrlab1:
       if (yyssp == yyss)
 	YYABORT;
 
-      yyerror_range[0] = *yylsp;
+      yyerror_range[1] = *yylsp;
       yydestruct ("Error: popping",
 		  yystos[yystate], yyvsp, yylsp);
       YYPOPSTACK (1);
@@ -3306,15 +3858,12 @@ yyerrlab1:
       YY_STACK_PRINT (yyss, yyssp);
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   *++yyvsp = yylval;
 
-  yyerror_range[1] = yylloc;
+  yyerror_range[2] = yylloc;
   /* Using YYLLOC is tempting, but would change the location of
-     the look-ahead.  YYLOC is available though.  */
-  YYLLOC_DEFAULT (yyloc, (yyerror_range - 1), 2);
+     the lookahead.  YYLOC is available though.  */
+  YYLLOC_DEFAULT (yyloc, yyerror_range, 2);
   *++yylsp = yyloc;
 
   /* Shift the error token.  */
@@ -3338,7 +3887,7 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#ifndef yyoverflow
+#if !defined(yyoverflow) || YYERROR_VERBOSE
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
@@ -3349,9 +3898,14 @@ yyexhaustedlab:
 #endif
 
 yyreturn:
-  if (yychar != YYEOF && yychar != YYEMPTY)
-     yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval, &yylloc);
+  if (yychar != YYEMPTY)
+    {
+      /* Make sure we have latest lookahead translation.  See comments at
+         user semantic actions for why this is necessary.  */
+      yytoken = YYTRANSLATE (yychar);
+      yydestruct ("Cleanup: discarding lookahead",
+                  yytoken, &yylval, &yylloc);
+    }
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
@@ -3375,6 +3929,8 @@ yyreturn:
 }
 
 
+
+/* Line 2067 of yacc.c  */
 #line 865 "./grammar.y"
 
 
