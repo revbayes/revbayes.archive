@@ -15,7 +15,7 @@
 #include "Workspace.h"
 #include "workspace/FunctionTable.h"
 #include "functions/RlFunction.h"
-#include "WorkspaceUtils.h"
+//#include "WorkspaceUtils.h"
 #include "CommandLineUtils.h"
 #include "IHelp.h"
 #include "Help.h"
