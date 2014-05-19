@@ -209,7 +209,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
     BranchHistory& bh = *(this->histories[nodeIndex]);
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
     unsigned int n = numOn(currState);
-    unsigned counts[2] = { this->numSites - n, n };
+	unsigned int n1 = this->numSites - n;
+    unsigned counts[2] = { n1, n };
     
     if (node.isRoot())
     {
