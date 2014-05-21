@@ -471,6 +471,7 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
             }
             else if (lnR < -300.0)
             {
+                ;
                 theMove->reject();
             }
             else 

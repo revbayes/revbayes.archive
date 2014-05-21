@@ -18,7 +18,7 @@ namespace RevBayesCore {
     class RateMap_Biogeography : public RateMap {
         
     public:
-        RateMap_Biogeography(size_t nc);                                                                    //!< Construct rate matrix with n states
+        RateMap_Biogeography(size_t nc, bool fe=true);                                                                               //!< Construct rate matrix with n states
         RateMap_Biogeography(const RateMap_Biogeography& m);                                                           //!< Copy constructor
         virtual                                     ~RateMap_Biogeography(void);                                       //!< Destructor
         
@@ -52,8 +52,9 @@ namespace RevBayesCore {
         void                                        setHeterogeneousGainLossRates(const std::vector<std::vector<double> >& r);
         
         // other crazy stuff for BiogeographyRateMapFunction to handle
-        void                                        setGeographicDistanceRateModifier(GeographicDistanceRateModifier* gdrm);
-        GeographicDistanceRateModifier*             getGeographicDistanceRateModifier(void);
+        void                                        setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm);
+        void                                        setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm);
+        const GeographicDistanceRateModifier &      getGeographicDistanceRateModifier(void);
         
     private:
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
@@ -74,6 +75,7 @@ namespace RevBayesCore {
         
         bool                                        branchHeterogeneousClockRates;
         bool                                        branchHeterogeneousGainLossRates;
+        bool                                        forbidExtinction;
         
     };
     

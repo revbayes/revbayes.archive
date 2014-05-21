@@ -16,14 +16,14 @@ AbstractCharacterHistoryRateModifier::AbstractCharacterHistoryRateModifier(void)
     ;
 }
 
-std::ostream& operator<<(std::ostream& o, const std::vector<AbstractCharacterHistoryRateModifier*>& x)
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<AbstractCharacterHistoryRateModifier*>& x)
 {
     o << " ";
     
     return o;
 }
 
-std::ostream& operator<<(std::ostream& o, const AbstractCharacterHistoryRateModifier& x)
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterHistoryRateModifier& x)
 {
     o << " ";
     
