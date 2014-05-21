@@ -214,7 +214,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
     unsigned int n = numOn(currState);
     unsigned counts[2] = { this->numSites - n, n };
     
-//    std::cout << "nodeIndex " << nodeIndex << "\n";
+    //std::cout << "nodeIndex " << nodeIndex << "\n";
 
     if (node.isRoot())
     {
@@ -249,7 +249,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
         double branchLength = tree.getBranchLength(nodeIndex);
         
         // TODO: Get from TimeTree once BTHC is non-templated
-        double currAge = 0.0;
+        double currAge = (!node.isRoot() ? node.getParent().getAge() : 10e200);
 
         // TODO: BTHC will soon have only one RateMap
         const RateMap_Biogeography* rm2;
@@ -290,7 +290,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             // update time and state
             currState[idx] = *it_h;
             t += dt;
-            currAge += dt * branchLength;
+            currAge -= dt * branchLength;
             
             // if (nodeIndex == 5) std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
         }
@@ -617,7 +617,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     const treeType& tree = this->tau->getValue();
     double bt = tree.getBranchLength(nodeIdx);
     if (node.isRoot())
-        bt = 1000.0;
+        bt = 10.0;
+        ;//bt = 1000.0;
     
     double br = 1.0;
     if (branchHeterogeneousClockRates)
