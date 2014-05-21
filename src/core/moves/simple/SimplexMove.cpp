@@ -25,6 +25,7 @@
 #include "RbUtil.h"
 
 #include <cmath>
+#include <ostream>
 
 using namespace RevBayesCore;
 
@@ -99,25 +100,30 @@ double SimplexMove::performSimpleMove( void ) {
         
 		// set up the vectors
 		std::vector<double> x(indicesToUpdate.size()+1, 0.0);
+		std::vector<double> kappaV(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> alphaForward(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> alphaReverse(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> z(indicesToUpdate.size()+1, 0.0);
 		for (int i=0; i<n; i++) {
 			std::map<int,int>::iterator it = mapper.find(i);
-			if (it != mapper.end())
+			if (it != mapper.end()){
 				x[it->second] += curVal[it->first];
-			else 
+				kappaV[it->second] += kappa;
+			}
+			else {
 				x[x.size()-1] += curVal[i];
-        }
+				kappaV[kappaV.size()-1] += kappa;
+			}
+       }
 		for (size_t i=0; i<x.size(); i++)
-            alphaForward[i] = (x[i]+offset) * alpha;
+            alphaForward[i] = (x[i]+offset) * alpha + kappaV[i];
         
 		// draw a new value for the reduced vector
 		z = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
 		// fill in the Dirichlet parameters for the reverse probability calculations
 		for (size_t i=0; i<z.size(); i++)
-			alphaReverse[i] = (z[i]+offset) * alpha;
+			alphaReverse[i] = (z[i]+offset) * alpha + kappaV[i];
 		
 		// fill in the full vector
 		double factor = z[z.size()-1] / x[x.size()-1];
