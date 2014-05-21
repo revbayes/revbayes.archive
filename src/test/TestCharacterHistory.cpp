@@ -68,6 +68,9 @@
 #include "TipRejectionSampleProposal.h"
 #include "PathRejectionSampleMove.h"
 #include "UniformTimeTreeDistribution.h"
+#include "BranchLengthTree.h"
+#include "UniformBranchLengthTreeDistribution.h"
+#include "DistanceDependentDispersalFunction.h"
 
 //#define USE_DDBD
 
@@ -116,20 +119,27 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     // io
     ////////////
+    
+    std::vector<unsigned> seed;
+//    seed.push_back(1); seed.push_back(2); // 39
+    seed.push_back(1); seed.push_back(8); // 2 for p=0.3
+    GLOBAL_RNG->setSeed(seed);
+
+    
     bool simulate = false;
+    bool useTipProbs = false;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
-    //std::string fn = "vireya.nex";
-    std::string fn = "bg.test.nex";
+    std::string fn = "vireya.nex";
+    //std::string fn = "bg.test.nex";
+    //std::string fn = "bg.break.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
+    //in_fp = "/Users/mlandis/data/ngene/";
+    //fn = "dolloplus.nex";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
-    
-    // binary probs ...
-    //std::vector<AbstractCharacterData*> data_prob = NclReader::getInstance().readMatrices(in_fp + "vireya.prob.nex");
-    //std::cout << "Read " << data_prob.size() << " matrices." << std::endl;
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
@@ -137,19 +147,10 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();
 
-//    // TODO: decide on how in geographic characters: JSON, NEXUS?
-//    filepath = "/Users/mlandis/data/bayarea/input/";
-//    timeatlasFilename = "timeatlas.txt";
-//    TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
-//    TimeAtlas ta(&tsdr);
-//    int numTimes = (int)ta.getTimes().size();
-//    
-//    // geographic grid timeatlas
-//    std::vector<GeographicDistanceRateModifier*> ggrmv;
-//    for (size_t i = 0; i < (size_t)numTimes; i++)
-//        ggrmv.push_back(new GeographicDistanceRateModifier(&ta, i));
-    
-    std::vector<std::vector<double> > geo_coords;
+    // geo by epochs
+    TimeAtlasDataReader tsdr(in_fp+"vireya.atlas2.txt",'\t');
+    TimeAtlas* ta = new TimeAtlas(&tsdr);
+    int numEpochs = (int)ta->getEpochs().size();
     
     ////////////
     // model
@@ -172,9 +173,10 @@ bool TestCharacterHistory::run_exp(void) {
     tau->setValue( trees[0] );
     
     // create biogeo rate map (to compute likelihoods)
-    ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
+    ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(5.0));
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
     dp->setValue(new double(0.0));
+    DeterministicNode<GeographicDistanceRateModifier> *ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
 
     ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(4.0));
     std::vector<const TypedDagNode<double> *> gainLossRates;
@@ -183,7 +185,7 @@ bool TestCharacterHistory::run_exp(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        tmp_glr->setValue(new double(0.1));
+        tmp_glr->setValue(new double(0.02));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -195,8 +197,8 @@ bool TestCharacterHistory::run_exp(void) {
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas);
     brmf_likelihood->setGainLossRates(glr_vector);
-    brmf_likelihood->setDistancePower(dp);
     brmf_likelihood->setClockRate(clockRate);
+//    brmf_likelihood->setGeographicDistanceRateModifier(ddd);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_l", brmf_likelihood);
     
     // Q-map used to sample path histories
@@ -212,9 +214,8 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters);
     biogeoCtmc->setRateMatrix(qmat);
     biogeoCtmc->setRateMap(q_likelihood);
-    if (data.size() == 2)
+    if (data.size() == 2 && useTipProbs)
     {
-        
         biogeoCtmc->setTipProbs( data[1] );
     }
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
@@ -238,8 +239,7 @@ bool TestCharacterHistory::run_exp(void) {
     charactermodel->redraw();
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
-//    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
-//    std::cout << GLOBAL_RNG->getSeed()[1] << "\n";
+
     
     ////////////
     // moves
@@ -247,19 +247,24 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
-    //    moves.push_back( new ScaleMove(dp, 1.0, true, 2.0) );
-    //    moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
-    for( size_t i=0; i<2; i++)
-		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, true, 2) );
-
-    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.25);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 4*numNodes));
-
-    NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, 2*numNodes));
     
-    TipRejectionSampleProposal<StandardState,TimeTree>* tipSampleProposal = new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, tipSampleProposal, 0.1, false, 1*numNodes));
+    //moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
+    //moves.push_back( new ScaleMove(dp, 0.25, true, 2.0) );
+    for( size_t i=0; i<2; i++)
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.2, true, 2) );
+
+//    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.25);
+//    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 1));
+
+    NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 1.0);
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 1.0, false, 1));
+    
+//    
+//    if (useTipProbs)
+//    {
+//        TipRejectionSampleProposal<StandardState,TimeTree>* tipSampleProposal = new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3);
+//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, tipSampleProposal, 0.3, false, 1*numNodes));
+//    }
 
     
     ////////////
@@ -271,8 +276,9 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert(clockRate);
+    monitoredNodes.insert( dp );
     monitoredNodes.insert( glr_vector );
-    //monitoredNodes.insert( dp );
+    
 
     monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb.mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
@@ -295,7 +301,7 @@ bool TestCharacterHistory::run_exp(void) {
     // mcmc
     //////////
     std::cout << "Instantiating mcmc\n";
-    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors, "single", true, 1.0, 0 );
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     
@@ -323,6 +329,242 @@ bool TestCharacterHistory::run_exp(void) {
     
     return true;
 }
+
+
+
+
+////////////////////////
+// drichter test module
+////////////////////////
+
+
+bool TestCharacterHistory::run_dollo(void) {
+    
+    
+    ////////////
+    // settings
+    ////////////
+    
+    //unsigned int burn = (unsigned int)(mcmcGenerations * .2);
+    
+    ////////////
+    // io
+    ////////////
+    bool simulate = false;
+    filepath="/Users/mlandis/data/ngene/";
+    
+    // binary characters
+    std::string fn = "dolloplus.nex";
+    std::string in_fp = "/Users/mlandis/data/ngene/";
+   
+    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
+    std::cout << "Read " << data.size() << " matrices." << std::endl;
+    size_t numAreas = data[0]->getNumberOfCharacters();
+    
+    // binary probs ...
+    //std::vector<AbstractCharacterData*> data_prob = NclReader::getInstance().readMatrices(in_fp + "vireya.prob.nex");
+    //std::cout << "Read " << data_prob.size() << " matrices." << std::endl;
+    
+    // tree
+//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+    std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn,"nexus");
+    std::vector<BranchLengthTree*> trees = *trees_ptr;
+    std::cout << "Read " << trees.size() << " trees." << std::endl;
+    std::cout << trees[0]->getNewickRepresentation() << std::endl;
+    size_t numNodes = trees[0]->getNumberOfNodes();
+    
+    //    // TODO: decide on how in geographic characters: JSON, NEXUS?
+    //    filepath = "/Users/mlandis/data/bayarea/input/";
+    //    timeatlasFilename = "timeatlas.txt";
+    //    TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
+    //    TimeAtlas ta(&tsdr);
+    //    int numTimes = (int)ta.getTimes().size();
+    //
+    //    // geographic grid timeatlas
+    //    std::vector<GeographicDistanceRateModifier*> ggrmv;
+    //    for (size_t i = 0; i < (size_t)numTimes; i++)
+    //        ggrmv.push_back(new GeographicDistanceRateModifier(&ta, i));
+    
+    std::vector<std::vector<double> > geo_coords;
+    
+    ////////////
+    // model
+    ////////////
+    
+    // clock
+    ConstantNode<double> *clockPriorA = new ConstantNode<double>("clockPrior_A", new double(2.0));
+    ConstantNode<double> *clockPriorB = new ConstantNode<double>("clockPrior_B", new double(2.0));
+    StochasticNode<double> *clockRate = new StochasticNode<double>("clockRate", new GammaDistribution(clockPriorA, clockPriorB) );
+    clockRate->setValue(new double(1.0));
+    
+    // tree
+    std::vector<std::string> names = data[0]->getTaxonNames();
+    //    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(0.05));
+    //    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
+    //    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
+    //ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.0 ) );
+    //    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+//    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>("tau", new UniformTimeTreeDistribution(origin, names));
+    StochasticNode<BranchLengthTree>* tau = new StochasticNode<BranchLengthTree>("tau_tmp", new UniformBranchLengthTreeDistribution(names));
+    tau->setValue( trees[0] );
+    
+    // create biogeo rate map (to compute likelihoods)
+    ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
+    StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
+    dp->setValue(new double(0.0));
+    
+    ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(4.0));
+    std::vector<const TypedDagNode<double> *> gainLossRates;
+	std::vector< ContinuousStochasticNode *> gainLossRates_nonConst;
+	for( size_t i=0; i<2; i++){
+        std::ostringstream glr_name;
+        glr_name << "r(" << i << ")";
+		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
+        tmp_glr->setValue(new double(0.1));
+		gainLossRates.push_back( tmp_glr );
+		gainLossRates_nonConst.push_back( tmp_glr );
+	}
+    DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( gainLossRates ) );
+    
+    //    ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(2,1.0) );
+    //    StochasticNode<std::vector<double> > *glr_vector = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
+    
+    // Q-map used to compute likehood under the full model
+    BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas);
+    brmf_likelihood->setGainLossRates(glr_vector);
+    //brmf_likelihood->setDistancePower(dp);
+    brmf_likelihood->setClockRate(clockRate);
+    DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_l", brmf_likelihood);
+    
+    // Q-map used to sample path histories
+    BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas);
+    brmf_sample->setGainLossRates(glr_vector);
+    DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_s", brmf_sample);
+    
+    // Soon to be deleted...
+    DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "Q_mtx", new FreeBinaryRateMatrixFunction(glr_vector) );
+    
+    // and the character model
+    bool usingAmbiguousCharacters = !true;
+    BiogeographicTreeHistoryCtmc<StandardState, BranchLengthTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, BranchLengthTree>(tau, 2, numAreas, usingAmbiguousCharacters);
+    biogeoCtmc->setRateMatrix(qmat);
+    biogeoCtmc->setRateMap(q_likelihood);
+    if (data.size() == 2)
+    {
+        
+        biogeoCtmc->setTipProbs( data[1] );
+    }
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
+    
+    
+    // simulated data
+    if (simulate)
+    {
+        //AbstractTreeHistoryCtmc<StandardState, TimeTree>* p = static_cast< AbstractTreeHistoryCtmc<StandardState, TimeTree>* >(charactermodel->getDistribution());
+        //p->simulate();
+        biogeoCtmc->simulate();
+    }
+    
+    // real data
+    else
+    {
+        charactermodel->clamp( data[0] );
+    }
+    
+    // initialize mapping
+    charactermodel->redraw();
+    
+    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
+    //    std::cout << GLOBAL_RNG->getSeed()[0] << "\n";
+    //    std::cout << GLOBAL_RNG->getSeed()[1] << "\n";
+    
+    ////////////
+    // moves
+    ////////////
+    
+    std::cout << "Adding moves\n";
+    std::vector<Move*> moves;
+    //    moves.push_back( new ScaleMove(dp, 1.0, true, 2.0) );
+    //    moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
+    for( size_t i=0; i<2; i++)
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, true, 2) );
+    
+    PathRejectionSampleProposal<StandardState,BranchLengthTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.25);
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 4*numNodes));
+    
+    NodeRejectionSampleProposal<StandardState,BranchLengthTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.1);
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, 2*numNodes));
+    
+    TipRejectionSampleProposal<StandardState,BranchLengthTree>* tipSampleProposal = new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.1);
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, tipSampleProposal, 0.1, false, 1*numNodes));
+    
+    
+    ////////////
+    // monitors
+    ////////////
+    
+    std::cout << "Adding monitors\n";
+    std::vector<Monitor*> monitors;
+    
+    std::set<DagNode*> monitoredNodes;
+    monitoredNodes.insert(clockRate);
+    monitoredNodes.insert( glr_vector );
+    //monitoredNodes.insert( dp );
+    
+    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb.mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb.tree_chars.txt", "\t"));
+    // monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, geo_coords, 50, mcmcGenerations, burn, filepath + "rb.phylowood.txt", "\t"));
+    //    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
+    
+    //    PhylowoodNhxMonitor* phwnm = new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" );
+    //    monitors.push_back(phwnm);
+    
+    
+    //////////
+    // model
+    //////////
+    std::cout << "Instantiating model\n";
+    Model myModel = Model(charactermodel);
+    
+    
+    //////////
+    // mcmc
+    //////////
+    std::cout << "Instantiating mcmc\n";
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+    myMcmc.run(mcmcGenerations*10);
+    myMcmc.printOperatorSummary();
+    
+    
+    //////////
+    // clean-up
+    //////////
+    std::cout << "Cleaning up objects\n";
+    
+    // segfault when uncommented? strange.
+    //    delete dp;
+    //    delete glr;
+    //    delete sglr;
+    
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+        const Move *theMove = *it;
+        delete theMove;
+    }
+    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
+        const Monitor *theMonitor = *it;
+        delete theMonitor;
+    }
+    
+    std::cout << "Finished CharacterHistory model test." << std::endl;
+    
+    return true;
+}
+
+
+
+
+
 
 
 
@@ -358,7 +600,7 @@ bool TestCharacterHistory::run( void ) {
     timeatlasFilename = "timeatlas.txt";
     TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
     TimeAtlas ta(&tsdr);
-    int numTimes = (int)ta.getTimes().size();
+    int numEpochs = (int)ta.getEpochs().size();
     
     //////////
     // test
@@ -456,15 +698,15 @@ bool TestCharacterHistory::run( void ) {
     //distancePower->setValue(new double(pow(10,-6)));
     
     // geographic distances
-    GeographicDistanceRateModifier* gdrm = new GeographicDistanceRateModifier(geo_coords);
-    gdrm->update();
+    GeographicDistanceRateModifier* gdrm;// = new GeographicDistanceRateModifier(geo_coords);
+    //gdrm->update();
     
     // geographic grid timeatlas
     std::vector<GeographicGridRateModifier*> ggrmv;
-    for (size_t i = 0; i < (size_t)numTimes; i++)
-    {
-        ggrmv.push_back(new GeographicGridRateModifier(&ta, i));
-    }
+//    for (size_t i = 0; i < (size_t)numTimes; i++)
+//    {
+//        ggrmv.push_back(new GeographicGridRateModifier(&ta, i));
+//    }
     // For this to work, must provide DisperalHistoryCtmc the age of the event to query the proper atlas slice
     
     
@@ -490,7 +732,7 @@ bool TestCharacterHistory::run( void ) {
     // simulation settings
     
     ggrmv.clear();
-    //gdrm = NULL;
+    gdrm = NULL;
     grsrm = NULL;
     lrsrm = NULL;
     asrm = NULL;

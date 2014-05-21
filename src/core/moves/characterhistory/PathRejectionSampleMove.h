@@ -167,16 +167,8 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
-
-    if (fabs(probRatio + hr) > 0.5)
-    {
-        
-        ;//std::cout << hr << " " << probRatio << "\n";
-    }
-    else
-    {
-        ;// std::cout << "ok\n";
-    }
+    
+    //hr = RbConstants::Double::neginf;
     
     return hr;
 }
@@ -201,23 +193,32 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectMove( void
     
     changed = false;
     
+    //std::cout << "PJSM REJECT\n";
+    //    std::cout << "BEFORE PRSM REJECT lnP   " << ctmc->getLnProbability() << "\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     
     // touch the node
     tau->touch();
+    //    std::cout << "AFTER PRSM REJECT lnP   " << ctmc->getLnProbability() << "\n";
 }
 
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectSimpleMove(void)
 {
+
+    
     proposal->undoProposal();
+
+
 }
 
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::acceptMove( void ) {
     // nothing to do
     changed = false;
+    
+    //std::cout << "PJSM ACCEPT\n";
     
     acceptSimpleMove();
 }

@@ -23,17 +23,16 @@ namespace RevBayesCore {
         TimeAtlas& operator=(const TimeAtlas& a);
         virtual TimeAtlas* clone(void) const;
         
-        std::vector<double> getTimes(void);
+        std::vector<double> getEpochs(void);
         std::vector<std::vector<GeographicArea*> > getAreas(void);
         
     protected:
         std::vector<std::vector<GeographicArea*> > areas;
-        std::vector<double> times;
+        std::vector<double> epochs;
         
     private:
         unsigned numAreas;
         unsigned numEpochs;
-        unsigned numTimes;
         
     };
     

@@ -46,7 +46,7 @@ namespace RevBayesCore {
     class PathRejectionSampleProposal : public Proposal {
         
     public:
-        PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l );   //!<  constructor
+        PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, int idx=-1);   //!<  constructor
         
         // Basic utility functions
         void                            assignNodeIndex(size_t idx);
@@ -73,7 +73,7 @@ namespace RevBayesCore {
         DeterministicNode<RateMap>*             qmap;
         
         BranchHistory*                          storedValue;
-        size_t                                  nodeIndex;
+        int                                     nodeIndex;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
         
@@ -81,10 +81,12 @@ namespace RevBayesCore {
         double                                  proposedLnProb;
         
         double                                  lambda;
+        //unsigned                                pathIndex;
         size_t                                  numNodes;
         size_t                                  numCharacters;
         size_t                                  numStates;
         
+        bool                                    fixNodeIndex;
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
         
@@ -101,13 +103,14 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l) : Proposal(),
+RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, int idx) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
     storedValue(NULL),
     proposedValue(NULL),
     lambda(l),
+    nodeIndex(idx),
     sampleNodeIndex(true),
     sampleSiteIndexSet(true)
 {
@@ -118,6 +121,8 @@ RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSamp
     numNodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
     numStates = static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates();
+    
+    fixNodeIndex = (nodeIndex > -1);
 }
 
 template<class charType, class treeType>
@@ -166,20 +171,18 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
     for (size_t i = 0; i < numStates; i++)
         counts[i] = 0;
     fillStateCounts(currState, counts);
-//    for (size_t i = 0; i < numStates; i++)
-//         std::cout << counts[i] << " ";
-//     std::cout << "\n";
-//    
-//    counts;
-//    ;
+
     const treeType& tree = tau->getValue();
     const TopologyNode& node = tree.getNode(bh.getIndex());
     double branchLength = tree.getBranchLength(bh.getIndex());
     if (node.isRoot())
+    {
+        return 0.0;
         branchLength = 1000.0;
+    }
     
-    // TODO: Get from TimeTree once BTHC is non-templated
-    double currAge = 0.0;
+    
+    double currAge = (!node.isRoot() ? node.getParent().getAge() : 10e200);
     
     // get sampling ratemap
     const RateMap& rm = qmap->getValue();
@@ -206,7 +209,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         // update state
         currState[idx] = *it_h;
         t += dt;
-        currAge += dt * branchLength;
+        //currAge -= dt * branchLength;
     }
     // lnL for final non-event
     double sr = rm.getSumOfRates(node, currState, counts, currAge);
@@ -282,6 +285,10 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
 
     // clear characters
     proposedValue = &p.getHistory(nodeIndex);
+//    std::cout << "BEFORE PATH PROPOSAL\n";
+//    proposedValue->print();
+//    std::cout << "\n";
+    
     proposedValue->clearEvents( siteIndexSet );
     
     // reject sample path history
@@ -329,14 +336,15 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     // assign values back to model for likelihood
     proposedValue->updateHistory(history, siteIndexSet);
     //p.setHistory(*proposedValue, nodeIndex);
+//    std::cout << "AFTER PATH PROPOSAL\n";
+//    proposedValue->print();
+//    std::cout << "\n";
+
 
     //if (nodeIndex == 5) { std::cout << "path new " << nodeIndex << "\n"; proposedValue->print(); }
     
-    // return hastings ratio
+    // return hastings ratio    
     proposedLnProb = computeLnProposal(*proposedValue);
-    
-    if (node.isRoot())
-        return 0.0;
     
     return storedLnProb - proposedLnProb;
 }
@@ -351,7 +359,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     storedLnProb = 0.0;
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
     
-    if (sampleNodeIndex)
+    if (sampleNodeIndex && !fixNodeIndex)
     {
         nodeIndex = GLOBAL_RNG->uniform01() * numNodes;
     }
@@ -375,6 +383,8 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     sampleSiteIndexSet = true;
     
     storedValue = new BranchHistory( p.getHistory(nodeIndex) );
+//    std::cout << "--------------------\n"; std::cout << "before proposal\n";    storedValue->print();    std::cout << "--------------------\n";
+    
     storedLnProb = computeLnProposal(*storedValue);
 }
 
@@ -407,8 +417,14 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal
     // swap current value and stored value
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     //p->getHistory(nodeIndex)->clearEvents(indexSet());
+    
+//    std::cout << "--------------------\n";std::cout << "before undo proposal\n";    p->getHistory(nodeIndex).print();    std::cout << "--------------------\n";
+    
     p->getHistory(nodeIndex).clearEvents(siteIndexSet);
     p->setHistory(*storedValue, nodeIndex);
+    
+//    std::cout << "--------------------\n";std::cout << "after undo proposal\n";    p->getHistory(nodeIndex).print();    std::cout << "--------------------\n";
+
     //delete proposedValue;
     
     //const TopologyNode& nd = tau->getValue().getNode(nodeIndex);

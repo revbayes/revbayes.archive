@@ -43,6 +43,7 @@ namespace RevBayesCore {
         double                                      getAge(size_t idx) const;
         double                                      getBranchLength(size_t idx) const;
         double                                      getTime(size_t idx) const;
+        double                                      getTreeLength(void) const;
         void                                        setBranchLength(size_t idx, double bl);
     
     protected:

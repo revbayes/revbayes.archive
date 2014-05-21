@@ -100,6 +100,15 @@ double BranchLengthTree::getTime(size_t idx) const {
 }
 
 
+double BranchLengthTree::getTreeLength(void) const {
+    double treeLength = 0;
+    const std::vector<TopologyNode*> &nodes = topology->getNodes();
+    for (size_t i = 0; i < nodes.size(); i++)
+        treeLength += nodes[i]->getBranchLength();
+    return treeLength;
+}
+
+
 void BranchLengthTree::resizeElementVectors(size_t n) {
     // remove all elements
     branchLengths.clear();

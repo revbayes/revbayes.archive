@@ -23,7 +23,7 @@ namespace RevBayesCore {
         TimeAtlasDataReader(std::string fn, char d='\t');
         TimeAtlasDataReader(const TimeAtlasDataReader& tadr);
         
-        std::vector<double> getTimes(void);
+        std::vector<double> getEpochs(void);
         std::vector<std::vector<GeographicArea*> > getAreas(void);
         void readJson(void);
         void printJson(boost::property_tree::ptree const& pt);
@@ -32,11 +32,11 @@ namespace RevBayesCore {
         
     protected:
         
-        void setTimes(void);
+        void setEpochs(void);
         void setAreas(void);
         void sortEpochs(void);
         
-        std::vector<double> times;
+        std::vector<double> epochs;
         std::vector<std::vector<GeographicArea*> > areas;
         
         struct AgeIndexPair
