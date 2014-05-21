@@ -32,7 +32,7 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(TypedDagNode<RateMatrix> *rm, std::ve
     addParameter(areaSizePower);
     
     if (geographicDistances != NULL)
-        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+        geographicDistances->setDistancePower(distancePower->getValue());
     
     if (gainRangeSizeRateModifier != NULL)
     {
@@ -61,7 +61,7 @@ DispersalHistoryCtmc::DispersalHistoryCtmc(std::vector<const TypedDagNode<double
     addParameter(areaSizePower);
     
     if (geographicDistances != NULL)
-        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+        geographicDistances->setDistancePower(distancePower->getValue());
     
     if (gainRangeSizeRateModifier != NULL)
     {
@@ -158,7 +158,7 @@ double DispersalHistoryCtmc::transitionRate(std::vector<CharacterEvent *> currSt
     double drm = 1.0;
     if (geographicDistances != NULL && nextState->getState() == 1)
     {
-        drm = geographicDistances->computeRateModifier(currState, nextState);
+        //drm = geographicDistances->computeRateModifier(currState, nextState);
 //        std::cout << rate*drm << " = " << rate << " * " << drm << "\n";
         rate *= drm;
     }
@@ -432,7 +432,7 @@ void DispersalHistoryCtmc::touchSpecialization(DagNode *toucher)
 {
     if (toucher == distancePower && geographicDistances != NULL)
     {
-        geographicDistances->updateGeographicDistancePowers(distancePower->getValue());
+        geographicDistances->setDistancePower(distancePower->getValue());
     }
     
     else if (toucher == lossRangeSizePower && lossRangeSizeRateModifier != NULL)
