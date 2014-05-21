@@ -43,8 +43,9 @@ namespace RevBayesCore {
         void													rejectMove(void);                                                                   //!< Reject the InferenceMoveSimple
     
     private:
-        double													lambda;                                                                             //!< The scaling parameter of the move  
+        double													getCurrentLnProbabilityForMove(void);
 		
+		double													lambda;                                                                             //!< The scaling parameter of the move  
         StochasticNode<std::vector<double> >*                   variable;
 		double													safeExponentiation(double x);
  
