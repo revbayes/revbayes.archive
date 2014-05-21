@@ -11,12 +11,14 @@
 
 using namespace RevBayesCore;
 
-RateMap_Biogeography::RateMap_Biogeography(size_t nc) : RateMap(2, nc)
+RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
+    geographicDistanceRateModifier()
 {
-    geographicDistanceRateModifier = NULL;
     useGeographicDistanceRateModifier = false;
     branchHeterogeneousClockRates = false;
     branchHeterogeneousGainLossRates = false;
+    forbidExtinction = fe;
+    geographicDistanceRateModifier = NULL;
     distancePower = 0.0;
     
     branchOffset=1;
@@ -30,6 +32,7 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     heterogeneousClockRates = m.heterogeneousClockRates;
     homogeneousGainLossRates = m.homogeneousGainLossRates;
     heterogeneousGainLossRates = m.heterogeneousGainLossRates;
+    geographicDistanceRateModifier = m.geographicDistanceRateModifier;
     distancePower = m.distancePower;
     
     geographicDistanceRateModifier = m.geographicDistanceRateModifier;
@@ -37,6 +40,7 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     
     branchHeterogeneousClockRates = m.branchHeterogeneousClockRates;
     branchHeterogeneousGainLossRates = m.branchHeterogeneousClockRates;
+    forbidExtinction = m.forbidExtinction;
     
     branchOffset = m.branchOffset;
     epochOffset = m.epochOffset;
@@ -105,7 +109,7 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     int s = to->getState();
     
     // rate to extinction cfg is 0
-    if (count[1] == 1 && s == 0)
+    if (count[1] == 1 && s == 0 && forbidExtinction)
         return 0.0;
     
     // rate according to binary rate matrix Q(node)
@@ -121,7 +125,7 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     
     // apply rate modifiers
     if (useGeographicDistanceRateModifier) // want this to take in age as an argument...
-        rate *= geographicDistanceRateModifier->computeRateModifier(node, from, to);
+        rate *= geographicDistanceRateModifier->computeRateModifier(node, from, to, age);
     
     return rate;
 
@@ -182,7 +186,7 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     unsigned n1 = counts[1];
 
     // forbid extinction events
-    if (counts[1] == 1)
+    if (counts[1] == 1 && forbidExtinction)
         n1 = 0;
     
     // get characters in each state
@@ -297,15 +301,31 @@ void RateMap_Biogeography::setHeterogeneousClockRates(const std::vector<double> 
     heterogeneousClockRates = r;
 }
 
-void RateMap_Biogeography::setGeographicDistanceRateModifier(GeographicDistanceRateModifier* gdrm)
+void RateMap_Biogeography::setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm)
 {
     useGeographicDistanceRateModifier = true;
-    geographicDistanceRateModifier = gdrm;
+    
+    //*geographicDistanceRateModifier = gdrm;
+//    geographicDistanceRateModifier = const_cast<GeographicDistanceRateModifier&>(gdrm);
+    
+    // ugly hack, prob better way to handle constness...
+    geographicDistanceRateModifier = &const_cast<GeographicDistanceRateModifier&>(gdrm);
+    
+//    std::cout << *geographicDistanceRateModifier << " " << gdrm << "\n";    
+//    std::cout << "ok\n";
+//    true;
 }
 
-GeographicDistanceRateModifier* RateMap_Biogeography::getGeographicDistanceRateModifier(void)
+void RateMap_Biogeography::setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm)
 {
-    return geographicDistanceRateModifier;
+    useGeographicDistanceRateModifier = true;
+    geographicDistanceRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
+}
+
+
+const GeographicDistanceRateModifier& RateMap_Biogeography::getGeographicDistanceRateModifier(void)
+{
+    return *geographicDistanceRateModifier;
 }
 
 

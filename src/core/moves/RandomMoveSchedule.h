@@ -1,4 +1,4 @@
-/**
+S/**
  * @file
  * This file contains the declaration of Move, which is the abstract
  * base class for moves used in the mcmc inference.

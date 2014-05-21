@@ -11,9 +11,8 @@
 
 using namespace RevBayesCore;
 
-TimeAtlas::TimeAtlas(TimeAtlasDataReader* tadr) : areas(tadr->getAreas()), times(tadr->getTimes())
+TimeAtlas::TimeAtlas(TimeAtlasDataReader* tadr) : areas(tadr->getAreas()), epochs(tadr->getEpochs())
 {
-    numTimes = times.size();
     numEpochs = areas.size();
     numAreas = 0;
     if (numEpochs > 0)
@@ -30,7 +29,7 @@ TimeAtlas& TimeAtlas::operator=(const TimeAtlas& a)
 {
     if (this != &a)
     {
-        times = a.times;
+        epochs = a.epochs;
         for (size_t i = 0; i < a.areas.size(); i++)
         {
             std::vector<GeographicArea*> tmpAreas;
@@ -41,7 +40,6 @@ TimeAtlas& TimeAtlas::operator=(const TimeAtlas& a)
             areas.push_back(tmpAreas);
         }
         
-        numTimes = a.numTimes;
         numAreas = a.numAreas;
         numEpochs = a.numEpochs;
     }
@@ -54,9 +52,9 @@ TimeAtlas* TimeAtlas::clone(void) const
     return new TimeAtlas(*this);
 }
 
-std::vector<double> TimeAtlas::getTimes(void)
+std::vector<double> TimeAtlas::getEpochs(void)
 {
-    return times;
+    return epochs;
 }
 
 std::vector<std::vector<GeographicArea*> > TimeAtlas::getAreas(void)
