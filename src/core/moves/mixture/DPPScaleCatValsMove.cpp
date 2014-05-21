@@ -67,14 +67,17 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 	TypedDistribution<double>* g0 = dist.getBaseDistribution();
 	
 	double storedValue;
+	variable->touch();
 	for(int i=0; i<numTables; i++){
 		
 		// get old lnL
+		double oldLnl = getCurrentLnProbabilityForMove();
 		
 		storedValue = tableVals[i];
 		double u = rng->uniform01();
 		double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-		tableVals[i] *= scalingFactor;
+		double newValue = storedValue * scalingFactor;
+		tableVals[i] = newValue;
 		
 		// Assign new value to elements
 		for(int j=0; j<numElements; j++){
@@ -82,22 +85,14 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 				elementVals[j] = tableVals[i];
 		}
 		
-		// get new lnL
-		variable->touch();
 		g0->getValue() = tableVals[i]; // new
-		double priorRatio = g0->computeLnProbability(); //variable->getLnProbabilityRatio();
-		
-		variable->touch();
+		double priorRatio = g0->computeLnProbability(); 
 		g0->getValue() = storedValue; // old
 		priorRatio -= g0->computeLnProbability();
 		
 		variable->touch();
-		std::set<DagNode*> affected;
-		variable->getAffectedNodes( affected );
-		double lnProbRatio = 0.0;
-		for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
-			lnProbRatio += (*it)->getLnProbabilityRatio();
-		}
+		double newLnl = getCurrentLnProbabilityForMove();
+		double lnProbRatio = newLnl - oldLnl;
 		
 		double r = safeExponentiation(priorRatio + lnProbRatio + scalingFactor);
 		u = rng->uniform01();
@@ -109,6 +104,7 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 					elementVals[j] = storedValue;
 			}
 			tableVals[i] = storedValue;
+			variable->touch();
 			variable->keep();
 		}
 	}
@@ -124,6 +120,17 @@ void RevBayesCore::DPPScaleCatValsMove::swapNode(DagNode *oldN, DagNode *newN) {
     variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
 }
 
+double RevBayesCore::DPPScaleCatValsMove::getCurrentLnProbabilityForMove(void) {
+	
+	std::set<DagNode*> affected;
+	variable->getAffectedNodes( affected );
+	double lnProb = 0.0;
+	for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
+		double lp = (*it)->getLnProbability();
+		lnProb += lp;
+	}
+	return lnProb;
+}
 
 
 double RevBayesCore::DPPScaleCatValsMove::safeExponentiation(double x) {
