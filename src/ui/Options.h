@@ -8,16 +8,19 @@
 #ifndef OPTIONS_H
 #define	OPTIONS_H
 
-#include "libs/filesystem.h"
-#include <boost/program_options.hpp>
+#include "libs/Filesystem.h"
 
+#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
+#include <boost/foreach.hpp>
 
 using namespace boost;
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
+
+typedef std::vector<std::string> StringVector;
 
 class Options {
 public:
@@ -26,10 +29,10 @@ public:
 
         // set up reasonable default values
         this->message = "";
-        this->includePath = "." + directorySeparator();
+        this->includePath = "." + Filesystem::directorySeparator() + ";../../examples/";
         this->help = false;
         this->interactive = true;
-        this->disableReadline = true;
+        this->disableReadline = false;
 
     }
 
@@ -42,7 +45,7 @@ public:
                 ("help,h", "print this help")
                 ("interactive,i", "enable interactive prompt\nBy default enabled when no files are given, otherwise disabled.")
                 ("disable-readline,d", "some terminals can't handle readline functionality well. Try this option if the output of your terminal is scrambled.")
-                ("include-path,p", po::value<std::string>(&includePath)->default_value(includePath), "include path to prepend to file names.")
+                ("include-path,p", po::value<std::string>(&includePath)->default_value(includePath), "Semicolon separated list of paths to scan for input files")
                 ("input-file,f", po::value< std::vector<std::string> >(&sourceFiles), "input file. ")
                 ;
 
@@ -105,14 +108,15 @@ public:
 
     }
 
-    void setIncludePath(std::string includePath) {
+    StringVector getIncludePaths() const {
+        StringVector tmp, p;
+        boost::split(tmp, includePath, boost::is_any_of(";"));
 
-        this->includePath = includePath;
-    }
-
-    std::string getIncludePath() const {
-
-        return includePath;
+        BOOST_FOREACH(std::string s, tmp) {
+            boost::trim(s);
+            p.push_back(s);
+        }
+        return p;
     }
 
     std::vector<std::string> getInputFiles() const {
