@@ -23,12 +23,17 @@
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
 
+#ifndef HELP_PARSER_CONST
+#define HELP_PARSER_CONST
+namespace HelpParserConstants {
+    const std::string sectionBreak = "\n\n";
+    const std::string lineBreak = "\n";
+    int w = 80;
+}
+#endif
 
 namespace fs = boost::filesystem;
-
-const std::string sectionBreak = "\n\n";
-const std::string lineBreak = "\n";
-int w = 80;
+using namespace HelpParserConstants;
 
 class HelpParser : public IHelp {
 public:

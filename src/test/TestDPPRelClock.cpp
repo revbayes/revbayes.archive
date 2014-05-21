@@ -87,13 +87,12 @@ bool TestDPPRelClock::run( void ) {
 	
 	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
 	
-	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
-	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
-	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
-	// The move for the concentration parameter hasn't been written yet...
-	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
+//	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
+//	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
+//	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
+//	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
 
-//	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(1.05, (double)numBranches)) );
+	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(2.0, (double)numBranches)) );
 	
 	// G_0 is an exponential distribution
     ConstantNode<double> *a = new ConstantNode<double>("a", new double(2.0) );
@@ -132,13 +131,13 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 //    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
-//    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) ); 
-//    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) ); 
-    moves.push_back( new SimplexMove( er, 800.0, 6, 0, false, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 800.0, 4, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( er, 50.0, 6, 0, false, 2.0, 1.0 ) ); 
+    moves.push_back( new SimplexMove( pi, 50.0, 4, 0, false, 2.0, 1.0 ) ); 
+//    moves.push_back( new SimplexMove( er, 600.0, 6, 0, false, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 800.0, 4, 0, false, 2.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
-    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, branchRates, 4, 2.0 ) );
+//    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, branchRates, 4, 2.0 ) );
 		
 	
     // add some tree stats to monitor
@@ -150,17 +149,17 @@ bool TestDPPRelClock::run( void ) {
 
     /* add the monitors */
     std::vector<Monitor*> monitors;
-    std::set<DagNode*> monitoredNodes;
-	monitoredNodes.insert( er );
-	monitoredNodes.insert( treeHeight );
-    monitoredNodes.insert( numCats );
-    monitoredNodes.insert( meanBrRate );
-    monitoredNodes.insert( cp );
+    std::vector<DagNode*> monitoredNodes;
+	monitoredNodes.push_back( pi );
+	monitoredNodes.push_back( treeHeight );
+    monitoredNodes.push_back( numCats );
+    monitoredNodes.push_back( meanBrRate );
+    monitoredNodes.push_back( cp );
+    monitoredNodes.push_back( er );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
  
-	monitoredNodes.insert( branchRates );
-    monitoredNodes.insert( pi );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "data/test_dpp_clock_times.log", "\t" ) );
+	monitoredNodes.push_back( branchRates );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, "data/test_dpp_clock_times_May.log", "\t" ) );
 
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );

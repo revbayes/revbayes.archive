@@ -28,7 +28,7 @@
 
 using namespace RevBayesCore;
 
-SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, int nc, double o, bool t, double w) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ) {
+SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, int nc, double o, bool t, double w, double k /*=0.0*/) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ), kappa( k ) {
     
 }
 
@@ -145,7 +145,7 @@ double SimplexMove::performSimpleMove( void ) {
 		std::vector<double> alphaForward(curVal.size());
 		for (size_t i=0; i<curVal.size(); i++)
         {
-			alphaForward[i] = (curVal[i]+offset) * alpha;
+			alphaForward[i] = (curVal[i]+offset) * alpha + kappa;
             // we need to check for 0 values
             if (alphaForward[i] < 1E-100) {
                 // very low proposal probability which will hopefully result into a rejected proposal
@@ -159,7 +159,7 @@ double SimplexMove::performSimpleMove( void ) {
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
 		std::vector<double> alphaReverse(newVal.size());
         for (size_t i=0; i<curVal.size(); i++) {
-			alphaReverse[i] = (newVal[i]+offset) * alpha;
+			alphaReverse[i] = (newVal[i]+offset) * alpha + kappa;
             // we need to check for 0 values
             if (alphaReverse[i] < 1E-100) {
                 // very low proposal probability which will hopefully result into a rejected proposal

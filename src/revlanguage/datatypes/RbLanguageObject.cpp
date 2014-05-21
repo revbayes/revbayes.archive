@@ -28,6 +28,7 @@
 #include "Workspace.h"
 
 #include <sstream>
+#include <stdio.h>
 
 using namespace RevLanguage;
 
@@ -187,7 +188,6 @@ const MemberRules& RbLanguageObject::getMemberRules(void) const {
 
 /** Get a member variable */
 RbLanguageObject* RbLanguageObject::getMember(const std::string& name) const {
-    
     throw RbException("No Member named '" + name + "' available.");
 }
 
