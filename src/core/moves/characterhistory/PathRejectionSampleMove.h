@@ -163,12 +163,10 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
         {
             DagNode* theAffectedNode = *i;
-            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
+            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << " " << theAffectedNode->getLnProbability() << "\n";
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
-    
-    //hr = RbConstants::Double::neginf;
     
     return hr;
 }
@@ -193,33 +191,23 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectMove( void
     
     changed = false;
     
-    //std::cout << "PJSM REJECT\n";
-    //    std::cout << "BEFORE PRSM REJECT lnP   " << ctmc->getLnProbability() << "\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     
     // touch the node
     tau->touch();
-    //    std::cout << "AFTER PRSM REJECT lnP   " << ctmc->getLnProbability() << "\n";
 }
 
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectSimpleMove(void)
 {
-
-    
     proposal->undoProposal();
-
-
 }
 
 template<class charType, class treeType>
-void RevBayesCore::PathRejectionSampleMove<charType, treeType>::acceptMove( void ) {
-    // nothing to do
-    changed = false;
-    
-    //std::cout << "PJSM ACCEPT\n";
-    
+void RevBayesCore::PathRejectionSampleMove<charType, treeType>::acceptMove( void )
+{
+    changed = false;   
     acceptSimpleMove();
 }
 
