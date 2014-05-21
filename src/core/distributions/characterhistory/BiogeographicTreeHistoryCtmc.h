@@ -75,10 +75,9 @@ namespace RevBayesCore {
         
     protected:
         
-        virtual void                                        computeRootLikelihood(const TopologyNode &n, size_t nIdx);
-        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx);
-        //virtual void                                        computeInternalNodeLikelihood_old(const TopologyNode &n, size_t nIdx);
-        virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
+        virtual double                                      computeRootLikelihood(const TopologyNode &n, size_t nIdx);
+        virtual double                                      computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx);
+        virtual double                                      computeTipLikelihood(const TopologyNode &node, size_t nIdx);
         virtual const std::vector<double>&                  getRootFrequencies(void);
         // (not needed)        void                         keepSpecialization(DagNode* affecter);
         // (not needed)        void                         restoreSpecialization(DagNode *restorer);
@@ -112,7 +111,6 @@ namespace RevBayesCore {
         bool                                                cladogenicEvents;
         bool                                                imperfectTipData;
         
-//        virtual void                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t);
         virtual void                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
         
     };
@@ -196,17 +194,18 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>* RevBayesCore::Bi
 
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n, size_t nIdx)
+double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n, size_t nIdx)
 {
 //    this->lnProb = 0.0;
 //    
 //    for (size_t i = 0; i < this->historyLikelihoods[0].size(); i++)
 //        this->lnProb += this->historyLikelihoods[ this->activeLikelihood[i] ][i];
-//    
+//
+    return 0.0;
 }
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex)
+double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
     double lnL = 0.0;
     BranchHistory& bh = *(this->histories[nodeIndex]);
@@ -215,16 +214,14 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
 	unsigned int n1 = this->numSites - n;
     unsigned counts[2] = { n1, n };
     
-    //std::cout << "nodeIndex " << nodeIndex << "\n";
-
     if (node.isRoot())
     {
-        this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = 0.0;
+        return 0.0;
     }
     else if (counts[1] == 0)
     {
         // reject extinction cfgs
-        this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
+        return RbConstants::Double::neginf;
     }
     else
     {
@@ -248,17 +245,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
         
         const treeType& tree = this->tau->getValue();
         double branchLength = tree.getBranchLength(nodeIndex);
-        
-        // TODO: Get from TimeTree once BTHC is non-templated
         double currAge = (!node.isRoot() ? node.getParent().getAge() : 10e200);
-
-        // TODO: BTHC will soon have only one RateMap
-        const RateMap_Biogeography* rm2;
-//        if (branchHeterogeneousSubstitutionMatrices)
-//            rm = static_cast<const RateMap_Biogeography>(heterogeneousRateMaps->getValue()[nodeIndex]);
-//        else
-//            rm = static_cast<const RateMap_Biogeography>(homogeneousRateMap->getValue());
-//        
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
        
         // stepwise events
@@ -274,7 +261,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             unsigned s = (*it_h)->getState();
             if (counts[1] == 1 && s == 0)
             {
-                this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = RbConstants::Double::neginf;
+                return RbConstants::Double::neginf;
                 break;
             }
 
@@ -293,22 +280,26 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInte
             t += dt;
             currAge -= dt * branchLength;
             
-            // if (nodeIndex == 5) std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
+            //if (nodeIndex == 5) std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << numOn(currState) << "\n";
         }
         
         // lnL for final non-event
         double sr = rm.getSumOfRates(node, currState, counts, currAge);
         lnL += -sr * (1.0 - t) * branchLength;
         
-        // if (nodeIndex == 5) std::cout << t << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << numOn(currState) << "\n\n";
-        this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
+//        if (nodeIndex == 70) {
+//            //std::cout << t << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << numOn(currState) << "\n";
+//            std::cout << history.size() << "\n";
+//            std::cout << "\n";
+//        }
+        return lnL;
     }
 }
 
 
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
+double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
 //    double lnL = 0.0;
 //    if (this->usingAmbiguousCharacters == true)
@@ -322,7 +313,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipL
 //        }
 //    }
 //    this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
-    
+    return 0.0;
 }
 
 
@@ -413,6 +404,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
 //    for (size_t i = 0; i < nodes.size(); i++)
 //        this->histories[i]->print();
     
+    
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+        std::cout << i << " " << nodes[i]->getBranchLength() << " " << this->histories[i]->getNumEvents() << "\n";
+    }
+
 }
 
 template<class charType, class treeType>
@@ -498,6 +495,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             // forbid extinction
             if (numOn(childState) == 0)
                 samplePathEnd(node, indexSet);
+            
             else
                 this->histories[nodeIdx]->setChildCharacters(childState);
         }
@@ -508,102 +506,40 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     }
     else
     {
-        // get model settings
-        size_t nodeIdx = node.getIndex();
-        size_t leftIdx = node.getChild(0).getIndex();
-        size_t rightIdx = node.getChild(1).getIndex();
+        TransitionProbabilityMatrix leftTpMatrix(this->numSites);
+        TransitionProbabilityMatrix rightTpMatrix(this->numSites);
         
-        //std::vector<CharacterEvent*> states = this->histories[nodeIdx].getChildCharacters();
-        const treeType& tree = this->tau->getValue();
-        double bt[3] = { tree.getBranchLength(nodeIdx), tree.getBranchLength( leftIdx ), tree.getBranchLength( rightIdx ) };
-        if (node.isRoot())
-            bt[0] = node.getAge() * 2;
-
-        double br[3] = { 1.0, 1.0, 1.0 };
-        if (branchHeterogeneousClockRates)
-        {
-            br[0] = heterogeneousClockRates->getValue()[nodeIdx];
-            br[1] = heterogeneousClockRates->getValue()[leftIdx];
-            br[2] = heterogeneousClockRates->getValue()[rightIdx];
-        }
-        else
-            br[0] = br[1] = br[2] = homogeneousClockRate->getValue();
-            
-        const RateMatrix* rm0;
-        const RateMatrix* rm1;
-        const RateMatrix* rm2;
-        if (branchHeterogeneousSubstitutionMatrices)
-        {
-            rm0 = &heterogeneousRateMatrices->getValue()[nodeIdx];
-            rm1 = &heterogeneousRateMatrices->getValue()[leftIdx];
-            rm2 = &heterogeneousRateMatrices->getValue()[rightIdx];
-        }
-        else
-            rm0 = rm1 = rm2 = &homogeneousRateMatrix->getValue();
+        homogeneousRateMap->getValue().calculateTransitionProbabilities(node.getChild(0), leftTpMatrix);
+        homogeneousRateMap->getValue().calculateTransitionProbabilities(node.getChild(1), rightTpMatrix);
         
-        double bs0 = br[0] * bt[0];
-        double bs1 = br[1] * bt[1];
-        double bs2 = br[2] * bt[2];
+        // for sampling probs
+        const std::vector<CharacterEvent*>& leftChildState = this->histories[node.getChild(0).getIndex() ]->getChildCharacters();
+        const std::vector<CharacterEvent*>& rightChildState = this->histories[node.getChild(1).getIndex()]->getChildCharacters();
         
-        // compute transition probabilities
-        //double r[2] = { (*rm)[1][0], (*rm)[0][1] };
-//        double expPart0 = exp( - (r[0] + r[1]) * bs0);
-//        double expPart1 = exp( - (r[0] + r[1]) * bs1);
-//        double expPart2 = exp( - (r[0] + r[1]) * bs2);
-//        double pi0 = r[0] / (r[0] + r[1]);
-//        double pi1 = 1.0 - pi0;
-
-//        double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
-//        double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
-//        double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
-
-        
-        double expPart0 = exp( -((*rm0)[1][0] + (*rm0)[0][1]) * bs0);
-        double expPart1 = exp( -((*rm1)[1][0] + (*rm1)[0][1]) * bs1);
-        double expPart2 = exp( -((*rm2)[1][0] + (*rm2)[0][1]) * bs2);
-        double p0 = (*rm0)[1][0] / ((*rm0)[1][0] + (*rm0)[0][1]);
-        double q0 = 1.0 - p0;
-        double p1 = (*rm1)[1][0] / ((*rm1)[1][0] + (*rm1)[0][1]);
-        double q1 = 1.0 - p1;
-        double p2 = (*rm2)[1][0] / ((*rm2)[1][0] + (*rm2)[0][1]);
-        double q2 = 1.0 - p2;
-
-        double tp0[2][2] = { { p0 + q0 * expPart0, q0 - q0 * expPart0 }, { p0 - p0 * expPart0, q0 + p0 * expPart0 } };
-        double tp1[2][2] = { { p1 + q1 * expPart1, q1 - q1 * expPart1 }, { p1 - p1 * expPart1, q1 + p1 * expPart1 } };
-        double tp2[2][2] = { { p2 + q2 * expPart2, q2 - q2 * expPart2 }, { p2 - p2 * expPart2, q2 + p2 * expPart2 } };
-        
-        //    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
-        //    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
-        //    std::cout << tp2[0][0] << " " << tp2[0][1] << "\n" << tp2[1][0] << " " << tp2[1][1] << "\n";
-        
-        std::vector<CharacterEvent*> parentState = this->histories[nodeIdx]->getParentCharacters();
-        std::vector<CharacterEvent*> childState = this->histories[nodeIdx]->getChildCharacters();
-        const std::vector<CharacterEvent*> leftState = this->histories[ leftIdx ]->getChildCharacters();
-        const std::vector<CharacterEvent*> rightState = this->histories[ rightIdx ]->getChildCharacters();
+        // to update
+        std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            unsigned int ancS = parentState[*it]->getState();
-            unsigned int desS1 = leftState[*it]->getState();
-            unsigned int desS2 = rightState[*it]->getState();
+            unsigned int desS1 = leftChildState[*it]->getState();
+            unsigned int desS2 = rightChildState[*it]->getState();
             
             double u = GLOBAL_RNG->uniform01();
-            double g0 = tp0[ancS][0] * tp1[0][desS1] * tp2[0][desS2];
-            double g1 = tp0[ancS][1] * tp1[1][desS1] * tp2[1][desS2];
+            double g0 = leftTpMatrix[0][desS1] * rightTpMatrix[0][desS2];
+            double g1 = leftTpMatrix[1][desS1] * rightTpMatrix[1][desS2];
             
             unsigned int s = 0;
             if (u < g1 / (g0 + g1))
                 s = 1;
             
-            //std::cout << "\t" << *it << " : " << ancS << " -> " << s << " -> (" << desS1 << "," << desS2 << ") wp " << (s == 0 ? g0/(g0+g1) : g1/(g0+g1)) << "\n";
-            
-            childState[*it] = new CharacterEvent(*it, s, 1.0);
+            nodeChildState[*it]->setState(s);
         }
-    
+
+        
         // forbid extinction
-        if (numOn(childState) == 0)
+        if (numOn(nodeChildState) == 0)
             samplePathEnd(node, indexSet);
         else
-            this->histories[nodeIdx]->setChildCharacters(childState);
+            this->histories[node.getIndex()]->setChildCharacters(nodeChildState);
         
     }
     return lnP;
@@ -621,21 +557,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
         bt = 10.0;
         ;//bt = 1000.0;
     
-    double br = 1.0;
-    if (branchHeterogeneousClockRates)
-        br = heterogeneousClockRates->getValue()[nodeIdx];
-    else
-        br = homogeneousClockRate->getValue();
-    
-    const RateMatrix* rm;
-    if (branchHeterogeneousSubstitutionMatrices)
-        rm = &heterogeneousRateMatrices->getValue()[nodeIdx];
-    else
-        rm = &homogeneousRateMatrix->getValue();
-    
-    double bs = br * bt;
-    double r[2] = { (*rm)[1][0], (*rm)[0][1] };
-    
+    const RateMap* rm = &homogeneousRateMap->getValue();
+ 
     // begin update
     BranchHistory* h = this->histories[ node.getIndex() ];
     //h.clearEvents( indexSet );
@@ -660,7 +583,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             do
             {
                 unsigned int nextState = (currState == 1 ? 0 : 1);
-                t += RbStatistics::Exponential::rv( r[nextState] * bs, *GLOBAL_RNG );
+                //t += RbStatistics::Exponential::rv( r[nextState] * bs, *GLOBAL_RNG );
+                t +=  RbStatistics::Exponential::rv(rm->getSiteRate(node, currState, nextState), *GLOBAL_RNG);
                 //std::cout << i << " " << t << " " << currState << " " << r[currState] * bs << "\n";
                 if (t < 1.0)
                 {
@@ -1254,7 +1178,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecia
             // flag recomputation only for the nodes
             for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
             {
-                this->recursivelyFlagNodeDirty( *nodes[*it] );
+                this->flagNodeDirty( *nodes[*it] );
             }
         }
     }
@@ -1275,7 +1199,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecia
             // flag recomputation only for the nodes
             for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
             {
-                this->recursivelyFlagNodeDirty( *nodes[*it] );
+                this->flagNodeDirty( *nodes[*it] );
             }
         }
     }
@@ -1283,7 +1207,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecia
     {
         
         const TopologyNode &root = this->tau->getValue().getRoot();
-        this->recursivelyFlagNodeDirty( root );
+        this->flagNodeDirty( root );
     }
     else
     {

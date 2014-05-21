@@ -68,7 +68,7 @@ namespace RevBayesCore {
         
     protected:
         // helper method for this and derived classes
-        void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
+        void                                                                flagNodeDirty(const TopologyNode& n);
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
@@ -76,9 +76,9 @@ namespace RevBayesCore {
         virtual void                                                        touchSpecialization(DagNode *toucher);
         
         // pure virtual methods
-        virtual void                                                        computeRootLikelihood(const TopologyNode &n, size_t root) = 0;
-        virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx) = 0;
-        virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
+        virtual double                                                      computeRootLikelihood(const TopologyNode &n, size_t root) = 0;
+        virtual double                                                      computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx) = 0;
+        virtual double                                                      computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
         virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
         
         // members
@@ -213,10 +213,12 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
     
     for (size_t i = 0; i < nodes.size(); i++)
     {
+        dirtyNodes[i] = true;
+        activeLikelihood[i] = 0;
         fillLikelihoodVector(*nodes[i], nodes[i]->getIndex());
         this->lnProb += historyLikelihoods[ activeLikelihood[i] ][i];
     }
-    
+    //std::cout << this->lnProb << "\n";
     return this->lnProb;
 }
 
@@ -229,7 +231,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVe
         return;
 
     // compute
-    computeInternalNodeLikelihood(node,nodeIndex);
+    double lnL = computeInternalNodeLikelihood(node,nodeIndex);
+    historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     
     // mark as computed
     dirtyNodes[nodeIndex] = false;
@@ -241,7 +244,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
-    recursivelyFlagNodeDirty(n);
+    flagNodeDirty(n);
     
 //    size_t idx = n.getIndex();
 //    std::cout << "fireTreeChangeEvent() " << idx << "  " << (changedNodes[idx] ? "1" : "0") << (dirtyNodes[idx] ? "1" : "0") << "\n";
@@ -309,7 +312,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::keepSpecializati
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::recursivelyFlagNodeDirty( const RevBayesCore::TopologyNode &n ) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::flagNodeDirty( const RevBayesCore::TopologyNode &n ) {
     
     // we need to flag this node and all ancestral nodes for recomputation
     size_t index = n.getIndex();
