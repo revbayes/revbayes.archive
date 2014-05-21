@@ -377,9 +377,9 @@ bool Test::performTests(void) {
     /* A DPP relaxed model test */
     try {
 //        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
-        TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_clock_gtr.nex", "data/test_clock_2_new_sc.tre", 300000);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
 		
-		//testDPPRC.run();
+		testDPPRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -457,7 +457,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run_exp();
+//        testDdm.run_exp();
     }
     catch (RbException &e)
     {
