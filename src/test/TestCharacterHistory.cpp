@@ -120,9 +120,9 @@ bool TestCharacterHistory::run_exp(void) {
     // io
     ////////////
     
+    std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-//    seed.push_back(1); seed.push_back(2); // 39
-    seed.push_back(1); seed.push_back(3); // 2 for p=0.3
+    seed.push_back(1); seed.push_back(2); // 39
     GLOBAL_RNG->setSeed(seed);
 
     
@@ -168,7 +168,7 @@ bool TestCharacterHistory::run_exp(void) {
     // geo distances
     ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(5.0));
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
-    dp->setValue(new double(0.0));
+//    dp->setValue(new double(10));
     DeterministicNode<GeographicDistanceRateModifier> *ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
 
     ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(4.0));
@@ -178,7 +178,7 @@ bool TestCharacterHistory::run_exp(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        tmp_glr->setValue(new double(0.02));
+        //tmp_glr->setValue(new double(0.02));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -188,7 +188,7 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas);
     brmf_likelihood->setGainLossRates(glr_vector);
     brmf_likelihood->setClockRate(clockRate);
-//    brmf_likelihood->setGeographicDistanceRateModifier(ddd);
+    //brmf_likelihood->setGeographicDistanceRateModifier(ddd);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_l", brmf_likelihood);
     
     // Q-map used to sample path histories
@@ -229,6 +229,11 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
+    
+    GLOBAL_RNG->setSeed(old_seed);
+    gainLossRates_nonConst[0]->redraw();
+    gainLossRates_nonConst[1]->redraw();
+
     ////////////
     // moves
     ////////////
@@ -237,15 +242,15 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<Move*> moves;
     
     //moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
-    //moves.push_back( new ScaleMove(dp, 0.25, true, 2.0) );
+    //moves.push_back( new ScaleMove(dp, 0.1, true, 2.0) );
     for( size_t i=0; i<2; i++)
-		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, false, 1) );
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.2, false, 2) );
 
-//    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.25);
-//    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.25, false, 1));
+    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2);
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.2, false, 20));
 
     NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.2, false, 1));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.2, false, 10));//numNodes));
     
 //    
 //    if (useTipProbs)
@@ -289,7 +294,7 @@ bool TestCharacterHistory::run_exp(void) {
     // mcmc
     //////////
     std::cout << "Instantiating mcmc\n";
-    Mcmc myMcmc = Mcmc( myModel, moves, monitors, "single", true, 1.0, 0 );
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors, "random", true, 1.0, 0 );
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     

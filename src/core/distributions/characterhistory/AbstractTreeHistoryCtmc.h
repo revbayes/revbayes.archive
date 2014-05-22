@@ -219,6 +219,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
         this->lnProb += historyLikelihoods[ activeLikelihood[i] ][i];
     }
     //std::cout << this->lnProb << "\n";
+    computeRootLikelihood(tau->getValue().getRoot(),0);
     return this->lnProb;
 }
 

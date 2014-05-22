@@ -73,6 +73,8 @@ namespace RevBayesCore {
         DeterministicNode<RateMap>*             qmap;
         
         BranchHistory*                          storedValue;
+        std::set<CharacterEvent*,CharacterEventCompare> storedHistory;
+        
         int                                     nodeIndex;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
@@ -420,8 +422,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal
     
 //    std::cout << "--------------------\n";std::cout << "before undo proposal\n";    p->getHistory(nodeIndex).print();    std::cout << "--------------------\n";
     
-    p->getHistory(nodeIndex).clearEvents(siteIndexSet);
-    p->setHistory(*storedValue, nodeIndex);
+//    p->getHistory(nodeIndex).clearEvents(siteIndexSet);
+    //p->setHistory(*storedValue, nodeIndex);
+    BranchHistory* bh = &p->getHistory(nodeIndex);
+    bh->setHistory(storedValue->getHistory());
     
 //    std::cout << "--------------------\n";std::cout << "after undo proposal\n";    p->getHistory(nodeIndex).print();    std::cout << "--------------------\n";
 
