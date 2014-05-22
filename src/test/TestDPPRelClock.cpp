@@ -87,16 +87,18 @@ bool TestDPPRelClock::run( void ) {
 	
 	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
 	
-	ConstantNode<double> *exCP = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(4.0, (double)numBranches)) );
+	double priorMean = 3.0;
+	double meanCP = RbStatistics::Helper::dppConcParamFromNumTables(priorMean, (double)numBranches);
+	
 	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
-	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / exCP->getValue()) );
-	// The move for the concentration parameter hasn't been written yet...
+	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / meanCP) );
 	StochasticNode<double> *cp = new StochasticNode<double>("cp", new GammaDistribution(dpA, dpB) );
+	
 
-//	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(RbStatistics::Helper::dppConcParamFromNumTables(1.05, (double)numBranches)) );
+//	ConstantNode<double> *cp = new ConstantNode<double>("concentrp", new double(meanCP) );
 	
 	// G_0 is an exponential distribution
-    ConstantNode<double> *a = new ConstantNode<double>("a", new double(2.0) );
+    ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
 	TypedDistribution<double> *g = new ExponentialDistribution(a);
 	
 	// Branch rates
@@ -122,6 +124,8 @@ bool TestDPPRelClock::run( void ) {
 	
 	std::cout << " branch rates: " << branchRates->getValue() << std::endl;
 
+    DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
+
 	/* add the moves */
     std::vector<Move*> moves;
 //    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
@@ -132,39 +136,38 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 //    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
-//    moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) ); 
-//    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) ); 
-    moves.push_back( new SimplexMove( er, 800.0, 6, 0, false, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 800.0, 4, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) ); 
+    moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
+//    moves.push_back( new SimplexMove( er, 600.0, 6, 0, false, 2.0 ) );
+//    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, false, 2.0, 1.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
-    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
-    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, branchRates, 4, 2.0 ) );
+    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 3.0 ) );
+    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, (int)numBranches, 4.0 ) );
 		
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
-    DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
 	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new DppMeanContinuousValStatistic(branchRates) );
 	
 //	Clade nd14 = new Clade(
 
     /* add the monitors */
     std::vector<Monitor*> monitors;
-    std::set<DagNode*> monitoredNodes;
-	monitoredNodes.insert( er );
-	monitoredNodes.insert( treeHeight );
-    monitoredNodes.insert( numCats );
-    monitoredNodes.insert( meanBrRate );
-    monitoredNodes.insert( cp );
+    std::vector<DagNode*> monitoredNodes;
+//	monitoredNodes.push_back( pi );
+//	monitoredNodes.push_back( treeHeight );
+    monitoredNodes.push_back( numCats );
+    monitoredNodes.push_back( meanBrRate );
+    monitoredNodes.push_back( cp );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
  
-	monitoredNodes.insert( branchRates );
-    monitoredNodes.insert( pi );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "data/test_dpp_clock_times.log", "\t" ) );
+    monitoredNodes.push_back( er );
+ 	monitoredNodes.push_back( branchRates );
+	monitors.push_back( new FileMonitor( monitoredNodes, 10, "clock_test/test_RBdpp_clock_x.log", "\t" ) );
 
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "data/test_dpp_clock_times.tree", "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "clock_test/test_RBdpp_clock_x.tree", "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);

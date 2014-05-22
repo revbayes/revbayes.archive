@@ -11,6 +11,7 @@
 
 #include "DelimitedDataReader.h"
 #include "GeographicArea.h"
+#include <boost/property_tree/ptree.hpp>
 
 #include <vector>
 
@@ -22,17 +23,36 @@ namespace RevBayesCore {
         TimeAtlasDataReader(std::string fn, char d='\t');
         TimeAtlasDataReader(const TimeAtlasDataReader& tadr);
         
-        std::vector<double> getTimes(void);
+        std::vector<double> getEpochs(void);
         std::vector<std::vector<GeographicArea*> > getAreas(void);
         void readJson(void);
+        void printJson(boost::property_tree::ptree const& pt);
+        void fillData(boost::property_tree::ptree const& pt);
+        
         
     protected:
         
-        void setTimes(void);
+        void setEpochs(void);
         void setAreas(void);
+        void sortEpochs(void);
         
-        std::vector<double> times;
+        std::vector<double> epochs;
         std::vector<std::vector<GeographicArea*> > areas;
+        
+        struct AgeIndexPair
+        {
+            double age;
+            size_t index;
+            AgeIndexPair(double a, size_t idx) : age(a), index(idx) {};
+        };
+        
+        struct AgeCompare
+        {
+            bool operator()(const AgeIndexPair first, const AgeIndexPair second)
+            {
+                return first.age > second.age;
+            }
+        };
         
     };
 }

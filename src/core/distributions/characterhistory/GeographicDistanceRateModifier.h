@@ -20,39 +20,48 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier( TimeAtlas* ta, int index, double dp=1.0, double threshhold=1e-6, std::string dt="haversine" );
-        GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
+        GeographicDistanceRateModifier( TimeAtlas* ta, int index=0, double dp=1.0, double threshhold=1e-6, std::string dt="haversine" );
+        //GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
         GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g);
         
-        double computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value to computeRateModifier
-        double computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState); // ... or pass value
-        void updateGeographicDistancePowers(double dp=1.0, bool upd=true);
-        void update(void);
-        GeographicDistanceRateModifier* clone(void) const;
-        void print(std::vector<std::vector<double> > m);
-        void printAll(void);
+        double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
+        double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
+        double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
+        void                                setDistancePower(double dp=1.0, bool upd=true);
+        const std::vector<double>&          getGeographicDistancePowers(void) const;
+        void                                setGeographicDistancePowers(const std::vector<double>& dp);
+        unsigned                            getEpochIndex(double age);
+        void                                update(void);
+        GeographicDistanceRateModifier*     clone(void) const;
+        void                                print(std::vector<std::vector<double> > m);
+        void                                printAll(void);
         
     protected:
-        double computePairwiseDistances(int i, int j);
-        void computeAllPairwiseDistances(void);
-        void computeAllPairwiseDistanceOrder(void);
+        double                              computePairwiseDistances(int i, int j, int k);
+        void                                computeAllPairwiseDistances(void);
+        void                                computeAllPairwiseDistanceOrder(void);
         
     private:
         
         // map objects
         TimeAtlas* atlas;
-        std::vector<GeographicArea*> areas;
+        std::vector<std::vector<GeographicArea*> > areas;
+        std::vector<double> epochs;
         int index;
         
         // distance values
         std::string distanceType;
-        std::vector<std::vector<double> > geographicCoordinates;
-        std::vector<std::vector<double> > geographicDistances;
-        std::vector<std::vector<double> > geographicDistancePowers;
-        std::vector<std::vector<size_t> > geographicDistanceOrder;
+        std::vector<double> geographicCoordinates;
+        std::vector<double> geographicDistances;
+        std::vector<double> geographicDistancePowers;
+        std::vector<size_t> geographicDistanceOrder;
         
         // helper variables
         unsigned numAreas;
+        unsigned numEpochs;
+        unsigned epochOffset;
+        unsigned areaOffset;
+        
         double threshhold;
         double distancePower;
         

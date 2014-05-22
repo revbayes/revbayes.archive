@@ -59,6 +59,10 @@ namespace RevBayesCore {
         void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistories(const std::vector<BranchHistory>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
+        
+        virtual const std::vector<double>&                                  getTipProbs(size_t nodeIndex) = 0;
+        virtual const std::vector<std::vector<double> >&                    getTipProbs(void) = 0;
+        
         virtual void                                                        simulate(void);
 
         
@@ -193,14 +197,22 @@ template<class charType, class treeType>
 double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProbability( void )
 {
     this->lnProb = 0.0;
+
     
     const std::vector<TopologyNode*>& nodes = tau->getValue().getNodes();
+
+//    std::cout << "recompute lnProb    ";
+//    for (size_t i = 0; i < nodes.size(); i++)
+//    {
+//        if (changedNodes[i] || dirtyNodes[i])
+//        {
+//            std::cout << i << ":" << (changedNodes[i] ? "1" : "0") << (dirtyNodes[i] ? "1" : "0") << " ";
+//        }
+//    }
+//    std::cout << "\n";
+    
     for (size_t i = 0; i < nodes.size(); i++)
     {
-        //dirtyNodes[i] = true; // comment line to use dirty flags
-//        activeLikelihood[i] = 0;
-//        if (dirtyNodes[i]) std::cout << i << " dirty\n";
-//        if (changedNodes[i]) std::cout << i << " changed\n";
         fillLikelihoodVector(*nodes[i], nodes[i]->getIndex());
         this->lnProb += historyLikelihoods[ activeLikelihood[i] ][i];
     }
@@ -230,6 +242,9 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fireTreeChangeEv
     
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty(n);
+    
+//    size_t idx = n.getIndex();
+//    std::cout << "fireTreeChangeEvent() " << idx << "  " << (changedNodes[idx] ? "1" : "0") << (dirtyNodes[idx] ? "1" : "0") << "\n";
 }
 
 
@@ -309,7 +324,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::recursivelyFlagN
         if ( !changedNodes[index] )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-            //activeLikelihood[index] = 0;
             changedNodes[index] = true;
         }
         
@@ -326,6 +340,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecializ
         (*it) = false;
     }
     
+    //std::cout << "affecter " << affecter->getName() << "\n";
+    
     // restore the active likelihoods vector
     for (size_t index = 0; index < changedNodes.size(); ++index)
     {
@@ -334,13 +350,15 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecializ
         if ( changedNodes[index] )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-            //activeLikelihood[index] = 0;
+//            if (affecter->getName() == "ctmc") std::cout << index << " " << activeLikelihood[index] << "\n";
         }
         
         // set all flags to false
         changedNodes[index] = false;
     }
     
+    
+    return;
 }
 
 

@@ -29,6 +29,7 @@ namespace RevBayesCore {
         
         bool                                    run(void);
         bool                                    run_exp(void);
+        bool                                    run_dollo(void);
         
     private:
         void tokenizeArgv(void);
