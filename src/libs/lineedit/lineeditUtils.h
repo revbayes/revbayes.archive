@@ -6,6 +6,18 @@
 
 class LineEditUtils {
 public:
+    
+     static std::string trim(const std::string &s) {
+        std::string::const_iterator it = s.begin();
+        while (it != s.end() && isspace(*it))
+            it++;
+
+        std::string::const_reverse_iterator rit = s.rbegin();
+        while (rit.base() != it && isspace(*rit))
+            rit++;
+
+        return std::string(it, rit.base());
+    }
 
     static std::string reverseString(std::string s) {
         std::string result = "";
@@ -50,7 +62,7 @@ public:
                 }
             }
         }
-        return reverseString(s);
+        return trim(reverseString(s));
     }
 
 

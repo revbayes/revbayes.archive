@@ -19,6 +19,7 @@ class EditorMachine {
 public:
 
     EditorMachine() {
+        transition = NOOP;
         defaultState = new StateIdle();
         queuedStates = new StatePointer();
         nl = "\n\r";
@@ -28,7 +29,8 @@ public:
     /**
      * Run this method for each new context
      */
-    void reset(void) { // resets to default state (new line)
+    void reset(void) { 
+        transition = NOOP;
         linePos.clear();
         linePos.push_back(0);
         cmd = "";
@@ -38,30 +40,35 @@ public:
         writeMessage("Reset", defaultState);
     }
 
-    void deleteChar() {
-        if (cmd.size() <= 0) {
+    /**
+     * LinePos<int> hold the positions where a state was triggered. When deleting
+     * past that point, the state triggered is canceled.
+     * 
+     * @param buf
+     */
+    void deleteChar(std::string buf) {
+        
+        transition = NOOP;
+        
+        if (cmd.size() <= 0 || buf.size() <= 0 || linePos.back() <= 0 || linePos.size() <= 1) {
             reset();
             return;
         }
-        const char c = cmd.at(cmd.size() - 1);
-        StateType type = queuedStates->back()->getType();
 
-        // cancel state
-        if (queuedStates->back()->tryCancel(c, type)) {
+        if (linePos.back() > buf.size()) {
             cancelState(queuedStates->back());
             linePos.pop_back();
+            cmd = cmd.substr(0, linePos.back());
         }
-
-        cmd = cmd.substr(0, cmd.size() - 1);
-
     }
 
     /**
      * Processes the whole command buffer and changes the state of machine accordingly
-     * @param buf user input, must be null terminated
-     * @return boolean weather the input has added a new state
+     * @param   buf user input
+     * @return  boolean weather the input has added a new state
      */
     bool processInput(std::string buf) {
+        transition = NOOP;
 
         if (buf.size() <= 0) {
             return false;
@@ -84,16 +91,19 @@ public:
         bool stateTriggered = true;
         // set new state
         if (stateInAssignment.tryHook(cmd, type)) {
-            addState(new StateInAssignment(), subject);
+            addState(new StateAssigning(), subject);
 
         } else if (stateInBrackets.tryHook(cmd, type)) {
-            addState(new StateInBrackets(), subject);
+            addState(new StateDefiningList(), subject);
 
         } else if (stateInString.tryHook(cmd, type)) {
-            addState(new StateInString(), subject);
+            addState(new StateDefiningString(), subject);
 
         } else if (stateListingMembers.tryHook(cmd, type)) {
-            addState(new StateListingMembers(), subject);
+            addState(new StateAccessingMember(), subject);
+
+        } else if (stateDefiningArgument.tryHook(cmd, type)) {
+            addState(new StateDefiningArgument(), subject);
 
         } else {
             stateTriggered = false;
@@ -127,12 +137,17 @@ public:
     std::string getMessage() {
         return message;
     }
-    
-    void setObserver(EditorMachineObserver *observer){
+
+    void setObserver(EditorMachineObserver *observer) {
         this->observer = observer;
+    }
+    
+    EditorStateChangeType getStateTransition(){
+        return transition;
     }
 
 private:
+    EditorStateChangeType transition;
     EditorMachineObserver *observer;
     std::string nl;
     std::string message;
@@ -145,10 +160,11 @@ private:
 
     // the states this machine can be in
     StateIdle stateIdle;
-    StateInAssignment stateInAssignment;
-    StateInBrackets stateInBrackets;
-    StateInString stateInString;
-    StateListingMembers stateListingMembers;
+    StateAssigning stateInAssignment;
+    StateDefiningList stateInBrackets;
+    StateDefiningString stateInString;
+    StateAccessingMember stateListingMembers;
+    StateDefiningArgument stateDefiningArgument;
 
     void writeMessage(std::string m, EditorState *state) {
         std::string tab = "";
@@ -164,19 +180,25 @@ private:
         e->setSubject(subject);
         queuedStates->push_back(e);
         writeMessage("add", e);
-        observer->eventStateChanged();
+        
+        transition = STATE_ADDED;
+        observer->eventStateChanged(e, transition);
     }
 
-    void releaseState(EditorState* e) {        
+    void releaseState(EditorState* e) {
         queuedStates->pop_back();
         writeMessage("release", e);
-        observer->eventStateChanged();
+        
+        transition = STATE_RELEASED;
+        observer->eventStateChanged(e, transition);
     }
-    
-    void cancelState(EditorState* e) {        
+
+    void cancelState(EditorState* e) {
         queuedStates->pop_back();
         writeMessage("cancel", e);
-        observer->eventStateChanged();
+        
+        transition = STATE_CANCELLED;
+        observer->eventStateChanged(e, transition);
     }
 };
 

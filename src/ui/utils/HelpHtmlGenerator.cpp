@@ -25,9 +25,6 @@
 namespace fs = boost::filesystem;
 using namespace std;
 
-std::string inifile = Filesystem::expandUserDir("~") + Filesystem::directorySeparator() + "revbayes.ini";
-
-// read file content
 
 string load_file(string filename) {
     string s;
@@ -52,8 +49,8 @@ struct compare_path {
 int main(int argc, const char * argv[]) {
 
     // read / create settings file
-    Configuration configuration(inifile);
-    configuration.parseInifile();
+    Configuration configuration;
+    configuration.parseConfiguration();
     std::cout << configuration.getMessage() << std::endl;
 
 

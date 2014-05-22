@@ -14,6 +14,7 @@
 #include "boost/filesystem/path.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
+#include <fstream>
 
 using namespace boost;
 namespace fs = boost::filesystem;
@@ -22,6 +23,28 @@ class Filesystem {
     typedef std::vector<std::string> StringVector;
 
 public:
+
+    static bool saveToFile(std::string filename, std::string path, std::string content) {
+
+        // check that directory exist
+        fs::path _path(path);
+        if (!fs::exists(_path)) {
+            if(!boost::filesystem::create_directory(_path)){
+                return false;
+            }
+        }
+        
+        // make a valid file path
+        fs::path _file(_path / filename);
+
+        // write out new file content
+        std::fstream fs;
+        fs.open(_file.string().c_str(), std::fstream::out | std::fstream::trunc);
+        fs << content;
+        fs.close();
+        
+        return true;
+    }
 
     /**
      * Portable code to get system directory separator
@@ -52,7 +75,7 @@ public:
         }
         return path;
     }
-    
+
     /**
      * List all files (optionally filtered by extension) in the given list of directories.
      * 
@@ -62,8 +85,10 @@ public:
      */
     static StringVector getFileList(StringVector directories, std::string extension = "") {
         StringVector result;
-        BOOST_FOREACH(std::string s, directories){
-            BOOST_FOREACH(std::string _s, getFileList(s, extension)){
+
+        BOOST_FOREACH(std::string s, directories) {
+
+            BOOST_FOREACH(std::string _s, getFileList(s, extension)) {
                 result.push_back(_s);
             }
         }
