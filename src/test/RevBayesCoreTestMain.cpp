@@ -6,7 +6,7 @@ int main (int argc, const char * argv[])
 {
     
     Test t = Test(argc, argv);
-    t.performTests();
+    t.performTests(argc, argv);
     
     std::cout << "Done!!!" << std::endl;
     
