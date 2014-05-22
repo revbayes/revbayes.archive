@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <typeinfo> 
 #include <sstream>
+#include  <iomanip>
 
 extern "C" {
 #include "linenoise.h"
@@ -20,10 +21,13 @@ extern "C" {
 #include "EditorState.h"
 #include "lineeditUtils.h"
 #include "EditorMachineObserver.h"
+#include "RepoClient.h"
+#include "IRepoObserver.h"
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/predicate.hpp> 
+#include "boost/algorithm/string_regex.hpp"
 #include <boost/lexical_cast.hpp>
 
 
@@ -39,12 +43,10 @@ const char* esc_prompt = (char*) "? > ";
 const char* prompt = default_prompt;
 char *line;
 
-int pseudoPos = 0;
-
 EditorMachine em;
 WorkspaceUtils wu;
-Options opt;
-Configuration config;
+Options *opt;
+Configuration *config;
 
 /**
  * Print an arbitrary number of columns to stdout.
@@ -54,9 +56,11 @@ Configuration config;
  * @param indentation   Number of spaces in beginning of line
  * @param columns       Number of columns to organize
  */
-void printColumns(StringVector v, int columnWidth = 20, int indentation = 4, int columns = 2) {
+void printData(StringVector v, int columns, int columnWidth = 20, int indentation = 4) {
     int i = 0;
+
     std::cout.flush();
+    linenoiceSetCursorPos(0);
 
     BOOST_FOREACH(std::string s, v) {
         linenoiceSetCursorPos((i++ % columns) * columnWidth + indentation);
@@ -66,38 +70,64 @@ void printColumns(StringVector v, int columnWidth = 20, int indentation = 4, int
         }
         std::cout.flush();
     }
-}
-
-void printGeneralHelp() {
 
     linenoiceSetCursorPos(0);
-
-    std::cout << nl << nl << "Type ?<function or object name> to display help of the object." << nl << nl;
     std::cout.flush();
+}
+
+/**
+ * General guidance how to use the terminal
+ */
+void printGeneralHelp() {
+    linenoiseClearScreen();
+    linenoiceSetCursorPos(0);
+
+    std::cout << nl << nl << "Type ?" << TerminalFormatter::makeBold("<function or object name>") << " to display help of the object" << nl;
 
     StringVector cmd;
     cmd.push_back("?");
     cmd.push_back("Print this screen");
     cmd.push_back("clr");
     cmd.push_back("Clear screen");
+    cmd.push_back("");
+    cmd.push_back("");
     cmd.push_back("(ESC)");
     cmd.push_back("Show a list over available completions");
-    cmd.push_back("(Ctrl + r)");
-    cmd.push_back("Recursive search of previous commands");
-    cmd.push_back("(Ctrl + a)");
-    cmd.push_back("Go to beginning of line");
-    cmd.push_back("(Ctrl + e)");
-    cmd.push_back("Go to end of line");
+    cmd.push_back("(TAB)");
+    cmd.push_back("Auto complete command");
+    cmd.push_back("");
+    cmd.push_back("");
     cmd.push_back("UP / DOWN arrows");
     cmd.push_back("Browse command history");
+    cmd.push_back("(Ctrl+R)");
+    cmd.push_back("Recursive search of previous commands");
+    cmd.push_back("");
+    cmd.push_back("");
+    cmd.push_back("repo-list");
+    cmd.push_back("Show files in web repositories");
+    cmd.push_back("repo-get <int>");
+    cmd.push_back("Download a file with the given index number");
+    cmd.push_back("");
+    cmd.push_back("");
+    cmd.push_back("(Ctrl+A)");
+    cmd.push_back("Go to beginning of line");
+    cmd.push_back("(Ctrl+E)");
+    cmd.push_back("Go to end of line");
+    cmd.push_back("(Ctrl+W)");
+    cmd.push_back("Delete one word to the left");
+    cmd.push_back("...");
+    cmd.push_back("");
+
 
 
     std::cout << nl << TerminalFormatter::makeUnderlined("Available commands") << nl;
-    std::cout.flush();
-    printColumns(cmd);
+    printData(cmd, 2);
 
 }
 
+/**
+ * Basically everything
+ */
 void setDefaultCompletions() {
 
     BOOST_FOREACH(std::string function, wu.getFunctions()) {
@@ -120,54 +150,27 @@ void setDefaultCompletions() {
 
 int listSeparatorCallback(const char *buf, size_t len, char c) {
 
-    // TODO: check that current state is supposed to have arguments
+    if (em.processInput(buf)) {
 
-    // start on a empty completion buffer when typing a separator
-    pseudoPos = std::string(buf).size() - em.getLinePos();
-    
-    std::string _s(buf);
+        // shouldn't be here if not previous state was defining a list
+        EditorState *func = em.getStateQueue()->at(em.getStateQueue()->size() - 2);
+        std::string usedArgument = em.getCurrentState()->getSubject();
 
-    // get the interesting part after the (
-    unsigned int start = _s.rfind("(");
-    if ((start + 1) > _s.size()) {
-        return 0;
-    }
-    std::string s = _s.substr(start + 1);
+        // pop the used argument from completions        
+        StringVector v;
 
-    // split on list separator to get all arguments
-    StringVector args;
-    boost::split(args, s, boost::is_any_of(","));
-
-    // parse the parameter names
-    StringVector params;
-
-    BOOST_FOREACH(std::string param, args) {
-        StringVector tmp;
-        boost::split(tmp, param, boost::is_any_of("="));
-        std::string p = tmp.at(0);
-        boost::algorithm::trim(p);
-        params.push_back(p);
-    }
-
-    // add parameters that haven't yet been used to completions
-    StringVector completions;
-
-    BOOST_FOREACH(std::string comp, em.getCurrentState()->getCompletions()) {
-        bool used = false;
-
-        BOOST_FOREACH(std::string p, params) {
-            if (p == comp) {
-                used = true;
-                continue;
+        BOOST_FOREACH(std::string s, func->getCompletions()) {
+            if (s != usedArgument) {
+                v.push_back(s);
             }
         }
-        if (!used) {
-            completions.push_back(comp);
-        }
+        func->setCompletions(v);
+
+        // use pruned completions also in current state
+        em.getCurrentState()->setCompletions(v);
+
+        // restoration of pruned arguments is handled in eventChange callback
     }
-
-    em.getCurrentState()->setCompletions(completions);
-
     return 0;
 }
 
@@ -199,7 +202,7 @@ int dotCallback(const char *buf, size_t len, char c) {
 /**
  * callback for '(' and ')' 
  * 
- * Add parameters to tab complete if the corresponding function or method is known.
+ * Add arguments to tab complete if the function or method is known.
  * 
  * @param buf
  * @param len
@@ -209,7 +212,7 @@ int dotCallback(const char *buf, size_t len, char c) {
 int bracketCallback(const char *buf, size_t len, char c) {
     std::string type = "";
     // query current state before switching to new
-    if (em.getCurrentState()->getType() == ST_LISTMEMBERS) {
+    if (em.getCurrentState()->getType() == ST_ACCESSING_MEMBER) {
         type = em.getCurrentState()->getSubject();
     }
     if (em.processInput(buf)) {
@@ -260,7 +263,7 @@ int quotationCallback(const char *buf, size_t len, char c) {
 
     if (em.processInput(buf)) {
 
-        BOOST_FOREACH(std::string s, Filesystem::getFileList(opt.getIncludePaths(), ".Rev")) {
+        BOOST_FOREACH(std::string s, Filesystem::getFileList(opt->getIncludePaths(), ".Rev")) {
             em.getCurrentState()->addCompletion(s);
         }
     }
@@ -287,7 +290,6 @@ int escapeCallback(const char *buf, size_t len, char c) {
     // completions
     linenoiceSetCursorPos(0);
     std::cout << nl << TerminalFormatter::makeUnderlined("Available completions") << nl;
-    std::cout.flush();
 
     unsigned int startPos = em.getLinePos(); // place in buffer to start match    
     while (buf[startPos] == ' ') { // discard extra spaces
@@ -297,32 +299,30 @@ int escapeCallback(const char *buf, size_t len, char c) {
     StringVector v;
 
     BOOST_FOREACH(std::string comp, em.getCurrentState()->getCompletions()) {
-        if (boost::starts_with(comp, (buf + startPos + pseudoPos))) {
+        if (boost::starts_with(comp, (buf + startPos))) {
             v.push_back(comp);
         }
     }
-    printColumns(v, 36);
+    printData(v, 2, 36);
 
     // debug
     if (debug) {
         std::cout << nl << TerminalFormatter::makeUnderlined("Editor state") << nl;
-        std::cout.flush();
+
         std::cout << em.getMessage() << nl;
-        std::cout.flush();
-        
+
+
         std::cout << nl << TerminalFormatter::makeUnderlined("Debug info") << nl;
-        std::cout.flush();
+
         StringVector dv;
-        
-        dv.push_back("pseudoPos");
-        dv.push_back(boost::lexical_cast<std::string>(pseudoPos));
-        dv.push_back("linePos");
+
+        dv.push_back("em-linePos");
         dv.push_back(boost::lexical_cast<std::string>(em.getLinePos()));
         dv.push_back("comp match");
-        dv.push_back(buf + startPos + pseudoPos);
-        
-        printColumns(dv);
-       
+        dv.push_back(buf + startPos);
+
+        printData(dv, 2);
+
     }
 
     // restore prompt
@@ -344,11 +344,7 @@ int escapeCallback(const char *buf, size_t len, char c) {
  * @return 
  */
 int backspaceCallback(const char *buf, size_t len, char c) {
-    if(pseudoPos > 0){
-        pseudoPos --;
-    }
-    
-    em.deleteChar();
+    em.deleteChar(buf);
     return 0;
 }
 
@@ -362,11 +358,10 @@ int backspaceCallback(const char *buf, size_t len, char c) {
  */
 void completion(const char *buf, linenoiseCompletions *lc) {
 
-    unsigned int startPos = em.getLinePos() + pseudoPos;
-    //unsigned int startPos = std::string(buf).size();
+    unsigned int startPos = em.getLinePos();
 
     // discard extra spaces
-    while (buf[startPos] == ' ' || buf[startPos] == ',') {
+    while (buf[startPos] == ' ') {
         startPos++;
     }
 
@@ -392,12 +387,14 @@ void completion(const char *buf, linenoiseCompletions *lc) {
  * @param options
  * @param configuration
  */
-void RbClient::startInterpretor(IHelp *help, Options options, Configuration configuration) {
-    
+void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *configuration) {
+
     em.setObserver(this);
 
     opt = options;
     config = configuration;
+    RepoClient repoClient;
+    repoClient.setObserver(this);
 
     /* Set tab completion callback */
     linenoiseSetCompletionCallback(completion);
@@ -443,6 +440,8 @@ void RbClient::startInterpretor(IHelp *help, Options options, Configuration conf
             debug = false;
         } else if (cmd == "debug=true") {
             debug = true;
+        } else if (repoClient.processCommand(config->getRepositories(), cmd)) {
+
         } else {
             // interpret Rev statement
             if (result == 0 || result == 2) {
@@ -453,8 +452,6 @@ void RbClient::startInterpretor(IHelp *help, Options options, Configuration conf
                 prompt = incomplete_prompt;
                 commandLine += cmd;
             }
-            //std::cout << "Issuing command: " << commandLine << nl;
-            //std::cout.flush();)
             result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
         }
 
@@ -465,8 +462,68 @@ void RbClient::startInterpretor(IHelp *help, Options options, Configuration conf
 }
 
 /**
- * This method is called by EditorStateMachine whenever state changes
+ * This method is fired by EditorStateMachine whenever state changes
  */
-void RbClient::eventStateChanged(){
-    pseudoPos = 0;
+void RbClient::eventStateChanged(EditorState *state, EditorStateChangeType type) {
+
+    // restore pruned arguments
+    if (state->getType() == ST_DEF_ARGUMENT && type == STATE_CANCELLED) {
+        em.getCurrentState()->addCompletion(state->getSubject());
+    }
+}
+
+/**
+ * fired by repo client when some error occurs
+ * @param error
+ */
+void RbClient::notifyError(std::string error) {
+    std::cout << nl << "Repository Client Error: " << error << nl;
+}
+
+/**
+ * fired by repo client when some data is available
+ */
+void RbClient::notifyGetIndexComplete(HttpResponse httpResponse, RepositoryInfo revRepository) {
+
+    if (httpResponse.code != 200 || httpResponse.exception.size() > 0) {
+        std::cout << nl << "The request to fetch index from '" << revRepository.GetName() << "' failed: \n" << httpResponse.exception << nl;
+
+    } else {
+        linenoiseClearScreen();
+        std::cout << nl << TerminalFormatter::makeUnderlined("File index of '" + revRepository.GetName() + "'") << nl;
+
+        for (int i = 0; i < httpResponse.data.size() - 1; i += 2) {
+            std::cout << std::setw(8) << httpResponse.data.at(i) << httpResponse.data.at(i + 1) << nl;
+        }
+    }
+    std::cout << nl;
+}
+
+/**
+ * fired by repo client when some data is available
+ */
+void RbClient::notifyGetFileComplete(HttpResponse httpResponse, RepositoryInfo revRepository) {
+
+    std::cout << nl;
+    if (httpResponse.code != 200 || httpResponse.exception.size() > 0) {
+        std::cout << "The request to fetch file '" << httpResponse.data.at(0) << "' from '" << revRepository.GetName() << "' failed: \n" << httpResponse.exception << nl;
+
+    } else {
+        std::cout << nl << nl << TerminalFormatter::makeUnderlined("Content of '" + httpResponse.data.at(0) + "'") << nl << nl;
+        std::string tmp = "    " + boost::regex_replace(httpResponse.data.at(1), boost::regex("\n"), "\n    ");
+        std::cout << tmp << nl << nl;
+
+        std::string filename = config->getDownloadDir() + Filesystem::directorySeparator() + httpResponse.data.at(0);
+        std::cout << "Save file to '" + filename + "' Y/N ?:";
+        char ch;
+        std::cin.get(ch);
+        if (ch == 'y' || ch == 'Y') {
+            if (Filesystem::saveToFile(httpResponse.data.at(0), config->getDownloadDir(), httpResponse.data.at(1))) {
+                std::cout << "File saved!" << nl;
+            } else {
+                std::cout << "Something went wrong and the file couldn't be saved!" << nl;
+            }
+        }
+    }
+    std::cout << nl;
 }

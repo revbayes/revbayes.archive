@@ -25,6 +25,7 @@
 
 #ifndef HELP_PARSER_CONST
 #define HELP_PARSER_CONST
+
 namespace HelpParserConstants {
     const std::string sectionBreak = "\n\n";
     const std::string lineBreak = "\n";
