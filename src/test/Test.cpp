@@ -79,14 +79,14 @@ Test::~Test() {
 
 
 
-bool Test::performTests(void) {
+bool Test::performTests(int argc, const char * argv[]) {
     time_t start,end;
     time (&start);
     
-    /* The transition probability test */
+    /* The transition probability test = "tpt" */
     try {
-        TestTransitionProbabilities test = TestTransitionProbabilities();
-//        test.run();
+        TestTransitionProbabilities testTP = TestTransitionProbabilities();
+//        testTP.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
