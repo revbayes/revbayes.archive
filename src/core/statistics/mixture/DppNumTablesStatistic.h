@@ -45,7 +45,8 @@ namespace RevBayesCore {
         void													swapParameterInternal(const DagNode *oldP, const DagNode *newP);			//!< Implementation of swaping parameters
         
     private:
-        // members
+		
+		// members
         const StochasticNode< std::vector<valueType> >*			elementVals;
     };
 	
@@ -89,6 +90,7 @@ void DppNumTablesStatistic<valueType>::swapParameterInternal(const DagNode *oldP
         elementVals = static_cast< const StochasticNode< std::vector<valueType> >* >( newP );
     }
 }
+
 
 
 #endif

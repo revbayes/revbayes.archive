@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 
 using namespace RevBayesCore;
 
@@ -46,10 +47,12 @@ void DppMeanContinuousValStatistic::update( void ) {
 	double sum = 0.0;
 	const std::vector<double>& evs = elementVals->getValue();
 	size_t numElem = evs.size();
-	for(int i=0; i<evs.size(); i++){
+	for(size_t i=0; i<numElem; i++){
 		sum += evs[i];
 	}
-	*value = sum / ((double)numElem);
+	double mv = sum / ((double)numElem);
+//	std::cout << "stat--" << mv << std::endl;
+	*value = mv;
 }
 
 void DppMeanContinuousValStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {

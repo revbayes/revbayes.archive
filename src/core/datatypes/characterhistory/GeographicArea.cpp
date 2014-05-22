@@ -12,9 +12,16 @@
 
 using namespace RevBayesCore;
 
-GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, double alt, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra) : index(idx), name(n), latitude(lat), longitude(lon), altitude(alt), adjacentAreas(aa), reachableAreas(ra)
+GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, double alt, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra)
+//: index(idx), name(n), latitude(lat), longitude(lon), altitude(alt), adjacentAreas(aa), reachableAreas(ra)
 {
-    ;
+    index = idx;
+    name = n;
+    latitude = lat;
+    longitude = lon;
+    altitude = alt;
+    adjacentAreas = aa;
+    reachableAreas = ra;
 }
 
 GeographicArea::GeographicArea(const GeographicArea& g)

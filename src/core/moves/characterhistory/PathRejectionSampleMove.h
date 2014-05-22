@@ -114,7 +114,7 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::swapNode(DagNode
     }
     else if (oldN == tau)
     {
-        tau = static_cast<StochasticNode<TimeTree>* >( newN );
+        tau = static_cast<StochasticNode<treeType>* >( newN );
     }
     else if (oldN == qmap)
     {
@@ -152,7 +152,8 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
     tau->touch();
     
     // calculate the probability ratio for the node we just changed
-    probRatio = tau->getLnProbabilityRatio();
+    // don't need this probability quite yet...
+    probRatio = 0.0; // tau->getLnProbabilityRatio();
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
     {
@@ -167,6 +168,8 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
         }
     }
     
+    //hr = RbConstants::Double::neginf;
+    
     return hr;
 }
 
@@ -175,8 +178,6 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionS
 {
     proposal->prepareProposal();
     double lnProposalRatio = proposal->doProposal();
-    
-    
     return lnProposalRatio;
 }
 
@@ -192,23 +193,32 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectMove( void
     
     changed = false;
     
+    //std::cout << "PJSM REJECT\n";
+    //    std::cout << "BEFORE PRSM REJECT lnP   " << ctmc->getLnProbability() << "\n";
     // delegate to the derived class. The derived class needs to restore the value(s).
     rejectSimpleMove();
     
     // touch the node
     tau->touch();
+    //    std::cout << "AFTER PRSM REJECT lnP   " << ctmc->getLnProbability() << "\n";
 }
 
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectSimpleMove(void)
 {
+
+    
     proposal->undoProposal();
+
+
 }
 
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::acceptMove( void ) {
     // nothing to do
     changed = false;
+    
+    //std::cout << "PJSM ACCEPT\n";
     
     acceptSimpleMove();
 }

@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class DPPGibbsConcentrationMove : public Move {
 		
     public:
-        DPPGibbsConcentrationMove(StochasticNode<double> *n, const StochasticNode< std::vector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
+        DPPGibbsConcentrationMove(StochasticNode<double> *n, const DeterministicNode<int>* v, int ne, double w);                                                                      //!< Internal constructor
 		
         // Basic utility functions
         DPPGibbsConcentrationMove<valueType>*					clone(void) const;                                                                  //!< Clone object
@@ -45,7 +45,8 @@ namespace RevBayesCore {
     private:
 		
         StochasticNode<double>*									concentration;
-		const StochasticNode< std::vector<valueType> >*			dppVariables;
+		const DeterministicNode<int>*							numCat;
+		int														numElem;
     };
 }
 
@@ -61,8 +62,8 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::DPPGibbsConcentrationMove<valueType>::DPPGibbsConcentrationMove(StochasticNode<double> *n, const StochasticNode< std::vector<valueType> >* v, int na, double w) : 
-  Move( n, w, false ), concentration( n ), dppVariables(v) {
+RevBayesCore::DPPGibbsConcentrationMove<valueType>::DPPGibbsConcentrationMove(StochasticNode<double> *n, const DeterministicNode<int>* v, int ne, double w) : 
+  Move( n, w, false ), concentration( n ), numCat(v), numElem(ne) {
     
 	
 }
@@ -97,26 +98,16 @@ void RevBayesCore::DPPGibbsConcentrationMove<valueType>::performGibbsMove( void 
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 	double& cpv = concentration->getValue();
 	
-	const DirichletProcessPriorDistribution<valueType>& dppDist = static_cast<const DirichletProcessPriorDistribution<valueType> &>( dppVariables->getDistribution() );
+	const int k = numCat->getValue();
+	int nV = numElem;
 	
 	// This move is a fully conditional Gibbs move, with a Gamma distribution
 	// Escobar MD, West M. Bayesian density estimation and inference using mixtures. J Am Stat Assoc. 1995;90:577-588.
 	GammaDistribution& dist = static_cast<GammaDistribution &>( concentration->getDistribution() );
 	
-	// TAH: I added these functions to the Gamma dist. Probably a better way to do this.
 	double sh = dist.getShapeValue();
 	double rt = dist.getRateValue();
-	
-//	const std::set<const DagNode*>& gammaPs = dist.getParameters();
-//	std::vector<double> gPs;
-//	
-//    for (std::set<const DagNode* >::const_iterator it = gammaPs.begin(); it != gammaPs.end(); ++it) {
-//		
-//    }
-	
-	int k = dppDist.getNumberOfCategories();
-	int nV = dppDist.getNumberOfElements();
-	
+		
 	double oldConc = cpv;
 	
 	std::vector<double> z(2);
@@ -133,10 +124,11 @@ void RevBayesCore::DPPGibbsConcentrationMove<valueType>::performGibbsMove( void 
 	if((u / (1.0 - u)) < x)
 		newAlpha = RbStatistics::Gamma::rv(sh + k, rt - log(eta), *GLOBAL_RNG);
 	else
-		newAlpha = RbStatistics::Gamma::rv(sh + k -1.0, rt - log(eta), *GLOBAL_RNG);
+		newAlpha = RbStatistics::Gamma::rv(sh + k - 1.0, rt - log(eta), *GLOBAL_RNG);
 		
 	cpv = newAlpha;
-//	std::cout << oldConc << " --> " << cpv << std::endl;
+	concentration->touch();
+	concentration->keep();
 }
 
 template <class valueType>
