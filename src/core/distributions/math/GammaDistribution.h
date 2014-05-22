@@ -43,9 +43,6 @@ namespace RevBayesCore {
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Implementation of swaping parameters
 		
-		// TAH: I need to get the shape and rate parameters of the gamma. How do I do that?
-		double												getShapeValue(void);
-		double												getRateValue(void);
         
     private:
         
