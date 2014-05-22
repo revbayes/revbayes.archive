@@ -201,6 +201,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRo
 //    for (size_t i = 0; i < this->historyLikelihoods[0].size(); i++)
 //        this->lnProb += this->historyLikelihoods[ this->activeLikelihood[i] ][i];
 //
+    
+    const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
+    const std::vector<double>& glr = rm.getHomogeneousGainLossRates();
+//    std::cout << "glr " << glr[0] << " " << glr[1] << "\n";
     return 0.0;
 }
 
@@ -225,6 +229,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     }
     else
     {
+        if (node.getIndex() == -120) { std::cout << "for likelihood\n";    this->histories[node.getIndex()]->print(); }
+        
         // update tip lnLs for ambiguous characters
         if (this->usingAmbiguousCharacters && node.isTip())
         {
@@ -405,10 +411,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
 //        this->histories[i]->print();
     
     
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        std::cout << i << " " << nodes[i]->getBranchLength() << " " << this->histories[i]->getNumEvents() << "\n";
-    }
+//    for (size_t i = 0; i < nodes.size(); i++)
+//    {
+//        std::cout << i << " " << nodes[i]->getBranchLength() << " " << this->histories[i]->getNumEvents() << "\n";
+//    }
 
 }
 
