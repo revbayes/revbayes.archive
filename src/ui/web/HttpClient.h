@@ -5,8 +5,8 @@
  * Created on May 20, 2014, 10:49 PM
  */
 
-#ifndef WEBCLIENT_H
-#define	WEBCLIENT_H
+#ifndef HTTPCLIENT_H
+#define	HTTPCLIENT_H
 
 #include <iostream>
 #include <istream>
@@ -32,7 +32,7 @@ public:
     std::string path;
     std::string host;
     std::string accept;
-    std::string protocol; // could be http or https
+    std::string protocol; 
 
 };
 
@@ -144,5 +144,5 @@ public:
 
 };
 
-#endif	/* WEBCLIENT_H */
+#endif	/* HTTPCLIENT_H */
 
