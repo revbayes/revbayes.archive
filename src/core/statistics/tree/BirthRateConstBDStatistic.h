@@ -1,8 +1,8 @@
 /**
  * @file
- * This file contains the declaration of the average value statistic for calculating the birth rate given div and turnover,
+ * This file contains the declaration of the statistic for calculating the birth rate given div and turnover,
  *
- * @brief Declaration of the DppNumTablesStatistic
+ * @brief Declaration of the BirthRateConstBDStatistic
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-07-05 16:47:08 +0200 (Thu, 05 Jul 2012) $
