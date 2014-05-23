@@ -68,16 +68,21 @@ bool TestDPPRelClock::run( void ) {
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     
     
+	// #######################################
     // ###### birth-death process priors #####
+	// #######################################
+
 	//   Constant nodes
 	ConstantNode<double> *dLambda = new  ConstantNode<double>("div_rate", new double(1.0 / 5.0)); // Exponential rate
 	ConstantNode<double> *turnA = new  ConstantNode<double>("turn_alpha", new double(2.0)); // Beta distribution alpha
 	ConstantNode<double> *turnB = new  ConstantNode<double>("turn_beta", new double(2.0)); // Beta distribution beta
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0)); // assume 100% sampling for now
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.5 ) );
+
 	//   Stochastic nodes
     StochasticNode<double> *div = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
     StochasticNode<double> *turn = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
+
 	//   Deterministic nodes
 	//    birthRate = div / (1 - turn)
 	DeterministicNode<double> *birthRate = new DeterministicNode<double>("birth_rate", new BirthRateConstBDStatistic(div, turn));
@@ -86,6 +91,7 @@ bool TestDPPRelClock::run( void ) {
 	// For some datasets with large root ages, if div>1.0 (or so), the probability is NaN
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	div->getValue() = rng->uniform01() / 1.5;
+
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
