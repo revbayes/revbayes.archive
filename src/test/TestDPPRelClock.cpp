@@ -159,8 +159,8 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 //    moves.push_back( new SubtreeScale( tau, 5.0 ) );
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 //		moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
+    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
     moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
@@ -207,7 +207,16 @@ bool TestDPPRelClock::run( void ) {
     
     myMcmc.printOperatorSummary();
 	
-    
+	for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+        const Move *theMove = *it;
+        delete theMove;
+    }
+    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
+        const Monitor *theMonitor = *it;
+        delete theMonitor;
+	}
+	
+   
 	/* clean up */
 //	delete div;
 //	delete turn;
@@ -218,19 +227,15 @@ bool TestDPPRelClock::run( void ) {
 //	delete branchRates;
 //	delete q;
 //	delete tau;
-//	delete phyloCTMC;
-//	delete charactermodel;
-//	delete treeHeight;
+	delete charactermodel;
+	delete treeHeight;
+	delete meanBrRate;
+	delete numCats;
+//	delete deathRate;
+//	delete birthRate;
+	delete phyloCTMC;
+//	delete dLambda;
 
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
-	
 	
 	monitors.clear();
 	moves.clear();
