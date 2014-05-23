@@ -13,7 +13,7 @@
 #include "DirichletProcessPriorDistribution.h"
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
-#include "DppMeanContinuousValStatistic.h"
+#include "MeanVecContinuousValStatistic.h"
 #include "DppNumTablesStatistic.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
@@ -115,9 +115,10 @@ bool TestDPPRelClock::run( void ) {
 	ConstantNode<double> *dpB  = new ConstantNode<double>("dp_b", new double(dpA->getValue() / meanCP) );
 	StochasticNode<double> *cp = new StochasticNode<double>("DPP.cp", new GammaDistribution(dpA, dpB) );
 	
-	// G_0 is an exponential distribution
+	// G_0 is an Gamma distribution
     ConstantNode<double> *a      = new ConstantNode<double>("a", new double(1.0) );
-	TypedDistribution<double> *g = new ExponentialDistribution(a);
+    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(2.0) );
+	TypedDistribution<double> *g = new GammaDistribution(a, b);
 	
 	// branchRates ~ DPP(g, cp, numBranches)
 	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
@@ -166,7 +167,7 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 //    moves.push_back( new SubtreeScale( tau, 5.0 ) );
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
+//	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
@@ -175,13 +176,10 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
     moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
-		
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
-	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new DppMeanContinuousValStatistic(branchRates) );
-	
-//	Clade nd14 = new Clade(
+	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
 
     /* add the monitors */
     std::vector<Monitor*> monitors;
@@ -199,11 +197,15 @@ bool TestDPPRelClock::run( void ) {
 	monitoredNodes.push_back( pi );
     monitoredNodes.push_back( er );
  	monitoredNodes.push_back( branchRates );
-	monitors.push_back( new FileMonitor( monitoredNodes, 10, "clock_test/test_RBdpp_clock_x.log", "\t" ) );
+
+	std::string logFN = "clock_test/test_RBdpp_clock_23May_abs_rn.log";
+	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "clock_test/test_RBdpp_clock_x.tree", "\t", false, false, false ) );
+
+	std::string treFN = "clock_test/test_RBdpp_clock_23May_abs_rn.tre";
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
@@ -229,8 +231,6 @@ bool TestDPPRelClock::run( void ) {
 //	delete turn;
 //	delete rho;
 //	delete cp;
-//	delete a;
-//	delete g;
 //	delete branchRates;
 //	delete q;
 //	delete tau;
@@ -238,7 +238,8 @@ bool TestDPPRelClock::run( void ) {
 	delete treeHeight;
 	delete meanBrRate;
 	delete numCats;
-//	delete deathRate;
+	delete g;
+//	delete a;
 //	delete birthRate;
 //	delete phyloCTMC;
 //	delete dLambda;
