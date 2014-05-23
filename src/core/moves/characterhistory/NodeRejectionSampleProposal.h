@@ -82,6 +82,9 @@ namespace RevBayesCore {
         // proposal
         std::vector<unsigned>                   storedNodeState;
         std::vector<unsigned>                   storedRootState;
+        std::vector<CharacterEvent*>            storedNodeState2;
+        std::vector<CharacterEvent*>            storedRootState2;
+        
         std::map<size_t,BranchHistory*>         storedValues;
         std::map<size_t,BranchHistory*>         proposedValues;
         BranchHistory*                          storedValue;
@@ -264,10 +267,10 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
     
     if (node.getIndex() == monitorIndex) { std::cout << "BEFORE node\n"; histories[node.getIndex()]->print(); }
 
-    sampleNodeCharacters(node, siteIndexSet);
-    if (node.isRoot())
-        proposedLnProbRatio += sampleRootCharacters(node,siteIndexSet);
-
+//    sampleNodeCharacters(node, siteIndexSet);
+//    if (node.isRoot())
+//        proposedLnProbRatio += sampleRootCharacters(node,siteIndexSet);
+//
     
     if (node.getIndex() == monitorIndex) { std::cout << "AFTER node\n"; histories[node.getIndex()]->print(); }
     
@@ -347,7 +350,6 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     }
    
     // store node state values
-    storedNodeState.resize(numCharacters,0);
     const std::vector<CharacterEvent*>& nodeState = p->getHistory(nodeIndex).getChildCharacters();
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
@@ -368,6 +370,12 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
             storedRootState[*it] = s;
         }
     }
+    
+    // alt...
+//    storedNodeState.resize(numCharacters,0);
+//    storedRootState2.resize(numCharacters,0) = p->getHistory(nodeIndex).getChildCharacters();
+//    storedNodeState2.resize(numCharacters,0) = p->getHistory(nodeIndex).getParentCharacters();
+
     
     sampleNodeIndex = true;
     sampleSiteIndexSet = true;    
@@ -432,11 +440,80 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
             if (u < g1 / (g0 + g1))
                 s = 1;
             
-            nodeChildState[*it]->setState(s);
-            leftParentState[*it]->setState(s);
-            rightParentState[*it]->setState(s);
+            nodeChildState[*it] = new CharacterEvent(*it,s,1.0);
+            leftParentState[*it] = new CharacterEvent(*it,s,0.0);
+            rightParentState[*it] = new CharacterEvent(*it,s,0.0);
+
+            
+//            nodeChildState[*it]->setState(s);
+//            leftParentState[*it]->setState(s);
+//            rightParentState[*it]->setState(s);
+
+            
+//            std::cout << ancS << " " << desS1 << " " << desS2 << "\n";
+//            std::cout << g0 << " = " << nodeTpMatrix[ancS][0] << " * " << leftTpMatrix[0][desS1] << " * " << rightTpMatrix[0][desS2] << "\n";
+//            std::cout << g1 << " = " << nodeTpMatrix[ancS][1] << " * " << leftTpMatrix[1][desS1] << " * " << rightTpMatrix[1][desS2] << "\n";
+//            std::cout << s << " " << g1/(g0+g1) << "\n";
+
+            //std::cout << "---\n";
         }
+        
+        histories[node.getIndex()]->setChildCharacters(nodeChildState);
+        histories[node.getChild(0).getIndex()]->setParentCharacters(leftParentState);
+        histories[node.getChild(1).getIndex()]->setParentCharacters(rightParentState);
     }
+    
+    /*
+     double br = branchRate->getValue();
+     double rootAge = tree->getValue().getRoot().getAge();
+     double bt = tree->getValue().getBranchLength(index) / rootAge;
+     if (bt == 0.0) // root bt
+     bt = 100.0;
+     double bs = br * bt;
+     //std::cout << "bs  " << bs << "\n";
+     
+     // compute transition probabilities
+     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
+     double expPart0 = exp( - (r[0] + r[1]) * bs);
+     double expPart1 = exp( - (r[0] + r[1]) * t1/rootAge); // needs *br1
+     double expPart2 = exp( - (r[0] + r[1]) * t2/rootAge); // needs *br2
+     double pi0 = r[0] / (r[0] + r[1]);
+     double pi1 = 1.0 - pi0;
+     double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
+     double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
+     double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
+     
+     //    std::cout << tp0[0][0] << " " << tp0[0][1] << "\n" << tp0[1][0] << " " << tp0[1][1] << "\n";
+     //    std::cout << tp1[0][0] << " " << tp1[0][1] << "\n" << tp1[1][0] << " " << tp1[1][1] << "\n";
+     //    std::cout << tp2[0][0] << " " << tp2[0][1] << "\n" << tp2[1][0] << " " << tp2[1][1] << "\n";
+     
+     std::vector<CharacterEvent*> parentState = value->getParentCharacters();
+     std::vector<CharacterEvent*> childState = value->getChildCharacters();
+     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+     {
+     unsigned int ancS = parentState[*it]->getState();
+     //unsigned int thisS = childState[*it]->getState();
+     unsigned int desS1 = state1[*it]->getState();
+     unsigned int desS2 = state2[*it]->getState();
+     
+     double u = GLOBAL_RNG->uniform01();
+     double g0 = tp0[ancS][0] * tp1[0][desS1] * tp2[0][desS2];
+     double g1 = tp0[ancS][1] * tp1[1][desS1] * tp2[1][desS2];
+     
+     unsigned int s = 0;
+     if (u < g1 / (g0 + g1))
+     s = 1;
+     
+     //        std::cout << "\t" << *it << " " << s << " : " << ancS << " -> (" << g0 << "," << g1 << ") -> (" << desS1 << "," << desS2 << ")\n";
+     
+     childState[*it] = new CharacterEvent(*it, s, 1.0);
+     }
+     
+     //double lnP = sampleCharacterState(indexSet, childStates, 1.0);
+     value->setChildCharacters(childState);
+     
+     return 0.0;
+     */
 }
 
 template<class charType, class treeType>

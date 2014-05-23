@@ -63,6 +63,16 @@ BranchHistory::BranchHistory(const BranchHistory& m)
     
 }
 
+BranchHistory::~BranchHistory(void)
+{
+//    for (size_t i = 0; i < parentCharacters.size(); i++)
+//        delete parentCharacters[i];
+//    for (size_t i = 0; i < childCharacters.size(); i++)
+//        delete childCharacters[i];
+//    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
+
+}
+
 BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     
     if (this != &bh) {
@@ -82,6 +92,8 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     
     return *this;
 }
+
+
 
 bool BranchHistory::operator<(const BranchHistory& m) const {
     return (this < &m);

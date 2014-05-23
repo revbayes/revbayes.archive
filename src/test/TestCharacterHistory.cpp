@@ -122,8 +122,10 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(1); seed.push_back(2); // 39
+    seed.push_back(1); seed.push_back(3);
     GLOBAL_RNG->setSeed(seed);
+    std::stringstream ss;
+    ss << "." << old_seed[0] << "." << old_seed[1];
 
     
     bool simulate = false;
@@ -244,13 +246,13 @@ bool TestCharacterHistory::run_exp(void) {
     //moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
     //moves.push_back( new ScaleMove(dp, 0.1, true, 2.0) );
     for( size_t i=0; i<2; i++)
-		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.2, false, 2) );
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.2, false, 5) );
 
-    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.2, false, 20));
+//    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3);
+//    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.3, false, 100));
 
     NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.2, false, 10));//numNodes));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.2, false, 50));//numNodes));
     
 //    
 //    if (useTipProbs)
@@ -273,9 +275,9 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     
 
-    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb.mcmc.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb.tree_chars.txt", "\t"));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb." + ss.str() + ".tree_chars.txt", "\t"));
     // monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, geo_coords, 50, mcmcGenerations, burn, filepath + "rb.phylowood.txt", "\t"));
     //    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
     
