@@ -1,8 +1,8 @@
 /**
  * @file
- * This file contains the implmentation of the average value statistic for DPP-distributed continuous variables, 
+ * This file contains the implmentation of the statistic for calculating the birth rate given div and turnover,
  *
- * @brief Implmentation of the DppNumTablesStatistic
+ * @brief Implmentation of the BirthRateConstBDStatistic
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-07-05 16:47:08 +0200 (Thu, 05 Jul 2012) $
