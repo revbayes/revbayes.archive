@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "WebClient.h"
+#include "HttpClient.h"
 #include "RepositoryInfo.h"
 
 typedef std::vector<std::string> StringVector;

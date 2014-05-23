@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "RepositoryInfo.h"
-#include "WebClient.h"
+#include "HttpClient.h"
 
 typedef std::vector<std::string> StringVector;
 
