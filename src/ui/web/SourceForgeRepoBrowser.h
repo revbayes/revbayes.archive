@@ -8,7 +8,7 @@
 
 #include "IRepoBrowser.h"
 #include "RepositoryInfo.h"
-#include "WebClient.h"
+#include "HttpClient.h"
 
 #include "pugixml.hpp"
 

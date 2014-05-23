@@ -21,7 +21,7 @@
 #include "RepoBrowserFactory.h"
 #include "IRepoBrowser.h"
 #include "IRepoObserver.h"
-#include "WebClient.h"
+#include "HttpClient.h"
 
 
 typedef std::vector<std::string> StringVector;
