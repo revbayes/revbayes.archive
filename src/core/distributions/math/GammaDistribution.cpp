@@ -63,11 +63,3 @@ void GammaDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
     }
 }
 
-double GammaDistribution::getShapeValue(void){
-	return shape->getValue();
-}
-
-double GammaDistribution::getRateValue(void){
-	return rate->getValue();
-}
-

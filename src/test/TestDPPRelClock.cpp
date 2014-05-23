@@ -66,8 +66,12 @@ bool TestDPPRelClock::run( void ) {
     
     
     // birth-death process priors
-    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(0.05));
-    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.5));
+	ConstantNode<double> *dMin = new  ConstantNode<double>("div_min", new double(0.0));
+	ConstantNode<double> *dMax = new  ConstantNode<double>("div_max", new double(1000.0));
+    StochasticNode<double> *div = new StochasticNode<double>("diversification", new UniformDistribution(dMin,dMax));
+	ConstantNode<double> *turnMin = new  ConstantNode<double>("turn_min", new double(0.0));
+	ConstantNode<double> *turnMax = new  ConstantNode<double>("turn_max", new double(1000.0));
+    StochasticNode<double> *turn = new StochasticNode<double>("turnover", new UniformDistribution(turnMin,turnMax));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
 	
     // gtr model priors
@@ -87,7 +91,7 @@ bool TestDPPRelClock::run( void ) {
 	
 	size_t numBranches = 2*data[0]->getNumberOfTaxa() - 2;
 	
-	double priorMean = 3.0;
+	double priorMean = 1.0;
 	double meanCP = RbStatistics::Helper::dppConcParamFromNumTables(priorMean, (double)numBranches);
 	
 	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
@@ -125,6 +129,8 @@ bool TestDPPRelClock::run( void ) {
 	std::cout << " branch rates: " << branchRates->getValue() << std::endl;
 
     DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
+	
+	std::cout << "- current NC = " << numCats->getValue() << std::endl;
 
 	/* add the moves */
     std::vector<Move*> moves;
@@ -141,8 +147,8 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new SimplexMove( er, 600.0, 6, 0, false, 2.0 ) );
 //    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, false, 2.0, 1.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
-    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 3.0 ) );
-    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, (int)numBranches, 4.0 ) );
+    moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
+    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
 		
 	
     // add some tree stats to monitor
@@ -154,13 +160,13 @@ bool TestDPPRelClock::run( void ) {
     /* add the monitors */
     std::vector<Monitor*> monitors;
     std::vector<DagNode*> monitoredNodes;
-//	monitoredNodes.push_back( pi );
 //	monitoredNodes.push_back( treeHeight );
     monitoredNodes.push_back( numCats );
     monitoredNodes.push_back( meanBrRate );
     monitoredNodes.push_back( cp );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
  
+	monitoredNodes.push_back( pi );
     monitoredNodes.push_back( er );
  	monitoredNodes.push_back( branchRates );
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, "clock_test/test_RBdpp_clock_x.log", "\t" ) );
