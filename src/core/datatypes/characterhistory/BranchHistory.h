@@ -11,6 +11,7 @@
 
 #include "CharacterEvent.h"
 #include "CharacterEventCompare.h"
+#include "Cloneable.h"
 
 #include <ostream>
 #include <set>
@@ -20,13 +21,14 @@ namespace RevBayesCore {
     
     class CharacterEvent;
 
-    class BranchHistory {
+    class BranchHistory : public Cloneable {
         
     public:
         //BranchHistory(void);
         BranchHistory(size_t nc, size_t ns, size_t idx);
         BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc);
         BranchHistory(const BranchHistory& m);
+        ~BranchHistory(void);
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
         //bool operator()(const BranchHistory&) const;

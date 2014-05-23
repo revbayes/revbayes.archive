@@ -33,6 +33,11 @@ CharacterEvent::~CharacterEvent(void)
 
 }
 
+CharacterEvent* CharacterEvent::clone( void ) const
+{
+    return new CharacterEvent( *this );
+}
+
 bool CharacterEvent::operator<(const CharacterEvent& rhs) const
 {
     return time < rhs.time;
