@@ -73,15 +73,15 @@ bool TestDPPRelClock::run( void ) {
 	// #######################################
 
 	//   Constant nodes
-	ConstantNode<double> *dLambda = new  ConstantNode<double>("div_rate", new double(1.0 / 5.0)); // Exponential rate
-	ConstantNode<double> *turnA = new  ConstantNode<double>("turn_alpha", new double(2.0)); // Beta distribution alpha
-	ConstantNode<double> *turnB = new  ConstantNode<double>("turn_beta", new double(2.0)); // Beta distribution beta
-    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0)); // assume 100% sampling for now
-    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.5 ) );
+	ConstantNode<double> *dLambda = new ConstantNode<double>("div_rate", new double(1.0 / 5.0));		// Exponential rate for prior on div
+	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
+	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
+    ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
+    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.5 ) );
 
 	//   Stochastic nodes
-    StochasticNode<double> *div = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
-    StochasticNode<double> *turn = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
+    StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
+    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
 
 	//   Deterministic nodes
 	//    birthRate = div / (1 - turn)
@@ -90,7 +90,7 @@ bool TestDPPRelClock::run( void ) {
 	DeterministicNode<double> *deathRate = new DeterministicNode<double>("death_rate", new DeathRateConstBDStatistic(div, turn));
 	// For some datasets with large root ages, if div>1.0 (or so), the probability is NaN
 	RandomNumberGenerator* rng = GLOBAL_RNG;
-	div->getValue() = rng->uniform01() / 1.5;
+	div->setValue(rng->uniform01() / 1.5);
 
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
@@ -111,16 +111,17 @@ bool TestDPPRelClock::run( void ) {
 	// This hyperprior is fully conditional on the DPP using a gamma distribution
 	//    the parameters of the gamma distribution are set so that the expectation of the hyperprior = meanCP
 	//    where meanCP = dpA / dpB
-	ConstantNode<double> *dpA = new ConstantNode<double>("dp_a", new double(2.0) );
-	ConstantNode<double> *dpB = new ConstantNode<double>("dp_b", new double(dpA->getValue() / meanCP) );
+	ConstantNode<double> *dpA  = new ConstantNode<double>("dp_a", new double(2.0) );
+	ConstantNode<double> *dpB  = new ConstantNode<double>("dp_b", new double(dpA->getValue() / meanCP) );
 	StochasticNode<double> *cp = new StochasticNode<double>("DPP.cp", new GammaDistribution(dpA, dpB) );
 	
 	// G_0 is an exponential distribution
-    ConstantNode<double> *a = new ConstantNode<double>("a", new double(1.0) );
+    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(1.0) );
 	TypedDistribution<double> *g = new ExponentialDistribution(a);
 	
 	// branchRates ~ DPP(g, cp, numBranches)
 	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
+
 	// a deterministic node for calculating the number of rate categories (required for the Gibbs move on cp)
 	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
 
@@ -129,8 +130,8 @@ bool TestDPPRelClock::run( void ) {
 
     // ###### GTR model priors ######
 	//    Constant nodes
-    ConstantNode<std::vector<double> > *bf = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(4,1.0) );
-    ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(6,1.0) );
+    ConstantNode<std::vector<double> > *bf   = new ConstantNode<std::vector<double> >( "bf", new std::vector<double>(4,1.0) );
+    ConstantNode<std::vector<double> > *e    = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(6,1.0) );
     //    Stochastic nodes
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(bf) );
     StochasticNode<std::vector<double> > *er = new StochasticNode<std::vector<double> >( "er", new DirichletDistribution(e) );
@@ -165,8 +166,8 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 //    moves.push_back( new SubtreeScale( tau, 5.0 ) );
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-//		moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
     moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
