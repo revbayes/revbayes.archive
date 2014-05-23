@@ -1,6 +1,7 @@
 /**
  * @file
- * This file contains the declaration of DPPGibbsConcentrationMove, which performs the DPP move based on Neal (2000) Algorithm 8
+ * This file contains the declaration of DPPGibbsConcentrationMove, which performs a fully conditional Gibbs move on the concentration parameter of the DPP
+ *   this move is conditional on the # of categories in the current state of the DPP
  *
  * @brief Declaration of DPPGibbsConcentrationMove
  *
