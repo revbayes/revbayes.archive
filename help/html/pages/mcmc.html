@@ -1,14 +1,13 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Create an MCMC analysis object</title>
+        <title>RevBayes Manual Pages :: MCMC analysis object</title>
         <link rel="stylesheet" type="text/css" href="../../lib/help.css"/>
-        
+
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
         </script>
-        
     </head>
     <body>
 
@@ -16,99 +15,90 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Create an MCMC analysis object</h1>
+        <h1>RevBayes Manual Pages :: MCMC analysis object</h1>
 
-        <h2>Function mcmc</h2>
+        <h2>Function MCMC</h2>
 
-        <span onClick="navigateHelp('mcmc');"><br />
+        <span onClick="navigateHelp('MCMC');"><br />
 <h2>Name</h2>
-<p class="indent">mcmc</p>
+<p class="indent">MCMC</p>
 </span><h2>Description</h2>
 <p class="indent"><p class="indent">
-                This function is used to create an MCMC analysis object from a model and associated
-                monitors and moves.
+                The MCMC analysis object keeps a model and the associated moves and monitors.
+                The object is used to run Markov chain Monte Carlo (MCMC) simulation on
+                the model, using the provided moves, to obtain a sample of the posterior probability
+                distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.
             </p>
 </p>
-<h2>Usage</h2>
-<p class="indent">
-            MCMC mcmc (Model model, Monitor[] monitors, Move[] moves)
-        </p>
-<h2 >Arguments</h2>
+<h2 >Member methods</h2>
 <div class="indent">
-<b >model</b>
+<b >MCMC</b>
 <div class="indent">
-
-                The model to use in the analysis. The function makes an independent copy of the model
-                and stores it internally in the MCMC object.
-            <br />
+ Create an MCMC analysis object (constructor).<br />
 <br />
-<span class="argument">Argument type: </span>
-fixed<br />
-<span class="argument">Value type: </span>
-Model<br />
+<span class="argument">Usage: </span>
+
+                MCMC MCMC (Model model, Monitor[] monitors, Move[] moves)
+            <br />
+<span class="argument">Method type :</span>
+
+                mutable
+            <br />
+<span class="argument">Return value: </span>
+An MCMC object<br />
 </div>
 <br />
-<b >monitors</b>
+<b >run</b>
 <div class="indent">
-
-                The monitors to use in the analysis. The function makes an independent copy of the monitors
-                and stores them internally in the MCMC object.
-            <br />
+ Run an MCMC analysis.<br />
 <br />
-<span class="argument">Argument type: </span>
-fixed<br />
-<span class="argument">Value type: </span>
-Vector of monitors<br />
+<span class="argument">Usage: </span>
+
+                void run (Natural generations)
+            <br />
+<span class="argument">Method type :</span>
+
+                mutable
+            <br />
+<span class="argument">Return value: </span>
+void<br />
 </div>
 <br />
-<b >moves</b>
+<b >burnin</b>
 <div class="indent">
 
-                The moves to use in the analysis. The function makes an independent copy of the moves
-                and stores them internally in the MCMC object.
+                Run a burnin simulation to let the MCMC procedure find the target distribution and to autotune move tuning parameters.
+                No parameter values are sampled.
             <br />
 <br />
-<span class="argument">Argument type: </span>
-fixed<br />
-<span class="argument">Value type: </span>
-Vector of moves<br />
+<span class="argument">Usage: </span>
+
+            void burnin (Natural generations, Natural tuningInterval)
+            <br />
+<span class="argument">Method type :</span>
+
+                mutable
+            <br />
+<span class="argument">Return value: </span>
+void<br />
 </div>
 <br />
 </div>
 <h2>Details</h2>
 <p class="indent"><p class="indent">
-                The MCMC analysis object produced by a call to this function keeps copies of the model and the associated moves and monitors.
-                The MCMC analysis object is used to run Markov chain Monte Carlo (MCMC) simulation on the model, using the provided moves,
-                to obtain a sample of the posterior probability distribution. During the analysis, the monitors are responsible for sampling
-                model parameters of interest.
+                Markov chain Monte Carlo (MCMC) simulation is a numerical method that, in this program, is used
+                to approximate the posterior probability distribution of the parameters of a model. The basic
+                sampling mechanism we use is the Metropolis-Hastings algorithm (Metropolis et al. 1953; Hastings 1970).
             </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-            # Create a simple model (unclamped)
-            a ~ exponential(1)
-            mymodel <- model(a)
-            
-            # Create a move vector and a monitor vector
-            moves[1] <- mScale(a, lambda=1.0, weight=1.0)
-            monitors[1] <- modelmonitor("out.txt")
-            
-            # Create an mcmc object
-            mymcmcObject <- mcmc( mymodel, monitors, moves)
-            
-            # Run a short analysis
-            mymcmcObject.run( generations = 100)
-        </pre>
+<p class="indent">
+                An MCMC simulation is known to converge to the posterior probability distribution, such that the frequency with
+                which a particular parameter value is sampled is a valid approximation of its posterior probability. However,
+                convergence to the target distribution may be slow, so it is important to assess convergence to ensure that you
+                are likely to have a reasonable sample from the posterior.
+            </p>
 </p>
 <h2>Author</h2>
 <p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('MCMC'); return false;">MCMC</a><br />
-<a href="" onClick="navigateHelp('model'); return false;">model</a><br />
-<a href="" onClick="navigateHelp('Model'); return false;">Model</a><br />
-<a href="" onClick="navigateHelp('Move'); return false;">Move</a><br />
-</p><br />
 
 
 
