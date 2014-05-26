@@ -20,3 +20,4 @@ boost_1_55_0/tools/build/v2/engine/bin.macosxx86_64/b2
 boost_1_55_0/tools/build/v2/engine/bin.macosxx86_64/bjam
 
 projects/xcode/revbayes.xcodeproj
+/src/core/.DS_Store
