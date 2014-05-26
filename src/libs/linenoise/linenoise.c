@@ -1628,4 +1628,9 @@ void linenoiceSetCursorPos(int x) {
 
 void linenoiceAppendCommand(const char *cmd) {
     insert_chars(_current, _current->pos, cmd);
+    refreshLine(_current->buf, _current);
+}
+
+char *linenoiseGetCurrentBuffer(){
+    return _current->buf;
 }

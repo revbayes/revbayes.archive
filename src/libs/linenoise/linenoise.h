@@ -68,5 +68,6 @@ void linenoiseClearScreen(void);
 void linenoiceCursorToLeft(void);
 void linenoiceSetCursorPos(int x);
 void linenoiceAppendCommand(const char *cmd);
+char *linenoiseGetCurrentBuffer(void);
 
 #endif /* __LINENOISE_H */

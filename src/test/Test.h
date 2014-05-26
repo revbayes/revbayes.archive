@@ -24,7 +24,7 @@ public:
     Test(void);
     Test(int c, const char * v[]);
     virtual                    ~Test(void);                                                          //!< Virtual destructor
-    bool                        performTests();
+    bool                        performTests(int argc, const char * argv[]);
     
 private:
     int argc;

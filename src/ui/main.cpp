@@ -29,41 +29,39 @@
 
 namespace fs = boost::filesystem;
 
-std::string inifile = Filesystem::expandUserDir("~") + Filesystem::directorySeparator() + "revbayes.ini";
-
 int main(int argc, const char* argv[]) {
     
 
     // parse command line arguments
-    Options options;
-    options.parseOptions(argc, argv);
-    std::cout << options.getMessage() << std::endl;
-    if (options.isHelp()) {
+    Options *options = new Options();
+    options->parseOptions(argc, argv);
+    std::cout << options->getMessage() << std::endl;
+    if (options->isHelp()) {
         exit(0);
     }
 
-    // read / create settings file
-    Configuration configuration(inifile);
-    configuration.parseInifile();
-    std::cout << configuration.getMessage() << std::endl;
-
+    // read / create configuration file
+    Configuration *configuration = new Configuration();
+    configuration->parseConfiguration();
+    std::cout << configuration->getMessage() << std::endl;
+    
     // set up help
     IHelpRenderer *helpRenderer = new HelpConsoleRenderer();
     HelpParser *help = new HelpParser();
     help->setRenderer(helpRenderer);
-    help->setHelpDir(configuration.getHelpDir());    
-    
+    help->setHelpDir(configuration->getHelpDir());    
+
     /* initialize environment */    
     RevLanguageMain rl(help);
 
     // pass input files to Rev
-    rl.startRevLanguageEnvironment(options.getInputFiles());
+    rl.startRevLanguageEnvironment(options->getInputFiles());
     // exit after processing the input files if not interactive
-    if (!options.isInteractive()) {
+    if (!options->isInteractive()) {
         exit(0);
     }
-
-    if (!options.isDisableReadline()) {
+    
+    if (!options->isDisableReadline()) {
         RbClient c;
         c.startInterpretor(help, options, configuration);
         return 0;

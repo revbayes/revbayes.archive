@@ -25,9 +25,6 @@
 namespace fs = boost::filesystem;
 using namespace std;
 
-std::string inifile = Filesystem::expandUserDir("~") + Filesystem::directorySeparator() + "revbayes.ini";
-
-// read file content
 
 string load_file(string filename) {
     string s;
@@ -51,9 +48,8 @@ struct compare_path {
 
 int main(int argc, const char * argv[]) {
 
-    // read / create settings file
-    Configuration configuration(inifile);
-    configuration.parseInifile();
+    Configuration configuration;
+    configuration.parseConfiguration();
     std::cout << configuration.getMessage() << std::endl;
 
 
@@ -124,7 +120,7 @@ int main(int argc, const char * argv[]) {
     BOOST_FOREACH(fs::path file, files) {
 
         if (!help->setHelp(fs::path(helpDir / file).string())) {
-            cout << "Warning: failed to parse " << file.string() << ": " << endl << help->getMessage();
+            cout << "\nWarning: failed to parse \n" << file.string() << ": " << endl << help->getMessage();
             continue;
         }
         std::string functionName = help->getRbHelpEntry().GetFunctionHelpEntry().GetName();
@@ -144,7 +140,7 @@ int main(int argc, const char * argv[]) {
 
             // create a manual page
             fstream fs;
-            std::string functionPage = "html/pages/" + functionName + ".html";
+            std::string functionPage = "html/pages/" + functionName + "-function.html";
             fs.open(fs::path(helpDir / functionPage).string().c_str(), fstream::out | fstream::trunc);
             fs << renderer->renderFunctionHelp(help->getRbHelpEntry().GetFunctionHelpEntry(), true);
             fs.close();
@@ -167,7 +163,7 @@ int main(int argc, const char * argv[]) {
             
             // create a manual page
             fstream fs;
-            std::string typePage = "html/pages/" + typeName + ".html";
+            std::string typePage = "html/pages/" + typeName + "-type.html";
             fs.open(fs::path(helpDir / typePage).string().c_str(), fstream::out | fstream::trunc);
             fs << renderer->renderTypeHelp(help->getRbHelpEntry().GetTypeHelpEntry(), true);
             fs.close();
@@ -185,7 +181,7 @@ int main(int argc, const char * argv[]) {
     fs << index_result;
     fs.close();
 
-    cout << "The index.html file is now updated." << endl;
+    cout << "\nHtml files are updated.\n" << endl;
 
     return 0;
 }

@@ -29,7 +29,7 @@ public:
 
         // set up reasonable default values
         this->message = "";
-        this->includePath = "." + Filesystem::directorySeparator() + ";../../examples/";
+        this->includePath = "." + Filesystem::directorySeparator() + ";../../examples/;../../downloads/";
         this->help = false;
         this->interactive = true;
         this->disableReadline = false;
