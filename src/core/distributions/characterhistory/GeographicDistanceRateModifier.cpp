@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
+#include <iomanip>
 #include <cmath>
 #include "CharacterEvent.h"
 #include "GeographicArea.h"
@@ -60,8 +61,10 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
     
     for (unsigned i = 0; i < numEpochs; i++)
     {
+        unsigned iOffset = i*epochOffset;
         for (unsigned j = 0; j < numAreas; j++)
         {
+            unsigned jOffset = j*areaOffset;
             for (unsigned k = j; k < numAreas; k++)
             {
 //                std::cout << "geoDist " << epochOffset*i + areaOffset*j + k << "\n";
@@ -73,9 +76,28 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
         }
     }
     
-    computeAllPairwiseDistanceOrder();
+//    std::cout << "\n";
+//    for (size_t i = 0; i < numEpochs; i++)
+//    {
+//        unsigned iOffset = i*epochOffset;
+//        for (size_t j = 0; j < numAreas; j++)
+//        {
+//            unsigned jOffset = j*areaOffset;
+//            for (size_t k = 0; k < numAreas; k++)
+//            {
+//                double d = geographicDistances[ iOffset + jOffset + k ];
+//                std::cout << std::fixed << std::setprecision(3) << std::setw(4);
+//                std::cout <<  d << " ";
+//            }
+//            std::cout << "\n";
+//        }
+//        std::cout << "----\n";
+//        
+//    }
     
-    setDistancePower(1.0, true);
+    //computeAllPairwiseDistanceOrder();
+    
+    setDistancePower(dp, true);
     update();
 }
 
@@ -148,7 +170,6 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
             if (idx_a == newState->getIndex())
                 rate += d;
         }
-
     }
     
     // get sum-normalized rate-modifier
@@ -187,18 +208,42 @@ void GeographicDistanceRateModifier::update(void)
             unsigned jOffset = j*areaOffset;
             for (size_t k = 0; k < j; k++)
             {
+                //double d = exp(-distancePower * geographicDistances[ iOffset + jOffset + k ]); //, -distancePower);
                 double d = pow(geographicDistances[ iOffset + jOffset + k ], -distancePower);
+
                 geographicDistancePowers[ iOffset + jOffset + k ] = d;
                 geographicDistancePowers[ iOffset + k*areaOffset + j ] = d;
             }
         }
     }
+    
+//    for (size_t i = 0; i < numEpochs; i++)
+//    {
+//        unsigned iOffset = i*epochOffset;
+//        for (size_t j = 0; j < numAreas; j++)
+//        {
+//            unsigned jOffset = j*areaOffset;
+//            for (size_t k = 0; k < numAreas; k++)
+//            {
+//                double d = geographicDistancePowers[ iOffset + jOffset + k ];
+//                std::cout << std::fixed << std::setw(4);
+//                std::cout <<  d << " ";
+//            }
+//            std::cout << "\n";
+//        }
+//        std::cout << "----\n";
+//        
+//    }
+    
 }
 
 
 void GeographicDistanceRateModifier::setDistancePower(double dp, bool upd)
 {
+    
     bool changed = (distancePower != dp);
+    
+    //std::cout << "setDistancePower " << dp << "\n";
     distancePower = dp;
     if (upd && changed)
         update();
