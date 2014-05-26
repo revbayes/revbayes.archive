@@ -68,6 +68,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         
         branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
         branchHeterogeneousGainLossRates = r.branchHeterogeneousClockRates;
+        forbidExtinction = r.forbidExtinction;
         
         branchOffset = r.branchOffset;
         epochOffset = r.epochOffset;
@@ -124,6 +125,12 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
 {
     double rate = 0.0;
     int s = to->getState();
+    
+    if (from[ to->getIndex() ]->getState() == to->getState())
+    {
+        std::cout << node.getIndex() << " problem...\n";
+        ;
+    }
     
     // rate to extinction cfg is 0
     if (count[1] == 1 && s == 0 && forbidExtinction)
@@ -222,7 +229,7 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
         r1 *= homogeneousGainLossRates[1];
     }
     
-    // apply rate for branch
+    // apply rate for branch.
     double sum = r0 + r1;
     if (branchHeterogeneousClockRates)
     {
@@ -277,12 +284,8 @@ const std::vector<double>& RateMap_Biogeography::getHomogeneousGainLossRates(voi
 
 void RateMap_Biogeography::setHomogeneousGainLossRates(const std::vector<double> &r)
 {
-    
     branchHeterogeneousGainLossRates = false;
     homogeneousGainLossRates = r;
-    
-    
-    ;
 }
 
 const std::vector<std::vector<double> >& RateMap_Biogeography::getHeterogeneousGainLossRates(void) const

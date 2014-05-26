@@ -242,6 +242,7 @@ void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
         parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
 }
 
+
 void BranchHistory::setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s)
 {
     history.clear();
