@@ -114,6 +114,10 @@ double RevBayesCore::SampleNodeHistoryCtmcMove<charType, treeType>::SampleNodeHi
     std::vector<TopologyNode*> nodes = tree->getValue().getNodes();
     size_t nodeIdx = GLOBAL_RNG->uniform01() * nodes.size();
     storedNode = nodes[nodeIdx];
+    
+    if (storedNode->isRoot())
+        return RbConstants::Double::neginf;
+    
     storedValue = new BranchHistory(p->getHistory(nodeIdx));
     
     storedAdjNodes.clear();

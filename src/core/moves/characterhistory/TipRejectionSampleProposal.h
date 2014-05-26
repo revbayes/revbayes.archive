@@ -251,9 +251,9 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::preparePropos
         }
     }
     
-    const TopologyNode& node = tau->getValue().getNode(nodeIndex);
+    TopologyNode& node = tau->getValue().getNode(nodeIndex);
     
-    nodeProposal->assignNodeIndex(node.getIndex());
+    nodeProposal->assignNode(&node);
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
         

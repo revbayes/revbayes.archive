@@ -163,18 +163,18 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i)
         {
             DagNode* theAffectedNode = *i;
-//            std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << " " << theAffectedNode->getLnProbability() << "\n";
+            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << " " << theAffectedNode->getLnProbability() << "\n";
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
     
     //std::cout << "move hr + probRatio " << hr + probRatio << "\n";
-//    if (fabs(hr + probRatio) > 0.1)
-//    {
-//        
-//        std::cout << "!!!\n";
-//    }
-//    
+    if (fabs(hr + probRatio) > 0.1)
+    {
+        std::cout << "move hr + probRatio " << hr + probRatio << " " << hr << " " << probRatio << "\n";
+        std::cout << "!!!\n";
+    }
+    
     return hr;
 }
 
@@ -203,6 +203,7 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectMove( void
     
     // touch the node
     tau->touch();
+    ctmc->touch();
 }
 
 template<class charType, class treeType>
