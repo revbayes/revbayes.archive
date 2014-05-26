@@ -85,6 +85,39 @@ bool Test::performTests(int argc, const char * argv[]) {
     time_t start,end;
     time (&start);
     
+    ////////////////
+    // Newer tests
+    ////////////////
+    
+    
+    /* A DPP relaxed model test */
+    try {
+        //        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+        //		testDPPRC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    // discrete dependence model
+    try
+    {
+        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
+//        testDdm.run_exp();
+//        testDdm.run_dollo();
+    }
+    catch (RbException &e)
+    {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
+    ////////////////
+    // Older tests
+    ////////////////
+   
+    
     /* The transition probability test = "tpt" */
     try {
         TestTransitionProbabilities testTP = TestTransitionProbabilities();
@@ -148,7 +181,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-    
     
     /* The normal model test */
     try {
@@ -374,18 +406,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
     
-    
-    
-    /* A DPP relaxed model test */
-    try {
-//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
-        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
-		
-//		testDPPRC.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
 	/* A strict clock model test */
     try {
         TestStrictClockModel testGMC = TestStrictClockModel("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
@@ -473,17 +493,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     }
 #endif
     
-    // discrete dependence model
-    try
-    {
-        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-//        testDdm.run_exp();
-        //testDdm.run_dollo();
-    }
-    catch (RbException &e)
-    {
-        std::cout << e.getMessage() << std::endl;
-    }
     
     /* The whole RevLanguage test suite */
     try {
