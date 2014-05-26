@@ -271,9 +271,9 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
     
     if (node->getIndex() == monitorIndex) { std::cout << "BEFORE node\n"; histories[node->getIndex()]->print(); }
 
-//    sampleNodeCharacters(*node, siteIndexSet);
-//    if (node->isRoot())
-//        proposedLnProbRatio += sampleRootCharacters(*node,siteIndexSet);
+    sampleNodeCharacters(*node, siteIndexSet);
+    if (node->isRoot())
+        proposedLnProbRatio += sampleRootCharacters(*node,siteIndexSet);
 
     
     if (node->getIndex() == monitorIndex) { std::cout << "AFTER node\n"; histories[node->getIndex()]->print(); }

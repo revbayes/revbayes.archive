@@ -125,7 +125,7 @@ bool TestCharacterHistory::run_exp(void) {
     seed.push_back(3); seed.push_back(2);
     GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
-    ss << "." << old_seed[0] << "." << old_seed[1];
+    ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
     
     bool simulate = false;
@@ -134,9 +134,10 @@ bool TestCharacterHistory::run_exp(void) {
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
-    std::string fn = "vireya_sim2.nex";
+//    std::string fn = "vireya_sim2.nex";
     //std::string fn = "bg.test.nex";
     //std::string fn = "bg.break.nex";
+    std::string fn = "vireya.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -187,14 +188,13 @@ bool TestCharacterHistory::run_exp(void) {
 //    dp->setValue(new double(10));
     DeterministicNode<GeographicDistanceRateModifier>* ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
 
-    ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(5.0));
+    ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(1.0));
     std::vector<const TypedDagNode<double> *> gainLossRates;
 	std::vector< ContinuousStochasticNode *> gainLossRates_nonConst;
 	for( size_t i=0; i<2; i++){
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        tmp_glr->setValue(new double(0.2));
 //        tmp_glr->setValue(new double(0.2));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
@@ -204,18 +204,15 @@ bool TestCharacterHistory::run_exp(void) {
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
     brmf_likelihood->setGainLossRates(glr_vector);
-    //brmf_likelihood->setClockRate(clockRate);
+    brmf_likelihood->setClockRate(clockRate);
     //brmf_likelihood->setGeographicDistanceRateModifier(ddd);
-    DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_l", brmf_likelihood);
+    DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
     // Q-map used to sample path histories
-    BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
+    BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, !forbidExtinction);
     brmf_sample->setGainLossRates(glr_vector);
-    DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_s", brmf_sample);
-    
-//    // Soon to be deleted...
-//    DeterministicNode<RateMatrix> *qmat = new DeterministicNode<RateMatrix>( "Q_mtx", new FreeBinaryRateMatrixFunction(glr_vector) );
-    
+    DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
+        
     // and the character model
     bool usingAmbiguousCharacters = !true;
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters, forbidExtinction);

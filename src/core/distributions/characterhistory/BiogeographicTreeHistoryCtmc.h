@@ -419,13 +419,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     const std::vector<double>& glr = qmap.getHomogeneousGainLossRates();
 //    double rate_sum = glr[0] + glr[1];
     
-    for (size_t i = 0; i < nodes.size(); i++)
-    {
-        TopologyNode* nd = nodes[i];
-        BranchHistory* bh = this->histories[nd->getIndex()];
-        double e_n = nodes[i]->getBranchLength() * glr[0] * (double)this->numSites;
-        std::cout << i << " " << nd->getBranchLength() << " " << bh->getNumEvents() << " " << e_n << " " << (double)bh->getNumEvents() / e_n <<  "\n";
-    }
+//    for (size_t i = 0; i < nodes.size(); i++)
+//    {
+//        TopologyNode* nd = nodes[i];
+//        BranchHistory* bh = this->histories[nd->getIndex()];
+//        double e_n = nodes[i]->getBranchLength() * glr[0] * (double)this->numSites;
+//        std::cout << i << " " << nd->getBranchLength() << " " << bh->getNumEvents() << " " << e_n << " " << (double)bh->getNumEvents() / e_n <<  "\n";
+//    }
 
 }
 
@@ -526,7 +526,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
         
         // to update
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
-        std::cout << node.getIndex() << " ";
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
             unsigned int desS1 = leftChildState[*it]->getState();
@@ -540,12 +539,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             if (u < g1 / (g0 + g1))
                 s = 1;
             
-            std::cout << s;
-            
             nodeChildState[*it]->setState(s);
         }
-        std::cout << "\n";
-
         
         // forbid extinction
         if (numOn(nodeChildState) == 0 && forbidExtinction)
