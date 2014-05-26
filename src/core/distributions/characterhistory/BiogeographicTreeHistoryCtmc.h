@@ -246,7 +246,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         
         const treeType& tree = this->tau->getValue();
         double branchLength = tree.getBranchLength(nodeIndex);
-        double currAge = (!node.isRoot() ? node.getParent().getAge() : 10e200);
+        double currAge = (node.isRoot() ? 10.0 * tree.getTreeLength() : node.getParent().getAge());
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
        
         // stepwise events
@@ -562,7 +562,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     double bt = node.getBranchLength();
 //    double bt = tree.getBranchLength(nodeIdx);
     if (node.isRoot())
-        bt = tree.getTreeLength() * 100.0;
+        bt = tree.getTreeLength() * 10.0;
         ;//bt = 1000.0;
     
     const RateMap* rm = &homogeneousRateMap->getValue();

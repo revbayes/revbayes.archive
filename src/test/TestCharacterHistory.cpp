@@ -123,21 +123,26 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
     seed.push_back(3); seed.push_back(2);
-    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
     
+    bool usingAmbiguousCharacters = !true;
     bool simulate = false;
-    bool useTipProbs = false;
-    bool forbidExtinction = !true;
+    bool useDistances = !true;
+//    bool useTipProbs = false;
+    bool forbidExtinction = true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
-//    std::string fn = "vireya_sim2.nex";
+    //std::string fn = "vireya_sim.nex";
+    //std::string fn = "vireya_sim2.nex";
+    std::string fn = "vireya_sim_0_1.nex";
+    //std::string fn = "vireya_gain0_02_loss0_06_dp3.nex";
     //std::string fn = "bg.test.nex";
     //std::string fn = "bg.break.nex";
-    std::string fn = "vireya.nex";
+    //std::string fn = "vireya.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -170,32 +175,38 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<double> *clockRate = new StochasticNode<double>("clockRate", new GammaDistribution(clockPriorA, clockPriorB) );
     clockRate->setValue(new double(1.0));
 
+    
     // tree
     std::vector<std::string> names = data[0]->getTaxonNames();
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge() ) );
     ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(1.0));
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
-
 //    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>("tau", new UniformTimeTreeDistribution(origin, names));
-    
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     tau->setValue( trees[0] );
     
+    
     // geo distances
-    ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(5.0));
-    StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
-//    dp->setValue(new double(10));
-    DeterministicNode<GeographicDistanceRateModifier>* ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
-
+    DeterministicNode<GeographicDistanceRateModifier>* ddd = NULL;
+    ContinuousStochasticNode* dp = NULL;
+    if (useDistances)
+    {
+        ConstantNode<double> *dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
+        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+        //dp->setValue(new double(0.1));
+        ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
+    }
+    
+    // ctmc rates
     ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(1.0));
     std::vector<const TypedDagNode<double> *> gainLossRates;
 	std::vector< ContinuousStochasticNode *> gainLossRates_nonConst;
 	for( size_t i=0; i<2; i++){
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
-		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-//        tmp_glr->setValue(new double(0.2));
+		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior));
+        //tmp_glr->setValue(new double(0.01));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -204,37 +215,31 @@ bool TestCharacterHistory::run_exp(void) {
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
     brmf_likelihood->setGainLossRates(glr_vector);
-    brmf_likelihood->setClockRate(clockRate);
-    //brmf_likelihood->setGeographicDistanceRateModifier(ddd);
+    //brmf_likelihood->setClockRate(clockRate);
+    if (useDistances)
+        brmf_likelihood->setGeographicDistanceRateModifier(ddd);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
     // Q-map used to sample path histories
-    BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, !forbidExtinction);
+    BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
     brmf_sample->setGainLossRates(glr_vector);
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
         
     // and the character model
-    bool usingAmbiguousCharacters = !true;
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters, forbidExtinction);
     biogeoCtmc->setRateMap(q_likelihood);
-//    if (data.size() == 2 && useTipProbs)
-//        biogeoCtmc->setTipProbs( data[1] );
+    if (data.size() == 2 && usingAmbiguousCharacters)
+        biogeoCtmc->setTipProbs( data[1] );
     
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
     // simulated data
     if (simulate)
-    {
-        //AbstractTreeHistoryCtmc<StandardState, TimeTree>* p = static_cast< AbstractTreeHistoryCtmc<StandardState, TimeTree>* >(charactermodel->getDistribution());
-        //p->simulate();
         biogeoCtmc->simulate();
-    }
 
     // real data
     else
-    {
         charactermodel->clamp( data[0] );
-    }
     
     // initialize mapping
     charactermodel->redraw();
@@ -256,39 +261,24 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<Move*> moves;
     
     //moves.push_back( new ScaleMove(clockRate, 1.0, true, 2.0) );
-    //moves.push_back( new ScaleMove(dp, 0.1, true, 2.0) );
+    
+    if (useDistances)
+    {
+        moves.push_back( new ScaleMove(dp, 0.25, true, 4) );
+        moves.push_back( new ScaleMove(dp, 1.0, true, 2) );
+    }
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 1.0, false, 1) );
-		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.25, false, 2) );
+        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 1.0, false, 3) );
+		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.25, false, 5) );
     }
 
+    TopologyNode* nd = NULL; // &tau->getValue().getNode(60);
+    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4, nd);
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.5, false, 100));
     
-    if (!true)
-    {
-        std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
-        for (size_t i = 0; i < nodes.size(); i++)
-        {
-            PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.5, nodes[i]);
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.5, false, 1));
-            
-            if (!nodes[i]->isTip())
-            {
-                NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nodes[i]);
-                moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, 1));//numNodes));
-            }
-        }
-    
-    }
-    else
-    {
-        TopologyNode* nd = NULL; // &tau->getValue().getNode(60);
-        PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd);
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.2, false, 100));
-        
-        NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd);
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.1, false, 50));//numNodes));
-    }
+    NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd);
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.5, false, 50));//numNodes));
 
  
 
@@ -312,7 +302,8 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert(clockRate);
-    monitoredNodes.insert( dp );
+    if (useDistances)
+        monitoredNodes.insert( dp );
     monitoredNodes.insert( glr_vector );
     
 
@@ -448,7 +439,7 @@ bool TestCharacterHistory::run_dollo(void) {
     // create biogeo rate map (to compute likelihoods)
     ConstantNode<double> *dpp = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
     StochasticNode<double> *dp = new StochasticNode<double>( "distancePower", new ExponentialDistribution(dpp) );
-    dp->setValue(new double(0.0));
+    //dp->setValue(new double(0.0));
     
     ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(4.0));
     std::vector<const TypedDagNode<double> *> gainLossRates;

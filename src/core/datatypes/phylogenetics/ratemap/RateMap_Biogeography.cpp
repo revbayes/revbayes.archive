@@ -32,7 +32,6 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     heterogeneousClockRates = m.heterogeneousClockRates;
     homogeneousGainLossRates = m.homogeneousGainLossRates;
     heterogeneousGainLossRates = m.heterogeneousGainLossRates;
-    geographicDistanceRateModifier = m.geographicDistanceRateModifier;
     distancePower = m.distancePower;
     
     geographicDistanceRateModifier = m.geographicDistanceRateModifier;
