@@ -73,8 +73,8 @@ pre  {
     padding: 20px;
 }
 
-a:link    { text-decoration: none; color: blue; }
-a:visited { text-decoration: none; color: blue; }
+a:link    { text-decoration: underline; color: blue; }
+a:visited { text-decoration: underline; color: blue; }
 a:hover   { text-decoration: underline; color: red; }
 a:active  { text-decoration: underline; background-color: #FFD0D0; }
 
@@ -122,4 +122,11 @@ a:active  { text-decoration: underline; background-color: #FFD0D0; }
 .argument{
     float: left;
     width: 130px;
+}
+
+.section-label{
+    font: bold, italic;
+    text-align: center;
+    width: 100%;
+    background-color: lightgray;
 }

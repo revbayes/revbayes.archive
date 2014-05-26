@@ -401,7 +401,10 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 template<class charType, class treeType>
 double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::computeLnProbability( void ) 
 {
-        
+	
+	// TAH Run under prior
+//	return 1.0;
+	
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = tau->getValue().getRoot();
     

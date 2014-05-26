@@ -12,7 +12,7 @@ win="false"
 
 # parse command line arguments
 while echo $1 | grep ^- > /dev/null; do
-# intercept help while parsing "-key value" pairs
+    # intercept help while parsing "-key value" pairs
     if [ "$1" = "--help" ] || [ "$1" = "-h" ]    
     then 
         echo '
@@ -21,7 +21,7 @@ while echo $1 | grep ^- > /dev/null; do
             make
         
         Command line options are: 
-            -h | -help                 : print this help and exit.
+            -h | -help                  : print this help and exit.
             -boost      <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
             -mavericks  <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
             -win        <true|false>    : set to true if you are building on a Windows system. Defaults to false.
@@ -50,9 +50,9 @@ then
 
     if [ "$mavericks" = "true" ]
     then
-        ./b2 cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+        ./b2 cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++ -lpthread"
     else
-        ./b2
+        ./b2 linkflags="-lpthread"
     fi
 
 else
@@ -98,7 +98,7 @@ then
     '  >> "$HERE/CMakeLists.txt"
 else
     echo '
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -lpthread")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
     '  >> "$HERE/CMakeLists.txt"
 fi  
@@ -128,7 +128,22 @@ target_link_libraries(rb rb-parser rb-core)
 
 # extended rev-bayes binary
 add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
-target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l boost_iostreams boost_serialization)
+
+' >> "$HERE/CMakeLists.txt"
+
+if [ "$win" = "true" ]
+then
+    echo '
+    target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l boost_iostreams boost_serialization)
+    '  >> "$HERE/CMakeLists.txt"
+else
+    echo '
+    target_link_libraries(rb-extended rb-ui rb-parser rb-core libs boost_system boost_filesystem boost_regex boost_thread boost_date_time boost_program_options boost_math_c99 boost_math_c99f boost_math_tr1f boost_math_tr1l boost_iostreams boost_serialization pthread)
+    '  >> "$HERE/CMakeLists.txt"
+fi  
+
+echo '
+
 
 # utility for generating help html files.
 add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenerator.cpp)

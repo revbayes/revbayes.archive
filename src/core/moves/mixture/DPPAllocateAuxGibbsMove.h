@@ -109,7 +109,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	TypedDistribution<valueType>* g0 = dist.getBaseDistribution();
 	    
 	int numAuxiliary = numAuxCat; 
-	double lnCPOverNumAux = log(cp/((double)numAuxiliary));
+	double lnCPOverNumAux = log( cp/( (double)numAuxiliary ) );
 	// loop over elements, remove i from current table, and try in all others
 	for(int i=0; i<numElements; i++){
 		std::vector<valueType> tempTables;
@@ -150,6 +150,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 
 		valueType afterValue = tempTables[reseat];
 		elementVals[i] = afterValue;
+		variable->touch();
 		int tID = findTableIDForVal(tableVals, afterValue);
 		if(tID == -1){
 			numTables += 1;
@@ -168,6 +169,8 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	tableVals.clear();
 	numPerTab.clear();
 	dist.createRestaurantVectors();
+	variable->touch();
+	variable->keep();
 
 }
 

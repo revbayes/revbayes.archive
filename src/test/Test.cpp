@@ -32,6 +32,7 @@
 #include "TestBranchHeterogeneousGtrModel.h"
 #include "TestBranchHeterogeneousHkyModel.h"
 #include "TestBranchHeterogeneousTamura92Model.h"
+#include "TestIndependentClockRates.h"
 #include "TestMixtureBranchHeterogeneousGtrModel.h"
 #include "TestMixtureModel.h"
 #include "TestMultispeciesCoalescent.h"
@@ -46,6 +47,7 @@
 #include "TestSequenceSimulation.h"
 #include "TestSkyline.h"
 #include "TestSlidingMove.h"
+#include "TestStrictClockModel.h"
 #include "TestTransitionProbabilities.h"
 #include "TestTreeTraceSummary.h"
 #include "TestUCLNRelaxedClock.h"
@@ -79,14 +81,14 @@ Test::~Test() {
 
 
 
-bool Test::performTests(void) {
+bool Test::performTests(int argc, const char * argv[]) {
     time_t start,end;
     time (&start);
     
-    /* The transition probability test */
+    /* The transition probability test = "tpt" */
     try {
-        TestTransitionProbabilities test = TestTransitionProbabilities();
-//        test.run();
+        TestTransitionProbabilities testTP = TestTransitionProbabilities();
+//        testTP.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -377,9 +379,27 @@ bool Test::performTests(void) {
     /* A DPP relaxed model test */
     try {
 //        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
-        TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_clock_gtr.nex", "data/test_clock_2_new_sc.tre", 300000);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
-		//testDPPRC.run();
+//		testDPPRC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+	/* A strict clock model test */
+    try {
+        TestStrictClockModel testGMC = TestStrictClockModel("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+//		testGMC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+	/* An independent clock rate model test */
+    try {
+        TestIndependentClockRates testIRMC = TestIndependentClockRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+		testIRMC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -457,7 +477,7 @@ bool Test::performTests(void) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run_exp();
+//        testDdm.run_exp();
         //testDdm.run_dollo();
     }
     catch (RbException &e)
