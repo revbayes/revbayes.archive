@@ -479,7 +479,6 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal
  
     if (printDebug) { std::cout << node->getIndex() << " BEFORE REJECT\n"; bh->print(); }
     
-    std::cout << node->getIndex() << " reject\n";
     bh->updateHistory(storedHistory,siteIndexSet);
     
     if (printDebug) { std::cout << node->getIndex() << " AFTER REJECT\n"; bh->print(); std::cout << "------\n"; }
