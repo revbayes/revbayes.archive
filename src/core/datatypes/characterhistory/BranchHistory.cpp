@@ -145,9 +145,6 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
     std::set<size_t>::iterator it_idx;
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h, it_tmp;
 
-    // store history elements that match indexSet into clearSet
-    std::set<CharacterEvent*,CharacterEventCompare> clearSet;
-    
     // for each event in history, delete if index matches indexSet
     for (it_h = history.begin(); it_h != history.end(); )
     {
@@ -157,6 +154,7 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
             it_tmp = it_h;
             ++it_tmp;
             history.erase(it_h);
+            //delete *it_h;
             it_h = it_tmp;
             //std::cout << "found!\n";
         }
