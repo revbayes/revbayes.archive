@@ -48,10 +48,10 @@ namespace RevBayesCore {
     class TipRejectionSampleProposal : public Proposal {
         
     public:
-        TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l );                                                                //!<  constructor
+        TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
-        void                            assignNodeIndex(size_t idx);
+        void                            assignNode(TopologyNode* nd);
         void                            assignSiteIndexSet(const std::set<size_t>& s);
         TipRejectionSampleProposal*     clone(void) const;                                                                  //!< Clone object
         void                            cleanProposal(void);
@@ -79,21 +79,20 @@ namespace RevBayesCore {
         size_t                                  numStates;
                 
         // proposal
-        std::map<size_t,BranchHistory*>         storedValues;
-        std::map<size_t,BranchHistory*>         proposedValues;
-        BranchHistory*                          storedValue;
-        size_t                                  nodeIndex;
+        std::vector<unsigned>                   storedNodeState;
+        TopologyNode*                           node;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
-        BranchHistory*                          proposedValue;
         double                                  proposedLnProb;
         
         PathRejectionSampleProposal<charType,treeType>* nodeProposal;
         TransitionProbabilityMatrix nodeTpMatrix;
         
         double                                  lambda;
+        int                                     monitorIndex;
         
         // flags
+        bool                                    fixNodeIndex;
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
         
@@ -109,33 +108,36 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::TipRejectionSampleProposal<charType, treeType>::TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l) : Proposal(),
+RevBayesCore::TipRejectionSampleProposal<charType, treeType>::TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
 numNodes(t->getValue().getNumberOfNodes()),
 numCharacters(n->getValue().getNumberOfCharacters()),
 numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
-storedValue(NULL),
-proposedValue(NULL),
+node(nd),
 nodeTpMatrix(numStates),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true)
 
 {
+    monitorIndex = -120;
+    
     nodes.push_back(ctmc);
     nodes.push_back(tau);
     nodes.push_back(qmap);
     
     nodeProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l);
+    
+    fixNodeIndex = (node != NULL);
 }
 
 
 template<class charType, class treeType>
 void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::cleanProposal( void )
 {
-    const TopologyNode& node = tau->getValue().getNode(nodeIndex);
+    //const TopologyNode& node = tau->getValue().getNode(nodeIndex);
     nodeProposal->cleanProposal();
 }
 
@@ -152,9 +154,9 @@ RevBayesCore::TipRejectionSampleProposal<charType, treeType>* RevBayesCore::TipR
 }
 
 template<class charType, class treeType>
-void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::assignNodeIndex(size_t idx)
+void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::assignNode(TopologyNode* nd)
 {
-    nodeIndex = idx;
+    node = nd;
     sampleNodeIndex = false;
 }
 
@@ -207,18 +209,13 @@ template<class charType, class treeType>
 double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     proposedLnProb = 0.0;
-    proposedValues.clear();
-    
+
     double proposedLnProbRatio = 0.0;
     
-    const TopologyNode& node = tau->getValue().getNode(nodeIndex);
-
     // update 1x pathEnd and 1x pathHistory values
-    
-    sampleTipCharacters(node,siteIndexSet);
+    sampleTipCharacters(*node, siteIndexSet);
     proposedLnProbRatio += nodeProposal->doProposal();
 
-    
     return proposedLnProbRatio;
 }
 
@@ -229,13 +226,15 @@ double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::doProposal(
 template<class charType, class treeType>
 void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
+
+    
     storedLnProb = 0.0;
-    storedValues.clear();
     
     size_t numTips = tau->getValue().getNumberOfTips();
     if (sampleNodeIndex)
     {
-        nodeIndex = GLOBAL_RNG->uniform01() * numTips;
+        size_t idx = GLOBAL_RNG->uniform01() * numTips;
+        node = &tau->getValue().getNode(idx);
     }
     
     if (sampleSiteIndexSet)
@@ -250,13 +249,23 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::preparePropos
             }
         }
     }
+
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     
-    TopologyNode& node = tau->getValue().getNode(nodeIndex);
-    
-    nodeProposal->assignNode(&node);
+    nodeProposal->assignNode(node);
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
-        
+    
+    storedNodeState.resize(numCharacters,0);
+    const std::vector<CharacterEvent*>& nodeState = p->getHistory(node->getIndex()).getChildCharacters();
+    for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
+    {
+        unsigned s = 0;
+        if (nodeState[*it]->getState() == 1)
+            s = 1;
+        storedNodeState[*it] = s;
+    }
+    
     sampleNodeIndex = true;
     sampleSiteIndexSet = true;
 }
@@ -308,8 +317,8 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipChar
         if (u < g1 / (g0 + g1))
             s = 1;
         
-        //nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
-        nodeChildState[*it]->setState(s);
+        nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
+        //nodeChildState[*it]->setState(s);
     }
     
     histories[node.getIndex()]->setChildCharacters(nodeChildState);
@@ -326,8 +335,20 @@ template<class charType, class treeType>
 void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::undoProposal( void )
 {
     // swap current value and stored value
-    //const TopologyNode& node = tau->getValue().getNode(nodeIndex);
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    const std::vector<BranchHistory*>& histories = p->getHistories();
+    
+    // restore path state
     nodeProposal->undoProposal();
+    
+    // restore node state
+    std::vector<CharacterEvent*> nodeChildState = histories[node->getIndex()]->getChildCharacters();
+    
+    for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
+    {
+        unsigned s = storedNodeState[*it];
+        nodeChildState[*it]->setState(s);
+    }
 }
 
 
