@@ -225,7 +225,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::assignSiteIn
 template<class charType, class treeType>
 const std::string& RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::getProposalName( void ) const
 {
-    static std::string name = "NodeRejectionSampleProposal";
+    static std::string name = "TipRejectionSampleProposal";
     
     return name;
 }
@@ -258,27 +258,20 @@ template<class charType, class treeType>
 double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     proposedLnProb = 0.0;
-//    proposedValues.clear();
     
     double proposedLnProbRatio = 0.0;
     
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    //const TopologyNode& node = tau->getValue().getNode(nodeIndex);
     const std::vector<BranchHistory*>& histories = p->getHistories();
     
     // update node value
-    
-    
     if (node->getIndex() == monitorIndex) { std::cout << "BEFORE node\n"; histories[node->getIndex()]->print(); }
 
     sampleNodeCharacters(*node, siteIndexSet);
     if (node->isRoot())
         proposedLnProbRatio += sampleRootCharacters(*node,siteIndexSet);
 
-    
     if (node->getIndex() == monitorIndex) { std::cout << "AFTER node\n"; histories[node->getIndex()]->print(); }
-    
-    
     
     
     // update 3x incident paths

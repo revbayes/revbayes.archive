@@ -54,8 +54,8 @@ namespace RevBayesCore {
         double                                              samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
         
         // These have been migrated to RateMap_Biogeography and BiogeographyRateMapFunction
-        void                                                setClockRate(const TypedDagNode< double > *r);
-        void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
+//        void                                                setClockRate(const TypedDagNode< double > *r);
+//        void                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
         void                                                setRateMap(const TypedDagNode< RateMap > *rm);
         void                                                setRateMap(const TypedDagNode< RbVector< RateMap > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
@@ -89,13 +89,13 @@ namespace RevBayesCore {
         bool                                                historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history);
         
         // members
-        const TypedDagNode< double >*                       homogeneousClockRate;
-        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
+//        const TypedDagNode< double >*                       homogeneousClockRate;
+//        const TypedDagNode< std::vector< double > >*        heterogeneousClockRates;
         const TypedDagNode< std::vector< double > >*        rootFrequencies;
         const TypedDagNode< std::vector< double > >*        siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
-        const TypedDagNode< double >*                       distancePower;
+//        const TypedDagNode< double >*                       distancePower;
         std::vector<std::vector<double> >                   tipProbs;
         
         // flags specifying which model variants we use
@@ -118,13 +118,13 @@ template<class charType, class treeType>
 RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool fe) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
     // initialize with default parameters
-    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
-    heterogeneousClockRates     = NULL;
+//    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
+//    heterogeneousClockRates     = NULL;
     rootFrequencies             = NULL;
     siteRates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
-    distancePower               = new ConstantNode<double>("distancePower", new double(0.0));
+//    distancePower               = new ConstantNode<double>("distancePower", new double(0.0));
     tipProbs.clear();
     
     
@@ -137,8 +137,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     forbidExtinction                            = fe;
     
     // add the parameters to the parents list
-    this->addParameter( homogeneousClockRate );
-    this->addParameter( distancePower );
+//    this->addParameter( homogeneousClockRate );
+//    this->addParameter( distancePower );
     
     // Uncomment this to draw the initial state
     // this->redrawValue();
@@ -150,13 +150,13 @@ template<class charType, class treeType>
 RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &d) : AbstractTreeHistoryCtmc<charType, treeType>( d ) {
     // parameters are automatically copied
     // initialize with default parameters
-    homogeneousClockRate        = d.homogeneousClockRate;
-    heterogeneousClockRates     = d.heterogeneousClockRates;
+//    homogeneousClockRate        = d.homogeneousClockRate;
+//    heterogeneousClockRates     = d.heterogeneousClockRates;
     rootFrequencies             = d.rootFrequencies;
     siteRates                   = d.siteRates;
     homogeneousRateMap          = d.homogeneousRateMap;
     heterogeneousRateMaps       = d.heterogeneousRateMaps;
-    distancePower               = d.distancePower;
+//    distancePower               = d.distancePower;
     tipProbs                    = d.tipProbs;
     
     // flags specifying which model variants we use
@@ -229,15 +229,13 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         // update tip lnLs for ambiguous characters
         if (this->usingAmbiguousCharacters && node.isTip())
         {
-            if (this->usingAmbiguousCharacters == true)
+            
+            BranchHistory& bh = *(this->histories[nodeIndex]);
+            std::vector<CharacterEvent*> currState = bh.getChildCharacters();
+            
+            for (size_t i = 0; i < currState.size(); i++)
             {
-                BranchHistory& bh = *(this->histories[nodeIndex]);
-                std::vector<CharacterEvent*> currState = bh.getChildCharacters();
-                
-                for (size_t i = 0; i < currState.size(); i++)
-                {
-                    lnL += log(tipProbs[nodeIndex][ currState[i]->getState() ]);
-                }
+                lnL += std::log(tipProbs[nodeIndex][ currState[i]->getState() ]);
             }
         }
         
@@ -652,90 +650,90 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::historyCont
     return false;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< double > *r) {
-    
-    // remove the old parameter first
-    if ( homogeneousClockRate != NULL )
-    {
-        this->removeParameter( homogeneousClockRate );
-        homogeneousClockRate = NULL;
-    }
-    else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousClockRates );
-        heterogeneousClockRates = NULL;
-    }
-    
-    // set the value
-    branchHeterogeneousClockRates = false;
-    homogeneousClockRate = r;
-    
-    // add the parameter
-    this->addParameter( homogeneousClockRate );
-    
-    // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
-    {
-        this->redrawValue();
-    }
-    
-}
+//template<class charType, class treeType>
+//void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< double > *r) {
+//    
+//    // remove the old parameter first
+//    if ( homogeneousClockRate != NULL )
+//    {
+//        this->removeParameter( homogeneousClockRate );
+//        homogeneousClockRate = NULL;
+//    }
+//    else // heterogeneousClockRate != NULL
+//    {
+//        this->removeParameter( heterogeneousClockRates );
+//        heterogeneousClockRates = NULL;
+//    }
+//    
+//    // set the value
+//    branchHeterogeneousClockRates = false;
+//    homogeneousClockRate = r;
+//    
+//    // add the parameter
+//    this->addParameter( homogeneousClockRate );
+//    
+//    // redraw the current value
+//    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+//    {
+//        this->redrawValue();
+//    }
+//    
+//}
 
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r) {
-    
-    // remove the old parameter first
-    if ( homogeneousClockRate != NULL )
-    {
-        this->removeParameter( homogeneousClockRate );
-        homogeneousClockRate = NULL;
-    }
-    else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousClockRates );
-        heterogeneousClockRates = NULL;
-    }
-    
-    // set the value
-    branchHeterogeneousClockRates = true;
-    heterogeneousClockRates = r;
-    
-    // add the parameter
-    this->addParameter( heterogeneousClockRates );
-    
-    // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
-    {
-        this->redrawValue();
-    }
-    
-}
+//template<class charType, class treeType>
+//void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r) {
+//    
+//    // remove the old parameter first
+//    if ( homogeneousClockRate != NULL )
+//    {
+//        this->removeParameter( homogeneousClockRate );
+//        homogeneousClockRate = NULL;
+//    }
+//    else // heterogeneousClockRate != NULL
+//    {
+//        this->removeParameter( heterogeneousClockRates );
+//        heterogeneousClockRates = NULL;
+//    }
+//    
+//    // set the value
+//    branchHeterogeneousClockRates = true;
+//    heterogeneousClockRates = r;
+//    
+//    // add the parameter
+//    this->addParameter( heterogeneousClockRates );
+//    
+//    // redraw the current value
+//    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+//    {
+//        this->redrawValue();
+//    }
+//    
+//}
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setDistancePower(const TypedDagNode< double > *dp) {
-    
-    // remove the old parameter first
-    if ( distancePower != NULL )
-    {
-        this->removeParameter( distancePower );
-        distancePower = NULL;
-    }
-
-    // set the value
-    distancePower = dp;
-    
-    // add the parameter
-    this->addParameter( distancePower );
-    
-    // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
-    {
-        this->redrawValue();
-    }
-}
+//template<class charType, class treeType>
+//void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setDistancePower(const TypedDagNode< double > *dp) {
+//    
+//    // remove the old parameter first
+//    if ( distancePower != NULL )
+//    {
+//        this->removeParameter( distancePower );
+//        distancePower = NULL;
+//    }
+//
+//    // set the value
+//    distancePower = dp;
+//    
+//    // add the parameter
+//    this->addParameter( distancePower );
+//    
+//    // redraw the current value
+//    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+//    {
+//        this->redrawValue();
+//    }
+//}
 
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(const TypedDagNode< RateMap > *rm) {
@@ -962,12 +960,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         // simulate path
         double bt = tree.getBranchLength(nodeIndex);
         double br = 1.0;
-        if (branchHeterogeneousClockRates)
-            br = heterogeneousClockRates->getValue()[nodeIndex];
-        else
-            br = homogeneousClockRate->getValue();
-        if (bt == 0.0)
-            bt = 100.0;
+//        if (branchHeterogeneousClockRates)
+//            br = heterogeneousClockRates->getValue()[nodeIndex];
+//        else
+//            br = homogeneousClockRate->getValue();
+//        if (bt == 0.0)
+//            bt = 100.0;
         double bs = br * bt;
         
         const RateMap* rm;
@@ -1060,15 +1058,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
-    if (oldP == homogeneousClockRate)
-    {
-        homogeneousClockRate = static_cast<const TypedDagNode< double >* >( newP );
-    }
-    else if (oldP == heterogeneousClockRates)
-    {
-        heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
-    }
-    else if (oldP == homogeneousRateMap)
+    if (oldP == homogeneousRateMap)
     {
         homogeneousRateMap = static_cast<const TypedDagNode< RateMap >* >( newP );
     }
@@ -1084,10 +1074,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParamet
     {
         siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
-    else if (oldP == distancePower)
-    {
-        distancePower = static_cast<const TypedDagNode<double>* >( newP );
-    }
     else
     {
         AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(oldP,newP);
@@ -1099,27 +1085,7 @@ template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter == heterogeneousClockRates )
-    {
-        const std::set<size_t> &indices = heterogeneousClockRates->getTouchedElementIndices();
-        
-        // maybe all of them have been touched or the flags haven't been set properly
-        if ( indices.size() == 0 )
-        {
-            // just delegate the call
-            AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
-        }
-        else
-        {
-            const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
-            // flag recomputation only for the nodes
-            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
-            {
-                this->flagNodeDirty( *nodes[*it] );
-            }
-        }
-    }
-    else if ( affecter == rootFrequencies || affecter == rootFrequencies )
+    if ( affecter == rootFrequencies || affecter == rootFrequencies )
     {
         
         const TopologyNode &root = this->tau->getValue().getRoot();
