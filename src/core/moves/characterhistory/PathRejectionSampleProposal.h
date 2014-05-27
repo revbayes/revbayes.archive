@@ -76,6 +76,7 @@ namespace RevBayesCore {
         
         //BranchHistory*                          storedValue;
         std::multiset<CharacterEvent*,CharacterEventCompare> storedHistory;
+        std::multiset<CharacterEvent*,CharacterEventCompare> proposedHistory;
         
         TopologyNode*                           node;
         std::set<size_t>                        siteIndexSet;
@@ -161,11 +162,11 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::cleanProposa
 
     if (printDebug) { std::cout << node->getIndex() << " ACCEPT\n"; bh->print(); std::cout << "------\n"; }
     
+    // delete old events
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = storedHistory.begin(); it_h != storedHistory.end(); it_h++)
-    {
         delete *it_h;
-    }
+    storedHistory.clear();
 }
 
 /**
@@ -331,7 +332,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
     std::vector<CharacterEvent*> childVector =  bh->getChildCharacters();
-    std::multiset<CharacterEvent*,CharacterEventCompare> history;
+   // std::multiset<CharacterEvent*,CharacterEventCompare> history;
     
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
@@ -342,7 +343,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
         unsigned int endState = childVector[i]->getState();
         do
         {
+            // delete previously rejected events
+            for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
+                delete *it_h;
             tmpHistory.clear();
+            
+            // proceed with rejection sampling
             currState = parentVector[i]->getState();
             double t = 0.0;
             do
@@ -354,7 +360,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
                 if (t < 1.0)
                 {
                     currState = nextState;
-                    CharacterEvent* evt = new CharacterEvent(i , nextState, t);
+                    CharacterEvent* evt = new CharacterEvent(i, nextState, t);
                     tmpHistory.insert(evt);
                 }
                 else
@@ -367,13 +373,14 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
         while (currState != endState);
         
         for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
-            history.insert(*it);
+        {
+            proposedHistory.insert(*it);
+//            history.insert(*it);
+        }
     }
     
-
-    
     // assign values back to model for likelihood
-    bh->updateHistory(history, siteIndexSet);
+    bh->updateHistory(proposedHistory, siteIndexSet);
 
 //    double r1=rm.getSiteRate(*node, 0, 1);
 //    double r0=rm.getSiteRate(*node, 1,0);
@@ -396,6 +403,8 @@ template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
     storedHistory.clear();
+    proposedHistory.clear();
+    
     storedLnProb = 0.0;
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
     
@@ -434,7 +443,8 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     {
         if (siteIndexSet.find( (*it_h)->getIndex() ) != siteIndexSet.end())
         {
-            storedHistory.insert(new CharacterEvent(**it_h));
+            storedHistory.insert(*it_h);
+            //storedHistory.insert(new CharacterEvent(**it_h));
         }
     }
     
@@ -481,6 +491,12 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal
     
     bh->updateHistory(storedHistory,siteIndexSet);
     
+    // delete new events
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    for (it_h = proposedHistory.begin(); it_h != proposedHistory.end(); it_h++)
+        delete *it_h;
+    proposedHistory.clear();
+
     if (printDebug) { std::cout << node->getIndex() << " AFTER REJECT\n"; bh->print(); std::cout << "------\n"; }
     //bh->setHistory(storedHistory);
     
