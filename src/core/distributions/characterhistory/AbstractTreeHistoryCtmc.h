@@ -52,19 +52,19 @@ namespace RevBayesCore {
         // non-virtual
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
-        BranchHistory&                                                      getHistory(size_t idx);
-        const BranchHistory&                                                getHistory(size_t idx) const;
+//        BranchHistory&                                                      getHistory(size_t idx);
+//        const BranchHistory&                                                getHistory(size_t idx) const;
         BranchHistory&                                                      getHistory(const TopologyNode& nd);
         const BranchHistory&                                                getHistory(const TopologyNode& nd) const;
 
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
-        void                                                                setHistory(const BranchHistory& bh, size_t idx);
+//        void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
         
-        virtual const std::vector<double>&                                  getTipProbs(size_t nodeIndex) = 0;
+        virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd) = 0;
         virtual const std::vector<std::vector<double> >&                    getTipProbs(void) = 0;
         
         virtual void                                                        simulate(void);
@@ -80,9 +80,9 @@ namespace RevBayesCore {
         virtual void                                                        touchSpecialization(DagNode *toucher);
         
         // pure virtual methods
-        virtual double                                                      computeRootLikelihood(const TopologyNode &nd, size_t nIdx) = 0;
-        virtual double                                                      computeInternalNodeLikelihood(const TopologyNode &nd, size_t nIdx) = 0;
-        virtual double                                                      computeTipLikelihood(const TopologyNode &nd, size_t nIdx) = 0;
+        virtual double                                                      computeRootLikelihood(const TopologyNode &nd) = 0;
+        virtual double                                                      computeInternalNodeLikelihood(const TopologyNode &nd) = 0;
+        virtual double                                                      computeTipLikelihood(const TopologyNode &nd) = 0;
         virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
         
         // members
@@ -113,7 +113,7 @@ namespace RevBayesCore {
         
     private:
         // private methods
-        void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
+        void                                                                fillLikelihoodVector(const TopologyNode &n);
         void                                                                initializeHistoriesVector(void);
         virtual void                                                        simulate(const TopologyNode& node, DiscreteCharacterData< charType > &taxa);
         
@@ -221,24 +221,24 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
         size_t nodeIndex = nd.getIndex();
 //        dirtyNodes[nodeIndex] = true; // to be commented
 //        activeLikelihood[nodeIndex] = 0; // to be commented
-        fillLikelihoodVector(nd, nodeIndex);
+        fillLikelihoodVector(nd);
         this->lnProb += historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
     }
     //std::cout << this->lnProb << "\n";
-    computeRootLikelihood(tau->getValue().getRoot(),0);
+//    computeRootLikelihood(tau->getValue().getRoot());
     return this->lnProb;
 }
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node, size_t nodeIndex)
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVector(const TopologyNode &node)
 {
-    
+    size_t nodeIndex = node.getIndex();
     if (!dirtyNodes[nodeIndex])
         return;
 
     // compute
-    double lnL = computeInternalNodeLikelihood(node,nodeIndex);
+    double lnL = computeInternalNodeLikelihood(node);
     historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     
     // mark as computed
@@ -270,17 +270,18 @@ RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, tr
 }
 
 
-template<class charType, class treeType>
-const RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx) const
-{
-    return histories[idx];
-}
-
-template<class charType, class treeType>
-RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx)
-{
-    return *histories[idx];
-}
+//template<class charType, class treeType>
+//const RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx) const
+//{
+//    
+//    return histories[idx];
+//}
+//
+//template<class charType, class treeType>
+//RevBayesCore::BranchHistory&  RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistory(size_t idx)
+//{
+//    return *histories[idx];
+//}
 
 template<class charType, class treeType>
 const std::vector<RevBayesCore::BranchHistory*>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getHistories(void) const
@@ -300,9 +301,11 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::initializeHistoriesVector( void ) {
     
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
+    histories.resize(nodes.size());
     for (size_t i = 0; i < nodes.size(); i++)
     {
-        histories.push_back(new BranchHistory(numSites, numChars, i));
+        TopologyNode* nd = nodes[i];
+        histories[nd->getIndex()] = new BranchHistory(numSites,numChars,nd->getIndex());
     }
     
     historyLikelihoods.resize(2);
@@ -384,13 +387,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::restoreSpecializ
     
     
     return;
-}
-
-
-template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistory(const BranchHistory& bh, size_t idx)
-{
-    histories[idx] = new BranchHistory(bh);
 }
 
 template<class charType, class treeType>

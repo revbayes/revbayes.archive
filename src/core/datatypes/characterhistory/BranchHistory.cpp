@@ -216,28 +216,28 @@ void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
 {
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        parentCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
 
 void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
 {
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        childCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        childCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
 
 void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
 {
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        childCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        childCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
 
 void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
 {
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        parentCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
 
 
@@ -261,10 +261,17 @@ void BranchHistory::print(void) const
     std::vector<CharacterEvent*> tmp = parentCharacters;
     
     std::cout << "BranchHistory " << index << "\n";
+    std::cout << "               ";
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (i % 10 == 0) std::cout << ".";
+        else std::cout << " ";
+    }
+    std::cout << "\n";
     std::cout << "         0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
-        std::cout << std::setw(3) << (*it_v)->getState() << " ";
+        std::cout << (*it_v)->getState();
     }
     std::cout << "\n";
     
@@ -275,17 +282,24 @@ void BranchHistory::print(void) const
         for (size_t i = 0; i < numCharacters; i++)
         {
             if (i != (*it_h)->getIndex())
-                std::cout << std::setw(3) << " ";
+                std::cout << " ";
             else
-                std::cout << std::setw(3) << (*it_h)->getState();
-            std::cout << " ";
+                std::cout << (*it_h)->getState();
+            //std::cout << " ";
         }
         std::cout << "\n";
     }
     std::cout << "         1.0 : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
-        std::cout << std::setw(3) << (*it_v)->getState() << " ";
+        std::cout << (*it_v)->getState();
+    }
+    std::cout << "\n";
+    std::cout << "               ";
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (i % 10 == 0) std::cout << ".";
+        else std::cout << " ";
     }
     std::cout << "\n";
     ;

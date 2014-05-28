@@ -122,8 +122,8 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(3); seed.push_back(2);
-//    GLOBAL_RNG->setSeed(seed);
+    seed.push_back(7); seed.push_back(2);
+    //GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -132,18 +132,17 @@ bool TestCharacterHistory::run_exp(void) {
     bool simulate = false;
     bool useDistances = !true;
     bool useClock = !true;
-//    bool useTipProbs = false;
-    bool forbidExtinction = true;
+    bool forbidExtinction = !true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
     //std::string fn = "vireya_sim.nex";
     //std::string fn = "vireya_sim2.nex";
-    std::string fn = "vireya_sim_0_1.nex";
+    //std::string fn = "vireya_sim_0_1.nex";
     //std::string fn = "vireya_gain0_02_loss0_06_dp3.nex";
     //std::string fn = "bg.test.nex";
     //std::string fn = "bg.break.nex";
-    //std::string fn = "vireya.nex";
+    std::string fn = "vireya.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -199,7 +198,7 @@ bool TestCharacterHistory::run_exp(void) {
     }
     
     // ctmc rates
-    ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(1.0));
+    ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(5.0));
     std::vector<const TypedDagNode<double> *> gainLossRates;
 	std::vector< ContinuousStochasticNode *> gainLossRates_nonConst;
 	for( size_t i=0; i<2; i++){
@@ -254,7 +253,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
     
-    GLOBAL_RNG->setSeed(old_seed);
+    //GLOBAL_RNG->setSeed(old_seed);
     gainLossRates_nonConst[0]->redraw();
     gainLossRates_nonConst[1]->redraw();
 
@@ -286,20 +285,18 @@ bool TestCharacterHistory::run_exp(void) {
     }
 
     TopologyNode* nd = NULL; // &tau->getValue().getNode(60);
-    PathRejectionSampleProposal<StandardState,TimeTree>* pathSampleProposal = new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.4, nd);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, pathSampleProposal, 0.5, false, 100));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 40));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 60));
     
-    NodeRejectionSampleProposal<StandardState,TimeTree>* nodeSampleProposal = new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd);
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, nodeSampleProposal, 0.5, false, 50));//numNodes));
-
- 
-
-//    
-//    if (useTipProbs)
-//    {
-//        TipRejectionSampleProposal<StandardState,TimeTree>* tipSampleProposal = new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3);
-//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, tipSampleProposal, 0.3, false, 1*numNodes));
-//    }
+    
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 20));
+    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 30));
+    
+    if (usingAmbiguousCharacters)
+    {
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 20));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 30));
+    }
 
 
 //    moves.push_back(new SamplePathHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 50));
@@ -387,8 +384,8 @@ bool TestCharacterHistory::run_dollo(void) {
     //unsigned int burn = (unsigned int)(mcmcGenerations * .2);
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(3); seed.push_back(2);
-    //    GLOBAL_RNG->setSeed(seed);
+    seed.push_back(6); seed.push_back(2);
+    //GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     
@@ -410,7 +407,7 @@ bool TestCharacterHistory::run_dollo(void) {
     size_t numAreas = data[0]->getNumberOfCharacters();
     
     // tree
-//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+    // std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
     std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn,"nexus");
     std::vector<BranchLengthTree*> trees = *trees_ptr;
     std::cout << "Read " << trees.size() << " trees." << std::endl;
@@ -497,24 +494,23 @@ bool TestCharacterHistory::run_dollo(void) {
     for( size_t i=0; i<2; i++)
     {
         moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 1.0, false, 3) );
-		moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.25, false, 5) );
+        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.25, false, 7) );
     }
+    
     
     TopologyNode* nd = NULL;
 
-    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 100));
-   // moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 100));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 40));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 60));
     
     
-//    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 50));
-//    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 50));
-//    
-    
-    
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 20));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 30));
     
     if (usingAmbiguousCharacters)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.5, nd), 0.5, false, 50));
+        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 20));
+        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 30));
     }
     
     
@@ -526,19 +522,11 @@ bool TestCharacterHistory::run_dollo(void) {
     std::vector<Monitor*> monitors;
     
     std::set<DagNode*> monitoredNodes;
-//    monitoredNodes.insert(clockRate);
     monitoredNodes.insert( glr_vector );
-    //monitoredNodes.insert( dp );
     
     monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb." + ss.str() + ".tree_chars.txt", "\t"));
-
-    // monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, geo_coords, 50, mcmcGenerations, burn, filepath + "rb.phylowood.txt", "\t"));
-    //    monitors.push_back( new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 50, filepath + "rb.tree_chars.txt", "\t" ));
-    
-    //    PhylowoodNhxMonitor* phwnm = new PhylowoodNhxMonitor( tau, bh_vector_stochastic, geo_coords, 50, maxGen, burn, filepath + "rb.phylowood.txt", "\t" );
-    //    monitors.push_back(phwnm);
     
     
     //////////
