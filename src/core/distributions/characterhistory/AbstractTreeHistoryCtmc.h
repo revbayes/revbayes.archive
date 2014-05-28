@@ -61,7 +61,7 @@ namespace RevBayesCore {
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
 //        void                                                                setHistory(const BranchHistory& bh, size_t idx);
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
-        void                                                                setHistories(const std::vector<BranchHistory>& bh);
+        void                                                                setHistories(const std::vector<BranchHistory*>& bh);
         void                                                                setValue(AbstractCharacterData *v);                              //!< Set the current value, e.g. attach an observation (clamp)
         
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd) = 0;
@@ -397,7 +397,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistory(const
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistories(const std::vector<BranchHistory>& bh)
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistories(const std::vector<BranchHistory*>& bh)
 {
     for (size_t i = 0; i < bh.size(); i++)
         histories[i] = bh[i];
