@@ -1,4 +1,4 @@
-//
+
 //  RateMap_Biogeography.cpp
 //  rb_mlandis
 //
@@ -127,6 +127,7 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     
     if (from[ to->getIndex() ]->getState() == to->getState())
     {
+        std::cout << count[0] << " " << count[1] << "\n";
         std::cout << node.getIndex() << " problem...\n";
         ;
     }

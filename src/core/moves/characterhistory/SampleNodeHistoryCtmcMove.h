@@ -118,7 +118,7 @@ double RevBayesCore::SampleNodeHistoryCtmcMove<charType, treeType>::SampleNodeHi
     if (storedNode->isRoot())
         return RbConstants::Double::neginf;
     
-    storedValue = new BranchHistory(p->getHistory(nodeIdx));
+    storedValue = new BranchHistory(p->getHistory(*storedNode));
     
     storedAdjNodes.clear();
     storedAdjValues.clear();
@@ -126,7 +126,7 @@ double RevBayesCore::SampleNodeHistoryCtmcMove<charType, treeType>::SampleNodeHi
     {
         TopologyNode* nd = &storedNode->getChild(i);
         storedAdjNodes.push_back(nd);
-        storedAdjValues.push_back(new BranchHistory(p->getHistory(nd->getIndex())));
+        storedAdjValues.push_back(new BranchHistory(p->getHistory(*nd)));
     }
     
     // sample characters to update

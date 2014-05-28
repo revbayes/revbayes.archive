@@ -115,7 +115,7 @@ double RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::SamplePathHi
     const TopologyNode& nd = tree->getValue().getNode(storedIndex);
     if (nd.isRoot()) return 0.0;
     //storedIndex = 10;
-    storedValue = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(variable->getDistribution()).getHistory(storedIndex);
+    storedValue = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(variable->getDistribution()).getHistory(nd);
     
     // sample characters to update
     std::set<size_t> updateSet;

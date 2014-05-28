@@ -60,7 +60,7 @@ namespace RevBayesCore {
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            prepareProposal(void);                                                              //!< Prepare the proposal
-        void                            sampleTipCharacters(const TopologyNode& node, const std::set<size_t>& indexSet);    //!< Sample the characters at the node
+        void                            sampleTipCharacters(const std::set<size_t>& indexSet);    //!< Sample the characters at the node
         void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the DAG nodes on which the Proposal is working on
         void                            tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                            undoProposal(void);                                                                 //!< Reject the proposal
@@ -213,7 +213,7 @@ double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::doProposal(
     double proposedLnProbRatio = 0.0;
     
     // update 1x pathEnd and 1x pathHistory values
-    sampleTipCharacters(*node, siteIndexSet);
+    sampleTipCharacters(siteIndexSet);
     proposedLnProbRatio += nodeProposal->doProposal();
 
     return proposedLnProbRatio;
@@ -256,8 +256,9 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::preparePropos
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
     
+    storedNodeState.clear();
     storedNodeState.resize(numCharacters,0);
-    const std::vector<CharacterEvent*>& nodeState = p->getHistory(node->getIndex()).getChildCharacters();
+    const std::vector<CharacterEvent*>& nodeState = p->getHistory(*node).getChildCharacters();
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         unsigned s = 0;
@@ -287,23 +288,23 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::printParamete
 
 
 template<class charType, class treeType>
-void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipCharacters(const TopologyNode& node, const std::set<size_t>& indexSet)
+void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipCharacters(const std::set<size_t>& indexSet)
 {
     
 
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     
-    qmap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix);
+    qmap->getValue().calculateTransitionProbabilities(*node, nodeTpMatrix);
     
     std::vector<BranchHistory*> histories = p->getHistories();
 
     
     // for sampling probs
-    const std::vector<CharacterEvent*>& nodeParentState = histories[node.getIndex()]->getParentCharacters();
-    const std::vector<double>& tipProbs = p->getTipProbs(node.getIndex());
+    const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
+    const std::vector<double>& tipProbs = p->getTipProbs(node->getIndex());
     
     // to update
-    std::vector<CharacterEvent*> nodeChildState = histories[node.getIndex()]->getChildCharacters();
+    std::vector<CharacterEvent*> nodeChildState = histories[node->getIndex()]->getChildCharacters();
         
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
@@ -317,11 +318,11 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipChar
         if (u < g1 / (g0 + g1))
             s = 1;
         
-        nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
-        //nodeChildState[*it]->setState(s);
+        //nodeChildState[*it] = new CharacterEvent(*it, s, 1.0);
+        nodeChildState[*it]->setState(s);
     }
     
-    histories[node.getIndex()]->setChildCharacters(nodeChildState);
+    //histories[node.getIndex()]->setChildCharacters(nodeChildState);
 }
 
 /**
