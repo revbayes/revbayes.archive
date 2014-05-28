@@ -185,15 +185,6 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>* RevBayesCore::Bi
 template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n)
 {
-//    this->lnProb = 0.0;
-//    
-//    for (size_t i = 0; i < this->historyLikelihoods[0].size(); i++)
-//        this->lnProb += this->historyLikelihoods[ this->activeLikelihood[i] ][i];
-//
-    
-//    const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
-//    const std::vector<double>& glr = rm.getHomogeneousGainLossRates();
-//    std::cout << "glr " << glr[0] << " " << glr[1] << "\n";
     return 0.0;
 }
 
@@ -202,10 +193,11 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 {
     size_t nodeIndex = node.getIndex();
     double lnL = 0.0;
-    BranchHistory& bh = *(this->histories[nodeIndex]);
+    BranchHistory* bh = this->histories[nodeIndex];
     
-    //std::cout << "computeLnL " << node.getIndex() << " " << bh.getIndex() << "\n";
-    std::vector<CharacterEvent*> currState = bh.getParentCharacters();
+//    if (nodeIndex == 15) bh->print();
+    //std::cout << "computeLnL " << node.getIndex() << " " << bh->getIndex() << "\n";
+    std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     unsigned int n1 = numOn(currState);
 	unsigned int n0 = this->numSites - n1;
     unsigned counts[2] = { n0, n1 };
@@ -230,15 +222,18 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         // update tip lnLs for ambiguous characters
         if (this->usingAmbiguousCharacters && node.isTip())
         {
-            std::vector<CharacterEvent*> tipState = bh.getChildCharacters();
+            std::vector<CharacterEvent*> tipState = bh->getChildCharacters();
             
-            for (size_t i = 0; i < currState.size(); i++)
+            for (size_t i = 0; i < tipState.size(); i++)
             {
-                lnL += std::log(tipProbs[nodeIndex][ tipState[i]->getState() ]);
+                double v = tipProbs[nodeIndex][i];
+                if (tipState[i]->getState() == 0)
+                    v = 1 - v;
+                lnL += std::log(v);
             }
         }
         
-        const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
         
         const treeType& tree = this->tau->getValue();
@@ -311,18 +306,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node)
 {
-//    double lnL = 0.0;
-//    if (this->usingAmbiguousCharacters == true)
-//    {
-//        BranchHistory& bh = *(this->histories[nodeIndex]);
-//        std::vector<CharacterEvent*> currState = bh.getChildCharacters();
-//        
-//        for (size_t i = 0; i < currState.size(); i++)
-//        {
-//            lnL += log(tipProbs[nodeIndex][ currState[i]->getState() ]);
-//        }
-//    }
-//    this->historyLikelihoods[ this->activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     return 0.0;
 }
 
@@ -350,21 +333,23 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeV
             if (node->isTip())
             {
                 DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData( node->getName() ) );
+                
                 std::vector<CharacterEvent*> tipState;
                 
                 for (size_t j = 0; j < d.size(); j++)
                 {
                     unsigned s = 0;
-                    if (this->usingAmbiguousCharacters && GLOBAL_RNG->uniform01() < tipProbs[node->getIndex()][j])
-                        s = 1;
-                    else
+                    if (!this->usingAmbiguousCharacters)
                         s = d[j].getStateIndex();
+                    else if (GLOBAL_RNG->uniform01() < tipProbs[node->getIndex()][j])
+                        s = 1;
                         
                     CharacterEvent* evt = new CharacterEvent(j, s, 1.0);
                     tipState.push_back( evt );
                 }
                 
                 this->histories[node->getIndex()]->setChildCharacters(tipState);
+                tipState.clear();
             }
         }
     }
@@ -448,7 +433,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             for (size_t i = 0; i < nodeState.size(); i++)
                 nodeState[i] = new CharacterEvent(*nodeState[i]);
             this->histories[ node.getIndex() ]->setParentCharacters( nodeState );
-//            this->histories[ node.getIndex() ]->setParentCharacters( this->histories[ node.getParent().getIndex() ]->getChildCharacters() );
         }
         else
         {
@@ -501,21 +485,18 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
             for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
             {
                 double u = GLOBAL_RNG->uniform01();
-                unsigned s = ( tipProbs[node.getIndex()][*it] < u ? 1 : 0);
-                //std::cout << nodeIdx << " " << *it << " " << " " << tipProbs[nodeIdx][*it] << " " << u << " " << s << "\n";
-                childState[*it] = new CharacterEvent(*it, s, 1.0);
+                unsigned s = ( u < tipProbs[node.getIndex()][*it] ? 1 : 0);
+                //std::cout << node.getIndex() << " " << *it << " " << s << " " << tipProbs[node.getIndex()][*it] << " " << u << "\n";
+                childState[*it]->setState(s); // = new CharacterEvent(*it, s, 1.0);
+                //childState[*it] = new CharacterEvent(*it, s, 1.0);
             }
       
             // forbid extinction
             if (numOn(childState) == 0 && forbidExtinction)
                 samplePathEnd(node, indexSet);
             
-            else
-                this->histories[node.getIndex()]->setChildCharacters(childState);
-        }
-        else
-        {
-            return 0.0;
+//            else
+//                this->histories[node.getIndex()]->setChildCharacters(childState);
         }
     }
     else
@@ -551,11 +532,11 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
         // forbid extinction
         if (numOn(nodeChildState) == 0 && forbidExtinction)
             samplePathEnd(node, indexSet);
-        else
-            this->histories[node.getIndex()]->setChildCharacters(nodeChildState);
+//        else
+//            this->histories[node.getIndex()]->setChildCharacters(nodeChildState);
         
     }
-    return lnP;
+    return 0.0;
 }
 
 template<class charType, class treeType>
@@ -624,6 +605,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     {
 //        std::cout << "contains extinction\n";
 //        std::cout << node.getIndex() << " " << history.size() << "\n";
+        for (std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h = history.begin(); it_h != history.end(); it_h++)
+            delete *it_h;
         history.clear();
         samplePathHistory(node, indexSet);
     }
@@ -899,17 +882,27 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs
     size_t numTaxa = tp->getNumberOfTaxa();
     size_t numCharacters = tp->getNumberOfCharacters();
     
+    const std::vector<TopologyNode*>& nodes = this->tau->getValue().getNodes();
+//    ContinuousTaxonData&                getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
+//    const ContinuousTaxonData&          getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
+//    const std::vector<std::string>&     getTaxonNames(void) const;
+    
     tipProbs.resize(numTaxa);
-    for (size_t i = 0; i < numTaxa; i++)
+    const ContinuousCharacterData* ccdp = static_cast<const ContinuousCharacterData*>(tp);
+    for (size_t i = 0; i < nodes.size(); i++)
     {
+        TopologyNode* nd = nodes[i];
+        if (!nd->isTip())
+            continue;
+        
+        const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
         for (size_t j = 0; j < numCharacters; j++)
         {
-            double v = static_cast<const ContinuousCharacterData*>(tp)->getCharacter(i,j).getMean();
-            tipProbs[i].push_back(v);
+            double v = cd->getCharacter(j).getMean();
+            //tipProbs[nd->getIndex()].push_back(1-v);
+            tipProbs[nd->getIndex()].push_back(v);
         }
     }
-    
-    ;
 }
 
 template<class charType, class treeType>

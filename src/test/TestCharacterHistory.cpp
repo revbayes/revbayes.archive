@@ -72,8 +72,6 @@
 #include "UniformBranchLengthTreeDistribution.h"
 #include "DistanceDependentDispersalFunction.h"
 
-//#define USE_DDBD
-
 using namespace RevBayesCore;
 
 
@@ -105,6 +103,20 @@ void TestCharacterHistory::tokenizeArgv(void)
 
 TestCharacterHistory::~TestCharacterHistory() {
     // nothing to do
+}
+
+bool TestCharacterHistory::run( void ) {
+ 
+    int idx = 1;
+    switch(idx)
+    {
+        case 0: return run_exp();
+        case 1: return run_dollo();
+        case 2: return run_old();
+        default: break;
+    };
+    return false;
+    
 }
 
 bool TestCharacterHistory::run_exp(void) {
@@ -369,6 +381,23 @@ bool TestCharacterHistory::run_exp(void) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ////////////////////////
 // drichter test module
 ////////////////////////
@@ -384,7 +413,7 @@ bool TestCharacterHistory::run_dollo(void) {
     //unsigned int burn = (unsigned int)(mcmcGenerations * .2);
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(6); seed.push_back(2);
+    seed.push_back(9); seed.push_back(2);
     //GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
@@ -394,8 +423,8 @@ bool TestCharacterHistory::run_dollo(void) {
     ////////////
     bool simulate = false;
     bool useClock = false;
-    bool forbidExtinction = !true;
-    bool usingAmbiguousCharacters = !true;
+    bool forbidExtinction = true;
+    bool usingAmbiguousCharacters = true;
     filepath="/Users/mlandis/data/ngene/";
     
     // binary characters
@@ -463,6 +492,10 @@ bool TestCharacterHistory::run_dollo(void) {
 
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
+//    GLOBAL_RNG->setSeed(old_seed);
+//    gainLossRates_nonConst[0]->redraw();
+//    gainLossRates_nonConst[1]->redraw();
+
     
     // simulated data
     if (simulate)
@@ -487,30 +520,30 @@ bool TestCharacterHistory::run_dollo(void) {
     std::vector<Move*> moves;
     if (useClock)
     {
-        moves.push_back( new ScaleMove(clockRate, 1.0, true, 2) );
-        moves.push_back( new ScaleMove(clockRate, 0.25, true, 4) );
+        moves.push_back( new ScaleMove(clockRate, 1.0, true, 1) );
+        moves.push_back( new ScaleMove(clockRate, 0.25, true, 2) );
     }
     
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 1.0, false, 3) );
-        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.25, false, 7) );
+        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 1.0, false, 1) );
+        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, false, 1) );
     }
     
     
     TopologyNode* nd = NULL;
 
-    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 40));
-    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 60));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 1.0, nd), 1.0, false, numNodes));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
     
     
-    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 20));
-    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 30));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 1.0, nd), 1.0, false, numNodes));
+    moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
     
     if (usingAmbiguousCharacters)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, 20));
-        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.05, nd), 0.05, false, 30));
+        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 1.0, nd), 1.0, false, numNodes));
+        moves.push_back(new PathRejectionSampleMove<StandardState, BranchLengthTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,BranchLengthTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
     }
     
     
@@ -541,7 +574,7 @@ bool TestCharacterHistory::run_dollo(void) {
     //////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.run(mcmcGenerations*10);
+    myMcmc.run(mcmcGenerations*20);
     myMcmc.printOperatorSummary();
     
     
@@ -593,7 +626,7 @@ bool TestCharacterHistory::run_dollo(void) {
 
 
 
-bool TestCharacterHistory::run( void ) {
+bool TestCharacterHistory::run_old( void ) {
     
     //////////
     // io

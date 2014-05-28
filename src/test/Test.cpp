@@ -104,8 +104,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run_exp();
-//        testDdm.run_dollo();
+        testDdm.run();
     }
     catch (RbException &e)
     {
