@@ -21,16 +21,12 @@
 
 using namespace RevBayesCore;
 
-UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(
-                                                         //const TypedDagNode<double>*         originT,
-                                                         const std::vector<std::string>&     taxaNames
-                                                         )
-:   TypedDistribution<BranchLengthTree>( new BranchLengthTree() ),
-//originTime( originT ),
+UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const TypedDagNode<double>* maxBrLen, const std::vector<std::string>& taxaNames) :  TypedDistribution<BranchLengthTree>( new BranchLengthTree() ),
+maxBranchLength( maxBrLen ),
 taxonNames( taxaNames )
 {
     
-    //addParameter( originTime );
+    addParameter(maxBranchLength);
     
     numTaxa = (int)( taxonNames.size() );
     
@@ -41,7 +37,7 @@ taxonNames( taxaNames )
 
 UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const UniformBranchLengthTreeDistribution &x)
 :   TypedDistribution<BranchLengthTree>( x ),
-//originTime( x.originTime ),
+maxBranchLength( x.maxBranchLength ),
 numTaxa( x.numTaxa ),
 taxonNames( x.taxonNames )
 {
@@ -53,57 +49,6 @@ UniformBranchLengthTreeDistribution::~UniformBranchLengthTreeDistribution()
 {
     
 }
-
-
-/**
- * Recursive call to attach ordered interior node times to the time tree psi. Call it initially with the
- * root of the tree.
- */
-
-/*
-void UniformBranchLengthTreeDistribution::attachTimes(
-                                              TimeTree*                       psi,
-                                              std::vector<TopologyNode *>&    nodes,
-                                              size_t                          index,
-                                              const std::vector<double>&      interiorNodeTimes,
-                                              double                          originTime
-                                              )
-{
-    
-    if (index < numTaxa-1)
-    {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // Randomly draw one node from the list of nodes
-        size_t node_index = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
-        
-        // Get the node from the list
-        TopologyNode* parent = nodes.at(node_index);
-        psi->setAge( parent->getIndex(), originTime - interiorNodeTimes[index] );
-        
-        // Remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+node_index);
-        
-        // Add the left child if an interior node
-        TopologyNode* leftChild = &parent->getChild(0);
-        if ( !leftChild->isTip() )
-        {
-            nodes.push_back(leftChild);
-        }
-        
-        // Add the right child if an interior node
-        TopologyNode* rightChild = &parent->getChild(1);
-        if ( !rightChild->isTip() )
-        {
-            nodes.push_back(rightChild);
-        }
-        
-        // Recursive call to this function
-        attachTimes(psi, nodes, index+1, interiorNodeTimes, originTime);
-    }
-}
-*/
 
 /** Build random binary tree to size numTaxa. The result is a draw from the uniform distribution on histories. */
 void UniformBranchLengthTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips) {
@@ -150,24 +95,14 @@ UniformBranchLengthTreeDistribution* UniformBranchLengthTreeDistribution::clone(
 /* Compute probability */
 double UniformBranchLengthTreeDistribution::computeLnProbability( void ) {
     
-    // Variable declarations and initialization
-    double lnProb = 0.0;
-//    double originT = originTime->getValue();
+    const BranchLengthTree& tree = *this->value;
+    const std::vector<TopologyNode*>& nodes = tree.getNodes();
     
-    // we need to check as well that all ages are smaller than the origin
-    // this can simply be checked if the root age is smaller than the origin
-//    if ( originT < value->getRoot().getAge() )
-//    {
-//        return RbConstants::Double::neginf;
-//    }
-    
-    // Take the uniform draws into account
-//    lnProb = (numTaxa - 2) * log( 1.0 / originT );
-    
-    // Take the ordering effect into account
-//    lnProb += RbMath::lnFactorial( numTaxa - 2 );
-    
-    // We return now; apparently we are not responsible for the topology probability
+    // return -inf if any branchlength exceeds maxBranchLength.value
+    for (size_t i = 0; i < nodes.size(); i++)
+        if (nodes[i]->getBranchLength() > maxBranchLength->getValue())
+            return RbConstants::Double::neginf;
+        
     return 0.0;
 }
 
@@ -222,25 +157,14 @@ void UniformBranchLengthTreeDistribution::simulateTree( void ) {
     psi->setTopology( tau, true );
     
     // Now simulate the speciation times counted from originTime
-    std::vector<double> intNodeTimes;
-    intNodeTimes.push_back( 0.0 );  // For time of mrca
-    for ( size_t i=0; i<numTaxa-2; i++ )
+    size_t numBranches = tau->getNumberOfNodes() - 1;
+    std::vector<double> nodeTimes;
+    for ( size_t i=0; i<numBranches; i++ )
     {
-//        double t = rng->uniform01() * t_or;
-//        intNodeTimes.push_back( t );
+        TopologyNode* nd = &tau->getNode(i);
+        double t = rng->uniform01() * maxBranchLength->getValue();
+        psi->setBranchLength(nd->getIndex(), t);
     }
-    
-    // Sort the speciation times from 0.0 (root node) to the largest value
-    std::sort( intNodeTimes.begin(), intNodeTimes.end() );
-    
-    // Attach times
-    nodes.clear();
-    nodes.push_back( root );
-//    attachTimes(psi, nodes, 0, intNodeTimes, t_or);
-//    for (size_t i = 0; i < numTaxa; ++i) {
-//        TopologyNode& node = tau->getTipNode(i);
-//        psi->setAge( node.getIndex(), 0.0 );
-//    }
     
     // Finally store the new value
     value = psi;
@@ -249,7 +173,7 @@ void UniformBranchLengthTreeDistribution::simulateTree( void ) {
 
 
 void UniformBranchLengthTreeDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-//    if (oldP == originTime) {
-//        originTime = static_cast<const TypedDagNode<double>* >( newP );
-//    }
+    if (oldP == maxBranchLength) {
+        maxBranchLength = static_cast<const TypedDagNode<double>* >( newP );
+    }
 }

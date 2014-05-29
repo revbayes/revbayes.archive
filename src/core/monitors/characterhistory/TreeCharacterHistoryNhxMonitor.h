@@ -182,7 +182,7 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::updateCha
 {
     
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
-    const BranchHistory& bh = p->getHistory(n->getIndex());
+    const BranchHistory& bh = p->getHistory(*n);
 
     std::vector<CharacterEvent*> characters;
     if (brEnd=="child")
@@ -205,7 +205,7 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
 {
     size_t nd_idx = n->getIndex();
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
-    const BranchHistory& bh = p->getHistory(n->getIndex());
+    const BranchHistory& bh = p->getHistory(*n);
 
     std::vector<CharacterEvent*> characters;
     std::stringstream ss;
