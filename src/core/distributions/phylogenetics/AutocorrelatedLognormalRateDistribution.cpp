@@ -53,7 +53,6 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     // the move could have changed this
     if ( (*value)[rootIndex] != parentRate ) {
         lnProb = RbConstants::Double::neginf;
-		std::cout << "here " << std::endl;
     } else {
         // we need to take the log of the root rate because we expect the parent rate to be the mean of the normal distribution
         parentRate = log( parentRate );
