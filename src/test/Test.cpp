@@ -13,6 +13,7 @@
 #include "RbOptions.h"
 #include "Test.h"
 #include "TestACLNRelaxedClock.h"
+#include "TestACLNRatesGen.h"
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
 #include "TestBayesFactor.h"
 #include "TestBirthDeath.h"
@@ -375,7 +376,9 @@ bool Test::performTests(int argc, const char * argv[]) {
     }
     
     
-    
+	// #######
+    // TAH: working on relaxed-clock models, setting up consistent test files
+	
     /* A DPP relaxed model test */
     try {
 //        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
@@ -399,11 +402,20 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         TestIndependentClockRates testIRMC = TestIndependentClockRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
-		testIRMC.run();
+//		testIRMC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
     
+	/* An autocorrelated rate model test */
+    try {
+        TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
+		
+		testACLNG.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+	// #######
     
     /* A time varying birth-death model test */
     try {
