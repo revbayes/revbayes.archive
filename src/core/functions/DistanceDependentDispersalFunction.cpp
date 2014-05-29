@@ -17,18 +17,18 @@ DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const Typ
 {
     // add the parameters as parents
     distancePower = dp;
-    this->addParameter(distancePower);
+    
+    addParameter(distancePower);
     
     update();
 }
 
 
-DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n) : TypedFunction<GeographicDistanceRateModifier>( n )
+DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n) : TypedFunction<GeographicDistanceRateModifier>( n ), distancePower(n.distancePower)
 {
     
     // no need to add parameters, happens automatically
-    value = n.value;
-    distancePower = n.distancePower;
+    //value = n.value;
     update();
 }
 
@@ -50,6 +50,7 @@ void DistanceDependentDispersalFunction::update( void )
 {
     //value->updateGeographicDistancePowers(distancePower->getValue(),true);
     // recompute distances based on distancePower
+    
     value->setDistancePower(distancePower->getValue(), true);
 }
 

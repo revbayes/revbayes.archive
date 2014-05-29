@@ -1,4 +1,4 @@
-//
+
 //  RateMap_Biogeography.cpp
 //  rb_mlandis
 //
@@ -32,7 +32,6 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     heterogeneousClockRates = m.heterogeneousClockRates;
     homogeneousGainLossRates = m.homogeneousGainLossRates;
     heterogeneousGainLossRates = m.heterogeneousGainLossRates;
-    geographicDistanceRateModifier = m.geographicDistanceRateModifier;
     distancePower = m.distancePower;
     
     geographicDistanceRateModifier = m.geographicDistanceRateModifier;
@@ -68,6 +67,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         
         branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
         branchHeterogeneousGainLossRates = r.branchHeterogeneousClockRates;
+        forbidExtinction = r.forbidExtinction;
         
         branchOffset = r.branchOffset;
         epochOffset = r.epochOffset;
@@ -94,8 +94,25 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     P[1][0] = p - p * expPart;
     P[1][1] = q + p * expPart;
 
-    //std::cout << node.getIndex() << " " << P[0][0] << " " << P[0][1] << " " << P[1][0] << " " << P[1][1] << "   " << glr[0] << " " << glr[1] << "\n";
+    //std::cout << node.getIndex() << " " << P[0][0] << " " << P[0][1] << " " << P[1][0] << " " << P[1][1] << "   " << glr[0] << " " << glr[1] << " " << l << " " << r << "\n";
     ;
+    
+    /*
+    
+     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
+     double expPart0 = exp( - (r[0] + r[1]) * bs);
+     double expPart1 = exp( - (r[0] + r[1]) * t1/rootAge); // needs *br1
+     double expPart2 = exp( - (r[0] + r[1]) * t2/rootAge); // needs *br2
+     double pi0 = r[0] / (r[0] + r[1]);
+     double pi1 = 1.0 - pi0;
+     double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
+     double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
+     double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
+     
+
+     
+     */
+    
 }
 
 RateMap_Biogeography* RateMap_Biogeography::clone(void) const
@@ -107,6 +124,13 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
 {
     double rate = 0.0;
     int s = to->getState();
+    
+    if (from[ to->getIndex() ]->getState() == to->getState())
+    {
+        std::cout << count[0] << " " << count[1] << "\n";
+        std::cout << node.getIndex() << " problem...\n";
+        ;
+    }
     
     // rate to extinction cfg is 0
     if (count[1] == 1 && s == 0 && forbidExtinction)
@@ -205,7 +229,7 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
         r1 *= homogeneousGainLossRates[1];
     }
     
-    // apply rate for branch
+    // apply rate for branch.
     double sum = r0 + r1;
     if (branchHeterogeneousClockRates)
     {
@@ -260,12 +284,8 @@ const std::vector<double>& RateMap_Biogeography::getHomogeneousGainLossRates(voi
 
 void RateMap_Biogeography::setHomogeneousGainLossRates(const std::vector<double> &r)
 {
-    
     branchHeterogeneousGainLossRates = false;
     homogeneousGainLossRates = r;
-    
-    
-    ;
 }
 
 const std::vector<std::vector<double> >& RateMap_Biogeography::getHeterogeneousGainLossRates(void) const
