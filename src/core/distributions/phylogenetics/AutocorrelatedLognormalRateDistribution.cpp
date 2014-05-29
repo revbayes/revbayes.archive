@@ -53,6 +53,7 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     // the move could have changed this
     if ( (*value)[rootIndex] != parentRate ) {
         lnProb = RbConstants::Double::neginf;
+		std::cout << "here " << std::endl;
     } else {
         // we need to take the log of the root rate because we expect the parent rate to be the mean of the normal distribution
         parentRate = log( parentRate );
@@ -66,7 +67,8 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
             
             size_t childIndex = child.getIndex();
             double childRate = (*value)[childIndex];
-            lnProb += log( RbStatistics::Lognormal::lnPdf(parentRate, standDev, childRate) );
+			double mu = parentRate - (standDev * standDev * 0.5);
+            lnProb += RbStatistics::Lognormal::lnPdf(mu, standDev, childRate);
             
         } 
     }
@@ -110,7 +112,8 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
             
             size_t childIndex = child.getIndex();
             double childRate = (*value)[childIndex];
-            lnProb += log( RbStatistics::Lognormal::lnPdf(parentRate, standDev, childRate) );
+			double mu = parentRate - (standDev * standDev * 0.5);
+            lnProb += RbStatistics::Lognormal::lnPdf(mu, standDev, childRate);
                 
         } 
     }
