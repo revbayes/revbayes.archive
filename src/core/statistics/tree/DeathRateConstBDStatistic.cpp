@@ -55,7 +55,7 @@ void DeathRateConstBDStatistic::swapParameterInternal(const DagNode *oldP, const
     if (oldP == diversification) {
         diversification = static_cast< const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == turnover) {
+    if (oldP == turnover) {
         turnover = static_cast< const TypedDagNode<double>* >( newP );
     }
 }
