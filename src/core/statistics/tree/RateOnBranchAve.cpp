@@ -63,7 +63,7 @@ void RateOnBranchAve::swapParameterInternal(const DagNode *oldP, const DagNode *
     if (oldP == nodeRates) {
         nodeRates = static_cast< const StochasticNode< std::vector<double> >* >( newP );
     }
-    else if (oldP == tree) {
+    if (oldP == tree) {
         tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
     }
     
