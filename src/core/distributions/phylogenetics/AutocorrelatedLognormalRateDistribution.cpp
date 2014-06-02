@@ -54,7 +54,6 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     if ( (*value)[rootIndex] != parentRate ) {
         lnProb = RbConstants::Double::neginf;
     } else {
-        // we need to take the log of the root rate because we expect the parent rate to be the mean of the normal distribution
         parentRate = log( parentRate );
         size_t numChildren = root.getNumberOfChildren();
         for (size_t i = 0; i < numChildren; ++i) {
@@ -62,13 +61,16 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
             lnProb += recursiveLnProb(child);
             
             // compute the variance
-            double standDev = sigma->getValue() * child.getBranchLength();
+            double variance = sigma->getValue() * child.getBranchLength();
             
             size_t childIndex = child.getIndex();
             double childRate = (*value)[childIndex];
-			double mu = parentRate - (standDev * standDev * 0.5);
-            lnProb += RbStatistics::Lognormal::lnPdf(mu, standDev, childRate);
-            
+			
+			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
+			// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
+			double mu = parentRate - (variance * 0.5);
+			double stDev = sqrt(variance);
+            lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
         } 
     }
     
@@ -107,16 +109,18 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
             lnProb += recursiveLnProb(child);
             
             // compute the variance
-            double standDev = sigma->getValue() * child.getBranchLength();
+            double variance = sigma->getValue() * child.getBranchLength();
             
             size_t childIndex = child.getIndex();
             double childRate = (*value)[childIndex];
-			double mu = parentRate - (standDev * standDev * 0.5);
-            lnProb += RbStatistics::Lognormal::lnPdf(mu, standDev, childRate);
-                
+
+			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
+			// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
+			double mu = parentRate - (variance * 0.5);
+			double stDev = sqrt(variance);
+            lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
         } 
     }
-    
     return lnProb;
     
 }
@@ -189,11 +193,13 @@ void AutocorrelatedLognormalRateDistribution::recursiveSimulate(const TopologyNo
     size_t nodeIndex = node.getIndex();
     
     // compute the variance along the branch
-    double standDev = sigma->getValue() * node.getBranchLength();
+    double variance = sigma->getValue() * node.getBranchLength();
+	double mu = log(parentRate) - (variance * 0.5);
+	double stDev = sqrt(variance);
     
     // simulate a new rate
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    double nodeRate = RbStatistics::Lognormal::rv( log(parentRate), standDev, *rng);
+    double nodeRate = RbStatistics::Lognormal::rv( mu, stDev, *rng );
     
     // we store this rate here
     (*value)[nodeIndex] = nodeRate;
