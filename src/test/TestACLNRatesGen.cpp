@@ -111,11 +111,15 @@ bool TestACLNRatesGen::run( void ) {
 	size_t numBranches = 2 * data[0]->getNumberOfTaxa() - 2;
 	size_t numNodes = 2 * data[0]->getNumberOfTaxa() - 1; // model rates at nodes
 	
-    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(1.0) );
-    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(2.0) );
+    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(4.0) );
+    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(4.0) );
+    ConstantNode<double> *anu      = new ConstantNode<double>("a_nu", new double(1.0) );
+    ConstantNode<double> *bnu      = new ConstantNode<double>("b_nu", new double(4.0) );
 	
 	StochasticNode<double> *rootRate = new StochasticNode<double>("root.rate", new GammaDistribution(a, b));
-	ConstantNode<double> *bmNu = new ConstantNode<double>("BM_var", new double(0.5));
+	rootRate->setValue(1.0);
+	StochasticNode<double> *bmNu = new StochasticNode<double>("BM_var", new GammaDistribution(anu, bnu));
+	bmNu->setValue(0.01);
 	StochasticNode< std::vector< double > > *nodeRates = new StochasticNode< std::vector< double > >("NodeRates", new AutocorrelatedLognormalRateDistribution(tau, bmNu, rootRate) );
 	
 	std::cout << nodeRates->getValue().size() << std::endl;
@@ -172,26 +176,30 @@ bool TestACLNRatesGen::run( void ) {
 	//	moves.push_back( new SubtreeScale( tau, 5.0 ) );
 	//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 //	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
-    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
+//    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
     moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 1.0 ) );
-	moves.push_back( new ScaleMove(rootRate, log(2.0), true, 6.0) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 4.0 * (double)numNodes) );
+//	moves.push_back( new ScaleMove(bmNu, 0.5, true, 4.0) );
+	moves.push_back( new ScaleMove(rootRate, 0.5, false, 3.0) );
+	moves.push_back( new ScaleMove(rootRate, 1.0, false, 3.0) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 5.0 * (double)numNodes) );
 //	moves.push_back( new RateTimeMixingStep( tau, nodeRates, 0.05, 2.0 ) ); // this from Thorne paper and Rannala/Yang papers, working on it
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
-//	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
+	DeterministicNode<double> *meanNdRate = new DeterministicNode<double>("MeanNodeRate", new MeanVecContinuousValStatistic(nodeRates) );
 	
     /* add the monitors */
     std::vector<Monitor*> monitors;
     std::vector<DagNode*> monitoredNodes;
-//	monitoredNodes.push_back( meanBrRate );
+	monitoredNodes.push_back( meanNdRate );
 	monitoredNodes.push_back( treeHeight );
 	monitoredNodes.push_back( nodeRates );
 	monitoredNodes.push_back( rootRate );
+	monitoredNodes.push_back( bmNu );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
 	
 	monitoredNodes.push_back( div );
@@ -202,14 +210,14 @@ bool TestACLNRatesGen::run( void ) {
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( brVector );
 	
-	std::string logFN = "clock_test/test_RB_gmc_ACLN_28May_1_pr.log";
-	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
+	std::string logFN = "clock_test/test_RB_gmc_ACLN_28May_2_pr.log";
+	monitors.push_back( new FileMonitor( monitoredNodes, 20, logFN, "\t" ) );
 	
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 	
-//	std::string treFN = "clock_test/test_RB_gmc_ACLN_28May_1_pr.tre";
-//    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
+//	std::string treFN = "clock_test/test_RB_gmc_ACLN_28May_2_pr.tre";
+//    monitors.push_back( new FileMonitor( monitoredNodes2, 10000, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
