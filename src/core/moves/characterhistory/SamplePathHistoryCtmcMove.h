@@ -107,11 +107,15 @@ const std::string& RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::
 template<class charType, class treeType>
 double RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::SamplePathHistoryCtmcMove::performSimpleMove(void)
 {
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    
     
     // sample branch to update and store values
     storedIndex = GLOBAL_RNG->uniform01() * numNodes;
+    const TopologyNode& nd = tree->getValue().getNode(storedIndex);
+    if (nd.isRoot()) return 0.0;
     //storedIndex = 10;
-    storedValue = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(variable->getDistribution()).getHistory(storedIndex);
+    storedValue = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(variable->getDistribution()).getHistory(nd);
     
     // sample characters to update
     std::set<size_t> updateSet;
@@ -125,20 +129,19 @@ double RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::SamplePathHi
     }
     
     // propose new value
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
-    const TopologyNode& nd = tree->getValue().getNode(storedIndex);
     
-    // std::cout << "OLD P\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
+//    std::cout << "BEFORE proposal\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
     
-    //    double lnProposalBwd = p->computeLnProposal();
+   // double lnProposalBwd = p->computeLnProposal();
     double lnProposalRatio = 0.0;
     p->samplePathHistory(tree->getValue().getNode(storedIndex), updateSet);
     p->fireTreeChangeEvent(nd);
-    //    double lnProposalFwd = p->computeLnProposal();
+//    double lnProposalFwd = p->computeLnProposal();
 
-    //    std::cout << "NEW P\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n";  p->getHistory(storedIndex).print();
-       
-    //    return lnProposalBwd - lnProposalFwd;
+//    std::cout << "AFTER proposal\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
+    
+ //   lnProposalRatio = lnProposalBwd - lnProposalFwd;
+    return 10e5;
     return lnProposalRatio;
 }
 
@@ -153,15 +156,20 @@ void RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::rejectSimpleMo
 {
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
     const TopologyNode& nd = tree->getValue().getNode(storedIndex);
+    
+//     std::cout << "BEFORE reject\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
     p->setHistory(storedValue, storedIndex);
     p->fireTreeChangeEvent(nd);
+//     std::cout << "AFTER reject\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
     // variable->setValue( new BranchHistory(storedValue) );
 }
 
 template<class charType, class treeType>
 void RevBayesCore::SamplePathHistoryCtmcMove<charType, treeType>::acceptSimpleMove(void)
 {
-
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    const TopologyNode& nd = tree->getValue().getNode(storedIndex);
+//    std::cout << "AFTER accept\n"; std::cout << p->getHistory(storedIndex).getNumEvents() << "\n"; p->getHistory(storedIndex).print();
 }
 
 template<class charType, class treeType>

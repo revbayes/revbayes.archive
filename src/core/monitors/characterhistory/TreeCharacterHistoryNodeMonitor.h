@@ -147,7 +147,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
 {
 
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
-    const BranchHistory& bh = p->getHistory(n->getIndex());
+    const BranchHistory& bh = p->getHistory(*n);
     std::stringstream ss;
     
     if (infoStr=="child")
