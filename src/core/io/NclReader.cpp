@@ -1,4 +1,4 @@
-#include "AminoAcidState.h"
+	#include "AminoAcidState.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
 #include "ContinuousCharacterState.h"
@@ -1413,6 +1413,10 @@ std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename
                 m = readBranchLengthTrees( *p, "phylip" );
             } 
             catch (RbException e) 
+            {
+                ;
+            }
+            catch (exception e) 
             {
                 ;
             }
