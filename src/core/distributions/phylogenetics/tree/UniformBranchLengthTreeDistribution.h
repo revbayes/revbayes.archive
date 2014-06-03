@@ -21,15 +21,15 @@ namespace RevBayesCore {
         
     public:
         UniformBranchLengthTreeDistribution(
-                                    //const TypedDagNode<double>*                 originT,
+                                    const TypedDagNode<double>*                 maxBrLen,
                                     const std::vector<std::string>&             taxaNames
                                     );                                                                                  //!< Constructor
-        UniformBranchLengthTreeDistribution(const UniformBranchLengthTreeDistribution &x);                                              //!< Copy constructor
+        UniformBranchLengthTreeDistribution(const UniformBranchLengthTreeDistribution &x);                              //!< Copy constructor
         
-        virtual                                            ~UniformBranchLengthTreeDistribution(void);                          //!< Virtual destructor
+        virtual                                            ~UniformBranchLengthTreeDistribution(void);                  //!< Virtual destructor
         
         // public member functions
-        UniformBranchLengthTreeDistribution*                        clone(void) const;                                          //!< Create an independent clone
+        UniformBranchLengthTreeDistribution*                clone(void) const;                                          //!< Create an independent clone
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);    //!< Swap distribution parameters
@@ -37,12 +37,11 @@ namespace RevBayesCore {
     private:
         
         // helper functions
-//        void                                                attachTimes(BranchLengthTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
         
         // members
-        //const TypedDagNode<double>*                         originTime;
+        const TypedDagNode<double>*                         maxBranchLength;
         size_t                                              numTaxa;
         std::vector<std::string>                            taxonNames;
     };
