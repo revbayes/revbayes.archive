@@ -177,7 +177,7 @@ namespace RevBayesCore {
             fillConditionalClades(tree.getRoot(), condClades, clades);
             
             
-            // first increment the clade frequency countera
+            // first increment the clade frequency counter
             // there need to be two loops because otherwise we count the the parent clade twice
             for (size_t i = 0; i < clades.size(); ++i) 
             {
