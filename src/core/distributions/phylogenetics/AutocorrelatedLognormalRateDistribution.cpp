@@ -47,6 +47,7 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     size_t rootIndex= root.getIndex();
     
     double lnProb = 0.0;
+	
     
     double parentRate = rootRate->getValue();
     // check if the root rate matches the parameter value for the root rate
@@ -203,7 +204,6 @@ void AutocorrelatedLognormalRateDistribution::recursiveSimulate(const TopologyNo
     
     // we store this rate here
     (*value)[nodeIndex] = nodeRate;
-    
     
     // simulate the rate for each child (if any)
     size_t numChildren = node.getNumberOfChildren();
