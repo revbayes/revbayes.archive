@@ -134,6 +134,7 @@ bool TestACLNRatesGen::run( void ) {
 	}
     DeterministicNode< std::vector< double > >* brVector = new DeterministicNode< std::vector< double > >( "branchRates", new VectorFunction< double >( branchRates ) );
 	
+	// making a combined DagNode for a compound move
 	std::vector<DagNode*> treeAndRates;
 	treeAndRates.push_back( tau );
 	treeAndRates.push_back(nodeRates);
