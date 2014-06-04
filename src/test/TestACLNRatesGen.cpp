@@ -35,7 +35,6 @@
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
 #include "RateOnBranchAve.h"
-//#include "RateTimeMixingStep.h"
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
 #include "RootTimeSlide.h"
@@ -52,6 +51,7 @@
 #include "VectorFunction.h"
 #include "VectorSingleElementScaleMove.h"
 #include "ScaleSingleACLNRatesMove.h"
+#include "RateAgeACLNMixingMove.h"
 
 using namespace RevBayesCore;
 
@@ -114,17 +114,16 @@ bool TestACLNRatesGen::run( void ) {
     ConstantNode<double> *a      = new ConstantNode<double>("a", new double(4.0) );
     ConstantNode<double> *b      = new ConstantNode<double>("b", new double(4.0) );
     ConstantNode<double> *anu      = new ConstantNode<double>("a_nu", new double(1.0) );
-    ConstantNode<double> *bnu      = new ConstantNode<double>("b_nu", new double(4.0) );
+    ConstantNode<double> *bnu      = new ConstantNode<double>("b_nu", new double(8.0) );
 	
 	StochasticNode<double> *rootRate = new StochasticNode<double>("root.rate", new GammaDistribution(a, b));
-	rootRate->setValue(1.0);
 	StochasticNode<double> *bmNu = new StochasticNode<double>("BM_var", new GammaDistribution(anu, bnu));
-	bmNu->setValue(0.01);
-	StochasticNode< std::vector< double > > *nodeRates = new StochasticNode< std::vector< double > >("NodeRates", new AutocorrelatedLognormalRateDistribution(tau, bmNu, rootRate) );
-	
-	std::cout << nodeRates->getValue().size() << std::endl;
 	
 	size_t rootID = trees[0]->getRoot().getIndex();
+
+	StochasticNode< std::vector< double > > *nodeRates = new StochasticNode< std::vector< double > >( "NodeRates", new AutocorrelatedLognormalRateDistribution(tau, bmNu, rootRate) );
+	
+	std::cout << nodeRates->getValue().size() << std::endl;
 	
 	std::vector<const TypedDagNode<double> *> branchRates;
 	for( size_t i=0; i<numBranches; i++){
@@ -134,6 +133,12 @@ bool TestACLNRatesGen::run( void ) {
 		branchRates.push_back( tmpBrRt );
 	}
     DeterministicNode< std::vector< double > >* brVector = new DeterministicNode< std::vector< double > >( "branchRates", new VectorFunction< double >( branchRates ) );
+	
+	std::vector<DagNode*> treeAndRates;
+	treeAndRates.push_back( tau );
+	treeAndRates.push_back(nodeRates);
+	treeAndRates.push_back(rootRate);
+
 	
 	// ####################################
 	
@@ -175,18 +180,18 @@ bool TestACLNRatesGen::run( void ) {
 	//	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 	//	moves.push_back( new SubtreeScale( tau, 5.0 ) );
 	//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-//	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
-//    moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-    moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
-    moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
-    moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 1.0 ) );
-//	moves.push_back( new ScaleMove(bmNu, 0.5, true, 4.0) );
+	moves.push_back( new RootTimeSlide( tau, 0.3, true, 10.0 ) );
+	moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
+	moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
+	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
+	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
+	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 1.0 ) );
+	moves.push_back( new ScaleMove(bmNu, 0.5, true, 4.0) );
 	moves.push_back( new ScaleMove(rootRate, 0.5, false, 3.0) );
 	moves.push_back( new ScaleMove(rootRate, 1.0, false, 3.0) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 5.0 * (double)numNodes) );
-//	moves.push_back( new RateTimeMixingStep( tau, nodeRates, 0.05, 2.0 ) ); // this from Thorne paper and Rannala/Yang papers, working on it
+	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); // this from Thorne paper and Rannala/Yang papers, working on it
 	
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
@@ -210,14 +215,14 @@ bool TestACLNRatesGen::run( void ) {
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( brVector );
 	
-	std::string logFN = "clock_test/test_RB_gmc_ACLN_28May_2_pr.log";
-	monitors.push_back( new FileMonitor( monitoredNodes, 20, logFN, "\t" ) );
+	std::string logFN = "clock_test/test_RB_gmc_ACLN_2June_1_pr.log";
+	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 	
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 	
-//	std::string treFN = "clock_test/test_RB_gmc_ACLN_28May_2_pr.tre";
-//    monitors.push_back( new FileMonitor( monitoredNodes2, 10000, treFN, "\t", false, false, false ) );
+//	std::string treFN = "clock_test/test_RB_gmc_ACLN_2June_1_pr.tre";
+//	monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
