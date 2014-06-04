@@ -14,6 +14,7 @@
 #include "BranchHistory.h"
 #include "StochasticNode.h"
 #include "TypedDagNode.h"
+#include "TimeAtlas.h"
 #include "TimeTree.h"
 
 #include <fstream>
@@ -28,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, std::vector<std::vector<double> > gc, int g, int mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, TimeAtlas* ta, int g, int mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor& f);
         
@@ -58,13 +59,15 @@ namespace RevBayesCore {
         std::fstream                            outStream;
         
         // parameters
-        StochasticNode<AbstractCharacterData>*    variable;
+        StochasticNode<AbstractCharacterData>*  variable;
         TypedDagNode<treeType>*                 tree;
+        TimeAtlas*                              timeAtlas;
         std::set<DagNode *>                     nodeVariables;
-        std::vector<std::vector<double> >       geographicCoordinates;
         
         std::vector<std::vector<unsigned int> > parentCharacterCounts;
         std::vector<std::vector<unsigned int> > childCharacterCounts;
+        
+        std::vector<GeographicArea*>        areas;
         
         size_t numHistories;
         size_t numCharacters;
@@ -93,12 +96,12 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, std::vector<std::vector<double> > gc, int g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, TimeAtlas* ta, int g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
 Monitor(g,t),
 outStream(),
 variable( s ),
 tree( t ),
-geographicCoordinates(gc),
+timeAtlas( ta ),
 filename( fname ),
 separator( del ),
 posterior( pp ),
@@ -115,11 +118,9 @@ burn(b) {
     
     nodes.push_back(s);
     nodes.push_back(t);
-    //for (size_t i = 0; i < branchHistories.size(); i++)
-    //    nodes.push_back(branchHistories[i]);
     
-//    numHistories = bh.size();
-//    numCharacters = bh[0]->getValue().getNumCharacters();
+    numHistories = tree->getValue().getNumberOfNodes();
+    numCharacters = variable->getValue().getNumberOfCharacters();
     
     parentCharacterCounts.resize(numHistories);
     childCharacterCounts.resize(numHistories);
@@ -128,6 +129,7 @@ burn(b) {
         parentCharacterCounts[i].resize(numCharacters,0);
         childCharacterCounts[i].resize(numCharacters,0);
     }
+    areas = timeAtlas->getAreas()[0];
 }
 
 template<class charType, class treeType>
@@ -136,10 +138,11 @@ Monitor( m ),
 outStream( ),
 variable( m.variable ),
 tree( m.tree ),
+timeAtlas( m.timeAtlas ),
 nodeVariables( m.nodeVariables ),
-geographicCoordinates(m.geographicCoordinates),
 parentCharacterCounts(m.parentCharacterCounts),
 childCharacterCounts(m.childCharacterCounts),
+areas(m.areas),
 numHistories(m.numHistories),
 numCharacters(m.numCharacters),
 showMetadata(m.showMetadata),
@@ -291,7 +294,7 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::monitor(l
     if (gen % samplingFrequency == 0 && gen != maxGen) { // && gen >= burn) {
         
         std::string en = buildExtendedNewick();
-        std::cout << "\n" << en << "\n\n";
+        //std::cout << "\n" << en << "\n\n";
         
     }
     
@@ -360,7 +363,8 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
     
     for (unsigned i = 0; i < numCharacters; i++)
     {
-        nhxStrm << "\t\t" << i << "\t" << geographicCoordinates[i][0] << "\t" << geographicCoordinates[i][1];
+//        nhxStrm << "\t\t" << i << "\t" << geographicCoordinates[i][0] << "\t" << geographicCoordinates[i][1];
+        nhxStrm << "\t\t" << i << "\t" << areas[i]->getLatitude() << "\t" << areas[i]->getLongitude();
         if (i < (numCharacters - 1))
             nhxStrm << ",";
         nhxStrm << "\n";

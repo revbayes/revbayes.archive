@@ -20,14 +20,14 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier( TimeAtlas* ta, int index=0, double dp=1.0, double threshhold=1e-6, std::string dt="haversine" );
+        GeographicDistanceRateModifier( TimeAtlas* ta, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
         //GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
         GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g);
         
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
         double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
-        void                                setDistancePower(double dp=1.0, bool upd=true);
+        void                                setDistancePower(double dp, bool upd=true);
         const std::vector<double>&          getGeographicDistancePowers(void) const;
         void                                setGeographicDistancePowers(const std::vector<double>& dp);
         unsigned                            getEpochIndex(double age);
@@ -64,6 +64,9 @@ namespace RevBayesCore
         
         double threshhold;
         double distancePower;
+        
+        std::set<CharacterEvent*> present;
+        std::set<CharacterEvent*> absent;
         
     };
 }

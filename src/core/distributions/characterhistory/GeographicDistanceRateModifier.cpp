@@ -27,9 +27,7 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
     threshhold = th;
     distanceType = dt;
 
-    
     const std::vector<std::vector<GeographicArea*> > tmpAreas = atlas->getAreas();
-    
     
     numAreas = 0;
     epochs = atlas->getEpochs();
@@ -139,8 +137,10 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     unsigned epochIndex = getEpochIndex(age);
     
     // determine which areas are present and which are absent
-    std::set<CharacterEvent*> present;
-    std::set<CharacterEvent*> absent;
+//    std::set<CharacterEvent*> present;
+//    std::set<CharacterEvent*> absent;
+    present.clear();
+    absent.clear();
     for (unsigned i = 0; i < numAreas; i++)
     {
         if (currState[i]->getState() == 0)
@@ -148,6 +148,9 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
         else
             present.insert(currState[i]);
     }
+    
+    if (present.size() == 0)
+        return 1.0;
     
     // get sum of distances_ij^beta
     double rate = 0.0;
@@ -163,7 +166,8 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
             size_t idx_a = (*it_a)->getIndex();
 
 //            double d = geographicDistancePowers[idx_p][idx_a];
-            double d = geographicDistancePowers[ epochIndex*epochOffset + idx_p*areaOffset + idx_a  ];
+//            double d = geographicDistancePowers[ epochIndex*epochOffset + idx_p*areaOffset + idx_a  ];
+            double d = geographicDistancePowers[ epochIndex*epochOffset + idx_a*areaOffset + idx_p  ]; // might be a bit faster, re: memory access...
             
             sum += d;
             
@@ -240,13 +244,12 @@ void GeographicDistanceRateModifier::update(void)
 
 void GeographicDistanceRateModifier::setDistancePower(double dp, bool upd)
 {
-    
     bool changed = (distancePower != dp);
-    
-    //std::cout << "setDistancePower " << dp << "\n";
-    distancePower = dp;
     if (upd && changed)
+    {
+        distancePower = dp;
         update();
+    }
 }
 
 void GeographicDistanceRateModifier::setGeographicDistancePowers(const std::vector<double>& dp)

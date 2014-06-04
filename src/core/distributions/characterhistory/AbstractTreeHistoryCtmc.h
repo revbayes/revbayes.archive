@@ -201,31 +201,18 @@ template<class charType, class treeType>
 double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProbability( void )
 {
     this->lnProb = 0.0;
-
     
     const std::vector<TopologyNode*>& nodes = tau->getValue().getNodes();
-
-//    std::cout << "recompute lnProb    ";
-//    for (size_t i = 0; i < nodes.size(); i++)
-//    {
-//        if (changedNodes[i] || dirtyNodes[i])
-//        {
-//            std::cout << i << ":" << (changedNodes[i] ? "1" : "0") << (dirtyNodes[i] ? "1" : "0") << " ";
-//        }
-//    }
-//    std::cout << "\n";
     
     for (size_t i = 0; i < nodes.size(); i++)
     {
         const TopologyNode& nd = *nodes[i];
         size_t nodeIndex = nd.getIndex();
-//        dirtyNodes[nodeIndex] = true; // to be commented
-//        activeLikelihood[nodeIndex] = 0; // to be commented
+//        dirtyNodes[nodeIndex] = true;       // uncomment to disable dirty flagging
+//        activeLikelihood[nodeIndex] = 0;    // uncomment to disable dirty flagging
         fillLikelihoodVector(nd);
         this->lnProb += historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
     }
-    //std::cout << this->lnProb << "\n";
-//    computeRootLikelihood(tau->getValue().getRoot());
     return this->lnProb;
 }
 
@@ -239,6 +226,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVe
 
     // compute
     double lnL = computeInternalNodeLikelihood(node);
+//    std::cout << node.getIndex() << " " << lnL << "\n";
     historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     
     // mark as computed

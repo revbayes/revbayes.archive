@@ -35,7 +35,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sne=false, bool ste=true);
         
         // new TreeCharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t"));
         
@@ -54,8 +54,10 @@ namespace RevBayesCore {
         void                                printHeader(void);                                                  //!< Print header
         
     private:
-        std::string                         buildExtendedNewick();
+        std::string                         buildExtendedNewick(void);
         std::string                         buildExtendedNewick(TopologyNode* n);
+        std::string                         buildNumEventsStr(TopologyNode* n);
+        std::string                         buildNumEventsStr(TopologyNode* n, unsigned state);
         std::string                         buildCharacterHistoryString(TopologyNode* n, std::string brEnd="child");
         
         // the stream to print
@@ -64,7 +66,6 @@ namespace RevBayesCore {
         // parameters
         StochasticNode<AbstractCharacterData>* variable;
         TypedDagNode<treeType>*             tree;
-        //std::vector<StochasticNode<BranchHistory>* > branchHistories;
         std::set<DagNode *>                 nodeVariables;
         std::string                         filename;
         std::string                         separator;
@@ -73,7 +74,8 @@ namespace RevBayesCore {
         bool                                likelihood;
         bool                                append;
         bool                                showMetadata;
-        bool                                showRates;
+        bool                                showNumEvents;
+        bool                                showTreeEvents;
         size_t                              numStates;
         
     };
@@ -82,7 +84,7 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::TreeCharacterHistoryNodeMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sne, bool ste) :
 Monitor(g,s),
 outStream(),
 variable(s),
@@ -94,7 +96,8 @@ prior( pr ),
 likelihood( l ),
 append(ap),
 showMetadata(sm),
-showRates(sr),
+showNumEvents(sne),
+showTreeEvents(ste),
 numStates(0)
 {
     nodes.push_back(s);
@@ -111,7 +114,8 @@ variable(m.variable),
 tree( m.tree ),
 nodeVariables( m.nodeVariables ),
 showMetadata(m.showMetadata),
-showRates(m.showRates),
+showNumEvents(m.showNumEvents),
+showTreeEvents(m.showTreeEvents),
 numStates(m.numStates)
 {    
     filename    = m.filename;
@@ -278,6 +282,50 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
     return o.str();
 }
 
+/* Build newick string */
+template<class charType, class treeType>
+std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::buildNumEventsStr(TopologyNode* nd)
+{
+    
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    BranchHistory* bh = &p->getHistory(*nd);
+    
+    std::stringstream ss;
+    double eventRatio = (double)bh->getNumEvents() / nd->getBranchLength();
+    
+    ss << eventRatio;
+    return ss.str();
+    
+}
+
+
+
+/* Build newick string */
+template<class charType, class treeType>
+std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::buildNumEventsStr(TopologyNode* nd, unsigned state)
+{
+    
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    BranchHistory* bh = &p->getHistory(*nd);
+    
+    const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh->getHistory();
+    std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+    
+    std::stringstream ss;
+    
+    unsigned v = 0;
+    for (it = evts.begin(); it != evts.end(); it++)
+    {
+        if ( (*it)->getState() == state )
+            v++;
+    }
+    double eventRatio = (double)v / nd->getBranchLength();
+
+    ss << eventRatio;
+    return ss.str();
+    
+}
+
 
 /** Monitor value at generation gen */
 template<class charType, class treeType>
@@ -330,13 +378,28 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::monitor(
             outStream << pp;
         }
         
-        // add a separator before the tree
-        outStream << separator;
+        if (showNumEvents)
+        {
+            
+            for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+            {
+                for (size_t s = 0; s < numStates; s++)
+                {
+                    TopologyNode* nd = &tree->getValue().getNode(i);
+                    if (nd->isRoot())
+                        continue;
+                    outStream << separator << buildNumEventsStr(nd, s);
+                }
+            }
+        }
         
-        std::string en = buildExtendedNewick();
-        //std::cout << "\n" << en << "\n\n";
-        
-        outStream << en;
+        if (showTreeEvents)
+        {
+            // add a separator before the tree
+            outStream << separator;
+            outStream << buildExtendedNewick();
+            
+        }
         
         outStream << std::endl;
         
@@ -380,8 +443,25 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::printHea
         outStream << "Prior";
     }
     
-    // add a separator tree
-    outStream << separator << "Tree";
+    if (showNumEvents)
+    {
+        for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
+        {
+            for (size_t s = 0; s < numStates; s++)
+            {
+                TopologyNode* nd = &tree->getValue().getNode(i);
+                if (nd->isRoot())
+                    continue;
+                outStream << separator << "b" << nd->getIndex() << "_s" << s;
+            }
+        }
+    }
+    
+    if (showTreeEvents)
+    {
+        // add a separator tree
+        outStream << separator << "Tree";
+    }
     
     // end line of stream
     outStream << std::endl;

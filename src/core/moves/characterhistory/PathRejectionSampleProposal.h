@@ -215,15 +215,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
     fillStateCounts(currState, counts);
 
     const treeType& tree = tau->getValue();
-    //const TopologyNode& node = tree.getNode(bh.getIndex());
     double branchLength = nd.getBranchLength();
     if (nd.isRoot())
     {
         return 0.0;
         branchLength = 1000.0;
     }
-    
-    
     double currAge = (!nd.isRoot() ? nd.getParent().getAge() : 10e200);
     
     // get sampling ratemap
@@ -311,15 +308,12 @@ const std::vector<RevBayesCore::DagNode*>& RevBayesCore::PathRejectionSampleProp
 template<class charType, class treeType>
 double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
-
-    //if (nodeIndex == 5) { std::cout << "path old " << nodeIndex << "\n";    storedValue->print(); }
-    
     AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
     proposedHistory.clear();
     
     // get model parameters
     const treeType& tree = this->tau->getValue();
-    double branchLength = node->getBranchLength(); //tree.getBranchLength(node.getIndex());
+    double branchLength = node->getBranchLength();
     if (node->isRoot())
     {
         return 0.0;
@@ -331,32 +325,17 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     // clear characters
     BranchHistory* bh = &p.getHistory(*node);
     if (printDebug) { std::cout << "BEFORE PATH PROPOSAL\n"; bh->print(); }
-    
-    //proposedValue->clearEvents( siteIndexSet );
-    
+
     // reject sample path history
     std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
     std::vector<CharacterEvent*> childVector =  bh->getChildCharacters();
-    
-//    std::cout << "path  " << node->getIndex() << " ";
-//    for (size_t i = 0; i < numCharacters; i++)
-//    {
-//        std::cout << parentVector[i]->getState();
-//    }
-//    std::cout << "\n";
-    //bh->print();
-    
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         std::set<CharacterEvent*> tmpHistory;
-        unsigned ct = 0;
-        bool reject = false;
-        
         unsigned int currState = parentVector[*it]->getState();
         unsigned int endState = childVector[*it]->getState();
         do
         {
-//            std::cout << node->getIndex() << " " << *it << " " << ct++ << "\n";
             // delete previously rejected events
             tmpHistory.clear();
                       
@@ -380,31 +359,19 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
                     for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
                         delete *it_h;
                 }
-                
-//                std::cout << node->getIndex() << " " << *it << " " << t << " " << currState << " " << nextState << " " << endState << "\n";
             }
             while(t < 1.0);
-//            std::cout << "tmpHistory.size() " << tmpHistory.size() << "\n";
         }
         while (currState != endState);
         
         for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
             proposedHistory.insert(*it);
-//            history.insert(*it);
         }
     }
     
     // assign values back to model for likelihood
     bh->updateHistory(proposedHistory, siteIndexSet);
-    //bh->print();
-
-//    double r1=rm.getSiteRate(*node, 0, 1);
-//    double r0=rm.getSiteRate(*node, 1,0);
-//    double sum_r_ns = (r0+r1)/2 * numCharacters;
-//    std::cout << node->getIndex() << " " << branchLength << " " << r0 << " " << r1 << " " << sum_r_ns << " " << branchLength*sum_r_ns << " " << bh->getNumEvents() << "\n";
-    
-    if (printDebug) { std::cout << "AFTER PATH PROPOSAL\n"; bh->print(); std::cout << "\n"; }
     
     // return hastings ratio
     proposedLnProb = computeLnProposal(*node, *bh);
@@ -419,22 +386,21 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
+    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
+    
     storedHistory.clear();
     proposedHistory.clear();
     
     storedLnProb = 0.0;
-    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(ctmc->getDistribution());
+    proposedLnProb = 0.0;
     
     if (sampleNodeIndex && !fixNodeIndex)
     {
         size_t nodeIndex = GLOBAL_RNG->uniform01() * numNodes;
         node = &tau->getValue().getNode(nodeIndex);
     }
-    if (node->isRoot()) return;
-
-    // Enable to use dirty lnL flagging.
-    p.fireTreeChangeEvent(*node);
-    
+    sampleNodeIndex = true;
+  
     if (sampleSiteIndexSet)
     {
         siteIndexSet.clear();
@@ -447,10 +413,18 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
             }
         }
     }
-
-    sampleNodeIndex = true;
     sampleSiteIndexSet = true;
-
+    
+//    std::cout << "Sites: ";
+//    for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
+//        std::cout << *it << " ";
+//    std::cout << "\n";
+    
+    if (node->isRoot())
+    {
+        return;
+    }
+    
     BranchHistory* bh = &p.getHistory(*node);
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
 
@@ -460,21 +434,16 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     {
         if (siteIndexSet.find( (*it_h)->getIndex() ) != siteIndexSet.end())
         {
-//            if (node->getIndex() == 41)
-//                std::cout << "yow " << (*it_h)->getTime() << " " << (*it_h)->getIndex() << " " << (*it_h)->getState() << "\n";
-
             storedHistory.insert(*it_h);
-            //storedHistory.insert(new CharacterEvent(**it_h));
         }
     }
+  
+    // flag node as dirty
+    p.fireTreeChangeEvent(*node);
     
     storedLnProb = computeLnProposal(*node, *bh);
-
-    if (printDebug) { std::cout << node->getIndex() << " PREPARE proposal\n"; bh->print(); }
     
-    //    storedValue = new BranchHistory( p.getHistory(nodeIndex) );
-    //    std::cout << "--------------------\n"; std::cout << "before proposal\n";    storedValue->print();    std::cout << "--------------------\n";
- //   storedLnProb = computeLnProposal(*storedValue);
+
 }
 
 
@@ -503,12 +472,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::printParamet
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal( void )
 {
-    // swap current value and stored value
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    BranchHistory* bh = &p->getHistory(*node);
- 
-    if (printDebug) { std::cout << node->getIndex() << " BEFORE REJECT\n"; bh->print(); }
     
+    // swap current value and stored value
+    BranchHistory* bh = &p->getHistory(*node);
     bh->updateHistory(storedHistory, siteIndexSet);
     
     // delete new events
@@ -519,9 +486,6 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::undoProposal
     }
     storedHistory.clear();
     proposedHistory.clear();
-    
-    if (printDebug) { std::cout << node->getIndex() << " AFTER REJECT\n"; bh->print(); std::cout << "------\n"; }
-    
 }
 
 

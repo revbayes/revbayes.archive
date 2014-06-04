@@ -12,19 +12,17 @@
 
 using namespace RevBayesCore;
 
-//BiogeographyRateMapFunction::BiogeographyRateMapFunction(const TypedDagNode<std::vector<double> > *glr, const TypedDagNode<double> *dp, size_t nc) : TypedFunction<RateMap>( new RateMap_Biogeography( nc ) ),
 BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : TypedFunction<RateMap>( new RateMap_Biogeography( nc, fe ) )
 {
-    homogeneousGainLossRates    = new ConstantNode<std::vector<double> >("homogeneousGainLossRates", new std::vector<double>(2,0.5));
-    heterogeneousGainLossRates  = NULL;
-    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
-    heterogeneousClockRates     = NULL;
-//    distancePower               = new ConstantNode<double>("distancePower", new double(0.0));
-    geographicDistanceRateModifier = NULL;
+    homogeneousGainLossRates            = new ConstantNode<std::vector<double> >("homogeneousGainLossRates", new std::vector<double>(2,0.5));
+    heterogeneousGainLossRates          = NULL;
+    homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
+    heterogeneousClockRates             = NULL;
+    geographicDistanceRateModifier      = NULL;
     
-    branchHeterogeneousClockRates = false;
-    branchHeterogeneousGainLossRates = false;
-    useGeographicDistance = false;
+    branchHeterogeneousClockRates       = false;
+    branchHeterogeneousGainLossRates    = false;
+    useGeographicDistance               = false;
     
     this->addParameter(homogeneousGainLossRates);
     this->addParameter(homogeneousClockRate);
@@ -39,14 +37,11 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateM
     heterogeneousGainLossRates = n.heterogeneousGainLossRates;
     homogeneousClockRate = n.homogeneousClockRate;
     heterogeneousClockRates = n.heterogeneousClockRates;
-//    distancePower = n.distancePower;
     geographicDistanceRateModifier = n.geographicDistanceRateModifier;
     
     branchHeterogeneousClockRates = n.branchHeterogeneousClockRates;
     branchHeterogeneousGainLossRates = n.branchHeterogeneousGainLossRates;
     useGeographicDistance = n.useGeographicDistance;
-    
-    //update();
 }
 
 
@@ -69,7 +64,6 @@ void BiogeographyRateMapFunction::update( void ) {
     if (branchHeterogeneousGainLossRates)
     {
         // Disabled for now due to ostream errors...
-        
 //        const std::vector<double>& glr = heterogeneousGainLossRates->getValue();
         std::vector<std::vector<double> > glr;
         static_cast< RateMap_Biogeography* >(value)->setHeterogeneousGainLossRates(glr);
@@ -94,7 +88,6 @@ void BiogeographyRateMapFunction::update( void ) {
     // set the distancePower
     if (useGeographicDistance)
     {
-        //const GeographicDistanceRateModifier& drm = geographicDistanceRateModifier->getValue();
         const GeographicDistanceRateModifier& drm = geographicDistanceRateModifier->getValue();
         static_cast< RateMap_Biogeography* >(value)->setGeographicDistanceRateModifier(drm);
     }
@@ -110,7 +103,7 @@ void BiogeographyRateMapFunction::setGainLossRates(const TypedDagNode<std::vecto
         this->removeParameter( homogeneousGainLossRates );
         homogeneousGainLossRates = NULL;
     }
-    else // heterogeneousClockRate != NULL
+    else
     {
         this->removeParameter( heterogeneousGainLossRates );
         heterogeneousGainLossRates = NULL;
@@ -123,31 +116,6 @@ void BiogeographyRateMapFunction::setGainLossRates(const TypedDagNode<std::vecto
     // add the parameter
     this->addParameter( homogeneousGainLossRates );
 }
-
-/*
-void BiogeographyRateMapFunction::setGainLossRates(const TypedDagNode<std::vector<std::vector<double> > > *r)
-{
-    // remove the old parameter first
-    if ( homogeneousGainLossRates != NULL )
-    {
-        this->removeParameter( homogeneousGainLossRates );
-        homogeneousGainLossRates = NULL;
-    }
-    else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousGainLossRates );
-        heterogeneousGainLossRates = NULL;
-    }
-    
-    // set the value
-    branchHeterogeneousGainLossRates = true;
-    heterogeneousGainLossRates = r[0];
-    
-    // add the parameter
-    this->addParameter( heterogeneousGainLossRates );
-
-}
- */
 
 void BiogeographyRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     
@@ -217,12 +185,9 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
     if (oldP == homogeneousGainLossRates)
     {
         homogeneousGainLossRates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
-        
-        ;
     }
     else if (oldP == heterogeneousGainLossRates)
     {
-//        heterogeneousGainLossRates = static_cast<const TypedDagNode<std::vector<std::vector<double> > >* >( newP );
         heterogeneousGainLossRates = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
     else if (oldP == homogeneousClockRate)
