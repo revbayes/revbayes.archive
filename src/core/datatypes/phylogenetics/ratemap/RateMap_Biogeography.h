@@ -29,12 +29,10 @@ namespace RevBayesCore {
         void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
         RateMap_Biogeography*                       clone(void) const;
         double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const;
-        //double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned n, double age=0.0) const;
         double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
         double                                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
         double                                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, double age=0.0) const;
         double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
-        //double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned n, double age=0.0) const;
         double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
         double                                      getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t, double age=0.0) const;
         void                                        updateMap(void);

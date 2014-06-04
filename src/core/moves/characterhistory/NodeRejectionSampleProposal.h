@@ -13,6 +13,7 @@
 #include "DeterministicNode.h"
 #include "DiscreteCharacterData.h"
 #include "DistributionBinomial.h"
+#include "DistributionPoisson.h"
 #include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
@@ -132,10 +133,7 @@ qmap(q),
 numNodes(t->getValue().getNumberOfNodes()),
 numCharacters(n->getValue().getNumberOfCharacters()),
 numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
-//nodeIndex(idx),
 node(nd),
-//storedValue(NULL),
-//proposedValue(NULL),
 nodeTpMatrix(numStates),
 leftTpMatrix(numStates),
 rightTpMatrix(numStates),
@@ -144,7 +142,6 @@ sampleNodeIndex(true),
 sampleSiteIndexSet(true)
 
 {
-    monitorIndex = -58;
     nodes.push_back(ctmc);
     nodes.push_back(tau);
     nodes.push_back(qmap);
@@ -152,7 +149,6 @@ sampleSiteIndexSet(true)
     nodeProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
     leftProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
     rightProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    ;
     
     fixNodeIndex = (node != NULL);
 }
@@ -164,16 +160,12 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::cleanProposa
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     const std::vector<BranchHistory*>& histories = p->getHistories();
     
-    if (node->getIndex() == monitorIndex) { std::cout << "BEFORE clean\n"; histories[node->getIndex()]->print(); std::cout << "-----------\n"; }
-    
     nodeProposal->cleanProposal();
     if (!node->isTip())
     {
         rightProposal->cleanProposal();
         leftProposal->cleanProposal();
     }
-    
-    if (node->getIndex() == monitorIndex) { std::cout << "AFTER clean\n"; histories[node->getIndex()]->print(); std::cout << "-----------\n"; }
 }
 
 /**
@@ -247,33 +239,23 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
     
     double proposedLnProbRatio = 0.0;
     
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    const std::vector<BranchHistory*>& histories = p->getHistories();
+//    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+//    const std::vector<BranchHistory*>& histories = p->getHistories();
     
     // update node value
-    if (node->getIndex() == monitorIndex) { std::cout << "BEFORE node\n"; histories[node->getIndex()]->print(); }
-
-    sampleNodeCharacters(siteIndexSet);
     if (node->isRoot())
         sampleRootCharacters(siteIndexSet);
-        //proposedLnProbRatio +=
 
-    if (node->getIndex() == monitorIndex) { std::cout << "AFTER node\n"; histories[node->getIndex()]->print(); }
-    
-    
+    sampleNodeCharacters(siteIndexSet);
+   
     // update 3x incident paths
-    if (node->getIndex() == monitorIndex) { std::cout << "BEFORE path\n"; histories[node->getIndex()]->print(); }
-
     proposedLnProbRatio += nodeProposal->doProposal();
     if (!node->isTip())
     {
         proposedLnProbRatio += leftProposal->doProposal();
         proposedLnProbRatio += rightProposal->doProposal();
     }
-    
-    if (node->getIndex() == monitorIndex) { std::cout << "AFTER path\n"; histories[node->getIndex()]->print(); }
 
-    
     return proposedLnProbRatio;
 }
 
@@ -284,16 +266,23 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
 template<class charType, class treeType>
 void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     
     storedLnProb = 0.0;
+    proposedLnProb = 0.0;
     
-    size_t numTips = tau->getValue().getNumberOfTips();
+    const treeType& tree = tau->getValue();
+    size_t numTips = tree.getNumberOfTips();
     if (sampleNodeIndex && !fixNodeIndex)
     {
-        size_t idx = numTips + GLOBAL_RNG->uniform01() * (numNodes-numTips);
-//        std::cout << "sampleNodeIndex " << idx << "\n";
-        node = &tau->getValue().getNode(idx);
+        node = NULL;
+        std::vector<TopologyNode*> nds = tree.getNodes();
+        do {
+            size_t idx = GLOBAL_RNG->uniform01() * nds.size(); //numTips + GLOBAL_RNG->uniform01() * (numNodes-numTips);
+            node = nds[idx];
+        } while (node == NULL || node->isTip());
     }
+    sampleNodeIndex = true;
     
     if (sampleSiteIndexSet)
     {
@@ -306,24 +295,10 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
                 siteIndexSet.insert(i);
             }
         }
-//        std::cout << "sites ";
-//        for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
-//        {
-//            std::cout << *it << " ";
-//        }
-//        std::cout << "\n";
     }
+    sampleSiteIndexSet = true;    
     
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    
-    
-//    const std::vector<BranchHistory*>& histories = p->getHistories();
-    
-//    std::cout << "BEFORE do\n";
-//    histories[node.getIndex()]->print();
-//    histories[node.getChild(0).getIndex()]->print();
-//    histories[node.getChild(1).getIndex()]->print();
-
+    // prepare the path proposals
     nodeProposal->assignNode(node);
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
@@ -353,20 +328,13 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     if (node->isRoot())
     {
         storedRootState.resize(numCharacters,0);
-        const std::vector<CharacterEvent*>& nodeState = p->getHistory(*node).getParentCharacters();
+        const std::vector<CharacterEvent*>& rootState = p->getHistory(*node).getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = nodeState[*it]->getState();
+            unsigned s = rootState[*it]->getState();
             storedRootState[*it] = s;
         }
     }
-    
-//    const std::vector<BranchHistory*>& histories = p->getHistories();
-//    std::cout << "prepare " << node->getIndex() << " " << node->getChild(0).getIndex() << " " << node->getChild(1).getIndex() << "\n";
-//    std::cout << "        " << histories[node->getIndex()]->getIndex() << "  " << histories[node->getChild(0).getIndex()]->getIndex() << "  " << histories[node->getChild(1).getIndex()]->getIndex() << "\n";
-    
-    sampleNodeIndex = true;
-    sampleSiteIndexSet = true;    
 }
 
 
@@ -384,43 +352,6 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::printParamet
     o << "lambda = " << lambda;
 }
 
-//template<class charType, class treeType>
-//void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCharacters2(const TopologyNode& node, const std::set<size_t>& indexSet)
-//{
-//    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-//    std::vector<BranchHistory*> histories = p->getHistories();
-//    BranchHistory* nodeBranchHistory = histories[node.getIndex()];
-//    
-//    std::vector<CharacterEvent*> nodeChildState = histories[node.getIndex()]->getChildCharacters();
-//    std::vector<CharacterEvent*> leftParentState = histories[node.getChild(0).getIndex() ]->getParentCharacters();
-//    std::vector<CharacterEvent*> rightParentState = histories[node.getChild(1).getIndex()]->getParentCharacters();
-//    
-//    std::vector<CharacterEvent*> currState = nodeBranchHistory->getParentCharacters();
-//    std::multiset<CharacterEvent*,CharacterEventCompare> nodeHistory = nodeBranchHistory->getHistory();
-//    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-//    for (it = nodeHistory.begin(); it != nodeHistory.end(); it++)
-//    {
-//        size_t idx = (*it)->getIndex();
-//        unsigned s = (*it)->getState();
-//        currState[ idx ] = *it;
-//        storedNodeState[ idx ] = s;
-//    }
-//    
-//    for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
-//    {
-//        size_t idx = *it;
-//        unsigned s = currState[idx]->getState();
-//        nodeChildState[ idx ] = new CharacterEvent(idx,s,1.0);
-//        leftParentState[ idx ] = new CharacterEvent(idx,s,0.0);
-//        rightParentState[ idx ] = new CharacterEvent(idx,s,0.0);
-//    }
-//
-//    histories[node.getIndex()]->setChildCharacters(nodeChildState);
-//    histories[node.getChild(0).getIndex()]->setParentCharacters(leftParentState);
-//    histories[node.getChild(1).getIndex()]->setParentCharacters(rightParentState);
-//}
-
-
 template<class charType, class treeType>
 void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCharacters(const std::set<size_t>& indexSet)
 {
@@ -437,12 +368,12 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
 
         // states for conditional sampling probs
         const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
-        const std::vector<CharacterEvent*>& leftChildState = histories[node->getChild(0).getIndex() ]->getChildCharacters();
+        const std::vector<CharacterEvent*>& leftChildState  = histories[node->getChild(0).getIndex()]->getChildCharacters();
         const std::vector<CharacterEvent*>& rightChildState = histories[node->getChild(1).getIndex()]->getChildCharacters();
         
         // states to update
-        std::vector<CharacterEvent*> nodeChildState = histories[node->getIndex()]->getChildCharacters();
-        std::vector<CharacterEvent*> leftParentState = histories[node->getChild(0).getIndex() ]->getParentCharacters();
+        std::vector<CharacterEvent*> nodeChildState   = histories[node->getIndex()]->getChildCharacters();
+        std::vector<CharacterEvent*> leftParentState  = histories[node->getChild(0).getIndex()]->getParentCharacters();
         std::vector<CharacterEvent*> rightParentState = histories[node->getChild(1).getIndex()]->getParentCharacters();
         
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
@@ -456,13 +387,17 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
             double g1 = nodeTpMatrix[ancS][1] * leftTpMatrix[1][desS1] * rightTpMatrix[1][desS2];
             
             unsigned int s = 0;
-            if (u < g1 / (g0 + g1))
+            if (u < (g1 / (g0 + g1)))
                 s = 1;
             
             nodeChildState[*it]->setState(s);
             leftParentState[*it]->setState(s);
             rightParentState[*it]->setState(s);
         }
+        
+//        std::cout << nodeTpMatrix << "\n";
+//        std::cout << leftTpMatrix << "\n";
+//        std::cout << rightTpMatrix << "\n";
     }
 }
 
@@ -473,7 +408,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
     if (!node->isRoot())
         return 0.0;
     
-  
+
     AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
     BranchHistory* bh = &p->getHistory(*node);
     std::vector<CharacterEvent*> parentState = bh->getParentCharacters();
@@ -487,7 +422,8 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         unsigned s = 0;
-        if (GLOBAL_RNG->uniform01() < p1)
+        double u = GLOBAL_RNG->uniform01();
+        if (u < p1)
         {
             s = 1;
             n1_new++;
@@ -499,7 +435,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
         
         parentState[*it]->setState(s); //new CharacterEvent(*it,s,0.0);
     }
-    bh->setParentCharacters(parentState);
+    //bh->setParentCharacters(parentState);
     
     size_t n = siteIndexSet.size();
     size_t n0_old = n - n1_old;
@@ -507,7 +443,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
     double p0 = 1.0 - p1;
     
     lnP = n1_old * log(p1) + n0_old * log(p0) - n1_new * log(p1) - n0_new * log(p0);
-    return 0.0;
+    //return 0.0;
     return lnP;
 }
 

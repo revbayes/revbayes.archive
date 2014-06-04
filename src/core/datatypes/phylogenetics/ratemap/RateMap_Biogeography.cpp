@@ -82,9 +82,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     const std::vector<double>& glr = ( branchHeterogeneousGainLossRates ? heterogeneousGainLossRates[node.getIndex()] : homogeneousGainLossRates );
     double l = node.getBranchLength();
     
-    
     if (node.isRoot())
-        l = 1000.0;
+        l = 10e100;
     double expPart = exp( -(glr[0] + glr[1]) * r * l);
     double p = glr[0] / (glr[0] + glr[1]);
     double q = 1.0 - p;
@@ -93,25 +92,6 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     P[0][1] = q - q * expPart;
     P[1][0] = p - p * expPart;
     P[1][1] = q + p * expPart;
-
-    //std::cout << node.getIndex() << " " << P[0][0] << " " << P[0][1] << " " << P[1][0] << " " << P[1][1] << "   " << glr[0] << " " << glr[1] << " " << l << " " << r << "\n";
-    ;
-    
-    /*
-    
-     double r[2] = { rates[0]->getValue(), rates[1]->getValue() };
-     double expPart0 = exp( - (r[0] + r[1]) * bs);
-     double expPart1 = exp( - (r[0] + r[1]) * t1/rootAge); // needs *br1
-     double expPart2 = exp( - (r[0] + r[1]) * t2/rootAge); // needs *br2
-     double pi0 = r[0] / (r[0] + r[1]);
-     double pi1 = 1.0 - pi0;
-     double tp0[2][2] = { { pi0 + pi1 * expPart0, pi1 - pi1 * expPart0 }, { pi0 - pi0 * expPart0, pi1 + pi0 * expPart0 } };
-     double tp1[2][2] = { { pi0 + pi1 * expPart1, pi1 - pi1 * expPart1 }, { pi0 - pi0 * expPart1, pi1 + pi0 * expPart1 } };
-     double tp2[2][2] = { { pi0 + pi1 * expPart2, pi1 - pi1 * expPart2 }, { pi0 - pi0 * expPart2, pi1 + pi0 * expPart2 } };
-     
-
-     
-     */
     
 }
 
@@ -325,15 +305,8 @@ void RateMap_Biogeography::setGeographicDistanceRateModifier(const GeographicDis
 {
     useGeographicDistanceRateModifier = true;
     
-    //*geographicDistanceRateModifier = gdrm;
-//    geographicDistanceRateModifier = const_cast<GeographicDistanceRateModifier&>(gdrm);
-    
     // ugly hack, prob better way to handle constness...
     geographicDistanceRateModifier = &const_cast<GeographicDistanceRateModifier&>(gdrm);
-    
-//    std::cout << *geographicDistanceRateModifier << " " << gdrm << "\n";    
-//    std::cout << "ok\n";
-//    true;
 }
 
 void RateMap_Biogeography::setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm)

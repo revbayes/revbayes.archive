@@ -55,6 +55,7 @@ namespace RevBayesCore {
         void                            assignSiteIndexSet(const std::set<size_t>& s);
         TipRejectionSampleProposal*     clone(void) const;                                                                  //!< Clone object
         void                            cleanProposal(void);
+        double                          computeLnProposal(const TopologyNode& nd);
         double                          doProposal(void);                                                                   //!< Perform proposal
         const std::vector<DagNode*>&    getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
@@ -151,6 +152,15 @@ template<class charType, class treeType>
 RevBayesCore::TipRejectionSampleProposal<charType, treeType>* RevBayesCore::TipRejectionSampleProposal<charType, treeType>::clone( void ) const
 {
     return new TipRejectionSampleProposal( *this );
+}
+
+template<class charType, class treeType>
+double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::computeLnProposal(const TopologyNode& nd)
+{
+    double lnP = 0.0;
+    
+    return 0.0;
+//    for (std::set<size_t>::iterator it = )
 }
 
 template<class charType, class treeType>
