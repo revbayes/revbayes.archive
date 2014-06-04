@@ -23,6 +23,8 @@ namespace RevBayesCore {
      * conditional clades encountered in a tree distribution.
      * To do so it contains a vector of taxons, found in all trees,
      * a vector of bitvectors giving presence/absence of taxons in clades.
+     * In addition we store a vector of clade probabilities as well as a vector
+     * of conditional clade probabilities.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Bastien Boussau, from code by Gergely Szollosi)
@@ -57,7 +59,7 @@ namespace RevBayesCore {
         boost::dynamic_bitset<>                       completeBitVector;                      //bit vector with all bits to 1 (all species present)
         size_t                                                numTaxons;
         size_t                                                  K_Gamma;              //Total number of bipartitions.
-        size_t                           numberOfPossibleTreeTopologies;              //number of unrooted trees on Gamma_size leaves
+        long double                      numberOfPossibleTreeTopologies;              //number of unrooted trees on Gamma_size leaves
         std::string                                      name_separator;                                                        //Character used between leaf names when writing the content of a leaf set.
         // std::map <std::string,std::string> tree_bipstrings;                                //Map between tree string and string containing all bipartitions in the tree.
         // std::map <std::string,std::string> bipstring_trees;                                //Dual from above. Map between string containing all bipartitions in the tree and tree string.
