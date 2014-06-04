@@ -12,6 +12,7 @@
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Test.h"
+#include "TestACLNDPPBranchRates.h"
 #include "TestACLNRelaxedClock.h"
 #include "TestACLNRatesGen.h"
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
@@ -127,6 +128,16 @@ bool Test::performTests(int argc, const char * argv[]) {
         TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
 		
 //		testACLNG.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+
+
+	/* An autocorrelated rate model test with dpp on node-wise nu */
+    try {
+        TestACLNDPPBranchRates testACLNDPP = TestACLNDPPBranchRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
+		
+		testACLNDPP.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
