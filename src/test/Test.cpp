@@ -98,9 +98,9 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A DPP relaxed model test */
     try {
 		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
-        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
 		
-		//		testDPPRC.run();
+		testDPPRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -137,7 +137,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         TestACLNDPPBranchRates testACLNDPP = TestACLNDPPBranchRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
 		
-		testACLNDPP.run();
+//		testACLNDPP.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

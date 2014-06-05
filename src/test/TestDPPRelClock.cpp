@@ -169,10 +169,10 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 //	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-    moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
-    moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
-    moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 1.0 ) );
+    moves.push_back( new SimplexMove( er, 200.0, 6, 0, true, 2.0, 2.0 ) );
+    moves.push_back( new SimplexMove( pi, 150.0, 4, 0, true, 2.0, 2.0 ) ); 
+    moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 2.0 ) );
+    moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 2.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
     moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
@@ -198,14 +198,15 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( er );
  	monitoredNodes.push_back( branchRates );
 
-	std::string logFN = "clock_test/test_RBdpp_clock_23May_abs_rn.log";
+	std::string logFN = "clock_test/test_RBdpp_clock_4June_rel_pr.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
+	mcmcGenerations = 10000;
 
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 
-	std::string treFN = "clock_test/test_RBdpp_clock_23May_abs_rn.tre";
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
+//	std::string treFN = "clock_test/test_RBdpp_clock_23May_abs_rn.tre";
+//    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
