@@ -76,9 +76,8 @@ double RateAgeACLNMixingMove::performCompoundMove( void ) {
 		} else nrates[i] = rootR;
 	}
 	
-	size_t nt = tau.getNumberOfTips();
 	storedC = c;
-	double pr = (((double)nt - 1.0) - (double)nr) * log(c);
+	double pr = (((double)nn) - (double)nr) * log(c);
 	return pr;
 }
 
