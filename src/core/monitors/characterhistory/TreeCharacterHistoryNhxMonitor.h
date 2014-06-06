@@ -314,7 +314,7 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
     nhxStrm << "#NEXUS" << "\n\n";
     
     // Nhx settings block
-    nhxStrm << "Begin Nhx;\n";
+    nhxStrm << "Begin phylowood;\n";
     nhxStrm << "\tdrawtype pie\n";
     nhxStrm << "\tmodeltype biogeography\n";
     nhxStrm << "\tareatype discrete\n";

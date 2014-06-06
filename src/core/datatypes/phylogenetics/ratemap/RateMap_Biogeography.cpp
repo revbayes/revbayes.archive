@@ -83,7 +83,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     double l = node.getBranchLength();
     
     if (node.isRoot())
-        l = 10e100;
+        l = 10e10;
+    
     double expPart = exp( -(glr[0] + glr[1]) * r * l);
     double p = glr[0] / (glr[0] + glr[1]);
     double q = 1.0 - p;
@@ -92,6 +93,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     P[0][1] = q - q * expPart;
     P[1][0] = p - p * expPart;
     P[1][1] = q + p * expPart;
+    
+//    std::cout << P << "\n";
     
 }
 

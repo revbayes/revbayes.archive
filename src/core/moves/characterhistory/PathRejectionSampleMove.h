@@ -149,6 +149,7 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
     }
     
     // touch the node
+//    ctmc->touch();
     tau->touch();
     
     // calculate the probability ratio for the node we just changed
@@ -206,7 +207,7 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::rejectMove( void
     
     // touch the node
     tau->touch();
-    ctmc->touch();
+//    ctmc->touch();
 }
 
 template<class charType, class treeType>
