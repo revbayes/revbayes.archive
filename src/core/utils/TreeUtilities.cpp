@@ -25,7 +25,7 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     
     // set the age
     double a = depth - n.getBranchLength();
-    if ( a < 1E-10 ) 
+    if ( a < 1E-6 ) 
     {
         a = 0.0;
     }
@@ -64,7 +64,7 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t) 
     std::vector<double> ages;
     std::vector<TopologyNode*> nodes;
     
-    double maxDepth = bln.getMaxDepth();
+    double maxDepth = bln.getMaxDepth() + bln.getBranchLength();
     
     // recursive creation of the tree
     constructTimeTreeRecursively(root, bln, nodes, ages, maxDepth);
@@ -76,7 +76,8 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t) 
     tt->setTopology( tau, true );
     
     // set the ages
-    for (size_t i = 0; i < nodes.size(); ++i) {
+    for (size_t i = 0; i < nodes.size(); ++i) 
+    {
         tt->setAge(nodes[i]->getIndex(), ages[i]);
     }
     
