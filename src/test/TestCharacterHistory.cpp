@@ -213,7 +213,7 @@ bool TestCharacterHistory::run_exp(void) {
     {
         ConstantNode<double> *dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
         dp = new ContinuousStochasticNode("distancePower", new NormalDistribution(new ConstantNode<double>("dp_mu",new double(0.0)), dp_pr));
-        dp->setValue(new double(0.1));
+        dp->setValue(new double(1.0));
 //        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
 //        dp->setValue(new double(1.0));
         ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
@@ -293,7 +293,7 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new ScaleMove(clockRate, 0.1, false, 2) );
     }
     
-    if (useDistances)
+    if (useDistances && false)
     {
 //        moves.push_back( new ScaleMove(dp, 0.25, false, 3) );
 //        moves.push_back( new ScaleMove(dp, 0.1, false, 3) );
@@ -477,7 +477,7 @@ bool TestCharacterHistory::run_dollo(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        //tmp_glr->setValue(new double(0.1));
+        tmp_glr->setValue(new double(0.1));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -572,9 +572,11 @@ bool TestCharacterHistory::run_dollo(void) {
 
     monitoredNodes.insert( glr_vector );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb." + ss.str() + ".tree_chars.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb_dollo" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 100, "\t" ) );
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb_dollo" + ss.str() + ".tree_chars.txt", "\t"));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb_dollo" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
+
     
     
     //////////

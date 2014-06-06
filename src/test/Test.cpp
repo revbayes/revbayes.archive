@@ -100,7 +100,7 @@ bool Test::performTests(int argc, const char * argv[]) {
 		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
         TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
 		
-		testDPPRC.run();
+//		testDPPRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -148,7 +148,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-//        testDdm.run();
+        testDdm.run();
     }
     catch (RbException &e)
     {
