@@ -12,16 +12,18 @@
 
 using namespace RevBayesCore;
 
-GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, double alt, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra)
-//: index(idx), name(n), latitude(lat), longitude(lon), altitude(alt), adjacentAreas(aa), reachableAreas(ra)
+GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, int st, double alt, double sz, std::vector<double> ar, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra)
 {
     index = idx;
     name = n;
+    state = st;
     latitude = lat;
     longitude = lon;
     altitude = alt;
     adjacentAreas = aa;
     reachableAreas = ra;
+    size = sz;
+    areaRates = ar;
 }
 
 GeographicArea::GeographicArea(const GeographicArea& g)
@@ -32,6 +34,9 @@ GeographicArea::GeographicArea(const GeographicArea& g)
         latitude = g.latitude;
         longitude = g.longitude;
         altitude = g.altitude;
+        size = g.size;
+        areaRates = g.areaRates;
+        state = g.state;
         
         std::set<GeographicArea*>::iterator it;
         for (it = adjacentAreas.begin(); it != adjacentAreas.end(); it++)
@@ -52,6 +57,9 @@ GeographicArea& GeographicArea::operator=(const GeographicArea &g)
         latitude = g.latitude;
         longitude = g.longitude;
         altitude = g.altitude;
+        size = g.size;
+        areaRates = g.areaRates;
+        state = g.state;
         
         std::set<GeographicArea*>::iterator it;
         for (it = adjacentAreas.begin(); it != adjacentAreas.end(); it++)
@@ -93,6 +101,16 @@ double GeographicArea::getLongitude(void)
 double GeographicArea::getAltitude(void)
 {
     return altitude;
+}
+
+double GeographicArea::getSize(void)
+{
+    return size;
+}
+
+int GeographicArea::getState(void)
+{
+    return state;
 }
 
 void GeographicArea::addAdjacentArea(GeographicArea* a)

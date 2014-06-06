@@ -88,25 +88,26 @@ void TimeAtlasDataReader::readJson(void)
                 if (node_areas.second.find("altitude") != node_areas.second.not_found())
                     areaAltitude = node_areas.second.get<double>("altitude");
                 
+                double areaSize = 0.0;
+                if (node_areas.second.find("size") != node_areas.second.not_found())
+                    areaSize = node_areas.second.get<double>("size");
+                
+                std::vector<double> areaRates;
+                if (node_areas.second.find("rates") != node_areas.second.not_found())
+                {
+                    boost::property_tree::ptree pt_rates = node_areas.second;
+                    BOOST_FOREACH(boost::property_tree::ptree::value_type &node_rates, pt_rates.get_child("rates"))
+                    {
+                        double v = node_rates.second.get_value<double>();
+                        areaRates.push_back( v );
+                    }
+                }
+                
                 unsigned areaState = 0;
                 if (node_areas.second.find("state") != node_areas.second.not_found())
-                    areaState = node_areas.second.get<unsigned>("state");
+                    areaState = node_areas.second.get<int>("state");
                 
-                
-//                
-//                node.second.not_found();
-//                
-//                node.second.find("state");
-//                
-//                ptree::const_assoc_iterator it = ptree.find("state");
-//                if( it == ptree.not_found() )
-//                {
-//                    std::cout << "state missing\n";
-//                }
-//                node_areas.second.get<unsigned>("state");
-                
-                
-                GeographicArea* g  = new GeographicArea(areaIndex, areaLatitude, areaLongitude, areaName, areaState);
+                GeographicArea* g  = new GeographicArea(areaIndex, areaLatitude, areaLongitude, areaName, areaState, areaAltitude, areaSize, areaRates);
                 
                 //std::cout << areaIndex << " " << areaName << " " << areaLatitude << " " << areaLongitude << " " << areaState << "\n";
                 
