@@ -139,7 +139,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
     seed.push_back(7); seed.push_back(2);
-//    GLOBAL_RNG->setSeed(seed);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -213,7 +213,7 @@ bool TestCharacterHistory::run_exp(void) {
     {
         ConstantNode<double> *dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
         dp = new ContinuousStochasticNode("distancePower", new NormalDistribution(new ConstantNode<double>("dp_mu",new double(0.0)), dp_pr));
-        dp->setValue(new double(1.0));
+        dp->setValue(new double(0.1));
 //        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
 //        dp->setValue(new double(1.0));
         ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
@@ -293,7 +293,7 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new ScaleMove(clockRate, 0.1, false, 2) );
     }
     
-    if (useDistances && false)
+    if (useDistances && true)
     {
 //        moves.push_back( new ScaleMove(dp, 0.25, false, 3) );
 //        moves.push_back( new ScaleMove(dp, 0.1, false, 3) );
