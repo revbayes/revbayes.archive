@@ -1,4 +1,4 @@
-#include "AutocorrelatedLognormalRateDistribution.h"
+#include "AutocorrelatedLognormalRateBranchwiseVarDistribution.h"
 #include "ConstantNode.h"
 #include "DistributionLognormal.h"
 #include "GtrRateMatrix.h"
@@ -16,7 +16,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ), 
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector< double > > * s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
         tau( t ), 
         sigma( s ), 
         rootRate( rr ) {
@@ -28,19 +28,19 @@ AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution
 }
 
 
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const AutocorrelatedLognormalRateDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ) {
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ) {
     // nothing to do here since the parameters are copied automatically
     
 }
 
 
 
-AutocorrelatedLognormalRateDistribution* AutocorrelatedLognormalRateDistribution::clone(void) const {
-    return new AutocorrelatedLognormalRateDistribution( *this );
+AutocorrelatedLognormalRateBranchwiseVarDistribution* AutocorrelatedLognormalRateBranchwiseVarDistribution::clone(void) const {
+    return new AutocorrelatedLognormalRateBranchwiseVarDistribution( *this );
 }
 
 
-double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
+double AutocorrelatedLognormalRateBranchwiseVarDistribution::computeLnProbability(void) {
     
     // get the root
     const TopologyNode& root = tau->getValue().getRoot();
@@ -60,11 +60,11 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
         for (size_t i = 0; i < numChildren; ++i) {
             const TopologyNode& child = root.getChild(i);
             lnProb += recursiveLnProb(child);
-            
-            // compute the variance
-            double variance = sigma->getValue() * child.getBranchLength();
-            
+
             size_t childIndex = child.getIndex();
+            // compute the variance
+            double variance = sigma->getValue()[childIndex] * child.getBranchLength();
+            
             double childRate = (*value)[childIndex];
 			
 			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
@@ -74,19 +74,18 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
             lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
         } 
     }
-    
     return lnProb;
 }
 
 
-void AutocorrelatedLognormalRateDistribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
     // only delegate when the toucher was the root rate
     if ( affecter == rootRate )
         this->dagNode->getAffectedNodes( affected );
 }
 
 
-void AutocorrelatedLognormalRateDistribution::keepSpecialization( DagNode* affecter ) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::keepSpecialization( DagNode* affecter ) {
     // only do this when the toucher was the root rate
     if ( affecter == rootRate )
         this->dagNode->keepAffected();
@@ -94,7 +93,7 @@ void AutocorrelatedLognormalRateDistribution::keepSpecialization( DagNode* affec
 
 
 
-double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyNode& n ) {
+double AutocorrelatedLognormalRateBranchwiseVarDistribution::recursiveLnProb( const TopologyNode& n ) {
     
     // get the index
     size_t nodeIndex = n.getIndex();
@@ -109,10 +108,10 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
             const TopologyNode& child = n.getChild(i);
             lnProb += recursiveLnProb(child);
             
-            // compute the variance
-            double variance = sigma->getValue() * child.getBranchLength();
-            
             size_t childIndex = child.getIndex();
+            // compute the variance
+            double variance = sigma->getValue()[childIndex] * child.getBranchLength();
+            
             double childRate = (*value)[childIndex];
 
 			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
@@ -127,13 +126,13 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
 }
 
 
-void AutocorrelatedLognormalRateDistribution::redrawValue(void) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::redrawValue(void) {
     simulate();
     std::cerr << "ACLN:\t\t" << *value << std::endl;
 }
 
 
-void AutocorrelatedLognormalRateDistribution::restoreSpecialization( DagNode *restorer ) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::restoreSpecialization( DagNode *restorer ) {
     // only do this when the toucher was our parameters
     if ( restorer == rootRate ) {
         // get the index of the root
@@ -146,14 +145,14 @@ void AutocorrelatedLognormalRateDistribution::restoreSpecialization( DagNode *re
 }
 
 
-void AutocorrelatedLognormalRateDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
     if ( oldP == sigma ) {
-        sigma = static_cast< const TypedDagNode<double> * >( newP );
+        sigma = static_cast< const TypedDagNode< std::vector<double> > * >( newP );
     }
     
     if ( oldP == rootRate ) {
@@ -162,7 +161,7 @@ void AutocorrelatedLognormalRateDistribution::swapParameter(const DagNode *oldP,
 }
 
 
-void AutocorrelatedLognormalRateDistribution::simulate() {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::simulate() {
         
     // get the initial rate
     double parentRate = rootRate->getValue();
@@ -188,13 +187,13 @@ void AutocorrelatedLognormalRateDistribution::simulate() {
 
 
 
-void AutocorrelatedLognormalRateDistribution::recursiveSimulate(const TopologyNode& node, double parentRate) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::recursiveSimulate(const TopologyNode& node, double parentRate) {
     
     // get the index
     size_t nodeIndex = node.getIndex();
     
     // compute the variance along the branch
-    double variance = sigma->getValue() * node.getBranchLength();
+    double variance = sigma->getValue()[nodeIndex] * node.getBranchLength();
 	double mu = log(parentRate) - (variance * 0.5);
 	double stDev = sqrt(variance);
     
@@ -215,7 +214,7 @@ void AutocorrelatedLognormalRateDistribution::recursiveSimulate(const TopologyNo
 
 
 
-void AutocorrelatedLognormalRateDistribution::touchSpecialization( DagNode *toucher ) {
+void AutocorrelatedLognormalRateBranchwiseVarDistribution::touchSpecialization( DagNode *toucher ) {
     // if the root rate has changed, then we need to change the corresponding value in our vector and downpass the touch
     if ( rootRate == toucher ) {
         

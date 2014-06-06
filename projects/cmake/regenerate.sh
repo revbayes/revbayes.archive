@@ -62,7 +62,7 @@ fi
 
 #################
 # generate cmake configuration
-cd $HERE
+cd "$HERE"
 cd ../../src
 
 echo 'cmake_minimum_required(VERSION 2.6)
