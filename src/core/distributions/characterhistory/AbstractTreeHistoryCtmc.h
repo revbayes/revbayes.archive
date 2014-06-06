@@ -511,7 +511,12 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter != tau )
+    if (affecter == this->dagNode)
+    {
+        // do nothing, assume tree events have been fired
+        ;
+    }
+    else if ( affecter != tau )
     {
         
         for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
