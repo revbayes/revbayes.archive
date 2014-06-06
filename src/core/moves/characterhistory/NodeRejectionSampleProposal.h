@@ -134,14 +134,16 @@ numNodes(t->getValue().getNumberOfNodes()),
 numCharacters(n->getValue().getNumberOfCharacters()),
 numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
 node(nd),
-nodeTpMatrix(numStates),
-leftTpMatrix(numStates),
-rightTpMatrix(numStates),
+nodeTpMatrix(2),
+leftTpMatrix(2),
+rightTpMatrix(2),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true)
 
 {
+    
+//    std::cout << numStates << "\n";
     nodes.push_back(ctmc);
     nodes.push_back(tau);
     nodes.push_back(qmap);
@@ -157,15 +159,15 @@ sampleSiteIndexSet(true)
 template<class charType, class treeType>
 void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::cleanProposal( void )
 {
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    const std::vector<BranchHistory*>& histories = p->getHistories();
+//    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+//    const std::vector<BranchHistory*>& histories = p->getHistories();
     
     nodeProposal->cleanProposal();
-    if (!node->isTip())
-    {
+//    if (!node->isTip())
+//    {
         rightProposal->cleanProposal();
         leftProposal->cleanProposal();
-    }
+//    }
 }
 
 /**
@@ -203,7 +205,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::assignSiteIn
 template<class charType, class treeType>
 const std::string& RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::getProposalName( void ) const
 {
-    static std::string name = "TipRejectionSampleProposal";
+    static std::string name = "NodeRejectionSampleProposal";
     
     return name;
 }
@@ -243,14 +245,15 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
 //    const std::vector<BranchHistory*>& histories = p->getHistories();
     
     // update node value
-    if (node->isRoot())
-        sampleRootCharacters(siteIndexSet);
+    
+//    if (node->isRoot())
+//        sampleRootCharacters(siteIndexSet);
 
     sampleNodeCharacters(siteIndexSet);
    
     // update 3x incident paths
     proposedLnProbRatio += nodeProposal->doProposal();
-    if (!node->isTip())
+ //   if (!node->isTip())
     {
         proposedLnProbRatio += leftProposal->doProposal();
         proposedLnProbRatio += rightProposal->doProposal();
@@ -303,8 +306,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
     
-    if (!node->isTip())
-    {
+//    if (!node->isTip())
+//    {
         leftProposal->assignNode(&node->getChild(0));
         leftProposal->assignSiteIndexSet(siteIndexSet);
         leftProposal->prepareProposal();
@@ -312,7 +315,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
         rightProposal->assignNode(&node->getChild(1));
         rightProposal->assignSiteIndexSet(siteIndexSet);
         rightProposal->prepareProposal();
-    }
+//    }
    
     // store node state values
     storedNodeState.clear();
@@ -362,9 +365,10 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
         std::vector<BranchHistory*> histories = p->getHistories();
         
         // get transition probs
-        qmap->getValue().calculateTransitionProbabilities(*node, nodeTpMatrix);
-        qmap->getValue().calculateTransitionProbabilities(node->getChild(0), leftTpMatrix);
-        qmap->getValue().calculateTransitionProbabilities(node->getChild(1), rightTpMatrix);
+        const RateMap& rm = qmap->getValue();
+        rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
+        rm.calculateTransitionProbabilities(node->getChild(0), leftTpMatrix);
+        rm.calculateTransitionProbabilities(node->getChild(1), rightTpMatrix);
 
         // states for conditional sampling probs
         const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
@@ -394,10 +398,6 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
             leftParentState[*it]->setState(s);
             rightParentState[*it]->setState(s);
         }
-        
-//        std::cout << nodeTpMatrix << "\n";
-//        std::cout << leftTpMatrix << "\n";
-//        std::cout << rightTpMatrix << "\n";
     }
 }
 
@@ -443,7 +443,7 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
     double p0 = 1.0 - p1;
     
     lnP = n1_old * log(p1) + n0_old * log(p0) - n1_new * log(p1) - n0_new * log(p0);
-    //return 0.0;
+    return 0.0;
     return lnP;
 }
 
@@ -463,11 +463,11 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::undoProposal
     
     // restore path state
     nodeProposal->undoProposal();
-    if (!node->isTip())
-    {
+//    if (!node->isTip())
+//    {
         rightProposal->undoProposal();
         leftProposal->undoProposal();
-    }
+//    }
     
     // restore node state
     std::vector<CharacterEvent*> nodeChildState = histories[node->getIndex()]->getChildCharacters();

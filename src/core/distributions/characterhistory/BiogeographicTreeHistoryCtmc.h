@@ -205,7 +205,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 	unsigned int n0 = this->numSites - n1;
     unsigned counts[2] = { n0, n1 };
     
-    unsigned monitorIndex = -30;
+    unsigned monitorIndex = -5;
     
     if (node.getIndex() == monitorIndex) std::cout << "\n";
     
@@ -241,7 +241,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         
         const treeType& tree = this->tau->getValue();
         double branchLength = node.getBranchLength();
-        double currAge = (node.isRoot() ? 10e200 : node.getParent().getAge());
+        double currAge = (node.isRoot() ? 10e10 : node.getParent().getAge());
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
        
         // stepwise events
@@ -265,7 +265,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
 
             // lnL for stepwise events for p(x->y)
-            lnL += log(tr) - sr * dt * branchLength;
+            lnL += -(sr * dt * branchLength) + log(tr);
             
             // update counts
             counts[currState[idx]->getState()] -= 1;
@@ -293,7 +293,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         
         // lnL for final non-event
         double sr = rm.getSumOfRates(node, currState, counts, currAge);
-        lnL += -sr * (1.0 - t) * branchLength;
+        lnL += -sr * ( (1.0 - t) * branchLength );
         
         if (nodeIndex == monitorIndex) {
             std::cout << "1.000000" << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << counts[0] << " " << counts[1] << " " << numOn(currState) << "\n";
@@ -532,11 +532,13 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     }
     else
     {
-        TransitionProbabilityMatrix leftTpMatrix(this->numSites);
-        TransitionProbabilityMatrix rightTpMatrix(this->numSites);
+        TransitionProbabilityMatrix leftTpMatrix(this->numChars);
+        TransitionProbabilityMatrix rightTpMatrix(this->numChars);
         
-        homogeneousRateMap->getValue().calculateTransitionProbabilities(node.getChild(0), leftTpMatrix);
-        homogeneousRateMap->getValue().calculateTransitionProbabilities(node.getChild(1), rightTpMatrix);
+        const RateMap& rm = homogeneousRateMap->getValue();
+        
+        rm.calculateTransitionProbabilities(node.getChild(0), leftTpMatrix);
+        rm.calculateTransitionProbabilities(node.getChild(1), rightTpMatrix);
         
         // for sampling probs
         const std::vector<CharacterEvent*>& leftChildState  = this->histories[node.getChild(0).getIndex()]->getChildCharacters();
@@ -581,7 +583,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     const treeType& tree = this->tau->getValue();
     double bt = node.getBranchLength();
     if (node.isRoot())
-        bt = tree.getTreeLength() * 1;
+        return 0.0;
+//        bt = tree.getTreeLength() * 1;
     
     const RateMap* rm = &homogeneousRateMap->getValue();
  
