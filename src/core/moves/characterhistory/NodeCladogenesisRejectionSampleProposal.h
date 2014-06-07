@@ -88,13 +88,13 @@ namespace RevBayesCore {
         std::vector<unsigned>                   storedBudState;
         std::vector<unsigned>                   storedTrunkState;
         std::vector<unsigned>                   storedRootState;
-        TopologyNode*                           node;
         int                                     monitorIndex;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
         double                                  proposedLnProb;
         
         int                                     storedCladogenesisState;
+        TopologyNode*                           node;
         TopologyNode*                           storedBudNode;
         TopologyNode*                           storedTrunkNode;
         TopologyNode*                           proposedBudNode;
@@ -116,6 +116,7 @@ namespace RevBayesCore {
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
         bool                                    swapBudTrunk;
+        bool                                    failed;
         
     };
     
@@ -152,16 +153,15 @@ sampleSiteIndexSet(true)
     proposedTrunkNode = NULL;
     proposedBudNode = NULL;
     swapBudTrunk = false;
+    failed = false;
     
-    //    std::cout << numStates << "\n";
     nodes.push_back(ctmc);
     nodes.push_back(tau);
     nodes.push_back(qmap);
     
-    nodeProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    leftProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    nodeProposal  = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    leftProposal  = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
     rightProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    
     
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
@@ -178,6 +178,8 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     nodeProposal->cleanProposal();
     rightProposal->cleanProposal();
     leftProposal->cleanProposal();
+    
+//    std::cout << "ACCEPT\n";
 }
 
 /**
@@ -248,26 +250,22 @@ template<class charType, class treeType>
 double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     proposedLnProb = 0.0;
+    failed = false;
+    
+//    return RbConstants::Double::neginf;
     
     double proposedLnProbRatio = 0.0;
     
-    //    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    //    const std::vector<BranchHistory*>& histories = p->getHistories();
-    
-    // update node value
-    
-    //    if (node->isRoot())
-    //        sampleRootCharacters(siteIndexSet);
-    
+    // update node state
     sampleNodeCharacters(siteIndexSet);
+    if (failed)
+        return RbConstants::Double::neginf;
     
     // update 3x incident paths
     proposedLnProbRatio += nodeProposal->doProposal();
-    //   if (!node->isTip())
-    {
-        proposedLnProbRatio += leftProposal->doProposal();
-        proposedLnProbRatio += rightProposal->doProposal();
-    }
+    proposedLnProbRatio += leftProposal->doProposal();
+    proposedLnProbRatio += rightProposal->doProposal();
+
     
     return proposedLnProbRatio;
 }
@@ -285,7 +283,6 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     proposedLnProb = 0.0;
     
     const treeType& tree = tau->getValue();
-    size_t numTips = tree.getNumberOfTips();
     if (sampleNodeIndex && !fixNodeIndex)
     {
         node = NULL;
@@ -312,16 +309,16 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     swapBudTrunk = GLOBAL_RNG->uniform01() < 0.5;
     if (swapBudTrunk)
     {
-        proposedBudNode = storedBudNode;
-        proposedTrunkNode = storedTrunkNode;
-    }
-    else
-    {
         proposedBudNode = storedTrunkNode;
         proposedTrunkNode = storedBudNode;
     }
-    p->setBuddingState(proposedTrunkNode, 0);
-    p->setBuddingState(proposedBudNode, 1);
+    else
+    {
+        proposedBudNode = storedBudNode;
+        proposedTrunkNode = storedTrunkNode;
+    }
+    p->setBuddingState(*proposedTrunkNode, 0);
+    p->setBuddingState(*proposedBudNode, 1);
     
     
     
@@ -345,8 +342,6 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
     
-    //    if (!node->isTip())
-    //    {
     leftProposal->assignNode(&node->getChild(0));
     leftProposal->assignSiteIndexSet(siteIndexSet);
     leftProposal->prepareProposal();
@@ -354,7 +349,7 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     rightProposal->assignNode(&node->getChild(1));
     rightProposal->assignSiteIndexSet(siteIndexSet);
     rightProposal->prepareProposal();
-    //    }
+
     
     // store node state values
     storedNodeState.clear();
@@ -365,9 +360,9 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
     storedTrunkState.resize(numCharacters,0);
-    const std::vector<CharacterEvent*>& nodeState = p->getHistory(*node).getChildCharacters();
-    const std::vector<CharacterEvent*>& budState = p->getHistory(*node).getParentCharacters();
-    const std::vector<CharacterEvent*>& trunkState = p->getHistory(*node).getParentCharacters();
+    const std::vector<CharacterEvent*>& nodeState  = p->getHistory(*node).getChildCharacters();
+    const std::vector<CharacterEvent*>& budState   = p->getHistory(*storedBudNode).getParentCharacters();
+    const std::vector<CharacterEvent*>& trunkState = p->getHistory(*storedTrunkNode).getParentCharacters();
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         storedNodeState[*it]    = nodeState[*it]->getState();
@@ -410,127 +405,16 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     if (!node->isTip())
     {
         
-        
-        /*
-         
-         
-         double lnP = 0.0;
-         
-         // ignore tips
-         if (node.isTip())
-         return lnP;
-         
-         // sample post-speciation path start states
-         
-         // 0: sympatric speciation, iid range inheritance
-         // A = L v R, n(L) = n(R) = n(A), L ^ R = A
-         
-         // 1: peripatric speciation
-         // A = L v R, n(R) = 1, n(L) = n(A), L ^ R = R
-         
-         // 2: allopatric speciation
-         // A = L v R, n(R) = 1, n(L) = n(A) - 1, L ^ R = 0
-         
-         // sample bud and trunk lineages
-         unsigned budChildIndex = 2 * GLOBAL_RNG->uniform01();
-         unsigned trunkChildIndex = (budChildIndex == 0 ? 1 : 0);
-         const TopologyNode& budNode = node.getChild(budChildIndex);
-         const TopologyNode& trunkNode = node.getChild(trunkChildIndex);
-         buddingState[ trunkNode.getIndex() ] = 0;
-         buddingState[ budNode.getIndex() ] = 1;
-         
-         // sample bud area index
-         const std::vector<CharacterEvent*>& nodeState = this->histories[ node.getIndex() ]->getChildCharacters();
-         std::vector<unsigned> presentAreas;
-         for (size_t i = 0; i < nodeState.size(); i++)
-         if (nodeState[i]->getState() == 1)
-         presentAreas.push_back(i);
-         
-         unsigned budAreaIndex = presentAreas[GLOBAL_RNG->uniform01() * presentAreas.size()];
-         
-         // update child states
-         std::vector<CharacterEvent*> budState, trunkState;
-         for (size_t i = 0; i < nodeState.size(); i++)
-         {
-         trunkState.push_back(new CharacterEvent(*nodeState[i]));
-         
-         // sympatry: iid
-         if (cladogenicState[node.getIndex()] == 0 || cladogenicEvents == false)
-         budState.push_back(new CharacterEvent(*nodeState[i]));
-         
-         // peripatry, allopatry: sparse
-         else
-         budState.push_back(new CharacterEvent(i,0,0.0));
-         }
-         
-         // peripatry: add bud area
-         if (cladogenicState[node.getIndex()] == 1)
-         {
-         budState[budAreaIndex]->setState(1);
-         }
-         
-         // allopatry: add bud area, del trunk area
-         else if (cladogenicState[node.getIndex()] == 2)
-         {
-         trunkState[budAreaIndex]->setState(0);
-         budState[budAreaIndex]->setState(1);
-         }
-         
-         this->histories[ trunkNode.getIndex() ]->setParentCharacters( trunkState );
-         this->histories[ budNode.getIndex() ]->setParentCharacters( budState );
-         
-         
-         
-         // sample sub-root state as necessary
-         if (node.isRoot())
-         {
-         TransitionProbabilityMatrix nodeTpMatrix(this->numSites);
-         
-         homogeneousRateMap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix);
-         
-         // for sampling probs
-         const std::vector<CharacterEvent*>& nodeChildState = this->histories[node.getIndex() ]->getChildCharacters();
-         
-         // to update
-         std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
-         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-         {
-         unsigned int desS1 = nodeChildState[*it]->getState();
-         
-         double u = GLOBAL_RNG->uniform01();
-         double g0 = nodeTpMatrix[0][desS1];
-         double g1 = nodeTpMatrix[1][desS1];
-         
-         unsigned int s = 0;
-         if (u < g1 / (g0 + g1))
-         s = 1;
-         
-         nodeParentState[*it]->setState(s);
-         }
-         
-         // forbid extinction
-         if (numOn(nodeParentState) == 0 && forbidExtinction)
-         samplePathStart(node, indexSet);
-         else
-         this->histories[node.getIndex()]->setParentCharacters(nodeParentState);
-         
-         }
-
-         
-         */
-        
-        
         BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
         const std::vector<BranchHistory*>& histories = p->getHistories();
-        const std::vector<int>& cladeStates = p->getCladeStates();
-        const std::vector<int>& buddingStates = p->getBuddingStates();
-        
+//        const std::vector<int>& cladogenicStates = p->getCladogenicStates();
+//        const std::vector<int>& buddingStates = p->getBuddingStates();
         
         // get transition probs
         const RateMap& rm = qmap->getValue();
         rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
-        rm.calculateTransitionProbabilities(node->getChild(0), trunkTpMatrix);
-        rm.calculateTransitionProbabilities(node->getChild(1), budTpMatrix);
+        rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix);
+        rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix);
         
         // states for conditional sampling probs
         const std::vector<CharacterEvent*>& nodeParentState  = histories[node->getIndex()]->getParentCharacters();
@@ -541,6 +425,21 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
         std::vector<CharacterEvent*> nodeChildState    = histories[node->getIndex()]->getChildCharacters();
         std::vector<CharacterEvent*> trunkParentState  = histories[storedTrunkNode->getIndex()]->getParentCharacters();
         std::vector<CharacterEvent*> budParentState    = histories[storedBudNode->getIndex()]->getParentCharacters();
+        
+//        std::cout << "node_ch  ";
+//        for (size_t i = 0; i < numCharacters; i++)
+//            std::cout << nodeChildState[i]->getState();
+//        std::cout << "\n";
+//        
+//        std::cout << "trunk_pa ";
+//        for (size_t i = 0; i < numCharacters; i++)
+//            std::cout << trunkParentState[i]->getState();
+//        std::cout << "\n";
+//        
+//        std::cout << "bud_pa   ";
+//        for (size_t i = 0; i < numCharacters; i++)
+//            std::cout << budParentState[i]->getState();
+//        std::cout << "\n\n";
         
         // sample node/trunk states
         std::vector<size_t> onIdx;
@@ -566,8 +465,34 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
             budParentState[*it]->setState(0); // bud has all 0s
         }
     
-        int budIdx = onIdx.size() * GLOBAL_RNG->uniform01();
-        budParentState[budIdx]->setState(1);
+        if (onIdx.size() > 0)
+        {
+        
+            int budIdx = onIdx[ onIdx.size() * GLOBAL_RNG->uniform01() ];
+            budParentState[budIdx]->setState(1);
+            
+//            std::cout << "node_ch  ";
+//            for (size_t i = 0; i < numCharacters; i++)
+//                std::cout << nodeChildState[i]->getState();
+//            std::cout << "\n";
+//            
+//            std::cout << "trunk_pa ";
+//            for (size_t i = 0; i < numCharacters; i++)
+//                std::cout << trunkParentState[i]->getState();
+//            std::cout << "\n";
+//            
+//            std::cout << "bud_pa   ";
+//            for (size_t i = 0; i < numCharacters; i++)
+//                std::cout << budParentState[i]->getState();
+//            std::cout << "\n----";
+//            
+//            std::cout << "\n";
+        }
+        else
+        {
+            // causes proposal to return neginf
+            failed = true;
+        }
     }
 }
 
@@ -660,8 +585,10 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
         
     }
     
-    p->setBuddingState(storedTrunkNode, 0);
-    p->setBuddingState(storedBudNode, 1);
+    p->setBuddingState(*storedTrunkNode, 0);
+    p->setBuddingState(*storedBudNode, 1);
+
+//    std::cout << "REJECT\n";
 }
 
 

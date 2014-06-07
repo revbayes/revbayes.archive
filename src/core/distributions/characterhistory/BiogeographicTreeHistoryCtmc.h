@@ -38,7 +38,7 @@ namespace RevBayesCore {
     class BiogeographicTreeHistoryCtmc : public AbstractTreeHistoryCtmc<charType, treeType> {
         
     public:
-        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool fe=true);
+        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool fe=true, bool useClado=true);
         BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &n);                                                                         //!< Copy constructor
         virtual                                            ~BiogeographicTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
@@ -125,7 +125,7 @@ namespace RevBayesCore {
 
 
 template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool fe) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
+RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool fe, bool uc) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
     // initialize with default parameters
 //    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -145,7 +145,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
-    cladogenicEvents                            = false;
+    cladogenicEvents                            = uc;
     imperfectTipData                            = false;
     forbidExtinction                            = fe;
     
@@ -414,6 +414,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     {
         TopologyNode* nd = nodes[i];
         samplePathHistory(*nd, indexSet);
+        this->histories[nd->getIndex()]->print();
+        if (!nd->isRoot()) this->histories[nd->getParent().getIndex()]->print();
+        std::cout << "\n----------\n";
     }
     
     double lnL = this->computeLnProbability();
