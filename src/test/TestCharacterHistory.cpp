@@ -68,6 +68,7 @@
 #include "MetropolisHastingsMove.h"
 #include "PathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
+#include "NodeCladogenesisRejectionSampleProposal.h"
 #include "TipRejectionSampleProposal.h"
 #include "PathRejectionSampleMove.h"
 #include "UniformTimeTreeDistribution.h"
@@ -139,7 +140,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
     seed.push_back(7); seed.push_back(2);
-    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 

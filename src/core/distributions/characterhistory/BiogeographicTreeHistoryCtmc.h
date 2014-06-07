@@ -97,6 +97,8 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >                   tipProbs;
         
         // flags specifying which model variants we use
+        std::vector<int>                                    cladogenicState;
+        std::vector<int>                                    buddingState;
         bool                                                branchHeterogeneousClockRates;
         bool                                                branchHeterogeneousSubstitutionMatrices;
         bool                                                rateVariationAcrossSites;
@@ -129,6 +131,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     
     
     // flags specifying which model variants we use
+    cladogenicState                             = std::vector<int>(this->histories.size(), 0);
+    buddingState                                = std::vector<int>(this->histories.size(), 0);
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
@@ -161,6 +165,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     redrawCount                 = d.redrawCount;
     
     // flags specifying which model variants we use
+    cladogenicState                             = d.cladogenicState;
+    buddingState                                = d.buddingState;
     branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;
@@ -391,20 +397,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     {
         TopologyNode* nd = nodes[i];
         samplePathEnd(*nd, indexSet);
-        for (size_t j = 0; j < nd->getNumberOfChildren(); j++)
-        {
-            TopologyNode& child = nd->getChild(j);
-            samplePathStart(child, indexSet);
-        }
-        
-        if (nd->isRoot())
-            samplePathStart(*nd, indexSet);
-        
-//        if (nd->isTip())
-//        {
-//            std::cout << nd->getName() << "\n";
-//            this->histories[nd->getIndex()]->print();
-//        }
+        samplePathStart(*nd, indexSet);
     }
     
     // sample paths
@@ -417,90 +410,121 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     double lnL = this->computeLnProbability();
     if (lnL != lnL)
     {
-        
         for (size_t i = 0; i < nodes.size(); i++)
         {
             this->fireTreeChangeEvent(*nodes[i]);
         }
-        
-        
-        std::cout << "bad " << lnL << "\n";
-        
         redrawValue();
     }
-
-    
-    
-//    for (size_t i = 0; i < nodes.size(); i++)
-//        this->histories[i]->print();
-    
-    
-//    const RateMap_Biogeography& qmap = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
-//    const std::vector<double>& glr = qmap.getHomogeneousGainLossRates();
-//    double rate_sum = glr[0] + glr[1];
-    
-//    for (size_t i = 0; i < nodes.size(); i++)
-//    {
-//        TopologyNode* nd = nodes[i];
-//        BranchHistory* bh = this->histories[nd->getIndex()];
-//        double e_n = nodes[i]->getBranchLength() * glr[0] * (double)this->numSites;
-//        std::cout << i << " " << nd->getBranchLength() << " " << bh->getNumEvents() << " " << e_n << " " << (double)bh->getNumEvents() / e_n <<  "\n";
-//    }
-
 }
+
 
 template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
     double lnP = 0.0;
-    if (cladogenicEvents)
-    {
-        ; // undefined for now
-    }
-    else // iid inheritance
-    {
-        if (node.isRoot() == false)
-        {
-            std::vector<CharacterEvent*> nodeState = this->histories[ node.getParent().getIndex() ]->getChildCharacters();
-            for (size_t i = 0; i < nodeState.size(); i++)
-                nodeState[i] = new CharacterEvent(*nodeState[i]);
-            this->histories[ node.getIndex() ]->setParentCharacters( nodeState );
-        }
-        else
-        {
-            TransitionProbabilityMatrix nodeTpMatrix(this->numSites);
-            
-            homogeneousRateMap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix);
-            
-            // for sampling probs
-            const std::vector<CharacterEvent*>& nodeChildState = this->histories[node.getIndex() ]->getChildCharacters();
-            
-            // to update
-            std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
-            for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-            {
-                unsigned int desS1 = nodeChildState[*it]->getState();
-                
-                double u = GLOBAL_RNG->uniform01();
-                double g0 = nodeTpMatrix[0][desS1];
-                double g1 = nodeTpMatrix[1][desS1];
-                
-                unsigned int s = 0;
-                if (u < g1 / (g0 + g1))
-                    s = 1;
-                
-                nodeParentState[*it]->setState(s);
-            }
-        
-            // forbid extinction
-            if (numOn(nodeParentState) == 0 && forbidExtinction)
-                samplePathStart(node, indexSet);
-            else
-                this->histories[node.getIndex()]->setParentCharacters(nodeParentState);
+    
+    // ignore tips
+    if (node.isTip())
+        return lnP;
+    
+    // sample post-speciation path start states
 
-        }
+    // 0: sympatric speciation, iid range inheritance
+    // A = L v R, n(L) = n(R) = n(A), L ^ R = A
+
+    // 1: peripatric speciation
+    // A = L v R, n(R) = 1, n(L) = n(A), L ^ R = R
+    
+    // 2: allopatric speciation
+    // A = L v R, n(R) = 1, n(L) = n(A) - 1, L ^ R = 0
+
+    // sample bud and trunk lineages
+    unsigned budChildIndex = 2 * GLOBAL_RNG->uniform01();
+    unsigned trunkChildIndex = (budChildIndex == 0 ? 1 : 0);
+    const TopologyNode& budNode = node.getChild(budChildIndex);
+    const TopologyNode& trunkNode = node.getChild(trunkChildIndex);
+    buddingStates[ trunkNode.getIndex() ] = 0;
+    buddingStates[ budNode.getIndex() ] = 1;
+
+    // sample bud area index
+    const std::vector<CharacterEvent*>& nodeState = this->histories[ node.getIndex() ]->getChildCharacters();
+    std::vector<unsigned> presentAreas;
+    for (size_t i = 0; i < nodeState.size(); i++)
+        if (nodeState[i]->getState() == 1)
+            presentAreas.push_back(i);
+    
+    unsigned budAreaIndex = presentAreas[GLOBAL_RNG->uniform01() * presentAreas.size()];
+    
+    // update child states
+    std::vector<CharacterEvent*> budState, trunkState;
+    for (size_t i = 0; i < nodeState.size(); i++)
+    {
+        trunkState.push_back(new CharacterEvent(*nodeState[i]));
+        
+        // sympatry: iid
+        if (cladogenicState[node.getIndex()] == 0 || cladogenicEvents == false)
+            budState.push_back(new CharacterEvent(*nodeState[i]));
+        
+        // peripatry, allopatry: sparse
+        else
+            budState.push_back(new CharacterEvent(i,0,0.0));
     }
     
+    // peripatry: add bud area
+    if (cladogenicState[node.getIndex()] == 1)
+    {
+        budState[budAreaIndex]->setState(1);
+    }
+    
+    // allopatry: add bud area, del trunk area
+    else if (cladogenicState[node.getIndex()] == 2)
+    {
+        trunkState[budAreaIndex]->setState(0);
+        budState[budAreaIndex]->setState(1);
+    }
+    
+    this->histories[ trunkNode.getIndex() ]->setParentCharacters( trunkState );
+    this->histories[ budNode.getIndex() ]->setParentCharacters( budState );
+    
+    
+    
+    // sample sub-root state as necessary
+    if (node.isRoot())
+    {
+        TransitionProbabilityMatrix nodeTpMatrix(this->numSites);
+        
+        homogeneousRateMap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix);
+        
+        // for sampling probs
+        const std::vector<CharacterEvent*>& nodeChildState = this->histories[node.getIndex() ]->getChildCharacters();
+        
+        // to update
+        std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
+        for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
+        {
+            unsigned int desS1 = nodeChildState[*it]->getState();
+            
+            double u = GLOBAL_RNG->uniform01();
+            double g0 = nodeTpMatrix[0][desS1];
+            double g1 = nodeTpMatrix[1][desS1];
+            
+            unsigned int s = 0;
+            if (u < g1 / (g0 + g1))
+                s = 1;
+            
+            nodeParentState[*it]->setState(s);
+        }
+        
+        // forbid extinction
+        if (numOn(nodeParentState) == 0 && forbidExtinction)
+            samplePathStart(node, indexSet);
+        else
+            this->histories[node.getIndex()]->setParentCharacters(nodeParentState);
+        
+    }
+
+        
     return lnP;
 }
 
