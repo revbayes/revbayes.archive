@@ -60,10 +60,19 @@ namespace RevBayesCore {
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
         void                                                setDistancePower(const TypedDagNode<double>* dp);
 
-        
+        // ambiguous characters at tips
         const std::vector<double>&                          getTipProbs(const TopologyNode& nd);
         const std::vector<std::vector<double> >&            getTipProbs(void);
         void                                                setTipProbs(const AbstractCharacterData* d);
+        
+        
+        // cladogenic state information
+        const std::vector<int>&                             getBuddingStates(void);
+        int                                                 getBuddingState(const TopologyNode &n);
+        void                                                setBuddingState(const TopologyNode &n, int n);
+        const std::vector<int>&                             getCladogenicStates(void);
+        int                                                 getCladogenicState(const TopologyNode &n);
+        
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
         
@@ -444,8 +453,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePat
     unsigned trunkChildIndex = (budChildIndex == 0 ? 1 : 0);
     const TopologyNode& budNode = node.getChild(budChildIndex);
     const TopologyNode& trunkNode = node.getChild(trunkChildIndex);
-    buddingStates[ trunkNode.getIndex() ] = 0;
-    buddingStates[ budNode.getIndex() ] = 1;
+    buddingState[ trunkNode.getIndex() ] = 0;
+    buddingState[ budNode.getIndex() ] = 1;
 
     // sample bud area index
     const std::vector<CharacterEvent*>& nodeState = this->histories[ node.getIndex() ]->getChildCharacters();
@@ -868,6 +877,37 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setTipProbs
             tipProbs[nd->getIndex()].push_back(v);
         }
     }
+}
+
+template<class charType, class treeType>
+const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getBuddingStates(void)
+{
+    return buddingState;
+}
+
+template<class charType, class treeType>
+const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogenicStates(void)
+{
+    return cladogenicState;
+}
+
+
+template<class charType, class treeType>
+int RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getBuddingState(const TopologyNode& nd)
+{
+    return buddingState[nd.getIndex()];
+}
+
+template<class charType, class treeType>
+int RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogenicState(const TopologyNode& nd)
+{
+    return cladogenicState[nd.getIndex()];
+}
+
+template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setBuddingState(const TopologyNode& nd, int n)
+{
+    buddingState[nd.getIndex()] = n;
 }
 
 template<class charType, class treeType>
