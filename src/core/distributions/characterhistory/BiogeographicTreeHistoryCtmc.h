@@ -140,7 +140,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     
     
     // flags specifying which model variants we use
-    cladogenicState                             = std::vector<int>(this->histories.size(), 0);
+    cladogenicState                             = std::vector<int>(this->histories.size(), (cladogenicEvents? 1 : 0));
     buddingState                                = std::vector<int>(this->histories.size(), 0);
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;

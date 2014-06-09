@@ -160,7 +160,7 @@ bool TestCharacterHistory::run_exp(void) {
 //    fn = "vireya_sim_0_1.nex";
 //    fn = "vireya_gain0_02_loss0_06_dp3.nex";
     fn = "vireya.nex";
-    fn = "psychotria.nex";
+//    fn = "psychotria.nex";
 //    fn = "vireya_gain0_01_loss0_03_dp0.nex";
 //    fn = "16tip_100areas_dp2.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
@@ -177,7 +177,7 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
     afn = "vireya.atlas.txt";
-    afn = "hawaii.atlas.txt";
+//    afn = "hawaii.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     TimeAtlas* ta = new TimeAtlas(&tsdr);
@@ -367,7 +367,7 @@ bool TestCharacterHistory::run_exp(void) {
     // mcmc
     //////////
     std::cout << "Instantiating mcmc\n";
-    Mcmc myMcmc = Mcmc( myModel, moves, monitors, "single", true, 1.0, 0 );
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors, "random", true, 1.0, 0 );
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     
