@@ -77,7 +77,7 @@ bool TestDPPRelClock::run( void ) {
 	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
 	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
-    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*1.5 ) );
+    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
 
 	//   Stochastic nodes
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
@@ -94,7 +94,7 @@ bool TestDPPRelClock::run( void ) {
 
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
 	
 	
 	// ####################################
@@ -167,7 +167,7 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 //    moves.push_back( new SubtreeScale( tau, 5.0 ) );
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-//	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
+	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 200.0, 6, 0, true, 2.0, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 150.0, 4, 0, true, 2.0, 2.0 ) ); 
@@ -198,19 +198,20 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( er );
  	monitoredNodes.push_back( branchRates );
 
-	std::string logFN = "clock_test/test_RBdpp_clock_4June_rel_pr.log";
+	std::string logFN = "clock_test/test_rb_DPP_6June_pr.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
-	mcmcGenerations = 10000;
 
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 
-//	std::string treFN = "clock_test/test_RBdpp_clock_23May_abs_rn.tre";
-//    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
+	std::string treFN = "clock_test/test_rb_DPP_6June_pr.tre";
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
     
+	mcmcGenerations = 100000;
+
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
     myMcmc.run(mcmcGenerations);
