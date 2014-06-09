@@ -68,6 +68,7 @@
 #include "MetropolisHastingsMove.h"
 #include "PathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
+#include "NodeCladogenesisRejectionSampleProposal.h"
 #include "TipRejectionSampleProposal.h"
 #include "PathRejectionSampleMove.h"
 #include "UniformTimeTreeDistribution.h"
@@ -146,9 +147,10 @@ bool TestCharacterHistory::run_exp(void) {
     
     bool usingAmbiguousCharacters = !true;
     bool simulate = false;
-    bool useDistances = true;
+    bool useDistances = !true;
     bool useClock = !true;
     bool forbidExtinction = true;
+    bool useCladogenesis = true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
@@ -158,19 +160,13 @@ bool TestCharacterHistory::run_exp(void) {
 //    fn = "vireya_sim_0_1.nex";
 //    fn = "vireya_gain0_02_loss0_06_dp3.nex";
     fn = "vireya.nex";
+//    fn = "psychotria.nex";
 //    fn = "vireya_gain0_01_loss0_03_dp0.nex";
 //    fn = "16tip_100areas_dp2.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     size_t numAreas = data[0]->getNumberOfCharacters();
-    
-//    for (size_t i = 0; i < data[0]->getNumberOfTaxa(); i++)
-//    {
-//        const DiscreteTaxonData<StandardState>& dtd = static_cast<const DiscreteTaxonData<StandardState>& >(data[0]->getTaxonData(i));
-//        std::cout << dtd << "\n";
-//    }
-    
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
@@ -181,6 +177,7 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
     afn = "vireya.atlas.txt";
+//    afn = "hawaii.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     TimeAtlas* ta = new TimeAtlas(&tsdr);
@@ -286,6 +283,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
+    TopologyNode* nd = NULL; // &tau->getValue().getNode(60); 
     
     if (useClock)
     {
@@ -293,7 +291,7 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new ScaleMove(clockRate, 0.1, false, 2) );
     }
     
-    if (useDistances)
+    if (useDistances && true)
     {
 //        moves.push_back( new ScaleMove(dp, 0.25, false, 3) );
 //        moves.push_back( new ScaleMove(dp, 0.1, false, 3) );
@@ -309,12 +307,21 @@ bool TestCharacterHistory::run_exp(void) {
 		moves.push_back( new ScaleMove(glr_nonConst[i], 0.1, false, 2) );
     }
 
-    TopologyNode* nd = NULL; // &tau->getValue().getNode(60);
+
     moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
     moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
     
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
+    
+    if (useCladogenesis)
+    {
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes));
+        
+    }
+    else
+    {
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
+    }
 
     
     if (usingAmbiguousCharacters)
@@ -323,6 +330,7 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.05, false, numNodes/1));
     }
 
+    
 
 //    moves.push_back(new SamplePathHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 50));
     
@@ -477,7 +485,7 @@ bool TestCharacterHistory::run_dollo(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(gainRatePrior, new ConstantNode<double>("offset", new double(0.0) )));
-        //tmp_glr->setValue(new double(0.1));
+        tmp_glr->setValue(new double(0.1));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
 	}
@@ -572,9 +580,11 @@ bool TestCharacterHistory::run_dollo(void) {
 
     monitoredNodes.insert( glr_vector );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb." + ss.str() + ".tree_chars.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb_dollo" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 100, "\t" ) );
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb_dollo" + ss.str() + ".tree_chars.txt", "\t"));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,BranchLengthTree>(charactermodel, tau, 100, filepath + "rb_dollo" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
+
     
     
     //////////

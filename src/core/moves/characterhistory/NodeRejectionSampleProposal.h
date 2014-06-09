@@ -280,10 +280,10 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     {
         node = NULL;
         std::vector<TopologyNode*> nds = tree.getNodes();
-        do {
+        while (node == NULL || node->isTip()) {
             size_t idx = GLOBAL_RNG->uniform01() * nds.size(); //numTips + GLOBAL_RNG->uniform01() * (numNodes-numTips);
             node = nds[idx];
-        } while (node == NULL || node->isTip());
+        };
     }
     sampleNodeIndex = true;
     
