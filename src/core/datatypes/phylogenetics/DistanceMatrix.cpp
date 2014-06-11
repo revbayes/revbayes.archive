@@ -7,6 +7,7 @@
 //
 
 #include "DistanceMatrix.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "StringUtilities.h"
 
@@ -94,7 +95,7 @@ size_t DistanceMatrix::indexOfTaxonWithName( const std::string& s ) const {
             return i;
         }
     }
-    return -1;
+    return RbConstants::Size_t::nan;
 }
 
 

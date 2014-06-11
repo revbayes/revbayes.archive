@@ -93,7 +93,9 @@ RevLanguage::RbLanguageObject* RevLanguage::Func_mapTree<treeType>::execute( voi
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
         
-        RevBayesCore::Clade c( tree->getRoot().getTaxaStringVector(), 0.0 );
+        std::vector<std::string> taxa;
+        tree->getRoot().getTaxaStringVector(taxa);
+        RevBayesCore::Clade c( taxa, 0.0 );
         writer.writeNexusBlock(c);
         
         writer.writeNexusBlock(*tree);

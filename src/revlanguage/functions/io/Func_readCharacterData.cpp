@@ -69,7 +69,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    int numFilesRead = 0;
+    size_t numFilesRead = 0;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
         bool isInterleaved = false;
         std::string myFileType = "unknown";

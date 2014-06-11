@@ -76,7 +76,7 @@ RevLanguage::RbLanguageObject* RevLanguage::DiscreteTaxonData<charType>::execute
             throw RbException("Index out of bounds in []");
         }
             
-        RbLanguageObject* element = new charType( this->value->getValue().getElement(index.getValue() - 1) );
+        RbLanguageObject* element = new charType( this->value->getValue().getElement( size_t(index.getValue()) - 1) );
         return element;
     } 
     

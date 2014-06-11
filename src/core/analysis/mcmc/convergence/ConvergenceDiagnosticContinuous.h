@@ -20,8 +20,8 @@ namespace RevBayesCore {
         ConvergenceDiagnosticContinuous();
         virtual                    ~ConvergenceDiagnosticContinuous(void) {}
     
-        virtual bool                assessConvergenceSingleChain(const std::vector<double>& values, int burnin) { return false; }
-        virtual bool                assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<int>& burnin) { return false; }
+        virtual bool                assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin) { return false; }
+        virtual bool                assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnin) { return false; }
     
     protected:
     

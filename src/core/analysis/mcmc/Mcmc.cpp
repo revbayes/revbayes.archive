@@ -2,7 +2,6 @@
 #include "FileMonitor.h"
 #include "Mcmc.h"
 #include "MoveSchedule.h"
-#include "PathSampleMonitor.h"
 #include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -38,9 +37,9 @@ using namespace RevBayesCore;
  * \param[in]    ci   The chain index (for multiple chain, e.g. in MCMCMC).
  * \param[in]    sT   Move schedule type (one of "random", "single", or "sequential").
  */
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, std::string sT, bool ca, double ch, int ci) :
+Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, std::string sT, bool ca, double heat, size_t ci) :
     chainActive(ca),
-    chainHeat(ch),
+    chainHeat(heat),
     chainIdx(ci),
     generation(0),
     model( m ),
@@ -406,7 +405,7 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
     
-    size_t proposals = round( schedule->getNumberMovesPerIteration() );
+    size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++) 
     {
         // Get the move

@@ -19,7 +19,7 @@
 using namespace RevBayesCore;
 
 
-PrecisionMatrixMove::PrecisionMatrixMove(StochasticNode<PrecisionMatrix > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+PrecisionMatrixMove::PrecisionMatrixMove(StochasticNode<PrecisionMatrix > *v, size_t l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
     
 }
 
@@ -44,7 +44,7 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    int df = (int) lambda;
+    size_t df = lambda;
     
     PrecisionMatrix& mymat = variable->getValue();
     
@@ -87,10 +87,10 @@ void PrecisionMatrixMove::tune( void ) {
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        lambda = size_t( round( lambda*(1.0 + ((rate-0.44)/0.56) ) ) );
     }
     else {
-        lambda /= (2.0 - rate/0.44 );
+        lambda /= size_t( round( lambda/(2.0 - rate/0.44 ) ) );
     }
 }
 

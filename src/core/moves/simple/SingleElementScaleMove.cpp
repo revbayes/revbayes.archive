@@ -80,7 +80,7 @@ double SingleElementScaleMove::performMove( double& probRatio ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     // choose an index
-    index = int(rng->uniform01() * variable.size());
+    index = size_t(rng->uniform01() * variable.size());
     
     StochasticNode<double> *theNode = variable[index];
     

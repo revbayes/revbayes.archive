@@ -17,7 +17,7 @@ MultinomialDistribution::MultinomialDistribution(const TypedDagNode< std::vector
     addParameter( p );
     addParameter( n );
         
-    *value = RbStatistics::Multinomial::rv(p->getValue(), n->getValue(), *GLOBAL_RNG);
+    *value = RbStatistics::Multinomial::rv(p->getValue(), size_t( n->getValue() ), *GLOBAL_RNG);
 }
 
 
@@ -43,12 +43,14 @@ double MultinomialDistribution::computeLnProbability( void ) {
 
 
 void MultinomialDistribution::redrawValue( void ) {
-    *value = RbStatistics::Multinomial::rv(p->getValue(), n->getValue(), *GLOBAL_RNG);
+    *value = RbStatistics::Multinomial::rv(p->getValue(), size_t( n->getValue() ), *GLOBAL_RNG);
 }
 
 
 void MultinomialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == p) {
+    
+    if (oldP == p)
+    {
         p = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
     else if (oldP == n)

@@ -1,3 +1,4 @@
+#include "RbConstants.h"
 #include "RbException.h"
 #include "StringUtilities.h"
 #include "TaxonReader.h"
@@ -18,7 +19,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     
     //Reading the header
     std::vector<std::string>& line = chars[0];
-    std::vector<int> columnIndices (line.size(), -1);
+    std::vector<size_t> columnIndices (line.size(), RbConstants::Size_t::nan);
     
     for (size_t i = 0 ; i < line.size() ; ++i) {
         std::string tmp = line[i];
@@ -36,7 +37,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
             throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
         }
     }
-    if (columnIndices[0] == -1) {
+    if (columnIndices[0] == RbConstants::Size_t::nan) {
         throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
     }
     
@@ -45,11 +46,11 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         const std::vector<std::string>& line = chars[i];
         Taxon t = Taxon(line[ columnIndices[0] ]);
                 
-        if ( columnIndices[2] != -1) {
+        if ( columnIndices[2] != RbConstants::Size_t::nan) {
             TimeAndDate d = TimeAndDate( ); // line[ columnIndices[2] ]
             t.setDate( d );
         }
-        if ( columnIndices[1] != -1) {
+        if ( columnIndices[1] != RbConstants::Size_t::nan) {
             t.setSpeciesName( line[columnIndices[1] ] );
         }
         taxa.push_back( t );

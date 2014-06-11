@@ -51,7 +51,7 @@ RevBayesCore::UniformTopologyDistribution* UniformTopologyDistribution::createDi
     // get the parameters
     int n = static_cast<const Natural &>( numTaxa->getValue() ).getValueNode()->getValue();
     const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
-    RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(n, names);
+    RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
     
     return d;
 }

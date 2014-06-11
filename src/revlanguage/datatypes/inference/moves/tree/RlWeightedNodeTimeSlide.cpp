@@ -41,7 +41,7 @@ void WeightedNodeTimeSlide::constructInternalObject( void ) {
     int b = static_cast<const Natural &>( blocks->getValue() ).getValue();
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::WeightedNodeTimeSlide(t, b, w);
+    value = new RevBayesCore::WeightedNodeTimeSlide(t, size_t(b), w);
 }
 
 

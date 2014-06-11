@@ -18,17 +18,17 @@ SemMin::SemMin() {
     blockSize = 10;
 }
 
-SemMin::SemMin(int b) {
+SemMin::SemMin(size_t b) {
     this->blockSize     = b;
 }
 
-int SemMin::estimateBurnin(const std::vector<double>& values) {
+size_t SemMin::estimateBurnin(const std::vector<double>& values) {
     // init
     double  min_sem     = RbConstants::Double::max;
-    int     best_burnin = 0;
+    size_t  best_burnin = 0;
     
     // iterate over possible burnins
-    for (int i=0; i<(int)values.size(); i+=blockSize) {
+    for (size_t i=0; i<values.size(); i+=blockSize) {
         // make mean invalid for recalculation
         analysis.analyseMean(values, i);
         // analyse trace for this burnin

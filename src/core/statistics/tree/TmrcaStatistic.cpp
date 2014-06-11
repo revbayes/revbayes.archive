@@ -7,21 +7,17 @@
 //
 
 #include "TmrcaStatistic.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c) : TypedFunction<double>( new double(0.0) ), tree( t ), clade( c ), index( -1 ) {
+TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c) : TypedFunction<double>( new double(0.0) ), tree( t ), clade( c ), index( RbConstants::Size_t::nan ) {
     // add the tree parameter as a parent
     addParameter( tree );
     
+    initialize();
     update();
-}
-
-
-TmrcaStatistic::TmrcaStatistic(const TmrcaStatistic &n) : TypedFunction<double>( n ), tree( n.tree ), clade( n.clade ), index( -1 ) {
-    // no need to add parameters, happens automatically
-
 }
 
 
@@ -38,23 +34,66 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const {
 }
 
 
-void TmrcaStatistic::update( void ) {
+void TmrcaStatistic::initialize( void ) {
     
+    taxaCount = clade.size();
+    index = RbConstants::Size_t::nan;
+    
+}
+
+
+void TmrcaStatistic::update( void ) {
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
     size_t minCaldeSize = n.size() + 2;
-    for (size_t i = tree->getValue().getNumberOfTips(); i < n.size(); ++i) 
+    
+    bool found = false;
+    if ( index != RbConstants::Size_t::nan )
     {
-        TopologyNode *node = n[i];
-        size_t cladeSize = node->getTaxaStringVector().size();
-        if ( cladeSize < minCaldeSize && node->containsClade( clade, false ) ) 
+        
+        TopologyNode *node = n[index];
+        std::vector<std::string> taxa;
+        node->getTaxaStringVector( taxa );
+        size_t cladeSize = taxa.size();
+        if ( node->containsClade( clade, false ) && taxaCount == cladeSize )
         {
-            index = int( node->getIndex() );
-            minCaldeSize = cladeSize;
-//            break;
+            found = true;
         }
+        else
+        {
+            minCaldeSize = cladeSize;
+        }
+        
     }
-    if ( index < 0 ) 
+    
+    
+    if ( found == false )
+    {
+        
+        for (size_t i = tree->getValue().getNumberOfTips(); i < n.size(); ++i)
+        {
+            
+            TopologyNode *node = n[i];
+            std::vector<std::string> taxa;
+            node->getTaxaStringVector( taxa );
+            size_t cladeSize = taxa.size();
+            if ( cladeSize < minCaldeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            {
+                
+                index = node->getIndex();
+                minCaldeSize = cladeSize;
+                if ( taxaCount == cladeSize )
+                {
+                    break;
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    if ( index == RbConstants::Size_t::nan )
     {
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
@@ -70,7 +109,7 @@ void TmrcaStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *n
     if (oldP == tree) 
     {
         tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
-        index = -1;
+        index = RbConstants::Size_t::nan;
     }
     
 }

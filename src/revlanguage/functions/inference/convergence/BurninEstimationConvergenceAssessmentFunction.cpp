@@ -71,14 +71,14 @@ RbLanguageObject* BurninEstimationConvergenceAssessmentFunction::execute( void )
         outStream = &std::cout;
     }
     
-    std::vector<int> burnin;
+    std::vector<size_t> burnin;
     if ( method == "ESS" ) 
     {
         EssMax estimator;
         for ( std::vector<Trace*>::const_iterator it = traces.begin(); it != traces.end(); ++it ) 
         {
             const std::vector<double> &values = (*it)->getValue().getValues();
-            int b = estimator.estimateBurnin( values );
+            size_t b = estimator.estimateBurnin( values );
             burnin.push_back( b );
         }
     } 
@@ -88,7 +88,7 @@ RbLanguageObject* BurninEstimationConvergenceAssessmentFunction::execute( void )
         for ( std::vector<Trace*>::const_iterator it = traces.begin(); it != traces.end(); ++it ) 
         {
             const std::vector<double> &values = (*it)->getValue().getValues();
-            int b = estimator.estimateBurnin( values );
+            size_t b = estimator.estimateBurnin( values );
             burnin.push_back( b );
         }
         
