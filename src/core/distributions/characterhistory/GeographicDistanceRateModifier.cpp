@@ -59,10 +59,10 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
     
     for (unsigned i = 0; i < numEpochs; i++)
     {
-        unsigned iOffset = i*epochOffset;
+//        unsigned iOffset = i*epochOffset;
         for (unsigned j = 0; j < numAreas; j++)
         {
-            unsigned jOffset = j*areaOffset;
+//            unsigned jOffset = j*areaOffset;
             for (unsigned k = j; k < numAreas; k++)
             {
 //                std::cout << "geoDist " << epochOffset*i + areaOffset*j + k << "\n";
