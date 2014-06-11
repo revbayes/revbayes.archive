@@ -53,6 +53,7 @@ namespace RevBayesCore {
         void                                        setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm);
         void                                        setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm);
         const GeographicDistanceRateModifier &      getGeographicDistanceRateModifier(void);
+        const std::vector<double>&                  getEpochs(void) const;
         
     private:
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;

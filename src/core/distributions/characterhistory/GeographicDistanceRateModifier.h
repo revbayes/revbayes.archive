@@ -31,6 +31,7 @@ namespace RevBayesCore
         const std::vector<double>&          getGeographicDistancePowers(void) const;
         void                                setGeographicDistancePowers(const std::vector<double>& dp);
         unsigned                            getEpochIndex(double age);
+        const std::vector<double>&          getEpochs(void) const;
         void                                update(void);
         GeographicDistanceRateModifier*     clone(void) const;
         void                                print(std::vector<std::vector<double> > m);

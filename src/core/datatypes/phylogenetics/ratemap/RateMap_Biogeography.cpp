@@ -324,6 +324,10 @@ const GeographicDistanceRateModifier& RateMap_Biogeography::getGeographicDistanc
     return *geographicDistanceRateModifier;
 }
 
+const std::vector<double>& RateMap_Biogeography::getEpochs(void) const
+{
+    return geographicDistanceRateModifier->getEpochs();
+}
 
 size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
 {

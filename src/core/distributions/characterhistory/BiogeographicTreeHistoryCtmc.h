@@ -68,11 +68,11 @@ namespace RevBayesCore {
         
         // cladogenic state information
         const std::vector<int>&                             getBuddingStates(void);
-        int                                                 getBuddingState(const TopologyNode &n);
-        void                                                setBuddingState(const TopologyNode &n, int n);
+        int                                                 getBuddingState(const TopologyNode& nd);
+        void                                                setBuddingState(const TopologyNode& nd, int s);
         const std::vector<int>&                             getCladogenicStates(void);
-        int                                                 getCladogenicState(const TopologyNode &n);
-        void                                                setCladogenicState(const TopologyNode& n, int n);
+        int                                                 getCladogenicState(const TopologyNode& nd);
+        void                                                setCladogenicState(const TopologyNode& nd, int s);
         
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
@@ -93,6 +93,7 @@ namespace RevBayesCore {
 
         
         // helper function
+        unsigned                                            getEpochIndex(const std::vector<double>& epochs, double age);
         size_t                                              numOn(const std::vector<CharacterEvent*>& s);
         bool                                                historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history);
         
@@ -103,7 +104,6 @@ namespace RevBayesCore {
         const TypedDagNode< std::vector< double > >*        siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
-//        const TypedDagNode< double >*                       distancePower;
         std::vector<std::vector<double> >                   tipProbs;
         
         // flags specifying which model variants we use
@@ -150,6 +150,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     
     cladogenicState                             = std::vector<int>(this->histories.size(), (cladogenicEvents ? 1 : 0));
     buddingState                                = std::vector<int>(this->histories.size(), 0);
+//    epochs                                      = std::vector<double>(1,0.0);
 
     
     // add the parameters to the parents list
@@ -179,6 +180,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     // flags specifying which model variants we use
     cladogenicState                             = d.cladogenicState;
     buddingState                                = d.buddingState;
+//    epochs                                      = d.epochs;
     branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;
@@ -241,18 +243,18 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         if (nodeIndex == monitorIndex) { std::cout << "for likelihood\n";    this->histories[nodeIndex]->print(); }
         
         // update tip lnLs for ambiguous characters
-//        if (this->usingAmbiguousCharacters && node.isTip())
-//        {
-//            std::vector<CharacterEvent*> tipState = bh->getChildCharacters();
-//            
-//            for (size_t i = 0; i < tipState.size(); i++)
-//            {
-//                double v = tipProbs[nodeIndex][i];
-//                if (tipState[i]->getState() == 0)
-//                    v = 1 - v;
-//                lnL += std::log(v);
-//            }
-//        }
+        if (this->usingAmbiguousCharacters && node.isTip())
+        {
+            std::vector<CharacterEvent*> tipState = bh->getChildCharacters();
+            
+            for (size_t i = 0; i < tipState.size(); i++)
+            {
+                double v = tipProbs[nodeIndex][i];
+                if (tipState[i]->getState() == 0)
+                    v = 1 - v;
+                lnL += std::log(v);
+            }
+        }
         
         const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
@@ -261,15 +263,22 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         double branchLength = node.getBranchLength();
         double currAge = (node.isRoot() ? 10e10 : node.getParent().getAge());
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
-       
+
+        // handle stratified/epoch models
+        const std::vector<double>& epochs = rm.getEpochs();
+        size_t epochIdx = getEpochIndex(epochs, currAge);
+        double epochEndAge = epochs[epochIdx];
+        
         // stepwise events
         double t = 0.0;
         double dt = 0.0;
+        double da = 0.0;
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
             double idx = (*it_h)->getIndex();
             dt = (*it_h)->getTime() - t;
+            da = dt * branchLength;
             
             // reject extinction
             unsigned s = (*it_h)->getState();
@@ -282,8 +291,25 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             double tr = rm.getRate(node, currState, *it_h, counts, currAge);
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
 
+            // if epoch crossed, prob no events until boundary
+            if (false && currAge - da < epochEndAge)
+            {
+                // lnL factor
+                lnL += -sr * (currAge - epochEndAge);
+                
+                // refresh tr,sr for new age
+                tr = rm.getRate(node, currState, *it_h, counts, epochEndAge);
+                sr = rm.getSumOfRates(node, currState, counts, epochEndAge);
+                
+                // update ages
+                da -= (currAge - epochEndAge);
+                epochIdx++;
+                epochEndAge = epochs[epochIdx];
+                currAge = epochEndAge;
+            }
+                
             // lnL for stepwise events for p(x->y)
-            lnL += -(sr * dt * branchLength) + log(tr);
+            lnL += -(sr * da) + log(tr);
             
             // update counts
             counts[currState[idx]->getState()] -= 1;
@@ -292,28 +318,18 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             // update time and state
             currState[idx] = *it_h;
             t += dt;
-            currAge -= dt * branchLength;
+            currAge -= da;
             
             if (nodeIndex == monitorIndex)
                 std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << counts[0] << " " << counts[1] << " " << numOn(currState) << "\n";
         }
-        
-//        std::vector<CharacterEvent*> endState = bh.getChildCharacters();
-//        for (size_t i = 0; i < this->numSites; i++)
-//        {
-//            unsigned s1 = endState[i]->getState();
-//            unsigned s2 = currState[i]->getState();
-//            if (s1 != s2)
-//            {
-//                std::cout << i << " " << s1 << " " << s2 << "\n";
-//            }
-//        }
-        
+            
         // lnL for final non-event
         double sr = rm.getSumOfRates(node, currState, counts, currAge);
         lnL += -sr * ( (1.0 - t) * branchLength );
         
-        if (nodeIndex == monitorIndex) {
+        if (nodeIndex == monitorIndex)
+        {
             std::cout << "1.000000" << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << counts[0] << " " << counts[1] << " " << numOn(currState) << "\n";
             std::cout << "n_events " << history.size() << "\n";
             std::cout << "brlen    " << branchLength << "\n";
@@ -395,6 +411,17 @@ size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::numOn(con
 }
 
 template<class charType, class treeType>
+unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getEpochIndex(const std::vector<double>& epochs, double age)
+{
+    unsigned index = 0;
+    while (age <= epochs[index] && index < epochs.size())
+    {
+        index++;
+    };
+    return index;
+}
+
+template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
 {
     if (this->tipsInitialized == false)
@@ -417,9 +444,9 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
     {
         TopologyNode* nd = nodes[i];
         samplePathHistory(*nd, indexSet);
-        this->histories[nd->getIndex()]->print();
-        if (!nd->isRoot()) this->histories[nd->getParent().getIndex()]->print();
-        std::cout << "\n----------\n";
+//        this->histories[nd->getIndex()]->print();
+//        if (!nd->isRoot()) this->histories[nd->getParent().getIndex()]->print();
+//        std::cout << "\n----------\n";
     }
     
     double lnL = this->computeLnProbability();
@@ -911,15 +938,15 @@ int RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogeni
 }
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setBuddingState(const TopologyNode& nd, int n)
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setBuddingState(const TopologyNode& nd, int s)
 {
-    buddingState[nd.getIndex()] = n;
+    buddingState[nd.getIndex()] = s;
 }
 
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicState(const TopologyNode& nd, int n)
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicState(const TopologyNode& nd, int s)
 {
-    cladogenicState[nd.getIndex()] = n;
+    cladogenicState[nd.getIndex()] = s;
 }
 
 template<class charType, class treeType>
