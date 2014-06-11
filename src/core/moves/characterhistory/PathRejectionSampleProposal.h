@@ -342,12 +342,24 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
             // proceed with rejection sampling
             currState = parentVector[*it]->getState();
             double t = 0.0;
+            
+            // repeated rejection sampling
             do
             {
                 unsigned int nextState = (currState == 1 ? 0 : 1);
                 double r = rm.getSiteRate(*node, currState, nextState);
                 
-                t += RbStatistics::Exponential::rv(r * branchLength, *GLOBAL_RNG);
+                // force valid time if event needed
+                if (t == 0.0 && currState != endState)
+                {
+                    double u = GLOBAL_RNG->uniform01();
+                    double truncate = 1.0;
+                    t += -log(1 - u * (1 - exp(-truncate * r * branchLength))) / (r * branchLength);
+                }
+                // standard sampling otherwise
+                else
+                    t += RbStatistics::Exponential::rv(r * branchLength, *GLOBAL_RNG);
+                
                 if (t < 1.0)
                 {
                     currState = nextState;
