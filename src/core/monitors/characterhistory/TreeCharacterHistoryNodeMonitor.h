@@ -58,6 +58,7 @@ namespace RevBayesCore {
         std::string                         buildExtendedNewick(TopologyNode* n);
         std::string                         buildNumEventsStr(TopologyNode* n);
         std::string                         buildNumEventsStr(TopologyNode* n, unsigned state);
+        std::string                         buildNumEventsForTreeStr(unsigned state);
         std::string                         buildCharacterHistoryString(TopologyNode* n, std::string brEnd="child");
         
         // the stream to print
@@ -254,6 +255,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         
         // character history
         characterStream << "&ch={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << ",&pa={" << buildCharacterHistoryString(n,"parent") << "}";
         
         // # events
         characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";
@@ -291,7 +293,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
     BranchHistory* bh = &p->getHistory(*nd);
     
     std::stringstream ss;
-    double eventRatio = (double)bh->getNumEvents() / nd->getBranchLength();
+    double eventRatio = (double)bh->getNumEvents() / 1.0; //nd->getBranchLength();
     
     ss << eventRatio;
     return ss.str();
@@ -319,11 +321,40 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         if ( (*it)->getState() == state )
             v++;
     }
-    double eventRatio = (double)v / nd->getBranchLength();
+    double eventRatio = (double)v / 1.0;//nd->getBranchLength();
 
     ss << eventRatio;
     return ss.str();
     
+}
+
+template<class charType, class treeType>
+std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::buildNumEventsForTreeStr(unsigned state)
+{
+    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    
+    const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
+    unsigned v = 0;
+    std::stringstream ss;
+    
+    for (size_t i = 0; i < nds.size(); i++)
+    {
+        BranchHistory* bh = &p->getHistory(*nds[i]);
+        
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh->getHistory();
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        
+        
+        for (it = evts.begin(); it != evts.end(); it++)
+        {
+            if ( (*it)->getState() == state )
+                v++;
+        }
+        
+    }
+    double eventRatio = (double)v / 1.0;//nd->getBranchLength();
+    ss << eventRatio;
+    return ss.str();
 }
 
 
@@ -380,7 +411,10 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::monitor(
         
         if (showNumEvents)
         {
-            
+            for (size_t s = 0; s < numStates; s++)
+            {
+                outStream << separator << buildNumEventsForTreeStr(s);
+            }
             for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
             {
                 for (size_t s = 0; s < numStates; s++)
@@ -445,6 +479,10 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::printHea
     
     if (showNumEvents)
     {
+        for (size_t s = 0; s < numStates; s++)
+        {
+            outStream << separator << "t" << s;
+        }
         for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
         {
             for (size_t s = 0; s < numStates; s++)
