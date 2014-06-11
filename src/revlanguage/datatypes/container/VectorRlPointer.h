@@ -171,7 +171,7 @@ RevLanguage::RbLanguageObject* RevLanguage::VectorRlPointer<rlType>::executeMeth
             throw RbException("Index out of bounds in []");
         }
         
-        RbLanguageObject* element = getElement(index.getValue() - 1);
+        RbLanguageObject* element = getElement( size_t(index.getValue()) - 1);
         return element;
     } 
     

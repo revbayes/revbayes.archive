@@ -19,7 +19,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-RnaState::RnaState(void) : DiscreteCharacterState(), state(0xFF) {
+RnaState::RnaState(void) : DiscreteCharacterState(), state( char(0xFF) ) {
     
 }
 
@@ -61,8 +61,8 @@ bool RnaState::operator<(const CharacterState &x) const {
     
     const RnaState* derivedX = static_cast<const RnaState*>(&x);
     if ( derivedX != NULL ) {
-        unsigned int myState = state;
-        unsigned int yourState = derivedX->state;
+        char myState = state;
+        char yourState = derivedX->state;
         
         while ( (myState & 1) == ( yourState & 1 )  ) {
             myState >>= 1;
@@ -114,7 +114,7 @@ RnaState* RnaState::clone( void ) const {
 
 unsigned int RnaState::getNumberObservedStates(void) const  {
     
-    unsigned int v = state;     // count the number of bits set in v
+    char v = state;     // count the number of bits set in v
     unsigned int c;             // c accumulates the total bits set in v
     
     for (c = 0; v; v >>= 1)
@@ -132,10 +132,10 @@ size_t RnaState::getNumberOfStates( void ) const {
 
 
 unsigned long RnaState::getState( void ) const {
-    return state;
+    return (unsigned long)state;
 }
 
-unsigned int RnaState::getStateIndex(void) const {
+size_t RnaState::getStateIndex(void) const {
     return stateIndex;
 }
 
@@ -204,7 +204,7 @@ void RnaState::setGapState(bool tf) {
         state = 0x0;
     }
     else {
-        state = 0xFF;
+        state = char(0xFF);
     }
 }
 
@@ -218,9 +218,9 @@ void RnaState::setState(char symbol) {
     state = computeState( symbol );
 }
 
-unsigned int RnaState::computeState(char symbol) const {
+char RnaState::computeState(char symbol) const {
 
-    symbol = toupper( symbol );
+    symbol = char( toupper( symbol ) );
     switch ( symbol ) {
         case '-':
             return 0x00;

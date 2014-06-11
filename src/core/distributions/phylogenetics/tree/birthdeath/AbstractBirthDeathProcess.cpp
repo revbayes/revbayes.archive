@@ -75,14 +75,14 @@ void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyN
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
         // randomly draw one node from the list of tips
-        size_t tip_index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
+        size_t tip_index = size_t( floor(rng->uniform01()*tips.size()) );
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
         psi->setAge( parent->getIndex(), T - (*times)[index] );
         
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+tip_index);
+        tips.erase(tips.begin()+ long(tip_index) );
         
         // add a left child
         TopologyNode* leftChild = &parent->getChild(0);
@@ -120,7 +120,7 @@ void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*>
         TopologyNode* parent = tips.at(index);
         
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
+        tips.erase(tips.begin()+long(index));
         
         // add a left child
         TopologyNode* leftChild = new TopologyNode(0);
@@ -392,7 +392,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
         TopologyNode* node = nodes.at(index);
         
         // remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
+        nodes.erase( nodes.begin()+long(index) );
         
         // set name
         const std::string& name = taxa[i].getName();

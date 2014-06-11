@@ -44,7 +44,7 @@ Move* RandomMoveSchedule::nextMove( unsigned long gen ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double u = movesPerIteration * rng->uniform01();
     
-    int index = 0;
+    size_t index = 0;
     // only if the move is inactive or the weight of the move is smaller than u
     while ( !moves[index]->isActive(gen) || weights[index] <= u ) 
     {

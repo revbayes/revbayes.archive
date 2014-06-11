@@ -22,9 +22,9 @@ namespace RevBayesCore {
     namespace RbStatistics {
         
         namespace Wishart {
-            double                      pdf(const PrecisionMatrix& omega0, int df, const PrecisionMatrix& z);        /*!< Dirichlet(a[]) probability density */
-            double                      lnPdf(const PrecisionMatrix& omega0, int df, const PrecisionMatrix& z);      /*!< Dirichlet(a[]) log_e probability density */
-            PrecisionMatrix         rv(const PrecisionMatrix& omega0, int df, RandomNumberGenerator& rng);           /*!< Dirichlet(a[]) random variable */
+            double                      pdf(const PrecisionMatrix& omega0, size_t df, const PrecisionMatrix& z);        /*!< Dirichlet(a[]) probability density */
+            double                      lnPdf(const PrecisionMatrix& omega0, size_t df, const PrecisionMatrix& z);      /*!< Dirichlet(a[]) log_e probability density */
+            PrecisionMatrix         rv(const PrecisionMatrix& omega0, size_t df, RandomNumberGenerator& rng);           /*!< Dirichlet(a[]) random variable */
         }
     }
 }

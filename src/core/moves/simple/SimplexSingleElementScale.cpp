@@ -66,7 +66,7 @@ double SimplexSingleElementScale::performSimpleMove( void ) {
     size_t cats = value.size();
     
     // randomly draw a new index
-    double chosenIndex = floor(rng->uniform01()*double(cats));
+    size_t chosenIndex = size_t( floor(rng->uniform01()*double(cats)) );
     double currentValue = value[chosenIndex];
     
     // draw new rates and compute the hastings ratio at the same time

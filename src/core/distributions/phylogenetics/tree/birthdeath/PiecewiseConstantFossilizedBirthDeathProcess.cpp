@@ -315,7 +315,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         rateChangeTimes.push_back( t );
         
         // add the speciation rate at the rate-change event t
-        pos = find(birthTimes.begin(), birthTimes.end(), t) - birthTimes.begin();
+        pos = size_t( find(birthTimes.begin(), birthTimes.end(), t) - birthTimes.begin() );
         if ( pos != birthTimes.size() ) 
         {
             indexBirth = pos;
@@ -323,7 +323,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         birth.push_back( b[indexBirth+1] );
         
         // add the extinction rate at the rate-change event t
-        pos = find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin();
+        pos = size_t( find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin() );
         if ( pos != deathTimes.size() ) 
         {
             indexDeath = pos;
@@ -331,7 +331,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         death.push_back( d[indexDeath+1] );
         
         // add the fossilization rate at the rate-change event t
-        pos = find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin();
+        pos = size_t( find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin() );
         if ( pos != fossilTimes.size() ) 
         {
             indexFossil = pos;
@@ -339,7 +339,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         fossil.push_back( f[indexFossil+1] );
         
         // add the sampling probability at the rate-change event t
-        pos = find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin();
+        pos = size_t( find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin() );
         if ( pos != samplingTimes.size() ) 
         {
             sampling.push_back( s[pos+1] );

@@ -42,7 +42,7 @@ void ModelMonitor::constructInternalObject( void )
     bool                                pr      = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
     bool                                ap      = static_cast<const RlBoolean &>( append->getValue() ).getValue();
     bool                                so      = static_cast<const RlBoolean &>( stochOnly->getValue() ).getValue();
-    RevBayesCore::ModelMonitor *m = new RevBayesCore::ModelMonitor(g, fn, sep);
+    RevBayesCore::ModelMonitor *m = new RevBayesCore::ModelMonitor((unsigned long)g, fn, sep);
     
     // now set the flags
     m->setAppend( ap );

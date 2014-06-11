@@ -1,42 +1,34 @@
-//
-//  RateAgeBetaShift.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 7/4/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__RateAgeBetaShift__
-#define __rb_mlandis__RateAgeBetaShift__
+#ifndef RateAgeBetaShift_H
+#define RateAgeBetaShift_H
 
 #include <map>
 #include <ostream>
 #include <set>
 #include <string>
 
-#include "CompoundMove.h"
+#include "AbstractMove.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
 
 namespace RevBayesCore {
     
-    class RateAgeBetaShift : public CompoundMove {
+    class RateAgeBetaShift : public AbstractMove {
         
     public:
-        RateAgeBetaShift( std::vector<DagNode*> n, double delta, bool t, double weight);                                                         //!<  constructor
+        RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
         
         // Basic utility functions
         RateAgeBetaShift*               clone(void) const;                                                                  //!< Clone object
-        void                            swapNode(DagNode *oldN, DagNode *newN);
+        const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        void                            printSummary(std::ostream &o) const;                                                //!< Print the move summary
+        void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
-        const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-        double                          performCompoundMove(void);                                                            //!< Perform move
-        void                            printParameterSummary(std::ostream &o) const;
-        void                            rejectCompoundMove(void);
+        void                            performMove(void);                                                            //!< Perform move
         void                            tune(void);
         
     private:
+        void                            reject(void);
         
         // member variables
         StochasticNode<TimeTree>*       tree;
@@ -46,7 +38,9 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         TopologyNode*                   storedNode;
         double                          storedAge;
-        std::map<int,double>            storedRates;
+        std::vector<double>             storedRates;
+        
+        size_t                          numAccepted;
         
     };
     

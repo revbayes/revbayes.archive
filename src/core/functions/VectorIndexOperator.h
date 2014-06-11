@@ -31,7 +31,6 @@ namespace RevBayesCore {
         
     public:
         VectorIndexOperator(const TypedDagNode<std::vector<valueType> >* v, const TypedDagNode<int>* idx);
-        VectorIndexOperator(const VectorIndexOperator &n);                                                                          //!< Copy constructor
         virtual                                            ~VectorIndexOperator(void);                                              //!< Virtual destructor
         
         // public member functions
@@ -53,18 +52,10 @@ namespace RevBayesCore {
 
 
 template <class valueType>
-RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode<std::vector<valueType> >* v, const TypedDagNode<int> *idx) : TypedFunction<valueType>( new valueType() ), vector( v ), index( idx ) {
+RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode<std::vector<valueType> >* v, const TypedDagNode<int> *idx) : TypedFunction<valueType>( new valueType() ), index( idx ), vector( v ) {
     // add the vector parameter as a parent
     this->addParameter( vector );
     this->addParameter( index );
-    
-    update();
-}
-
-
-template <class valueType>
-RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator(const VectorIndexOperator<valueType> &n) : TypedFunction<valueType>( n ), vector( n.vector ), index( n.index ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -87,7 +78,7 @@ template <class valueType>
 void RevBayesCore::VectorIndexOperator<valueType>::update( void ) {
     
     const std::vector<valueType> &v = vector->getValue();
-    *(this->value) = v[index->getValue() - 1];
+    *(this->value) = v[size_t(index->getValue()) - 1];
 }
 
 

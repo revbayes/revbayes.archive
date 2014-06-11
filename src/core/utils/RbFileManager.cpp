@@ -381,9 +381,9 @@ bool RbFileManager::parsePathFileNames(std::string s)
     
 	/* Find the location of the last "/". This is where
      we will divide the path/file string into two. */
-	int location = (int)s.find_last_of( pathSeparator );
+	size_t location = s.find_last_of( pathSeparator );
 	
-	if ( location == -1 )
+	if ( location == std::string::npos )
     {
 		/* There is no path in this string. We 
          must have only the file name, and the
@@ -391,7 +391,7 @@ bool RbFileManager::parsePathFileNames(std::string s)
 		fileName = s;
 		filePath = "";
     }
-	else if ( location == (int)s.length() - 1 )
+	else if ( location == s.length() - 1 )
     {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. However,

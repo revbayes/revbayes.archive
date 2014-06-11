@@ -2,7 +2,6 @@
 #include "FileMonitor.h"
 #include "PowerPosteriorMcmc.h"
 #include "MoveSchedule.h"
-#include "PathSampleMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -84,7 +83,7 @@ PowerPosteriorMcmc::~PowerPosteriorMcmc(void) {
     }
 }
 
-void PowerPosteriorMcmc::burnin(int generations, int tuningInterval) {
+void PowerPosteriorMcmc::burnin(size_t generations, size_t tuningInterval) {
     
     
     std::cout << "burning in the chain ..." << std::endl;
@@ -106,14 +105,14 @@ void PowerPosteriorMcmc::burnin(int generations, int tuningInterval) {
     SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
     //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
     
-    for (int k=1; k<=generations; k++) {
+    for (size_t k=1; k<=generations; k++) {
         
         if ( k % (generations/20) == 0 ) {
             std::cout << "**";
             std::cout.flush();
         }
         
-        size_t proposals = round( schedule.getNumberMovesPerIteration() );
+        size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
         for (size_t i=0; i<proposals; i++) {
             /* Get the move */
             Move* theMove = schedule.nextMove(k);
@@ -268,7 +267,7 @@ double PowerPosteriorMcmc::pathSampling( void ) {
 }
 
 
-void PowerPosteriorMcmc::run(int gen) {
+void PowerPosteriorMcmc::run(size_t gen) {
     
     std::cerr << "Running power posterior ..." << std::endl;
     
@@ -289,9 +288,9 @@ void PowerPosteriorMcmc::run(int gen) {
         double b = beta[i];
         std::cerr << "Beta = " << b << std::endl;
 
-        for (int k=1; k<=gen; k++) {
+        for (size_t k=1; k<=gen; k++) {
         
-            size_t proposals = round( schedule.getNumberMovesPerIteration() );
+            size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
             for (size_t j=0; j<proposals; j++) {
                 /* Get the move */
                 Move* theMove = schedule.nextMove(k);

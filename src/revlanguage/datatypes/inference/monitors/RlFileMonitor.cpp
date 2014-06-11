@@ -45,7 +45,7 @@ void FileMonitor::constructInternalObject( void ) {
     bool ci = static_cast<const RlBoolean &>( chainIdx->getValue() ).getValue();
     bool ch = static_cast<const RlBoolean &>( chainHeat->getValue() ).getValue();
     
-    value = new RevBayesCore::FileMonitor(n, g, fn, sep, pp, l, pr, app, ci, ch);
+    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, ci, ch);
 }
 
 

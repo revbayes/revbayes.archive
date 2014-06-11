@@ -14,13 +14,13 @@
 
 using namespace RevBayesCore;
 
-ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double> *N, unsigned int nTaxa, 
+ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<double> *N, size_t nTaxa, 
                                                      const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( NULL ), constraints( c ), 
 Ne( N ), numTaxa( nTaxa ), taxonNames( tn ) {
     
     addParameter( Ne );
     
-    double lnFact = RbMath::lnFactorial(nTaxa);
+    double lnFact = RbMath::lnFactorial( int(nTaxa) );
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
@@ -56,7 +56,7 @@ void ConstantPopulationCoalescent::attachTimes(TimeTree *psi, std::vector<Topolo
         psi->setAge( parent->getIndex(), times[numTaxa - index - 2] );
         
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+tip_index);
+        tips.erase(tips.begin()+long(tip_index));
         
         // add a left child
         TopologyNode* leftChild = &parent->getChild(0);
@@ -92,7 +92,7 @@ void ConstantPopulationCoalescent::buildRandomBinaryTree(std::vector<TopologyNod
         TopologyNode* parent = tips.at(index);
                 
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
+        tips.erase(tips.begin()+long(index));
         
         // add a left child
         TopologyNode* leftChild = new TopologyNode(0);
@@ -210,7 +210,7 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
         TopologyNode* node = nodes.at(index);
         
         // remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
+        nodes.erase(nodes.begin()+long(index));
         
         // set name
         std::string& name = taxonNames[i];

@@ -41,7 +41,7 @@
 
 
 /** This is what turn up in terminal window */
-std::string Help::getHelp(std::string qs, int columnWidth)
+std::string Help::getHelp(std::string qs, size_t columnWidth)
 {
 
     this->loadHelpFile(qs);
@@ -253,7 +253,7 @@ std::string Help::wrapText(const std::string s, std::string padding, size_t w)
             size_t next = s.substr(i).find_first_of(" ", 1);
 
             // if next wrap point is beyond the width, then wrap line now
-            if (cc + next > ww && next != -1)
+            if (cc + next > ww && next != std::string::npos)
             {
                 wrappedText += "\n" + padding;
                 // reset char count for next line

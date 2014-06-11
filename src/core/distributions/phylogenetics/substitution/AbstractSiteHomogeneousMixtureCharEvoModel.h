@@ -548,7 +548,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     {
         // draw the state
         double u = rng->uniform01();
-        size_t rateIndex = (int)(u*numSiteRates);
+        size_t rateIndex = size_t(u*numSiteRates);
         perSiteRates.push_back( rateIndex );
     }
     

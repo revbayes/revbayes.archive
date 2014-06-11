@@ -35,7 +35,16 @@ void RateAgeBetaShift::constructInternalObject( void ) {
     bool at = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-//    value = new RevBayesCore::RateAgeBetaShift(t, d, at, w);
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const Vector<RealPos> &>( rates->getValue() ).getValueNode();
+    const std::set<const RevBayesCore::DagNode*> &p = tmpRates->getParents();
+    std::vector< RevBayesCore::StochasticNode<double> *> rates;
+    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it)
+    {
+        const RevBayesCore::StochasticNode<double> *theNode = static_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+        rates.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
+    }
+
+    //    value = new RevBayesCore::RateAgeBetaShift(t, rates, d, at, w);
 }
 
 

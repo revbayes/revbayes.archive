@@ -30,7 +30,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
-TopologyNode::TopologyNode(int indx) :
+TopologyNode::TopologyNode(size_t indx) :
     parent( NULL ),
     tree( NULL ),
     name(""), 
@@ -46,7 +46,7 @@ TopologyNode::TopologyNode(int indx) :
 
 
 /** Constructor of node with name. Give the node an optional index ID */
-TopologyNode::TopologyNode(const std::string& n, int indx) :
+TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     parent( NULL ),
     tree( NULL ),
     name(n), 
@@ -381,8 +381,10 @@ std::string TopologyNode::computePlainNewick( void ) const {
 
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const {
     
-    std::vector<std::string> myTaxa   = getTaxaStringVector();
-    std::vector<std::string> yourTaxa = c->getTaxaStringVector();
+    std::vector<std::string> myTaxa;
+    std::vector<std::string> yourTaxa;
+    getTaxaStringVector( myTaxa );
+    c->getTaxaStringVector( yourTaxa );
     
     if ( myTaxa.size() < yourTaxa.size() ) 
     {
@@ -431,7 +433,8 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const {
 bool TopologyNode::containsClade(const Clade &c, bool strict) const 
 {
     
-    std::vector<std::string> myTaxa   = getTaxaStringVector();
+    std::vector<std::string> myTaxa;
+    getTaxaStringVector( myTaxa );
     
     if ( myTaxa.size() < c.size() ) 
     {
@@ -673,21 +676,18 @@ const TopologyNode& TopologyNode::getParent(void) const {
 }
 
 
-std::vector<std::string> TopologyNode::getTaxaStringVector( void ) const {
+void TopologyNode::getTaxaStringVector( std::vector<std::string> &taxa ) const {
     
     if ( isTip() ) 
     {
-        return std::vector<std::string>(1,name);
+        taxa.push_back( name );
     }
     else 
     {
-        std::vector<std::string> taxa;
-        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ ) 
+        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ )
         {
-            std::vector<std::string> names = (*i)->getTaxaStringVector();
-            taxa.insert( taxa.begin(), names.begin(), names.end() );
+            (*i)->getTaxaStringVector( taxa );
         }
-        return taxa;
     }
 }
 
@@ -700,8 +700,10 @@ double TopologyNode::getTime( void ) const {
 
 double TopologyNode::getTmrca(const TopologyNode &n) const {
     
-    std::vector<std::string> myTaxa   = getTaxaStringVector();
-    std::vector<std::string> yourTaxa = n.getTaxaStringVector();
+    std::vector<std::string> myTaxa;
+    std::vector<std::string> yourTaxa;
+    getTaxaStringVector( myTaxa );
+    n.getTaxaStringVector( yourTaxa );
     
     if ( myTaxa.size() < yourTaxa.size() ) 
     {

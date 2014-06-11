@@ -118,7 +118,7 @@ RbLanguageObject* Container::executeMethod(std::string const &name, const std::v
             throw RbException("Index out of bounds in []");
         }
         
-        RbLanguageObject* element = getElement(index.getValue() - 1);
+        RbLanguageObject* element = getElement( size_t(index.getValue()) - 1);
         return element;
         
     } 

@@ -50,6 +50,9 @@ private:
     
 }
 
+
+#include "RbConstants.h"
+
 #include <iostream>
 
 
@@ -120,7 +123,7 @@ template <typename ptrType>
 size_t RevLanguage::RbPtr<ptrType>::countForAddress(const ptrType* qPtr) {
     
     // check if we got the NULL pointer
-    if (qPtr == 0) return -1;
+    if (qPtr == 0) return RbConstants::Size_t::nan;
     
     return qPtr->getReferenceCount();
 }

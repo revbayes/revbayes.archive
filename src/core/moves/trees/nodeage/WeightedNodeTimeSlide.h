@@ -32,7 +32,7 @@ namespace RevBayesCore {
     class WeightedNodeTimeSlide : public SimpleMove {
         
     public:
-        WeightedNodeTimeSlide( StochasticNode<TimeTree> *n, int b, double weight);                                                          //!<  constructor
+        WeightedNodeTimeSlide( StochasticNode<TimeTree> *n, size_t b, double weight);                                                          //!<  constructor
         
         // Basic utility functions
         WeightedNodeTimeSlide*          clone(void) const;                                                                  //!< Clone object

@@ -32,7 +32,7 @@ df(indf)    {
 }
 
 WishartDistribution::WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(indim->getValue())),
+TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(indim->getValue()) )),
     dim(indim),
     omega0(NULL),
     kappa(inkappa),
@@ -83,7 +83,7 @@ double WishartDistribution::computeLnProbability(void)  {
     
     double ret = 0;
     ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
-    ret += 0.5 * (getDF() - dim - 1) * getValue().getLogDet();
+    ret += 0.5 * (getDF() - long(dim) - 1) * getValue().getLogDet();
 
     double trace = 0;
  
@@ -119,7 +119,7 @@ void WishartDistribution::drawNormalSample(std::vector<double>& tmp)    {
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
-        for (int i=0; i<dim; i++)  {
+        for (size_t i=0; i<dim; i++)  {
             tmp[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(kappa->getValue()), *rng);
         }
     }

@@ -40,7 +40,7 @@ namespace RevBayesCore {
             template <class T> void		randomlySelectFromVectorWithReplacement(std::vector<T>& sourceV, std::vector<T>& destV, size_t k, RandomNumberGenerator& rng) {
             
                 destV.clear();
-                for (int i=0; i<k; i++)
+                for (size_t i=0; i<k; i++)
                     destV.push_back( sourceV[(int)(rng.uniform01()*(sourceV.size()))] );
             }
             template <class T> void		randomlySelectFromVectorWithoutReplacement(std::vector<T>& sourceV, std::vector<T>& destV, size_t k, RandomNumberGenerator& rng) {
@@ -51,7 +51,7 @@ namespace RevBayesCore {
                 std::vector<T> tmpV = sourceV;
                 size_t n = tmpV.size();
                 for (size_t i=0; i<k; i++) {
-                    int whichElement = (int)(rng.uniform01()*(n-i));
+                    size_t whichElement = (size_t)(rng.uniform01()*(n-i));
                     destV.push_back( tmpV[whichElement] );
                     tmpV[whichElement] = tmpV[n-i-1];
                 }

@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class ConstantPopulationCoalescent : public TypedDistribution<TimeTree> {
         
     public:
-        ConstantPopulationCoalescent(const TypedDagNode<double> *N, unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
+        ConstantPopulationCoalescent(const TypedDagNode<double> *N, size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
         ConstantPopulationCoalescent(const ConstantPopulationCoalescent &n);                                                                                          //!< Copy constructor
         virtual                                            ~ConstantPopulationCoalescent(void);                                                                    //!< Virtual destructor
         
@@ -51,7 +51,7 @@ namespace RevBayesCore {
         // members
         std::vector<Clade>                                  constraints;
         const TypedDagNode<double>*                         Ne;
-        unsigned int                                        numTaxa;
+        size_t                                              numTaxa;
         std::vector<std::string>                            taxonNames;
         double                                              logTreeTopologyProb;
         

@@ -36,10 +36,10 @@ namespace RevBayesCore {
         
         // public methods
         PowerPosteriorMcmc*                                 clone(void) const;
-        void                                                burnin(int g, int ti);
+        void                                                burnin(size_t g, size_t ti);
         const std::vector<double>&                          getSamples(void) const;
         double                                              pathSampling();
-        void                                                run(int g);
+        void                                                run(size_t g);
         double                                              steppingStoneSampling();
         
 //        void                                                setGenerations(size_t g);

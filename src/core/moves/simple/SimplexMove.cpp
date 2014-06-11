@@ -29,7 +29,7 @@
 
 using namespace RevBayesCore;
 
-SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, int nc, double o, bool t, double w, double k /*=0.0*/) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ), kappa( k ) {
+SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, size_t nc, double o, bool t, double w, double k /*=0.0*/) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ), kappa( k ) {
     
 }
 
@@ -61,7 +61,7 @@ double SimplexMove::performSimpleMove( void ) {
     
 	const std::vector<double>& curVal = variable->getValue();
 	std::vector<double> newVal = curVal;
-    int                 n      = int( curVal.size() );
+    size_t              n      = curVal.size();
     
 	/* We update the simplex values by proposing new values from a Dirichlet centered
      on the current values. The i-th parameter of the Dirichlet is the i-th value
@@ -89,12 +89,12 @@ double SimplexMove::performSimpleMove( void ) {
 		// we update a subset of the elements in the full simplex
 		// pick k values at random, producing a map from the index in the full vector (curVal) to
 		// the index in the reduced vector (x, alpha, and z)
-		std::vector<int> indicesToUpdate;
-		std::vector<int> tmpV;
-		for (int i=0; i<n; i++)
+		std::vector<size_t> indicesToUpdate;
+		std::vector<size_t> tmpV;
+		for (size_t i=0; i<n; i++)
 			tmpV.push_back(i);
-		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, nCategories, *rng);
-		std::map<int,int> mapper;
+		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<size_t>(tmpV, indicesToUpdate, nCategories, *rng);
+		std::map<size_t,size_t> mapper;
 		for (size_t i=0; i<indicesToUpdate.size(); i++)
 			mapper.insert( std::make_pair(indicesToUpdate[i], i) );
         
@@ -104,8 +104,8 @@ double SimplexMove::performSimpleMove( void ) {
 		std::vector<double> alphaForward(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> alphaReverse(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> z(indicesToUpdate.size()+1, 0.0);
-		for (int i=0; i<n; i++) {
-			std::map<int,int>::iterator it = mapper.find(i);
+		for (size_t i=0; i<n; i++) {
+			std::map<size_t,size_t>::iterator it = mapper.find(i);
 			if (it != mapper.end()){
 				x[it->second] += curVal[it->first];
 				kappaV[it->second] += kappa;
@@ -127,8 +127,8 @@ double SimplexMove::performSimpleMove( void ) {
 		
 		// fill in the full vector
 		double factor = z[z.size()-1] / x[x.size()-1];
-		for (int i=0; i<n; i++) {
-			std::map<int,int>::iterator it = mapper.find(i);
+		for (size_t i=0; i<n; i++) {
+			std::map<size_t,size_t>::iterator it = mapper.find(i);
 			if (it != mapper.end())
 				newVal[i] = z[it->second];
 			else 

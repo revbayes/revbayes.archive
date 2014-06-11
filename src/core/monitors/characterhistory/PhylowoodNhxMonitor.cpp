@@ -17,7 +17,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, std::vector<std::vector<double> > gc, int g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh),  geographicCoordinates(gc), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr), numSamples(0), maxGen(mg), burn(b) {
+PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, std::vector<std::vector<double> > gc, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh),  geographicCoordinates(gc), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr), numSamples(0), maxGen(mg), burn(b) {
     
     std::cout << g << " " << mg << "\n";
     
@@ -163,10 +163,10 @@ std::string PhylowoodNhxMonitor::buildExtendedNewick( TopologyNode* n ) {
 
 
 /** Monitor value at generation gen */
-void PhylowoodNhxMonitor::monitor(long gen) {
+void PhylowoodNhxMonitor::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0 && gen != maxGen) { // && gen >= burn) {
         
@@ -301,12 +301,12 @@ void PhylowoodNhxMonitor::printHeader() {
     ;
 }
 
-std::vector<unsigned int> PhylowoodNhxMonitor::getChildCharacterCounts(int idx)
+std::vector<unsigned int> PhylowoodNhxMonitor::getChildCharacterCounts(size_t idx)
 {
     return childCharacterCounts[idx];
 }
 
-std::vector<unsigned int> PhylowoodNhxMonitor::getParentCharacterCounts(int idx)
+std::vector<unsigned int> PhylowoodNhxMonitor::getParentCharacterCounts(size_t idx)
 {
     return parentCharacterCounts[idx];
 }

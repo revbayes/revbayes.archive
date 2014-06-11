@@ -49,7 +49,7 @@ RbLanguageObject* RateMatrix_JC::executeMethod(std::string const &name, const st
             throw RbException("Index out of bounds in []");
         }
         
-        const std::vector<double>& element = this->value->getValue()[index.getValue() - 1];
+        const std::vector<double>& element = this->value->getValue()[size_t(index.getValue()) - 1];
         std::vector<double> elementVector;
         for (size_t i=0; i < this->value->getValue().size(); ++i) {
             elementVector.push_back( element[i] );

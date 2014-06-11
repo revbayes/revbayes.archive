@@ -32,19 +32,19 @@ namespace RevBayesCore {
     
     public:
         // Constructors and Destructors
-        Monitor(int printgen);                                                                                      //!< Default Constructor
-        Monitor(int printgen, DagNode *n);                                                                         //!< Default Constructor
-        Monitor(int printgen, const std::set<DagNode *> &n);                                                       //!< Default Constructor
-        Monitor(int printgen, const std::vector<DagNode *> &n);                                                       //!< Default Constructor
-        Monitor(const Monitor &x);                                                                                          //!< Copy Constructor
-        virtual ~Monitor(void);                                                                                             //!< Destructor
+        Monitor(unsigned long printgen);                                                                                          //!< Default Constructor
+        Monitor(unsigned long printgen, DagNode *n);                                                                              //!< Default Constructor
+        Monitor(unsigned long printgen, const std::set<DagNode *> &n);                                                            //!< Default Constructor
+        Monitor(unsigned long printgen, const std::vector<DagNode *> &n);                                                         //!< Default Constructor
+        Monitor(const Monitor &x);                                                                                      //!< Copy Constructor
+        virtual ~Monitor(void);                                                                                         //!< Destructor
 
         // overloaded operators
         Monitor&                                    operator=(const Monitor &i);
             
         // pure virtual member functions
         virtual Monitor*                            clone(void) const = 0;
-        virtual void                                monitor(long gen) = 0;                                                  //!< InferenceMonitor at generation gen
+        virtual void                                monitor(unsigned long gen) = 0;                                     //!< InferenceMonitor at generation gen
 
         // methods you may want to overwrite
         virtual void                                swapNode(DagNode *oldN, DagNode *newN);
@@ -55,7 +55,7 @@ namespace RevBayesCore {
 
 
         // getters and setters
-        const std::vector<DagNode *>&               getDagNodes(void) const;                                                //!< Get the nodes vector
+        const std::vector<DagNode *>&               getDagNodes(void) const;                                            //!< Get the nodes vector
         void                                        setDagNodes(const std::set<DagNode *>& args);
         void                                        setDagNodes(const std::vector<DagNode *>& args);
         void                                        setMcmc(Mcmc* m);
@@ -63,7 +63,7 @@ namespace RevBayesCore {
     protected:
     
         // parameters
-        int                                         printgen;
+        unsigned long                               printgen;
         Mcmc*                                       mcmc;
         std::vector<DagNode *>                      nodes;
         const Model*                                model;
