@@ -93,8 +93,8 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 		variable->touch();
 		double newLnl = getCurrentLnProbabilityForMove();
 		double lnProbRatio = newLnl - oldLnl;
-		
-		double r = safeExponentiation(priorRatio + lnProbRatio + scalingFactor);
+				
+		double r = safeExponentiation(priorRatio + lnProbRatio + log(scalingFactor));
 		u = rng->uniform01();
 		if ( u < r ) //accept
 			variable->keep();

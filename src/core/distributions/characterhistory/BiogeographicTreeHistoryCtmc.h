@@ -38,7 +38,7 @@ namespace RevBayesCore {
     class BiogeographicTreeHistoryCtmc : public AbstractTreeHistoryCtmc<charType, treeType> {
         
     public:
-        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool fe=true, bool useClado=true);
+        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true);
         BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &n);                                                                         //!< Copy constructor
         virtual                                            ~BiogeographicTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
@@ -72,6 +72,7 @@ namespace RevBayesCore {
         void                                                setBuddingState(const TopologyNode &n, int n);
         const std::vector<int>&                             getCladogenicStates(void);
         int                                                 getCladogenicState(const TopologyNode &n);
+        void                                                setCladogenicState(const TopologyNode& n, int n);
         
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
@@ -125,7 +126,7 @@ namespace RevBayesCore {
 
 
 template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool fe, bool uc) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
+RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool forbidExt, bool useClado) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
     // initialize with default parameters
 //    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -140,14 +141,16 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     
     
     // flags specifying which model variants we use
-    cladogenicState                             = std::vector<int>(this->histories.size(), (cladogenicEvents? 1 : 0));
-    buddingState                                = std::vector<int>(this->histories.size(), 0);
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
-    cladogenicEvents                            = uc;
+    cladogenicEvents                            = useClado;
     imperfectTipData                            = false;
-    forbidExtinction                            = fe;
+    forbidExtinction                            = forbidExt;
+    
+    cladogenicState                             = std::vector<int>(this->histories.size(), (cladogenicEvents ? 1 : 0));
+    buddingState                                = std::vector<int>(this->histories.size(), 0);
+
     
     // add the parameters to the parents list
 //    this->addParameter( homogeneousClockRate );
@@ -911,6 +914,12 @@ template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setBuddingState(const TopologyNode& nd, int n)
 {
     buddingState[nd.getIndex()] = n;
+}
+
+template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicState(const TopologyNode& nd, int n)
+{
+    cladogenicState[nd.getIndex()] = n;
 }
 
 template<class charType, class treeType>

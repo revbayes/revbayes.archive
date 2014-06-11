@@ -254,11 +254,13 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
     if (showMetadata)
     {
         updateCharacterCounts(n,"child");
+        updateCharacterCounts(n,"parent");
         
         characterStream << "[";
         
         // character history
         characterStream << "&ch={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << ",&pa={" << buildCharacterHistoryString(n,"parent") << "}";
         
         // ... whatever else
         characterStream << "]";

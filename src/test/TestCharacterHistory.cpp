@@ -130,7 +130,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 100;
+    mcmcGenerations *= 10;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
     ////////////
@@ -139,7 +139,8 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(7); seed.push_back(2);
+    seed.push_back(4); seed.push_back(1);
+//    old_seed = seed;
 //    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
@@ -150,7 +151,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool useDistances = !true;
     bool useClock = !true;
     bool forbidExtinction = true;
-    bool useCladogenesis = true;
+    bool useCladogenesis = !true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
@@ -159,10 +160,10 @@ bool TestCharacterHistory::run_exp(void) {
     //fn = "vireya_sim2.nex";
 //    fn = "vireya_sim_0_1.nex";
 //    fn = "vireya_gain0_02_loss0_06_dp3.nex";
-    fn = "vireya.nex";
-//    fn = "psychotria.nex";
+//    fn = "vireya.nex";
+    fn = "psychotria.nex";
 //    fn = "vireya_gain0_01_loss0_03_dp0.nex";
-//    fn = "16tip_100areas_dp2.nex";
+//    fn = "16tip_100areas_dp0.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -176,8 +177,8 @@ bool TestCharacterHistory::run_exp(void) {
 
     // geo by epochs
     std::string afn="";
-    afn = "vireya.atlas.txt";
-//    afn = "hawaii.atlas.txt";
+//    afn = "vireya.atlas.txt";
+    afn = "hawaii.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     TimeAtlas* ta = new TimeAtlas(&tsdr);
@@ -217,7 +218,7 @@ bool TestCharacterHistory::run_exp(void) {
     }
     
     // ctmc rates
-    ConstantNode<double>* glr_pr = new ConstantNode<double>("glr_pr", new double(1.0));
+    ConstantNode<double>* glr_pr = new ConstantNode<double>("glr_pr", new double(10.0));
     std::vector<const TypedDagNode<double> *> glr;
     std::vector<StochasticNode<double>* > glr_stoch;
 	std::vector< ContinuousStochasticNode *> glr_nonConst;
@@ -250,7 +251,7 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
         
     // and the character model
-    BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters, forbidExtinction);
+    BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters, forbidExtinction, useCladogenesis);
     biogeoCtmc->setRateMap(q_likelihood);
     if (data.size() == 2 && usingAmbiguousCharacters)
         biogeoCtmc->setTipProbs( data[1] );
@@ -271,7 +272,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
     
-    GLOBAL_RNG->setSeed(old_seed);
+//    GLOBAL_RNG->setSeed(old_seed);
 //    glr_nonConst[0]->redraw();
 //    glr_nonConst[1]->redraw();
 
@@ -314,7 +315,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useCladogenesis)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, numNodes*2));
         
     }
     else
@@ -512,7 +513,7 @@ bool TestCharacterHistory::run_dollo(void) {
 
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("ctmc", biogeoCtmc );
     
-//    GLOBAL_RNG->setSeed(old_seed);
+    GLOBAL_RNG->setSeed(old_seed);
 //    gainLossRates_nonConst[0]->redraw();
 //    gainLossRates_nonConst[1]->redraw();
 
