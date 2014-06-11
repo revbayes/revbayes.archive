@@ -148,7 +148,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     bool usingAmbiguousCharacters = !true;
     bool simulate = false;
-    bool useDistances = !true;
+    bool useDistances = true;
     bool useClock = !true;
     bool forbidExtinction = true;
     bool useCladogenesis = !true;
@@ -442,8 +442,9 @@ bool TestCharacterHistory::run_dollo(void) {
     ////////////
     bool simulate = false;
     bool useClock = !true;
-    bool forbidExtinction = true;
+    bool forbidExtinction = !true;
     bool usingAmbiguousCharacters = true;
+    bool useCladogenesis = false;
     filepath="/Users/mlandis/data/ngene/";
     
     // binary characters
@@ -482,6 +483,8 @@ bool TestCharacterHistory::run_dollo(void) {
     ConstantNode<double>* gainRatePrior = new ConstantNode<double>("glr_pr", new double(4.0));
     std::vector<const TypedDagNode<double> *> gainLossRates;
 	std::vector< ContinuousStochasticNode *> gainLossRates_nonConst;
+    std::vector<StochasticNode<double>* > glr_stoch;
+
 	for( size_t i=0; i<2; i++){
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
@@ -489,6 +492,7 @@ bool TestCharacterHistory::run_dollo(void) {
         tmp_glr->setValue(new double(0.1));
 		gainLossRates.push_back( tmp_glr );
 		gainLossRates_nonConst.push_back( tmp_glr );
+        glr_stoch.push_back(tmp_glr);
 	}
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( gainLossRates ) );
     
@@ -505,7 +509,7 @@ bool TestCharacterHistory::run_dollo(void) {
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_s", brmf_sample);
     
     // and the character model
-    BiogeographicTreeHistoryCtmc<StandardState, BranchLengthTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, BranchLengthTree>(tau, 2, numAreas, usingAmbiguousCharacters,forbidExtinction);
+    BiogeographicTreeHistoryCtmc<StandardState, BranchLengthTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, BranchLengthTree>(tau, 2, numAreas, usingAmbiguousCharacters, forbidExtinction, useCladogenesis);
     biogeoCtmc->setRateMap(q_likelihood);
     
     if (data.size() == 2 && usingAmbiguousCharacters)
@@ -545,6 +549,9 @@ bool TestCharacterHistory::run_dollo(void) {
         moves.push_back( new ScaleMove(clockRate, 0.1, true, 5) );
     }
     
+    
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
         moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.5, false, 5) );

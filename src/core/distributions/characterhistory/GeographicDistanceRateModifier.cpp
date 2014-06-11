@@ -273,6 +273,11 @@ unsigned GeographicDistanceRateModifier::getEpochIndex(double age)
     return index;
 }
 
+const std::vector<double>& GeographicDistanceRateModifier::getEpochs(void) const
+{
+    return epochs;
+}
+
 double GeographicDistanceRateModifier::computePairwiseDistances(int i, int j, int k)
 {
     double d = 0.0;

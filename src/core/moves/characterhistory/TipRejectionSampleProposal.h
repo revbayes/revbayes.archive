@@ -334,8 +334,8 @@ double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipCh
             unsigned int ancS = nodeParentState[*it]->getState();
             
             double u = GLOBAL_RNG->uniform01();
-            double g0 = nodeTpMatrix[ancS][0] * (1.0 - tipProbs[*it]);
-            double g1 = nodeTpMatrix[ancS][1] * tipProbs[*it];
+            double g0 = nodeTpMatrix[ancS][0]; // * (1.0 - tipProbs[*it]);
+            double g1 = nodeTpMatrix[ancS][1]; // * tipProbs[*it];
             
             unsigned int s = 0;
             if (u < g1 / (g0 + g1))
