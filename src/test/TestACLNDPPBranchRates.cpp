@@ -103,6 +103,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
+
+    DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	
 	
 	// ############################################################
@@ -131,14 +133,17 @@ bool TestACLNDPPBranchRates::run( void ) {
 	StochasticNode<double> *rootRate = new StochasticNode<double>("root.rate", new GammaDistribution(a, b));
 	size_t rootID = trees[0]->getRoot().getIndex();
 
-	StochasticNode< std::vector< double > > *nodeRates = new StochasticNode< std::vector< double > >( "NodeRates", new AutocorrelatedLognormalRateBranchwiseVarDistribution(tau, nodeNus, rootRate) );
+	ConstantNode<double> *crInv  = new ConstantNode<double>("invCr", new double(1.0) );
+	DeterministicNode<double> *scaleRate = new DeterministicNode<double>("scaleRate", new BinaryDivision<double, double, double>(crInv, treeHeight));
+
+	StochasticNode< std::vector< double > > *nodeRates = new StochasticNode< std::vector< double > >( "NodeRates", new AutocorrelatedLognormalRateBranchwiseVarDistribution(tau, nodeNus, rootRate, scaleRate) );
 	std::cout << nodeRates->getValue().size() << std::endl;
 	
 	std::vector<const TypedDagNode<double> *> branchRates;
 	for( size_t i=0; i<numBranches; i++){
 		std::ostringstream brName;
         brName << "br(" << i << ")";
-		DeterministicNode<double> *tmpBrRt = new DeterministicNode<double>(brName.str(), new RateOnBranchAve(nodeRates, tau, i));
+		DeterministicNode<double> *tmpBrRt = new DeterministicNode<double>(brName.str(), new RateOnBranchAve(nodeRates, tau, scaleRate, i));
 		branchRates.push_back( tmpBrRt );
 	}
     DeterministicNode< std::vector< double > >* brVector = new DeterministicNode< std::vector< double > >( "branchRates", new VectorFunction< double >( branchRates ) );
@@ -191,10 +196,10 @@ bool TestACLNDPPBranchRates::run( void ) {
 	//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 	moves.push_back( new RootTimeSlide( tau, 0.3, true, 10.0 ) );
 	moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
-	moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
-	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
-	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
-	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 1.0 ) );
+	moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 0.5 ) );
+	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 0.5 ) ); 
+	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 0.5 ) );
+	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 0.5 ) );
 	moves.push_back( new ScaleMove(rootRate, 0.5, false, 3.0) );
 	moves.push_back( new ScaleMove(rootRate, 1.0, false, 3.0) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
@@ -204,7 +209,6 @@ bool TestACLNDPPBranchRates::run( void ) {
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( nodeNus, 4, 2.0 ) );
 	
     // add some tree stats to monitor
-    DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	DeterministicNode<double> *meanNdRate = new DeterministicNode<double>("MeanNodeRate", new MeanVecContinuousValStatistic(nodeRates) );
 	
     /* add the monitors */
@@ -214,6 +218,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	monitoredNodes.push_back( treeHeight );
 	monitoredNodes.push_back( nodeRates );
 	monitoredNodes.push_back( rootRate );
+	monitoredNodes.push_back( scaleRate );
 	monitoredNodes.push_back( numCats );
 	monitoredNodes.push_back( nodeNus );
 	monitoredNodes.push_back( cp );
@@ -227,19 +232,19 @@ bool TestACLNDPPBranchRates::run( void ) {
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( brVector );
 	
-	std::string logFN = "clock_test/test_rb_ACLNDPP_6June_pr.log";
+	std::string logFN = "clock_test/test_rb_ACLNDPP_6June_pr2.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 	
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 	
-	std::string treFN = "clock_test/test_rb_ACLNDPP_6June_pr.tre";
-	monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
+//	std::string treFN = "clock_test/test_rb_ACLNDPP_6June_pr.tre";
+//	monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
     
-	mcmcGenerations = 100000;
+	mcmcGenerations = 1000;
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
