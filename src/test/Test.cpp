@@ -98,7 +98,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A DPP relaxed model test */
     try {
 		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
-        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
 //		testDPPRC.run();
     } catch (RbException &e) {
@@ -109,7 +109,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         TestStrictClockModel testGMC = TestStrictClockModel("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
-		//		testGMC.run();
+//		testGMC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -118,16 +118,16 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         TestIndependentClockRates testIRMC = TestIndependentClockRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
-		//		testIRMC.run();
+//		testIRMC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
     
 	/* An autocorrelated rate model test */
     try {
-        TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
+        TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
-//		testACLNG.run();
+		testACLNG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -135,7 +135,7 @@ bool Test::performTests(int argc, const char * argv[]) {
 
 	/* An autocorrelated rate model test with dpp on node-wise nu */
     try {
-        TestACLNDPPBranchRates testACLNDPP = TestACLNDPPBranchRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_rel_clk.tre", 100000);
+        TestACLNDPPBranchRates testACLNDPP = TestACLNDPPBranchRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
 //		testACLNDPP.run();
     } catch (RbException &e) {

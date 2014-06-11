@@ -29,8 +29,9 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr);
-        AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n);
+		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr);
+		AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv);
+		AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n);
         
         // public member functions
         AutocorrelatedLognormalRateBranchwiseVarDistribution*                clone(void) const;                                                                      //!< Create an independent clone
@@ -53,8 +54,9 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< std::vector< double > >*           sigma;
+        const TypedDagNode< std::vector< double > >*			sigma;
         const TypedDagNode< double >*                           rootRate;
+        const TypedDagNode< double >*                           scaleValue;
         
     };
     
