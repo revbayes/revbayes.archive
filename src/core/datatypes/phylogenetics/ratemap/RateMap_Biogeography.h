@@ -66,6 +66,7 @@ namespace RevBayesCore {
         std::vector<double>                         homogeneousGainLossRates;
         std::vector<std::vector<double> >           heterogeneousGainLossRates;
         double                                      distancePower;
+        std::vector<double>                         epochs;
 
         
         // come up with some way to handle epoch age vectors...

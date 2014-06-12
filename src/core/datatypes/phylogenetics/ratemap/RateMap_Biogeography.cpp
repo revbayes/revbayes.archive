@@ -20,6 +20,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     forbidExtinction = fe;
     geographicDistanceRateModifier = NULL;
     distancePower = 0.0;
+    epochs = std::vector<double>(1,0.0);
     
     branchOffset=1;
     epochOffset=1;
@@ -33,6 +34,7 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     homogeneousGainLossRates = m.homogeneousGainLossRates;
     heterogeneousGainLossRates = m.heterogeneousGainLossRates;
     distancePower = m.distancePower;
+    epochs = m.epochs;
     
     geographicDistanceRateModifier = m.geographicDistanceRateModifier;
     useGeographicDistanceRateModifier = m.useGeographicDistanceRateModifier;
@@ -61,6 +63,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         homogeneousGainLossRates = r.homogeneousGainLossRates;
         heterogeneousGainLossRates = r.heterogeneousGainLossRates;
         distancePower = r.distancePower;
+        epochs = r.epochs;
         
         geographicDistanceRateModifier = r.geographicDistanceRateModifier;
         useGeographicDistanceRateModifier = r.useGeographicDistanceRateModifier;
@@ -310,6 +313,7 @@ void RateMap_Biogeography::setGeographicDistanceRateModifier(const GeographicDis
     
     // ugly hack, prob better way to handle constness...
     geographicDistanceRateModifier = &const_cast<GeographicDistanceRateModifier&>(gdrm);
+    epochs = geographicDistanceRateModifier->getEpochs();
 }
 
 void RateMap_Biogeography::setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm)
@@ -326,7 +330,7 @@ const GeographicDistanceRateModifier& RateMap_Biogeography::getGeographicDistanc
 
 const std::vector<double>& RateMap_Biogeography::getEpochs(void) const
 {
-    return geographicDistanceRateModifier->getEpochs();
+    return epochs; // geographicDistanceRateModifier->getEpochs();
 }
 
 size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
