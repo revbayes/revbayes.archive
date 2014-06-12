@@ -141,7 +141,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> seed;
     seed.push_back(6); seed.push_back(1);
 //    old_seed = seed;
-//    GLOBAL_RNG->setSeed(seed);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -156,10 +156,6 @@ bool TestCharacterHistory::run_exp(void) {
     
     // binary characters
     std::string fn = "";
-    //fn = "vireya_sim.nex";
-    //fn = "vireya_sim2.nex";
-//    fn = "vireya_sim_0_1.nex";
-//    fn = "vireya_gain0_02_loss0_06_dp3.nex";
 //    fn = "vireya.nex";
     fn = "psychotria.nex";
 //    fn = "vireya_gain0_01_loss0_03_dp0.nex";
@@ -178,7 +174,8 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "vireya.atlas.txt";
-    afn = "hawaii.atlas.txt";
+//    afn = "hawaii.atlas.txt";
+    afn = "hawaii_complex.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     TimeAtlas* ta = new TimeAtlas(&tsdr);
