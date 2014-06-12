@@ -16,8 +16,15 @@ RateAgeBetaShift::RateAgeBetaShift(StochasticNode<TimeTree> *tr, std::vector<Sto
     storedNode( NULL ),
     storedAge( 0.0 ),
     storedRates( 0.0, rates.size() ),
+    nodes(),
     numAccepted( 0 )
 {
+    
+    nodes.insert( tree );
+    for (std::vector<StochasticNode<double>* >::iterator it = rates.begin(); it != rates.end(); ++it)
+    {
+        nodes.insert( *it );
+    }
     
 }
 
@@ -41,7 +48,7 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const {
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( void )
+void RateAgeBetaShift::performMove( double heat )
 {
     
     // clear rates map

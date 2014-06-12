@@ -1,7 +1,7 @@
 #ifndef AbstractMove_H
 #define AbstractMove_H
 
-#include "Cloneable.h"
+#include "MoveInterface.h"
 
 #include <ostream>
 #include <set>
@@ -22,13 +22,14 @@ namespace RevBayesCore {
      * @since 2014-03-26, version 1.0
      *
      */
-    class AbstractMove : public Cloneable {
+    class AbstractMove : public MoveInterface {
         
     public:
         virtual                                                ~AbstractMove(void);                                                                     //!< Destructor
         
         // pure virtual public methods
         virtual AbstractMove*                                   clone(void) const = 0;
+        virtual const std::set<DagNode*>&                       getDagNodes(void) const = 0;                                                            //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                                                            //!< Get the name of the move for summary printing
         virtual void                                            printSummary(std::ostream &o) const = 0;                                                //!< Print the move summary
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;                                             //!< Swap the pointers to the variable on which the move works on.
@@ -36,14 +37,14 @@ namespace RevBayesCore {
         // functions you should not override
         void                                                    autoTune(void);                                                                         //!< Automatic tuning of the move.
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
-        void                                                    perform(void);                                                                          //!< Perform the move.
+        void                                                    perform(double heat);                                                                   //!< Perform the move.
         
     protected:
         AbstractMove(double w, bool autoTune = false);                                                                                                  //!< Constructor
         
         
         // pure virtual public methods
-        virtual void                                            performMove(void) = 0;                                                                  //!< Perform the move.
+        virtual void                                            performMove(double heat) = 0;                                                           //!< Perform the move.
         virtual void                                            tune(void) = 0;                                                                         //!< Specific tuning of the move
         
         

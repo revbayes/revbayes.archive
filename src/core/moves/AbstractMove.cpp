@@ -61,13 +61,13 @@ double AbstractMove::getUpdateWeight( void ) const
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::perform( void )
+void AbstractMove::perform( double heat )
 {
     // increment the tries counter
     numTried++;
     
     // delegate to derived class
-    performMove();
+    performMove(heat);
     
 }
 

@@ -30,19 +30,20 @@ namespace RevBayesCore {
         
         // pure virtual public methods
         virtual MetropolisHastingsMove*                         clone(void) const;
+        const std::set<DagNode*>&                               getDagNodes(void) const;                                                                //!< Get the nodes vector
         const std::string&                                      getMoveName(void) const;                                                                //!< Get the name of the move for summary printing
         void                                                    printSummary(std::ostream &o) const;                                                    //!< Print the move summary
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
         void                                                    tune(void);                                                                             //!< Specific tuning of the move
         
         // functions you should not override
-        void                                                    performMove(void);                                                                      //!< Perform the move.
+        void                                                    performMove(double heat);                                                               //!< Perform the move.
         
     private:
         
         // parameters
         std::set<DagNode*>                                      affectedNodes;                                                                          //!< The affected nodes by this move.
-        std::vector<DagNode*>                                   nodes;                                                                                  //!< The vector of nodes this move is working on
+        std::set<DagNode*>                                      nodes;                                                                                  //!< The set of nodes this move is working on
         unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
         Proposal*                                               proposal;                                                                               //!< The proposal distribution
     };
