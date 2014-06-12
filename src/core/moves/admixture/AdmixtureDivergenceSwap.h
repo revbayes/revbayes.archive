@@ -14,7 +14,7 @@
 #include <set>
 #include <string>
 
-#include "Move.h"
+#include "MoveOld.h"
 #include "ConstantNode.h"
 #include "ContinuousStochasticNode.h"
 #include "DeterministicNode.h"
@@ -24,7 +24,7 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureDivergenceSwap : public Move {
+    class AdmixtureDivergenceSwap : public MoveOld {
         
     public:
         AdmixtureDivergenceSwap( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double weight);                                                          //!<  constructor

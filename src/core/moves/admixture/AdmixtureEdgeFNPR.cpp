@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeFNPR::AdmixtureEdgeFNPR(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, int ag, bool asa, double l, double w) : Move( v, w), variable( v ), branchRates(br), lambda(l), changed(false), failed(false), allowSisterAdmixture(asa), activeGen(ag) {
+AdmixtureEdgeFNPR::AdmixtureEdgeFNPR(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, int ag, bool asa, double l, double w) : MoveOld( v, w), variable( v ), branchRates(br), lambda(l), changed(false), failed(false), allowSisterAdmixture(asa), activeGen(ag) {
     
     for (size_t i = 0; i < branchRates.size(); i++)
         nodes.insert(branchRates[i]);
@@ -252,7 +252,7 @@ void AdmixtureEdgeFNPR::acceptSimpleMove(void) {
 
 void AdmixtureEdgeFNPR::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (variable == oldN)
         variable = static_cast<StochasticNode<AdmixtureTree>* >(newN) ;

@@ -13,7 +13,7 @@
 #include <set>
 #include <string>
 
-#include "Move.h"
+#include "MoveOld.h"
 #include "ConstantNode.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
@@ -21,7 +21,7 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeAdd : public Move {
+    class AdmixtureEdgeAdd : public MoveOld {
         
     public:
         AdmixtureEdgeAdd( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, ConstantNode<int>* dt, double weight);                                            //!<  constructor

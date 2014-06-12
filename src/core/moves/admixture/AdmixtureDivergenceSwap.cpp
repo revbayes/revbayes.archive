@@ -20,7 +20,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureDivergenceSwap::AdmixtureDivergenceSwap(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : Move( v, w), variable( v ), rate(r), residuals(res), branchRates(br), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa), activeGen(ag) {
+AdmixtureDivergenceSwap::AdmixtureDivergenceSwap(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), residuals(res), branchRates(br), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa), activeGen(ag) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -316,7 +316,7 @@ void AdmixtureDivergenceSwap::acceptSimpleMove(void)
 
 void AdmixtureDivergenceSwap::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

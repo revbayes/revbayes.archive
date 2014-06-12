@@ -9,7 +9,7 @@
 
 using namespace RevBayesCore;
 
-SimpleMove::SimpleMove(DagNode *n, double w, bool t) : Move( n, w, t ), theNode( n ) {
+SimpleMove::SimpleMove(DagNode *n, double w, bool t) : MoveOld( n, w, t ), theNode( n ) {
     
     changed = false;
 
@@ -86,7 +86,7 @@ void SimpleMove::rejectMove( void ) {
 
 void SimpleMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     theNode = newN;
     

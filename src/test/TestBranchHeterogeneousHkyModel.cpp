@@ -214,12 +214,11 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
 	moves.push_back( new ScaleMove(alpha, 1.0, true, 2.0) );
     moves.push_back( new ScaleMove(expectLN, 1.0, true, 2.0) );
     moves.push_back( new ScaleMove(sigLN, 1.0, true, 2.0) );
-	std::vector<DagNode*> treeAndRates;
-	treeAndRates.push_back( tau );
+	std::vector<StochasticNode<double> * > rates;
 	for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
-		treeAndRates.push_back( branchRates_nonConst[i] );
+		rates.push_back( branchRates_nonConst[i] );
 	}
-	moves.push_back( new RateAgeBetaShift( treeAndRates, 1.0, true, 10.0) );                                                         //!<  constructor
+	moves.push_back( new RateAgeBetaShift( tau, rates, 1.0, true, 10.0) );                                                         //!<  constructor
 
 	
 	

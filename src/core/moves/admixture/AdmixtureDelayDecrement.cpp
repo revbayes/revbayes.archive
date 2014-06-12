@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureDelayDecrement::AdmixtureDelayDecrement( ConstantNode<int>* dt, double w ) : Move(dt, w), delayTimer(dt)
+AdmixtureDelayDecrement::AdmixtureDelayDecrement( ConstantNode<int>* dt, double w ) : MoveOld(dt, w), delayTimer(dt)
 {
     //nodes.insert(delayTimer);
 }

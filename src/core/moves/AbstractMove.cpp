@@ -45,6 +45,18 @@ void AbstractMove::autoTune( void )
     
 }
 
+
+/**
+ * Is the move active at the given generation?
+ * The move itself will determine if it was switched off before or after
+ * some given iteration.
+ */
+bool AbstractMove::isActive(unsigned long gen) const
+{
+    return true;
+}
+
+
 /**
  * Get the update weight of how often the move should be used.
  *
@@ -61,15 +73,43 @@ double AbstractMove::getUpdateWeight( void ) const
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::perform( double heat )
+void AbstractMove::perform( double heat, bool raiseLikelihoodOnly )
 {
     // increment the tries counter
     numTried++;
     
     // delegate to derived class
-    performMove(heat);
+    performMove(heat,raiseLikelihoodOnly);
     
 }
+
+
+
+/**
+ * Reset the counters. Here we reset the counters stored in the base class
+ * and delegate the call to the potentially overwritten method from the 
+ * derived classes.
+ *
+ */
+void AbstractMove::resetCounters( void )
+{
+    numTried = 0;
+    
+    // delegate call
+    resetMoveCounters();
+}
+
+/**
+ * Reset the move counters. This method is only a hook for derived classes 
+ * and here we provide only a dummy implementation.
+ *
+ */
+void AbstractMove::resetMoveCounters( void )
+{
+    // dummy implementation
+}
+
+
 
 
 

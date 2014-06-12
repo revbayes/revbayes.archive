@@ -27,7 +27,7 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
 {
     nodes = proposal->getNodes();
     
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->getAffectedNodes( affectedNodes );
     }
@@ -82,7 +82,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( double heat )
+void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -92,7 +92,7 @@ void MetropolisHastingsMove::performMove( double heat )
     
     // first we touch all the nodes
     // that will set the flags for recomputation
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->touch();
     }
@@ -218,8 +218,15 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o.precision(previousPrecision);
     
     
+}
 
-    
+/**
+ * Reset the move counters. Here we only reset the counter for the number of accepted moves.
+ *
+ */
+void MetropolisHastingsMove::resetMoveCounters( void )
+{
+    numAccepted = 0;
 }
 
 
@@ -232,17 +239,18 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
 void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN) 
 {
     
-    for (size_t i = 0; i < nodes.size(); ++i) 
+    // find the old node
+    std::set<DagNode*>::iterator pos = nodes.find( oldN );
+    // remove it from the set if it was contained
+    if ( pos != nodes.end() )
     {
-        // replace the node if it is thise one
-        if ( nodes[i] == oldN) 
-        {
-            nodes[i] = newN;
-        }
+        nodes.erase( pos );
     }
-    
+    // insert the new node
+    nodes.insert( newN );
+        
     affectedNodes.clear();
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->getAffectedNodes( affectedNodes );
     }

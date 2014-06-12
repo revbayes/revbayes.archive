@@ -26,7 +26,7 @@ AbstractOldMove::~AbstractOldMove() {
 }
 
 
-void AbstractOldMove::perform( double heat ) {
+void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
     
     if ( isGibbs() )
     {
@@ -52,7 +52,6 @@ void AbstractOldMove::perform( double heat ) {
         }
         else if (lnR < -300.0)
         {
-            ;
             reject();
         }
         else

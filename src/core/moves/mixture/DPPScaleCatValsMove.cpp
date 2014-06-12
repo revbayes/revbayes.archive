@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-RevBayesCore::DPPScaleCatValsMove::DPPScaleCatValsMove(StochasticNode<std::vector<double> > *v, double l, double w) : Move( v, w, false ), variable( v ) {
+RevBayesCore::DPPScaleCatValsMove::DPPScaleCatValsMove(StochasticNode<std::vector<double> > *v, double l, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	// set isGibbs to true
 	lambda = l;
@@ -115,7 +115,7 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 
 void RevBayesCore::DPPScaleCatValsMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
 }

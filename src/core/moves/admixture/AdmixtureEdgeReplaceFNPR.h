@@ -18,7 +18,7 @@
 
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "AdmixtureNode.h"
 #include "AdmixtureTree.h"
@@ -26,7 +26,7 @@
 
 namespace RevBayesCore {
 
-    class AdmixtureEdgeReplaceFNPR : public Move {
+    class AdmixtureEdgeReplaceFNPR : public MoveOld {
         
     public:
         AdmixtureEdgeReplaceFNPR( StochasticNode<AdmixtureTree> *n, DeterministicNode<std::vector<double> >* res, double delta, int ag, int me, bool asa, double weight);                                            //!<  constructor

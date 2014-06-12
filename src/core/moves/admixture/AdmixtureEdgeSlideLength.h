@@ -16,7 +16,7 @@
 
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "AdmixtureNode.h"
 #include "AdmixtureTree.h"
@@ -24,7 +24,7 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeSlideLength : public Move {
+    class AdmixtureEdgeSlideLength : public MoveOld {
         
     public:
         AdmixtureEdgeSlideLength( StochasticNode<AdmixtureTree> *n, double weight, unsigned long activeGen, double delta);                                            //!<  constructor
