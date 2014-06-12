@@ -60,7 +60,7 @@ namespace RevBayesCore {
         void                            cleanProposal(void);
         double                          computeProposal(const std::set<size_t>& indexSet);
         double                          doProposal(void);                                                                   //!< Perform proposal
-        const std::vector<DagNode*>&    getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
+        const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            prepareProposal(void);                                                              //!< Prepare the proposal
@@ -76,7 +76,7 @@ namespace RevBayesCore {
         StochasticNode<AbstractCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
-        std::vector<DagNode*>                   nodes;
+        std::set<DagNode*>                      nodes;
         
         // dimensions
         size_t                                  numNodes;
@@ -153,9 +153,9 @@ sampleSiteIndexSet(true)
     proposedBudNode = NULL;
     swapBudTrunk = false;
     
-    nodes.push_back(ctmc);
-    nodes.push_back(tau);
-    nodes.push_back(qmap);
+    nodes.insert(ctmc);
+    nodes.insert(tau);
+    nodes.insert(qmap);
     
     nodeProposal  = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
     leftProposal  = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
@@ -268,7 +268,7 @@ const std::string& RevBayesCore::NodeCladogenesisRejectionSampleProposal<charTyp
  * \return  Const reference to a vector of nodes pointer on which the proposal operates.
  */
 template<class charType, class treeType>
-const std::vector<RevBayesCore::DagNode*>& RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::getNodes( void ) const
+const std::set<RevBayesCore::DagNode*>& RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::getNodes( void ) const
 {
     
     return nodes;

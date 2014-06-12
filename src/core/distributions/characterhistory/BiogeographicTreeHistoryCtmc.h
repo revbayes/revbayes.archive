@@ -68,11 +68,11 @@ namespace RevBayesCore {
         
         // cladogenic state information
         const std::vector<int>&                             getBuddingStates(void);
-        int                                                 getBuddingState(const TopologyNode &n);
-        void                                                setBuddingState(const TopologyNode &n, int n);
+        int                                                 getBuddingState(const TopologyNode &tn);
+        void                                                setBuddingState(const TopologyNode &tn, int n);
         const std::vector<int>&                             getCladogenicStates(void);
         int                                                 getCladogenicState(const TopologyNode &n);
-        void                                                setCladogenicState(const TopologyNode& n, int n);
+        void                                                setCladogenicState(const TopologyNode& tn, int n);
         
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
@@ -345,6 +345,10 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
     if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
     {
         return rootFrequencies->getValue();
+    }
+    else
+    {
+        throw RbException("BUG: Reached end of a non-void function in BiogeographicTreeHistoryCtmc.");
     }
     
 }
