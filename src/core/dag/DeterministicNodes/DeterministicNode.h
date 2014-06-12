@@ -70,7 +70,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
     // get the parameters from the function and add them as my parents in the DAG
     const std::set<const DagNode*> funcParents = function->getParameters();
     
-    for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it) {
+    for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
+    {
         this->addParent( *it );
     }
     

@@ -31,8 +31,25 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
     {
         (*it)->getAffectedNodes( affectedNodes );
     }
+    
 }
 
+
+/**
+ * Copy constructor.
+ * We need to create a deep copy of the proposal here.
+ *
+ * \param[in]   m   The object to copy.
+ *
+ */
+MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
+    affectedNodes( m.affectedNodes ),
+    nodes( m.nodes ),
+    numAccepted( m.numAccepted ),
+    proposal( m.proposal->clone() )
+{
+    
+}
 
 
 /**
@@ -41,6 +58,28 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
 MetropolisHastingsMove::~MetropolisHastingsMove( void )
 {
     delete proposal;
+}
+
+
+/** 
+ * Overloaded assignment operator.
+ * We need a deep copy of the operator.
+ */
+MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::MetropolisHastingsMove &m)
+{
+    
+    if ( this != &m )
+    {
+        // free memory
+        delete proposal;
+        
+        affectedNodes = m.affectedNodes;
+        nodes = m.nodes;
+        numAccepted = m.numAccepted;
+        proposal = m.proposal->clone();
+    }
+    
+    return *this;
 }
 
 

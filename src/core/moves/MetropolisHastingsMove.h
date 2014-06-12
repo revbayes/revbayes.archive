@@ -26,7 +26,11 @@ namespace RevBayesCore {
         
     public:
         MetropolisHastingsMove(Proposal *p, double w, bool autoTune = false);                                                                           //!< Constructor
+        MetropolisHastingsMove(const MetropolisHastingsMove &m);                                                                                        //!< Copy constructor
         virtual                                                ~MetropolisHastingsMove(void);                                                           //!< Destructor
+
+        // overloaded operators
+        MetropolisHastingsMove&                                 operator=(const MetropolisHastingsMove &m);                                             //!< Assignment operator
         
         // pure virtual public methods
         virtual MetropolisHastingsMove*                         clone(void) const;
