@@ -20,7 +20,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeAddCladeResiduals::AdmixtureEdgeAddCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), allowSisterAdmixture(asa), maxEvents(me),  numNodes(0) {
+AdmixtureEdgeAddCladeResiduals::AdmixtureEdgeAddCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), allowSisterAdmixture(asa), maxEvents(me),  numNodes(0) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -399,7 +399,7 @@ void AdmixtureEdgeAddCladeResiduals::acceptSimpleMove(void)
 
 void AdmixtureEdgeAddCladeResiduals::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

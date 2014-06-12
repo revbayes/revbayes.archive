@@ -1,7 +1,7 @@
 #ifndef AbstractMove_H
 #define AbstractMove_H
 
-#include "MoveInterface.h"
+#include "Move.h"
 
 #include <ostream>
 #include <set>
@@ -22,7 +22,7 @@ namespace RevBayesCore {
      * @since 2014-03-26, version 1.0
      *
      */
-    class AbstractMove : public MoveInterface {
+    class AbstractMove : public Move {
         
     public:
         virtual                                                ~AbstractMove(void);                                                                     //!< Destructor
@@ -37,16 +37,20 @@ namespace RevBayesCore {
         // functions you should not override
         void                                                    autoTune(void);                                                                         //!< Automatic tuning of the move.
         double                                                  getUpdateWeight(void) const;                                                            //!< Get update weight of InferenceMove
-        void                                                    perform(double heat);                                                                   //!< Perform the move.
+        bool                                                    isActive(unsigned long gen) const;                                                      //!< Is the move active at the generation 'gen'?
+        void                                                    perform(double heat, bool raiseLikelihoodOnly);                                         //!< Perform the move.
+        void                                                    resetCounters(void);                                                                    //!< Reset the counters such as numTried.
         
     protected:
         AbstractMove(double w, bool autoTune = false);                                                                                                  //!< Constructor
         
         
-        // pure virtual public methods
-        virtual void                                            performMove(double heat) = 0;                                                           //!< Perform the move.
+        // pure virtual protected methods
+        virtual void                                            performMove(double heat, bool raiseLikelihoodOnly) = 0;                                 //!< Perform the move.
         virtual void                                            tune(void) = 0;                                                                         //!< Specific tuning of the move
         
+        // virtual methods
+        virtual void                                            resetMoveCounters(void);                                                                //!< Reset the counters such as numTried and numAccepted.
         
         // parameters
         double                                                  weight;

@@ -36,8 +36,10 @@ namespace RevBayesCore {
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
         void                                                    tune(void);                                                                             //!< Specific tuning of the move
         
-        // functions you should not override
-        void                                                    performMove(double heat);                                                               //!< Perform the move.
+    protected:
+        //protected methods that are overwritten from the base class
+        void                                                    performMove(double heat, bool raiseLikelihoodOnly);                                     //!< Perform the move.
+        void                                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
         
     private:
         

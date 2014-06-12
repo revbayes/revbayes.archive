@@ -1,7 +1,7 @@
 #ifndef AbstractOldMove_H
 #define AbstractOldMove_H
 
-#include "MoveInterface.h"
+#include "Move.h"
 
 namespace RevBayesCore {
     
@@ -18,13 +18,13 @@ namespace RevBayesCore {
      * @since 2014-03-26, version 1.0
      *
      */
-    class AbstractOldMove : public MoveInterface {
+    class AbstractOldMove : public Move {
         
     public:
         virtual                                                ~AbstractOldMove(void);                                                                     //!< Destructor
         
         // pure virtual public methods
-        void                                                    perform(double heat);                                                                          //!< Perform the move.
+        void                                                    perform(double heat, bool raiseLikelihoodOnly);                                                                          //!< Perform the move.
         
         virtual void                                            accept(void) = 0;
         virtual void                                            autoTune(void) = 0;                                                                         //!< Automatic tuning of the move.

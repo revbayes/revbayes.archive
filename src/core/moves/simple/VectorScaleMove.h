@@ -1,7 +1,7 @@
 #ifndef VectorScaleMove_H
 #define VectorScaleMove_H
 
-#include "SimpleMove.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 
 #include <ostream>
@@ -27,7 +27,7 @@ namespace RevBayesCore {
      * @copyright GPL version 3
      *
      */
-    class VectorScaleMove : public Move {
+    class VectorScaleMove : public MoveOld {
         
     public:
         VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w);                                  //!< Constructor

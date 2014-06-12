@@ -16,13 +16,13 @@
 #include <vector>
 
 #include "ContinuousStochasticNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeSlide : public Move {
+    class AdmixtureEdgeSlide : public MoveOld {
         
     public:
         AdmixtureEdgeSlide( StochasticNode<AdmixtureTree> *n, std::vector<ContinuousStochasticNode*> br, int ag, bool asa, double l, double weight);                                               //!<  constructor

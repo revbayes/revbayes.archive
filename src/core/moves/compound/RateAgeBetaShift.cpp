@@ -38,6 +38,13 @@ RateAgeBetaShift* RateAgeBetaShift::clone( void ) const
 }
 
 
+const std::set<DagNode*>& RateAgeBetaShift::getDagNodes( void ) const
+{
+    
+    return nodes;
+}
+
+
 
 const std::string& RateAgeBetaShift::getMoveName( void ) const {
     
@@ -48,7 +55,7 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const {
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( double heat )
+void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
 {
     
     // clear rates map

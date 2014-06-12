@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeSlideLength::AdmixtureEdgeSlideLength(StochasticNode<AdmixtureTree> *v, double w, unsigned long g, double d) : Move(v, w), variable( v ) {
+AdmixtureEdgeSlideLength::AdmixtureEdgeSlideLength(StochasticNode<AdmixtureTree> *v, double w, unsigned long g, double d) : MoveOld(v, w), variable( v ) {
     
     activeGen = g;
     changed = false;
@@ -291,7 +291,7 @@ void AdmixtureEdgeSlideLength::acceptSimpleMove(void)
 
 void AdmixtureEdgeSlideLength::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

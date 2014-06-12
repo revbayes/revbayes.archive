@@ -21,7 +21,7 @@
 
 #include "Model.h"
 #include "Monitor.h"
-#include "MoveInterface.h"
+#include "Move.h"
 
 #include <vector>
 
@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class PowerPosteriorMcmc {
         
     public:
-        PowerPosteriorMcmc(const Model& m, const std::vector<MoveInterface*> &moves);
+        PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &moves);
         PowerPosteriorMcmc(const PowerPosteriorMcmc &m);
         virtual                                            ~PowerPosteriorMcmc(void);                                                          //!< Virtual destructor
         
@@ -52,8 +52,8 @@ namespace RevBayesCore {
         // members       
         double                                              lnProbability;
         Model                                               model;
-        std::vector<MoveInterface*>                         moves;
-        std::map<MoveInterface*, std::set<DagNode*> >       orgNodesMoves;
+        std::vector<Move*>                                  moves;
+        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
     
         std::vector<double>                                 beta;
         size_t                                              sampleFreq;
