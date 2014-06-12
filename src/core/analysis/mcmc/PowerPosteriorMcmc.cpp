@@ -14,12 +14,12 @@
 
 using namespace RevBayesCore;
 
-PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &mvs) : model( m ) {
+PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<MoveInterface*> &mvs) : model( m ) {
     
     // we need to replace the DAG nodes of the monitors and moves
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
-    for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
-        Move *theMove = (*it)->clone();
+    for (std::vector<MoveInterface*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
+        MoveInterface *theMove = (*it)->clone();
         std::set<DagNode*> nodes = theMove->getDagNodes();
         for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
             DagNode* theNewNode = NULL;
@@ -45,12 +45,13 @@ PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<Move*> 
 
 
 PowerPosteriorMcmc::PowerPosteriorMcmc(const PowerPosteriorMcmc &m) : model( m.model ), beta( m.beta ), sampleFreq( m.sampleFreq ) {
-    const std::vector<Move*>& mvs = m.moves;
+    
+    const std::vector<MoveInterface*>& mvs = m.moves;
     
     // we need to replace the DAG nodes of the monitors and moves
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
-    for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
-        Move *theMove = (*it)->clone();
+    for (std::vector<MoveInterface*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
+        MoveInterface *theMove = (*it)->clone();
         std::set<DagNode*> nodes = theMove->getDagNodes();
         for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
             DagNode* theNewNode = NULL;
@@ -77,8 +78,8 @@ PowerPosteriorMcmc::PowerPosteriorMcmc(const PowerPosteriorMcmc &m) : model( m.m
 
 PowerPosteriorMcmc::~PowerPosteriorMcmc(void) {
     // free the moves and monitors
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        Move *theMove = (*it);
+    for (std::vector<MoveInterface*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+        MoveInterface *theMove = (*it);
         delete theMove;
     }
 }
@@ -97,7 +98,8 @@ void PowerPosteriorMcmc::burnin(size_t generations, size_t tuningInterval) {
 #endif
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+    for (std::vector<MoveInterface*>::iterator it = moves.begin(); it != moves.end(); ++it)
+    {
         (*it)->resetCounters();
     }
     
@@ -117,57 +119,7 @@ void PowerPosteriorMcmc::burnin(size_t generations, size_t tuningInterval) {
             /* Get the move */
             Move* theMove = schedule.nextMove(k);
             
-            if ( theMove->isGibbs() ) {
-                // do Gibbs proposal
-                theMove->performGibbs();
-                //                theMove->accept(); Not necessary, because Gibbs samplers are automatically accepted.
-            } else {
-                // do a Metropolois-Hastings proposal
-                
-                /* Propose a new value */
-                double lnProbabilityRatio;
-                double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-                // QUESTION: How to Gibbs samplers by-pass the accept-reject?
-                /* Calculate acceptance ratio */
-                double lnR = lnProbabilityRatio + lnHastingsRatio;
-                
-                if (lnR >= 0.0) {
-                    theMove->accept();
-                    lnProbability += lnProbabilityRatio;
-                }
-                else if (lnR < -300.0){ 
-                    theMove->reject();
-                }
-                else { 
-                    double r = exp(lnR);
-                    /* Accept or reject the move */
-                    double u = rng->uniform01(); 
-                    if (u < r) {
-                        theMove->accept();
-                        lnProbability += lnProbabilityRatio;
-                    }
-                    else {
-                        theMove->reject();
-                    }
-                }
-            }
-            
-            
-            
-#ifdef DEBUG_MCMC
-            /* Assert that the probability calculation shortcuts work */
-            double curLnProb = 0.0;
-            std::vector<double> lnRatio;
-            for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-                (*i)->touch();
-                double lnProb = (*i)->getLnProbability();
-                curLnProb += lnProb;
-            }
-            if (fabs(lnProbability - curLnProb) > 1E-8)
-                throw RbException("Error in ln probability calculation shortcuts");
-            else
-                lnProbability = curLnProb;              // otherwise rounding errors accumulate
-#endif
+            theMove->perform(1.0);
         }
         
         // check for autotuning and only tune in first half
@@ -275,7 +227,7 @@ void PowerPosteriorMcmc::run(size_t gen) {
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+    for (std::vector<MoveInterface*>::iterator it = moves.begin(); it != moves.end(); ++it) {
         (*it)->resetCounters();
     }
     
@@ -293,7 +245,7 @@ void PowerPosteriorMcmc::run(size_t gen) {
             size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
             for (size_t j=0; j<proposals; j++) {
                 /* Get the move */
-                Move* theMove = schedule.nextMove(k);
+                MoveInterface* theMove = schedule.nextMove(k);
             
                 /* Propose a new value */
                 double lnProbabilityRatio;

@@ -18,29 +18,31 @@ namespace RevBayesCore {
         RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
         
         // Basic utility functions
-        RateAgeBetaShift*               clone(void) const;                                                                  //!< Clone object
-        const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-        void                            printSummary(std::ostream &o) const;                                                //!< Print the move summary
-        void                            swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
+        RateAgeBetaShift*                       clone(void) const;                                                                  //!< Clone object
+        const std::set<DagNode*>&               getDagNodes(void) const;
+        const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
+        void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
-        void                            performMove(void);                                                            //!< Perform move
-        void                            tune(void);
+        void                                    performMove(double heat);                                                           //!< Perform move
+        void                                    tune(void);
         
     private:
-        void                            reject(void);
+        void                                    reject(void);
         
         // member variables
-        StochasticNode<TimeTree>*       tree;
-        std::vector<StochasticNode<double>* > rates;
-        double                          delta;
+        StochasticNode<TimeTree>*               tree;
+        std::vector<StochasticNode<double>* >   rates;
+        double                                  delta;
         
         // stored objects to undo proposal
-        TopologyNode*                   storedNode;
-        double                          storedAge;
-        std::vector<double>             storedRates;
+        TopologyNode*                           storedNode;
+        double                                  storedAge;
+        std::vector<double>                     storedRates;
         
-        size_t                          numAccepted;
+        std::set<DagNode*>                      nodes;
+        size_t                                  numAccepted;
         
     };
     

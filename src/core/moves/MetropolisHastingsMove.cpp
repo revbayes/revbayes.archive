@@ -58,6 +58,18 @@ MetropolisHastingsMove* MetropolisHastingsMove::clone( void ) const
 
 
 /**
+ * Get the set of nodes on which this move is working on.
+ *
+ * \return The set of nodes.
+ */
+const std::set<DagNode*>& MetropolisHastingsMove::getDagNodes( void ) const
+{
+    
+    return nodes;
+}
+
+
+/**
  * Get moves' name of object 
  *
  * \return The moves' name.
@@ -70,7 +82,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( void )  
+void MetropolisHastingsMove::performMove( double heat )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -84,11 +96,16 @@ void MetropolisHastingsMove::performMove( void )
     {
         (*it)->touch();
     }
+    
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
         lnAcceptanceRatio += (*it)->getLnProbabilityRatio();
     }
+    
+    // exponentiate with the chain heat
+    lnAcceptanceRatio *= heat;
+    
     // finally add the Hastings ratio
     lnAcceptanceRatio += lnHastingsRatio;
     
