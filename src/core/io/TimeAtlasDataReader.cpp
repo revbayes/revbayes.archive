@@ -67,7 +67,6 @@ void TimeAtlasDataReader::readJson(void)
             if (node.second.find("end_age") != node.second.not_found())
                 epochEndAge = node.second.get<double>("end_age");
             
-            
             unsigned areaIndex = 0;
             boost::property_tree::ptree pt_areas = node.second;
             BOOST_FOREACH(boost::property_tree::ptree::value_type &node_areas, pt_areas.get_child("areas"))
@@ -92,22 +91,34 @@ void TimeAtlasDataReader::readJson(void)
                 if (node_areas.second.find("size") != node_areas.second.not_found())
                     areaSize = node_areas.second.get<double>("size");
                 
-                std::vector<double> areaRates;
-                if (node_areas.second.find("rates") != node_areas.second.not_found())
+                std::vector<double> dispersalValues;
+                if (node_areas.second.find("dispersalValues") != node_areas.second.not_found())
                 {
                     boost::property_tree::ptree pt_rates = node_areas.second;
-                    BOOST_FOREACH(boost::property_tree::ptree::value_type &node_rates, pt_rates.get_child("rates"))
+                    BOOST_FOREACH(boost::property_tree::ptree::value_type &node_rates, pt_rates.get_child("dispersalValues"))
                     {
                         double v = node_rates.second.get_value<double>();
-                        areaRates.push_back( v );
+                        dispersalValues.push_back( v );
                     }
                 }
+                
+                std::vector<double> extinctionValues;
+                if (node_areas.second.find("extinctionValues") != node_areas.second.not_found())
+                {
+                    boost::property_tree::ptree pt_rates = node_areas.second;
+                    BOOST_FOREACH(boost::property_tree::ptree::value_type &node_rates, pt_rates.get_child("extinctionValues"))
+                    {
+                        double v = node_rates.second.get_value<double>();
+                        extinctionValues.push_back( v );
+                    }
+                }
+                
                 
                 unsigned areaState = 0;
                 if (node_areas.second.find("state") != node_areas.second.not_found())
                     areaState = node_areas.second.get<int>("state");
                 
-                GeographicArea* g  = new GeographicArea(areaIndex, areaLatitude, areaLongitude, areaName, areaState, areaAltitude, areaSize, areaRates);
+                GeographicArea* g  = new GeographicArea(areaIndex, areaLatitude, areaLongitude, areaName, areaState, areaAltitude, areaSize, dispersalValues, extinctionValues);
                 
                 //std::cout << areaIndex << " " << areaName << " " << areaLatitude << " " << areaLongitude << " " << areaState << "\n";
                 
