@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, TimeAtlas* ta, int g, int mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, TimeAtlas* ta, unsigned long g, int mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor& f);
         
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         TreeCharacterHistoryNhxMonitor*   clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                    monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                    monitor(unsigned long gen);                                                  //!< Monitor at generation gen
         void                                    swapNode(DagNode *oldN, DagNode *newN);
         
         // FileMonitor functions
@@ -96,7 +96,7 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, TimeAtlas* ta, int g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, TimeAtlas* ta, unsigned long g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
 Monitor(g,t),
 outStream(),
 variable( s ),
@@ -288,10 +288,10 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
 
 /** Monitor value at generation gen */
 template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::monitor(long gen) {
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0 && gen != maxGen) { // && gen >= burn) {
         

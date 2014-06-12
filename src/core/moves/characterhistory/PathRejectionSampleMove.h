@@ -76,7 +76,7 @@ namespace RevBayesCore {
 
 template<class charType, class treeType>
 RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
-    Move(t, w, tuning),
+    MoveOld(t, w, tuning),
     ctmc(n),
     tau(t),
     qmap(q),
