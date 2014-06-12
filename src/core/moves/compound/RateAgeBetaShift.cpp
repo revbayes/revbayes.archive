@@ -15,7 +15,7 @@ RateAgeBetaShift::RateAgeBetaShift(StochasticNode<TimeTree> *tr, std::vector<Sto
     delta( d ),
     storedNode( NULL ),
     storedAge( 0.0 ),
-    storedRates( 0.0, rates.size() ),
+    storedRates( rates.size(), 0.0 ),
     nodes(),
     numAccepted( 0 )
 {
@@ -58,9 +58,6 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const {
 void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
 {
     
-    // clear rates map
-    storedRates.clear();
-    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -68,10 +65,11 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
+    size_t nodeIdx = 0;
     do {
         double u = rng->uniform01();
-        size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
-        node = &tau.getNode(index);
+        nodeIdx = size_t( std::floor(tau.getNumberOfNodes() * u) );
+        node = &tau.getNode(nodeIdx);
     } while ( node->isRoot() || node->isTip() ); 
     
     TopologyNode& parent = node->getParent();
@@ -89,7 +87,6 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     storedNode = node;
     storedAge = my_age;
     
-    size_t nodeIdx = node->getIndex();
     storedRates[nodeIdx] = rates[nodeIdx]->getValue();
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
@@ -113,26 +110,42 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     
     // set the age
     tau.setAge( node->getIndex(), my_new_age );
+    tree->touch();
     
-    double priorRatio = tree->getLnProbabilityRatio();
+    double treeProbRatio = tree->getLnProbabilityRatio();
     
     // set the rates
     rates[nodeIdx]->setValue( new double((node->getParent().getAge() - my_age) * storedRates[nodeIdx] / (node->getParent().getAge() - my_new_age)));
+    double ratesProbRatio = rates[nodeIdx]->getLnProbabilityRatio();
+    
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
         size_t childIdx = node->getChild(i).getIndex();
         rates[childIdx]->setValue( new double((my_age - node->getChild(i).getAge()) * storedRates[childIdx] / (my_new_age - node->getChild(i).getAge())));
-        priorRatio += rates[childIdx]->getLnProbabilityRatio();
+        ratesProbRatio += rates[childIdx]->getLnProbabilityRatio();
+    }
+    
+    std::set<DagNode*> affected;
+    tree->getAffectedNodes( affected );
+    double lnProbRatio = 0;
+    for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+    {
+        lnProbRatio += (*it)->getLnProbabilityRatio();
+    }
+    
+    if ( lnProbRatio != 0 ) {
+        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
     }
     
     double hastingsRatio = backward - forward;
-    double lnAcceptanceRatio = priorRatio + hastingsRatio;
+    double lnAcceptanceRatio = treeProbRatio + ratesProbRatio + hastingsRatio;
     
     if (lnAcceptanceRatio >= 0.0)
     {
         numAccepted++;
         
         tree->keep();
+        rates[nodeIdx]->keep();
         for (size_t i = 0; i < node->getNumberOfChildren(); i++)
         {
             size_t childIdx = node->getChild(i).getIndex();
@@ -154,6 +167,7 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
             
             //keep
             tree->keep();
+            rates[nodeIdx]->keep();
             for (size_t i = 0; i < node->getNumberOfChildren(); i++)
             {
                 size_t childIdx = node->getChild(i).getIndex();
@@ -216,6 +230,17 @@ void RateAgeBetaShift::swapNode(DagNode *oldN, DagNode *newN) {
             }
         }
     }
+    
+    
+    // find the old node
+    std::set<DagNode*>::iterator pos = nodes.find( oldN );
+    // remove it from the set if it was contained
+    if ( pos != nodes.end() )
+    {
+        nodes.erase( pos );
+    }
+    // insert the new node
+    nodes.insert( newN );
 }
 
 

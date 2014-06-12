@@ -44,7 +44,7 @@ void RateAgeBetaShift::constructInternalObject( void ) {
         rates.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
     }
 
-    //    value = new RevBayesCore::RateAgeBetaShift(t, rates, d, at, w);
+    value = new RevBayesCore::RateAgeBetaShift(t, rates, d, at, w);
 }
 
 
