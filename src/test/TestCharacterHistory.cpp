@@ -139,7 +139,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(4); seed.push_back(1);
+    seed.push_back(6); seed.push_back(1);
 //    old_seed = seed;
 //    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
@@ -151,7 +151,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool useDistances = true;
     bool useClock = !true;
     bool forbidExtinction = true;
-    bool useCladogenesis = !true;
+    bool useCladogenesis = true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters

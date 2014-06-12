@@ -216,18 +216,12 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 {
     size_t nodeIndex = node.getIndex();
     double lnL = 0.0;
+
     BranchHistory* bh = this->histories[nodeIndex];
-    
-//    if (nodeIndex == 15) bh->print();
-    //std::cout << "computeLnL " << node.getIndex() << " " << bh->getIndex() << "\n";
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     unsigned int n1 = numOn(currState);
 	unsigned int n0 = this->numSites - n1;
     unsigned counts[2] = { n0, n1 };
-    
-    unsigned monitorIndex = -5;
-    
-    if (node.getIndex() == monitorIndex) std::cout << "\n";
     
     if (node.isRoot())
     {
@@ -235,18 +229,14 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     }
     else if (counts[1] == 0 && forbidExtinction)
     {
-        // reject extinction cfgs
         return RbConstants::Double::neginf;
     }
     else
     {
-        if (nodeIndex == monitorIndex) { std::cout << "for likelihood\n";    this->histories[nodeIndex]->print(); }
-        
         // update tip lnLs for ambiguous characters
         if (this->usingAmbiguousCharacters && node.isTip())
         {
-            std::vector<CharacterEvent*> tipState = bh->getChildCharacters();
-            
+            const std::vector<CharacterEvent*>& tipState = bh->getChildCharacters();
             for (size_t i = 0; i < tipState.size(); i++)
             {
                 double v = tipProbs[nodeIndex][i];
@@ -262,6 +252,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         const treeType& tree = this->tau->getValue();
         double branchLength = node.getBranchLength();
         double currAge = (node.isRoot() ? 10e10 : node.getParent().getAge());
+        double startAge = currAge;
+        double endAge = node.getAge();
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
 
         // handle stratified/epoch models
@@ -273,6 +265,9 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         double t = 0.0;
         double dt = 0.0;
         double da = 0.0;
+      
+        bool useEpoch = true;
+//        std::cout << "start "  << startAge << " " << endAge << " "<<  currAge << " " << da << " " << dt << " " << epochIdx << " " << epochEndAge << " " << lnL << "\n";
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
@@ -288,29 +283,35 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
                 break;
             }
 
+            // if epoch crossed, compute prob no events until boundary then advance epochIdx
+            while (useEpoch && currAge - da < epochEndAge)
+            {
+                // waiting factor
+                double sr = rm.getSumOfRates(node, currState, counts, currAge);
+                lnL += -sr * (currAge - epochEndAge);
+             
+//                std::cout << "epoch " << startAge << " " << endAge << " " <<  currAge << " " << da << " " << dt << " " << epochIdx << " " << epochEndAge << " " << lnL << "\n";
+                
+                // if before branch end, advance epoch
+                if (endAge < epochEndAge)
+                {
+                    epochIdx++;
+                    da -= (currAge - epochEndAge);
+                    currAge = epochEndAge;
+                    epochEndAge = epochs[epochIdx];
+                }
+                // otherwise, exit loop
+                else
+                    break;
+            }
+            
+            // lnL for stepwise events for p(x->y)
             double tr = rm.getRate(node, currState, *it_h, counts, currAge);
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
-
-            // if epoch crossed, prob no events until boundary
-            if (false && currAge - da < epochEndAge)
-            {
-                // lnL factor
-                lnL += -sr * (currAge - epochEndAge);
-                
-                // refresh tr,sr for new age
-                tr = rm.getRate(node, currState, *it_h, counts, epochEndAge);
-                sr = rm.getSumOfRates(node, currState, counts, epochEndAge);
-                
-                // update ages
-                da -= (currAge - epochEndAge);
-                epochIdx++;
-                epochEndAge = epochs[epochIdx];
-                currAge = epochEndAge;
-            }
-                
-            // lnL for stepwise events for p(x->y)
             lnL += -(sr * da) + log(tr);
             
+//            std::cout << "event " << startAge << " " << endAge << " " << currAge << " " << da << " " << dt << " " << epochIdx << " " << epochEndAge << " " << lnL << "\n";
+
             // update counts
             counts[currState[idx]->getState()] -= 1;
             counts[s] += 1;
@@ -320,21 +321,37 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             t += dt;
             currAge -= da;
             
-            if (nodeIndex == monitorIndex)
-                std::cout << t << " " << dt << " " << branchLength << " " << tr << " " << sr << " " << lnL << "; " << (*it_h)->getState() << " " << counts[0] << " " << counts[1] << " " << numOn(currState) << "\n";
         }
-            
+
         // lnL for final non-event
-        double sr = rm.getSumOfRates(node, currState, counts, currAge);
-        lnL += -sr * ( (1.0 - t) * branchLength );
-        
-        if (nodeIndex == monitorIndex)
-        {
-            std::cout << "1.000000" << " " << (1.0-t) << " " << branchLength << "  ...  " << sr << " " << lnL << "; "  << " " << counts[0] << " " << counts[1] << " " << numOn(currState) << "\n";
-            std::cout << "n_events " << history.size() << "\n";
-            std::cout << "brlen    " << branchLength << "\n";
-            std::cout << "\n";
+        if (useEpoch) {
+            while (currAge > endAge)
+            {
+                // waiting factor
+                double sr = rm.getSumOfRates(node, currState, counts, currAge);
+                lnL += -sr * (currAge - epochEndAge);
+                
+//                std::cout << "wait  " << startAge << " " << endAge << " " << currAge << " " << da << " " << dt << " " << epochIdx << " " << epochEndAge << " " << lnL << " " << endAge << " " << (currAge > endAge ? "T" : "F") <<"\n";
+                
+                // advance epoch
+                epochIdx++;
+                currAge = epochEndAge;
+                epochEndAge = epochs[epochIdx];
+            }
+            double sr = rm.getSumOfRates(node, currState, counts, currAge);
+            lnL += -sr * (currAge - endAge);
+//            std::cout << "wait  " << startAge << " " << endAge << " " << currAge << " " << da << " " << dt << " " << epochIdx << " " << epochEndAge << " " << lnL << " " << endAge << " " << (currAge > endAge ? "T" : "F") <<"\n";
+
         }
+        else
+        {
+            double sr = rm.getSumOfRates(node, currState, counts, currAge);
+            lnL += -sr * ( (1.0 - t) * branchLength );
+//            std::cout << "wait  " << startAge << " " << endAge << " " <<  currAge << " "  << da << " " << dt << " " << epochIdx << " " << epochEndAge << " " << lnL << " " << endAge << " " << (currAge > endAge ? "T" : "F") <<"\n";
+        }
+//        std::cout << " -------- \n";
+
+//        std::cout << lnL << "\n";
         
         if (lnL != lnL)
         {
