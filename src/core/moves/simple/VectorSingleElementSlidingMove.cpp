@@ -38,7 +38,7 @@ double VectorSingleElementSlidingMove::performSimpleMove( void ) {
 
     std::vector<double>& v = variable->getValue();
     // choose an index
-    index = int(rng->uniform01() * v.size());
+    index = size_t( rng->uniform01() * v.size() );
     
     // copy value
     storedValue = v[index];

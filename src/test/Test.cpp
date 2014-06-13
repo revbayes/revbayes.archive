@@ -18,8 +18,6 @@
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
 #include "TestBayesFactor.h"
 #include "TestBirthDeath.h"
-#include "TestBirthDeathModelImplementations.h"
-#include "TestBrownianMotion.h"
 #include "TestCharEvoModelImplementationPerformance.h"
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
@@ -47,13 +45,11 @@
 #include "TestScalingMove.h"
 #include "TestSimplexMove.h"
 #include "TestSequenceSimulation.h"
-#include "TestSkyline.h"
 #include "TestSlidingMove.h"
 #include "TestStrictClockModel.h"
 #include "TestTransitionProbabilities.h"
 #include "TestTreeTraceSummary.h"
 #include "TestUCLNRelaxedClock.h"
-#include "TestVariableBirthDeath.h"
 #include "Tree.h"
 #include "TreeTrace.h"
 
@@ -209,22 +205,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
     
-    /* The skyline model test */
-    try {
-        TestSkyline test = TestSkyline(100000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The Brownian motion test */
-    try {
-        TestBrownianMotion test = TestBrownianMotion(100000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
     /* The normal model test */
     try {
         TestNormalModel testNormal = TestNormalModel(10000);
@@ -333,7 +313,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-     //   testGtrGamma.run();
+        testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -448,31 +428,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-    
-
-    
-    /* A time varying birth-death model test */
-    try {
-        TestBirthDeathModelImplementations testBD = TestBirthDeathModelImplementations("trees/Sim_2_1.75.tre", 10000);
-//        TestBirthDeathModelImplementations testBD = TestBirthDeathModelImplementations("trees/simple.tree", 10000);
-//        testBD.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A time varying birth-death model test */
-    try {
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/AAtimetreeAUTOhard.tre", 100000);
-        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/MammalianPhylogeny.tre", 100000);
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/MammalianPhylogeny2.tre", 100000);
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/Sim_2_1.75.tre", 2000);
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/Sim_2_1.75_large.tre", 10000);
-//        testBD.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
     
     /* The whole RevLanguage test suite */
     try {

@@ -17,18 +17,35 @@ using namespace RevBayesCore;
 
 // constructor(s)
 AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector< double > > * s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
-        tau( t ), 
-        sigma( s ), 
-        rootRate( rr ) {
+tau( t ), 
+sigma( s ), 
+rootRate( rr ),
+scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
+	
     this->addParameter( tau );
     this->addParameter( sigma );
     this->addParameter( rootRate );
+	this->addParameter( scaleValue );
+    
+    simulate();
+}
+
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const TypedDagNode< TimeTree > *t, TypedDagNode< std::vector< double > > *s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
+tau( t ), 
+sigma( s ), 
+rootRate( rr ),
+scaleValue( sv ) {
+	
+    this->addParameter( tau );
+    this->addParameter( sigma );
+    this->addParameter( rootRate );
+	this->addParameter( scaleValue );
     
     simulate();
 }
 
 
-AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ) {
+AutocorrelatedLognormalRateBranchwiseVarDistribution::AutocorrelatedLognormalRateBranchwiseVarDistribution(const AutocorrelatedLognormalRateBranchwiseVarDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ), scaleValue( n.scaleValue ) {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -47,6 +64,7 @@ double AutocorrelatedLognormalRateBranchwiseVarDistribution::computeLnProbabilit
     size_t rootIndex= root.getIndex();
     
     double lnProb = 0.0;
+	double scale = scaleValue->getValue();
 	
     
     double parentRate = rootRate->getValue();
@@ -63,7 +81,7 @@ double AutocorrelatedLognormalRateBranchwiseVarDistribution::computeLnProbabilit
 
             size_t childIndex = child.getIndex();
             // compute the variance
-            double variance = sigma->getValue()[childIndex] * child.getBranchLength();
+            double variance = sigma->getValue()[childIndex] * child.getBranchLength() * scale;
             
             double childRate = (*value)[childIndex];
 			
@@ -100,6 +118,7 @@ double AutocorrelatedLognormalRateBranchwiseVarDistribution::recursiveLnProb( co
     
     double lnProb = 0.0;
     size_t numChildren = n.getNumberOfChildren();
+	double scale = scaleValue->getValue();
     
     if ( numChildren > 0 ) {
         double parentRate = log( (*value)[nodeIndex] );
@@ -110,7 +129,7 @@ double AutocorrelatedLognormalRateBranchwiseVarDistribution::recursiveLnProb( co
             
             size_t childIndex = child.getIndex();
             // compute the variance
-            double variance = sigma->getValue()[childIndex] * child.getBranchLength();
+            double variance = sigma->getValue()[childIndex] * child.getBranchLength() * scale;
             
             double childRate = (*value)[childIndex];
 
@@ -158,6 +177,10 @@ void AutocorrelatedLognormalRateBranchwiseVarDistribution::swapParameter(const D
     if ( oldP == rootRate ) {
         rootRate = static_cast< const TypedDagNode< double > * >( newP );
     }
+
+    if ( oldP == scaleValue ) {
+        scaleValue = static_cast< const TypedDagNode< double > * >( newP );
+    }
 }
 
 
@@ -193,7 +216,8 @@ void AutocorrelatedLognormalRateBranchwiseVarDistribution::recursiveSimulate(con
     size_t nodeIndex = node.getIndex();
     
     // compute the variance along the branch
-    double variance = sigma->getValue()[nodeIndex] * node.getBranchLength();
+	double scale = scaleValue->getValue();
+    double variance = sigma->getValue()[nodeIndex] * node.getBranchLength() * scale;
 	double mu = log(parentRate) - (variance * 0.5);
 	double stDev = sqrt(variance);
     

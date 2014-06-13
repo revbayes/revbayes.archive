@@ -48,8 +48,8 @@ namespace RevBayesCore {
     class TopologyNode  {
         
     public:
-        TopologyNode(int indx=0);                                                                                                       //!< Default constructor with optional index
-        TopologyNode(const std::string& n, int indx=0);                                                                                 //!< Constructor with name and optional index
+        TopologyNode(size_t indx=0);                                                                                                       //!< Default constructor with optional index
+        TopologyNode(const std::string& n, size_t indx=0);                                                                                 //!< Constructor with name and optional index
         TopologyNode(const TopologyNode &n);                                                                                            //!< Copy constructor
         virtual                                    ~TopologyNode(void);                                                                 //!< Destructor
         TopologyNode&                               operator=(const TopologyNode& n);
@@ -83,7 +83,7 @@ namespace RevBayesCore {
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;                                         //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
-        std::vector<std::string>                    getTaxaStringVector(void) const;
+        void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
         double                                      getTime(void) const;                                                                //!< Get the time of the node
         double                                      getTmrca(const TopologyNode &n) const;
         void                                        initiateFlaggingForNewickRecomputation(void);

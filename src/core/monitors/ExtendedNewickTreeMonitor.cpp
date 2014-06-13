@@ -26,13 +26,13 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap) {
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap) {
     
 }
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< std::vector<double> > *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), nodeVariables( n ), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap) {
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode< std::vector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), nodeVariables( n ), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap) {
 //    this->nodes.insert( tree );
     
     for (std::set<TypedDagNode< std::vector<double> > *>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it) {
@@ -68,10 +68,10 @@ void ExtendedNewickTreeMonitor::closeStream() {
 
 
 /** Monitor value at generation gen */
-void ExtendedNewickTreeMonitor::monitor(long gen) {
+void ExtendedNewickTreeMonitor::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first

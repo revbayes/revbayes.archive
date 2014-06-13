@@ -2,11 +2,13 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "RbLanguageObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlScaleMove.h"
+#include "ScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -60,7 +62,10 @@ void ScaleMove::constructInternalObject( void )
     bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
     
     // finally create the internal move object
-    value = new RevBayesCore::ScaleMove(n, d, t, w);
+//    value = new RevBayesCore::ScaleMove(n, d, t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n,d);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }
 

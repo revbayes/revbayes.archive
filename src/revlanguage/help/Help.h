@@ -33,7 +33,7 @@ public:
  
     void initializeHelp(std::string helpDir); //!< Initialize the help from an XML file
     //~Help(void); //!< Destructor
-    std::string getHelp(std::string qs, int columnWidth); //!< Format the help information for printing to the terminal
+    std::string getHelp(std::string qs, size_t columnWidth); //!< Format the help information for printing to the terminal
     bool isHelpAvailableForQuery(std::string query);
 
 //    static Help& getHelp(void) //!< Return a reference to the singleton help

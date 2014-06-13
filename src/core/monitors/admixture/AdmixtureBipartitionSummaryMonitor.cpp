@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), numTaxa(0), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar) {
+AdmixtureBipartitionSummaryMonitor::AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), delayTimer(dt), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), numTaxa(0), numSamples(0), numTreeResults(ntr), numAdmixtureResults(nar) {
     
     nodes.push_back(branchRates);
     nodes.push_back(delayTimer); // ????
@@ -368,10 +368,10 @@ std::string AdmixtureBipartitionSummaryMonitor::buildAdmixtureBipartitionSummary
 }
 
 
-void AdmixtureBipartitionSummaryMonitor::monitor(long gen) {
+void AdmixtureBipartitionSummaryMonitor::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first

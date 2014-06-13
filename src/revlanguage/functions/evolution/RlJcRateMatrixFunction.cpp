@@ -35,7 +35,7 @@ JcRateMatrixFunction* JcRateMatrixFunction::clone( void ) const {
 RbLanguageObject* JcRateMatrixFunction::execute() {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getValue() ).getValue();
-    RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( ns );
+    RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );
     RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix>("", f);
     
     RateMatrix* value = new RateMatrix( detNode );

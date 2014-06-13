@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT, int nc, int np, int si, double dt, double st, double sh) : Cloneable( ), numChains(nc), numProcesses(np),  scheduleType(sT), currentGeneration(0), swapInterval(si), delta(dt),  sigma(st), startingHeat(sh)
+ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT, size_t nc, size_t np, size_t si, double dt, double st, double sh) : Cloneable( ), numChains(nc), numProcesses(np),  scheduleType(sT), currentGeneration(0), swapInterval(si), delta(dt),  sigma(st), startingHeat(sh)
 {
     activeIndex = 0;
     
@@ -139,7 +139,7 @@ void ParallelMcmcmc::run(size_t generations)
     {
         // start parallel job per block of swapInterval cycles
         size_t np = numProcesses; // in fact, used by the macro below
-        int pid = 0;
+        size_t pid = 0;
         
         #pragma omp parallel default(shared) private(np, pid)
         {
@@ -249,13 +249,13 @@ void ParallelMcmcmc::swapChains(void)
             // swap active chain
             if (activeIndex == j)
             {
-                activeIndex = (int)k;
+                activeIndex = k;
                 chains[j]->setChainActive(false);
                 chains[k]->setChainActive(true);
             }
             else if (activeIndex == k)
             {
-                activeIndex = (int)j;
+                activeIndex = j;
                 chains[j]->setChainActive(true);
                 chains[k]->setChainActive(false);
             }

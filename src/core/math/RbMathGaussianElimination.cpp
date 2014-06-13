@@ -36,13 +36,18 @@ void RbMath::backSubstitutionRow(MatrixComplex& u, std::vector<std::complex<doub
     
 	size_t n = u.getNumberOfRows();
 	b[n-1] /= u[n-1][n-1];
-	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
+    if ( n > 1 )
+    {
+        size_t i = n-1;
+        while ( i > 0 )
         {
-		std::complex<double> dotProduct(0.0, 0.0);
-		for (size_t j=i+1; j<n; j++)
-			dotProduct += u[i][j] * b[j];
-		b[i] = (b[i] - dotProduct) / u[i][i];
+            --i;
+            std::complex<double> dotProduct(0.0, 0.0);
+            for (size_t j=i+1; j<n; j++)
+                dotProduct += u[i][j] * b[j];
+            b[i] = (b[i] - dotProduct) / u[i][i];
         }
+    }
 }
 
 
@@ -58,13 +63,18 @@ void RbMath::backSubstitutionRow(MatrixReal& u, std::vector<double>& b) {
     
 	size_t n = u.getNumberOfRows();
 	b[n-1] /= u[n-1][n-1];
-	for ( int i = static_cast<int>( n ) - 2; i >= 0; i-- ) 
+    if ( n > 1 )
+    {
+        size_t i = n-1;
+        while ( i > 0 )
         {
-		double dotProduct = 0.0;
-		for (size_t j=i+1; j<n; j++)
-			dotProduct += u[i][j] * b[j];
-		b[i] = (b[i] - dotProduct) / u[i][i];
+            --i;
+            double dotProduct = 0.0;
+            for (size_t j=i+1; j<n; j++)
+            dotProduct += u[i][j] * b[j];
+            b[i] = (b[i] - dotProduct) / u[i][i];
         }
+    }
 }
 
 

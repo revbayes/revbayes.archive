@@ -31,7 +31,7 @@ namespace RevBayesCore {
         void                            cleanProposal(void);                                                                //!< Clean up proposal
         ScaleProposal*                  clone(void) const;                                                                  //!< Clone object
         double                          doProposal(void);                                                                   //!< Perform proposal
-        const std::vector<DagNode*>&    getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
+        const std::set<DagNode*>&       getNodes(void) const;                                                               //!< Get the vector of DAG nodes this proposal is working on
         const std::string&              getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                            printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                            prepareProposal(void);                                                              //!< Prepare the proposal
@@ -45,7 +45,7 @@ namespace RevBayesCore {
         StochasticNode<double>*         variable;                                                                           //!< The variable the Proposal is working on
         double                          storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                          lambda;                                                                             //!< The scaling parameter of the Proposal
-        std::vector<DagNode*>           nodes;
+        std::set<DagNode*>              nodes;
         double                          proposedValue;                                                                      //!< The value we propose.
     };
     

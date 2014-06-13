@@ -30,7 +30,13 @@ using namespace RevLanguage;
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp) : label(argName), argTypeSpecs( 1, argTypeSp ), isConst( c ), hasDefaultVal(false), defaultVar( NULL ) {
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp) :
+    argTypeSpecs( 1, argTypeSp ),
+    defaultVar( NULL ),
+    isConst( c ),
+    label(argName),
+    hasDefaultVal(false)
+{
 
 }
 
@@ -38,7 +44,13 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& a
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal) : label(argName), argTypeSpecs( 1, argTypeSp ), isConst( c ), hasDefaultVal( true ), defaultVar( new Variable( defVal ) ) {
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal) :
+    argTypeSpecs( 1, argTypeSp ),
+    defaultVar( new Variable( defVal ) ),
+    isConst( c ),
+    label(argName),
+    hasDefaultVal( true )
+{
     
 }
 
@@ -46,7 +58,13 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& a
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp) : label(argName), argTypeSpecs( argTypeSp ), isConst( c ), hasDefaultVal(false), defaultVar( NULL ) {
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp) :
+    argTypeSpecs( argTypeSp ),
+    defaultVar( NULL ),
+    isConst( c ),
+    label(argName),
+    hasDefaultVal(false)
+{
     
 }
 
@@ -54,13 +72,20 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal) : label(argName), argTypeSpecs( argTypeSp ), isConst( c ), hasDefaultVal( true ), defaultVar( new Variable( defVal ) ) {
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal) :
+    argTypeSpecs( argTypeSp ),
+    defaultVar( new Variable( defVal ) ),
+    isConst( c ),
+    label(argName),
+    hasDefaultVal( true )
+{
     
 }
 
 
 
-ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const {
+ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
+{
 
     return new ArgumentRule( *this );
 }

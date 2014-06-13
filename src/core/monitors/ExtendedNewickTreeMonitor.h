@@ -34,15 +34,15 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode<std::vector<double> > *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode<std::vector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
         ExtendedNewickTreeMonitor(const ExtendedNewickTreeMonitor& f);
         
         // basic methods
         ExtendedNewickTreeMonitor*          clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                                  //!< Monitor at generation gen
         void                                swapNode(DagNode *oldN, DagNode *newN);
 
         // FileMonitor functions

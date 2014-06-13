@@ -18,7 +18,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeRemoveResidualWeights::AdmixtureEdgeRemoveResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag), delta(d) {
+AdmixtureEdgeRemoveResidualWeights::AdmixtureEdgeRemoveResidualWeights(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, double d, int ag, double w) : MoveOld( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), changed(false), failed(false), activeGen(ag), delta(d) {
     
     //nodes.insert(rate);
     nodes.insert(residuals);
@@ -233,7 +233,7 @@ void AdmixtureEdgeRemoveResidualWeights::acceptSimpleMove(void) {
 
 void AdmixtureEdgeRemoveResidualWeights::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

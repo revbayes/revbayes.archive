@@ -37,7 +37,7 @@ namespace RevBayesCore {
     class PrecisionMatrixMove : public SimpleMove {
         
     public:
-        PrecisionMatrixMove(StochasticNode<PrecisionMatrix >* n, double l, bool t, double w);                         //!< Constructor
+        PrecisionMatrixMove(StochasticNode<PrecisionMatrix >* n, size_t l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
         PrecisionMatrixMove*                     clone(void) const;                                                                  //!< Clone this object.
@@ -57,8 +57,8 @@ namespace RevBayesCore {
         
         StochasticNode<PrecisionMatrix >*   variable;
         
-        double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
- 		PrecisionMatrix                                      storedValue;                                                                        //!< The stored value of the last modified element.
+        size_t                                  lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
+ 		PrecisionMatrix                         storedValue;                                                                        //!< The stored value of the last modified element.
         
     };
     

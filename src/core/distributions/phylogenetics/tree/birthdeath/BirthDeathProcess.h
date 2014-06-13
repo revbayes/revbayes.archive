@@ -25,8 +25,8 @@ namespace RevBayesCore {
         
     public:
         BirthDeathProcess(const TypedDagNode<double> *o, 
-                                      const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, 
-                                      unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
+                                    const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
+                                    size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);
         
         // pure virtual member functions
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                                              //!< Create an independent clone
@@ -63,7 +63,7 @@ namespace RevBayesCore {
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
-        unsigned int                                        numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
+        size_t                                              numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::string                                         samplingStrategy;                                                                                   //!< The incomplete taxon sampling strategy (uniform/diversified).
         std::vector<std::string>                            taxonNames;                                                                                         //!< Taxon names that will be attached to new simulated trees.
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).

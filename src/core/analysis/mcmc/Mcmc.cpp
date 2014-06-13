@@ -2,7 +2,6 @@
 #include "FileMonitor.h"
 #include "Mcmc.h"
 #include "MoveSchedule.h"
-#include "PathSampleMonitor.h"
 #include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -38,9 +37,9 @@ using namespace RevBayesCore;
  * \param[in]    ci   The chain index (for multiple chain, e.g. in MCMCMC).
  * \param[in]    sT   Move schedule type (one of "random", "single", or "sequential").
  */
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, std::string sT, bool ca, double ch, int ci) :
+Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons, std::string sT, bool ca, double heat, size_t ci) :
     chainActive(ca),
-    chainHeat(ch),
+    chainHeat(heat),
     chainIdx(ci),
     generation(0),
     model( m ),
@@ -406,106 +405,13 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
     
-    size_t proposals = round( schedule->getNumberMovesPerIteration() );
+    size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++) 
     {
         // Get the move
         Move* theMove = schedule->nextMove( generation );
+        theMove->perform( chainHeat, false);
         
-        if ( theMove->isGibbs() ) 
-        {
-            // do Gibbs proposal
-            theMove->performGibbs();
-            // theMove->accept(); // Not necessary, because Gibbs samplers are automatically accepted.
-        } 
-        else 
-        {
-            // do a Metropolois-Hastings proposal
-            
-            // Propose a new value
-            double lnProbabilityRatio;
-            double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-            
-            ///////
-            // likelihood-only heat test
-            
-            /*
-            double lnP = 0.0;
-            const std::vector<DagNode*> &n = model.getDagNodes();
-            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
-                (*it)->touch();
-                double p = (*it)->getLnProbabilityRatio();
-                std::cout << (*it)->getName() << " " << p << " " << p * ( (*it)->isClamped() ? chainHeat : 1.0 ) << "\n";
-                if ( (*it)->isClamped() )
-                    p *= chainHeat;
-                lnP += p;
-                
-            }
-            //double lnP2 = lnP - lnProbabilityRatio;
-            //std::cout << "* " << lnP2 << "\n";
-             
-            // Calculate acceptance ratio
-            double lnR = lnP + lnHastingsRatio;
-            std::cout << lnP << " " << lnProbabilityRatio << "\n";
-//            std::cout << lnR << " = " << lnP << " + " << lnHastingsRatio << "\n";
-            ////////////
-            */
-
-#ifdef DEBUG_MCMC
-            // TODO: In non-debug version, we need to make sure we abandon the move if one of these values
-            // is positive infinite so that the lnR-based branch below would otherwise result in acceptance.
-            // Possibly, we should throw an error rather than trying to pass through -- to be discussed.
-            if (!RbMath::isAComputableNumber(lnHastingsRatio))
-                throw RbException("Hastings ratio not computable after move '" + theMove->getMoveName() + "'");
-            if (!RbMath::isAComputableNumber(lnProbabilityRatio))
-                throw RbException("Probability ratio not computable after move '" + theMove->getMoveName() + "'");
-#endif
-            
-            // Calculate acceptance ratio
-            double lnR = chainHeat * (lnProbabilityRatio) + lnHastingsRatio;
-                        
-            if (lnR >= 0.0)
-            {
-                theMove->accept();
-                lnProbability += lnProbabilityRatio;
-            }
-            else if (lnR < -300.0)
-            {
-                ;
-                theMove->reject();
-            }
-            else 
-            {
-                double r = exp(lnR);
-                // Accept or reject the move
-                double u = GLOBAL_RNG->uniform01();
-                if (u < r) 
-                {
-                    theMove->accept();
-                    lnProbability += lnProbabilityRatio;
-                }
-                else 
-                {
-                    theMove->reject();
-                }
-            }
-        }
-        
-#ifdef DEBUG_MCMC
-        // Assert that the probability calculation shortcuts work
-        double curLnProb = 0.0;
-        std::vector<double> lnRatio;
-        for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) 
-        {
-            (*i)->touch();
-            double lnProb = (*i)->getLnProbability();
-            curLnProb += lnProb;
-        }
-        if (fabs(lnProbability - curLnProb) > 1E-8)
-            throw RbException("Error in ln probability calculation shortcuts");
-        else
-            lnProbability = curLnProb;              // otherwise rounding errors accumulate
-#endif
     }
     
     

@@ -57,10 +57,10 @@ ScreenMonitor* ScreenMonitor::clone(void) const {
 
 
 /** Monitor value at generation gen */
-void ScreenMonitor::monitor(long gen) {
+void ScreenMonitor::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first

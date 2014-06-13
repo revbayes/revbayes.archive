@@ -44,7 +44,7 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
     bool pp = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
-    value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, g, fn, sep, pp, l, pr);
+    value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, size_t(g), fn, sep, pp, l, pr);
 }
 
 

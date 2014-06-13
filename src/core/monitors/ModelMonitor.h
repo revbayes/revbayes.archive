@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ModelMonitor(int g, const std::string &fname, const std::string &del);                                  //!< Constructor
+        ModelMonitor(unsigned long g, const std::string &fname, const std::string &del);                                  //!< Constructor
         ModelMonitor(const ModelMonitor &m);
         virtual ~ModelMonitor(void);
         
@@ -39,7 +39,7 @@ namespace RevBayesCore {
         ModelMonitor*                       clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         
         // ModelMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing

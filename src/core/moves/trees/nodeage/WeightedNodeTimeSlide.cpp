@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-WeightedNodeTimeSlide::WeightedNodeTimeSlide(StochasticNode<TimeTree> *v, int b, double w) : SimpleMove( v, w), variable( v ), blocks( b ) {
+WeightedNodeTimeSlide::WeightedNodeTimeSlide(StochasticNode<TimeTree> *v, size_t b, double w) : SimpleMove( v, w), variable( v ), blocks( b ) {
     
     for (size_t i = 1; i <= blocks; ++i) {
         double x = i / (1.0 + blocks);
@@ -55,7 +55,7 @@ double WeightedNodeTimeSlide::performSimpleMove( void ) {
     TopologyNode* node;
     do {
         double u = rng->uniform01();
-        size_t index = std::floor(tau.getNumberOfNodes() * u);
+        size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->isTip() );
     

@@ -27,7 +27,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        CharacterHistoryPosteriorPredictiveMonitor(TypedDagNode<TimeTree> *t, std::vector< StochasticNode< BranchHistory >* > bh, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        CharacterHistoryPosteriorPredictiveMonitor(TypedDagNode<TimeTree> *t, std::vector< StochasticNode< BranchHistory >* > bh, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         // new CharacterHistoryPosteriorPredictiveMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t"));
         
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         CharacterHistoryPosteriorPredictiveMonitor*          clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                                  //!< Monitor at generation gen
         void                                swapNode(DagNode *oldN, DagNode *newN);
         
         // FileMonitor functions

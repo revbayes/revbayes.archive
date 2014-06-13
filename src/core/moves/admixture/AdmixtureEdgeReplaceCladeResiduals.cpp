@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : Move( v, w), variable( v ), rate(r), branchRates(br), residuals(res), activeGen(ag), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa) {
+AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector< ContinuousStochasticNode*> br, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), branchRates(br), residuals(res), activeGen(ag), changed(false), failed(false), failedAdd(false), allowSisterAdmixture(asa) {
 
 //AdmixtureEdgeReplaceCladeResiduals::AdmixtureEdgeReplaceCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), maxEvents(me), allowSisterAdmixture(asa), numNodes(0) {
     
@@ -473,7 +473,7 @@ void AdmixtureEdgeReplaceCladeResiduals::acceptSimpleMove(void)
 
 void AdmixtureEdgeReplaceCladeResiduals::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

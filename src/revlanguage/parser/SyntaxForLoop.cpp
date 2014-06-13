@@ -118,7 +118,7 @@ RbLanguageObject* SyntaxForLoop::getNextLoopState( void ) {
 //    // the setting of the new iterator might have affected other nodes; therefore we call a keep
 //    theVar.getDagNode()->keep();
     
-    RbLanguageObject *elm = stateSpace->getElement( nextElement );
+    RbLanguageObject *elm = stateSpace->getElement( size_t(nextElement) );
     
     nextElement++;
 

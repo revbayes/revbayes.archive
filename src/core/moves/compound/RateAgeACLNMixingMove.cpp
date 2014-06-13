@@ -138,8 +138,9 @@ void RateAgeACLNMixingMove::swapNode(DagNode *oldN, DagNode *newN) {
 }
 
 
-void RateAgeACLNMixingMove::tune( void ) {
-    double rate = numAccepted / double(numTried);
+void RateAgeACLNMixingMove::tune( void )
+{
+//    double rate = numAccepted / double(numTried);
     
     // do nothing right now
 }
