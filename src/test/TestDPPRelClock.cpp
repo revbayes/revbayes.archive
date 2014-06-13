@@ -103,6 +103,7 @@ bool TestDPPRelClock::run( void ) {
     std::vector<std::string> names = data[0]->getTaxonNames();
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
 	DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
+	tau->setValue( trees[0] );
 
 	
 	// ####################################
@@ -121,7 +122,7 @@ bool TestDPPRelClock::run( void ) {
 	//    where meanCP = dpA / dpB
 	ConstantNode<double> *dpA  = new ConstantNode<double>("dp_a", new double(2.0) );
 	ConstantNode<double> *dpB  = new ConstantNode<double>("dp_b", new double(dpA->getValue() / meanCP) );
-	StochasticNode<double> *cp = new StochasticNode<double>("DPP.cp", new GammaDistribution(dpA, dpB) );
+	StochasticNode<double> *cp = new StochasticNode<double>("DPP.cp", new GammaDistribution(dpA, dpB) ); 
 //	ConstantNode<double> *cp = new ConstantNode<double>("DPP.cp", new double(meanCP) );
 	
 	// G_0 is an Gamma distribution
@@ -159,7 +160,6 @@ bool TestDPPRelClock::run( void ) {
     std::cout << "Q:\t" << q->getValue() << std::endl;
     
 	
-	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
 	std::cout << " ** origin   " << origin->getValue() << std::endl;
 	std::cout << " ** root age " << trees[0]->getRoot().getAge() << std::endl;
@@ -209,7 +209,7 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( numCats );
     monitoredNodes.push_back( meanBrRate );
     monitoredNodes.push_back( cp );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "  " ) );
  
 	monitoredNodes.push_back( div );
 	monitoredNodes.push_back( turn );
