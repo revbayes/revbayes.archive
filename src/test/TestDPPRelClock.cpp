@@ -33,6 +33,8 @@
 #include "NearestNeighborInterchange.h"
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
+#include "NormalDistribution.h"
+#include "OriginTimeSlide.h"
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
 #include "RootTimeSlide.h"
@@ -78,9 +80,11 @@ bool TestDPPRelClock::run( void ) {
 	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
 	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
-    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(trees[0]->getRoot().getAge()*1.5));
+	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(10.0));
 
 	//   Stochastic nodes
+    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
 //	ConstantNode<double> *turnA   = new ConstantNode<double>("turn.uni_min", new double(0.0));			// Uniform distribution min
 //	ConstantNode<double> *turnB   = new ConstantNode<double>("turn.uni_max", new double(1.0));				// Uniform distribution max
@@ -182,6 +186,7 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 //    moves.push_back( new SubtreeScale( tau, 5.0 ) );
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+	moves.push_back( new OriginTimeSlide( origin, tau, 50.0, true, 10.0 ) );
 	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 200.0, 6, 0, true, 2.0, 2.0 ) );
@@ -200,6 +205,7 @@ bool TestDPPRelClock::run( void ) {
     std::vector<Monitor*> monitors;
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( treeHeight );
+	monitoredNodes.push_back( origin );
     monitoredNodes.push_back( numCats );
     monitoredNodes.push_back( meanBrRate );
     monitoredNodes.push_back( cp );
@@ -215,7 +221,7 @@ bool TestDPPRelClock::run( void ) {
  	monitoredNodes.push_back( scaleRate );
  	monitoredNodes.push_back( branchSubRates );
 
-	std::string logFN = "clock_test/test_rb_DPP_CR_rn_2.log";
+	std::string logFN = "clock_test/test_rb_DPP_OT_pr_1.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 
     std::set<DagNode*> monitoredNodes2;
@@ -227,7 +233,7 @@ bool TestDPPRelClock::run( void ) {
     /* instantiate the model */
     Model myModel = Model(q);
     
-	mcmcGenerations = 100000;
+	mcmcGenerations = 30000;
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
@@ -254,7 +260,7 @@ bool TestDPPRelClock::run( void ) {
 //	delete q;
 //	delete tau;
 	delete charactermodel;
-	delete treeHeight;
+//	delete treeHeight;
 	delete meanBrRate;
 	delete numCats;
 	delete g;
