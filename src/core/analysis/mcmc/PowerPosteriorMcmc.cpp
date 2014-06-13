@@ -92,7 +92,6 @@ void PowerPosteriorMcmc::burnin(size_t generations, size_t tuningInterval) {
     std::cout << "*";
     std::cout.flush();
     
-    RandomNumberGenerator* rng        = GLOBAL_RNG;
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
