@@ -48,7 +48,7 @@ void SimplexMove::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getValue() ).getValueNode();
     RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
-    value = new RevBayesCore::SimplexMove(n, a, nc, o, t, w);
+    value = new RevBayesCore::SimplexMove(n, a, size_t(nc), o, t, w);
 }
 
 

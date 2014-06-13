@@ -171,7 +171,7 @@ double RbStatistics::Binomial::do_search(double y, double *z, double p, double n
     else {		/* search to the right */
         for(;;) {
             y = RbMath::Helper::fmin2(y + incr, n);
-            if(y == n || (*z = RbStatistics::Binomial::cdf(y, n, pr) >= p) )
+            if(y == n || ( (*z = RbStatistics::Binomial::cdf(y, n, pr)) >= p) )
                 return y;
         }
     }

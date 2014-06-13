@@ -21,13 +21,13 @@
 #ifndef SimpleMove_H
 #define SimpleMove_H
 
-#include "Move.h"
+#include "MoveOld.h"
 
 #include <vector>
 
 namespace RevBayesCore {
 
-    class SimpleMove : public Move {
+    class SimpleMove : public MoveOld {
     
     public:
         virtual                                 ~SimpleMove(void);                                                         //!< Destructor

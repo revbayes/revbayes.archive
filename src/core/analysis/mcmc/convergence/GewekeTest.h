@@ -23,7 +23,7 @@ namespace RevBayesCore {
         GewekeTest(double p, double f1, double f2);
     
         // implementen functions from convergence diagnostic
-        bool        assessConvergenceSingleChain(const std::vector<double>& values, int burnin);
+        bool        assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin);
     
         // setters
         void        setFraction1(double f1) { frac1 = f1; }

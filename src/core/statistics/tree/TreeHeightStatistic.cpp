@@ -20,13 +20,6 @@ TreeHeightStatistic::TreeHeightStatistic(const TypedDagNode<TimeTree> *t) : Type
 }
 
 
-TreeHeightStatistic::TreeHeightStatistic(const TreeHeightStatistic &n) : TypedFunction<double>( n ), 
-tree( n.tree ) 
-{
-    // no need to add parameters, happens automatically
-}
-
-
 TreeHeightStatistic::~TreeHeightStatistic( void ) 
 {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!

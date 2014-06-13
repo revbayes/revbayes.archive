@@ -63,7 +63,7 @@ RbLanguageObject* PowerPosterior::executeMethod(std::string const &name, const s
     if (name == "run") {
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        value->run( gen );
+        value->run( size_t(gen) );
         
         return NULL;
     } 
@@ -71,7 +71,7 @@ RbLanguageObject* PowerPosterior::executeMethod(std::string const &name, const s
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
         int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
-        value->burnin( gen, tuningInterval );
+        value->burnin( (unsigned long)gen, size_t(tuningInterval) );
         
         return NULL;
     } 

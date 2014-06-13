@@ -99,6 +99,7 @@ namespace RevBayesCore {
 
 #include "DiscreteCharacterState.h"
 #include "DiscreteTaxonData.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 #include <cmath>
@@ -693,7 +694,7 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::indexOfTaxonWithName( std:
         }
     }
     
-    return -1;
+    return RbConstants::Size_t::nan;
 }
 
 

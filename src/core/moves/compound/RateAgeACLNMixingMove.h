@@ -22,15 +22,15 @@ namespace RevBayesCore {
         RateAgeACLNMixingMove( std::vector<DagNode*> n, double ep, bool t, double w);                                                         //!<  constructor
         
         // Basic utility functions
-        RateAgeACLNMixingMove*               clone(void) const;                                                                  //!< Clone object
-        void                            swapNode(DagNode *oldN, DagNode *newN);
+        RateAgeACLNMixingMove*                  clone(void) const;                                                                  //!< Clone object
+        void                                    swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
-        const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-        double                          performCompoundMove(void);                                                            //!< Perform move
-        void                            printParameterSummary(std::ostream &o) const;
-        void                            rejectCompoundMove(void);
-        void                            tune(void);
+        const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
+        double                                  performCompoundMove(void);                                                            //!< Perform move
+        void                                    printParameterSummary(std::ostream &o) const;
+        void                                    rejectCompoundMove(void);
+        void                                    tune(void);
         
     private:
         

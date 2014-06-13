@@ -34,11 +34,8 @@ namespace RevBayesCore {
         
     public:
         TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c);                                                                                   //!< Default constructor
-        TmrcaStatistic(const TmrcaStatistic& t);                                                                                      //!< Copy constructor
         virtual                                    ~TmrcaStatistic(void);                                                                  //!< Destructor
-        
-        TmrcaStatistic&                             operator=(const TmrcaStatistic& t);
-        
+                
         // Basic utility functions
         TmrcaStatistic*                             clone(void) const;                                                                          //!< Clone object
         void                                        update(void);                                                                               //!< Clone the function
@@ -47,10 +44,14 @@ namespace RevBayesCore {
         void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                            //!< Implementation of swaping parameters
         
     private:
+        void                                        initialize(void);
+        
         // members
         const TypedDagNode<TimeTree>*               tree;
         Clade                                       clade;
-        int                                         index;
+        bool                                        initialized;
+        size_t                                      index;
+        size_t                                      taxaCount;
     };
     
 }

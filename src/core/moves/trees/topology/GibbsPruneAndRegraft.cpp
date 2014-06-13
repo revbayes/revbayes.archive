@@ -85,7 +85,7 @@ double GibbsPruneAndRegraft::performSimpleMove( void )
     TopologyNode* node;
     do {
         double u = rng->uniform01();
-        size_t index = std::floor(tau.getNumberOfNodes() * u);
+        size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->getParent().isRoot() );
     
@@ -139,7 +139,7 @@ double GibbsPruneAndRegraft::performSimpleMove( void )
     }
     
     double ran = rng->uniform01() * sumOfWeights;
-    int index = 0;
+    size_t index = 0;
     while (ran > 0.0) {
         ran -= weights[index];
         index++;

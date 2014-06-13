@@ -47,7 +47,7 @@ namespace RevBayesCore {
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         size_t                          getNumberOfStates(void) const;                      //!< Get the number of discrete states for the character
         unsigned long                   getState(void) const;                               //!< Get the discrete observation
-        unsigned int                    getStateIndex(void) const;
+        size_t                          getStateIndex(void) const;
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
         bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
         void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
@@ -56,10 +56,10 @@ namespace RevBayesCore {
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
     
     private:
-        unsigned int                    computeState(char symbol) const;                    //!< Compute the internal state value for this character.
+        char                            computeState(char symbol) const;                    //!< Compute the internal state value for this character.
     
         char                            state;
-        unsigned int                    stateIndex;
+        size_t                          stateIndex;
     
     };
     

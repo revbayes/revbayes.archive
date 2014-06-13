@@ -440,7 +440,7 @@ void Environment::setName(size_t i, const std::string &name) {
     variableTable.insert(std::pair<std::string, VariableSlot* >(name, &theSlot));
 
     // insert the name at it's old position
-    varNames.insert(varNames.begin() + i, name);
+    varNames.insert(varNames.begin() + long(i), name);
 }
 
 size_t Environment::size(void) const {

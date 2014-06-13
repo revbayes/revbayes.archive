@@ -18,14 +18,14 @@
 
 #include "AbstractCharacterHistoryCtmc.h"
 #include "BranchHistory.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
 
 namespace RevBayesCore {
 
 
-class CharacterHistoryCtmcNodeUpdate : public Move {
+class CharacterHistoryCtmcNodeUpdate : public MoveOld {
         
     public:
         CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector<StochasticNode<BranchHistory>* > bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w);                                    //!<  constructor

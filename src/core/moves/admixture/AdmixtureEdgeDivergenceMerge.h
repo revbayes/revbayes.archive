@@ -13,7 +13,7 @@
 #include <set>
 #include <string>
 
-#include "Move.h"
+#include "MoveOld.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "ContinuousStochasticNode.h"
@@ -23,7 +23,7 @@
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeDivergenceMerge : public Move {
+    class AdmixtureEdgeDivergenceMerge : public MoveOld {
         
     public:
        

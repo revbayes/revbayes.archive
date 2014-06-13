@@ -104,8 +104,8 @@ bool TestIndependentClockRates::run( void ) {
 	
 	size_t numBranches = 2 * data[0]->getNumberOfTaxa() - 2;
 	
-    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(1.0) );
-    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(2.0) );
+    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(4.0) );
+    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(8.0) );
 
 	std::vector<const TypedDagNode<double> *> brates;
 	std::vector< StochasticNode<double> *> bratesNotConst;

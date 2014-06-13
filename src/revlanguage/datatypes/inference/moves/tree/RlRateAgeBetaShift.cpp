@@ -9,6 +9,7 @@
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "Vector.h"
+#include "VectorFunction.h"
 
 
 using namespace RevLanguage;
@@ -35,7 +36,17 @@ void RateAgeBetaShift::constructInternalObject( void ) {
     bool at = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
     double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-//    value = new RevBayesCore::RateAgeBetaShift(t, d, at, w);
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const Vector<RealPos> &>( rates->getValue() ).getValueNode();
+    std::vector< RevBayesCore::StochasticNode<double> *> rates;
+    RevBayesCore::DeterministicNode<std::vector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode<std::vector<double> > *>( tmpRates );
+    const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = static_cast< const RevBayesCore::VectorFunction<double> &>( dnode->getFunction() ).getParams();
+
+    for (size_t i = 0; i < pars.size(); ++i)
+    {
+        rates.push_back( const_cast<RevBayesCore::StochasticNode<double>* >(static_cast<const RevBayesCore::StochasticNode<double>* >( pars[i] ) ) );
+    }
+    
+    value = new RevBayesCore::RateAgeBetaShift(t, rates, d, at, w);
 }
 
 

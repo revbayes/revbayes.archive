@@ -25,14 +25,14 @@
 #include "StochasticNode.h"
 #include "DeterministicNode.h"
 #include "TypedDagNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "ConstantNode.h"
 
 
 namespace RevBayesCore {
 	
     template <class valueType>
-    class DPPGibbsConcentrationMove : public Move {
+    class DPPGibbsConcentrationMove : public MoveOld {
 		
     public:
         DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w);                                                                      //!< Internal constructor
@@ -73,7 +73,7 @@ namespace RevBayesCore {
 
 template <class valueType>
 RevBayesCore::DPPGibbsConcentrationMove<valueType>::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : 
-  Move( n, w, false ), variable( n ), numCats(v), gammaShape(gS), gammaRate(gR), numElem(ne) {
+  MoveOld( n, w, false ), variable( n ), numCats(v), gammaShape(gS), gammaRate(gR), numElem(ne) {
 
 	nodes.insert(numCats);
 	nodes.insert(gammaShape);
@@ -147,7 +147,7 @@ void RevBayesCore::DPPGibbsConcentrationMove<valueType>::performGibbsMove( void 
 template <class valueType>
 void RevBayesCore::DPPGibbsConcentrationMove<valueType>::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     if (oldN == variable){
 		variable = static_cast< StochasticNode<double>* >( newN );
 	}

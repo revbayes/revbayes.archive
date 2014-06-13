@@ -14,12 +14,12 @@
 #include <set>
 #include <string>
 
-#include "Move.h"
+#include "MoveOld.h"
 #include "ConstantNode.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureDelayDecrement : public Move {
+    class AdmixtureDelayDecrement : public MoveOld {
         
     public:
         AdmixtureDelayDecrement( ConstantNode<int>* dt, double w );                                                    //!<  constructor

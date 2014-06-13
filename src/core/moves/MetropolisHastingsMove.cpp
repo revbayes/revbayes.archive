@@ -27,12 +27,29 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
 {
     nodes = proposal->getNodes();
     
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->getAffectedNodes( affectedNodes );
     }
+    
 }
 
+
+/**
+ * Copy constructor.
+ * We need to create a deep copy of the proposal here.
+ *
+ * \param[in]   m   The object to copy.
+ *
+ */
+MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) : AbstractMove(m),
+    affectedNodes( m.affectedNodes ),
+    nodes( m.nodes ),
+    numAccepted( m.numAccepted ),
+    proposal( m.proposal->clone() )
+{
+    
+}
 
 
 /**
@@ -41,6 +58,28 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
 MetropolisHastingsMove::~MetropolisHastingsMove( void )
 {
     delete proposal;
+}
+
+
+/** 
+ * Overloaded assignment operator.
+ * We need a deep copy of the operator.
+ */
+MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::MetropolisHastingsMove &m)
+{
+    
+    if ( this != &m )
+    {
+        // free memory
+        delete proposal;
+        
+        affectedNodes = m.affectedNodes;
+        nodes = m.nodes;
+        numAccepted = m.numAccepted;
+        proposal = m.proposal->clone();
+    }
+    
+    return *this;
 }
 
 
@@ -58,6 +97,18 @@ MetropolisHastingsMove* MetropolisHastingsMove::clone( void ) const
 
 
 /**
+ * Get the set of nodes on which this move is working on.
+ *
+ * \return The set of nodes.
+ */
+const std::set<DagNode*>& MetropolisHastingsMove::getDagNodes( void ) const
+{
+    
+    return nodes;
+}
+
+
+/**
  * Get moves' name of object 
  *
  * \return The moves' name.
@@ -70,7 +121,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( void )  
+void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -80,15 +131,20 @@ void MetropolisHastingsMove::performMove( void )
     
     // first we touch all the nodes
     // that will set the flags for recomputation
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->touch();
     }
+    
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
         lnAcceptanceRatio += (*it)->getLnProbabilityRatio();
     }
+    
+    // exponentiate with the chain heat
+    lnAcceptanceRatio *= heat;
+    
     // finally add the Hastings ratio
     lnAcceptanceRatio += lnHastingsRatio;
     
@@ -201,8 +257,15 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o.precision(previousPrecision);
     
     
+}
 
-    
+/**
+ * Reset the move counters. Here we only reset the counter for the number of accepted moves.
+ *
+ */
+void MetropolisHastingsMove::resetMoveCounters( void )
+{
+    numAccepted = 0;
 }
 
 
@@ -215,17 +278,18 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
 void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN) 
 {
     
-    for (size_t i = 0; i < nodes.size(); ++i) 
+    // find the old node
+    std::set<DagNode*>::iterator pos = nodes.find( oldN );
+    // remove it from the set if it was contained
+    if ( pos != nodes.end() )
     {
-        // replace the node if it is thise one
-        if ( nodes[i] == oldN) 
-        {
-            nodes[i] = newN;
-        }
+        nodes.erase( pos );
     }
-    
+    // insert the new node
+    nodes.insert( newN );
+        
     affectedNodes.clear();
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->getAffectedNodes( affectedNodes );
     }

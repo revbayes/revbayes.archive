@@ -19,19 +19,19 @@ namespace RevBayesCore {
     public:
         StationarityTest();
         StationarityTest(double p);
-        StationarityTest(int nBlocks, double p);
+        StationarityTest(size_t nBlocks, double p);
     
         // implementen functions from convergence diagnostic
-        bool        assessConvergenceSingleChain(const std::vector<double>& values, int burnin);
-        bool        assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<int>& burnin);
+        bool        assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin);
+        bool        assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnin);
     
         // setters
-        void        setNBlocks(int n) { nBlocks = n; }
+        void        setNBlocks(size_t n) { nBlocks = n; }
         void        setP(double f) { this->p = f; }
     
     private:
     
-        int         nBlocks;                                                                                            //!< number of blocks 
+        size_t      nBlocks;                                                                                            //!< number of blocks 
         double      p;                                                                                                  //!< sginificance level
     
     };

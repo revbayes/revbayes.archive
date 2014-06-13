@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-CompoundMove::CompoundMove(std::vector<DagNode*> n, double w, bool t) : Move( n, w, t ), theNodes( n ) {
+CompoundMove::CompoundMove(std::vector<DagNode*> n, double w, bool t) : MoveOld( n, w, t ), theNodes( n ) {
     
     changed = false;
 
@@ -103,7 +103,7 @@ void CompoundMove::rejectMove( void ) {
 
 void CompoundMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    CompoundMove::swapNode(oldN, newN);
     
     for (std::vector<DagNode*>::iterator it = theNodes.begin(); it != theNodes.end(); it++)
     {

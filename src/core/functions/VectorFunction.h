@@ -44,6 +44,9 @@ namespace RevBayesCore {
         void                                                touch(DagNode *toucher );
         void                                                update(void);
         
+        // a test
+        const std::vector<const TypedDagNode<valueType>* >& getParams() const { return parameters; }
+        
     protected:
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
         
@@ -58,9 +61,11 @@ namespace RevBayesCore {
 
 template <class valueType>
 RevBayesCore::VectorFunction<valueType>::VectorFunction(const std::vector<const TypedDagNode<valueType> *> &args) : TypedFunction< std::vector<valueType> >( new std::vector<valueType>() ), parameters( args ) {
+
     // add the lambda parameter as a parent
     typename std::vector<const TypedDagNode<valueType>* >::iterator it;
-    for (it = parameters.begin(); it != parameters.end(); ++it) {
+    for (it = parameters.begin(); it != parameters.end(); ++it)
+    {
         this->addParameter( *it );
     }
     

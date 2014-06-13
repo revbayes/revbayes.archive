@@ -110,7 +110,7 @@ AminoAcidState* AminoAcidState::clone(void) const {
 
 unsigned int AminoAcidState::computeState(char symbol) const {
     /* A R N D C Q E G H I L K M F P S T W Y V */
-    symbol = toupper( symbol );
+    symbol = char( toupper( symbol ) );
     switch ( symbol ) {
         case '-':
             return 0x00000;
@@ -180,7 +180,8 @@ unsigned long AminoAcidState::getState( void ) const {
     return state;
 }
 
-unsigned int AminoAcidState::getStateIndex( void ) const {
+size_t AminoAcidState::getStateIndex( void ) const
+{
     return stateIndex;
 }
 
@@ -264,8 +265,8 @@ void AminoAcidState::setGapState(bool tf) {
 
 void AminoAcidState::setState(size_t pos, bool val) {
     
-    state &= val << pos;
-    stateIndex = (unsigned)pos;
+    state &= ((unsigned int)val) << pos;
+    stateIndex = pos;
 }
 
 

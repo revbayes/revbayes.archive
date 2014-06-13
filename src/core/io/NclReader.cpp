@@ -63,8 +63,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
     
 	std::vector<AbstractCharacterData* > cmv;
     
-	int numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	for (int tBlck=0; tBlck<numTaxaBlocks; tBlck++)
+	size_t numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
+	for (unsigned tBlck=0; tBlck<numTaxaBlocks; tBlck++)
     {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
@@ -203,7 +203,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigTaxa = charblock->GetNTax();
+	size_t numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -213,7 +213,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
     cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // get the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
@@ -236,9 +236,9 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
             }
             else
             {
-                int nStates = charblock->GetNumStates(origTaxIndex, *cit);
+                size_t nStates = charblock->GetNumStates(origTaxIndex, *cit);
                 aaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
-                for(int s=1; s<nStates; s++)
+                for(unsigned s=1; s<nStates; s++)
                     aaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
             }
             dataVec.addCharacter( aaState );
@@ -261,7 +261,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix
         return NULL;
     
     // get the set of characters (and the number of taxa)
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
@@ -269,7 +269,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAminoAcidMatrix
     cMat->setHomologyEstablished(false);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
@@ -305,7 +305,7 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -315,7 +315,7 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
     cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
@@ -354,7 +354,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -364,7 +364,7 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
     cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
@@ -413,7 +413,7 @@ DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnaligne
         return NULL;
     
     // get the set of characters (and the number of taxa)
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
@@ -421,7 +421,7 @@ DiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatrix(NxsUnaligne
     cMat->setHomologyEstablished(false);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
@@ -457,7 +457,7 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -467,7 +467,7 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
     cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
@@ -516,7 +516,7 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
         return NULL;
     
     // get the set of characters (and the number of taxa)
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     NxsTaxaBlockAPI* taxonBlock = charblock->GetTaxaBlockPtr();
     
     // instantiate the character matrix
@@ -524,7 +524,7 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
     cMat->setHomologyEstablished(false);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
@@ -560,7 +560,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
         charset.insert(i);
-	int numOrigTaxa = charblock->GetNTax();
+	unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -577,7 +577,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     cMat->setHomologyEstablished(true);
     
 	// read in the data, including taxon names
-	for (int origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++) 
+	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
     {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
@@ -666,7 +666,7 @@ std::string NclReader::intuitDataType(std::string& s) {
     static std::string nucStates = "acgtu";
     
     // and intialize a few variables we'll be needing
-    int nucCount = 0, nMissing = 0;
+    size_t nucCount = 0, nMissing = 0;
     bool notDna = false, notRna = false, notAa = false, notStd = false;
     
     // loop over the string (s) that contains the raw data we look at the state and try to determine if the

@@ -20,12 +20,12 @@
 #include <ostream>
 
 #include "DirichletProcessPriorDistribution.h"
-#include "SimpleMove.h"
+#include "MoveOld.h"
 
 namespace RevBayesCore {
 
     template <class valueType>
-    class DPPAllocateAuxGibbsMove : public Move {
+    class DPPAllocateAuxGibbsMove : public MoveOld {
     
     public:
         DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
@@ -62,7 +62,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> > *v, int na, double w) : Move( v, w, false ), variable( v ) {
+RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> > *v, int na, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	numAuxCat = na;
 }
@@ -177,7 +177,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 template <class valueType>
 void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     variable = static_cast<StochasticNode< std::vector<valueType> > * >( newN );
 }
 
