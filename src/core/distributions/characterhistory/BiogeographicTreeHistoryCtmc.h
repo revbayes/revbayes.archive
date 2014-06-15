@@ -74,6 +74,10 @@ namespace RevBayesCore {
         int                                                 getCladogenicState(const TopologyNode& nd);
         void                                                setCladogenicState(const TopologyNode& nd, int s);
         
+        // epoch info
+        const std::vector<double>&                          getEpochs(void) const;
+        
+        
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
         
@@ -105,6 +109,7 @@ namespace RevBayesCore {
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         std::vector<std::vector<double> >                   tipProbs;
+        std::vector<double>                                 epochs;
         
         // flags specifying which model variants we use
         std::vector<int>                                    cladogenicState;
@@ -150,6 +155,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     
     cladogenicState                             = std::vector<int>(this->histories.size(), (cladogenicEvents ? 1 : 0));
     buddingState                                = std::vector<int>(this->histories.size(), 0);
+    epochs                                      = std::vector<double>(1,0.0);
 //    epochs                                      = std::vector<double>(1,0.0);
 
     
@@ -180,7 +186,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     // flags specifying which model variants we use
     cladogenicState                             = d.cladogenicState;
     buddingState                                = d.buddingState;
-//    epochs                                      = d.epochs;
+    epochs                                      = d.epochs;
     branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
     branchHeterogeneousSubstitutionMatrices     = d.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = d.rateVariationAcrossSites;

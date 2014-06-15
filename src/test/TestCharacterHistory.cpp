@@ -67,6 +67,7 @@
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "MetropolisHastingsMove.h"
 #include "PathRejectionSampleProposal.h"
+#include "EpochPathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
 #include "NodeCladogenesisRejectionSampleProposal.h"
 #include "TipRejectionSampleProposal.h"
@@ -139,9 +140,9 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(6); seed.push_back(1);
+    seed.push_back(7); seed.push_back(1);
 //    old_seed = seed;
-    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -151,7 +152,8 @@ bool TestCharacterHistory::run_exp(void) {
     bool useDistances = true;
     bool useClock = !true;
     bool forbidExtinction = true;
-    bool useCladogenesis = true;
+    bool useCladogenesis = !true;
+    bool useEpochs = !true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
@@ -174,8 +176,8 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "vireya.atlas.txt";
-//    afn = "hawaii.atlas.txt";
-    afn = "hawaii_complex.atlas.txt";
+    afn = "hawaii.atlas.txt";
+//    afn = "hawaii_complex.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     TimeAtlas* ta = new TimeAtlas(&tsdr);
@@ -245,6 +247,9 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
     brmf_sample->setGainLossRates(glr_vector);
     brmf_sample->setClockRate(clockRate);
+    if (useDistances)
+        brmf_sample->setGeographicDistanceRateModifier(ddd);
+
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
         
     // and the character model
@@ -291,8 +296,6 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useDistances && true)
     {
-//        moves.push_back( new ScaleMove(dp, 0.25, false, 3) );
-//        moves.push_back( new ScaleMove(dp, 0.1, false, 3) );
         moves.push_back(new SlidingMove(dp, 0.1, false, 5 ));
         moves.push_back(new SlidingMove(dp, 0.3, false, 2 ));
     }
@@ -305,23 +308,37 @@ bool TestCharacterHistory::run_exp(void) {
 		moves.push_back( new ScaleMove(glr_nonConst[i], 0.1, false, 2) );
     }
 
-
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
-    moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
-    
-    
-    if (useCladogenesis)
+    // path proposals
+    if (useEpochs)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, numNodes*2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes * 2));
+    }
+    else if (!useEpochs)
+    {
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
+    }
+    
+    // node proposals
+    if (useEpochs)
+    {
+        
+        EpochPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.2, nd), 0.2, false, numNodes*2));
         
     }
-    else
+    else if (useCladogenesis && !useEpochs)
+    {
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, numNodes*2));
+    }
+    else if (!useCladogenesis && !useEpochs)
     {
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
     }
 
-    
+    // tip proposals
     if (usingAmbiguousCharacters)
     {
 //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.5, nd), 0.5, false, numNodes/2));
@@ -330,8 +347,6 @@ bool TestCharacterHistory::run_exp(void) {
 
     
 
-//    moves.push_back(new SamplePathHistoryCtmcMove<StandardState, TimeTree>(charactermodel, tau, 0.2, false, 50));
-    
     
     ////////////
     // monitors
@@ -347,7 +362,7 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     
 
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb1" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
