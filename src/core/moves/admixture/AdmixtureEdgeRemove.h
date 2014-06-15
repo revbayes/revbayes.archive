@@ -14,14 +14,14 @@
 #include <string>
 
 #include "ConstantNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
 #include "Tree.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeRemove : public Move {
+    class AdmixtureEdgeRemove : public MoveOld {
         
     public:
         AdmixtureEdgeRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, ConstantNode<int>* dt, double weight);                                            //!<  constructor

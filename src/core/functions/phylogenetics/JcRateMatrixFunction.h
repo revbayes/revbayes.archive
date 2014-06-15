@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class JcRateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
-        JcRateMatrixFunction(int ns);
+        JcRateMatrixFunction(size_t ns);
         JcRateMatrixFunction(const JcRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~JcRateMatrixFunction(void);                                                    //!< Virtual destructor
         

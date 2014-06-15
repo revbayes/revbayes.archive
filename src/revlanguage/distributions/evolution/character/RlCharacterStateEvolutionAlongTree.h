@@ -83,7 +83,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getValue() ).getValueNode();
-    int n = static_cast<const Natural &>( nSites->getValue() ).getValue();
+    size_t n = size_t( static_cast<const Natural &>( nSites->getValue() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getValue() ).getValue();
     
     size_t nNodes = tau->getValue().getNumberOfNodes();

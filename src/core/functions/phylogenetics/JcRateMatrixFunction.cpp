@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-JcRateMatrixFunction::JcRateMatrixFunction(int ns) : TypedFunction<RateMatrix>( new RateMatrix_JC(ns) ) {
+JcRateMatrixFunction::JcRateMatrixFunction(size_t ns) : TypedFunction<RateMatrix>( new RateMatrix_JC(ns) ) {
     
     update();
 }

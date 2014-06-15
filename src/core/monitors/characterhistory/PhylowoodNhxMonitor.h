@@ -26,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        PhylowoodNhxMonitor(TypedDagNode<TimeTree> *t, std::vector< StochasticNode< BranchHistory >* > bh, std::vector<std::vector<double> > gc, int g, int mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        PhylowoodNhxMonitor(TypedDagNode<TimeTree> *t, std::vector< StochasticNode< BranchHistory >* > bh, std::vector<std::vector<double> > gc, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         // new PhylowoodNhxMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t"));
         
@@ -36,15 +36,15 @@ namespace RevBayesCore {
         PhylowoodNhxMonitor*          clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                                  //!< Monitor at generation gen
         void                                swapNode(DagNode *oldN, DagNode *newN);
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing
         void                                openStream(void);                                                   //!< Open the stream for writing
         void                                printHeader(void);                                                  //!< Print header
-        std::vector<unsigned int>           getChildCharacterCounts(int idx);
-        std::vector<unsigned int>           getParentCharacterCounts(int idx);
+        std::vector<unsigned int>           getChildCharacterCounts(size_t idx);
+        std::vector<unsigned int>           getParentCharacterCounts(size_t idx);
         long                                getNumSamples(void);
         
     private:
@@ -78,7 +78,7 @@ namespace RevBayesCore {
         bool                                showMetadata;
         bool                                showRates;
         long                                numSamples;
-        long                                maxGen;
+        unsigned long                       maxGen;
         long                                burn;
         
     };

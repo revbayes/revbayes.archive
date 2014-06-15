@@ -30,10 +30,10 @@ bool UserInterface::ask(std::string msg) {
 	RBOUT(msg + "? (yes/no) ");
     std::cin >> answer;
     for (size_t i=0; i<answer.size(); i++)
-        answer[i] = tolower(answer[i]);
+        answer[i] = char( tolower(answer[i])) ;
 
     while (answer!="y" && answer!="yes" && answer!="n" && answer!="no") 
-		{
+    {
         std::getline(std::cin, dummy);
         std::cout << std::endl;
 		RBOUT("Please answer yes or no.");
@@ -41,8 +41,8 @@ bool UserInterface::ask(std::string msg) {
 
         std::cin >> answer;
         for (size_t i=0; i<answer.size(); i++)
-            answer[i] = tolower(answer[i]);
-		}
+            answer[i] = char( tolower(answer[i]) );
+    }
     std::getline(std::cin, dummy);
 
     if (answer[0] == 'y')

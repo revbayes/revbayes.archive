@@ -148,7 +148,7 @@ unsigned long StandardState::getState( void ) const {
     return state;
 }
 
-unsigned int StandardState::getStateIndex( void ) const {
+size_t StandardState::getStateIndex( void ) const {
     return stateIndex;
 }
 
@@ -200,8 +200,8 @@ void StandardState::setGapState(bool tf) {
 
 void StandardState::setState(size_t pos, bool val) {
     
-    state &= val << pos;
-    stateIndex = (unsigned)pos;
+    state &= ((unsigned long)val) << pos;
+    stateIndex = pos;
 }
 
 

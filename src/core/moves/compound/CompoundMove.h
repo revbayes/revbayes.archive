@@ -21,13 +21,13 @@
 #ifndef CompoundMove_H
 #define CompoundMove_H
 
-#include "Move.h"
+#include "MoveOld.h"
 
 #include <vector>
 
 namespace RevBayesCore {
 
-    class CompoundMove : public Move {
+    class CompoundMove : public MoveOld {
     
     public:
         virtual                                 ~CompoundMove(void);                                                         //!< Destructor

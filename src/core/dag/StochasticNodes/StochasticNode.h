@@ -191,7 +191,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void ) {
 template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void ) {
     
-    return this->heat * ( getLnProbability() - storedLnProb );
+    return getLnProbability() - storedLnProb;
 }
 
 

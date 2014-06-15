@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-CharacterHistoryCtmcNodeUpdate::CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector< StochasticNode<BranchHistory> *> bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w) : Move(n, w, tuning), changed(false), variable(n), tree(t), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates()), index(n->getValue().getIndex())
+CharacterHistoryCtmcNodeUpdate::CharacterHistoryCtmcNodeUpdate( StochasticNode<BranchHistory>* n, std::vector< StochasticNode<BranchHistory> *> bhv, StochasticNode<TimeTree>* t, double l, bool tuning, double w) : MoveOld(n, w, tuning), changed(false), variable(n), tree(t), lambda(l), numCharacters(n->getValue().getNumCharacters()), numStates(n->getValue().getNumStates()), index(n->getValue().getIndex())
 
 {
     
@@ -36,7 +36,7 @@ CharacterHistoryCtmcNodeUpdate* CharacterHistoryCtmcNodeUpdate::clone(void) cons
 
 void CharacterHistoryCtmcNodeUpdate::swapNode(DagNode *oldN, DagNode *newN)
 {
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

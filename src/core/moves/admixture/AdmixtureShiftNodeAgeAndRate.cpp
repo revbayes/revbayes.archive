@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureShiftNodeAgeAndRate::AdmixtureShiftNodeAgeAndRate(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, int ni, double d, bool t, double w) : Move( v, w, t), variable( v ), branchRates(br), nodeIndex(ni), changed(false), failed(false), delta(d) {
+AdmixtureShiftNodeAgeAndRate::AdmixtureShiftNodeAgeAndRate(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, int ni, double d, bool t, double w) : MoveOld( v, w, t), variable( v ), branchRates(br), nodeIndex(ni), changed(false), failed(false), delta(d) {
     
     for (size_t i = 0; i < branchRates.size(); i++)
         nodes.insert(branchRates[i]);
@@ -242,7 +242,7 @@ void AdmixtureShiftNodeAgeAndRate::rejectMove( void ) {
 
 void AdmixtureShiftNodeAgeAndRate::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN,newN);
+    MoveOld::swapNode(oldN,newN);
     if (oldN == variable)
         variable = static_cast<StochasticNode<AdmixtureTree>* >(newN) ;
     for (size_t i = 0; i < branchRates.size(); i++)

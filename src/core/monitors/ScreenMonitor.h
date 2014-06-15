@@ -40,7 +40,7 @@ namespace RevBayesCore {
         ScreenMonitor*                      clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         
         // FileMonitor functions
         void                                printHeader(void);                                                  //!< Print header

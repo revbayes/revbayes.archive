@@ -71,7 +71,7 @@ double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
     TopologyNode* node;
     do {
         double u = rng->uniform01();
-        size_t index = std::floor(tau.getNumberOfNodes() * u);
+        size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->getParent().isRoot() );
     
@@ -86,7 +86,7 @@ double FixedNodeheightPruneRegraft::performSimpleMove( void ) {
     // collect the possible reattachement points
     std::vector<TopologyNode*> new_brothers;
     findNewBrothers(new_brothers, *parent, &tau.getRoot());
-    int index = int(rng->uniform01() * new_brothers.size());
+    size_t index = size_t(rng->uniform01() * new_brothers.size());
     TopologyNode* newBro = new_brothers[index];
     
     

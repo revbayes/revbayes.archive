@@ -18,7 +18,7 @@ using namespace RevBayesCore;
  * \param[in]    t    Should this move be tuned.
  * \param[in]    w    Weight of the proposal.
  */
-SingleElementScaleMove::SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), changed(false), lambda( l ), storedValue( 0.0 ), variable( n ) {
+SingleElementScaleMove::SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w ) : MoveOld( n[0], w, t ), changed(false), lambda( l ), storedValue( 0.0 ), variable( n ) {
     
     for (std::vector< StochasticNode<double> *>::const_iterator it = n.begin(); it != n.end(); it++)
         nodes.insert( *it );
@@ -80,7 +80,7 @@ double SingleElementScaleMove::performMove( double& probRatio ) {
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     // choose an index
-    index = int(rng->uniform01() * variable.size());
+    index = size_t(rng->uniform01() * variable.size());
     
     StochasticNode<double> *theNode = variable[index];
     
@@ -135,7 +135,7 @@ void SingleElementScaleMove::rejectMove( void ) {
 
 void SingleElementScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     
     for (size_t i = 0; i < variable.size(); ++i)

@@ -14,6 +14,7 @@
  */
 
 #include "ContinuousCharacterState.h"
+#include "RbConstants.h"
 
 #include <cmath>
 #include <limits>
@@ -95,7 +96,7 @@ double ContinuousCharacterState::getMean( void ) const {
 
 
 size_t ContinuousCharacterState::getNumberOfStates( void ) const {
-    return -1;
+    return RbConstants::Size_t::nan;
 }
 
 

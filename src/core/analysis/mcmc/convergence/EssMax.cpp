@@ -16,17 +16,17 @@ EssMax::EssMax() {
     blockSize = 10;
 }
 
-EssMax::EssMax(int b) {
+EssMax::EssMax(size_t b) {
     this->blockSize     = b;
 }
 
-int EssMax::estimateBurnin(const std::vector<double>& values) {
+size_t EssMax::estimateBurnin(const std::vector<double>& values) {
     // init
     double  max_ess     = 0;
-    int     best_burnin = 0;
+    size_t  best_burnin = 0;
     
     // iterate over possible burnins
-    for (int i=0; i<(int)values.size(); i+=blockSize) {
+    for (size_t i=0; i<values.size(); i+=blockSize) {
         // make mean invalid for recalculation
         analysis.analyseMean(values, i);
         // analyse trace for this burnin

@@ -20,13 +20,13 @@
 #include "DeterministicNode.h"
 #include "Proposal.h"
 #include "RateMap.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
     
     template<class charType, class treeType>
-    class PathRejectionSampleMove : public Move {
+    class PathRejectionSampleMove : public MoveOld {
         
     public:
         PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
@@ -76,7 +76,7 @@ namespace RevBayesCore {
 
 template<class charType, class treeType>
 RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
-    Move(t, w, tuning),
+    MoveOld(t, w, tuning),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -106,7 +106,7 @@ RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRej
 template<class charType, class treeType>
 void RevBayesCore::PathRejectionSampleMove<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN)
 {
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == ctmc)
     {

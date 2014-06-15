@@ -10,21 +10,21 @@ using namespace RevBayesCore;
 
 
 
-Monitor::Monitor(int g) : printgen( g ), model( NULL ) {
+Monitor::Monitor(unsigned long g) : printgen( g ), model( NULL ) {
     
 }
 
-Monitor::Monitor(int g, DagNode *n) : printgen( g ), model( NULL ) {
+Monitor::Monitor(unsigned long g, DagNode *n) : printgen( g ), model( NULL ) {
     
     nodes.push_back( n );
 }
 
-Monitor::Monitor(int g, const std::set<DagNode *> &n) : printgen( g ), model( NULL ) {
+Monitor::Monitor(unsigned long g, const std::set<DagNode *> &n) : printgen( g ), model( NULL ) {
     for (std::set<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
         nodes.push_back(*it);
 }
 
-Monitor::Monitor(int g, const std::vector<DagNode *> &n) : printgen( g ), nodes( n ), model( NULL ) {
+Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) : printgen( g ), nodes( n ), model( NULL ) {
     
 }
 

@@ -385,6 +385,10 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
     {
         return rootFrequencies->getValue();
     }
+    else
+    {
+        throw RbException("BUG: Reached end of a non-void function in BiogeographicTreeHistoryCtmc.");
+    }
     
 }
 

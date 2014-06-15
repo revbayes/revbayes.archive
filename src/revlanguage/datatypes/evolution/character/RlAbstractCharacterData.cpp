@@ -52,7 +52,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
         const RbLanguageObject& argument = args[0].getVariable()->getValue();
         if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
         {
-            int n = static_cast<const Natural&>( argument ).getValue();
+            size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
             // remember that we internally store the character indeces from 0 to n-1
             // but externally represent it as 1 to n
             value->getValue().excludeCharacter( n-1 );
@@ -65,7 +65,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
             {
                 // remember that we internally store the character indeces from 0 to n-1
                 // but externally represent it as 1 to n
-                v.excludeCharacter( x[i]-1 );
+                v.excludeCharacter( size_t(x[i])-1 );
             }
         }
         return NULL;
@@ -182,16 +182,16 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     else if (name == "show") 
     {
         
-        int nt = (int)this->value->getValue().getNumberOfTaxa();
-        for (int i=0; i<nt; i++) 
+        size_t nt = this->value->getValue().getNumberOfTaxa();
+        for (size_t i=0; i<nt; i++)
         {
             
             const RevBayesCore::AbstractTaxonData& taxonData = this->value->getValue().getTaxonData(i);
             std::string taxonName = this->value->getValue().getTaxonNameWithIndex(i);
-            int nc = (int)taxonData.getNumberOfCharacters();
+            size_t nc = taxonData.getNumberOfCharacters();
             std::cout << "   " << taxonName << std::endl;
             std::cout << "   ";
-            for (int j=0; j<nc; j++) 
+            for (size_t j=0; j<nc; j++)
             {
                 
                 const RevBayesCore::CharacterState& o = taxonData[j];

@@ -2,7 +2,6 @@
 #include "FileMonitor.h"
 #include "PowerPosteriorMcmc.h"
 #include "MoveSchedule.h"
-#include "PathSampleMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -46,6 +45,7 @@ PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<Move*> 
 
 
 PowerPosteriorMcmc::PowerPosteriorMcmc(const PowerPosteriorMcmc &m) : model( m.model ), beta( m.beta ), sampleFreq( m.sampleFreq ) {
+    
     const std::vector<Move*>& mvs = m.moves;
     
     // we need to replace the DAG nodes of the monitors and moves
@@ -84,7 +84,7 @@ PowerPosteriorMcmc::~PowerPosteriorMcmc(void) {
     }
 }
 
-void PowerPosteriorMcmc::burnin(int generations, int tuningInterval) {
+void PowerPosteriorMcmc::burnin(size_t generations, size_t tuningInterval) {
     
     
     std::cout << "burning in the chain ..." << std::endl;
@@ -92,13 +92,13 @@ void PowerPosteriorMcmc::burnin(int generations, int tuningInterval) {
     std::cout << "*";
     std::cout.flush();
     
-    RandomNumberGenerator* rng        = GLOBAL_RNG;
 #ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
+    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it)
+    {
         (*it)->resetCounters();
     }
     
@@ -106,69 +106,19 @@ void PowerPosteriorMcmc::burnin(int generations, int tuningInterval) {
     SequentialMoveSchedule schedule = SequentialMoveSchedule(moves);
     //RandomMoveSchedule schedule = RandomMoveSchedule(moves);
     
-    for (int k=1; k<=generations; k++) {
+    for (size_t k=1; k<=generations; k++) {
         
         if ( k % (generations/20) == 0 ) {
             std::cout << "**";
             std::cout.flush();
         }
         
-        size_t proposals = round( schedule.getNumberMovesPerIteration() );
+        size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
         for (size_t i=0; i<proposals; i++) {
             /* Get the move */
             Move* theMove = schedule.nextMove(k);
             
-            if ( theMove->isGibbs() ) {
-                // do Gibbs proposal
-                theMove->performGibbs();
-                //                theMove->accept(); Not necessary, because Gibbs samplers are automatically accepted.
-            } else {
-                // do a Metropolois-Hastings proposal
-                
-                /* Propose a new value */
-                double lnProbabilityRatio;
-                double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-                // QUESTION: How to Gibbs samplers by-pass the accept-reject?
-                /* Calculate acceptance ratio */
-                double lnR = lnProbabilityRatio + lnHastingsRatio;
-                
-                if (lnR >= 0.0) {
-                    theMove->accept();
-                    lnProbability += lnProbabilityRatio;
-                }
-                else if (lnR < -300.0){ 
-                    theMove->reject();
-                }
-                else { 
-                    double r = exp(lnR);
-                    /* Accept or reject the move */
-                    double u = rng->uniform01(); 
-                    if (u < r) {
-                        theMove->accept();
-                        lnProbability += lnProbabilityRatio;
-                    }
-                    else {
-                        theMove->reject();
-                    }
-                }
-            }
-            
-            
-            
-#ifdef DEBUG_MCMC
-            /* Assert that the probability calculation shortcuts work */
-            double curLnProb = 0.0;
-            std::vector<double> lnRatio;
-            for (std::vector<DagNode*>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++) {
-                (*i)->touch();
-                double lnProb = (*i)->getLnProbability();
-                curLnProb += lnProb;
-            }
-            if (fabs(lnProbability - curLnProb) > 1E-8)
-                throw RbException("Error in ln probability calculation shortcuts");
-            else
-                lnProbability = curLnProb;              // otherwise rounding errors accumulate
-#endif
+            theMove->perform(1.0,false);
         }
         
         // check for autotuning and only tune in first half
@@ -268,7 +218,7 @@ double PowerPosteriorMcmc::pathSampling( void ) {
 }
 
 
-void PowerPosteriorMcmc::run(int gen) {
+void PowerPosteriorMcmc::run(size_t gen) {
     
     std::cerr << "Running power posterior ..." << std::endl;
     
@@ -289,62 +239,64 @@ void PowerPosteriorMcmc::run(int gen) {
         double b = beta[i];
         std::cerr << "Beta = " << b << std::endl;
 
-        for (int k=1; k<=gen; k++) {
+        for (size_t k=1; k<=gen; k++) {
         
-            size_t proposals = round( schedule.getNumberMovesPerIteration() );
+            size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
             for (size_t j=0; j<proposals; j++) {
                 /* Get the move */
                 Move* theMove = schedule.nextMove(k);
-            
-                /* Propose a new value */
-                double lnProbabilityRatio;
-                double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
-                // QUESTION: How to Gibbs samplers by-pass the accept-reject?
-                /* Calculate acceptance ratio */
-                const std::set<DagNode*> &changedNodes = theMove->getDagNodes();
-                double priorRatio = 0.0;
-                double likelihoodRatio = 0.0;
-                for (std::set<DagNode*>::const_iterator it = changedNodes.begin(); it != changedNodes.end(); ++it) {
-                    priorRatio += (*it)->getLnProbabilityRatio();
-                    
-                    // get the affected nodes
-                    std::set<DagNode*> affected;
-                    (*it)->getAffectedNodes(affected);
-                    
-                    for (std::set<DagNode*>::const_iterator a = affected.begin(); a != affected.end(); ++a) {
-                        if ( (*a)->isClamped() ) {
-                            likelihoodRatio += (*a)->getLnProbabilityRatio();
-                        } else {
-                            priorRatio += (*a)->getLnProbabilityRatio();
-                        }
-                    }
-                    
-                }
                 
-                double acceptance_ratio;
-                if ( b == 0.0 ) {
-                    acceptance_ratio = priorRatio+lnHastingsRatio;
-                } else { 
-                    acceptance_ratio = priorRatio+b*likelihoodRatio+lnHastingsRatio;
-                }
-                
-                double r;
-                if (acceptance_ratio > 0.0)
-                    r = 1.0;
-                else if (acceptance_ratio < -300.0)
-                    r = 0.0;
-                else
-                    r = exp(acceptance_ratio);
+                theMove->perform( b, true );
             
-                /* Accept or reject the move */
-                double u = rng->uniform01(); // TODO No need to draw rng if lnR > 0.0x
-                if (u < r) {
-                    theMove->accept();
-//                    lnProbability += lnProbabilityRatio;
-                }
-                else {
-                    theMove->reject();
-                }
+//                /* Propose a new value */
+//                double lnProbabilityRatio;
+//                double lnHastingsRatio = theMove->perform(lnProbabilityRatio);
+//                // QUESTION: How to Gibbs samplers by-pass the accept-reject?
+//                /* Calculate acceptance ratio */
+//                const std::set<DagNode*> &changedNodes = theMove->getDagNodes();
+//                double priorRatio = 0.0;
+//                double likelihoodRatio = 0.0;
+//                for (std::set<DagNode*>::const_iterator it = changedNodes.begin(); it != changedNodes.end(); ++it) {
+//                    priorRatio += (*it)->getLnProbabilityRatio();
+//                    
+//                    // get the affected nodes
+//                    std::set<DagNode*> affected;
+//                    (*it)->getAffectedNodes(affected);
+//                    
+//                    for (std::set<DagNode*>::const_iterator a = affected.begin(); a != affected.end(); ++a) {
+//                        if ( (*a)->isClamped() ) {
+//                            likelihoodRatio += (*a)->getLnProbabilityRatio();
+//                        } else {
+//                            priorRatio += (*a)->getLnProbabilityRatio();
+//                        }
+//                    }
+//                    
+//                }
+//                
+//                double acceptance_ratio;
+//                if ( b == 0.0 ) {
+//                    acceptance_ratio = priorRatio+lnHastingsRatio;
+//                } else { 
+//                    acceptance_ratio = priorRatio+b*likelihoodRatio+lnHastingsRatio;
+//                }
+//                
+//                double r;
+//                if (acceptance_ratio > 0.0)
+//                    r = 1.0;
+//                else if (acceptance_ratio < -300.0)
+//                    r = 0.0;
+//                else
+//                    r = exp(acceptance_ratio);
+//            
+//                /* Accept or reject the move */
+//                double u = rng->uniform01(); // TODO No need to draw rng if lnR > 0.0x
+//                if (u < r) {
+//                    theMove->accept();
+////                    lnProbability += lnProbabilityRatio;
+//                }
+//                else {
+//                    theMove->reject();
+//                }
             }
         
             // sample the likelihood

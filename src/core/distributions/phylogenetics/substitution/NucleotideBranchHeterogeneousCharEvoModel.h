@@ -587,7 +587,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     {
         branchTime = this->homogeneousClockRate->getValue() * brlen;
     }
-    
+        
     // and finally compute the per site rate transition probability matrix
     if ( this->rateVariationAcrossSites == true ) 
     {

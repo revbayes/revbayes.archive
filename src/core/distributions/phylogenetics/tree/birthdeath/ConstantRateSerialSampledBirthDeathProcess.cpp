@@ -191,15 +191,15 @@ double ConstantRateSerialSampledBirthDeathProcess::q( double t ) const
 std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(size_t n, double origin) const
 {
     
-    // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    // Get the rng
+//    RandomNumberGenerator* rng = GLOBAL_RNG;
+//    
+//    // get the parameters
+//    double birth = lambda->getValue();
+//    double death = mu->getValue();
+//    double p     = psi->getValue();
+//    double r     = rho->getValue();
     
-    // get the parameters
-    double birth = lambda->getValue();
-    double death = mu->getValue();
-    double p     = psi->getValue();
-    double r     = rho->getValue();
-        
     
     std::vector<double> *times = new std::vector<double>(n,0.0);
     for (size_t i = 0; i < n; i++ )

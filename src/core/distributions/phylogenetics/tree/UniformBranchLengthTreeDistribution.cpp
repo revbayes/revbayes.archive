@@ -22,24 +22,23 @@
 using namespace RevBayesCore;
 
 UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const TypedDagNode<double>* maxBrLen, const std::vector<std::string>& taxaNames) :  TypedDistribution<BranchLengthTree>( new BranchLengthTree() ),
-maxBranchLength( maxBrLen ),
-taxonNames( taxaNames )
+    maxBranchLength( maxBrLen ),
+    taxonNames( taxaNames )
 {
     
     addParameter(maxBranchLength);
     
-    numTaxa = (int)( taxonNames.size() );
+    numTaxa = taxonNames.size();
     
     simulateTree();
     
 }
 
 
-UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const UniformBranchLengthTreeDistribution &x)
-:   TypedDistribution<BranchLengthTree>( x ),
-maxBranchLength( x.maxBranchLength ),
-numTaxa( x.numTaxa ),
-taxonNames( x.taxonNames )
+UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const UniformBranchLengthTreeDistribution &x) : TypedDistribution<BranchLengthTree>( x ),
+    maxBranchLength( x.maxBranchLength ),
+    numTaxa( x.numTaxa ),
+    taxonNames( x.taxonNames )
 {
     // parameters are automatically copied
 }
@@ -65,7 +64,7 @@ void UniformBranchLengthTreeDistribution::buildRandomBinaryHistory(std::vector<T
         TopologyNode* parent = tips.at(index);
         
         // Remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
+        tips.erase( tips.begin()+long(index) );
         
         // Add a left child
         TopologyNode* leftChild = new TopologyNode(0);
@@ -143,7 +142,7 @@ void UniformBranchLengthTreeDistribution::simulateTree( void ) {
         TopologyNode* node = nodes.at(index);
         
         // Remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
+        nodes.erase(nodes.begin()+long(index));
         
         // Set name
         std::string& name = taxonNames[i];

@@ -45,12 +45,12 @@ namespace RbConstants {
         const double    neginf      = 1E-37;
 	}
     
-// (unused)    namespace Size_t {
+    namespace Size_t {
 //        const size_t    inf         = std::numeric_limits<std::size_t>::infinity();
 //        const size_t    max         = std::numeric_limits<std::size_t>::max();
 //        const size_t    min         = std::numeric_limits<std::size_t>::min();
-//        const size_t    nan         = std::numeric_limits<std::size_t>::quiet_NaN();
-//    }
+        const size_t    nan         = std::numeric_limits<std::size_t>::quiet_NaN();
+    }
     
     
     /* ----- The following constants and entry points are part of the R API ---- */
