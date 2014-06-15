@@ -321,6 +321,17 @@ const std::vector<double>& GeographicDistanceRateModifier::getEpochs(void) const
     return epochs;
 }
 
+const std::vector<double>& GeographicDistanceRateModifier::getDispersalValues(void) const
+{
+    return dispersalValues;
+}
+
+const std::vector<double>& GeographicDistanceRateModifier::getExtinctionValues(void) const
+{
+    return extinctionValues;
+}
+
+
 double GeographicDistanceRateModifier::computePairwiseDistances(int i, int j, int k)
 {
     double d = 0.0;
