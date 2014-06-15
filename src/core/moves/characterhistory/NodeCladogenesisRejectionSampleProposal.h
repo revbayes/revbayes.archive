@@ -205,9 +205,9 @@ sampleSiteIndexSet(true)
     proposedBudNode = NULL;
     swapBudTrunk = false;
     
-    nodes.push_back(ctmc);
-    nodes.push_back(tau);
-    nodes.push_back(qmap);
+    nodes.insert(ctmc);
+    nodes.insert(tau);
+    nodes.insert(qmap);
     
     nodeProposal  = new PathRejectionSampleProposal<charType,treeType>(*p);
     leftProposal  = new PathRejectionSampleProposal<charType,treeType>(*p);
