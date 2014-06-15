@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class ParallelMcmcmc : Cloneable {
         
     public:
-        ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT="random", int nc=4, int np=4, int si=1000, double dt=0.1, double st=1.0, double sh=1.0);
+        ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT="random", size_t nc=4, size_t np=4, size_t si=1000, double dt=0.1, double st=1.0, double sh=1.0);
         ParallelMcmcmc(const ParallelMcmcmc &m);
         virtual                                            ~ParallelMcmcmc(void);                                                          //!< Virtual destructor
         
@@ -49,8 +49,8 @@ namespace RevBayesCore {
         std::vector<std::vector<size_t> >                   chainsPerProcess;
         std::vector<Mcmc*>                                  chains;
         std::string                                         scheduleType;
-        unsigned int                                        currentGeneration;
-        unsigned int                                        swapInterval;
+        size_t                                              currentGeneration;
+        size_t                                              swapInterval;
         
         size_t                                              activeIndex;  // index of coldest chain, i.e. which one samples the posterior
         double                                              delta;        // delta-T, temperature increment for computeBeta

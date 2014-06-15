@@ -8,7 +8,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ModelMonitor::ModelMonitor(int g, const std::string &fname, const std::string &del) : Monitor(g), 
+ModelMonitor::ModelMonitor(unsigned long g, const std::string &fname, const std::string &del) : Monitor(g),
     outStream(), 
     filename( fname ), 
     separator( del ), 
@@ -84,7 +84,7 @@ void ModelMonitor::closeStream()
  *
  * \param[in]   gen    The current generation.
  */
-void ModelMonitor::monitor(long gen) 
+void ModelMonitor::monitor(unsigned long gen) 
 {
     
     if (gen % printgen == 0) 

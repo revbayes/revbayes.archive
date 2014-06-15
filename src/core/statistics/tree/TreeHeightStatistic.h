@@ -33,11 +33,8 @@ namespace RevBayesCore {
         
     public:
         TreeHeightStatistic(const TypedDagNode<TimeTree> *t);                                                                                   //!< Default constructor
-        TreeHeightStatistic(const TreeHeightStatistic& t);                                                                                      //!< Copy constructor
         virtual                                    ~TreeHeightStatistic(void);                                                                  //!< Destructor
-        
-        TreeHeightStatistic&                        operator=(const TreeHeightStatistic& t);
-        
+                
         // Basic utility functions
         TreeHeightStatistic*                        clone(void) const;                                                                          //!< Clone object
         void                                        update(void);                                                                               //!< Clone the function

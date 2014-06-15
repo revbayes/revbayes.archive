@@ -42,7 +42,7 @@ void TreeScale::constructInternalObject( void ) {
     double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
     bool tune = static_cast<const RlBoolean &>( tuning->getValue() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::TreeScale(t, w, l, tune);
+    value = new RevBayesCore::TreeScale(t, l, tune, w);
 }
 
 

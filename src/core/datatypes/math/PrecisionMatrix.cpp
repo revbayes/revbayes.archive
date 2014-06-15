@@ -81,7 +81,7 @@ void PrecisionMatrix::drawNormalSample(std::vector<double>& v)  const {
     
     // draw the normal variate in eigen basis
     std::vector<double> w(getDim());
-    for (int i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)  {
         w[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(eigen[i]), *rng);
     }
     
@@ -89,9 +89,9 @@ void PrecisionMatrix::drawNormalSample(std::vector<double>& v)  const {
     const MatrixReal& eigenvect = eigensystem.getEigenvectors();
     
     // change basis
-    for (int i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)  {
         double tmp = 0;
-        for (int j=0; j<getDim(); j++)  {
+        for (size_t j=0; j<getDim(); j++)  {
             tmp += eigenvect[i][j] * w[j];
         }
         v[i] = tmp;
@@ -111,7 +111,7 @@ void PrecisionMatrix::drawNormalSampleFromInverse(std::vector<double>& v)  const
     
     // draw the normal variate in eigen basis
     std::vector<double> w(getDim());
-    for (int i=0; i<getDim(); i++)  {
+    for (size_t i=0; i<getDim(); i++)  {
         w[i] = RbStatistics::Normal::rv(0, sqrt(eigen[i]), *rng);
     }
     

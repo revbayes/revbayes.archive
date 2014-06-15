@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureShiftTreeRates::AdmixtureShiftTreeRates(StochasticNode<double> *v, std::vector<ContinuousStochasticNode*> br, double d, bool t, double w) : Move( v, w, t), treeRate( v ), branchRates(br), changed(false), failed(false), delta(d) {
+AdmixtureShiftTreeRates::AdmixtureShiftTreeRates(StochasticNode<double> *v, std::vector<ContinuousStochasticNode*> br, double d, bool t, double w) : MoveOld( v, w, t), treeRate( v ), branchRates(br), changed(false), failed(false), delta(d) {
     
     for (size_t i = 0; i < branchRates.size(); i++)
         nodes.insert(branchRates[i]);
@@ -153,7 +153,7 @@ void AdmixtureShiftTreeRates::rejectMove( void ) {
 
 void AdmixtureShiftTreeRates::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN,newN);
+    MoveOld::swapNode(oldN,newN);
     if (oldN == treeRate)
         treeRate = static_cast<StochasticNode<double>* >(newN) ;
     for (size_t i = 0; i < branchRates.size(); i++)

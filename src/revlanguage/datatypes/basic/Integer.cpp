@@ -32,7 +32,7 @@ Integer::Integer(int v) : RlModelVariableWrapper<int>( new int(v) ) {
 
 
 /* Construct from unsigned int (ambiguous between int and bool otherwise) */
-Integer::Integer(unsigned int v) : RlModelVariableWrapper<int>( new int(v) ) {
+Integer::Integer(unsigned int v) : RlModelVariableWrapper<int>( new int( int(v) ) ) {
     
 }
 

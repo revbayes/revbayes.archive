@@ -1,13 +1,5 @@
-//
-//  Trace.m
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 3/24/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "GewekeTest.h"
+#include "RbConstants.h"
 #include "StationarityTest.h"
 #include "Trace.h"
 #include "TraceAnalysisContinuous.h"
@@ -36,10 +28,10 @@ void Trace::addObject(double d) {
 void Trace::computeStatistics( void ) { 
     
     // check if we need to set the burnin
-    if ( burnin < 0 ) {
-        burnin = int(size());
+    if ( burnin == RbConstants::Size_t::nan ) {
+        burnin = size();
         burnin *= stepSize;
-        burnin = (int)(burnin * 0.1);
+        burnin = (size_t)(burnin * 0.1);
     }
     
     TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
@@ -51,7 +43,7 @@ void Trace::computeStatistics( void ) {
     
     
     // test stationarity within chain
-    int nBlocks = 10;
+    size_t nBlocks = 10;
     StationarityTest testS = StationarityTest(nBlocks, 0.01);
     passedStationarityTest = testS.assessConvergenceSingleChain(values, burnin);
     
@@ -71,7 +63,7 @@ Trace* Trace::clone() const {
 
 void Trace::invalidate() {
     // set values to defaults and mark for recalculation
-    burnin                          = -1;
+    burnin                          = RbConstants::Size_t::nan;
     ess                             = -1;
     mean                            = 0.0;
     median                          = 0.0;

@@ -15,14 +15,14 @@
 
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
 #include "Tree.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureEdgeRemoveResidualWeights : public Move {
+    class AdmixtureEdgeRemoveResidualWeights : public MoveOld {
         
     public:
         //AdmixtureEdgeRemoveResidualWeights( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor

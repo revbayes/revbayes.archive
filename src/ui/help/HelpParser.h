@@ -62,7 +62,7 @@ public:
      * @param columnWidth
      * @return 
      */
-    std::string getHelp(std::string query, int columnWidth) {
+    std::string getHelp(std::string query, size_t columnWidth) {
         w = columnWidth;
         this->message = "";
 

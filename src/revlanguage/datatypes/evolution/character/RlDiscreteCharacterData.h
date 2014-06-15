@@ -100,7 +100,7 @@ RevLanguage::RbLanguageObject* RevLanguage::DiscreteCharacterData<charType>::exe
             throw RbException("Index out of bounds in []");
         }
             
-        const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->value->getValue() ).getTaxonData(index.getValue() - 1);
+        const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->value->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
     
         return new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) );
     }

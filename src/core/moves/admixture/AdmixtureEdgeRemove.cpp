@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeRemove::AdmixtureEdgeRemove(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, ConstantNode<int>* dt, double w) : Move( v, w), variable( v ), rate(r), delayTimer(dt), changed(false), failed(false) {
+AdmixtureEdgeRemove::AdmixtureEdgeRemove(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, ConstantNode<int>* dt, double w) : MoveOld( v, w), variable( v ), rate(r), delayTimer(dt), changed(false), failed(false) {
     
     nodes.insert(rate);
     nodes.insert(dt);
@@ -167,7 +167,7 @@ void AdmixtureEdgeRemove::acceptSimpleMove(void) {
 
 void AdmixtureEdgeRemove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

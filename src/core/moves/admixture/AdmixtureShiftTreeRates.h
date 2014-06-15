@@ -14,14 +14,14 @@
 #include <set>
 #include <string>
 
-#include "SimpleMove.h"
+#include "MoveOld.h"
 #include "ContinuousStochasticNode.h"
 #include "StochasticNode.h"
 #include "AdmixtureTree.h"
 
 namespace RevBayesCore {
     
-    class AdmixtureShiftTreeRates : public Move {
+    class AdmixtureShiftTreeRates : public MoveOld {
         
     public:
         AdmixtureShiftTreeRates( StochasticNode<double> *n, std::vector<ContinuousStochasticNode*> br, double d, bool t, double weight);                                                         //!<  constructor

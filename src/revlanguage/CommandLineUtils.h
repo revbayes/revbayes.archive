@@ -53,7 +53,7 @@ public:
     }
     
     bool lastEffectiveSeparatorIsBlank(const char* buf) {
-        long i = strlen(buf)-1;
+        long i = long(strlen(buf))-1;
         if(i < 0){
             return false;
         }

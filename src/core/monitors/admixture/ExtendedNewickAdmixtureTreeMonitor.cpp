@@ -15,7 +15,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, bool sr, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr) {
+ExtendedNewickAdmixtureTreeMonitor::ExtendedNewickAdmixtureTreeMonitor(TypedDagNode<AdmixtureTree> *t,  TypedDagNode< std::vector< double > >* br, bool sm, bool sr, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,t), outStream(), tree( t ), branchRates(br), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr) {
     
     nodes.push_back(branchRates);
     
@@ -130,10 +130,10 @@ std::string ExtendedNewickAdmixtureTreeMonitor::buildExtendedNewick( AdmixtureNo
 
 
 /** Monitor value at generation gen */
-void ExtendedNewickAdmixtureTreeMonitor::monitor(long gen) {
+void ExtendedNewickAdmixtureTreeMonitor::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first

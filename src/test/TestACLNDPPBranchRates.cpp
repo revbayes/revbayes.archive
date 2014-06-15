@@ -35,6 +35,8 @@
 #include "NearestNeighborInterchange.h"
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
+#include "NormalDistribution.h"
+#include "OriginTimeSlide.h"
 #include "RateOnBranchAve.h"
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
@@ -85,9 +87,11 @@ bool TestACLNDPPBranchRates::run( void ) {
 	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
 	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
-    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(trees[0]->getRoot().getAge()*1.5));
+	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(10.0));
 	
 	//   Stochastic nodes
+    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
     StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
 	
@@ -103,7 +107,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
-
+	
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	
 	
@@ -194,7 +198,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	//	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 	//	moves.push_back( new SubtreeScale( tau, 5.0 ) );
 	//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-	moves.push_back( new RootTimeSlide( tau, 0.3, true, 10.0 ) );
+	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
+	moves.push_back( new OriginTimeSlide( origin, tau, 50.0, true, 10.0 ) );
 	moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 	moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 0.5 ) );
 	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 0.5 ) ); 
@@ -204,7 +209,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	moves.push_back( new ScaleMove(rootRate, 1.0, false, 3.0) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 5.0 * (double)numNodes) );
-	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); // this from Thorne paper and Rannala/Yang papers, working on it
+	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 
     moves.push_back( new DPPScaleCatValsMove( nodeNus, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( nodeNus, 4, 2.0 ) );
 	
@@ -218,11 +223,12 @@ bool TestACLNDPPBranchRates::run( void ) {
 	monitoredNodes.push_back( treeHeight );
 	monitoredNodes.push_back( nodeRates );
 	monitoredNodes.push_back( rootRate );
+	monitoredNodes.push_back( origin );
 	monitoredNodes.push_back( scaleRate );
 	monitoredNodes.push_back( numCats );
 	monitoredNodes.push_back( nodeNus );
 	monitoredNodes.push_back( cp );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, " \t" ) );
 	
 	monitoredNodes.push_back( div );
 	monitoredNodes.push_back( turn );
@@ -232,7 +238,7 @@ bool TestACLNDPPBranchRates::run( void ) {
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( brVector );
 	
-	std::string logFN = "clock_test/test_rb_ACLNDPP_6June_pr2.log";
+	std::string logFN = "clock_test/test_rb_ACLNDPP_PR.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 	
     std::set<DagNode*> monitoredNodes2;
@@ -244,7 +250,7 @@ bool TestACLNDPPBranchRates::run( void ) {
     /* instantiate the model */
     Model myModel = Model(q);
     
-	mcmcGenerations = 1000;
+	mcmcGenerations = 20000;
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );

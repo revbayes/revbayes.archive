@@ -131,10 +131,12 @@ void StringUtilities::stringSplit(std::string str, std::string delim, std::vecto
 
 
 /** Utility function for converting string to all lower case */
-void StringUtilities::toLower(std::string& str) {
+void StringUtilities::toLower(std::string& str)
+{
 
     for (size_t i=0; i<str.size(); i++)
-        str[i] = tolower(str[i]);
+        str[i] = char( tolower(str[i]) );
+    
 }
 
 

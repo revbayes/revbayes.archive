@@ -28,7 +28,7 @@ using namespace RevBayesCore;
  * \param[in]    c         Clade constraints.
  */
 BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *r, 
-                                     const std::string& ss, const std::string &cdt, unsigned int nTaxa, 
+                                     const std::string& ss, const std::string &cdt, size_t nTaxa,
                                      const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ), 
         condition( cdt ),
         constraints( c ),
@@ -86,7 +86,7 @@ void BirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &
         psi->setAge( parent->getIndex(), T - times[index] );
         
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+tip_index);
+        tips.erase(tips.begin()+long(tip_index) );
         
         // add a left child
         TopologyNode* leftChild = &parent->getChild(0);
@@ -124,7 +124,7 @@ void BirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) 
         TopologyNode* parent = tips.at(index);
         
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
+        tips.erase(tips.begin()+long(index));
         
         // add a left child
         TopologyNode* leftChild = new TopologyNode(0);
@@ -192,7 +192,7 @@ double BirthDeathProcess::computeLnProbability( void ) {
     lnProbTimes += lnP1(0,presentTime,samplingProbability);
     
     // add the survival of a second species if we condition on the MRCA
-    int numInitialSpecies = 1;
+    size_t numInitialSpecies = 1;
     
     // check if we condition on the root or origin
     bool conditionOnMRCA = false;
@@ -374,7 +374,7 @@ void BirthDeathProcess::simulateTree( void ) {
         TopologyNode* node = nodes.at(index);
         
         // remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
+        nodes.erase(nodes.begin()+long(index));
         
         // set name
         std::string& name = taxonNames[i];
@@ -411,7 +411,7 @@ void BirthDeathProcess::simulateTree( void ) {
     // under diversified sampling we only use the first numTaxa simulated events
     if ( samplingStrategy == "diversified" ) 
     {
-        times = std::vector<double>(t.begin(), t.begin()+(numTaxa-1));
+        times = std::vector<double>(t.begin(), t.begin()+long(numTaxa-1));
     }
     else
     {

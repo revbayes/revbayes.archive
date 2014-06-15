@@ -39,8 +39,9 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n) {
     // ignore white spaces
     std::string trimmed = "";
     char c;
-    while ( ss.good() ) {
-        c = ss.get();
+    while ( ss.good() )
+    {
+        c = char( ss.get() );
         if ( c != ' ')
             trimmed += c;
     }
@@ -112,8 +113,9 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         
         // read the optional label
         std::string lbl = "";
-        while ( ss.good() && (c = ss.peek()) != ':' && c != '[' && c != ';' && c != ',' && c != ')') {
-            lbl += ss.get();
+        while ( ss.good() && (c = char( ss.peek() ) ) != ':' && c != '[' && c != ';' && c != ',' && c != ')')
+        {
+            lbl += char( ss.get() );
         }
         childNode->setName( lbl );
         
@@ -131,9 +133,9 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
                 // read the parameter name
                 std::string paramName = "";
-                while ( ss.good() && (c = ss.peek()) != '=' && c != ',') 
+                while ( ss.good() && (c = char( ss.peek() ) ) != '=' && c != ',')
                 {
-                    paramName += ss.get();
+                    paramName += char( ss.get() );
                 }
                 
                 // ignore the equal sign between parameter name and value
@@ -144,18 +146,18 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
                 // read the parameter name
                 std::string paramValue = "";
-                while ( ss.good() && (c = ss.peek()) != ']' && c != ',') 
+                while ( ss.good() && (c = char( ss.peek() ) ) != ']' && c != ',')
                 {
-                    paramValue += ss.get();
+                    paramValue += char( ss.get() );
                 }
                 
                 // \todo: Needs implementation
                 //                childNode->addNodeParameter(paramName, paramValue);
                 
-            } while ( (c = ss.peek()) == ',' );
+            } while ( (c = char( ss.peek() ) ) == ',' );
             
             // ignore the final ']'
-            if ( (c = ss.peek()) == ']' )
+            if ( (c = char( ss.peek( ) ) ) == ']' )
             {
                 ss.ignore();
             }
@@ -166,8 +168,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         if ( ss.peek() == ':' ) {
             ss.ignore();
             std::string time = "";
-            while ( ss.good() && (c = ss.peek()) != ';' && c != ','  && c != ')') {
-                time += ss.get();
+            while ( ss.good() && (c = char( ss.peek( ) ) ) != ';' && c != ','  && c != ')') {
+                time += char( ss.get() );
             }
             
             std::istringstream stm;
@@ -183,7 +185,7 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         }
         
         // skip comma
-        if ( ss.peek() == ',' ) {
+        if ( char( ss.peek() ) == ',' ) {
             ss.ignore();
         }
     }
@@ -193,50 +195,50 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     
     // read the optional label
     std::string lbl = "";
-    while ( ss.good() && (c = ss.peek()) != ':' && c != ';' && c != ',' && c != '[') {
-        lbl += ss.get();
+    while ( ss.good() && (c = char( ss.peek() )) != ':' && c != ';' && c != ',' && c != '[') {
+        lbl += char( ss.get() );
     }
     node->setName( lbl );
     
     // read the optional node parameters
-    if ( ss.peek() == '[' ) {
+    if ( char( ss.peek() ) == '[' ) {
         ss.ignore();
         
         do {
             
             // ignore the '&' before parameter name
-            if ( ss.peek() == '&') 
+            if ( char( ss.peek() ) == '&') 
             {
                 ss.ignore();
             }
             
             // read the parameter name
             std::string paramName = "";
-            while ( ss.good() && (c = ss.peek()) != '=' && c != ',') 
+            while ( ss.good() && (c = char( ss.peek() )) != '=' && c != ',') 
             {
-                paramName += ss.get();
+                paramName += char( ss.get() );
             }
             
             // ignore the equal sign between parameter name and value
-            if ( ss.peek() == '=') 
+            if ( char( ss.peek() ) == '=') 
             {
                 ss.ignore();
             }
             
             // read the parameter name
             std::string paramValue = "";
-            while ( ss.good() && (c = ss.peek()) != ']' && c != ',') 
+            while ( ss.good() && (c = char( ss.peek() )) != ']' && c != ',') 
             {
-                paramValue += ss.get();
+                paramValue += char( ss.get() );
             }
             
             // \todo: Needs implementation
             //                childNode->addNodeParameter(paramName, paramValue);
             
-        } while ( (c = ss.peek()) == ',' );
+        } while ( (c = char( ss.peek() )) == ',' );
         
         // ignore the final ']'
-        if ( (c = ss.peek()) == ']' )
+        if ( (c = char( ss.peek() )) == ']' )
         {
             ss.ignore();
         }
@@ -244,11 +246,11 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     }
     
     // read the optinal  branch length
-    if ( ss.peek() == ':' ) {
+    if ( char( ss.peek() ) == ':' ) {
         ss.ignore();
         std::string time = "";
-        while ( ss.good() && (c = ss.peek()) != ';' && c != ',') {
-            time += ss.get();
+        while ( ss.good() && (c = char( ss.peek() )) != ';' && c != ',') {
+            time += char( ss.get() );
         }
         
         std::istringstream stm;

@@ -25,14 +25,15 @@ StationarityTest::StationarityTest(double f) : ConvergenceDiagnosticContinuous()
     p       = f;
 }
 
-StationarityTest::StationarityTest(int b, double f) : ConvergenceDiagnosticContinuous() {
+StationarityTest::StationarityTest(size_t b, double f) : ConvergenceDiagnosticContinuous() {
     nBlocks   = b;
     p         = f;
 }
 
-bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& values, int burnin) {
+bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
+{
     // calculate the block size
-    double blockSize = ((int)values.size()-burnin) / nBlocks;
+    size_t blockSize = (values.size()-burnin) / nBlocks;
     
     // use correction for multiple sampling
     double p_corrected = pow(1.0-p, 1.0/nBlocks);
@@ -44,11 +45,11 @@ bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& v
     // get a mean and standard error for each block
     double* blockMeans = new double[nBlocks];
     double* blockSem = new double[nBlocks];
-    for (int i=0; i<nBlocks; i++) {
-        analysis.analyseMean(values,int(i*blockSize+burnin),int((i+1)*blockSize+burnin));
+    for (size_t i=0; i<nBlocks; i++) {
+        analysis.analyseMean(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
         blockMeans[i]   = analysis.getMean();
         
-        analysis.analyseCorrelation(values,int(i*blockSize+burnin),int((i+1)*blockSize+burnin));
+        analysis.analyseCorrelation(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
         blockSem[i]     = analysis.getStdErrorOfMean();
         
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2
@@ -69,9 +70,9 @@ bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& v
     return true;
 }
 
-bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<int>& burnins) {
+bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins) {
     // get number of chains
-    int nChains = (int) values.size();
+    size_t nChains = values.size();
     // use correction for multiple sampling
     double p_corrected = pow(1.0-p, 1.0/nChains);
     
@@ -82,9 +83,9 @@ bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::ve
     // get a mean and standard error for each block
     double* chainMeans  = new double[nChains];
     double* chainSem    = new double[nChains];
-    for (int i=0; i<nChains; i++) {
+    for (size_t i=0; i<nChains; i++) {
         const std::vector<double>& chain    = values.at(i);
-        int burnin                          = burnins.at(i);
+        size_t burnin                       = burnins.at(i);
         analysis.analyseMean(chain,burnin);
         chainMeans[i]                       = analysis.getMean();
         

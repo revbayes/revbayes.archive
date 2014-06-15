@@ -20,7 +20,7 @@ ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(),
     lambda( l ),
     nodes()
 {
-    nodes.push_back( variable );
+    nodes.insert( variable );
     
 }
 
@@ -66,7 +66,7 @@ const std::string& ScaleProposal::getProposalName( void ) const
  *
  * \return  Const reference to a vector of nodes pointer on which the proposal operates.
  */
-const std::vector<DagNode*>& ScaleProposal::getNodes( void ) const
+const std::set<DagNode*>& ScaleProposal::getNodes( void ) const
 {
     
     return nodes;

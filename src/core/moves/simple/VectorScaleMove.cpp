@@ -18,7 +18,7 @@ using namespace RevBayesCore;
  * \param[in]    t    Should this move be tuned.
  * \param[in]    w    Weight of the proposal.
  */
-VectorScaleMove::VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w ) : Move( n[0], w, t ), 
+VectorScaleMove::VectorScaleMove( const std::vector<StochasticNode< double > *> &n, double l, bool t, double w ) : MoveOld( n[0], w, t ),
     changed( false ), 
     lambda( l ), 
     storedValue( std::vector<double>( n.size(), 0.0) ), 
@@ -150,7 +150,7 @@ void VectorScaleMove::rejectMove( void ) {
 
 void VectorScaleMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     
     for (size_t i = 0; i < variable.size(); ++i)

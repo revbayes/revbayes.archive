@@ -59,11 +59,13 @@ namespace RevBayesCore {
     inline BranchLengthTree* TreeSummary<BranchLengthTree>::map( int b ) {
         treeFrequencies.clear();
         
-        if (b == -1) {
+        if (b == -1)
+        {
             burnin = trace.size() / 4;
         }
-        else {
-            burnin = b;
+        else
+        {
+            burnin = size_t( b );
         }
         
         for (size_t i = burnin; i < trace.size(); ++i) {
@@ -142,7 +144,7 @@ namespace RevBayesCore {
         }
         else 
         {
-            burnin = b;
+            burnin = size_t( b );
         }
         
         double sampleSize = trace.size() - burnin;
@@ -244,7 +246,9 @@ namespace RevBayesCore {
             if ( !n->isTip() ) 
             {
                 // first we compute the posterior probability of the clade
-                Clade c( n->getTaxaStringVector(), 0.0 );
+                std::vector<std::string> taxa;
+                n->getTaxaStringVector(taxa);
+                Clade c( taxa, 0.0 );
 
                 double cladeFreq = cladeFrequencies[c.toString()];
                 double pp = cladeFreq / sampleSize;
@@ -255,7 +259,10 @@ namespace RevBayesCore {
                 double age = 0.0;
                 if ( !n->isRoot() ) 
                 {
-                    Clade parent( n->getParent().getTaxaStringVector(), 0.0 );
+                    std::vector<std::string> parentTaxa;
+                    n->getParent().getTaxaStringVector(parentTaxa);
+                    Clade c( parentTaxa, 0.0 );
+                    Clade parent( parentTaxa, 0.0 );
                     std::map<std::string, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent.toString()];
                     double parentCladeFreq = cladeFrequencies[parent.toString()];
                     const std::vector<double>& condCladeSamples = condCladeFreqs[c.toString()];
@@ -308,7 +315,9 @@ template <class treeType>
 RevBayesCore::Clade RevBayesCore::TreeSummary<treeType>::fillConditionalClades(const RevBayesCore::TopologyNode &n, std::vector<RevBayesCore::ConditionalClade> &condClades, std::vector<RevBayesCore::Clade> &clades)
 {
  
-    Clade parent( n.getTaxaStringVector(), n.getAge() );
+    std::vector<std::string> taxa;
+    n.getTaxaStringVector( taxa );
+    Clade parent( taxa, n.getAge() );
     clades.push_back( parent );
     
     const TopologyNode &leftChild = n.getChild( 0 );
@@ -344,7 +353,7 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
     }
     else 
     {
-        burnin = b;
+        burnin = size_t( b );
     }
     
     for (size_t i = burnin; i < trace.size(); ++i) 

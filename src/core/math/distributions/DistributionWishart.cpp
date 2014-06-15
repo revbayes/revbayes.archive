@@ -28,7 +28,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::Wishart::pdf(const PrecisionMatrix &omega0, int df, const PrecisionMatrix &z) {
+double RbStatistics::Wishart::pdf(const PrecisionMatrix &omega0, size_t df, const PrecisionMatrix &z) {
 	
     return exp(lnPdf(omega0,df,z));
 }
@@ -46,7 +46,7 @@ double RbStatistics::Wishart::pdf(const PrecisionMatrix &omega0, int df, const P
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, int df, const PrecisionMatrix &z) {
+double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, size_t df, const PrecisionMatrix &z) {
     
     double ret = 0;
     ret -= 0.5 * df * omega0.getLogDet();
@@ -80,7 +80,7 @@ double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, int df, const
  * \return Returns a vector containing the Wishart random variable.
  * \throws Does not throw an error.
  */
-PrecisionMatrix RbStatistics::Wishart::rv(const PrecisionMatrix &omega0, int df, RandomNumberGenerator& rng) {
+PrecisionMatrix RbStatistics::Wishart::rv(const PrecisionMatrix &omega0, size_t df, RandomNumberGenerator& rng) {
     
     size_t dim = omega0.getDim();
     

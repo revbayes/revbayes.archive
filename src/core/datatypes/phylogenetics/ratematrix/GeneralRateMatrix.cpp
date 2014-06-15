@@ -122,11 +122,13 @@ void GeneralRateMatrix::calculateStationaryFrequencies(void) {
 	// back substitute into z = 0 to find un-normalized stationary frequencies, starting with x_n = 1.0
     std::vector<double> pi(numStates, 0.0);
 	pi[numStates-1] = 1.0;
-	for (int i= int(numStates-2); i >= 0; i--)
+    size_t i=numStates-1;
+    while ( i > 0 )
     {
+        i--;
 		double dotProduct = 0.0;
 		for (size_t j=i+1; j<numStates; j++)
-			dotProduct += U[i][j] * pi[j];
+        dotProduct += U[i][j] * pi[j];
 		pi[i] = (0.0 - dotProduct) / U[i][i];
     }
     

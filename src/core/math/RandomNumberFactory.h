@@ -50,7 +50,7 @@ namespace RevBayesCore {
                                                     RandomNumberFactory&operator=(const RandomNumberFactory&);                             //!< Assignment operator
                                                    ~RandomNumberFactory(void);                                                             //!< Destructor
 		void                                        setSeed(void);                                                                         //!< Set the seeds of the factory using the current time
-        void                                        setSeed(int s);                                                                         
+        void                                        setSeed(unsigned int s);
 		RandomNumberGenerator*                      seedGenerator;                                                                         //!< A random number object that generates seeds
 		std::set<RandomNumberGenerator*>            allocatedRandomNumbers;                                                                //!< The pool of random number objects
 		unsigned int                     I1, I2;                                                                                //!< The factory seeds

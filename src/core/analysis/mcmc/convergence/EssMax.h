@@ -18,14 +18,14 @@ class EssMax : public BurninEstimatorContinuous {
     
 public:
     EssMax();
-    EssMax(int blockSize);
+    EssMax(size_t blockSize);
     
     // implementen functions from convergence diagnostic
-    int         estimateBurnin(const std::vector<double>& values);
+    size_t      estimateBurnin(const std::vector<double>& values);
     
 private:
     
-    int         blockSize;                                                                                          //!< first window 
+    size_t      blockSize;                                                                                          //!< first window
     
     
 };
