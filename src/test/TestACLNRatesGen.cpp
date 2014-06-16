@@ -34,6 +34,7 @@
 #include "NearestNeighborInterchange.h"
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
+#include "NormalDistribution.h"
 #include "RateOnBranchAve.h"
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
@@ -52,6 +53,7 @@
 #include "VectorSingleElementScaleMove.h"
 #include "ScaleSingleACLNRatesMove.h"
 #include "RateAgeACLNMixingMove.h"
+#include "OriginTimeSlide.h"
 
 using namespace RevBayesCore;
 
@@ -84,9 +86,11 @@ bool TestACLNRatesGen::run( void ) {
 	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
 	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
-    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(trees[0]->getRoot().getAge()*1.5));
+	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(10.0));
 	
 	//   Stochastic nodes
+    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
     StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
 	
@@ -187,18 +191,19 @@ bool TestACLNRatesGen::run( void ) {
 	//	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 	//	moves.push_back( new SubtreeScale( tau, 5.0 ) );
 	//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-	moves.push_back( new RootTimeSlide( tau, 0.3, true, 10.0 ) );
+	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
+	moves.push_back( new OriginTimeSlide( origin, tau, 50.0, true, 10.0 ) );
 	moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 	moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 0.5 ) );
 	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 0.5 ) ); 
 	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 0.5 ) );
 	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 0.5 ) );
-	moves.push_back( new ScaleMove(bmNu, 0.5, true, 4.0) );
+	moves.push_back( new ScaleMove(bmNu, 0.75, true, 4.0) );
 	moves.push_back( new ScaleMove(rootRate, 0.5, false, 2.0) );
 	moves.push_back( new ScaleMove(rootRate, 1.0, false, 2.0) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 8.0 * (double)numNodes) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 8.0 * (double)numNodes) );
-	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); // this from Thorne paper and Rannala/Yang papers, working on it
+	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 
 	
     // add some tree stats to monitor
 	DeterministicNode<double> *meanNdRate = new DeterministicNode<double>("MeanNodeRate", new MeanVecContinuousValStatistic(nodeRates) );
@@ -208,6 +213,7 @@ bool TestACLNRatesGen::run( void ) {
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( meanNdRate );
 	monitoredNodes.push_back( treeHeight );
+	monitoredNodes.push_back( origin );
 	monitoredNodes.push_back( nodeRates );
 	monitoredNodes.push_back( rootRate );
 	monitoredNodes.push_back( bmNu );
@@ -222,7 +228,7 @@ bool TestACLNRatesGen::run( void ) {
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( brVector );
 	
-	std::string logFN = "clock_test/test_rb_ACLN_6June_pr_2.log";
+	std::string logFN = "clock_test/test_rb_ACLN_6June_rn_3.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 	
     std::set<DagNode*> monitoredNodes2;
@@ -234,7 +240,7 @@ bool TestACLNRatesGen::run( void ) {
     /* instantiate the model */
     Model myModel = Model(q);
 	
-	mcmcGenerations = 1000;
+	mcmcGenerations = 200000;
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );

@@ -12,7 +12,7 @@
 
 using namespace RevBayesCore;
 
-GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, int st, double alt, double sz, std::vector<double> ar, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra)
+GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, int st, double alt, double sz, std::vector<double> dv, std::vector<double> ev, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra)
 {
     index = idx;
     name = n;
@@ -23,7 +23,8 @@ GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n
     adjacentAreas = aa;
     reachableAreas = ra;
     size = sz;
-    areaRates = ar;
+    dispersalValues = dv;
+    extinctionValues = ev;
 }
 
 GeographicArea::GeographicArea(const GeographicArea& g)
@@ -35,7 +36,8 @@ GeographicArea::GeographicArea(const GeographicArea& g)
         longitude = g.longitude;
         altitude = g.altitude;
         size = g.size;
-        areaRates = g.areaRates;
+        dispersalValues = g.dispersalValues;
+        extinctionValues = g.extinctionValues;
         state = g.state;
         
         std::set<GeographicArea*>::iterator it;
@@ -58,7 +60,8 @@ GeographicArea& GeographicArea::operator=(const GeographicArea &g)
         longitude = g.longitude;
         altitude = g.altitude;
         size = g.size;
-        areaRates = g.areaRates;
+        dispersalValues = g.dispersalValues;
+        extinctionValues = g.extinctionValues;
         state = g.state;
         
         std::set<GeographicArea*>::iterator it;
@@ -101,6 +104,16 @@ double GeographicArea::getLongitude(void)
 double GeographicArea::getAltitude(void)
 {
     return altitude;
+}
+
+const std::vector<double>& GeographicArea::getDispersalValues(void)
+{
+    return dispersalValues;
+}
+
+const std::vector<double>& GeographicArea::getExtinctionValues(void)
+{
+    return extinctionValues;
 }
 
 double GeographicArea::getSize(void)

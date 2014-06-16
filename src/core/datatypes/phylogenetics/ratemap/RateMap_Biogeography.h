@@ -26,12 +26,14 @@ namespace RevBayesCore {
         RateMap_Biogeography&                       operator=(const RateMap_Biogeography& r);
         
         // virtual RateMap functions
-        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+//        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx=0, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition
         RateMap_Biogeography*                       clone(void) const;
         double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const;
         double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
         double                                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
-        double                                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, double age=0.0) const;
+        double                                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const;
         double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
         double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
         double                                      getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t, double age=0.0) const;
@@ -53,11 +55,12 @@ namespace RevBayesCore {
         void                                        setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm);
         void                                        setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm);
         const GeographicDistanceRateModifier &      getGeographicDistanceRateModifier(void);
+        const std::vector<double>&                  getEpochs(void) const;
         
     private:
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
+        unsigned                                    getEpochIndex(double age) const;
 
-        size_t                                      epochOffset;
         size_t                                      branchOffset;
 
         double                                      homogeneousClockRate;
@@ -65,6 +68,12 @@ namespace RevBayesCore {
         std::vector<double>                         homogeneousGainLossRates;
         std::vector<std::vector<double> >           heterogeneousGainLossRates;
         double                                      distancePower;
+        
+        std::vector<double>                         epochs;
+        size_t                                      numEpochs;
+        size_t                                      epochOffset;
+        std::vector<double>                         dispersalValues;
+        std::vector<double>                         extinctionValues;
 
         
         // come up with some way to handle epoch age vectors...
