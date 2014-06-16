@@ -103,7 +103,7 @@ void CompoundMove::rejectMove( void ) {
 
 void CompoundMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    CompoundMove::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     for (std::vector<DagNode*>::iterator it = theNodes.begin(); it != theNodes.end(); it++)
     {

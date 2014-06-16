@@ -163,11 +163,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::cleanProposa
 //    const std::vector<BranchHistory*>& histories = p->getHistories();
     
     nodeProposal->cleanProposal();
-//    if (!node->isTip())
-//    {
-        rightProposal->cleanProposal();
-        leftProposal->cleanProposal();
-//    }
+    rightProposal->cleanProposal();
+    leftProposal->cleanProposal();
 }
 
 /**
@@ -253,11 +250,8 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
    
     // update 3x incident paths
     proposedLnProbRatio += nodeProposal->doProposal();
- //   if (!node->isTip())
-    {
-        proposedLnProbRatio += leftProposal->doProposal();
-        proposedLnProbRatio += rightProposal->doProposal();
-    }
+    proposedLnProbRatio += leftProposal->doProposal();
+    proposedLnProbRatio += rightProposal->doProposal();
 
     return proposedLnProbRatio;
 }
@@ -306,16 +300,13 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     nodeProposal->assignSiteIndexSet(siteIndexSet);
     nodeProposal->prepareProposal();
     
-//    if (!node->isTip())
-//    {
-        leftProposal->assignNode(&node->getChild(0));
-        leftProposal->assignSiteIndexSet(siteIndexSet);
-        leftProposal->prepareProposal();
-        
-        rightProposal->assignNode(&node->getChild(1));
-        rightProposal->assignSiteIndexSet(siteIndexSet);
-        rightProposal->prepareProposal();
-//    }
+    leftProposal->assignNode(&node->getChild(0));
+    leftProposal->assignSiteIndexSet(siteIndexSet);
+    leftProposal->prepareProposal();
+    
+    rightProposal->assignNode(&node->getChild(1));
+    rightProposal->assignSiteIndexSet(siteIndexSet);
+    rightProposal->prepareProposal();
    
     // store node state values
     storedNodeState.clear();
@@ -463,11 +454,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::undoProposal
     
     // restore path state
     nodeProposal->undoProposal();
-//    if (!node->isTip())
-//    {
-        rightProposal->undoProposal();
-        leftProposal->undoProposal();
-//    }
+    rightProposal->undoProposal();
+    leftProposal->undoProposal();
     
     // restore node state
     std::vector<CharacterEvent*> nodeChildState = histories[node->getIndex()]->getChildCharacters();

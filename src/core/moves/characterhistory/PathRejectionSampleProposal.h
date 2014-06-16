@@ -53,7 +53,7 @@ namespace RevBayesCore {
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
         void                            assignSiteIndexSet(const std::set<size_t>& s);
-        double                          computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
+        virtual double                  computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
         void                            cleanProposal(void);
         PathRejectionSampleProposal*    clone(void) const;                                                                  //!< Clone object
         double                          doProposal(void);                                                                   //!< Perform proposal
@@ -235,7 +235,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         double idx = (*it_h)->getIndex();
         dt = (*it_h)->getTime() - t;
     
-        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
+//        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
+        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
         double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         
         // lnP for stepwise events for p(x->y)

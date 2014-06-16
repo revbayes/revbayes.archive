@@ -27,8 +27,8 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
     threshhold = th;
     distanceType = dt;
 
+    // get geography dimensions
     const std::vector<std::vector<GeographicArea*> > tmpAreas = atlas->getAreas();
-    
     numAreas = 0;
     epochs = atlas->getEpochs();
     numEpochs = epochs.size();
@@ -37,7 +37,6 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
     
     epochOffset = numAreas * numAreas;
     areaOffset = numAreas;
-    
     
     // assign areas for timeslice
     areas.resize(numEpochs);
@@ -53,47 +52,41 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, in
         }
     }
 
-
+    // initialize distance dependence
     geographicDistances.resize(numEpochs * numAreas * numAreas, 0.0);
     geographicDistancePowers.resize(numEpochs * numAreas * numAreas, 0.0);
-    
     for (unsigned i = 0; i < numEpochs; i++)
     {
-//        unsigned iOffset = i*epochOffset;
         for (unsigned j = 0; j < numAreas; j++)
         {
-//            unsigned jOffset = j*areaOffset;
             for (unsigned k = j; k < numAreas; k++)
             {
-//                std::cout << "geoDist " << epochOffset*i + areaOffset*j + k << "\n";
-//                unsigned l = epochOffset*i + areaOffset*j + k;
-                
                 geographicDistances[epochOffset*i + areaOffset*j + k] = computePairwiseDistances(i, j, k);
                 geographicDistances[epochOffset*i + areaOffset*k + j] = geographicDistances[epochOffset*i + areaOffset*j + k];
             }
         }
     }
-    
-//    std::cout << "\n";
-//    for (size_t i = 0; i < numEpochs; i++)
-//    {
-//        unsigned iOffset = i*epochOffset;
-//        for (size_t j = 0; j < numAreas; j++)
-//        {
-//            unsigned jOffset = j*areaOffset;
-//            for (size_t k = 0; k < numAreas; k++)
-//            {
-//                double d = geographicDistances[ iOffset + jOffset + k ];
-//                std::cout << std::fixed << std::setprecision(3) << std::setw(4);
-//                std::cout <<  d << " ";
-//            }
-//            std::cout << "\n";
-//        }
-//        std::cout << "----\n";
-//        
-//    }
-    
+    // unimplemented, but helps for computations for large N
     //computeAllPairwiseDistanceOrder();
+    
+    // initialize provided area dispersal/extinction rates
+    dispersalValues.resize(numEpochs * numAreas * numAreas, 0.0);
+    extinctionValues.resize(numEpochs * numAreas, 0.0);
+    for (unsigned i = 0; i < numEpochs; i++)
+    {
+        for (unsigned j = 0; j < numAreas; j++)
+        {
+            const std::vector<double>& dvs = areas[i][j]->getDispersalValues();
+            const std::vector<double>& evs = areas[i][j]->getExtinctionValues();
+
+            extinctionValues[numEpochs*i + j] = evs[0];
+            for (unsigned k = 0; k < numAreas; k++)
+            {
+                dispersalValues[epochOffset*i + areaOffset*j + k] = dvs[k];
+            }
+        }
+    }
+    
     
     setDistancePower(dp, true);
     update();
@@ -115,6 +108,9 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(const GeographicD
         geographicDistancePowers = g.geographicDistancePowers;
         geographicDistanceOrder = g.geographicDistanceOrder;
         
+        dispersalValues = g.dispersalValues;
+        extinctionValues = g.extinctionValues;
+        
         numAreas = g.numAreas;
         numEpochs = g.numEpochs;
         areaOffset = g.areaOffset;
@@ -126,6 +122,72 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(const GeographicD
         setDistancePower(1.0, true);
         update();
     }
+}
+
+double GeographicDistanceRateModifier::computeRateModifier_test(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+{
+    unsigned epochIndex = getEpochIndex(age);
+    double rate = 0.0;
+    double sum = 0.0;
+    double ret = 0.0;
+    
+    // determine which areas are present and which are absent
+    present.clear();
+    absent.clear();
+    for (unsigned i = 0; i < numAreas; i++)
+    {
+        if (currState[i]->getState() == 0)
+            absent.insert(currState[i]);
+        else
+            present.insert(currState[i]);
+    }
+    
+    if (present.size() == 0)
+        return 1.0;
+    
+    // get relative rates
+    if (newState->getState() == 0)
+    {
+//        std::cout << "loss "  << newState->getIndex() << "\n";
+        for (std::set<CharacterEvent*>::iterator it = present.begin(); it != present.end(); it++)
+        {
+            sum += extinctionValues[ epochIndex*numEpochs + (*it)->getIndex() ];
+        }
+        rate = extinctionValues[ epochIndex*numEpochs + newState->getIndex() ];
+        ret = present.size() * rate / sum;
+    }
+    else
+    {
+//        std::cout << "gain " << newState->getIndex() << "\n";
+        // get sum of distances
+        std::set<CharacterEvent*>::iterator it_p;
+        std::set<CharacterEvent*>::iterator it_a;
+        for (it_p = present.begin(); it_p != present.end(); it_p++)
+        {
+            size_t idx_p = (*it_p)->getIndex();
+            
+            for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+            {
+                size_t idx_a = (*it_a)->getIndex();
+                
+                double d = dispersalValues[ epochIndex*epochOffset + idx_p*areaOffset + idx_a  ];
+//                std::cout << "e" << epochIndex << " " << idx_p << " -> " << idx_a << " = " << d << "\n";
+                
+                sum += d;
+                
+                if (idx_a == newState->getIndex())
+                    rate += d;
+            }
+        }
+        
+        // get sum-normalized rate-modifier
+        ret = absent.size() * rate / sum;
+    }
+    
+//    std::cout << "drm   " << ret << "\n";
+    
+    return ret;
+
 }
 
 double GeographicDistanceRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
@@ -167,7 +229,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
 
 //            double d = geographicDistancePowers[idx_p][idx_a];
 //            double d = geographicDistancePowers[ epochIndex*epochOffset + idx_p*areaOffset + idx_a  ];
-            double d = geographicDistancePowers[ epochIndex*epochOffset + idx_a*areaOffset + idx_p  ]; // might be a bit faster, re: memory access...
+            double d = geographicDistancePowers[ epochIndex*epochOffset + idx_p*areaOffset + idx_a  ]; // might be a bit faster, re: memory access...
             
             sum += d;
             
@@ -220,25 +282,6 @@ void GeographicDistanceRateModifier::update(void)
             }
         }
     }
-    
-//    for (size_t i = 0; i < numEpochs; i++)
-//    {
-//        unsigned iOffset = i*epochOffset;
-//        for (size_t j = 0; j < numAreas; j++)
-//        {
-//            unsigned jOffset = j*areaOffset;
-//            for (size_t k = 0; k < numAreas; k++)
-//            {
-//                double d = geographicDistancePowers[ iOffset + jOffset + k ];
-//                std::cout << std::fixed << std::setw(4);
-//                std::cout <<  d << " ";
-//            }
-//            std::cout << "\n";
-//        }
-//        std::cout << "----\n";
-//        
-//    }
-    
 }
 
 
@@ -272,6 +315,22 @@ unsigned GeographicDistanceRateModifier::getEpochIndex(double age)
     };
     return index;
 }
+
+const std::vector<double>& GeographicDistanceRateModifier::getEpochs(void) const
+{
+    return epochs;
+}
+
+const std::vector<double>& GeographicDistanceRateModifier::getDispersalValues(void) const
+{
+    return dispersalValues;
+}
+
+const std::vector<double>& GeographicDistanceRateModifier::getExtinctionValues(void) const
+{
+    return extinctionValues;
+}
+
 
 double GeographicDistanceRateModifier::computePairwiseDistances(int i, int j, int k)
 {
