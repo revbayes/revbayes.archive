@@ -137,7 +137,7 @@ namespace RevBayesCore {
 
 #include <cmath>
 
-#define USE_SCALING
+//#define USE_SCALING
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ), 
@@ -442,9 +442,10 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
         for (size_t i = 0; i<numNodes; ++i)
         {
             double sf = this->scalingFactors[this->activeLikelihood[i]*numNodes+i];
-            this->lnProb -= numSites * log( sf );
+            this->lnProb += numSites * log( sf );
         }
 #endif
+        
     }
     
     return this->lnProb;
