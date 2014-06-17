@@ -3,7 +3,7 @@
 # read the data
 # the readCharacter function returns a vector of matrices. We just take the first one
 D <- readCharacterData("clock_test/test_data_clock_gtr.nex")[1]
-T <- readTree("clock_test/true_calib_clk.tre")
+T <- readTrees("clock_test/true_calib_clk.tre")[1]
 
 
 #######################################
@@ -17,9 +17,9 @@ turn_alpha <- 2.0
 turn_beta <- 2.0
 turnover ~ beta(turn_alpha, turn_beta) # r
 
-mean_origin <- getRootAge(T) * 1.5	## ?
+mean_origin <- treeHeight(T) * 1.5	## ?
 stdv_origin <- 20.0
-origin_time ~ Normal(mean_origin, stdv_origin)
+origin_time ~ norm(mean_origin, stdv_origin)
 
 rho <- 1.0
 birth_rate := diversification / (1.0 - turnover)
@@ -32,8 +32,8 @@ names <- D.names()
 
 # tree from birth-death process 
 ### is/can this function be overloaded draw node ages from BDP on a given topology 
-tau ~ ConstBDProcess(origin_time, birth_rate, death_rate, rho, "uniform", "nTaxa", nTaxa=taxaCount, names=names)
-tree_height := TreeHeightStatistic(tau)
+tau ~ cBDP(origin_time, birth_rate, death_rate, rho, "uniform", "nTaxa", nTaxa=taxaCount, names=names)
+tree_height := treeHeight(tau)
 tau.set_value(T)
 
 
@@ -60,7 +60,7 @@ n_cats := DppNumTablesStatistic(branch_rates) ## not yet in language
 
 scale_rate := 1.0 / tree_height
 branch_subrates := for b in branch_rates, branch_subrates = b * scale_rate ## place holder
-mean_brate := MeanVecContinuousValStatistic(branch_rates) ## Mean func
+mean_brate := mean(branch_rates) ## Mean func
 
 
 ####################################
