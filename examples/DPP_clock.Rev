@@ -22,8 +22,8 @@ stdv_origin <- 20.0
 origin_time ~ Normal(mean_origin, stdv_origin)
 
 rho <- 1.0
-birth_rate := BirthRateConstBDStatistic(diversification, turnover)  ## br = d / (1.0 - r)
-death_rate := DeathRateConstBDStatistic(diversification, turnover)  ## dr = (r * d) / (1.0 - r)
+birth_rate := diversification / (1.0 - turnover)
+death_rate := (turnover * diversification) / (1.0 - turnover)
 
 # get some useful variables from the data
 n_taxa <- D.ntaxa()
@@ -45,7 +45,7 @@ n_branches <- 2 * n_taxa - 2
 
 ## concentration parameter ##
 pr_mean_cats <- 3.0
-mean_CP <- dppConcParamFromNumTables(pr_mean_cats, n_branches)
+mean_CP <- dppConcParamFromNumTables(pr_mean_cats, n_branches) ## not in language
 cp_shape <- 2.0
 cp_rate <- cp_shape / mean_CP
 concentration ~ Gamma(cp_shape, cp_rate)
@@ -55,12 +55,12 @@ g0_a <- 4.0
 g0_b <- 8.0
 g0 <- GammaDisribution(g0_a, g0_b) ## ??
 
-branch_rates ~ DirichletProcessPriorDistribution(g0, concentration, n_branches)
-n_cats := DppNumTablesStatistic(branch_rates)
+branch_rates ~ DirichletProcessPriorDistribution(g0, concentration, n_branches) ## not yet in language
+n_cats := DppNumTablesStatistic(branch_rates) ## not yet in language
 
 scale_rate := 1.0 / tree_height
-branch_subrates := VectorDoubleProductStatistic(branch_rates, scale_rate
-mean_brate := MeanVecContinuousValStatistic(branch_rates)
+branch_subrates := for b in branch_rates, branch_subrates = b * scale_rate ## place holder
+mean_brate := MeanVecContinuousValStatistic(branch_rates) ## Mean func
 
 
 ####################################
