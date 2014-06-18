@@ -214,6 +214,9 @@
 #include "DistributionFunctionQuantile.h"
 #include "DistributionFunctionRv.h"
 
+/* Distribution helper function */
+#include "RlDPPConcFromPriorMean.h"
+#include "RlDPPNumFromConcentration.h"
 
 /// Inference Functions ///
 
@@ -559,6 +562,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("punif", new DistributionFunctionCdf( new PositiveUniformDistribution() ) );
         addFunction("qunif", new DistributionFunctionQuantile( new PositiveUniformDistribution() ) );
         addFunction("runif", new DistributionFunctionRv<RealPos>( new PositiveUniformDistribution() ) );
+		
+		// distribution helper function
+		addFunction("dppCPFromNum", new DPPConcFromPriorMean( ) );
+		addFunction("dppNumFromCP", new DPPNumFromConcentration( ) );
         
         
         //////////////////////////////////

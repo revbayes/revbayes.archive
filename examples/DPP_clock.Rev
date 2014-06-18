@@ -45,7 +45,7 @@ n_branches <- 2 * n_taxa - 2
 
 ## concentration parameter ##
 pr_mean_cats <- 3.0
-mean_CP <- dppConcParamFromNumTables(pr_mean_cats, n_branches) ## not in language
+mean_CP <- dppCPFromNum(pr_mean_cats, n_branches) 
 cp_shape <- 2.0
 cp_rate <- cp_shape / mean_CP
 concentration ~ gamma(cp_shape, cp_rate)
