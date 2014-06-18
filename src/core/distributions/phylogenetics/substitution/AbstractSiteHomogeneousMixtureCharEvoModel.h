@@ -75,6 +75,7 @@ namespace RevBayesCore {
         
         // pure virtual methods
         virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r) = 0;
+        virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
@@ -427,16 +428,35 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
         dirtyNodes[rootIndex] = false;
         
         
-        // start by filling the likelihood vector for the two children of the root
-        const TopologyNode &left = root.getChild(0);
-        size_t leftIndex = left.getIndex();
-        fillLikelihoodVector( left, leftIndex );
-        const TopologyNode &right = root.getChild(1);
-        size_t rightIndex = right.getIndex();
-        fillLikelihoodVector( right, rightIndex );
+        // start by filling the likelihood vector for the children of the root
+        if ( root.getNumberOfChildren() == 2 )
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            
+            // compute the likelihood of the root
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex );
+        }
+        else if ( root.getNumberOfChildren() == 3 )
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            const TopologyNode &middle = root.getChild(2);
+            size_t middleIndex = middle.getIndex();
+            fillLikelihoodVector( middle, middleIndex );
+            
+            // compute the likelihood of the root
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
+        }
         
-        // compute the likelihood of the root
-        computeRootLikelihood( rootIndex, leftIndex, rightIndex );
         
 #ifdef USE_SCALING
         for (size_t i = 0; i<numNodes; ++i)
