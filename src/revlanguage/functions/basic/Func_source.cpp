@@ -74,7 +74,13 @@ RbLanguageObject* Func_source::execute( void ) {
         getline( inFile, line );
         lineNumber++;
         
-        if (echo_on) RBOUT("RevBayes > " + line);
+        if (echo_on) {
+
+            if ( result == 1 )
+                RBOUT("RevBayes + " + line);
+            else
+                RBOUT("RevBayes > " + line);
+        }
         
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
