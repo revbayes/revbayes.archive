@@ -1,16 +1,10 @@
-//
-//  AbstractOldMove.cpp
-//  RevBayes
-//
-//  Created by Sebastian Hoehna on 6/11/14.
-//  Copyright (c) 2014 hoehna. All rights reserved.
-//
-
 #include "AbstractOldMove.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
 #include <cmath>
+#include <stdio.h>
+#include <iostream>
 
 using namespace RevBayesCore;
 
