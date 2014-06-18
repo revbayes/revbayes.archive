@@ -408,9 +408,39 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++) 
     {
+#ifdef DEBUG_MCMC
+        double oldLnProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            oldLnProb += (*it)->getLnProbability();
+        }
+#endif
+
         // Get the move
         Move* theMove = schedule->nextMove( generation );
         theMove->perform( chainHeat, false);
+        
+#ifdef DEBUG_MCMC
+        double lnProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            lnProb += (*it)->getLnProbability();
+        }
+        double touchedLnProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->touch();
+        }
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            touchedLnProb += (*it)->getLnProbability();
+        }
+        if ( fabs(lnProb - touchedLnProb) > 1E-8 )
+        {
+            std::cout << "Failure occurred after move:\t" << theMove->getMoveName() << std::endl;
+            throw RbException("Error in MCMC probability computation.");
+        }
+#endif
         
     }
     
