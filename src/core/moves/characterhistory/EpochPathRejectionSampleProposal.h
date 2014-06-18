@@ -95,7 +95,7 @@ double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::compu
     unsigned counts[this->numStates];
     for (size_t i = 0; i < this->numStates; i++)
         counts[i] = 0;
-    fillStateCounts(currState, counts);
+    this->fillStateCounts(currState, counts);
     
     const treeType& tree = this->tau->getValue();
     double branchLength = nd.getBranchLength();
@@ -155,7 +155,7 @@ double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::compu
     unsigned counts[this->numStates];
     for (size_t i = 0; i < this->numStates; i++)
         counts[i] = 0;
-    fillStateCounts(currState, counts);
+    this->fillStateCounts(currState, counts);
     
     if (nd.isRoot())
     {

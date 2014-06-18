@@ -2,8 +2,8 @@
 
 # read the data
 # the readCharacter function returns a vector of matrices. We just take the first one
-D <- readCharacterData("clock_test/test_data_clock_gtr.nex")[1]
-T <- readTree("clock_test/true_calib_clk.tre")
+D <- readCharacterData(file="/Users/tracyh/Code/RevBayes/RevBayesX/DerivedData/RevBayesX/Build/Products/Debug/clock_test/test_data_clock_gtr.nex")[1]
+T <- readTrees("/Users/tracyh/Code/RevBayes/RevBayesX/DerivedData/RevBayesX/Build/Products/Debug/clock_test/true_calib_clk.tre")[1]
 
 
 #######################################
@@ -17,13 +17,13 @@ turn_alpha <- 2.0
 turn_beta <- 2.0
 turnover ~ beta(turn_alpha, turn_beta) # r
 
-mean_origin <- getRootAge(T) * 1.5	## ?
+mean_origin <- treeHeight(T) * 1.5	
 stdv_origin <- 20.0
-origin_time ~ Normal(mean_origin, stdv_origin)
+origin_time ~ norm(mean_origin, stdv_origin)
 
 rho <- 1.0
-birth_rate := BirthRateConstBDStatistic(diversification, turnover)  ## br = d / (1.0 - r)
-death_rate := DeathRateConstBDStatistic(diversification, turnover)  ## dr = (r * d) / (1.0 - r)
+birth_rate := diversification / (1.0 - turnover)
+death_rate := (turnover * diversification) / (1.0 - turnover)
 
 # get some useful variables from the data
 n_taxa <- D.ntaxa()
@@ -32,9 +32,9 @@ names <- D.names()
 
 # tree from birth-death process 
 ### is/can this function be overloaded draw node ages from BDP on a given topology 
-tau ~ ConstBDProcess(origin_time, birth_rate, death_rate, rho, "uniform", "nTaxa", nTaxa=taxaCount, names=names)
-tree_height := TreeHeightStatistic(tau)
-tau.set_value(T)
+tau ~ cBDP(lambda=birth_rate, mu=death_rate, origin=origin_time, rho=rho, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
+tree_height := treeHeight(tau)
+tau.setValue(T)
 
 
 ####################################
@@ -45,22 +45,27 @@ n_branches <- 2 * n_taxa - 2
 
 ## concentration parameter ##
 pr_mean_cats <- 3.0
-mean_CP <- dppConcParamFromNumTables(pr_mean_cats, n_branches)
+mean_CP <- dppConcParamFromNumTables(pr_mean_cats, n_branches) ## not in language
 cp_shape <- 2.0
 cp_rate <- cp_shape / mean_CP
-concentration ~ Gamma(cp_shape, cp_rate)
+concentration ~ gamma(cp_shape, cp_rate)
 
 ## G_0 ##
 g0_a <- 4.0
 g0_b <- 8.0
-g0 <- GammaDisribution(g0_a, g0_b) ## ??
+g0 <- gamma(g0_a, g0_b)
 
-branch_rates ~ DirichletProcessPriorDistribution(g0, concentration, n_branches)
-n_cats := DppNumTablesStatistic(branch_rates)
+branch_rates ~ DirichletProcessPriorDistribution(g0, concentration, n_branches) ## not yet in language
+n_cats := DppNumTablesStatistic(branch_rates) ## not yet in language
 
 scale_rate := 1.0 / tree_height
-branch_subrates := VectorDoubleProductStatistic(branch_rates, scale_rate
-mean_brate := MeanVecContinuousValStatistic(branch_rates)
+
+RealPos branch_subrates
+for (i in 1:branch_rates.size()) {
+	branch_subrates[i] := branch_rates[i] * scale_rate
+}
+
+mean_brate := mean(branch_rates) ## Mean func
 
 
 ####################################
@@ -103,8 +108,8 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(generations=10000)
 
- treetrace <- readTreeTrace("./dpp_rclock_test.trees")
- treetrace.summarize()
+treetrace <- readTreeTrace("./dpp_rclock_test.trees")
+treetrace.summarize()
 
 
- mapTree(treetrace,"dpp_rclock_test_MAP.tre")
+mapTree(treetrace,"dpp_rclock_test_MAP.tre")
