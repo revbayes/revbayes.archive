@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 using namespace RevBayesCore;
 
@@ -151,11 +152,24 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     if (lnAcceptanceRatio >= 0.0)
     {
         numAccepted++;
+        
+        // call accept for each node
+        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        {
+            (*i)->keep();
+        }
+        
 //        lnProbability += lnProbabilityRatio;
     }
     else if (lnAcceptanceRatio < -300.0)
     {
         proposal->undoProposal();
+        
+        // call restore for each node
+        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        {
+            (*i)->restore();
+        }
     }
     else 
     {
@@ -165,12 +179,25 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
         if (u < r) 
         {
             numAccepted++;
+            
+            // call accept for each node
+            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            {
+                (*i)->keep();
+            }
+            
             proposal->cleanProposal();
 //            lnProbability += lnProbabilityRatio;
         }
         else 
         {
             proposal->undoProposal();
+            
+            // call restore for each node
+            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            {
+                (*i)->restore();
+            }
         }
     }
 
