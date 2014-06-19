@@ -160,6 +160,7 @@
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
 #include "Func_seed.h"
+#include "Func_seq.h"
 #include "Func_simplex.h"
 #include "Func_type.h"
 #include "Func_source.h"
@@ -519,6 +520,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "seed",                     new Func_seed()                     );
+        addFunction( "seq",                      new Func_seq<Integer>()             );
+        addFunction( "seq",                      new Func_seq<Real>()                );
         addFunction( "simplex",                  new Func_simplex()                  );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
