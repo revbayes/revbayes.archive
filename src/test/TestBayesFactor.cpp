@@ -60,6 +60,8 @@ bool TestBayesFactor::run( void ) {
     double sss = myMcmc.steppingStoneSampling();
     double ps = myMcmc.pathSampling();
     
+    std::cout << "True marginal likelihood:\t\t" << log(0.005956) << std::endl;
+    std::cout << "True marginal likelihood:\t\t" << log(0.004975) << std::endl;
     std::cout << "Stepping-Stone-Sampling:\t\t" << sss << std::endl;
     std::cout << "Path-Sampling:\t\t\t\t\t" << ps << std::endl;
     

@@ -19,42 +19,29 @@
 #ifndef PowerPosteriorMcmc_H
 #define PowerPosteriorMcmc_H
 
-#include "Model.h"
-#include "Monitor.h"
-#include "Move.h"
-
-#include <vector>
+#include "MonteCarloSampler.h"
 
 namespace RevBayesCore {
     
-    class PowerPosteriorMcmc {
+    class PowerPosteriorMcmc : public MonteCarloSampler {
         
     public:
         PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &moves);
-        PowerPosteriorMcmc(const PowerPosteriorMcmc &m);
         virtual                                            ~PowerPosteriorMcmc(void);                                                          //!< Virtual destructor
         
         // public methods
         PowerPosteriorMcmc*                                 clone(void) const;
-        void                                                burnin(size_t g, size_t ti);
         const std::vector<double>&                          getSamples(void) const;
         double                                              pathSampling();
         void                                                run(size_t g);
         double                                              steppingStoneSampling();
         
-//        void                                                setGenerations(size_t g);
         void                                                setBeta(const std::vector<double> &b);
         void                                                setSampleFreq(size_t sf);
         
     private:
-        void                                                initialize(void);
         
-        // members       
-        double                                              lnProbability;
-        Model                                               model;
-        std::vector<Move*>                                  moves;
-        std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
-    
+        // members
         std::vector<double>                                 beta;
         size_t                                              sampleFreq;
         std::vector<double>                                 samples;

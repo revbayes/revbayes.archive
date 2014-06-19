@@ -132,7 +132,8 @@ void FileMonitor::monitor(unsigned long gen) {
             outStream << mcmc->getChainHeat();
         }
         
-        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        {
             // add a separator before every new element
             outStream << separator;
             

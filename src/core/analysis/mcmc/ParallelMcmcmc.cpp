@@ -24,7 +24,10 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         
         // create chains
         bool a = (i == 0 ? true : false);
-        Mcmc* oneChain = new Mcmc(m, moves, mons, scheduleType, a, b);
+        Mcmc* oneChain = new Mcmc(m, moves, mons);
+        oneChain->setScheduleType( scheduleType );
+        oneChain->setChainActive( a );
+        oneChain->setChainHeat( b );
         oneChain->setChainIndex(i);
         oneChain->startMonitors();
         

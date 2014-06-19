@@ -44,7 +44,8 @@ void Mcmc::constructInternalObject( void ) {
     const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
     const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
     const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getValue() ).getValue();
-    value = new RevBayesCore::Mcmc(mdl, mvs, mntr, sched);
+    value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
+    value->setScheduleType( sched );
 }
 
 
