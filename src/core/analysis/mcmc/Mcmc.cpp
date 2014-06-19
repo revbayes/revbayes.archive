@@ -426,15 +426,26 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
         {
             lnProb += (*it)->getLnProbability();
         }
-        double touchedLnProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
             (*it)->touch();
         }
+        double touchedLnProb = 0.0;
+        double lnLikelihoodProb = 0.0;
+        double lnPriorProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
             touchedLnProb += (*it)->getLnProbability();
+            if ( (*it)->isClamped() )
+            {
+                lnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                lnPriorProb += (*it)->getLnProbability();
+            }
         }
+        
         if ( fabs(lnProb - touchedLnProb) > 1E-8 )
         {
             std::cout << "Failure occurred after move:\t" << theMove->getMoveName() << std::endl;
