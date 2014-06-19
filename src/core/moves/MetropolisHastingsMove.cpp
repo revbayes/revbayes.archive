@@ -138,7 +138,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     double lnPriorRatio = 0.0;
     double lnLikelihoodRatio = 0.0;
     
-    // call accept for each node
+    // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         lnPriorRatio += (*it)->getLnProbabilityRatio();
@@ -147,7 +147,14 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
-        lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+        if ( (*it)->isClamped() )
+        {
+            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+        }
+        else
+        {
+            lnPriorRatio += (*it)->getLnProbabilityRatio();
+        }
     }
     
     // exponentiate with the chain heat

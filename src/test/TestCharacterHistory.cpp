@@ -380,7 +380,7 @@ bool TestCharacterHistory::run_exp(void) {
     // mcmc
     //////////
     std::cout << "Instantiating mcmc\n";
-    Mcmc myMcmc = Mcmc( myModel, moves, monitors, "random", true, 1.0, 0 );
+    Mcmc myMcmc = Mcmc( myModel, moves, monitors );
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     
