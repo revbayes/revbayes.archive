@@ -41,6 +41,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         double lnLikelihoodRatio = lnProbabilityRatio;
         if ( raiseLikelihoodOnly )
         {
+            lnLikelihoodRatio = 0.0;
             const std::set<DagNode*> &nodes = getDagNodes();
             std::set<DagNode*> affectedNodes;
             for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
