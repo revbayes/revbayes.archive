@@ -56,6 +56,7 @@
 #include "RlBranchRateJumpProcess.h"
 #include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
+#include "RlDirichletProcessPriorDistribution.h"
 #include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
@@ -217,6 +218,7 @@
 /* Distribution helper function */
 #include "RlDPPConcFromPriorMean.h"
 #include "RlDPPNumFromConcentration.h"
+#include "RlDppNumTablesStatistic.h"
 
 /// Inference Functions ///
 
@@ -359,6 +361,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // dirichlet distribution
         addDistribution( "dirichlet",       new DirichletDistribution() );
+		
+		// dirichlet process prior distribution
+        addDistribution( "dpp",				new DirichletProcessPriorDistribution<Real>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<RealPos>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Natural>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Integer>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Probability>() );
+		  // TAH: thes don't semm to work with the moves, probably need to figure this out
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Topology>() );
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Simplex>() );
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution< Vector<RealPos> >() );
         
         // gamma distribution
         addDistribution( "gamma",           new GammaDistribution() );
