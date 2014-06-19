@@ -48,7 +48,7 @@ bool TestBayesFactor::run( void ) {
     /* instiate and run the MCMC */
     PowerPosteriorMcmc myMcmc = PowerPosteriorMcmc( myModel, moves );
     std::vector<double> beta;
-    int k = 20;
+    int k = 50;
     for (int i = k; i >= 0; --i) {
         double b = RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
         beta.push_back( b );
@@ -60,7 +60,6 @@ bool TestBayesFactor::run( void ) {
     double sss = myMcmc.steppingStoneSampling();
     double ps = myMcmc.pathSampling();
     
-    std::cout << "True marginal likelihood:\t\t" << log(0.005956) << std::endl;
     std::cout << "True marginal likelihood:\t\t" << log(0.004975) << std::endl;
     std::cout << "Stepping-Stone-Sampling:\t\t" << sss << std::endl;
     std::cout << "Path-Sampling:\t\t\t\t\t" << ps << std::endl;

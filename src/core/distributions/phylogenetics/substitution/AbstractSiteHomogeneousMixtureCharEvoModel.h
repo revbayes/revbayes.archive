@@ -138,7 +138,7 @@ namespace RevBayesCore {
 
 #include <cmath>
 
-//#define USE_SCALING
+#define USE_SCALING
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ), 
@@ -252,19 +252,47 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     charMatrix.resize(tips);
     gapMatrix.resize(tips);
     
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
+    size_t siteIndex = 0;
+    for (size_t i = 0; i < numSites; ++i)
+    {
+        while ( this->value->isCharacterExcluded(siteIndex) )
+        {
+            siteIndex++;
+            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            {
+                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
+            }
+        }
+        siteIndices[i] = siteIndex;
+        siteIndex++;
+    }
+    // test if there were additional sites that we did not use
+    while ( siteIndex < this->value->getNumberOfCharacters() )
+    {
+        if ( !this->value->isCharacterExcluded(siteIndex)  )
+        {
+            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
+        }
+        siteIndex++;
+    }
+    
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
     // find the unique site patterns and compute their respective frequencies
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
     for (size_t site = 0; site < numSites; ++site) 
     {
+        
         for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
         {
             if ( (*it)->isTip() ) 
             {
                 // \todo modify this so that the distribution is actually defined on discrete character data
                 AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(site) );
+                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(siteIndices[site]) );
                 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
@@ -310,7 +338,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 if ( (*it)->isTip() ) 
                 {
                     AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                    CharacterState &c = taxon.getCharacter(site);
+                    CharacterState &c = taxon.getCharacter(siteIndices[site]);
                     pattern += c.getStringValue();
                 }
             }
@@ -366,7 +394,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 // only add this site if it is unique
                 if ( unique[site] ) 
                 {
-                    charType &c = static_cast<charType &>( taxon.getCharacter(site) );
+                    charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[site]) );
                     gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
                     if ( ambiguousCharacters ) 

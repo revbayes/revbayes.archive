@@ -112,10 +112,6 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
     initializeChain();
     initializeMonitors();
     
-#ifdef DEBUG_MonteCarloSampler
-    std::vector<DagNode *>& dagNodes = model.getDagNodes();
-#endif
-    
     // reset the counters for the move schedules
     double movesPerIteration = 0.0;
     for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it)
@@ -404,14 +400,14 @@ void MonteCarloSampler::monitor(unsigned long g)
 
 unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
     
-#ifdef DEBUG_MonteCarloSampler
+#ifdef DEBUG_MCMC
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
 #endif
     
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++)
     {
-#ifdef DEBUG_MonteCarloSampler
+#ifdef DEBUG_MCMC
         double oldLnProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
@@ -423,7 +419,7 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
         Move* theMove = schedule->nextMove( generation );
         theMove->perform( chainHeat, false);
         
-#ifdef DEBUG_MonteCarloSampler
+#ifdef DEBUG_MCMC
         double lnProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {

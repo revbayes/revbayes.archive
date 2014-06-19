@@ -50,9 +50,8 @@ double PowerPosteriorMcmc::pathSampling( void )
         double mean = 0.0;
         for (size_t j = 0; j < samplesPerPath; ++j)
         {
-            mean += samples[i*samplesPerPath + j];
+            mean += samples[i*samplesPerPath + j] / samplesPerPath;
         }
-        mean /= samplesPerPath;
         
         pathValues.push_back( mean );
         
@@ -97,7 +96,7 @@ void PowerPosteriorMcmc::run(size_t gen)
                 /* Get the move */
                 Move* theMove = schedule.nextMove(k);
                 
-                theMove->perform( b, false );
+                theMove->perform( b, true );
             
             }
         
@@ -155,9 +154,8 @@ double PowerPosteriorMcmc::steppingStoneSampling( void )
         double mean = 0.0;
         for (size_t j = 0; j < samplesPerPath; ++j)
         {
-            mean += exp( (samples[i*samplesPerPath + j]-max)*(beta[i-1]-beta[i]) );
+            mean += exp( (samples[i*samplesPerPath + j]-max)*(beta[i-1]-beta[i]) ) / samplesPerPath;
         }
-        mean /= samplesPerPath;
         
         marginal += log(mean) + (beta[i-1]-beta[i])*max;
         
