@@ -35,6 +35,7 @@
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
 #include "NormalDistribution.h"
+#include "QuantileFunction.h"
 #include "RateOnBranchAve.h"
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
@@ -164,6 +165,26 @@ bool TestACLNRatesGen::run( void ) {
 	
     DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new GtrRateMatrixFunction(er, pi) );
     std::cout << "Q:\t" << q->getValue() << std::endl;
+
+	// ####### Gamma Rate Het. ######
+	
+	ConstantNode<double> *shapePr = new ConstantNode<double>("gammaShPr", new double(0.5));
+	StochasticNode<double> *srAlpha = new StochasticNode<double>("siteRates.alpha", new ExponentialDistribution(shapePr));
+    ConstantNode<double> *q1 = new ConstantNode<double>("q1", new double(0.125) );
+    DeterministicNode<double> *q1Value = new DeterministicNode<double>("q1_value", new QuantileFunction(q1, new GammaDistribution(srAlpha, srAlpha) ) );
+    ConstantNode<double> *q2 = new ConstantNode<double>("q2", new double(0.375) );
+    DeterministicNode<double> *q2Value = new DeterministicNode<double>("q2_value", new QuantileFunction(q2, new GammaDistribution(srAlpha, srAlpha) ) );
+    ConstantNode<double> *q3 = new ConstantNode<double>("q3", new double(0.625) );
+    DeterministicNode<double> *q3Value = new DeterministicNode<double>("q3_value", new QuantileFunction(q3, new GammaDistribution(srAlpha, srAlpha) ) );
+    ConstantNode<double> *q4 = new ConstantNode<double>("q4", new double(0.875) );
+    DeterministicNode<double> *q4Value = new DeterministicNode<double>("q4_value", new QuantileFunction(q4, new GammaDistribution(srAlpha, srAlpha) ) );
+    std::vector<const TypedDagNode<double>* > gammaRates = std::vector<const TypedDagNode<double>* >();
+    gammaRates.push_back(q1Value);
+    gammaRates.push_back(q2Value);
+    gammaRates.push_back(q3Value);
+    gammaRates.push_back(q4Value);
+    DeterministicNode<std::vector<double> > *siteRates = new DeterministicNode<std::vector<double> >( "site_rates", new VectorFunction<double>(gammaRates) );
+    DeterministicNode<std::vector<double> > *siteRatesNormed = new DeterministicNode<std::vector<double> >( "site_rates_norm", new NormalizeVectorFunction(siteRates) );
     
 	
 	tau->setValue( trees[0] );
@@ -174,6 +195,7 @@ bool TestACLNRatesGen::run( void ) {
     GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
 	phyloCTMC->setClockRate( brVector ); 
     phyloCTMC->setRateMatrix( q );
+	phyloCTMC->setSiteRates( siteRatesNormed );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
 	charactermodel->clamp( data[0] );
 	
@@ -198,6 +220,7 @@ bool TestACLNRatesGen::run( void ) {
 	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 0.5 ) ); 
 	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 0.5 ) );
 	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 0.5 ) );
+	moves.push_back( new ScaleMove(srAlpha, log(2.0), true, 1.0) );
 	moves.push_back( new ScaleMove(bmNu, 0.75, true, 4.0) );
 	moves.push_back( new ScaleMove(rootRate, 0.5, false, 2.0) );
 	moves.push_back( new ScaleMove(rootRate, 1.0, false, 2.0) );
@@ -226,6 +249,7 @@ bool TestACLNRatesGen::run( void ) {
 	monitoredNodes.push_back( deathRate );
 	monitoredNodes.push_back( pi );
     monitoredNodes.push_back( er );
+    monitoredNodes.push_back( srAlpha );
 	monitoredNodes.push_back( brVector );
 	
 	std::string logFN = "clock_test/test_rb_ACLN_6June_rn_3.log";
