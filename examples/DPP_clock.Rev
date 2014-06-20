@@ -55,7 +55,7 @@ g0_a <- 4.0
 g0_b <- 8.0
 g0 <- gamma(g0_a, g0_b)
 
-branch_rates ~ DirichletProcessPriorDistribution(g0, concentration, n_branches) ## not yet in language
+branch_rates ~ dpp(g0, concentration, n_branches) ## works, I think! yay!
 n_cats := DppNumTablesStatistic(branch_rates) ## not yet in language
 
 scale_rate := 1.0 / tree_height
