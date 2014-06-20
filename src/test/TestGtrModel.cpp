@@ -104,7 +104,6 @@ bool TestGtrModel::run( void ) {
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( data[0] );
     
-    
     /* add the moves */
     std::vector<Move*> moves;
     moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );

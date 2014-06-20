@@ -118,6 +118,7 @@ bool TestCharacterHistory::run( void ) {
         case 0: return run_exp();
         case 1: return run_dollo();
         case 2: return run_old();
+            
         default: break;
     };
     return false;
@@ -142,24 +143,27 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> seed;
     seed.push_back(7); seed.push_back(1);
 //    old_seed = seed;
-//    GLOBAL_RNG->setSeed(seed);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
     
     bool usingAmbiguousCharacters = !true;
     bool simulate = false;
-    bool useDistances = true;
     bool useClock = !true;
     bool forbidExtinction = true;
-    bool useCladogenesis = !true;
-    bool useEpochs = !true;
+    bool useCladogenesis = true;
+    bool useEpochs = true;
+    bool useDistances = true;
+    bool useAdjacency = true;
+    bool useAvailable = true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
-    fn = "psychotria.nex";
+//    fn = "psychotria.nex";
+    fn = "16tip_4areas.nex";
 //    fn = "vireya_gain0_01_loss0_03_dp0.nex";
 //    fn = "16tip_100areas_dp0.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
@@ -176,7 +180,8 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "vireya.atlas.txt";
-    afn = "hawaii.atlas.txt";
+//    afn = "hawaii.atlas.txt";
+    afn = "hawaii_hard.atlas.txt";
 //    afn = "hawaii_complex.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
@@ -210,10 +215,10 @@ bool TestCharacterHistory::run_exp(void) {
     {
         ConstantNode<double> *dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
         dp = new ContinuousStochasticNode("distancePower", new NormalDistribution(new ConstantNode<double>("dp_mu",new double(0.0)), dp_pr));
-        dp->setValue(new double(0.1));
+        dp->setValue(new double(0.00001));
 //        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
 //        dp->setValue(new double(1.0));
-        ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
+        ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
     }
     
     // ctmc rates
@@ -239,7 +244,7 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
     brmf_likelihood->setGainLossRates(glr_vector);
     brmf_likelihood->setClockRate(clockRate);
-    if (useDistances)
+    if (useDistances || useAvailable || useAdjacency)
         brmf_likelihood->setGeographicDistanceRateModifier(ddd);
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
@@ -247,7 +252,7 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
     brmf_sample->setGainLossRates(glr_vector);
     brmf_sample->setClockRate(clockRate);
-    if (useDistances)
+    if (useDistances || useAvailable || useAdjacency)
         brmf_sample->setGeographicDistanceRateModifier(ddd);
 
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
@@ -362,8 +367,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     
 
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb1" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb4" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
