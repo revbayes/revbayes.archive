@@ -70,7 +70,7 @@ double PowerPosteriorMcmc::pathSampling( void )
 void PowerPosteriorMcmc::run(size_t gen)
 {
     
-    std::cerr << "Running power posterior ..." << std::endl;
+    std::cout << "Running power posterior ..." << std::endl;
     
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
     
@@ -82,14 +82,28 @@ void PowerPosteriorMcmc::run(size_t gen)
     
     samples.clear();
     samplesPerPath = gen / sampleFreq;
+    size_t printInterval = size_t( round( fmax(1,gen/20.0) ) );
+    size_t digits = size_t( ceil( log10( beta.size() ) ) );
     
     /* Run the chain */    
     RandomMoveSchedule schedule = RandomMoveSchedule(moves);
     for (size_t i = 0; i < beta.size(); ++i) {
         double b = beta[i];
-        std::cerr << "Beta = " << b << std::endl;
+        std::cout << "Step ";
+        for (size_t d = size_t( ceil( log10( i+1.1 ) ) ); d < digits; d++ )
+        {
+            std::cout << " ";
+        }
+        std::cout << (i+1) << " / " << beta.size();
+        std::cout << "\t\t";
 
         for (size_t k=1; k<=gen; k++) {
+            
+            if ( k % printInterval == 0 )
+            {
+                std::cout << "**";
+                std::cout.flush();
+            }
         
             size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
             for (size_t j=0; j<proposals; j++) {
@@ -114,6 +128,8 @@ void PowerPosteriorMcmc::run(size_t gen)
             }
         
         }
+        
+        std::cout << std::endl;
         
     }
     
