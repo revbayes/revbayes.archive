@@ -27,7 +27,7 @@ using namespace RevBayesCore;
 Tree::Tree(void) : 
     topology( NULL ), 
     changeEventHandler(),
-    ownsTopology( false ) 
+    ownsTopology( true )
 {
     
 }
