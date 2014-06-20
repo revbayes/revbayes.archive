@@ -212,6 +212,19 @@ const std::string& ContinuousCharacterData::getFileName(void) const
     return fileName;
 }
 
+/** 
+ * Get whether the homology of the characters has been established, or not.
+ * For continuous characters, this should always be "true." However, we still 
+ * return the state of the member variable (homologyEstablished) rather than
+ * simply returning true.
+ *
+ * \return    The homology state of the character
+ */
+const bool ContinuousCharacterData::getHomologyEstablished(void) const
+{
+
+    return homologyEstablished;
+}
 
 /** 
  * Get the number of characters in taxon data object. 
