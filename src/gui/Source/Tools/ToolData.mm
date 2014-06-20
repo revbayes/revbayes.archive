@@ -6,14 +6,14 @@
 #include <string>
 #include "AminoAcidState.h"
 #include "CharacterState.h"
-#include "CharacterData.h"
+#include "AbstractCharacterData.h"
 #include "ContinuousCharacterState.h"
 #include "DnaState.h"
 #include "Parser.h"
-#include "RlCharacterData.h"
+#include "AbstractCharacterData.h"
 #include "RnaState.h"
 #include "StandardState.h"
-#include "TaxonData.h"
+#include "AbstractTaxonData.h"
 #include "Workspace.h"
 
 
@@ -223,14 +223,14 @@
     [dataInspector window];
 }
 
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(const std::string&)dt {
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {
 
     std::string fn = cd.getFileName();
     
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd.getNumberOfTaxa())];
-    if ( cd.getIsHomologyEstablished() == true )
+    if ( cd.getHomologyEstablished() == true )
         [m setIsHomologyEstablished:YES];
     else
         [m setIsHomologyEstablished:NO];
@@ -263,7 +263,7 @@
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )
             {
-                unsigned int x = static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
+                unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:YES];
