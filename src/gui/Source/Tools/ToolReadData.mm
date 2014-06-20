@@ -1,3 +1,4 @@
+#include <iostream>
 #include <map>
 #include <vector>
 #include <string>
@@ -370,17 +371,31 @@
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
     const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *>( &dv );
-    NSLog(@"dnc = %d", dnc);
+
+
+    NSLog(@"dnc = %ul", dnc);
+    std::cout << (*dnc)[0].toString() << std::endl;
+    std::cout << (*dnc)[0].getClassName() << std::endl;
+    (*dnc)[0].printStructure(std::cout);
+    (*dnc)[0].printValue(std::cout);
+
+    //virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
+    //virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
+
+
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
-        NSLog(@"dnc->size() = %d", dnc->size());
+        NSLog(@"dnc->size() = %d", (int)dnc->size());
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[ i ];
+            const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[i];
             NSLog(@"theDagNode = %d", &theDagNode);
             
-            // TODO: Maybe find a better solution than these ugly type cast checks (Sebastian)
+
+
+            const RevBayesCore::AbstractCharacterData *an = dynamic_cast<const RevBayesCore::AbstractCharacterData *>( &theDagNode );
+            NSLog(@"an = %d", an);
             RbData* newMatrix = NULL;
             
             // DNA
@@ -413,7 +428,8 @@
             if ( NULL == newMatrix ) 
                 {
                 const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( &theDagNode );
-                if ( cd != NULL ) 
+                NSLog(@"aa check = %d", cd);
+                if ( cd != NULL )
                     {
                     std::string type = "Protein";
                     newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];

@@ -236,7 +236,7 @@
                 {
                 int numMatrices = [self numAttachedMatrices];
                 BOOL numPlatesIteratingOverMatrices = 0;
-                char idxChar;
+                char idxChar = 'a';
                 for (int i=0; i<[ot numAssignedPlates]; i++)
                     {
                     if ( [[ot getPlateIndexed:i] indexSource] == SRC_NUMBER_MATRICES )
