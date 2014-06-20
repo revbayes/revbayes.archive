@@ -101,6 +101,8 @@ void TimeAtlasDataReader::readJson(void)
                         dispersalValues.push_back( v );
                     }
                 }
+         
+                ;
                 
                 std::vector<double> extinctionValues;
                 if (node_areas.second.find("extinctionValues") != node_areas.second.not_found())
@@ -117,6 +119,8 @@ void TimeAtlasDataReader::readJson(void)
                 unsigned areaState = 0;
                 if (node_areas.second.find("state") != node_areas.second.not_found())
                     areaState = node_areas.second.get<int>("state");
+              
+                
                 
                 GeographicArea* g  = new GeographicArea(areaIndex, areaLatitude, areaLongitude, areaName, areaState, areaAltitude, areaSize, dispersalValues, extinctionValues);
                 
