@@ -445,7 +445,7 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
             }
         }
         
-        if ( fabs(lnProb - touchedLnProb) > 1E-8 )
+        if ( fabs(lnProb - touchedLnProb) > 1E-6 )
         {
             std::cout << "Failure occurred after move:\t" << theMove->getMoveName() << std::endl;
             throw RbException("Error in MonteCarloSampler probability computation.");
