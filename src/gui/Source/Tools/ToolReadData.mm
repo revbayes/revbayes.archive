@@ -8,6 +8,7 @@
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
+#include "RlAbstractCharacterData.h"
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
@@ -394,14 +395,15 @@
             
 
 
-            const RevBayesCore::AbstractCharacterData *an = dynamic_cast<const RevBayesCore::AbstractCharacterData *>( &theDagNode );
-            NSLog(@"an = %d", an);
+            const RevLanguage::AbstractCharacterData *rlan = dynamic_cast<const RevLanguage::AbstractCharacterData *>( &(theDagNode) );
+            NSLog(@"an = %d", rlan);
             RbData* newMatrix = NULL;
             
             // DNA
             if ( NULL == newMatrix )
                 {
-                const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( &theDagNode );
+                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
+                const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( an );
                 NSLog(@"dna check = %d", cd);
                 if ( cd != NULL )
                     {
