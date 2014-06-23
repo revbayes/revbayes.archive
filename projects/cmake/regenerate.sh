@@ -145,7 +145,52 @@ set_target_properties(boost_math_tr1l PROPERTIES IMPORTED_LOCATION "../../boost_
 
 ######## end of boost #################
 
+######## optional bio++ ###############
 
+SET(WITH_BPP)
+
+#here is a useful function:
+MACRO(IMPROVED_FIND_LIBRARY OUTPUT_LIBS lib_name include_to_find)
+  #start:
+  FIND_PATH(${lib_name}_INCLUDE_DIR ${include_to_find})
+  SET(${lib_name}_NAMES ${lib_name} ${lib_name}lib ${lib_name}dll)
+  FIND_LIBRARY(${lib_name}_LIBRARY NAMES ${${lib_name}_NAMES} PATH_SUFFIXES lib${LIB_SUFFIX})
+
+  IF(${lib_name}_LIBRARY)
+    MESSAGE("-- Library ${lib_name} found here:")
+    MESSAGE("   includes : ${${lib_name}_INCLUDE_DIR}")
+    MESSAGE("   libraries: ${${lib_name}_LIBRARY}")
+  ELSE(${lib_name}_LIBRARY)
+    MESSAGE("${lib_name} required but not found.")
+    UNSET(WITH_BPP)
+  ENDIF(${lib_name}_LIBRARY)
+  
+  #add the dependency:
+  INCLUDE_DIRECTORIES(${${lib_name}_INCLUDE_DIR})
+  SET(${OUTPUT_LIBS} ${${OUTPUT_LIBS}} ${${lib_name}_LIBRARY})
+ENDMACRO(IMPROVED_FIND_LIBRARY)
+
+#Find the Bio++ libraries:
+IMPROVED_FIND_LIBRARY(LIBS bpp-core Bpp/Clonable.h)
+IMPROVED_FIND_LIBRARY(LIBS bpp-seq Bpp/Seq/Alphabet/Alphabet.h)
+IMPROVED_FIND_LIBRARY(LIBS bpp-phyl Bpp/Phyl/Tree.h)
+
+# Subdirectories
+
+
+# IF (DWITH_BPP)
+#  SET(bpp-lib bpp-core bpp-seq bpp-phyl)
+#  
+#  FOREACH(bpplib ${bpp-lib})
+#      find_library(${bpplib} SHARED ${BPPDIR})
+#      set_target_properties(${bpplib} PROPERTIES LINKER_LANGUAGE CXX)
+#      MESSAGE(${bpplib})
+#  ENDFOREACH(bpplib)
+# 
+# 
+#  #ADD_SUBDIRECTORY(bpp)
+# ENDIF(DEFINED ${BPPDIR}) 
+# 
 
 ' >> $HERE/CMakeLists.txt
 
