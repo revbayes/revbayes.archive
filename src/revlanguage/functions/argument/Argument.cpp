@@ -47,7 +47,7 @@ Argument* Argument::clone( void ) const {
 
 const RbPtr<Variable>& Argument::getReferenceVariable(void) const {
     if ( isConst ) {
-        throw RbException("You naughty boy! You cannot get a non-const reference to a constant variable.");
+        throw RbException("Illegal attempt to get a non-const reference to a constant variable.");
     }
     return var;
 }
