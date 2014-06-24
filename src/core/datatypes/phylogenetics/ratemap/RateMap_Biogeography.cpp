@@ -245,8 +245,8 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
 
 double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age) const
 {
-    unsigned n1 = numOn(from);
-    unsigned n0 = numCharacters - n1;
+    unsigned n1 = (unsigned)numOn(from);
+    unsigned n0 = (unsigned)(numCharacters - n1);
     unsigned counts[2] = { n0, n1 };
     return getRate(node, from, to, counts, age);
 }
@@ -255,7 +255,7 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
 {
     double rate = 0.0;
     int s = to->getState();
-    int charIdx = to->getIndex();
+    int charIdx = (int)to->getIndex();
     int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
@@ -349,8 +349,8 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
 
 double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
 {
-    unsigned n1 = numOn(from);
-    unsigned n0 = numCharacters - n1;
+    unsigned n1 = (unsigned)numOn(from);
+    unsigned n0 = (unsigned)(numCharacters - n1);
     unsigned counts[2] = {n0,n1};
     return getSumOfRates(node, from, counts, age);
 }

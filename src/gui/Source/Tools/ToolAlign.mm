@@ -13,12 +13,11 @@
 #include <string>
 
 #include "CharacterState.h"
-#include "CharacterData.h"
+#include "AbstractCharacterData.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RbNullObject.h"
-#include "RlCharacterData.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -183,7 +182,7 @@
         RbData* d = [unalignedData objectAtIndex:i];
         NSString* fName = [NSString stringWithString:[d name]];
                   fName = [fName stringByAppendingString:@".fas"];
-        NSString* tempDir = [NSString stringWithFormat:@"temp_%d", i+1];
+        NSString* tempDir = [NSString stringWithFormat:@"temp_%lu", i+1];
         NSNumber* nt = [NSNumber numberWithInt:[d numTaxa]];
         
         NSMutableArray* theTaskInfo = [[NSMutableArray alloc] initWithCapacity:2];

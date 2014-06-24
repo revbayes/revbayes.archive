@@ -306,7 +306,7 @@
     line += " <- distances(";
     line += alnAsStlStr;
     line += ", \"jc69\", \"equal\", \"equal\", 0.5, 0.0)";
-    std::cout << "line = \"" << line << "\"" << std::cout;
+    //std::cout << "line = \"" << line << "\"" << std::cout;
     
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)

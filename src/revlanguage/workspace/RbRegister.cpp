@@ -7,15 +7,8 @@
  * @brief Function registering language objects
  *
  * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @extends Frame
- * @package parser
- * @version 1.0
- * @since version 1.0 2009-09-02
  *
- * $Id$
  */
 
 #include "ArgumentRule.h"
@@ -60,14 +53,14 @@
 #include "RlModelMonitor.h"
 #include "RlScreenMonitor.h"
 
-/* Moves (in folder "datatypes/inference/moves") */
+/* Moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
 #include "RlMove.h"
 
-/* Moves on real values*/
+/* Moves on real values */
 #include "RlScaleMove.h"
 #include "RlSlidingMove.h"
 
-/* Moves on integer values*/
+/* Moves on integer values */
 #include "RlRandomIntegerWalkMove.h"
 #include "RlRandomGeometricWalkMove.h"
 
@@ -103,7 +96,7 @@
 
 /// Distributions ///
 
-/* Distributions (in folder "distribution") (alphabetic order) */
+/* Distributions (in folder "distributions/math") (alphabetic order) */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
 #include "RlBimodalLognormalDistribution.h"
@@ -127,7 +120,7 @@
 #include "RlWhiteNoisePhyloProcess.h"
 #include "RlWishartDistribution.h"
 
-// tree priors
+/* Tree priors (in folder "distributions/evolution/tree") */
 #include "RlConstantRateBirthDeathProcess.h"
 #include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
@@ -137,9 +130,11 @@
 #include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RlUniformTimeTreeDistribution.h"
 
-
-// sequence models
+/* Character evolution models (in folder "distributions/evolution/character") */
 #include "RlCharacterStateEvolutionAlongTree.h"
+
+/* Mixture distributions (in folder "distributions/mixture") */
+#include "RlDirichletProcessPriorDistribution.h"
 
 /// Parser functions ///
 
@@ -167,6 +162,7 @@
 #include "Func_normalizeVector.h"
 #include "Func_quit.h"
 #include "Func_seed.h"
+#include "Func_seq.h"
 #include "Func_simplex.h"
 #include "Func_type.h"
 #include "Func_source.h"
@@ -222,6 +218,10 @@
 #include "DistributionFunctionQuantile.h"
 #include "DistributionFunctionRv.h"
 
+/* Distribution helper function */
+#include "RlDPPConcFromPriorMean.h"
+#include "RlDPPNumFromConcentration.h"
+#include "RlDppNumTablesStatistic.h"
 
 /// Inference Functions ///
 
@@ -413,6 +413,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // dirichlet distribution
         addDistribution( "dnDirichlet",     new DirichletDistribution() );
         addDistribution( "dirichlet",       new DirichletDistribution() );
+		
+		// dirichlet process prior distribution
+        addDistribution( "dpp",				new DirichletProcessPriorDistribution<Real>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<RealPos>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Natural>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Integer>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Probability>() );
+		  // TAH: thes don't semm to work with the moves, probably need to figure this out
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Topology>() );
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Simplex>() );
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution< Vector<RealPos> >() );
         
         // gamma distribution
         addDistribution( "dnGamma",         new GammaDistribution() );
@@ -543,6 +554,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "seed",                     new Func_seed()                     );
+        addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "simplex",                  new Func_simplex()                  );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
@@ -646,6 +658,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "estimateBurnin", new OptimalBurninFunction() );
 
         
+        /////////////////////////////////////
+        // Add distribution functions here //
+        /////////////////////////////////////
+
         /* Add io functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
@@ -829,6 +845,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("qunif", new DistributionFunctionQuantile( new PositiveUniformDistribution() ) );
         addFunction("runif", new DistributionFunctionRv<RealPos>( new PositiveUniformDistribution() ) );
 
+		// distribution helper function
+		addFunction("dppCPFromNum", new DPPConcFromPriorMean( ) );
+		addFunction("dppNumFromCP", new DPPNumFromConcentration( ) );
+    
     }
     catch(RbException& rbException) {
         

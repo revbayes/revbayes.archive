@@ -131,12 +131,11 @@
 - (void)setControlsEnabledState;
 - (void)setControlWindowSize;
 - (void)setTableColumns;
-//- (void)setToolValues;
 - (void)setInletsAndOutlets;
 - (IBAction)settingChangedAction:(id)sender;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
-- (void)updateForChangeInState;
+- (void)updateForChangeInUpstreamState;
 
 
 @end

@@ -431,8 +431,7 @@ bool TestAdmixtureGraph::run(void) {
     std::cout << "Calling mcmc\n";
     if (!useParallelMcmcmc)
     {
-        double chainHeat = 1.0;
-        Mcmc myMcmc = Mcmc(myModel, moves, monitors, "random", true, chainHeat, 0);
+        Mcmc myMcmc = Mcmc(myModel, moves, monitors);
         myMcmc.run(mcmcGenerations);
         myMcmc.printOperatorSummary();
     }

@@ -12,7 +12,7 @@ namespace RevBayesCore {
     class DagNode;
     
     /**
-     * Base class for all move within an MCMC (and all other variants). 
+     * Base class for all moves within an MCMC (and all other variants). 
      *
      * The base class of all moves only provides the interface for the call to propose a new move.
      * All specifics are implemented in the derived classes.
