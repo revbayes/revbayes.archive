@@ -41,7 +41,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
+    if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
     {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
