@@ -276,7 +276,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
         
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
-        addType( "Simplex", new Simplex() );
+        addType( new Simplex() );
         
         
         //////////////////
@@ -284,13 +284,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         //////////////////
         
         /* File monitor */
-        addTypeWithConstructor("extNewickmonitor",    new ExtendedNewickFileMonitor());
+        addTypeWithConstructor("extNewickmonitor", new ExtendedNewickFileMonitor());
         
         /* File monitor */
-        addTypeWithConstructor("filemonitor",    new FileMonitor());
+        addTypeWithConstructor("filemonitor",      new FileMonitor());
         
         /* File monitor */
-        addTypeWithConstructor("modelmonitor",    new ModelMonitor());
+        addTypeWithConstructor("modelmonitor",     new ModelMonitor());
         
         /* Screen monitor */
         addTypeWithConstructor("screenmonitor",    new ScreenMonitor());
@@ -452,18 +452,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Add parser functions here //
         ///////////////////////////////
         
-        /* Add basic internal functions (alphabetic order) */
+        /* Add builtin internal functions (alphabetic order) */
         addFunction( "_range",    new Func_range()       );
+
+        /* Add builtin unary arithmetic templated functions (alphabetic order) */
         
-        
-        /* Add basic unary arithmetic templated functions */
-        
-        /* Add basic logical functions */
+        /* Add builtin logical functions (alphabetic order) */
         addFunction( "_and",      new Func__and()  );
-        addFunction( "_unot",     new Func__unot() );
         addFunction( "_or",       new Func__or()   );
+        addFunction( "_unot",     new Func__unot() );
         
-        /* Add basic logic templated functions */
+        /* Add builtin logical templated functions (alphabetic order) */
         addFunction( "_eq",       new Func__eq<             Integer,        Integer >()             );
         addFunction( "_eq",       new Func__eq<                Real,           Real >()             );
         addFunction( "_eq",       new Func__eq<             Integer,           Real >()             );
@@ -493,7 +492,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_ne",       new Func__ne<           RlBoolean,      RlBoolean >()             );
         
         
-        /* Add builtin (basic) functions (alphabetical order) */
+        /* Add basic functions (alphabetical order) */
         addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "contributors",             new Func_contributors()             );
@@ -662,17 +661,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // sin function
         //        addFunction( "sin",       new Func_sin() );
         
-		// square root function
-        addFunction( "sqrt",      new Func_sqrt()  );
-		
 		// round function
         addFunction( "round",     new Func_round<Real,Integer>()  );
         addFunction( "round",     new Func_round<RealPos,Natural>()  );
 		
+		// square root function
+        addFunction( "sqrt",      new Func_sqrt()  );
+		
 		// truncate function
         addFunction( "trunc",     new Func_trunc<Real,Integer>()  );
         addFunction( "trunc",     new Func_trunc<RealPos,Natural>()  );
-        
         
         
 		// rate matrix functions
@@ -693,7 +691,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "Blosum62", new Blosum62RateMatrixFunction() );
 		
         
-        /* Add phylogeny-related functions (alphabetical order) */
+        /* Add phylogeny-related (in directory io, except clade, which is in directory constructor) functions (alphabetical order) */
         addFunction( "clade",                       new ConstructorClade()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
@@ -704,6 +702,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "writeFasta",                  new Func_writeFasta()                  );
         addFunction( "writeNexus",                  new Func_writeNexus()                  );
         
+        /* Add phylogeny-related (in directory evolution) functions (alphabetical order) */
         addFunction( "rateMultiplierPhyloFunction", new RateMultiplierPhyloFunction()      );
         addFunction( "tmrca",                       new TmrcaStatistic()                   );
         addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
@@ -729,10 +728,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // Add RevLanguage only functions here //
         /////////////////////////////////////////
         
+        // Mixed origin...
         addFunction( "source",         new Func_source() );
         addFunction( "write",          new Func_write()  );
         
-        // inference function
+        // inference functions
         addFunction( "beca",           new BurninEstimationConvergenceAssessmentFunction() );
         addFunction( "estimateBurnin", new OptimalBurninFunction() );
     }
