@@ -553,6 +553,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
+        addFunction( "range",                    new Func_range()                    );     // Same as _range; cf. R
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "simplex",                  new Func_simplex()                  );
@@ -579,7 +580,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_and",      new Func__and()   );
         addFunction( "_or",       new Func__or()    );
         addFunction( "_unot",     new Func__unot()  );
-        addFunction( "range",     new Func_range()  );  // note analogy with R "range" function, therefore not "_range"
+        addFunction( "_range",     new Func_range()  );
 
         // templated
         addFunction( "_eq",       new Func__eq<             Integer,        Integer >()             );
