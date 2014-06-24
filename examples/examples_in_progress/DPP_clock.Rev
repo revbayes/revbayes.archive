@@ -45,7 +45,7 @@ n_branches <- 2 * n_taxa - 2
 
 ## concentration parameter ##
 pr_mean_cats <- 3.0
-mean_CP <- dppConcParamFromNumTables(pr_mean_cats, n_branches) ## not in language
+mean_CP <- dppCPFromNum(pr_mean_cats, n_branches) 
 cp_shape <- 2.0
 cp_rate <- cp_shape / mean_CP
 concentration ~ gamma(cp_shape, cp_rate)
@@ -55,7 +55,7 @@ g0_a <- 4.0
 g0_b <- 8.0
 g0 <- gamma(g0_a, g0_b)
 
-branch_rates ~ DirichletProcessPriorDistribution(g0, concentration, n_branches) ## not yet in language
+branch_rates ~ dpp(g0, concentration, n_branches) ## works, I think! yay!
 n_cats := DppNumTablesStatistic(branch_rates) ## not yet in language
 
 scale_rate := 1.0 / tree_height

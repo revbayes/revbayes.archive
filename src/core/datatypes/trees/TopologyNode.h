@@ -91,6 +91,7 @@ namespace RevBayesCore {
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
+        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node   
         void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                        //!< Sets the node's parent

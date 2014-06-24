@@ -8,15 +8,15 @@
 #import "WindowControllerSimulateQuery.h"
 
 #include <iostream>
-#include "CharacterData.h"
-#include "DnaState.h"
+#include "DiscreteCharacterData.h"
+#include "DiscreteTaxonData.h"
 #include "DistributionExponential.h"
 #include "DistributionGamma.h"
 #include "DistributionUniform.h"
+#include "DnaState.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbStatisticsHelper.h"
-#include "TaxonData.h"
 
 
 
@@ -417,8 +417,8 @@
         }
         
     // create the character matrix
-	RevBayesCore::CharacterData<RevBayesCore::DnaState>* cMat = new RevBayesCore::CharacterData<RevBayesCore::DnaState>();
-    cMat->setIsHomologyEstablished(true);
+	RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState > *cMat = new RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState >();
+    cMat->setHomologyEstablished(true);
     
     for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)
         {
@@ -429,14 +429,14 @@
             const char* tName2 = [tName1 UTF8String];
             std::string tName = tName2;
 
-            RevBayesCore::TaxonData<RevBayesCore::DnaState> dataVec = RevBayesCore::TaxonData<RevBayesCore::DnaState>(tName);
+            RevBayesCore::DiscreteTaxonData<RevBayesCore::DnaState> dataVec = RevBayesCore::DiscreteTaxonData<RevBayesCore::DnaState>(tName);
             for (int c=0; c<sequenceLength; c++)
             {
                 RevBayesCore::DnaState* dnaState = new RevBayesCore::DnaState();
                 int charIdx = m[[p index]][c];
                 char nuc = [self charState:charIdx];
                 dnaState->setState(nuc);
-                dataVec.addCharacter( dnaState );
+                dataVec.addCharacter( *dnaState );
             }
             cMat->addTaxonData( dataVec );
                 
@@ -444,7 +444,7 @@
             }
         }
         
-    RbData* simData = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cMat):cMat->getDatatype()];
+    RbData* simData = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cMat) andDataType:cMat->getDatatype()];
     [simData setName:@"Simulated Data Matrix"];
     [simData setAlignmentMethod:@"Simulated"];
     if ([self numDataMatrices] > 0)

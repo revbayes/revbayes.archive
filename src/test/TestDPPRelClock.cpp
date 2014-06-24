@@ -194,7 +194,7 @@ bool TestDPPRelClock::run( void ) {
     phyloCTMC->setRateMatrix( q );
 	phyloCTMC->setSiteRates( siteRatesNormed );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
-	charactermodel->clamp( data[0] );
+//	charactermodel->clamp( data[0] );
 	
 	std::cout << " branch rates: " << branchRates->getValue() << std::endl;
 	std::cout << " diversification: " << div->getValue() << std::endl;
@@ -247,13 +247,13 @@ bool TestDPPRelClock::run( void ) {
  	monitoredNodes.push_back( scaleRate );
  	monitoredNodes.push_back( branchSubRates );
 
-	std::string logFN = "bears/RBDPP_bears_rel_2_rn.log";
+	std::string logFN = "bears/RBDPP_bears_rel_2_pr.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 
-	std::string treFN = "bears/RBDPP_bears_rel_2_rn.tre";
+	std::string treFN = "bears/RBDPP_bears_rel_2_pr.tre";
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
@@ -285,7 +285,7 @@ bool TestDPPRelClock::run( void ) {
 //	delete branchRates;
 //	delete q;
 //	delete tau;
-	delete charactermodel;
+//	delete charactermodel;
 //	delete treeHeight;
 	delete meanBrRate;
 	delete numCats;
