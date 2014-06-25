@@ -53,7 +53,7 @@ RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::
         for (size_t i=0; i < this->value->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }
-        return new Vector<RealPos>( elementVector );
+        return new Vector<Real>( elementVector );
     }
     else if (name == "size") {
         int n = (int)this->value->getValue().getNumberOfStates();
