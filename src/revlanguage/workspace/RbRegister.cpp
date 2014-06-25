@@ -46,7 +46,9 @@
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
+#include "RlPathSampler.h"
 #include "RlPowerPosterior.h"
+#include "RlSteppingStoneSampler.h"
 
 /* Distributions with distribution constructors and distribution functions (alphabetic order) */
 #include "RlBetaDistribution.h"
@@ -275,11 +277,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addType( new Vector<RlString>()           );
         
         /* Add MemberObject types with auto-generated constructors (alphabetic order) */
-        addTypeWithConstructor( "clade",            new Clade() );
-        addTypeWithConstructor( "mcmc",             new Mcmc()  );
-        addTypeWithConstructor( "pmcmcmc",          new ParallelMcmcmc() );
-        addTypeWithConstructor( "model",            new Model() );
-        addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
+        addTypeWithConstructor( "clade",                  new Clade() );
+        addTypeWithConstructor( "mcmc",                   new Mcmc()  );
+        addTypeWithConstructor( "model",                  new Model() );
+        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc() );
+        addTypeWithConstructor( "pathSampler",            new PathSampler() );
+        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()  );
+        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler() );
         
         /* Add MemberObject types without auto-generated constructors (alphabetic order) */
         addType( "Simplex", new Simplex() );
