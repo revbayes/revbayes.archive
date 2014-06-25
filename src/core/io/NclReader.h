@@ -99,7 +99,7 @@ namespace RevBayesCore {
 
         // methods for reading trees
         void                                        constructBranchLengthTreefromNclRecursively(TopologyNode* tn, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
-//        void                                        constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
+        //void                                      constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
         std::vector<BranchLengthTree* >*            readBranchLengthTrees(const char* fileName, const std::string fileFormat);      //!< Reads trees contained in a file
         std::vector<BranchLengthTree* >*            convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
         BranchLengthTree*                           translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);  //!< Translate a single NCL tree into a RevBayes tree

@@ -357,8 +357,6 @@
         return NO;
         }
     
-    NSLog(@"Successfully read data, I assume\n");
-
     // retrieve the value (character data matrix or matrices) from the workspace
     const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
     if ( dv == RevLanguage::RbNullObject::getInstance() )
@@ -368,35 +366,17 @@
         return NO;
         }
     
-    NSLog(@"isDataFormatAutomaticallyDetermined=%d", [controlWindow isDataFormatAutomaticallyDetermined]);
-    // instantiate data matrices for the gui, by reading the matrices that were 
+    // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
     const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *>( &dv );
-
-
-    NSLog(@"dnc = %ul", dnc);
-    std::cout << (*dnc)[0].toString() << std::endl;
-    std::cout << (*dnc)[0].getClassName() << std::endl;
-    (*dnc)[0].printStructure(std::cout);
-    (*dnc)[0].printValue(std::cout);
-
-    //virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
-    //virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
-
 
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
-        NSLog(@"dnc->size() = %d", (int)dnc->size());
         for (int i=0; i<dnc->size(); i++)
             {
             const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[i];
-            NSLog(@"theDagNode = %d", &theDagNode);
-            
-
-
             const RevLanguage::AbstractCharacterData *rlan = dynamic_cast<const RevLanguage::AbstractCharacterData *>( &(theDagNode) );
-            NSLog(@"an = %d", rlan);
             RbData* newMatrix = NULL;
             
             // DNA
@@ -404,10 +384,8 @@
                 {
                 const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
                 const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( an );
-                NSLog(@"dna check = %d", cd);
                 if ( cd != NULL )
                     {
-                    NSLog(@"DNA Matrix\n");
                     std::string type = "DNA";
                     newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
                     }
@@ -416,11 +394,10 @@
             // RNA
             if ( NULL == newMatrix ) 
                 {
-                const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( &theDagNode );
-                NSLog(@"rna check = %d", cd);
+                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
+                const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( an );
                 if ( cd != NULL )
                     {
-                    NSLog(@"RNA Matrix\n");
                     std::string type = "RNA";
                     newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
                     }
@@ -429,8 +406,8 @@
             // Amino-Acid
             if ( NULL == newMatrix ) 
                 {
-                const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( &theDagNode );
-                NSLog(@"aa check = %d", cd);
+                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
+                const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( an );
                 if ( cd != NULL )
                     {
                     std::string type = "Protein";

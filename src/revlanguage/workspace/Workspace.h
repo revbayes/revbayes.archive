@@ -80,7 +80,7 @@ namespace RevLanguage {
         bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution on continuous variable
         //        bool                            addDistribution(const std::string& name, DistributionContinuous *dist);                       //!< Add distribution on continuous variable
         //        bool                            addType(RlMo *exampleObj);                                                          //!< Add type
-        bool                    addType(RbLanguageObject *exampleObj); //!< Add type
+        bool                    addType(RbLanguageObject *exampleObj);                                      //!< Add type (auto-generated name = rbClassName)
         bool                    addType(const std::string& name, RbLanguageObject *exampleObj);             //!< Add special abstract type (synonym)
         bool                    addTypeWithConstructor(const std::string& name, RbLanguageObject *templ);   //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
