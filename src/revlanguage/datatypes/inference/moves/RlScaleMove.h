@@ -1,7 +1,6 @@
 #ifndef RlScaleMove_H
 #define RlScaleMove_H
 
-#include "ScaleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
