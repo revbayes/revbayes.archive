@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the PowerPosteriorMcmc class. 
- * An PowerPosteriorMcmc object manages the marginal likelihood computation for a given model
- * using either the stepping stone sampling or path sampling.
- *
- * @brief Declaration of PowerPosteriorMcmc class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-06-17
- *
- * $Id$
- */
-
-
 #ifndef PowerPosteriorMcmc_H
 #define PowerPosteriorMcmc_H
 
@@ -23,29 +5,39 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Power posterior MCMC class.
+     *
+     * A power posterior MCMC runs an MCMC for a vector of powers
+     * where the likelihood during each MCMC run is raised to the given power.
+     * The likelihood values and the current powers are stored in a file.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2012-06-17
+     *
+     */
     class PowerPosteriorMcmc : public MonteCarloSampler {
         
     public:
-        PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &moves);
+        PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &moves, const std::string &fn);
         virtual                                            ~PowerPosteriorMcmc(void);                                                          //!< Virtual destructor
         
         // public methods
         PowerPosteriorMcmc*                                 clone(void) const;
-        const std::vector<double>&                          getSamples(void) const;
-        double                                              pathSampling();
         void                                                run(size_t g);
-        double                                              steppingStoneSampling();
         
-        void                                                setBeta(const std::vector<double> &b);
+        void                                                setPowers(const std::vector<double> &p);
         void                                                setSampleFreq(size_t sf);
         
     private:
         
         // members
-        std::vector<double>                                 beta;
+        std::string                                         filename;
+        std::vector<double>                                 powers;
         size_t                                              sampleFreq;
-        std::vector<double>                                 samples;
-        size_t                                              samplesPerPath;
+        
     };
     
 }
