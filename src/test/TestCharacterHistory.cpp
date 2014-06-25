@@ -30,6 +30,7 @@
 #include "GeographicDistanceRateModifier.h"
 #include "GeographicGridRateModifier.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -38,7 +39,7 @@
 #include "PhylowoodNhxMonitor.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
@@ -290,8 +291,8 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useClock)
     {
-        moves.push_back( new ScaleMove(clockRate, 0.25, false, 1) );
-        moves.push_back( new ScaleMove(clockRate, 0.1, false, 2) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.25), false, 1.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), false, 2.0 ) );
     }
     
     if (useDistances && true)
@@ -304,8 +305,8 @@ bool TestCharacterHistory::run_exp(void) {
     moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new ScaleMove(glr_nonConst[i], 0.25, false, 2) );
-		moves.push_back( new ScaleMove(glr_nonConst[i], 0.1, false, 2) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), false, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), false, 2.0 ) );
     }
 
     // path proposals
@@ -557,8 +558,8 @@ bool TestCharacterHistory::run_dollo(void) {
     std::vector<Move*> moves;
     if (useClock)
     {
-        moves.push_back( new ScaleMove(clockRate, 0.5, true, 5) );
-        moves.push_back( new ScaleMove(clockRate, 0.1, true, 5) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.5), true, 5.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), true, 5.0 ) );
     }
     
     
@@ -566,8 +567,8 @@ bool TestCharacterHistory::run_dollo(void) {
     moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.5, false, 5) );
-        moves.push_back( new ScaleMove(gainLossRates_nonConst[i], 0.1, false, 5) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.5), false, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.1), false, 2.0 ) );
     }
     
     
@@ -911,9 +912,9 @@ bool TestCharacterHistory::run_old( void ) {
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(distancePower, 1.0, true, 5.0) );
-    moves.push_back( new ScaleMove(rateGain, 5.0, true, 5.0) );
-    moves.push_back( new ScaleMove(rateLoss, 1.0, true, 5.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(distancePower, 1.0), true, 5.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateGain, 5.0), true, 5.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateLoss, 1.0), true, 5.0 ) );
 //    moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
 //    moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
 //    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));

@@ -13,6 +13,7 @@
 #include "GtrRateMatrixFunction.h"
 #include "MatrixReal.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -24,7 +25,7 @@
 #include "NormalDistribution.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
@@ -140,7 +141,7 @@ bool TestCoala::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(lambda, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(lambda, 1.0), true, 2.0 ) );
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );

@@ -15,6 +15,7 @@
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "ModelMonitor.h"
 #include "Monitor.h"
@@ -29,7 +30,7 @@
 #include "RateAgeBetaShift.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexSingleElementScale.h"
 #include "SlidingMove.h"
@@ -199,7 +200,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -209,11 +210,11 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
 	//    moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
 //test: only 20 instead of 30
     moves.push_back( new NodeTimeSlideUniform( tau, 20.0 ) );
-    moves.push_back( new ScaleMove(tstv, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(tstv, 1.0), true, 2.0 ) );
     moves.push_back( new SimplexSingleElementScale( rf, 10.0, true, 2.0 ) );
-	moves.push_back( new ScaleMove(alpha, 1.0, true, 2.0) );
-    moves.push_back( new ScaleMove(expectLN, 1.0, true, 2.0) );
-    moves.push_back( new ScaleMove(sigLN, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(alpha, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(expectLN, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(sigLN, 1.0), true, 2.0 ) );
 	std::vector<StochasticNode<double> * > rates;
 	for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
 		rates.push_back( branchRates_nonConst[i] );
@@ -224,7 +225,7 @@ bool TestBranchHeterogeneousHkyModel::run( void ) {
 	
     for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
         moves.push_back( new SimplexSingleElementScale( pis[i], 10.0, true, 2.0 ) );
-        moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, true, 1.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), true, 1.0 ) );
     }
     
     // add some tree stats to monitor

@@ -79,7 +79,8 @@ RevLanguage::RlControlVariableWrapper<rbType>::RlControlVariableWrapper(rbType *
 template <typename rbType>
 RevLanguage::RlControlVariableWrapper<rbType>::RlControlVariableWrapper(const RlControlVariableWrapper &v) : RbLanguageObject( v ), value( NULL ) {
     
-    if ( v.value != NULL ) {
+    if ( v.value != NULL )
+    {
         value = v.value->clone();
     }
 }

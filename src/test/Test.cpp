@@ -441,7 +441,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* The Bayes factors */
     try {
         TestBayesFactor testBF = TestBayesFactor(10000);
-//        testBF.run();
+        testBF.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
