@@ -32,7 +32,6 @@ namespace RevLanguage {
     public:
         
         Mcmc(void);                                                                                                        //!< Default constructor
-        Mcmc(const Mcmc& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
         virtual Mcmc*                               clone(void) const;                                                      //!< Clone object
