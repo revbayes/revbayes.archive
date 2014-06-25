@@ -12,7 +12,8 @@
 
 using namespace RevBayesCore;
 
-Trace::Trace() {
+Trace::Trace()
+{
     invalidate();
 }
 
