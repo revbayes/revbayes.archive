@@ -6,7 +6,7 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "Simplex.h"
+#include "RlSimplex.h"
 
 
 #include "ArgumentRule.h"

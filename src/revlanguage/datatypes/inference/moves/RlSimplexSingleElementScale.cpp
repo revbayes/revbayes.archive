@@ -16,7 +16,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlSimplexSingleElementScale.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "SimplexSingleElementScale.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
