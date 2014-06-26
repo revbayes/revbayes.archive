@@ -6,39 +6,53 @@
  *
  * @brief Function registering language objects
  *
+ * Instructions
+ *
+ * This is the central registry of Rev objects. It is a large file and needs
+ * to be properly organized to facilitate maintenance. Follow these simple
+ * guidelines to ensure that your additions follow the existing structure.
+ * 
+ * 1. All headers are added in groups corresponding to directories in the
+ *    revlanguage code base.
+ * 2. All objects (types, distributions, and functions) are registered in
+ *    groups corresponding to directories in the revlanguage code base.
+ * 3. All entries in each group are listed in alphabetical order.
+ *
  * (c) Copyright 2009-
  * @license GPL version 3
  *
  */
 
-#include "ArgumentRule.h"
+
+/* Files including helper classes */
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
-/* Primitive types (in folder "datatypes/basic") (alphabetic order) */
-#include "RlBoolean.h"
+/* Primitive types (in folder "datatypes/basic") */
 #include "Complex.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RlBoolean.h"
 #include "RlString.h"
 #include "Real.h"
 #include "RealPos.h"
 
-/* Container types (in folder "datatypes/container") (alphabetic order) */
-#include "RealMatrix.h"
-#include "RealSymmetricMatrix.h"
-#include "RlSimplex.h"
+/* Container types (in folder "datatypes/container") */
 #include "Vector.h"
 
-/* Evolution types (in folder "datatypes/evolution") (alphabetic order) */
+/* Evolution types (in folder "datatypes/evolution") */
 
-/* Character types (in folder "datatypes/evolution/character") (alphabetic order) */
+/* Character state types (in folder "datatypes/evolution/character") */
 #include "RlAminoAcidState.h"
-#include "RlClade.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
+
+/* Character data types (in folder "datatypes/evolution/datamatrix") */
+
+/* Tree types (in folder "datatypes/evolution/trees") */
+#include "RlClade.h"
 
 /* Inference types (in folder "datatypes/inference") */
 #include "RlMcmc.h"
@@ -48,14 +62,14 @@
 #include "RlPowerPosterior.h"
 #include "RlSteppingStoneSampler.h"
 
-/* Monitors (in folder "datatypes/inference/monitors) */
+/* Monitor types (in folder "datatypes/inference/monitors) */
 #include "RlMonitor.h"
 #include "RlFileMonitor.h"
 #include "RlExtendedNewickFileMonitor.h"
 #include "RlModelMonitor.h"
 #include "RlScreenMonitor.h"
 
-/* Moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
+/* Move types (in folder "datatypes/inference/moves") (grouped by parameter type) */
 #include "RlMove.h"
 
 /* Moves on real values */
@@ -94,11 +108,26 @@
 #include "RlWeightedNodeTimeSlide.h"
 
 /* Math types (in folder "datatypes/math") */
-#include "RateMatrix.h"
+#include "RealMatrix.h"
+#include "RealSymmetricMatrix.h"
+#include "RlRateMatrix.h"
+#include "RlSimplex.h"
 
 /// Distributions ///
 
-/* Distributions (in folder "distributions/math") (alphabetic order) */
+/* Distribution types (in folder "distributions") */
+
+/* Tree priors (in folder "distributions/evolution/tree") */
+#include "RlConstantRateBirthDeathProcess.h"
+#include "RlConstantRateSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
+#include "RlDiversityDependentPureBirthProcess.h"
+#include "RlMultispeciesCoalescentConstantPopulationProcess.h"
+#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "RlUniformTimeTreeDistribution.h"
+
+/* Distributions on simple variables (in folder "distributions/math") */
 #include "RlBetaDistribution.h"
 #include "RlBernoulliDistribution.h"
 #include "RlBimodalLognormalDistribution.h"
@@ -122,15 +151,6 @@
 #include "RlWhiteNoisePhyloProcess.h"
 #include "RlWishartDistribution.h"
 
-/* Tree priors (in folder "distributions/evolution/tree") */
-#include "RlConstantRateBirthDeathProcess.h"
-#include "RlConstantRateSerialSampledBirthDeathProcess.h"
-#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
-#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
-#include "RlDiversityDependentPureBirthProcess.h"
-#include "RlMultispeciesCoalescentConstantPopulationProcess.h"
-#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
-#include "RlUniformTimeTreeDistribution.h"
 
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "RlCharacterStateEvolutionAlongTree.h"
@@ -141,6 +161,8 @@
 /// Parser functions ///
 
 /* Basic internal functions (alphabetic order) */
+#include "ArgumentRule.h"
+
 #include "Func_range.h"
 
 /* Basic arithmetic/logic templated functions */
