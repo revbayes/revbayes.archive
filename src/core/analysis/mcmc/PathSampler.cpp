@@ -54,7 +54,7 @@ double PathSampler::marginalLikelihood( void ) const
     }
     
     double marginal = 0.0;
-    for (size_t i = 0; i < pathValues.size(); ++i)
+    for (size_t i = 0; i < pathValues.size()-1; ++i)
     {
         marginal += (pathValues[i] + pathValues[i+1])*(powers[i]-powers[i+1])/2.0;
     }
