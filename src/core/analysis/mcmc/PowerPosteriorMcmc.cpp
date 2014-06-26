@@ -14,7 +14,10 @@
 
 using namespace RevBayesCore;
 
-PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &mvs) : MonteCarloSampler( m, mvs, std::vector<Monitor*>() )
+PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &mvs, const std::string &fn) : MonteCarloSampler( m, mvs, std::vector<Monitor*>() ),
+    filename( fn ),
+    powers(),
+    sampleFreq( 100 )
 {
     
 }
@@ -34,41 +37,12 @@ PowerPosteriorMcmc* PowerPosteriorMcmc::clone( void ) const
 }
 
 
-
-const std::vector<double>& PowerPosteriorMcmc::getSamples( void ) const {
-    return samples;
-}
-
-
-double PowerPosteriorMcmc::pathSampling( void )
-{
-    
-    std::vector<double> pathValues;
-    for (size_t i = 0; i < beta.size(); ++i)
-    {
-        
-        double mean = 0.0;
-        for (size_t j = 0; j < samplesPerPath; ++j)
-        {
-            mean += samples[i*samplesPerPath + j] / samplesPerPath;
-        }
-        
-        pathValues.push_back( mean );
-        
-    }
-    
-    double marginal = 0.0;
-    for (size_t i = 0; i < pathValues.size(); ++i)
-    {
-        marginal += (pathValues[i] + pathValues[i+1])*(beta[i]-beta[i+1])/2.0;
-    }
-    
-    return marginal;
-}
-
-
 void PowerPosteriorMcmc::run(size_t gen)
 {
+    
+    std::fstream outStream;
+    outStream.open( filename.c_str(), std::fstream::out);
+    outStream << "state\t" << "power\t" << "likelihood" << std::endl;
     
     std::cout << "Running power posterior ..." << std::endl;
     
@@ -80,21 +54,21 @@ void PowerPosteriorMcmc::run(size_t gen)
         (*it)->resetCounters();
     }
     
-    samples.clear();
-    samplesPerPath = gen / sampleFreq;
+    size_t burnin = size_t( ceil( 0.25*gen ) );
+    
     size_t printInterval = size_t( round( fmax(1,gen/20.0) ) );
-    size_t digits = size_t( ceil( log10( beta.size() ) ) );
+    size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     /* Run the chain */    
     RandomMoveSchedule schedule = RandomMoveSchedule(moves);
-    for (size_t i = 0; i < beta.size(); ++i) {
-        double b = beta[i];
+    for (size_t i = 0; i < powers.size(); ++i) {
+        double p = powers[i];
         std::cout << "Step ";
         for (size_t d = size_t( ceil( log10( i+1.1 ) ) ); d < digits; d++ )
         {
             std::cout << " ";
         }
-        std::cout << (i+1) << " / " << beta.size();
+        std::cout << (i+1) << " / " << powers.size();
         std::cout << "\t\t";
 
         for (size_t k=1; k<=gen; k++) {
@@ -106,16 +80,17 @@ void PowerPosteriorMcmc::run(size_t gen)
             }
         
             size_t proposals = size_t( round( schedule.getNumberMovesPerIteration() ) );
-            for (size_t j=0; j<proposals; j++) {
+            for (size_t j=0; j<proposals; j++)
+            {
                 /* Get the move */
                 Move* theMove = schedule.nextMove(k);
                 
-                theMove->perform( b, true );
+                theMove->perform( p, true );
             
             }
         
             // sample the likelihood
-            if ( k % sampleFreq == 0 ) {
+            if ( k > burnin && k % sampleFreq == 0 ) {
                 // compute the joint likelihood
                 double likelihood = 0.0;
                 for (std::vector<DagNode*>::const_iterator n = dagNodes.begin(); n != dagNodes.end(); ++n) {
@@ -124,7 +99,7 @@ void PowerPosteriorMcmc::run(size_t gen)
                     }
                 }
                 
-                samples.push_back( likelihood );
+                outStream << k << "\t" << p << "\t" << likelihood << std::endl;
             }
         
         }
@@ -133,13 +108,15 @@ void PowerPosteriorMcmc::run(size_t gen)
         
     }
     
+    outStream.close();
+    
     
 }
 
 
-void PowerPosteriorMcmc::setBeta(const std::vector<double> &b)
+void PowerPosteriorMcmc::setPowers(const std::vector<double> &p)
 {
-    beta = b;
+    powers = p;
 }
 
 
@@ -148,34 +125,3 @@ void PowerPosteriorMcmc::setSampleFreq(size_t sf)
     sampleFreq = sf;
 }
 
-double PowerPosteriorMcmc::steppingStoneSampling( void )
-{
-    
-    std::vector<double> pathValues;
-    double marginal = 0.0;
-    for (size_t i = 1; i < beta.size(); ++i)
-    {
-        
-        double max = samples[i*samplesPerPath];
-        for (size_t j = 1; j < samplesPerPath; ++j)
-        {
-            if (max < samples[i*samplesPerPath + j])
-            {
-                max = samples[i*samplesPerPath + j];
-            }
-        }
-        
-        // mean( exp(samples-max)^(beta[k-1]-beta[k]) )     or
-        // mean( exp( (samples-max)*(beta[k-1]-beta[k]) ) )
-        double mean = 0.0;
-        for (size_t j = 0; j < samplesPerPath; ++j)
-        {
-            mean += exp( (samples[i*samplesPerPath + j]-max)*(beta[i-1]-beta[i]) ) / samplesPerPath;
-        }
-        
-        marginal += log(mean) + (beta[i-1]-beta[i])*max;
-        
-    }
-        
-    return marginal;
-}
