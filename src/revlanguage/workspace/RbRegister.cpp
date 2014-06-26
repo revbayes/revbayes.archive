@@ -29,7 +29,7 @@
 /* Container types (in folder "datatypes/container") (alphabetic order) */
 #include "RealMatrix.h"
 #include "RealSymmetricMatrix.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "Vector.h"
 
 /* Evolution types (in folder "datatypes/evolution") (alphabetic order) */

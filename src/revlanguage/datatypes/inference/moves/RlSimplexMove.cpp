@@ -16,7 +16,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlSimplexMove.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "SimplexMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"

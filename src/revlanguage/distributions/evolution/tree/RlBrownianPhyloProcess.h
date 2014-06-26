@@ -14,7 +14,7 @@
 
 #include "BrownianPhyloProcess.h"
 #include "RlTypedDistribution.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "Real.h"
 #include "Vector.h"
 

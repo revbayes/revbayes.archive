@@ -14,7 +14,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;

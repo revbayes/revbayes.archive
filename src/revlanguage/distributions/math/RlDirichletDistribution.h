@@ -20,7 +20,7 @@
 
 #include "DirichletDistribution.h"
 #include "RlTypedDistribution.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 
 namespace RevLanguage {
     
