@@ -14,7 +14,7 @@
 
 #include "WhiteNoisePhyloProcess.h"
 #include "RlTypedDistribution.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "RealPos.h"
 #include "Vector.h"
 
