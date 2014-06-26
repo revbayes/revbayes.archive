@@ -23,11 +23,6 @@ Mcmc::Mcmc() : RlControlVariableWrapper<RevBayesCore::Mcmc>() {
 }
 
 
-Mcmc::Mcmc(const Mcmc &m) : RlControlVariableWrapper<RevBayesCore::Mcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
-    
-}
-
-
 /** Clone object */
 Mcmc* Mcmc::clone(void) const {
     

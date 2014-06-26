@@ -44,7 +44,9 @@
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
+#include "RlPathSampler.h"
 #include "RlPowerPosterior.h"
+#include "RlSteppingStoneSampler.h"
 
 /* Monitors (in folder "datatypes/inference/monitors) */
 #include "RlMonitor.h"
@@ -281,6 +283,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addType( new Vector<RlBoolean>()          );
         addType( new Vector<RlString>()           );
         
+
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
 
         
@@ -292,10 +295,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "mcmc",             new Mcmc()  );
-        addTypeWithConstructor( "model",            new Model() );
-        addTypeWithConstructor( "pmcmcmc",          new ParallelMcmcmc() );
-        addTypeWithConstructor( "powerPosterior",   new PowerPosterior()  );
+        addTypeWithConstructor( "mcmc",                   new Mcmc()  );
+        addTypeWithConstructor( "model",                  new Model() );
+        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc() );
+        addTypeWithConstructor( "pathSampler",            new PathSampler() );
+        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()  );
+        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler() );
 
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -556,6 +561,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "range",                    new Func_range()                    );     // Same as _range; cf. R
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
+        addFunction( "seq",                      new Func_seq<Real>()                );
         addFunction( "simplex",                  new Func_simplex()                  );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
