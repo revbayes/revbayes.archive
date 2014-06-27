@@ -30,16 +30,16 @@ namespace RevLanguage {
         ExponentialBranchTree( void ) {}
         ~ExponentialBranchTree() {}
         
-        // Basic utility functions
-        ExponentialBranchTree(const ExponentialBranchTree &x);                                                                            //!< Copy constuctor
+                                                        // Basic utility functions
+                                                        ExponentialBranchTree(const ExponentialBranchTree &x);                          //!< Copy constuctor
 
-        ExponentialBranchTree*                                       clone(void) const;                                                              //!< Clone the object
+        ExponentialBranchTree*                          clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
-        // Function functions you have to override
-        RevObject*                               execute(void);                                                                  //!< Execute function
+                                                        // Function functions you have to override
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
 
@@ -49,14 +49,14 @@ namespace RevLanguage {
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
-     //   void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+     //   void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
 
         
     private:
 
-        // RbPtr<const Variable>                           tree;
-        // RbPtr<const Variable>                           nodeval;
+        // RevPtr<const Variable>                         tree;
+        // RevPtr<const Variable>                         nodeval;
     };
     
 }

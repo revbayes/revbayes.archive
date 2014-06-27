@@ -116,7 +116,7 @@ void OneOverXDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OneOverXDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void OneOverXDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "max" )
     {

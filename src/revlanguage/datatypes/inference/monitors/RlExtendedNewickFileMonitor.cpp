@@ -37,7 +37,7 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
     int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
     std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
-    for (std::set<RbPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getValue()).getValueNode();
         n.insert( node );
     }
@@ -106,7 +106,7 @@ void ExtendedNewickFileMonitor::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );

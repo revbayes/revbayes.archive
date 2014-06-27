@@ -40,16 +40,16 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                                 //!< Get methods
-        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                                  executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        RbPtr<const Variable>                       likelihoodColumnName;
-        RbPtr<const Variable>                       powerColumnName;
-        RbPtr<const Variable>                       delimmiter;
-        RbPtr<const Variable>                       filename;
+        RevPtr<const Variable>                      likelihoodColumnName;
+        RevPtr<const Variable>                      powerColumnName;
+        RevPtr<const Variable>                      delimmiter;
+        RevPtr<const Variable>                      filename;
         
     };
     

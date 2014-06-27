@@ -75,7 +75,7 @@ SyntaxUnaryExpr* SyntaxUnaryExpr::clone () const {
 
 
 /** Convert element to DAG node expression */
-RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
 
     // Package the argument
     std::vector<Argument> arg;
@@ -90,7 +90,7 @@ RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
     delete func;
 
     // Return new function node
-    return RbPtr<Variable>( new Variable( funcReturnValue ) );
+    return RevPtr<Variable>( new Variable( funcReturnValue ) );
 }
 
 

@@ -66,7 +66,7 @@ SyntaxLabeledExpr* SyntaxLabeledExpr::clone () const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxLabeledExpr::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxLabeledExpr::evaluateContent( Environment& env ) {
 
     return NULL;
 }

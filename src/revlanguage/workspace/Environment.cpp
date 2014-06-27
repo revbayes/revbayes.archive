@@ -213,7 +213,7 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 }
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, const RbPtr<Variable>& theVar) {
+void Environment::addVariable(const std::string& name, const RevPtr<Variable>& theVar) {
 
     // create a new slot
     VariableSlot* theSlot = new VariableSlot(name, RevObject::getClassTypeSpec(), theVar);
@@ -225,7 +225,7 @@ void Environment::addVariable(const std::string& name, const RbPtr<Variable>& th
 /** Add variable to frame */
 void Environment::addVariable(const std::string& name, RevObject* val) {
     // create a new variable object
-    RbPtr<Variable> var = RbPtr<Variable>(new Variable(val));
+    RevPtr<Variable> var = RevPtr<Variable>(new Variable(val));
 
     // add the object to the list
     addVariable(name, var);
@@ -234,7 +234,7 @@ void Environment::addVariable(const std::string& name, RevObject* val) {
 /** Add variable to frame */
 void Environment::addVariable(const std::string& name) {
     // create a new variable object
-    RbPtr<Variable> var = RbPtr<Variable>(new Variable(NULL));
+    RevPtr<Variable> var = RevPtr<Variable>(new Variable(NULL));
 
     // add the object to the list
     addVariable(name, var);
@@ -447,7 +447,7 @@ size_t Environment::size(void) const {
     return varNames.size();
 }
 
-void Environment::remove(const RbPtr<Variable> &var) {
+void Environment::remove(const RevPtr<Variable> &var) {
 
     // delegate call
     eraseVariable(var->getName());

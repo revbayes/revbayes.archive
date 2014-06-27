@@ -110,7 +110,7 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone () const {
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-RbPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();

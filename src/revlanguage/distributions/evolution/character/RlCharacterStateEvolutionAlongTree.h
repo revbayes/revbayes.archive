@@ -29,18 +29,18 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
         
-        RbPtr<const Variable>                           tree;
-        RbPtr<const Variable>                           q;
-        RbPtr<const Variable>                           rate;
-        RbPtr<const Variable>                           siteRates;
-        RbPtr<const Variable>                           rootFrequencies;
-        RbPtr<const Variable>                           nSites;
-        RbPtr<const Variable>                           type;
+        RevPtr<const Variable>                          tree;
+        RevPtr<const Variable>                          q;
+        RevPtr<const Variable>                          rate;
+        RevPtr<const Variable>                          siteRates;
+        RevPtr<const Variable>                          rootFrequencies;
+        RevPtr<const Variable>                          nSites;
+        RevPtr<const Variable>                          type;
         
     };
     
@@ -439,7 +439,7 @@ void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::printValue(std::os
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) 
     {

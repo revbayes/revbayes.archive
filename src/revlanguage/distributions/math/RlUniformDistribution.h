@@ -43,12 +43,12 @@ public:
     
 protected:
     
-    void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+    void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
     
     
 private:
-    RbPtr<const Variable>                           lower;
-    RbPtr<const Variable>                           upper;
+    RevPtr<const Variable>                          lower;
+    RevPtr<const Variable>                          upper;
     
 };
     

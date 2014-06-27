@@ -82,7 +82,7 @@ const MethodTable& Move::getMethods(void) const {
 
 
 /** Set a member variable */
-void Move::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void Move::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "weight" ) 
     {

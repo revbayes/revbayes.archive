@@ -174,7 +174,7 @@ const TypeSpec& DiversityDependentPureBirthProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void DiversityDependentPureBirthProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void DiversityDependentPureBirthProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

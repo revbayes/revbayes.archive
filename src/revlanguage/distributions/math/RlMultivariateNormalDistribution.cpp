@@ -111,7 +111,7 @@ void MultivariateNormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void MultivariateNormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void MultivariateNormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

@@ -38,20 +38,20 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Filemonitor.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        std::set<RbPtr<const Variable> >            vars;
-        RbPtr<const Variable>                       printgen;
-        RbPtr<const Variable>                       separator;
-        RbPtr<const Variable>                       prior;
-        RbPtr<const Variable>                       posterior;
-        RbPtr<const Variable>                       likelihood;
+        std::set<RevPtr<const Variable> >           vars;
+        RevPtr<const Variable>                      printgen;
+        RevPtr<const Variable>                      separator;
+        RevPtr<const Variable>                      prior;
+        RevPtr<const Variable>                      posterior;
+        RevPtr<const Variable>                      likelihood;
         
     };
     

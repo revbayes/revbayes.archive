@@ -4,7 +4,7 @@
 #include "Workspace.h"
 
 #include "RevObject.h"
-#include "RbPtr.h"
+#include "RevPtr.h"
 
 #include "VariableSlot.h"
 #include "RlFunction.h"

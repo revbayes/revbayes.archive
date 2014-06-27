@@ -51,7 +51,7 @@ namespace RevLanguage {
         virtual RevObject*                   executeCode(void);                                                          //!< Execute Rev code of function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
-        void                                        setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var);             
+        void                                        setArgumentVariable(const std::string& name, const RevPtr<const Variable> &var);             
         
         
     protected:

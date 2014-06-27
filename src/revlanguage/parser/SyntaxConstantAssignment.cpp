@@ -93,17 +93,17 @@ SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
     printf( "Evaluating assign expression\n" );
 #endif
     
     // Get variable info from lhs
-    const RbPtr<Variable>& theSlot = variable->createVariable( env );
+    const RevPtr<Variable>& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    RbPtr<Variable> theVariable = NULL;
+    RevPtr<Variable> theVariable = NULL;
         
 #ifdef DEBUG_PARSER
     printf("Constant assignment\n");

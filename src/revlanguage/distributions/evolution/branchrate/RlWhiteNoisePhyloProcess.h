@@ -27,7 +27,7 @@ namespace RevLanguage {
         virtual ~WhiteNoisePhyloProcess();
         
         // Basic utility functions
-        WhiteNoisePhyloProcess*               clone(void) const;                                                              //!< Clone the object
+        WhiteNoisePhyloProcess*                         clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -37,17 +37,17 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::WhiteNoisePhyloProcess*            createDistribution(void) const;
+        RevBayesCore::WhiteNoisePhyloProcess*           createDistribution(void) const;
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
         
-        RbPtr<const Variable>                           tree;
-        RbPtr<const Variable>                           sigma;
+        RevPtr<const Variable>                          tree;
+        RevPtr<const Variable>                          sigma;
         
     };
     

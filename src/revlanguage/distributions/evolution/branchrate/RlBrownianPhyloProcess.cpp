@@ -126,7 +126,7 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void BrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void BrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {

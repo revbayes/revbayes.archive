@@ -220,7 +220,7 @@ bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::ve
             
             if ( filled[j] == false ) 
             {
-                const RbPtr<const Variable>& argVar = passedArgs[i].getVariable();
+                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
                 if ( theRules[j].isArgumentValid( argVar ) ) 
                 {
                     taken[i]          = true;
@@ -613,7 +613,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
             throw RbException("No argument found for parameter '" + theRules[i].getArgumentLabel() + "'.");
 
         const ArgumentRule& theRule = theRules[i];
-        RbPtr<Variable> theVar = theRule.getDefaultVariable().clone();
+        RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
         theVar->setValueTypeSpec( theRule.getDefaultVariable().getValueTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;

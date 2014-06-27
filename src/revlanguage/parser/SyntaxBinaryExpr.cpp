@@ -83,13 +83,13 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
  * We simply look up the function and calculate the value.
  *
  */
-RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
+RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
     std::vector<Argument> args;
-    RbPtr<Variable> left = leftOperand->evaluateContent(env);
+    RevPtr<Variable> left = leftOperand->evaluateContent(env);
     args.push_back( Argument( left, "") );
-    RbPtr<Variable> right = rightOperand->evaluateContent(env);
+    RevPtr<Variable> right = rightOperand->evaluateContent(env);
     args.push_back( Argument( right, "") );
 
     // Get function and create deterministic DAG node
@@ -103,7 +103,7 @@ RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
     // free the memory of the function
     delete theFunction;
     
-    return RbPtr<Variable>( new Variable( theReturnValue ) );
+    return RevPtr<Variable>( new Variable( theReturnValue ) );
 }
 
 

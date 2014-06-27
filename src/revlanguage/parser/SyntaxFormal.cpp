@@ -129,7 +129,7 @@ const std::string& SyntaxFormal::getLabel(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
 
     return NULL;
 }

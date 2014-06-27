@@ -27,16 +27,16 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        RbPtr<const Variable>                       filename;
-        RbPtr<const Variable>                       printgen;
-        RbPtr<const Variable>                       separator;
-        RbPtr<const Variable>                       prior;
-        RbPtr<const Variable>                       posterior;
-        RbPtr<const Variable>                       likelihood;
-        RbPtr<const Variable>                       append;
-        RbPtr<const Variable>                       stochOnly;
+        RevPtr<const Variable>                      filename;
+        RevPtr<const Variable>                      printgen;
+        RevPtr<const Variable>                      separator;
+        RevPtr<const Variable>                      prior;
+        RevPtr<const Variable>                      posterior;
+        RevPtr<const Variable>                      likelihood;
+        RevPtr<const Variable>                      append;
+        RevPtr<const Variable>                      stochOnly;
         
     };
     

@@ -36,23 +36,23 @@ namespace RevLanguage {
         RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* createDistribution(void) const;  //!< Create an internal object of the diveristy-dependent pure-birth process.
         
     protected:
-        void setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);  //!< Set member variable
+        void setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);  //!< Set member variable
         
     private:
         // members        
-        RbPtr<const Variable>                           lambda;
-        RbPtr<const Variable>                           lambdaTimes;
-        RbPtr<const Variable>                           mu;
-        RbPtr<const Variable>                           muTimes;
-        RbPtr<const Variable>                           psi;
-        RbPtr<const Variable>                           psiTimes;
-        RbPtr<const Variable>                           rho;
-        RbPtr<const Variable>                           rhoTimes;
-     // RbPtr<const Variable>                           tLast;
-        RbPtr<const Variable>                           origin;                     //!< The time of the process since the origin
-        RbPtr<const Variable>                           condition;                  //!< The condition of the process (none/survival/#Taxa)
-        RbPtr<const Variable>                           taxonNames;                 //!< The taxon names that will be applied to the initally simulated tree
-        RbPtr<const Variable>                           constraints;                //!< Topological constraints that will be used for calibrations
+        RevPtr<const Variable>                          lambda;
+        RevPtr<const Variable>                          lambdaTimes;
+        RevPtr<const Variable>                          mu;
+        RevPtr<const Variable>                          muTimes;
+        RevPtr<const Variable>                          psi;
+        RevPtr<const Variable>                          psiTimes;
+        RevPtr<const Variable>                          rho;
+        RevPtr<const Variable>                          rhoTimes;
+     // RevPtr<const Variable>                          tLast;
+        RevPtr<const Variable>                          origin;                     //!< The time of the process since the origin
+        RevPtr<const Variable>                          condition;                  //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const Variable>                          taxonNames;                 //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const Variable>                          constraints;                //!< Topological constraints that will be used for calibrations
     };
 }
 

@@ -38,13 +38,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
         
     private:
         
-        RbPtr<const Variable>                           numTaxa;                                                                                        //!< Number of taxa of the topology
-        RbPtr<const Variable>                           taxonNames;                                                                                     //!< Taxon names
+        RevPtr<const Variable>                          numTaxa;                                                                                        //!< Number of taxa of the topology
+        RevPtr<const Variable>                          taxonNames;                                                                                     //!< Taxon names
         
     };
     

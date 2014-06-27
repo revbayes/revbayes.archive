@@ -65,9 +65,9 @@ TestMultispeciesCoalescentWithSequences::~TestMultispeciesCoalescentWithSequence
 TreeTrace<TimeTree> TestMultispeciesCoalescentWithSequences::readTreeTrace(const std::string &fname) {
 //    RevLanguage::Func_readTreeTrace reader;
 //    std::vector<RevLanguage::Argument> args;
-//    RevLanguage::RbPtr<RevLanguage::Variable> var = new RevLanguage::Variable(new RevLanguage::RlString(fname) );
+//    RevLanguage::RevPtr<RevLanguage::Variable> var = new RevLanguage::Variable(new RevLanguage::RlString(fname) );
 //    args.push_back( RevLanguage::Argument(var,"filename") );
-//    RevLanguage::RbPtr<RevLanguage::Variable> var2 = new RevLanguage::Variable(new RevLanguage::RlString("clock") );
+//    RevLanguage::RevPtr<RevLanguage::Variable> var2 = new RevLanguage::Variable(new RevLanguage::RlString("clock") );
 //    args.push_back( RevLanguage::Argument(var2,"treetype") );
 //    reader.processArguments(args);
 //    

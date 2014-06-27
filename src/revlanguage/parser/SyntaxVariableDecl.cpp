@@ -86,7 +86,7 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
     printf( "Evaluating variable declaration\n" );
@@ -110,7 +110,7 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
         }
         else {
             
-            RbPtr<Variable>         temp    = (*i)->evaluateContent( env );
+            RevPtr<Variable> temp    = (*i)->evaluateContent( env );
             const RevObject& value   = temp->getValue();
             
             if ( value.isTypeSpec( Integer::getClassTypeSpec() ) )

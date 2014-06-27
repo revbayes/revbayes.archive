@@ -64,13 +64,13 @@ SyntaxConstant* SyntaxConstant::clone (void) const {
 
 
 /** Get semantic value of element */
-RbPtr<Variable> SyntaxConstant::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxConstant::evaluateContent( Environment& env ) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return RbPtr<Variable>( new Variable( NULL ) );
+        return RevPtr<Variable>( new Variable( NULL ) );
     else 
-        return RbPtr<Variable>( new Variable( value->clone() ) );
+        return RevPtr<Variable>( new Variable( value->clone() ) );
 }
 
 

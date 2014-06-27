@@ -27,7 +27,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Environment.h"
-#include "RbPtr.h"
+#include "RevPtr.h"
 
 /**
  * This is the interface and abstract base class for functions in
@@ -96,8 +96,7 @@ namespace RevLanguage {
         // function you may want to override
         virtual void                                    clearArguments(void); //!< Clear argument Environment "args"
 
-        virtual void                                    setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var) {
-        } //!< Set the private member variable here (for derived classes)!
+        virtual void                                    setArgumentVariable(const std::string& name, const RevPtr<const Variable> &var) {}  //!< Set the private member variable here (for derived classes)!
 
         // Member variables
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?

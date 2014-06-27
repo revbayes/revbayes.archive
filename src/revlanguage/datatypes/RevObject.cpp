@@ -339,7 +339,7 @@ void RevObject::replaceVariable(RevObject *newVar) {
 
 
 /** Set a member variable */
-void RevObject::setConstMember(const std::string& name, const RbPtr<const Variable> &var) {
+void RevObject::setConstMember(const std::string& name, const RevPtr<const Variable> &var) {
     
     // here, we might want to do some general stuff like catching all members so that we can provide general functions as
     // 1) getNames()
@@ -351,7 +351,7 @@ void RevObject::setConstMember(const std::string& name, const RbPtr<const Variab
 
 
 /** Set a member variable */
-void RevObject::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RevObject::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     throw RbException("No constant member with name \"" + name + "\" found to set.");
 }
@@ -362,7 +362,7 @@ void RevObject::setConstMemberVariable(const std::string& name, const RbPtr<cons
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
  */
-void RevObject::setMember(const std::string& name, const RbPtr<Variable> &var) {
+void RevObject::setMember(const std::string& name, const RevPtr<Variable> &var) {
     
     // here, we might want to do some general stuff like catching all members so that we can provide general functions as
     // 1) getNames()
@@ -378,9 +378,9 @@ void RevObject::setMember(const std::string& name, const RbPtr<Variable> &var) {
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
  */
-void RevObject::setMemberVariable(const std::string& name, const RbPtr<Variable> &var) {
+void RevObject::setMemberVariable(const std::string& name, const RevPtr<Variable> &var) {
     
-    setConstMemberVariable(name, RbPtr<const Variable>( var ) );
+    setConstMemberVariable(name, RevPtr<const Variable>( var ) );
     
 }
 

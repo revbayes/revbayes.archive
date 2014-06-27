@@ -88,7 +88,7 @@ SyntaxIncrement* SyntaxIncrement::clone () const
  * Evaluate the content of this syntax element.
  * This will perform an addition assignment operation.
  */
-RbPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
 {
     
 #ifdef DEBUG_PARSER
@@ -96,7 +96,7 @@ RbPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
 #endif
     
     // Get variable info from lhs
-    RbPtr<Variable> theVariable = variable->createVariable( env );
+    RevPtr<Variable> theVariable = variable->createVariable( env );
     
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );

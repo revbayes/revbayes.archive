@@ -105,7 +105,7 @@ void FixedNodeheightPruneRegraft::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void FixedNodeheightPruneRegraft::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void FixedNodeheightPruneRegraft::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

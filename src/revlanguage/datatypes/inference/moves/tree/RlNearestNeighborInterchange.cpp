@@ -105,7 +105,7 @@ void NearestNeighborInterchange::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NearestNeighborInterchange::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void NearestNeighborInterchange::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

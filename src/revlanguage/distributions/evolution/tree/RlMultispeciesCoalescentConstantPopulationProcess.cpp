@@ -162,7 +162,7 @@ const MemberRules& MultispeciesCoalescentConstantPopulationProcess::getMemberRul
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "speciesTree" ) 

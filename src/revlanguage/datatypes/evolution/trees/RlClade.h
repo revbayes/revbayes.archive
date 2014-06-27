@@ -30,30 +30,30 @@ namespace RevLanguage {
     class Clade : public ModelObject<RevBayesCore::Clade> {
         
     public:
-        Clade(void);                                                                                                                         //!< Constructor requires character type
-        Clade(RevBayesCore::Clade *v);                                                                                                    //!< Constructor requires character type
-        Clade(const RevBayesCore::Clade &v);                                                                                              //!< Constructor requires character type
-        Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n);                                                                        //!< Constructor requires character type
-        Clade(const Clade& d);                                                                                                            //!< Constructor requires character type
+        Clade(void);                                                                                                                    //!< Constructor requires character type
+        Clade(RevBayesCore::Clade *v);                                                                                                  //!< Constructor requires character type
+        Clade(const RevBayesCore::Clade &v);                                                                                            //!< Constructor requires character type
+        Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n);                                                                      //!< Constructor requires character type
+        Clade(const Clade& d);                                                                                                          //!< Constructor requires character type
         
         typedef RevBayesCore::Clade valueType;
         
         // Basic utility functions
-        Clade*                              clone(void) const;                                                                                  //!< Clone object
-        void                                constructInternalObject(void);                                          //!< We construct the a new internal MCMC object.
-        static const std::string&           getClassName(void);                                                                                 //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
-        const MemberRules&                  getMemberRules(void) const;                                             //!< Get member rules (const)
-        const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
+        Clade*                                  clone(void) const;                                                                      //!< Clone object
+        void                                    constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
+        static const std::string&               getClassName(void);                                                                     //!< Get class name
+        static const TypeSpec&                  getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const MemberRules&                      getMemberRules(void) const;                                                             //!< Get member rules (const)
+        const TypeSpec&                         getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        const MethodTable&                      getMethods(void) const;                                                                 //!< Get methods
+        RevObject*                              executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
         
     protected:
-        void                                setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                    setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        std::vector<RbPtr<const Variable> > names;
+        std::vector<RevPtr<const Variable> >    names;
 
     };
     
