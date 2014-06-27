@@ -36,8 +36,8 @@ UniformTimeTreeDistribution* UniformTimeTreeDistribution::clone( void ) const {
 RevBayesCore::UniformTimeTreeDistribution* UniformTimeTreeDistribution::createDistribution( void ) const {
 
     // Get the parameters
-    RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getValue() ).getValueNode();
-    const std::vector<std::string>      &names  = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getRevObject() ).getDagNode();
+    const std::vector<std::string>      &names  = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
 
     RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( originT, names );
 

@@ -77,17 +77,15 @@ namespace RevLanguage {
         void                    printValue(std::ostream& o) const;                                          //!< Print table for user
 
         // Workspace functions
-        bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution on continuous variable
-        //        bool                            addDistribution(const std::string& name, DistributionContinuous *dist);                       //!< Add distribution on continuous variable
-        //        bool                            addType(RlMo *exampleObj);                                                          //!< Add type
-        bool                    addType(RevObject *exampleObj);                                      //!< Add type (auto-generated name = rbClassName)
-        bool                    addType(const std::string& name, RevObject *exampleObj);             //!< Add special abstract type (synonym)
-        bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);   //!< Add type with constructor
+        bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution
+        bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rbClassName)
+        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
+        bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const TypeSpec& name) const;                                     //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
-        RevObject*       getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
-        const std::string&      getTemplateValueType(const std::string& type) const;                        //!< Get the templated internal value type of the object
+        RevObject*              getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
+        const std::string&      getValueType(const std::string& type) const;                                //!< Get the templated internal value type of the object
         TypeTable               getTypeTable(void){ return typeTable; }
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
 

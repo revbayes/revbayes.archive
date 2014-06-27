@@ -35,8 +35,8 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const {
 
 RevObject* TmrcaStatistic::execute() {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getValue() ).getValueNode();
-    const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     

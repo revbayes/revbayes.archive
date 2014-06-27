@@ -36,8 +36,8 @@ RevObject* Func_simplex::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<double>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const RealPos &val = static_cast<const RealPos &>( args[i].getVariable()->getValue() );
-        params.push_back( val.getValueNode() );
+        const RealPos &val = static_cast<const RealPos &>( args[i].getVariable()->getRevObject() );
+        params.push_back( val.getDagNode() );
     }
     
     RevBayesCore::SimplexFunction *func = new RevBayesCore::SimplexFunction( params );

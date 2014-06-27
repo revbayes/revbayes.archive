@@ -37,16 +37,16 @@ void PowerPosterior::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
-    const std::string&                          fn      = static_cast<const RlString &>( filename->getValue() ).getValue();
+    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
     
     std::vector<double> beta;
-    if ( powers->getValue() != RevNullObject::getInstance() )
+    if ( powers->getRevObject() != RevNullObject::getInstance() )
     {
-        beta = static_cast<const Vector<RealPos> &>( powers->getValue() ).getValue();
+        beta = static_cast<const Vector<RealPos> &>( powers->getRevObject() ).getValue();
     }
     else
     {
@@ -67,15 +67,15 @@ RevObject* PowerPosterior::executeMethod(std::string const &name, const std::vec
     
     if (name == "run") {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( size_t(gen) );
         
         return NULL;
     } 
     else if (name == "burnin") {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( size_t(gen), size_t(tuningInterval) );
         
         return NULL;

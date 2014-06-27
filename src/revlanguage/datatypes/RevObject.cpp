@@ -127,7 +127,7 @@ RevObject* RevObject::executeMethod(std::string const &name, const std::vector<A
     if (name == "get") 
     {
         // get the member with give name
-        const std::string &varName = static_cast<const RlString &>( args[0].getVariable()->getValue() ).getValue();
+        const std::string &varName = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
         
         // check if a member with that name exists
         if ( hasMember( varName ) ) 
@@ -227,12 +227,12 @@ const MethodTable& RevObject::getMethods(void) const {
 
 
 /**
- * Get the templated internal value type of the object as a string corresponding to the type name.
+ * Get the internal value type of the object as a string corresponding to the type name.
  * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
  * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
  * return "Mcmc", etc.
  */
-const std::string& RevObject::getTemplateValueType( void ) const {
+const std::string& RevObject::getValueType( void ) const {
     
     throw RbException("No value template type implemented for this object (lazy RevBayes programmers...)");
 }
@@ -250,7 +250,7 @@ const std::string& RevObject::getType( void ) const {
 /**
  * Get the value as a DAG node. This default implementation throws an error.
  */
-RevBayesCore::DagNode* RevObject::getValueNode( void ) const {
+RevBayesCore::DagNode* RevObject::getDagNode( void ) const {
     
     throw RbException("RevLanguage only objects cannot be used inside DAG's!");
     
@@ -265,7 +265,7 @@ bool RevObject::hasMember(std::string const &name) const {
 
 
 /** Does this object have an internal value node? Default implementation returns false. */
-bool RevObject::hasValueNode(void) const {
+bool RevObject::hasDagNode(void) const {
     return false;
 }
 
@@ -333,7 +333,7 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 /**
  * Replace the variable. This default implementation does nothing.
  */
-void RevObject::replaceVariable(RevObject *newVar) {
+void RevObject::replaceMe(RevObject *newVar) {
     
 }
 
@@ -399,9 +399,9 @@ void RevObject::setName(std::string const &n) {
  * Setting the value node, potentially replacing the existing value node. The default implementation
  * throws an error because we do not have a value node.
  */
-void RevObject::setValueNode(RevBayesCore::DagNode* newVal) {
+void RevObject::setDagNode(RevBayesCore::DagNode* newVal) {
     
-    if ( this->hasValueNode() )
+    if ( this->hasDagNode() )
         throw RbException( "Replacing or setting of the internal value node of this type of object not supported yet (lazy developers...)");
     else
         throw RbException( "This language object does not have an internal value node that can be replaced or set");

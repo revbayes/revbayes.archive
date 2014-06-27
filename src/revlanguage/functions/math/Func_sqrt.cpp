@@ -30,7 +30,7 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 
 RevObject* Func_sqrt::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SqrtFunction* f = new RevBayesCore::SqrtFunction( arg );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     

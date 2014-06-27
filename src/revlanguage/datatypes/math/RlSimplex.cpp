@@ -118,14 +118,14 @@ RevObject* Simplex::executeMethod(std::string const &name, const std::vector<Arg
     if ( name == "[]") 
     {
         // get the member with give index
-        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 
         if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
         {
             throw RbException("Index out of bounds in []");
         }
 
-        RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getValueNode() );
+        RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getDagNode() );
         RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
             
         RealPos* v = new RealPos( detNode );
@@ -236,7 +236,7 @@ const std::vector<double>& Simplex::getValue( void ) const {
 
 
 
-RevBayesCore::TypedDagNode<std::vector<double> >* Simplex::getValueNode( void ) const {
+RevBayesCore::TypedDagNode<std::vector<double> >* Simplex::getDagNode( void ) const {
     
     return value;
 }
@@ -289,7 +289,7 @@ void Simplex::printValue(std::ostream &o) const {
 
 void Simplex::replaceVariable(RevObject *newVar) {
     
-    RevBayesCore::DagNode* newParent = newVar->getValueNode();
+    RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
     while ( value->getNumberOfChildren() > 0 ) {
         value->getFirstChild()->swapParent(value, newParent);

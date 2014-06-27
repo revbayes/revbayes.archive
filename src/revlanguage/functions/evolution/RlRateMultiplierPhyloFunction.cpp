@@ -25,9 +25,9 @@ RateMultiplierPhyloFunction* RateMultiplierPhyloFunction::clone( void ) const
 RevObject* RateMultiplierPhyloFunction::execute() 
 {
     
-    RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode< double >* baseRate = static_cast<const RealPos &>( this->args[2].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* baseRate = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RateMultiplierPhyloFunction* f = new RevBayesCore::RateMultiplierPhyloFunction( tree, rates, baseRate );
     RevBayesCore::DeterministicNode< std::vector<double> > *detNode = new RevBayesCore::DeterministicNode< std::vector<double> >("", f);
     

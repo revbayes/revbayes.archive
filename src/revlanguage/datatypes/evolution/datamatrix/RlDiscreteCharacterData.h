@@ -93,7 +93,7 @@ RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMet
     if (name == "[]") 
     {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
             
         if (this->value->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) ) 
         {

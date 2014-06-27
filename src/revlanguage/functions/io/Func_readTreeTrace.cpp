@@ -37,8 +37,8 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const {
 RevObject* Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() ).getValue();
-    const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
+    const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+    const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );

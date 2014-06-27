@@ -173,9 +173,9 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getValue() != RevNullObject::getInstance()) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 
@@ -229,7 +229,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 	 
@@ -272,7 +272,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 
@@ -297,7 +297,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
                 
@@ -316,7 +316,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
                     
@@ -344,15 +344,15 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue().isTypeSpec( RlBoolean::getClassTypeSpec() ) ) {
+    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) ) {
         
-        bool retValue = static_cast<const RlBoolean&>( temp->getValue() ).getValue();
+        bool retValue = static_cast<const RlBoolean&>( temp->getRevObject() ).getValue();
         
         return retValue;
     }
     else {
         
-        RevObject *tempObject = temp->getValue().convertTo( RlBoolean::getClassTypeSpec() );
+        RevObject *tempObject = temp->getRevObject().convertTo( RlBoolean::getClassTypeSpec() );
         RlBoolean* tempBool = static_cast<RlBoolean*>( tempObject );
         bool     retValue = tempBool->getValue();
         

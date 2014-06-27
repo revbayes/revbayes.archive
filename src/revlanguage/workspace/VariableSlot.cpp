@@ -131,16 +131,16 @@ size_t VariableSlot::getDim( void ) const {
 
 
 /** Get the value of the variable */
-const RevObject& VariableSlot::getValue( void ) const {
+const RevObject& VariableSlot::getRevObject( void ) const {
     
-    return variable[0]->getValue();
+    return variable[0]->getRevObject();
 }
 
 
 /** Get the value of the variable */
-RevObject& VariableSlot::getValue( void ) {
+RevObject& VariableSlot::getRevObject( void ) {
     
-    return variable[0]->getValue();
+    return variable[0]->getRevObject();
 }
 
 
@@ -370,7 +370,7 @@ std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
     if ( x.getLabel() != "" )
         o << " " << x.getLabel();
     o << " = ";
-    x.getValue().printValue(o);
+    x.getRevObject().printValue(o);
 
     return o;
 }

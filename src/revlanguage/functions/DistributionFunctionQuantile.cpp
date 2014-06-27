@@ -107,7 +107,7 @@ DistributionFunctionQuantile* DistributionFunctionQuantile::clone(void) const {
 RevObject* DistributionFunctionQuantile::execute( void ) {
     
     Real* value = NULL;
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     if ( templateObject != NULL ) {
         ContinuousDistribution* copyObject = templateObject->clone();

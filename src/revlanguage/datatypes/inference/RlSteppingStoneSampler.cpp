@@ -29,10 +29,10 @@ void SteppingStoneSampler::constructInternalObject( void ) {
     delete value;
     
     // get the parameter values
-    const std::string&   fn      = static_cast<const RlString &>( filename->getValue() ).getValue();
-    const std::string&   pn      = static_cast<const RlString &>( powerColumnName->getValue() ).getValue();
-    const std::string&   ln      = static_cast<const RlString &>( likelihoodColumnName->getValue() ).getValue();
-    const std::string&   del     = static_cast<const RlString &>( delimmiter->getValue() ).getValue();
+    const std::string&   fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const std::string&   pn      = static_cast<const RlString &>( powerColumnName->getRevObject() ).getValue();
+    const std::string&   ln      = static_cast<const RlString &>( likelihoodColumnName->getRevObject() ).getValue();
+    const std::string&   del     = static_cast<const RlString &>( delimmiter->getRevObject() ).getValue();
     
     value = new RevBayesCore::SteppingStoneSampler(fn, pn, ln, del);
     

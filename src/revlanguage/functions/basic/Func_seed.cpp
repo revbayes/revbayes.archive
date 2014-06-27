@@ -36,9 +36,9 @@ Func_seed* Func_seed::clone( void ) const {
 RevObject* Func_seed::execute( void ) {
     
     std::vector<unsigned int> s;
-    const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+    const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
     s.push_back( (unsigned int) val1.getValue() );
-    const Natural &val2 = static_cast<const Natural &>( args[1].getVariable()->getValue() );
+    const Natural &val2 = static_cast<const Natural &>( args[1].getVariable()->getRevObject() );
     s.push_back( (unsigned int) val2.getValue() );
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;

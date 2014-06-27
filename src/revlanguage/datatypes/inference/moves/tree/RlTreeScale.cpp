@@ -37,10 +37,10 @@ void TreeScale::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
-    bool tune = static_cast<const RlBoolean &>( tuning->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    bool tune = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     value = new RevBayesCore::TreeScale(t, l, tune, w);
 }

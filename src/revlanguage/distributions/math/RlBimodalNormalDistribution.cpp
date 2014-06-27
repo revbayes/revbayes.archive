@@ -35,11 +35,11 @@ RevBayesCore::BimodalNormalDistribution* BimodalNormalDistribution::createDistri
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m1 = static_cast<const Real &>( mean1->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* m2 = static_cast<const Real &>( mean2->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s1 = static_cast<const RealPos &>( sd1->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s2 = static_cast<const RealPos &>( sd2->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* p = static_cast<const Probability &>( prob->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* m1 = static_cast<const Real &>( mean1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* m2 = static_cast<const Real &>( mean2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s1 = static_cast<const RealPos &>( sd1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s2 = static_cast<const RealPos &>( sd2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* p = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
     RevBayesCore::BimodalNormalDistribution*   d = new RevBayesCore::BimodalNormalDistribution(m1, m2, s1, s2, p);
     
     return d;

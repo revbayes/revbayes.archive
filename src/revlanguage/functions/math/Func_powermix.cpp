@@ -36,7 +36,7 @@ RevObject* Func_powermix::execute() {
     
     std::vector<const RevBayesCore::TypedDagNode< std::vector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const RevBayesCore::TypedDagNode< std::vector<double> >* val = static_cast<const Simplex &> ( args[i].getVariable()->getValue() ).getValueNode();
+        const RevBayesCore::TypedDagNode< std::vector<double> >* val = static_cast<const Simplex &> ( args[i].getVariable()->getRevObject() ).getDagNode();
         params.push_back( val );
     }
     

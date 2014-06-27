@@ -71,7 +71,7 @@ RevLanguage::Func_round<valType, retType>* RevLanguage::Func_round<valType, retT
 template <typename valType, typename retType>
 RevLanguage::RevObject* RevLanguage::Func_round<valType, retType>::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RoundFunction* f = new RevBayesCore::RoundFunction( arg );
     RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
     

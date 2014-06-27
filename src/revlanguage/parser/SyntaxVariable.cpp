@@ -156,10 +156,10 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
             
             RevPtr<Variable> indexVar = (*i)->evaluateContent( env );
             
-            if ( indexVar->getValue().isTypeSpec( Integer::getClassTypeSpec() ) ) {
+            if ( indexVar->getRevObject().isTypeSpec( Integer::getClassTypeSpec() ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<Integer &>( indexVar->getValue() ).getValue(); 
+                int intIndex = static_cast<Integer &>( indexVar->getRevObject() ).getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -176,7 +176,7 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
                 theIndex.push_back( intIndex-1 );
             }
             
-            else if ( indexVar->getValue().isTypeSpec( RlString::getClassTypeSpec() ) ) {
+            else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) ) {
                 
                 // Push RlString index onto index vector
 //                theIndex.push_back( indexVar->getValue()->clone() );
@@ -309,11 +309,11 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
                     RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
                     
                     // we assume that the indices have to be natural values
-                    if ( indexVar->getValue().isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                        Natural &n = static_cast<Natural &>( indexVar->getValue() );
+                    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                        Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
                         slotIndices.push_back( n.getValue()-1 );
-                    } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        RevObject* convObj = indexVar->getValue().convertTo( Natural::getClassTypeSpec() );
+                    } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
+                        RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
                         Natural *n = static_cast<Natural *>( convObj );
                         int tmp = n->getValue()-1;
                         slotIndices.push_back( tmp );
@@ -328,7 +328,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
                     throw RbException( "Dynamic reference to field variables not supported yet" );
 
                 // First get the variable we want to reference
-                RevObject* theObj = &(theSlot.getVariable(slotIndices)->getValue());
+                RevObject* theObj = &(theSlot.getVariable(slotIndices)->getRevObject());
                 RevObject* theReference = theObj->dagReference();
 
                 // Now make a new variable, which is a reference to that variable
@@ -357,7 +357,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
             if ( identifier == "" )
                 throw RbException( "Member variable identifier missing" );
             
-            const RevObject &theMemberObject = baseVar->getValue();
+            const RevObject &theMemberObject = baseVar->getRevObject();
             const RevObject* member = theMemberObject.getMember( identifier );
             
             // test whether we actually got a variable back
@@ -391,10 +391,10 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
             //theVar = new Variable( new ConstantNode( static_cast<RevObject*>( subElement.clone() ) ) );
             
             // create the new variable name
-            std::string varName = theVar->getName() + "[" + indexVar->getValue().toString() + "]";
+            std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
             
             // convert the value into a member object
-            RevObject &mObject = theVar->getValue();
+            RevObject &mObject = theVar->getRevObject();
             
             // get the method table for this member object
             // \TODO: We should not allow const casts
@@ -466,11 +466,11 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                     RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
                     
                     // we assume that the indices have to be natural values
-                    if ( indexVar->getValue().isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                        Natural &n = static_cast<Natural &>( indexVar->getValue() );
+                    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                        Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
                         slotIndices.push_back( n.getValue()-1 );
-                    } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        RevObject* convObj = indexVar->getValue().convertTo( Natural::getClassTypeSpec() );
+                    } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
+                        RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
                         Natural *n = static_cast<Natural *>( convObj );
                         int tmp = n->getValue()-1;
                         slotIndices.push_back( tmp );
@@ -506,7 +506,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             if ( identifier == "" )
                 throw RbException( "Member variable identifier missing" );
 
-            const RevObject &theMemberObject = baseVar->getValue();
+            const RevObject &theMemberObject = baseVar->getRevObject();
             const RevObject* member = theMemberObject.getMember( identifier );
 
             // test whether we actually got a variable back
@@ -541,10 +541,10 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             //theVar = new Variable( new ConstantNode( static_cast<RevObject*>( subElement.clone() ) ) );
             
             // create the new variable name
-            std::string varName = theVar->getName() + "[" + indexVar->getValue().toString() + "]";
+            std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
             
             // convert the value into a member object
-            RevObject &mObject = theVar->getValue();
+            RevObject &mObject = theVar->getRevObject();
             
             // get the method table for this member object
             // \TODO: We should not allow const casts

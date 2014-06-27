@@ -50,7 +50,7 @@ MemberFunction* MemberFunction::clone(void) const
 RevObject* MemberFunction::execute( void ) 
 {
     
-    return object->getValue().executeMethod( funcName, args );
+    return object->getRevObject().executeMethod( funcName, args );
     
 }
 

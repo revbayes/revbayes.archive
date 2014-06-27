@@ -57,9 +57,9 @@ void Taxon::constructInternalObject( void )
     }
     
     // now allocate a new Taxon
-    std::string taxonName = static_cast<const RlString &>( (taxon)->getValue() ).getValue() ;
-    std::string taxonSpecies = static_cast<const RlString &>( (species)->getValue() ).getValue() ;
-//    std::string taxonDate = static_cast<const RlDate &>( (date)->getValue() ).getValue() ;
+    std::string taxonName = static_cast<const RlString &>( (taxon)->getRevObject() ).getValue() ;
+    std::string taxonSpecies = static_cast<const RlString &>( (species)->getRevObject() ).getValue() ;
+//    std::string taxonDate = static_cast<const RlDate &>( (date)->getRevObject() ).getValue() ;
 //    RevBayesCore::TimeAndDate d = RevBayesCore::TimeAndDate();
     
     value = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName, taxonSpecies ) );

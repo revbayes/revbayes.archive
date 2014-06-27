@@ -149,7 +149,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 
         RevPtr<Variable> theVar = variable->evaluateContent( env );
             
-        RevObject &theMemberObject = theVar->getValue();
+        RevObject &theMemberObject = theVar->getRevObject();
             
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );

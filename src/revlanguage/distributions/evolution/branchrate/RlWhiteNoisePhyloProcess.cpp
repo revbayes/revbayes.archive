@@ -40,9 +40,9 @@ WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::clone( void ) const {
 RevBayesCore::WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::createDistribution( void ) const {
     // get the parameters
 
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos &>( sigma->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos &>( sigma->getRevObject() ).getDagNode();
     
     RevBayesCore::WhiteNoisePhyloProcess* d    = new RevBayesCore::WhiteNoisePhyloProcess( tau, s );
     

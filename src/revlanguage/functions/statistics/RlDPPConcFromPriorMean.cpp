@@ -37,8 +37,8 @@ DPPConcFromPriorMean* DPPConcFromPriorMean::clone( void ) const {
 
 RevObject* DPPConcFromPriorMean::execute() {
 
-    double nc = static_cast<const RealPos &>( args[0].getVariable()->getValue() ).getValue();
-    double ne = static_cast<const RealPos &>( args[1].getVariable()->getValue() ).getValue();
+    double nc = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
+    double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
 	
 	double meanCP = RevBayesCore::RbStatistics::Helper::dppConcParamFromNumTables(nc, ne);
     RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));

@@ -32,7 +32,7 @@ void Model::constructInternalObject( void ) {
     // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
     for (std::set<RevPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
-        RevBayesCore::DagNode* n = (*it)->getValue().getValueNode();
+        RevBayesCore::DagNode* n = (*it)->getRevObject().getDagNode();
         s.insert( n );
     }
     value = new RevBayesCore::Model( s );

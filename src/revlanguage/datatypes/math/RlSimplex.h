@@ -53,7 +53,7 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         const TypeSpec&                             getTypeSpec(void) const;                                        //!< Get language type of the object
         const valueType&                            getValue(void) const;
-        RevBayesCore::TypedDagNode<valueType>*      getValueNode(void) const;
+        RevBayesCore::TypedDagNode<valueType>*      getDagNode(void) const;
         bool                                        isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
         void                                        makeConstantValue();                                                //!< Convert the stored variable to a constant variable (if applicable)
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user

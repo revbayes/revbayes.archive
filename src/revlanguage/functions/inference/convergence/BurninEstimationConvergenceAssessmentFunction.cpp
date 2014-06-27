@@ -52,9 +52,9 @@ RevObject* BurninEstimationConvergenceAssessmentFunction::execute( void ) {
     
     bool converged = false;
     
-    const std::string&   fn     = static_cast<const RlString&>( args[0].getVariable()->getValue() ).getValue();
-    const std::string&   method = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
-    const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[2].getVariable()->getValue() ).getValue();
+    const std::string&   fn     = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+    const std::string&   method = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[2].getVariable()->getRevObject() ).getValue();
     
     std::ostream* outStream = NULL;
     if ( fn != "" ) 

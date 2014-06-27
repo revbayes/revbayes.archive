@@ -111,7 +111,7 @@ RevObject* Container::executeMethod(std::string const &name, const std::vector<A
     else if ( name == "[]") 
     {
         // get the member with give index
-        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 
         if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
         {

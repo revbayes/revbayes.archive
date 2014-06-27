@@ -115,7 +115,7 @@ RevPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& en
     // the variable itself will be passed on as the semantic value of the statement
     // and can be used in further assignments
     // when the slot is set, the clone is named
-    theSlot->setValue( theVariable->getValue().clone() );
+    theSlot->setRevObject( theVariable->getRevObject().clone() );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);

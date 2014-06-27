@@ -46,7 +46,7 @@ Func_type* Func_type::clone( void ) const {
 /** Execute function */
 RevObject* Func_type::execute( void ) {
     
-    RlString* type = new RlString( args[0].getVariable()->getValue().getType() );
+    RlString* type = new RlString( args[0].getVariable()->getRevObject().getType() );
     
     return type;
 }

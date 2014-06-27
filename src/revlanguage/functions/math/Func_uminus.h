@@ -69,7 +69,7 @@ RevLanguage::Func_uminus<firstValType, retType>* RevLanguage::Func_uminus<firstV
 template <typename firstValType, typename retType>
 RevLanguage::RevObject* RevLanguage::Func_uminus<firstValType, retType>::execute() {
     
-    RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::UnaryMinus<typename firstValType::valueType> *func = new RevBayesCore::UnaryMinus<typename firstValType::valueType>(firstArg);
     RevBayesCore::DeterministicNode<typename retType::valueType> *detNode = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
     retType* value = new retType( detNode );

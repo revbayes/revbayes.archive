@@ -34,7 +34,7 @@ SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : 
         argRule = new ArgumentRule(label, true, argType);
     else {
         Environment env = Environment();
-        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent( env )->getValue().clone() );
+        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent( env )->getRevObject().clone() );
     }
 }
 
@@ -60,7 +60,7 @@ SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, Synt
         argRule = new ArgumentRule(label, true, argType);
     else {
         Environment env = Environment();
-        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent(env)->getValue().clone() );
+        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent(env)->getRevObject().clone() );
     }
 }
 

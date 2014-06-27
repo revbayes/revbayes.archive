@@ -134,7 +134,7 @@ RevPtr<Variable> SyntaxAdditionAssignment::evaluateContent( Environment& env )
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
       
-    const RevObject& lhs_value = theVariable->getValue();
+    const RevObject& lhs_value = theVariable->getRevObject();
     
     
     // Calculate the value of the rhs expression
@@ -143,12 +143,12 @@ RevPtr<Variable> SyntaxAdditionAssignment::evaluateContent( Environment& env )
         throw RbException( "Invalid NULL variable returned by rhs expression in addition assignment" );
     
     // fill the slot with the new variable
-    const RevObject& rhs_value = rhs->getValue();
+    const RevObject& rhs_value = rhs->getRevObject();
     
     RevObject *newValue = lhs_value.add( rhs_value );
     
     // set the value of the variable
-    theVariable->setValue( newValue );
+    theVariable->setRevObject( newValue );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);

@@ -75,8 +75,8 @@ RevLanguage::Func__eq<leftValType,rightValType>* RevLanguage::Func__eq<leftValTy
 template <typename leftValType, typename rightValType>
 RevLanguage::RevObject* RevLanguage::Func__eq<leftValType,rightValType>::execute( void ) {
         
-    const RevBayesCore::TypedDagNode<typename leftValType::valueType>* leftVal = static_cast<const leftValType &>( args[0].getVariable()->getValue() ).getValueNode();
-    const RevBayesCore::TypedDagNode<typename rightValType::valueType>* rightVal = static_cast<const rightValType &>( args[1].getVariable()->getValue() ).getValueNode();
+    const RevBayesCore::TypedDagNode<typename leftValType::valueType>* leftVal = static_cast<const leftValType &>( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode<typename rightValType::valueType>* rightVal = static_cast<const rightValType &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::EquationFunction<typename leftValType::valueType, typename rightValType::valueType> *func = new RevBayesCore::EquationFunction<typename leftValType::valueType, typename rightValType::valueType>( leftVal, rightVal );
     RevBayesCore::TypedDagNode<bool> *detNode = new RevBayesCore::DeterministicNode<bool>("", func);

@@ -41,13 +41,13 @@ void SimplexMove::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double a = static_cast<const RealPos &>( alpha->getValue() ).getValue();
-    int nc = static_cast<const Natural &>( numCats->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    double o = static_cast<const RealPos &>( offset->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getValue() ).getValueNode();
+    double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
+    int nc = static_cast<const Natural &>( numCats->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double o = static_cast<const RealPos &>( offset->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::SimplexMove(n, a, size_t(nc), o, t, w);
 }
 

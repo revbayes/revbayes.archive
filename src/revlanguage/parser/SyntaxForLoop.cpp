@@ -140,7 +140,7 @@ void SyntaxForLoop::initializeLoop(Environment& env) {
 
     // Evaluate expression and check that we get a vector
     const RevPtr<Variable>&      theVar      = inExpression->evaluateContent(env);
-    const RevObject&             theValue    = theVar->getValue();
+    const RevObject&             theValue    = theVar->getRevObject();
 
     // Check that it is a vector
     if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false ) {

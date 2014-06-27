@@ -54,10 +54,10 @@ void RlcRateScaleMove::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    double w                                                    = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    double l                                                    = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    bool t                                                      = static_cast<const RlBoolean &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const Vector<RealPos> &>( v->getValue() ).getValueNode();
+    double w                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double l                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    bool t                                                      = static_cast<const RlBoolean &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const Vector<RealPos> &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< std::vector<double> > *n      = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     
     // just to make sure also test that the stochastic node has the correct distribution

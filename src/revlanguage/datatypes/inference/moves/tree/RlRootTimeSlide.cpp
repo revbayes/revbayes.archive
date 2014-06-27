@@ -37,10 +37,10 @@ void RootTimeSlide::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
-    double d = static_cast<const RealPos &>( delta->getValue() ).getValue();
-    bool at = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
+    bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     value = new RevBayesCore::RootTimeSlide(t, d, at, w);
 }

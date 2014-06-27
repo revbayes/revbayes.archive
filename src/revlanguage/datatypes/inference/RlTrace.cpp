@@ -53,7 +53,7 @@ RevObject* Trace::executeMethod(std::string const &name, const std::vector<Argum
     
     if (name == "summarize") {
         
-//        int b = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+//        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
 //        RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
 //        summary.summarize( b );
 //        summary.printTreeSummary(std::cerr);

@@ -35,8 +35,8 @@ TreeAssemblyFunction* TreeAssemblyFunction::clone( void ) const {
 
 RevObject* TreeAssemblyFunction::execute() {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens );
     RevBayesCore::DeterministicNode<RevBayesCore::BranchLengthTree> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::BranchLengthTree>("", f);
     

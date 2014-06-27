@@ -193,7 +193,7 @@ RevObject* UserFunction::executeCode( void ) {
             break;
     }
     
-    RevObject* retValue = retVar->getValue().clone();
+    RevObject* retValue = retVar->getRevObject().clone();
         
     // Return the return value
     return retValue;

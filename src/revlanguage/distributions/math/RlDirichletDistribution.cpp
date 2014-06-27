@@ -38,7 +38,7 @@ DirichletDistribution* DirichletDistribution::clone( void ) const {
 RevBayesCore::DirichletDistribution* DirichletDistribution::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const Vector<RealPos> &>( alpha->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const Vector<RealPos> &>( alpha->getRevObject() ).getDagNode();
     RevBayesCore::DirichletDistribution* d    = new RevBayesCore::DirichletDistribution( a );
     
     return d;

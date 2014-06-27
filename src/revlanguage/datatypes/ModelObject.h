@@ -46,7 +46,7 @@ namespace RevLanguage {
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
-        RevBayesCore::TypedDagNode<rbType>*     getValueNode(void) const;
+        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
@@ -232,7 +232,7 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::str
         RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
         
         // get the observation
-        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getValue() ).getValue();
+        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
         
         // clamp
         stochNode->clamp( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
@@ -251,7 +251,7 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::str
         RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
         
         // get the observation
-        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getValue() ).getValue();
+        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
         
         // set value
         stochNode->setValue( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
@@ -356,7 +356,7 @@ const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
 
 
 template <typename rbType>
-RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getValueNode( void ) const {
+RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
     
     return value;
 }
@@ -469,7 +469,7 @@ void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
     
-    RevBayesCore::DagNode* newParent = newVar->getValueNode();
+    RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
     while ( value->getNumberOfChildren() > 0 ) 
     {

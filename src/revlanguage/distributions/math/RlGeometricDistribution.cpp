@@ -46,7 +46,7 @@ GeometricDistribution* GeometricDistribution::clone( void ) const
 RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* prob    = static_cast<const Probability &>( p->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* prob    = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
     RevBayesCore::GeometricDistribution* d      = new RevBayesCore::GeometricDistribution( prob );
     
     return d;

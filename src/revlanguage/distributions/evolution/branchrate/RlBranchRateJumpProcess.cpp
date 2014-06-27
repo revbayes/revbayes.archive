@@ -42,14 +42,14 @@ RevBayesCore::BranchRateJumpProcess* BranchRateJumpProcess::createDistribution( 
     // get the parameters
 
     // the value distribution
-    const Distribution& rlDistribution                      = static_cast<const Distribution &>( valueDistribution->getValue() );
+    const Distribution& rlDistribution                      = static_cast<const Distribution &>( valueDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<double>* vd             = static_cast<RevBayesCore::TypedDistribution<double>*>( rlDistribution.createDistribution() );    
     // the tree
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* t   = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* t   = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     // the scaling factor of the branch lengths
-    RevBayesCore::TypedDagNode<double>* l                   = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l                   = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // the instantaneousJumpProbability
-    RevBayesCore::TypedDagNode<double>* rho                 = static_cast<const RealPos &>( instantaneousJumpProbability->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* rho                 = static_cast<const RealPos &>( instantaneousJumpProbability->getRevObject() ).getDagNode();
     
     // create the internal distribution object
     RevBayesCore::BranchRateJumpProcess*   d = new RevBayesCore::BranchRateJumpProcess(vd,t,l,rho);
