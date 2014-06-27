@@ -90,7 +90,7 @@
     
     RevBayesCore::Trace* t = data->at(0);
     
-    return t->size();
+    return (int)t->size();
 }
 
 - (void)setControlWindowSize {
