@@ -78,7 +78,7 @@ void ScaleMove::constructInternalObject( void )
 const std::string& ScaleMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Scaling move";
+    static std::string rbClassName = "Move_Scale";
     
 	return rbClassName; 
 }

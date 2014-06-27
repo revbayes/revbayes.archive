@@ -64,7 +64,7 @@ const ArgumentRules& Func_gtr::getArgumentRules( void ) const {
 
 const std::string& Func_gtr::getClassName(void) { 
     
-    static std::string rbClassName = "GTR";
+    static std::string rbClassName = "Func_gtr";
     
 	return rbClassName; 
 }

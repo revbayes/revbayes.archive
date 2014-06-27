@@ -47,7 +47,7 @@ RevBayesCore::OneOverXDistribution* OneOverXDistribution::createDistribution( vo
 /* Get class name of object */
 const std::string& OneOverXDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "1/x distribution";
+    static std::string rbClassName = "Dist_oneOverX";
     
 	return rbClassName; 
 }

@@ -95,7 +95,7 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSamp
 const std::string& ConstantRateSerialSampledBirthDeathProcess::getClassName( void ) 
 { 
     
-    static std::string rbClassName = "DivDependentPureBirthProcess";
+    static std::string rbClassName = "Dist_serialBDP";
     
 	return rbClassName; 
 }

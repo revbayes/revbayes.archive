@@ -59,7 +59,7 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const {
 
 const std::string& Func_exp::getClassName(void) { 
     
-    static std::string rbClassName = "Exponential";
+    static std::string rbClassName = "Func_exp";
     
 	return rbClassName; 
 }

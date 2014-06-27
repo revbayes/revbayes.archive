@@ -89,7 +89,7 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTrees::getClassName(void) { 
     
-    static std::string rbClassName = "Read trees function";
+    static std::string rbClassName = "Func_readTrees";
     
 	return rbClassName; 
 }

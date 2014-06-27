@@ -162,7 +162,7 @@ RevObject* RevObject::executeMethod(std::string const &name, const std::vector<A
 /** Get class vector describing type of object */
 const std::string& RevObject::getClassName(void) { 
     
-    static std::string rbClassName = "language object";
+    static std::string rbClassName = "RevObject";
 	return rbClassName; 
 }
 

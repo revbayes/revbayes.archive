@@ -46,7 +46,7 @@ void NarrowExchange::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& NarrowExchange::getClassName(void) { 
     
-    static std::string rbClassName = "NarrowExchange";
+    static std::string rbClassName = "Move_NarrowExchange";
     
 	return rbClassName; 
 }

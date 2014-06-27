@@ -55,7 +55,7 @@ void SimplexMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SimplexMove::getClassName(void) { 
     
-    static std::string rbClassName = "Simplex move";
+    static std::string rbClassName = "Move_Simplex";
     
 	return rbClassName; 
 }

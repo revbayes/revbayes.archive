@@ -96,7 +96,7 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 /** Get class name of object */
 const std::string& ConstructorFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Constructor function";
+    static std::string rbClassName = "Func_constructor";
     
 	return rbClassName; 
 }

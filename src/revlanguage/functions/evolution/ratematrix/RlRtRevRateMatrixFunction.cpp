@@ -52,7 +52,7 @@ const ArgumentRules& RtRevRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& RtRevRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "RtRev";
+    static std::string rbClassName = "Func_rtRev";
     
 	return rbClassName; 
 }

@@ -479,28 +479,34 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         // constant rate birth-death process
         addDistribution( "dnBDP"                        , new ConstantRateBirthDeathProcess() );
+        addDistribution( "bdp"                          , new ConstantRateBirthDeathProcess() );
         addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
         addDistribution( "BirthDeathConstant"           , new ConstantRateBirthDeathProcess() );
         addDistribution( "BDConst"                      , new ConstantRateBirthDeathProcess() );
         
         // constant rate birth-death process with serially sampled tips
         addDistribution( "dnSerialBDP"                  , new ConstantRateSerialSampledBirthDeathProcess() );
+        addDistribution( "serialBDP"                    , new ConstantRateSerialSampledBirthDeathProcess() );
         addDistribution( "BirthDeathConstantSerial"     , new ConstantRateSerialSampledBirthDeathProcess() );
         addDistribution( "BDConstSS"                    , new ConstantRateSerialSampledBirthDeathProcess() );
 
         // piecewise constant rate birth-death process with serially sampled tips
         addDistribution( "dnSkySerialBDP"               , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        addDistribution( "skySerialBDP"                 , new PiecewiseConstantSerialSampledBirthDeathProcess() );
         addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
         addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
 
         // piecewise constant rate fossilized birth-death process with serially sampled fossils
         addDistribution( "dnSkyFossilBDP"               , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "skyFossilBDP"                 , new PiecewiseConstantFossilizedBirthDeathProcess() );
         addDistribution( "FossilizedBirthDeath"         , new PiecewiseConstantFossilizedBirthDeathProcess() );
         addDistribution( "FBD"                          , new PiecewiseConstantFossilizedBirthDeathProcess() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
+        addDistribution( "dnDivDepYuleProcess"          , new DiversityDependentPureBirthProcess() );
         addDistribution( "dnDivDepPBP"                  , new DiversityDependentPureBirthProcess() );
         addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
+        addDistribution( "divDepYuleProcess"            , new DiversityDependentPureBirthProcess() );
         addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
         addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
         addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
@@ -851,8 +857,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
  		/* Statistics functions (in folder "functions/statistics") */
-        addFunction("dppConcFromNum",   new DPPConcFromPriorMean( )     );
-        addFunction("dppNumFromConc",   new DPPNumFromConcentration( )  );
+        addFunction("dppConcFromMean",  new DPPConcFromPriorMean( )     );
+        addFunction("dppMeanFromConc",   new DPPNumFromConcentration( )  );
 
         // nonstandard forms form backward compatibility
         addFunction("dppCPFromNum",     new DPPConcFromPriorMean( )     );

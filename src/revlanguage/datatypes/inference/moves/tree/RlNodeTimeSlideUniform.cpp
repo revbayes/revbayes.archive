@@ -46,7 +46,7 @@ void NodeTimeSlideUniform::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& NodeTimeSlideUniform::getClassName(void) { 
     
-    static std::string rbClassName = "NodeTimeSlideUniform";
+    static std::string rbClassName = "Move_NodeTimeSlideUniform";
     
 	return rbClassName; 
 }

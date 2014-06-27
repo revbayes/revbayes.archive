@@ -60,7 +60,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 
 const std::string& Func_mean::getClassName(void) { 
     
-    static std::string rbClassName = "mean";
+    static std::string rbClassName = "Func_mean";
     
 	return rbClassName; 
 }

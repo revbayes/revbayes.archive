@@ -65,7 +65,7 @@ RevBayesCore::UniformTopologyDistribution* UniformTopologyDistribution::createDi
 const std::string& UniformTopologyDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "uniform topology distribution";
+    static std::string rbClassName = "Dist_uniformTopology";
     
 	return rbClassName; 
 }

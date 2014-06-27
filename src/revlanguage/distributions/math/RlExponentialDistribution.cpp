@@ -63,7 +63,7 @@ RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistributi
 const std::string& ExponentialDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Exponential distribution";
+    static std::string rbClassName = "Dist_exponential";
     
 	return rbClassName; 
 }

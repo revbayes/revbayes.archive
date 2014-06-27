@@ -52,7 +52,7 @@ const ArgumentRules& Blosum62RateMatrixFunction::getArgumentRules( void ) const 
 
 const std::string& Blosum62RateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Blosum62";
+    static std::string rbClassName = "Func_blosum62";
     
 	return rbClassName; 
 }

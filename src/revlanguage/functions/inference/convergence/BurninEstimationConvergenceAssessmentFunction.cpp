@@ -142,7 +142,7 @@ const ArgumentRules& BurninEstimationConvergenceAssessmentFunction::getArgumentR
 /** Get class name of object */
 const std::string& BurninEstimationConvergenceAssessmentFunction::getClassName(void) { 
     
-    static std::string rbClassName = "burnin-estimation & convergence-assessment function";
+    static std::string rbClassName = "Func_beca";
     
 	return rbClassName; 
 }

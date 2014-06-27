@@ -46,7 +46,7 @@ void FixedNodeheightPruneRegraft::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& FixedNodeheightPruneRegraft::getClassName(void) { 
     
-    static std::string rbClassName = "FNPR";
+    static std::string rbClassName = "Move_FNPR";
     
 	return rbClassName; 
 }

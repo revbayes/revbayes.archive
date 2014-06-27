@@ -53,7 +53,7 @@ void RateAgeBetaShift::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& RateAgeBetaShift::getClassName(void) { 
     
-    static std::string rbClassName = "RateAgeBetaShift";
+    static std::string rbClassName = "Move_RateAgeBetaShift";
     
 	return rbClassName; 
 }

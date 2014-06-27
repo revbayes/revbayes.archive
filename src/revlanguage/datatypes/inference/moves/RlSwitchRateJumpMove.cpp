@@ -78,7 +78,7 @@ void SwitchRateJumpMove::constructInternalObject( void )
 const std::string& SwitchRateJumpMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "SwitchRateJumpMove";
+    static std::string rbClassName = "Move_SwitchRateJump";
     
 	return rbClassName; 
 }

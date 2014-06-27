@@ -102,7 +102,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_sub<firstValType, secondValT
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func_sub<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "sub<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__sub<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
     
 	return rbClassName; 
 }

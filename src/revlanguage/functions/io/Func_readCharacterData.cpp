@@ -238,7 +238,7 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readCharacterData::getClassName(void) { 
     
-    static std::string rbClassName = "Read alignment function";
+    static std::string rbClassName = "Func_readCharacterData";
     
 	return rbClassName; 
 }

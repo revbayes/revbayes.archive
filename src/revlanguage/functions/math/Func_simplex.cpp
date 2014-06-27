@@ -77,7 +77,7 @@ const std::string& Func_simplex::getClassName(void) {
 /** Get class type spec describing type of object */
 const RevLanguage::TypeSpec& Func_simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_simplex", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

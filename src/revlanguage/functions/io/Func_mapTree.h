@@ -130,7 +130,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
 template <typename treeType>
 const std::string& RevLanguage::Func_mapTree<treeType>::getClassName(void) { 
     
-    static std::string rbClassName = "MAP-Tree<" + treeType::getClassName() + ">";
+    static std::string rbClassName = "Func_mapTree<" + treeType::getClassName() + ">";
     
 	return rbClassName; 
 }

@@ -52,7 +52,7 @@ const ArgumentRules& VtRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& VtRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Vt";
+    static std::string rbClassName = "Func_vt";
     
 	return rbClassName; 
 }

@@ -46,7 +46,7 @@ void NearestNeighborInterchange::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& NearestNeighborInterchange::getClassName(void) { 
     
-    static std::string rbClassName = "NNI";
+    static std::string rbClassName = "Move_NNI";
     
 	return rbClassName; 
 }

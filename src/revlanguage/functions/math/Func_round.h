@@ -103,7 +103,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::get
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_round<valType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "round";
+    static std::string rbClassName = "Func_round";
     
 	return rbClassName; 
 }

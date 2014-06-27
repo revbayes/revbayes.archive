@@ -104,7 +104,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::get
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_trunc<valType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "trunc";
+    static std::string rbClassName = "Func_trunc";
     
 	return rbClassName; 
 }

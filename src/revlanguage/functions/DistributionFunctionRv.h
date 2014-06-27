@@ -150,7 +150,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionRv<valueType>
 template <class valueType>
 const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassName(void) { 
     
-    static std::string rbClassName = "RV";
+    static std::string rbClassName = "Func_randomVariable";
     
 	return rbClassName; 
 }

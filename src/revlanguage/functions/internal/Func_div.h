@@ -102,7 +102,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_div<firstValType, secondValT
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func_div<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "div<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__div<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
     
 	return rbClassName; 
 }

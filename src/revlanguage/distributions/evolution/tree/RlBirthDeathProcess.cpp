@@ -36,7 +36,7 @@ BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
 const std::string& BirthDeathProcess::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Birth-Death Process";
+    static std::string rbClassName = "Dist_BDP";
     
 	return rbClassName; 
 }

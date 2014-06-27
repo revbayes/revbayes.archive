@@ -59,7 +59,7 @@ Probability* BetaDistribution::createRandomVariable(void) const {
 /* Get class name of object */
 const std::string& BetaDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Beta distribution";
+    static std::string rbClassName = "Dist_beta";
     
 	return rbClassName; 
 }

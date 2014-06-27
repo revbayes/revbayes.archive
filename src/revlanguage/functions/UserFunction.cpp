@@ -204,7 +204,7 @@ RevObject* UserFunction::executeCode( void ) {
 /** Get class name of object */
 const std::string& UserFunction::getClassName(void) { 
     
-    static std::string rbClassName = "User function";
+    static std::string rbClassName = "UserFunction";
     
 	return rbClassName; 
 }

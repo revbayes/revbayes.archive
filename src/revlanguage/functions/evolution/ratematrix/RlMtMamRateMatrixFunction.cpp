@@ -52,7 +52,7 @@ const ArgumentRules& MtMamRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& MtMamRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "MtMam";
+    static std::string rbClassName = "Func_mtMam";
     
 	return rbClassName; 
 }

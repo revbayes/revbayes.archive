@@ -61,7 +61,7 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
 
 const std::string& Func_power::getClassName(void) { 
     
-    static std::string rbClassName = "power";
+    static std::string rbClassName = "Func_power";
     
 	return rbClassName; 
 }

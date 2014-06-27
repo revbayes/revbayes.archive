@@ -52,7 +52,7 @@ const ArgumentRules& DayhoffRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& DayhoffRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Dayhoff";
+    static std::string rbClassName = "Func_dayhoff";
     
 	return rbClassName; 
 }

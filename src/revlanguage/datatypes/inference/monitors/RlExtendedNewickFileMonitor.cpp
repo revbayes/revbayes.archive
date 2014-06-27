@@ -51,7 +51,7 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& ExtendedNewickFileMonitor::getClassName(void) { 
     
-    static std::string rbClassName = "ExtendedNewickFileMonitor";
+    static std::string rbClassName = "Mntr_ExtendedNewickFile";
     
 	return rbClassName; 
 }

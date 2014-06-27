@@ -98,7 +98,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_uminus<firstValType, retType
 template <typename firstValType, typename retType>
 const std::string& RevLanguage::Func_uminus<firstValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "Unary Minus<" + firstValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__uminus<" + firstValType::getClassName() + "," + retType::getClassName() + ">";
     
 	return rbClassName; 
 }

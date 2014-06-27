@@ -63,7 +63,7 @@ const ArgumentRules& JcRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& JcRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "JC";
+    static std::string rbClassName = "Func_jc";
     
 	return rbClassName; 
 }

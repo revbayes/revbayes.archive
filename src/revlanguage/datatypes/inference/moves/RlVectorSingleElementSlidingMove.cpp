@@ -52,7 +52,7 @@ void VectorSingleElementSlidingMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& VectorSingleElementSlidingMove::getClassName(void) { 
     
-    static std::string rbClassName = "VectorSingleElementMove";
+    static std::string rbClassName = "Move_VectorSingleElementSlide";
     
 	return rbClassName; 
 }

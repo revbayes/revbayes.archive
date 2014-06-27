@@ -47,7 +47,7 @@ void ScreenMonitor::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& ScreenMonitor::getClassName(void) { 
     
-    static std::string rbClassName = "Screenmonitor";
+    static std::string rbClassName = "Mntr_Screen";
     
 	return rbClassName; 
 }

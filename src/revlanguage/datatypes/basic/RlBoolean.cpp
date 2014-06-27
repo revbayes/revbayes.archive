@@ -74,7 +74,7 @@ RevObject* RlBoolean::convertTo(const TypeSpec& type) const {
 /** Get class name of object */
 const std::string& RlBoolean::getClassName(void) { 
     
-    static std::string rbClassName = "bool";
+    static std::string rbClassName = "Bool";
     
 	return rbClassName; 
 }

@@ -103,7 +103,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ceil<valType, retType>::getA
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_ceil<valType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "ceil";
+    static std::string rbClassName = "Func_ceil";
     
 	return rbClassName; 
 }

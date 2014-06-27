@@ -47,7 +47,7 @@ RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
 /** Get class name of object */
 const std::string& ContinuousCharacterData::getClassName(void) {
     
-    static std::string rbClassName = "ContinuousCharacter";
+    static std::string rbClassName = "ContinuousCharacterData";
     
 	return rbClassName;
 }

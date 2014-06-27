@@ -82,7 +82,7 @@ const ArgumentRules& Func_clear::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_clear::getClassName(void) { 
     
-    static std::string rbClassName = "clear function";
+    static std::string rbClassName = "Func_clear";
     
 	return rbClassName; 
 }

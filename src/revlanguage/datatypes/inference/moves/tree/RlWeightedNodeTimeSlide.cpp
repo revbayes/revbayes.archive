@@ -48,7 +48,7 @@ void WeightedNodeTimeSlide::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& WeightedNodeTimeSlide::getClassName(void) { 
     
-    static std::string rbClassName = "WeightedNodeTimeSlide";
+    static std::string rbClassName = "Move_WeightedNodeTimeSlide";
     
 	return rbClassName; 
 }
