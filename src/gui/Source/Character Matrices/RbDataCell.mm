@@ -76,7 +76,7 @@
     if (isGapState == YES)
         return '-';
 	char aaCode[20] = { 'A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' };
-	char v;
+	char v = ' ';
 	int nOn = 0;
 	for (int i=0; i<20; i++)
 		{

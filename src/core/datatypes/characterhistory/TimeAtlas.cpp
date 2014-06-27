@@ -13,10 +13,10 @@ using namespace RevBayesCore;
 
 TimeAtlas::TimeAtlas(TimeAtlasDataReader* tadr) : areas(tadr->getAreas()), epochs(tadr->getEpochs())
 {
-    numEpochs = areas.size();
+    numEpochs =(unsigned int)areas.size();
     numAreas = 0;
     if (numEpochs > 0)
-        numAreas = areas[0].size();
+        numAreas = (unsigned int)areas[0].size();
     
 }
 

@@ -1,17 +1,14 @@
 /**
  * @file
  * This file contains the declaration of Func_normalize,
- * which is used to normalize vectors.
+ * which is used to normalize vectors, creating a
+ * simplex.
  *
  * @brief Declaration of Func_normalize
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-06-12 10:25:58 +0200 (Tue, 12 Jun 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func_normalize.h 1626 2012-06-12 08:25:58Z hoehna $
  */
 
 #ifndef Func_normalize_H
