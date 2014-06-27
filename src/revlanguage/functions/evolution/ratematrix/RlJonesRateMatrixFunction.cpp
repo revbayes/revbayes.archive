@@ -52,7 +52,7 @@ const ArgumentRules& JonesRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& JonesRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Jones";
+    static std::string rbClassName = "Func_jones";
     
 	return rbClassName; 
 }

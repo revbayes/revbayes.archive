@@ -54,7 +54,7 @@ RevObject* RnaState::convertTo(const TypeSpec& type) const {
 /** Get class name of object */
 const std::string& RnaState::getClassName(void) { 
     
-    static std::string rbClassName = "Rna";
+    static std::string rbClassName = "RNA";
     
 	return rbClassName; 
 }

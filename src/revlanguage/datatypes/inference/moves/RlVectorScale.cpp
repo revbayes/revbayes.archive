@@ -50,7 +50,7 @@ void VectorScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& VectorScale::getClassName(void) { 
     
-    static std::string rbClassName = "VectorScale";
+    static std::string rbClassName = "Move_VectorScale";
     
 	return rbClassName; 
 }

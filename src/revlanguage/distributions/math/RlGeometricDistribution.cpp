@@ -62,7 +62,7 @@ RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( 
 const std::string& GeometricDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Geometric distribution";
+    static std::string rbClassName = "Dist_geom";
     
 	return rbClassName; 
 }

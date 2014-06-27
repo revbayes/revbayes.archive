@@ -73,7 +73,7 @@ const std::string& Func__or::getClassName(void) {
 /** Get class type spec describing type of object */
 const RevLanguage::TypeSpec& Func__or::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func__or", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

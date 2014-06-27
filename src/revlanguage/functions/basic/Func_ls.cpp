@@ -89,7 +89,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_ls::getClassName(void) { 
     
-    static std::string rbClassName = "ls function";
+    static std::string rbClassName = "Func_ls";
     
 	return rbClassName; 
 }

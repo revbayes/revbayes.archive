@@ -58,7 +58,7 @@ RevObject* MemberFunction::execute( void )
 /** Get class name of object */
 const std::string& MemberFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Member function";
+    static std::string rbClassName = "MemberFunction";
     
 	return rbClassName; 
 }

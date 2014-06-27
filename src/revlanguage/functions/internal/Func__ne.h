@@ -118,7 +118,7 @@ const std::string& RevLanguage::Func__ne<leftValType,rightValType>::getClassName
 template <typename leftValType, typename rightValType>
 const RevLanguage::TypeSpec& RevLanguage::Func__ne<leftValType,rightValType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func__ne", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

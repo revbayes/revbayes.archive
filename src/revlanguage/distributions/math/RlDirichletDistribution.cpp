@@ -49,7 +49,7 @@ RevBayesCore::DirichletDistribution* DirichletDistribution::createDistribution( 
 /* Get class name of object */
 const std::string& DirichletDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Dirichlet distribution";
+    static std::string rbClassName = "Dist_dirichlet";
     
 	return rbClassName; 
 }

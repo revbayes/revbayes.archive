@@ -102,7 +102,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DppNumTablesStatistic<valType>::g
 template <typename valType>
 const std::string& RevLanguage::DppNumTablesStatistic<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "DPPNumTables-Statistic";
+    static std::string rbClassName = "Func_dppNumTablesStatistic";
     
 	return rbClassName; 
 }

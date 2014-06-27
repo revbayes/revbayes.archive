@@ -81,7 +81,7 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
 const std::string& Func_writeFasta::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Write fasta function";
+    static std::string rbClassName = "Func_writeFasta";
     
 	return rbClassName; 
 }

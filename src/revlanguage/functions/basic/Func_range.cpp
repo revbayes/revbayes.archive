@@ -81,7 +81,7 @@ const ArgumentRules& Func_range::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_range::getClassName(void) { 
     
-    static std::string rbClassName = "Range function";
+    static std::string rbClassName = "Func_range";
     
 	return rbClassName; 
 }

@@ -116,7 +116,7 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_write::getClassName(void) { 
     
-    static std::string rbClassName = "Write function";
+    static std::string rbClassName = "Func_write";
     
 	return rbClassName; 
 }

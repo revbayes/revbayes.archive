@@ -103,7 +103,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_add<firstValType, secondValT
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func_add<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "Add<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__add<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
     
 	return rbClassName; 
 }

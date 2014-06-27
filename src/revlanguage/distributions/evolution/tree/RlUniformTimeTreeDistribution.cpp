@@ -49,7 +49,7 @@ RevBayesCore::UniformTimeTreeDistribution* UniformTimeTreeDistribution::createDi
 /* Get class name of object */
 const std::string& UniformTimeTreeDistribution::getClassName(void) {
     
-    static std::string rbClassName = "UniformTimeTreeDistribution";
+    static std::string rbClassName = "Dist_uniformTimeTree";
     
 	return rbClassName;
 }

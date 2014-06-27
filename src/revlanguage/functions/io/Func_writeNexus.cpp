@@ -83,7 +83,7 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
 const std::string& Func_writeNexus::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Write Nexus function";
+    static std::string rbClassName = "Func_writeNexus";
     
 	return rbClassName; 
 }

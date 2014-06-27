@@ -64,7 +64,7 @@ const ArgumentRules& HkyRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& HkyRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "HKY";
+    static std::string rbClassName = "Func_hky";
     
 	return rbClassName; 
 }

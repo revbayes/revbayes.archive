@@ -66,7 +66,7 @@ const ArgumentRules& TmrcaStatistic::getArgumentRules( void ) const {
 
 const std::string& TmrcaStatistic::getClassName(void) { 
     
-    static std::string rbClassName = "TMRCA-Statistic";
+    static std::string rbClassName = "Func_tmrca";
     
 	return rbClassName; 
 }

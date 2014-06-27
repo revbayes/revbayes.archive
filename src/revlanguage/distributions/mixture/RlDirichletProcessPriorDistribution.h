@@ -112,7 +112,7 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
 template <typename valType>
 const std::string& RevLanguage::DirichletProcessPriorDistribution<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Dirichlet process prior distribution";
+    static std::string rbClassName = "Dist_dpp";
     
 	return rbClassName; 
 }

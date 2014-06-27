@@ -329,7 +329,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 template <class treeType>
 const std::string& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getClassName(void) { 
     
-    static std::string rbClassName = "Character-State-Evolution-Along-Tree Process";
+    static std::string rbClassName = "Dist_phyloCTMC";
     
 	return rbClassName; 
 }

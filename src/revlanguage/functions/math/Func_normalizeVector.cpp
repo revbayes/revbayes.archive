@@ -63,7 +63,7 @@ const ArgumentRules& Func_normalizeVector::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_normalizeVector::getClassName(void) { 
     
-    static std::string rbClassName = "Func_normalizeVector";
+    static std::string rbClassName = "Func_normalize";
     
 	return rbClassName; 
 }
@@ -72,7 +72,7 @@ const std::string& Func_normalizeVector::getClassName(void) {
 /** Get class type spec describing type of object */
 const RevLanguage::TypeSpec& Func_normalizeVector::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_normalizeVector", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

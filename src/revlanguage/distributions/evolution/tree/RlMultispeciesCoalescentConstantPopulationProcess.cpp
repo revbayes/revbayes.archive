@@ -99,7 +99,7 @@ RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationPr
 const std::string& MultispeciesCoalescentConstantPopulationProcess::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Multispecies Coalescent Constant Population Process";
+    static std::string rbClassName = "Dist_constPopMultispCoal";
     
 	return rbClassName; 
 }

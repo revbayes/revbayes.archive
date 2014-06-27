@@ -50,7 +50,7 @@ void SingleElementScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SingleElementScale::getClassName(void) { 
     
-    static std::string rbClassName = "SingleElementScale";
+    static std::string rbClassName = "Move_SingleElementScale";
     
 	return rbClassName; 
 }

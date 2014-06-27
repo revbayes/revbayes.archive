@@ -130,7 +130,7 @@ const std::string& RevLanguage::Func_seq<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( "Func_seq", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }

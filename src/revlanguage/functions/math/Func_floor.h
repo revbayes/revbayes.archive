@@ -102,8 +102,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::get
 
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_floor<valType, retType>::getClassName(void) { 
-    
-    static std::string rbClassName = "floor";
+
+    static std::string rbClassName = "Func_floor";
     
 	return rbClassName; 
 }

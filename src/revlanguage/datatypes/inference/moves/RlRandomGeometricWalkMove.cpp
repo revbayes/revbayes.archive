@@ -73,7 +73,7 @@ void RandomGeometricWalkMove::constructInternalObject( void )
 const std::string& RandomGeometricWalkMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Random-Geometric-Walk move";
+    static std::string rbClassName = "Move_RandomGeometricWalk";
     
 	return rbClassName; 
 }

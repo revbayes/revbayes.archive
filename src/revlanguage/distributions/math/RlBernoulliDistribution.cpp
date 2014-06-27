@@ -48,7 +48,7 @@ RevBayesCore::BernoulliDistribution* BernoulliDistribution::createDistribution( 
 /* Get class name of object */
 const std::string& BernoulliDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Bernoulli distribution";
+    static std::string rbClassName = "Dist_bernoulli";
     
 	return rbClassName; 
 }

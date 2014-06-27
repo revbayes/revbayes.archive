@@ -62,7 +62,7 @@ RevBayesCore::PoissonDistribution* PoissonDistribution::createDistribution( void
 const std::string& PoissonDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Poisson distribution";
+    static std::string rbClassName = "Dist_poisson";
     
 	return rbClassName; 
 }

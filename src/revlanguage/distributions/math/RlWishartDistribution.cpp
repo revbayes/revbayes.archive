@@ -76,7 +76,7 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
 /* Get class name of object */
 const std::string& WishartDistribution::getClassName(void) {
     
-    static std::string rbClassName = "Wishart distribution";
+    static std::string rbClassName = "Dist_wishart";
     
 	return rbClassName;
 }

@@ -56,7 +56,7 @@ const ArgumentRules& ConstructorClade::getArgumentRules( void ) const {
 
 const std::string& ConstructorClade::getClassName(void) { 
     
-    static std::string rbClassName = "clade constructor function";
+    static std::string rbClassName = "Func_clade";
     
 	return rbClassName; 
 }

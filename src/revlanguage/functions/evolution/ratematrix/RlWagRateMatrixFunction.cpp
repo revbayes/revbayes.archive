@@ -52,7 +52,7 @@ const ArgumentRules& WagRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& WagRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Wag";
+    static std::string rbClassName = "Func_wag";
     
 	return rbClassName; 
 }

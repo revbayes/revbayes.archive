@@ -44,7 +44,7 @@ void SlidingMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SlidingMove::getClassName(void) { 
     
-    static std::string rbClassName = "Sliding move";
+    static std::string rbClassName = "Move_Slide";
     
 	return rbClassName; 
 }

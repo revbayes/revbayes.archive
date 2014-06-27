@@ -70,7 +70,7 @@ const ArgumentRules& Func_powermix::getArgumentRules( void ) const {
 
 const std::string& Func_powermix::getClassName(void) {
     
-    static std::string rbClassName = "powermix";
+    static std::string rbClassName = "Func_powermix";
     
 	return rbClassName;
 }

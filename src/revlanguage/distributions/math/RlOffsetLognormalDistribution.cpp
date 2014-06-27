@@ -35,7 +35,7 @@ RevBayesCore::LognormalDistribution* OffsetLognormalDistribution::createDistribu
 /* Get class name of object */
 const std::string& OffsetLognormalDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Lognormal with offset distribution";
+    static std::string rbClassName = "Dist_offsetLnorm";
     
 	return rbClassName; 
 }

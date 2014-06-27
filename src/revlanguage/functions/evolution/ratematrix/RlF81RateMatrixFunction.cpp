@@ -62,7 +62,7 @@ const ArgumentRules& F81RateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& F81RateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "F81";
+    static std::string rbClassName = "Func_f81";
     
 	return rbClassName; 
 }

@@ -117,7 +117,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTreeTrace::getClassName(void) { 
     
-    static std::string rbClassName = "Read tree trace function";
+    static std::string rbClassName = "Func_readTreeTrace";
     
 	return rbClassName; 
 }

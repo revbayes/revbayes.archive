@@ -46,7 +46,7 @@ void SubtreeScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SubtreeScale::getClassName(void) { 
     
-    static std::string rbClassName = "SubtreeScale";
+    static std::string rbClassName = "Move_SubtreeScale";
     
 	return rbClassName; 
 }

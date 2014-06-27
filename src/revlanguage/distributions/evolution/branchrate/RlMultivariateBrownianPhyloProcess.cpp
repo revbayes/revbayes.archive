@@ -48,7 +48,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess
 /* Get class name of object */
 const std::string& MultivariateBrownianPhyloProcess::getClassName(void) {
     
-    static std::string rbClassName = "MultivariateBrownianPhyloProcess";
+    static std::string rbClassName = "Dist_multivariateBrownian";
     
 	return rbClassName;
 }

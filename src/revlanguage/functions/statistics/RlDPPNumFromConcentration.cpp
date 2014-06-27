@@ -69,7 +69,7 @@ const ArgumentRules& DPPNumFromConcentration::getArgumentRules( void ) const {
 
 const std::string& DPPNumFromConcentration::getClassName(void) { 
     
-    static std::string rbClassName = "DPP-approx_CP";
+    static std::string rbClassName = "Func_dppMeanFromConc";
     
 	return rbClassName; 
 }

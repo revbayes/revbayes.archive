@@ -62,7 +62,7 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_quit::getClassName(void) { 
     
-    static std::string rbClassName = "quit function";
+    static std::string rbClassName = "Func_quit";
     
 	return rbClassName; 
 }

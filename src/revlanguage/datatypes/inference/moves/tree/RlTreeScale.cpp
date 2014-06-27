@@ -49,7 +49,7 @@ void TreeScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& TreeScale::getClassName(void) { 
     
-    static std::string rbClassName = "TreeScale";
+    static std::string rbClassName = "Move_TreeScale";
     
 	return rbClassName; 
 }

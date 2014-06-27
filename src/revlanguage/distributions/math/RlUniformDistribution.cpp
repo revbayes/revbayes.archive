@@ -47,7 +47,7 @@ RevBayesCore::UniformDistribution* UniformDistribution::createDistribution( void
 /* Get class name of object */
 const std::string& UniformDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Uniform distribution";
+    static std::string rbClassName = "Dist_unif";
     
 	return rbClassName; 
 }

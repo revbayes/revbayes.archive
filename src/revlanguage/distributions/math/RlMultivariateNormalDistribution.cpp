@@ -50,7 +50,7 @@ RevBayesCore::MultivariateNormalDistribution* MultivariateNormalDistribution::cr
 /* Get class name of object */
 const std::string& MultivariateNormalDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "MultivariateNormal distribution";
+    static std::string rbClassName = "Dist_multivariateNormal";
     
 	return rbClassName; 
 }

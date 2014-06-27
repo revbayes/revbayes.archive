@@ -46,7 +46,7 @@ RevBayesCore::BrownianPhyloProcess* BrownianPhyloProcess::createDistribution( vo
 /* Get class name of object */
 const std::string& BrownianPhyloProcess::getClassName(void) {
     
-    static std::string rbClassName = "Brownian Process along Phylogeny";
+    static std::string rbClassName = "Dist_brownian";
     
 	return rbClassName;
 }

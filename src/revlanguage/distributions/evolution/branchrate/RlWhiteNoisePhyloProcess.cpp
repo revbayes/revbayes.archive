@@ -55,7 +55,7 @@ RevBayesCore::WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::createDistribution
 /* Get class name of object */
 const std::string& WhiteNoisePhyloProcess::getClassName(void) {
     
-    static std::string rbClassName = "White Noise Process along Phylogeny";
+    static std::string rbClassName = "Dist_whiteNoise";
     
 	return rbClassName;
 }

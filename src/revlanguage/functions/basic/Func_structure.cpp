@@ -58,7 +58,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_structure::getClassName(void) { 
     
-    static std::string rbClassName = "type function";
+    static std::string rbClassName = "Func_type";
     
 	return rbClassName; 
 }

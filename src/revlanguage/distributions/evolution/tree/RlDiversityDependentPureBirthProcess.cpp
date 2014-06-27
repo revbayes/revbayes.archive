@@ -89,7 +89,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
 const std::string& DiversityDependentPureBirthProcess::getClassName( void ) 
 { 
     
-    static std::string rbClassName = "DivDependentPureBirthProcess";
+    static std::string rbClassName = "Dist_divDepYuleProcess";
     
 	return rbClassName; 
 }

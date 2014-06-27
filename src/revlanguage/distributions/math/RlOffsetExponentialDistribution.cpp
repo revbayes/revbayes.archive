@@ -47,7 +47,7 @@ RevBayesCore::ExponentialDistribution* OffsetExponentialDistribution::createDist
 /* Get class name of object */
 const std::string& OffsetExponentialDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "offset Exponential distribution";
+    static std::string rbClassName = "Dist_offsetExponential";
     
 	return rbClassName; 
 }

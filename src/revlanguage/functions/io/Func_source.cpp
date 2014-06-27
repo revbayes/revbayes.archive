@@ -124,7 +124,7 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_source::getClassName(void) {
     
-    static std::string rbClassName = "Source function";
+    static std::string rbClassName = "Func_source";
     
 	return rbClassName; 
 }

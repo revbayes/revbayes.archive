@@ -60,7 +60,7 @@ void ModelMonitor::constructInternalObject( void )
 const std::string& ModelMonitor::getClassName(void) 
 { 
     
-    static std::string rbClassName = "ModelMonitor";
+    static std::string rbClassName = "Mntr_Model";
     
 	return rbClassName; 
 }

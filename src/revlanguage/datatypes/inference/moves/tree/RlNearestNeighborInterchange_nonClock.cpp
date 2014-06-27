@@ -48,7 +48,7 @@ void NearestNeighborInterchange_nonClock::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& NearestNeighborInterchange_nonClock::getClassName(void) { 
     
-    static std::string rbClassName = "NNI";
+    static std::string rbClassName = "Move_NNI";
     
 	return rbClassName; 
 }

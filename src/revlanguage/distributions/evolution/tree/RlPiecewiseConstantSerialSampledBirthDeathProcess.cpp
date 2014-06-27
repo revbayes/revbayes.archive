@@ -103,7 +103,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstant
 const std::string& PiecewiseConstantSerialSampledBirthDeathProcess::getClassName( void ) 
 { 
     
-    static std::string rbClassName = "PiecewiseConstantSerialSampledBirthDeathProcess";
+    static std::string rbClassName = "Dist_skySerialBDP";
     
 	return rbClassName; 
 }

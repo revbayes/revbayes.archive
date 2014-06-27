@@ -99,7 +99,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFos
  */
 const std::string& PiecewiseConstantFossilizedBirthDeathProcess::getClassName( void )
 {
-    static std::string rbClassName = "PiecewiseConstantFossilizedBirthDeathProcess";
+    static std::string rbClassName = "Dist_skyFossilBDP";
     
 	return rbClassName;
 }

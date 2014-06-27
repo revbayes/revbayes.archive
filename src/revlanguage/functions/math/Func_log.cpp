@@ -61,7 +61,7 @@ const ArgumentRules& Func_log::getArgumentRules( void ) const {
 
 const std::string& Func_log::getClassName(void) { 
     
-    static std::string rbClassName = "log";
+    static std::string rbClassName = "Func_log";
     
 	return rbClassName; 
 }

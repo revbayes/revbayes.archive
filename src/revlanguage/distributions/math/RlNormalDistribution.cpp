@@ -63,7 +63,7 @@ NormalDistribution* NormalDistribution::clone( void ) const
 const std::string& NormalDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Normal distribution";
+    static std::string rbClassName = "Dist_norm";
     
 	return rbClassName; 
 }

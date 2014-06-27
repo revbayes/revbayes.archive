@@ -60,7 +60,7 @@ const ArgumentRules& RateMultiplierPhyloFunction::getArgumentRules( void ) const
 
 const std::string& RateMultiplierPhyloFunction::getClassName(void) { 
     
-    static std::string rbClassName = "RateMultiplierPhyloFunction";
+    static std::string rbClassName = "Func_phyloRateMultiplier";
     
 	return rbClassName; 
 }

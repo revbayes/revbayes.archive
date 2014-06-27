@@ -66,7 +66,7 @@ const ArgumentRules& TreeAssemblyFunction::getArgumentRules( void ) const {
 
 const std::string& TreeAssemblyFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Tree-Assembly";
+    static std::string rbClassName = "Func_treeAssembly";
     
 	return rbClassName; 
 }

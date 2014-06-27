@@ -67,7 +67,7 @@ BimodalNormalDistribution* BimodalNormalDistribution::clone( void ) const
 const std::string& BimodalNormalDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "BimodalNormalDistribution";
+    static std::string rbClassName = "Dist_bnorm";
     
 	return rbClassName; 
 }

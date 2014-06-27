@@ -52,7 +52,7 @@ const ArgumentRules& CpRevRateMatrixFunction::getArgumentRules( void ) const {
 
 const std::string& CpRevRateMatrixFunction::getClassName(void) { 
     
-    static std::string rbClassName = "CpRev";
+    static std::string rbClassName = "Func_cpRev";
     
 	return rbClassName; 
 }

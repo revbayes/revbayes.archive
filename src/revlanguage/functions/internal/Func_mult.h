@@ -102,7 +102,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mult<firstValType, secondVal
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func_mult<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "mult<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__mult<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
     
 	return rbClassName; 
 }

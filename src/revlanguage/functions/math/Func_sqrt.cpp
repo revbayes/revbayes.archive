@@ -59,7 +59,7 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 
 const std::string& Func_sqrt::getClassName(void) { 
     
-    static std::string rbClassName = "Square-root";
+    static std::string rbClassName = "Func_sqrt";
     
 	return rbClassName; 
 }

@@ -151,7 +151,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionPdf<valueType
 template <class valueType>
 const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassName(void) { 
     
-    static std::string rbClassName = "PDF";
+    static std::string rbClassName = "Func_pdf";
     
 	return rbClassName; 
 }

@@ -59,7 +59,7 @@ const ArgumentRules& Func_ln::getArgumentRules( void ) const {
 
 const std::string& Func_ln::getClassName(void) { 
     
-    static std::string rbClassName = "ln";
+    static std::string rbClassName = "Func_ln";
     
 	return rbClassName; 
 }

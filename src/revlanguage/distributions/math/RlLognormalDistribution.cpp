@@ -41,7 +41,7 @@ RevBayesCore::LognormalDistribution* LognormalDistribution::createDistribution( 
 /* Get class name of object */
 const std::string& LognormalDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Lognormal distribution";
+    static std::string rbClassName = "Dist_lnorm";
     
 	return rbClassName; 
 }

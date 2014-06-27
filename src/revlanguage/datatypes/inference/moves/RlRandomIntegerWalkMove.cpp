@@ -69,7 +69,7 @@ void RandomIntegerWalkMove::constructInternalObject( void )
 const std::string& RandomIntegerWalkMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Random-Integer-Walk move";
+    static std::string rbClassName = "Move_RandomIntegerWalk";
     
 	return rbClassName; 
 }

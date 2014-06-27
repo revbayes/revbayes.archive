@@ -63,7 +63,7 @@ const ArgumentRules& TreeHeightStatistic::getArgumentRules( void ) const {
 
 const std::string& TreeHeightStatistic::getClassName(void) { 
     
-    static std::string rbClassName = "TreeHeight-Statistic";
+    static std::string rbClassName = "Func_treeHeight";
     
 	return rbClassName; 
 }

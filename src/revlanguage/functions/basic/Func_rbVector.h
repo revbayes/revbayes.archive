@@ -113,7 +113,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_vector<valType>::getArgument
 template <typename valType>
 const std::string& RevLanguage::Func_vector<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_rbVector<" + valType::getClassTypeSpec() + ">";
+    static std::string rbClassName = "Func_vector<" + valType::getClassTypeSpec() + ">";
     
 	return rbClassName; 
 }
@@ -123,7 +123,7 @@ const std::string& RevLanguage::Func_vector<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_vector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_rbVector", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

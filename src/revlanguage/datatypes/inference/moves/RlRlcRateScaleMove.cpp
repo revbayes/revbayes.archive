@@ -81,7 +81,7 @@ void RlcRateScaleMove::constructInternalObject( void )
 const std::string& RlcRateScaleMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "RlcRateScaleMove";
+    static std::string rbClassName = "Move_RLCRateScale";
     
 	return rbClassName; 
 }

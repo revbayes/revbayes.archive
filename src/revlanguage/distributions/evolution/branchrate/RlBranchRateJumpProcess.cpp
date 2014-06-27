@@ -78,7 +78,7 @@ BranchRateJumpProcess* BranchRateJumpProcess::clone( void ) const
 const std::string& BranchRateJumpProcess::getClassName(void) 
 { 
     
-    static std::string rbClassName = "BranchRateJumpProcess";
+    static std::string rbClassName = "Dist_branchRateJumpProcess";
     
 	return rbClassName; 
 }

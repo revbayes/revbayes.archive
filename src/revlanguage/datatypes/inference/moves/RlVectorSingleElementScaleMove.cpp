@@ -52,7 +52,7 @@ void VectorSingleElementScaleMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& VectorSingleElementScaleMove::getClassName(void) { 
     
-    static std::string rbClassName = "VectorSingleElementMove";
+    static std::string rbClassName = "Move_VectorSingleElementScale";
     
 	return rbClassName; 
 }

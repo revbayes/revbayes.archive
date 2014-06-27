@@ -49,7 +49,7 @@ void RootTimeSlide::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& RootTimeSlide::getClassName(void) { 
     
-    static std::string rbClassName = "RootTimeSlide";
+    static std::string rbClassName = "Move_RootTimeSlide";
     
 	return rbClassName; 
 }

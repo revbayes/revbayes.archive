@@ -101,7 +101,7 @@ const ArgumentRules& OptimalBurninFunction::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& OptimalBurninFunction::getClassName(void) { 
     
-    static std::string rbClassName = "optimal-burnin function";
+    static std::string rbClassName = "Func_estimateBurnin";
     
 	return rbClassName; 
 }

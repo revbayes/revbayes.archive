@@ -58,7 +58,7 @@ void PrecisionMatrixSimpleMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& PrecisionMatrixSimpleMove::getClassName(void) {
     
-    static std::string rbClassName = "VectorSingleElementMove";
+    static std::string rbClassName = "Move_VectorSingleElement";
     
 	return rbClassName;
 }

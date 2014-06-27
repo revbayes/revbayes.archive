@@ -69,7 +69,7 @@ const ArgumentRules& DPPConcFromPriorMean::getArgumentRules( void ) const {
 
 const std::string& DPPConcFromPriorMean::getClassName(void) { 
     
-    static std::string rbClassName = "DPP-approx_CP";
+    static std::string rbClassName = "Func_dppConcFromMean";
     
 	return rbClassName; 
 }
