@@ -10,35 +10,35 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BernoulliDistribution.h"
-#include "RlBernoulliDistribution.h"
-#include "RealPos.h"
-#include "Probability.h"
 #include "ContinuousStochasticNode.h"
+#include "RlBernoulliDistribution.h"
+#include "Probability.h"
+#include "RealPos.h"
 
 using namespace RevLanguage;
 
-BernoulliDistribution::BernoulliDistribution() : TypedDistribution<Natural>() {
+Dist_bernoulli::Dist_bernoulli() : TypedDistribution<Natural>() {
     
 }
 
 
-BernoulliDistribution::~BernoulliDistribution() {
+Dist_bernoulli::~Dist_bernoulli() {
     
 }
 
 
 
-BernoulliDistribution* BernoulliDistribution::clone( void ) const {
+Dist_bernoulli* Dist_bernoulli::clone( void ) const {
     
-    return new BernoulliDistribution(*this);
+    return new Dist_bernoulli(*this);
 }
 
 
-RevBayesCore::BernoulliDistribution* BernoulliDistribution::createDistribution( void ) const {
+RevBayesCore::Dist_bernoulli* Dist_bernoulli::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<double>* q   = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
-    RevBayesCore::BernoulliDistribution* d  = new RevBayesCore::BernoulliDistribution( q );
+    RevBayesCore::Dist_bernoulli* d  = new RevBayesCore::Dist_bernoulli( q );
     
     return d;
 }
@@ -46,7 +46,7 @@ RevBayesCore::BernoulliDistribution* BernoulliDistribution::createDistribution( 
 
 
 /* Get class name of object */
-const std::string& BernoulliDistribution::getClassName(void) { 
+const std::string& Dist_bernoulli::getClassName(void) { 
     
     static std::string rbClassName = "Dist_bernoulli";
     
@@ -54,7 +54,7 @@ const std::string& BernoulliDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& BernoulliDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_bernoulli::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -65,7 +65,7 @@ const TypeSpec& BernoulliDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& BernoulliDistribution::getMemberRules(void) const {
+const MemberRules& Dist_bernoulli::getMemberRules(void) const {
     
     static MemberRules distBernMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& BernoulliDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& BernoulliDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_bernoulli::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -90,7 +90,7 @@ const TypeSpec& BernoulliDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void BernoulliDistribution::printValue(std::ostream& o) const {
+void Dist_bernoulli::printValue(std::ostream& o) const {
     
     o << "Bernoulli(p=";
     if ( p != NULL ) {
@@ -103,7 +103,7 @@ void BernoulliDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void BernoulliDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_bernoulli::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "p" ) 
     {

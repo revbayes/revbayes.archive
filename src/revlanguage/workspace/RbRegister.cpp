@@ -132,45 +132,44 @@
 /* Distribution types (in folder "distributions") */
 
 /* Character evolution models (in folder "distributions/evolution/character") */
-#include "RlCharacterStateEvolutionAlongTree.h"
+#include "Dist_phyloCTMC.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
-#include "RlBranchRateJumpProcess.h"
-#include "RlBrownianPhyloProcess.h"
-#include "RlWhiteNoisePhyloProcess.h"
+#include "Dist_branchRateJumpProcess.h"
+#include "Dist_brownian.h"
+#include "Dist_whiteNoise.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
-#include "RlConstantRateBirthDeathProcess.h"
-#include "RlConstantRateSerialSampledBirthDeathProcess.h"
-#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
-#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
-#include "RlDiversityDependentPureBirthProcess.h"
-#include "RlMultispeciesCoalescentConstantPopulationProcess.h"
-#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
-#include "RlUniformTimeTreeDistribution.h"
+#include "Dist_bdp.h"
+#include "Dist_constPopMultispCoal.h"
+#include "Dist_divDepYuleProcess.h"
+#include "Dist_serialBDP.h"
+#include "Dist_skySerialBDP.h"
+#include "Dist_skyFossilBDP.h"
+#include "Dist_uniformTimeTree.h"
+#include "Dist_uniformTopology.h"
 
 /* Distributions on simple variables (in folder "distributions/math") */
-#include "RlBetaDistribution.h"
-#include "RlBernoulliDistribution.h"
-#include "RlBimodalLognormalDistribution.h"
-#include "RlBimodalNormalDistribution.h"
-#include "RlDirichletDistribution.h"
-#include "RlExponentialDistribution.h"
-#include "RlGammaDistribution.h"
-#include "RlGeometricDistribution.h"
-#include "RlPoissonDistribution.h"
-#include "RlLognormalDistribution.h"
-#include "RlNormalDistribution.h"
-#include "RlOffsetExponentialDistribution.h"
-#include "RlOffsetLognormalDistribution.h"
-#include "RlOneOverXDistribution.h"
-#include "RlPositiveUniformDistribution.h"
-#include "RlUniformDistribution.h"
-#include "RlUniformTopologyDistribution.h"
-#include "RlWishartDistribution.h"
+#include "Dist_bernoulli.h"
+#include "Dist_beta.h"
+#include "Dist_blnorm.h"
+#include "Dist_bnorm.h"
+#include "Dist_dirichlet.h"
+#include "Dist_exponential.h"
+#include "Dist_gamma.h"
+#include "Dist_geom.h"
+#include "Dist_poisson.h"
+#include "Dist_lnorm.h"
+#include "Dist_norm.h"
+#include "Dist_offsetExponential.h"
+#include "Dist_offsetLnorm.h"
+#include "Dist_oneOverX.h"
+#include "Dist_positiveUnif.h"
+#include "Dist_unif.h"
+#include "Dist_wishart.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
-#include "RlDirichletProcessPriorDistribution.h"
+#include "Dist_dpp.h"
 
 /// Functions ///
 
@@ -287,7 +286,7 @@
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_mean.h"
-#include "Func_normalizeVector.h"
+#include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
 #include "Func_round.h"
@@ -451,163 +450,163 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
         // branch-rate jump process
-        addDistribution( "dnBranchRateJumpProcess", new BranchRateJumpProcess() );
-        addDistribution( "branchRateJumpProcess",   new BranchRateJumpProcess() );
+        addDistribution( "dnBranchRateJumpProcess", new Dist_branchRateJumpProcess() );
+        addDistribution( "branchRateJumpProcess",   new Dist_branchRateJumpProcess() );
         
         // brownian motion
-        addDistribution( "dnBrownian",  new BrownianPhyloProcess() );
-        addDistribution( "brownian",    new BrownianPhyloProcess() );
+        addDistribution( "dnBrownian",  new Dist_brownian() );
+        addDistribution( "brownian",    new Dist_brownian() );
         
         // white noise process
-        addDistribution( "dnWhiteNoise",    new WhiteNoisePhyloProcess() );
-        addDistribution( "whiteNoise",      new WhiteNoisePhyloProcess() );
-        addDistribution( "whitenoise",      new WhiteNoisePhyloProcess() );
+        addDistribution( "dnWhiteNoise",    new Dist_whiteNoise() );
+        addDistribution( "whiteNoise",      new Dist_whiteNoise() );
+        addDistribution( "whitenoise",      new Dist_whiteNoise() );
         
         
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
         // simple phylogenetic CTMC on fixed number of discrete states
-        addDistribution( "dnPhyloCTMC", new CharacterStateEvolutionAlongTree<TimeTree>() );
-        addDistribution( "dnPhyloCTMC", new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
-        addDistribution( "phyloCTMC",   new CharacterStateEvolutionAlongTree<TimeTree>() );
-        addDistribution( "phyloCTMC",   new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
-        addDistribution( "substModel",  new CharacterStateEvolutionAlongTree<TimeTree>() );
-        addDistribution( "substModel",  new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
+        addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<TimeTree>() );
+        addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "phyloCTMC",   new Dist_phyloCTMC<TimeTree>() );
+        addDistribution( "phyloCTMC",   new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "substModel",  new Dist_phyloCTMC<TimeTree>() );
+        addDistribution( "substModel",  new Dist_phyloCTMC<BranchLengthTree>() );
 
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
-        addDistribution( "dnBDP"                        , new ConstantRateBirthDeathProcess() );
-        addDistribution( "bdp"                          , new ConstantRateBirthDeathProcess() );
-        addDistribution( "cBDP"                         , new ConstantRateBirthDeathProcess() );
-        addDistribution( "BirthDeathConstant"           , new ConstantRateBirthDeathProcess() );
-        addDistribution( "BDConst"                      , new ConstantRateBirthDeathProcess() );
+        addDistribution( "dnBDP"                        , new Dist_bdp() );
+        addDistribution( "bdp"                          , new Dist_bdp() );
+        addDistribution( "cBDP"                         , new Dist_bdp() );
+        addDistribution( "BirthDeathConstant"           , new Dist_bdp() );
+        addDistribution( "BDConst"                      , new Dist_bdp() );
         
         // constant rate birth-death process with serially sampled tips
-        addDistribution( "dnSerialBDP"                  , new ConstantRateSerialSampledBirthDeathProcess() );
-        addDistribution( "serialBDP"                    , new ConstantRateSerialSampledBirthDeathProcess() );
-        addDistribution( "BirthDeathConstantSerial"     , new ConstantRateSerialSampledBirthDeathProcess() );
-        addDistribution( "BDConstSS"                    , new ConstantRateSerialSampledBirthDeathProcess() );
+        addDistribution( "dnSerialBDP"                  , new Dist_serialBDP() );
+        addDistribution( "serialBDP"                    , new Dist_serialBDP() );
+        addDistribution( "BirthDeathConstantSerial"     , new Dist_serialBDP() );
+        addDistribution( "BDConstSS"                    , new Dist_serialBDP() );
 
         // piecewise constant rate birth-death process with serially sampled tips
-        addDistribution( "dnSkySerialBDP"               , new PiecewiseConstantSerialSampledBirthDeathProcess() );
-        addDistribution( "skySerialBDP"                 , new PiecewiseConstantSerialSampledBirthDeathProcess() );
-        addDistribution( "BirthDeathSkySerial"          , new PiecewiseConstantSerialSampledBirthDeathProcess() );
-        addDistribution( "BDSkySS"                      , new PiecewiseConstantSerialSampledBirthDeathProcess() );
+        addDistribution( "dnSkySerialBDP"               , new Dist_skySerialBDP() );
+        addDistribution( "skySerialBDP"                 , new Dist_skySerialBDP() );
+        addDistribution( "BirthDeathSkySerial"          , new Dist_skySerialBDP() );
+        addDistribution( "BDSkySS"                      , new Dist_skySerialBDP() );
 
         // piecewise constant rate fossilized birth-death process with serially sampled fossils
-        addDistribution( "dnSkyFossilBDP"               , new PiecewiseConstantFossilizedBirthDeathProcess() );
-        addDistribution( "skyFossilBDP"                 , new PiecewiseConstantFossilizedBirthDeathProcess() );
-        addDistribution( "FossilizedBirthDeath"         , new PiecewiseConstantFossilizedBirthDeathProcess() );
-        addDistribution( "FBD"                          , new PiecewiseConstantFossilizedBirthDeathProcess() );
+        addDistribution( "dnSkyFossilBDP"               , new Dist_skyFossilBDP() );
+        addDistribution( "skyFossilBDP"                 , new Dist_skyFossilBDP() );
+        addDistribution( "FossilizedBirthDeath"         , new Dist_skyFossilBDP() );
+        addDistribution( "FBD"                          , new Dist_skyFossilBDP() );
 
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "dnDivDepYuleProcess"          , new DiversityDependentPureBirthProcess() );
-        addDistribution( "dnDivDepPBP"                  , new DiversityDependentPureBirthProcess() );
-        addDistribution( "divDepPBP"                    , new DiversityDependentPureBirthProcess() );
-        addDistribution( "divDepYuleProcess"            , new DiversityDependentPureBirthProcess() );
-        addDistribution( "diversityDependentPureBirthProcess", new DiversityDependentPureBirthProcess() );
-        addDistribution( "PureBirthDiversityDependent"  , new DiversityDependentPureBirthProcess() );
-        addDistribution( "PBDD"                         , new DiversityDependentPureBirthProcess() );
+        addDistribution( "dnDivDepYuleProcess"          , new Dist_divDepYuleProcess() );
+        addDistribution( "dnDivDepPBP"                  , new Dist_divDepYuleProcess() );
+        addDistribution( "divDepPBP"                    , new Dist_divDepYuleProcess() );
+        addDistribution( "divDepYuleProcess"            , new Dist_divDepYuleProcess() );
+        addDistribution( "diversityDependentPureBirthProcess", new Dist_divDepYuleProcess() );
+        addDistribution( "PureBirthDiversityDependent"  , new Dist_divDepYuleProcess() );
+        addDistribution( "PBDD"                         , new Dist_divDepYuleProcess() );
         
         // diversity-dependent pure-birth process (renamed to be somewhat consistent with cBDP)
-        addDistribution( "dnConstPopMultispCoal"        , new MultispeciesCoalescentConstantPopulationProcess() );
-        addDistribution( "MultispCoal"                  , new MultispeciesCoalescentConstantPopulationProcess() );
-        addDistribution( "MultispeciesCoalescentConstantPopulationProcess", new MultispeciesCoalescentConstantPopulationProcess() );
+        addDistribution( "dnConstPopMultispCoal"        , new Dist_constPopMultispCoal() );
+        addDistribution( "MultispCoal"                  , new Dist_constPopMultispCoal() );
+        addDistribution( "MultispeciesCoalescentConstantPopulationProcess", new Dist_constPopMultispCoal() );
 
         // uniform time tree distribution
-        addDistribution( "dnUniformTimeTree"            , new UniformTimeTreeDistribution() );
-        addDistribution( "uniformTimeTree"              , new UniformTimeTreeDistribution() );
+        addDistribution( "dnUniformTimeTree"            , new Dist_uniformTimeTree() );
+        addDistribution( "uniformTimeTree"              , new Dist_uniformTimeTree() );
         
         // uniform topology distribution
-        addDistribution( "dnUniformTopology"            , new UniformTopologyDistribution() );
-        addDistribution( "uniformTopology"              , new UniformTopologyDistribution() );
+        addDistribution( "dnUniformTopology"            , new Dist_uniformTopology() );
+        addDistribution( "uniformTopology"              , new Dist_uniformTopology() );
         
         
         /* Statistical distributions on simple variables (in folder "distributions/math") */
         
         // bernoulli distribution
-        addDistribution( "dnBernoulli",     new BernoulliDistribution() );
-        addDistribution( "bernoulli",       new BernoulliDistribution() );
+        addDistribution( "dnBernoulli",     new Dist_bernoulli() );
+        addDistribution( "bernoulli",       new Dist_bernoulli() );
         
         // beta distribution
-        addDistribution( "dnBeta",          new BetaDistribution() );
-        addDistribution( "beta",            new BetaDistribution() );
+        addDistribution( "dnBeta",          new Dist_beta() );
+        addDistribution( "beta",            new Dist_beta() );
         
         // bimodal normal distribution
-        addDistribution( "dnBnorm",         new BimodalNormalDistribution() );
-        addDistribution( "bnorm",           new BimodalNormalDistribution() );
+        addDistribution( "dnBnorm",         new Dist_bnorm() );
+        addDistribution( "bnorm",           new Dist_bnorm() );
         
         // bimodal lognormal distribution
-        addDistribution( "dnBlnorm",        new BimodalLognormalDistribution() );
-        addDistribution( "blnorm",          new BimodalLognormalDistribution() );
+        addDistribution( "dnBlnorm",        new Dist_blnorm() );
+        addDistribution( "blnorm",          new Dist_blnorm() );
         
         // dirichlet distribution
-        addDistribution( "dnDirichlet",     new DirichletDistribution() );
-        addDistribution( "dirichlet",       new DirichletDistribution() );
+        addDistribution( "dnDirichlet",     new Dist_dirichlet() );
+        addDistribution( "dirichlet",       new Dist_dirichlet() );
 		
         // gamma distribution
-        addDistribution( "dnGamma",         new GammaDistribution() );
-        addDistribution( "gamma",           new GammaDistribution() );
+        addDistribution( "dnGamma",         new Dist_gamma() );
+        addDistribution( "gamma",           new Dist_gamma() );
         
         // geometric distribution
-        addDistribution( "dnGeom",          new GeometricDistribution() );
-        addDistribution( "geom",            new GeometricDistribution() );
+        addDistribution( "dnGeom",          new Dist_geom() );
+        addDistribution( "geom",            new Dist_geom() );
         
         // poisson distribution
-        addDistribution( "dnPoisson",       new PoissonDistribution() );
-        addDistribution( "poisson",         new PoissonDistribution() );
+        addDistribution( "dnPoisson",       new Dist_poisson() );
+        addDistribution( "poisson",         new Dist_poisson() );
         
         // exponential distribution
-        addDistribution( "dnExponential",   new ExponentialDistribution() );
-        addDistribution( "dnExponential",   new OffsetExponentialDistribution() );
-        addDistribution( "exponential",     new ExponentialDistribution() );
-        addDistribution( "exponential",     new OffsetExponentialDistribution() );
+        addDistribution( "dnExponential",   new Dist_exponential() );
+        addDistribution( "dnExponential",   new Dist_offsetExponential() );
+        addDistribution( "exponential",     new Dist_exponential() );
+        addDistribution( "exponential",     new Dist_offsetExponential() );
         
         // lognormal distribution
-        addDistribution( "dnLnorm",         new LognormalDistribution() );
-        addDistribution( "dnLnorm",         new OffsetLognormalDistribution() );
-        addDistribution( "lnorm",           new LognormalDistribution() );
-        addDistribution( "lnorm",           new OffsetLognormalDistribution() );
+        addDistribution( "dnLnorm",         new Dist_lnorm() );
+        addDistribution( "dnLnorm",         new Dist_offsetLnorm() );
+        addDistribution( "lnorm",           new Dist_lnorm() );
+        addDistribution( "lnorm",           new Dist_offsetLnorm() );
         
         // normal distribution
-        addDistribution( "dnNorm",          new NormalDistribution() );
-        addDistribution( "norm",            new NormalDistribution() );
+        addDistribution( "dnNorm",          new Dist_norm() );
+        addDistribution( "norm",            new Dist_norm() );
         
         // 1/x distribution
-        addDistribution( "dnOneOverX",      new OneOverXDistribution() );
-        addDistribution( "oneOverX",        new OneOverXDistribution() );
+        addDistribution( "dnOneOverX",      new Dist_oneOverX() );
+        addDistribution( "oneOverX",        new Dist_oneOverX() );
         
         // uniform distribution
-        addDistribution( "dnUnif",          new UniformDistribution() );
-        addDistribution( "dnUnif",          new PositiveUniformDistribution() );
-        addDistribution( "unif",            new UniformDistribution() );
-        addDistribution( "unif",            new PositiveUniformDistribution() );
+        addDistribution( "dnUnif",          new Dist_unif() );
+        addDistribution( "dnUnif",          new Dist_positiveUnif() );
+        addDistribution( "unif",            new Dist_unif() );
+        addDistribution( "unif",            new Dist_positiveUnif() );
         
         // wishart distribution
-        addDistribution( "dnWishart",       new WishartDistribution() );
-        addDistribution( "wishart",         new WishartDistribution() );
+        addDistribution( "dnWishart",       new Dist_wishart() );
+        addDistribution( "wishart",         new Dist_wishart() );
         
         
         /* Mixture distributions (in folder "distributions/mixture") */
         
         // dirichlet process prior distribution
-        addDistribution( "dnDPP",		    new DirichletProcessPriorDistribution<Real>() );
-		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<RealPos>() );
-		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<Natural>() );
-		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<Integer>() );
-		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<Probability>() );
-        addDistribution( "dpp",				new DirichletProcessPriorDistribution<Real>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<RealPos>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Natural>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Integer>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Probability>() );
+        addDistribution( "dnDPP",		    new Dist_dpp<Real>() );
+		addDistribution( "dnDPP",			new Dist_dpp<RealPos>() );
+		addDistribution( "dnDPP",			new Dist_dpp<Natural>() );
+		addDistribution( "dnDPP",			new Dist_dpp<Integer>() );
+		addDistribution( "dnDPP",			new Dist_dpp<Probability>() );
+        addDistribution( "dpp",				new Dist_dpp<Real>() );
+		addDistribution( "dpp",				new Dist_dpp<RealPos>() );
+		addDistribution( "dpp",				new Dist_dpp<Natural>() );
+		addDistribution( "dpp",				new Dist_dpp<Integer>() );
+		addDistribution( "dpp",				new Dist_dpp<Probability>() );
         
         // TAH: these don't seem to work with the moves, probably need to figure this out
-		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Topology>() );
-		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Simplex>() );
-		//addDistribution( "dpp",				new DirichletProcessPriorDistribution< Vector<RealPos> >() );
+		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
+		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
+		//addDistribution( "dpp",				new Dist_dpp< Vector<RealPos> >() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -870,8 +869,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         ///////////////////////////////////////////////////////////////////////////
         
         // bernoulli distribution
-        addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new BernoulliDistribution() ) );
-        addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new BernoulliDistribution() ) );
+        addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new Dist_bernoulli() ) );
+        addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new Dist_bernoulli() ) );
         
         // beta distribution
         addFunction("dbeta", new DistributionFunctionPdf<Probability>( new BetaDistribution() ) );
