@@ -7,26 +7,26 @@
 //
 
 
-#include "ConstructorClade.h"
+#include "Func_clade.h"
 #include "RlClade.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-ConstructorClade::ConstructorClade( void ) : Function( ) {
+Func_clade::Func_clade( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-ConstructorClade* ConstructorClade::clone( void ) const {
+Func_clade* Func_clade::clone( void ) const {
     
-    return new ConstructorClade( *this );
+    return new Func_clade( *this );
 }
 
 
-RevObject* ConstructorClade::execute() {
+RevObject* Func_clade::execute() {
     
     // now allocate a new Clade
     const std::vector<std::string>& n = static_cast<const Vector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -37,7 +37,7 @@ RevObject* ConstructorClade::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& ConstructorClade::getArgumentRules( void ) const {
+const ArgumentRules& Func_clade::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -54,7 +54,7 @@ const ArgumentRules& ConstructorClade::getArgumentRules( void ) const {
 }
 
 
-const std::string& ConstructorClade::getClassName(void) { 
+const std::string& Func_clade::getClassName(void) { 
     
     static std::string rbClassName = "Func_clade";
     
@@ -62,7 +62,7 @@ const std::string& ConstructorClade::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& ConstructorClade::getClassTypeSpec(void) { 
+const TypeSpec& Func_clade::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -71,7 +71,7 @@ const TypeSpec& ConstructorClade::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& ConstructorClade::getReturnType( void ) const {
+const TypeSpec& Func_clade::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Clade::getClassTypeSpec();
     
@@ -79,7 +79,7 @@ const TypeSpec& ConstructorClade::getReturnType( void ) const {
 }
 
 
-const TypeSpec& ConstructorClade::getTypeSpec( void ) const {
+const TypeSpec& Func_clade::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

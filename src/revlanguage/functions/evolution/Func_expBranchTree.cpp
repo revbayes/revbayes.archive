@@ -1,5 +1,5 @@
 //
-//  RlExponentialBranchTree.cpp
+//  Func_expBranchTree.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-24.
@@ -7,25 +7,20 @@
 //
 
 #include "ExponentialBranchTree.h"
-#include "RlExponentialBranchTree.h"
+#include "Func_expBranchTree.h"
 
 #include "RealPos.h"
-#include "Vector.h"
 #include "RlTimeTree.h"
+#include "Vector.h"
 
 using namespace RevLanguage;
 
-ExponentialBranchTree::ExponentialBranchTree( const ExponentialBranchTree &d ) : Function(d) {}
+Func_expBranchTree::Func_expBranchTree( const Func_expBranchTree &x ) : Function(x) {}
 
-/*
-ExponentialBranchTree::~ExponentialBranchTree() {
-    
-}
-*/
 
-ExponentialBranchTree* ExponentialBranchTree::clone( void ) const {
+Func_expBranchTree* Func_expBranchTree::clone( void ) const {
 
-    return new ExponentialBranchTree(*this);
+    return new Func_expBranchTree(*this);
 }
 
 /*
@@ -39,7 +34,7 @@ RevBayesCore::ExponentialBranchTree* ExponentialBranchTree::createFunction(void)
 */
 
 /* Get argument rules */
-const ArgumentRules& ExponentialBranchTree::getArgumentRules( void ) const {
+const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
  
@@ -47,7 +42,7 @@ const ArgumentRules& ExponentialBranchTree::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "tree", true, TimeTree::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "nodevals", true, Vector<Real>::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -59,15 +54,15 @@ const ArgumentRules& ExponentialBranchTree::getArgumentRules( void ) const {
 
 
 /* Get class name of object */
-const std::string& ExponentialBranchTree::getClassName(void) {
+const std::string& Func_expBranchTree::getClassName(void) {
     
-    static std::string rbClassName = "ExponentialBranchTree";
+    static std::string rbClassName = "Func_expBranchTree";
     
 	return rbClassName;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& ExponentialBranchTree::getClassTypeSpec(void) {
+const TypeSpec& Func_expBranchTree::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedFunction<Vector<RealPos> >::getClassTypeSpec() ) );
     
@@ -76,7 +71,7 @@ const TypeSpec& ExponentialBranchTree::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& ExponentialBranchTree::getReturnType( void ) const {
+const TypeSpec& Func_expBranchTree::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Vector<RealPos>::getClassTypeSpec();
     
@@ -85,7 +80,7 @@ const TypeSpec& ExponentialBranchTree::getReturnType( void ) const {
 
 
 
-const TypeSpec& ExponentialBranchTree::getTypeSpec( void ) const {
+const TypeSpec& Func_expBranchTree::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -93,7 +88,7 @@ const TypeSpec& ExponentialBranchTree::getTypeSpec( void ) const {
 }
 
 
-RevObject* ExponentialBranchTree::execute() {
+RevObject* Func_expBranchTree::execute() {
     
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
@@ -110,7 +105,7 @@ RevObject* ExponentialBranchTree::execute() {
 }
 
 
-void ExponentialBranchTree::printValue(std::ostream& o) const {
+void Func_expBranchTree::printValue(std::ostream& o) const {
     
     o << " expbranchtree(";
    

@@ -161,7 +161,7 @@ const ArgumentRules& DistributionFunctionQuantile::getArgumentRules(void) const 
 /** Get class name of object */
 const std::string& DistributionFunctionQuantile::getClassName(void) { 
     
-    static std::string rbClassName = "Func_quantile";
+    static std::string rbClassName = "DistributionFunctionQuantile";
     
 	return rbClassName; 
 }

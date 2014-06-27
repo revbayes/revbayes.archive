@@ -155,7 +155,6 @@
 #include "RlBimodalLognormalDistribution.h"
 #include "RlBimodalNormalDistribution.h"
 #include "RlDirichletDistribution.h"
-#include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
 #include "RlGammaDistribution.h"
 #include "RlGeometricDistribution.h"
@@ -208,11 +207,12 @@
 
 
 /* Functions related to evolution (in folder "functions/evolution") */
-#include "ConstructorClade.h"
-#include "RlRateMultiplierPhyloFunction.h"
-#include "RlTmrcaStatistic.h"
-#include "RlTreeHeightStatistic.h"
-#include "RlTreeAssemblyFunction.h"
+#include "Func_clade.h"
+#include "Func_expBranchTree.h"
+#include "Func_phyloRateMultiplier.h"
+#include "Func_tmrca.h"
+#include "Func_treeHeight.h"
+#include "Func_treeAssembly.h"
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
 #include "Func_gtr.h"
@@ -653,16 +653,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         /* Evolution-related functions (in folder "functions/evolution") */
-        addFunction( "clade",                       new ConstructorClade()                 );
-        addFunction( "expBranchTree",               new ExponentialBranchTree()            );
-        addFunction( "phyloRateMultiplier",         new RateMultiplierPhyloFunction()      );
-        addFunction( "tmrca",                       new TmrcaStatistic()                   );
-        addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
-        addFunction( "treeHeight",                  new TreeHeightStatistic()              );
+        addFunction( "clade",                       new Func_clade()                    );
+        addFunction( "expBranchTree",               new Func_expBranchTree()            );
+        addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
+        addFunction( "tmrca",                       new Func_tmrca()                    );
+        addFunction( "treeAssembly",                new Func_treeAssembly()             );
+        addFunction( "treeHeight",                  new Func_treeHeight()               );
         
         // nonstandard names (for backward compatibility)
-        addFunction( "expbranchtree",               new ExponentialBranchTree()            );
-        addFunction( "rateMultiplierPhyloFunction", new RateMultiplierPhyloFunction()      );
+        addFunction( "expbranchtree",               new Func_expBranchTree()            );
+        addFunction( "rateMultiplierPhyloFunction", new Func_phyloRateMultiplier()      );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "blosum62", new Blosum62RateMatrixFunction() );

@@ -1,6 +1,6 @@
 #include "DeterministicNode.h"
+#include "Func_phyloRateMultiplier.h"
 #include "RateMultiplierPhyloFunction.h"
-#include "RlRateMultiplierPhyloFunction.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
@@ -9,20 +9,20 @@
 using namespace RevLanguage;
 
 /** default constructor */
-RateMultiplierPhyloFunction::RateMultiplierPhyloFunction( void ) : Function( ) {
+Func_phyloRateMultiplier::Func_phyloRateMultiplier( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-RateMultiplierPhyloFunction* RateMultiplierPhyloFunction::clone( void ) const 
+Func_phyloRateMultiplier* Func_phyloRateMultiplier::clone( void ) const 
 {
     
-    return new RateMultiplierPhyloFunction( *this );
+    return new Func_phyloRateMultiplier( *this );
 }
 
 
-RevObject* RateMultiplierPhyloFunction::execute() 
+RevObject* Func_phyloRateMultiplier::execute() 
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -38,7 +38,7 @@ RevObject* RateMultiplierPhyloFunction::execute()
 
 
 /* Get argument rules */
-const ArgumentRules& RateMultiplierPhyloFunction::getArgumentRules( void ) const 
+const ArgumentRules& Func_phyloRateMultiplier::getArgumentRules( void ) const 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -58,7 +58,7 @@ const ArgumentRules& RateMultiplierPhyloFunction::getArgumentRules( void ) const
 }
 
 
-const std::string& RateMultiplierPhyloFunction::getClassName(void) { 
+const std::string& Func_phyloRateMultiplier::getClassName(void) { 
     
     static std::string rbClassName = "Func_phyloRateMultiplier";
     
@@ -66,7 +66,7 @@ const std::string& RateMultiplierPhyloFunction::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& RateMultiplierPhyloFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_phyloRateMultiplier::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -75,7 +75,7 @@ const TypeSpec& RateMultiplierPhyloFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& RateMultiplierPhyloFunction::getReturnType( void ) const {
+const TypeSpec& Func_phyloRateMultiplier::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Vector<RealPos>::getClassTypeSpec();
     
@@ -83,7 +83,7 @@ const TypeSpec& RateMultiplierPhyloFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& RateMultiplierPhyloFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_phyloRateMultiplier::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
