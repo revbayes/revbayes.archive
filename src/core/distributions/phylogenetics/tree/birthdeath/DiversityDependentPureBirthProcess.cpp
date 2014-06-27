@@ -39,7 +39,7 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const Typ
  *
  * \return A new copy of the model. 
  */
-DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( void ) const 
+DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( void ) const
 {
     
     return new DiversityDependentPureBirthProcess( *this );
@@ -114,7 +114,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
  *
  * \return Speciation rate at time t. 
  */
-double DiversityDependentPureBirthProcess::pSurvival(double start, double end) const 
+double DiversityDependentPureBirthProcess::pSurvival(double start, double end) const
 {
     
     return 1.0;
