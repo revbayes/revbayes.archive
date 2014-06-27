@@ -18,6 +18,10 @@
  *    groups corresponding to directories in the revlanguage code base.
  * 3. All entries in each group are listed in alphabetical order.
  *
+ * Some explanation of the directory structure is provided in the comments
+ * in this file. Consult these comments if you are uncertain about where
+ * to add your objects in the code.
+ *
  * (c) Copyright 2009-
  * @license GPL version 3
  *
@@ -62,12 +66,16 @@
 #include "RlPowerPosterior.h"
 #include "RlSteppingStoneSampler.h"
 
+/// Monitors ///
+
 /* Monitor types (in folder "datatypes/inference/monitors) */
 #include "RlMonitor.h"
 #include "RlFileMonitor.h"
 #include "RlExtendedNewickFileMonitor.h"
 #include "RlModelMonitor.h"
 #include "RlScreenMonitor.h"
+
+/// Moves ///
 
 /* Move types (in folder "datatypes/inference/moves") (grouped by parameter type) */
 #include "RlMove.h"
@@ -117,6 +125,14 @@
 
 /* Distribution types (in folder "distributions") */
 
+/* Character evolution models (in folder "distributions/evolution/character") */
+#include "RlCharacterStateEvolutionAlongTree.h"
+
+/* Branch rate priors (in folder "distributions/evolution/tree") */
+#include "RlBranchRateJumpProcess.h"
+#include "RlBrownianPhyloProcess.h"
+#include "RlWhiteNoisePhyloProcess.h"
+
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "RlConstantRateBirthDeathProcess.h"
 #include "RlConstantRateSerialSampledBirthDeathProcess.h"
@@ -132,8 +148,6 @@
 #include "RlBernoulliDistribution.h"
 #include "RlBimodalLognormalDistribution.h"
 #include "RlBimodalNormalDistribution.h"
-#include "RlBranchRateJumpProcess.h"
-#include "RlBrownianPhyloProcess.h"
 #include "RlDirichletDistribution.h"
 #include "RlExponentialBranchTree.h"
 #include "RlExponentialDistribution.h"
@@ -148,24 +162,40 @@
 #include "RlPositiveUniformDistribution.h"
 #include "RlUniformDistribution.h"
 #include "RlUniformTopologyDistribution.h"
-#include "RlWhiteNoisePhyloProcess.h"
 #include "RlWishartDistribution.h"
-
-
-/* Character evolution models (in folder "distributions/evolution/character") */
-#include "RlCharacterStateEvolutionAlongTree.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "RlDirichletProcessPriorDistribution.h"
 
-/// Parser functions ///
+/// Functions ///
 
-/* Basic internal functions (alphabetic order) */
+/* Argument rules (in folder "functions/argumentrules") */
 #include "ArgumentRule.h"
 
+/* Basic functions (in folder "functions/basic"). */
+/* These are core functions providing user help and other essential functionality. */
+#include "Func_citation.h"
+#include "Func_clear.h"
+#include "Func_contributors.h"
+#include "Func_help.h"
+#include "Func_license.h"
+#include "Func_ls.h"
+#include "Func_quit.h"
 #include "Func_range.h"
+#include "Func_seed.h"
+#include "Func_seq.h"
+#include "Func_type.h"
+#include "Func_structure.h"
 
-/* Basic arithmetic/logic templated functions */
+/* Internal functions (in folder ("functions/internal") */
+/* These are functions that are typically not called explicitly but implicitly
+   through parsing of a Rev statement. Examples include a statement like '1 + 2',
+   which results in the builtin '_add' function to be called. The exception is
+   the Func_range function, which is called implicitly in a 'x:y' statement but
+   also exists as an explicit function called 'range' and therefore is grouped
+   among basic functions. All internal functions have function calls that start
+   with an underscore character, and therefore their class names have two underscore
+   characters. */
 #include "Func__and.h"
 #include "Func__eq.h"
 #include "Func__ge.h"
@@ -176,22 +206,22 @@
 #include "Func__or.h"
 #include "Func__unot.h"
 
-/* Built-in functions */
-#include "Func_citation.h"
-#include "Func_clear.h"
-#include "Func_contributors.h"
-#include "Func_help.h"
-#include "Func_license.h"
-#include "Func_ls.h"
-#include "Func_normalizeVector.h"
-#include "Func_quit.h"
-#include "Func_seed.h"
-#include "Func_seq.h"
-#include "Func_simplex.h"
-#include "Func_type.h"
+#include "Func_add.h"
+#include "Func_div.h"
+#include "Func_mult.h"
+#include "Func_sub.h"
+#include "Func_uminus.h"
+
+/* Input/output functions (in folder "functions/io") */
+#include "Func_mapTree.h"
+#include "Func_readCharacterData.h"
+#include "Func_readTrace.h"
+#include "Func_readTrees.h"
+#include "Func_readTreeTrace.h"
 #include "Func_source.h"
-#include "Func_structure.h"
 #include "Func_write.h"
+#include "Func_writeFasta.h"
+#include "Func_writeNexus.h"
 
 /* Builtin templated functions */
 #include "Func_vector.h"
@@ -200,14 +230,8 @@
 /* Constructor functions */
 #include "ConstructorClade.h"
 
+
 /* Phylogeny functions */
-#include "Func_mapTree.h"
-#include "Func_readCharacterData.h"
-#include "Func_readTrace.h"
-#include "Func_readTrees.h"
-#include "Func_readTreeTrace.h"
-#include "Func_writeFasta.h"
-#include "Func_writeNexus.h"
 #include "RlTmrcaStatistic.h"
 #include "RlTreeHeightStatistic.h"
 #include "RlTreeAssemblyFunction.h"
@@ -235,28 +259,14 @@
 #include "OptimalBurninFunction.h"
 #include "BurninEstimationConvergenceAssessmentFunction.h"
 
-
 /* Distribution functions */
 #include "DistributionFunctionCdf.h"
 #include "DistributionFunctionPdf.h"
 #include "DistributionFunctionQuantile.h"
 #include "DistributionFunctionRv.h"
 
-/* Distribution helper function */
-#include "RlDPPConcFromPriorMean.h"
-#include "RlDPPNumFromConcentration.h"
-#include "RlDppNumTablesStatistic.h"
 
-/// Inference Functions ///
-
-/* Basic arithmetic/logic templated functions */
-#include "Func_add.h"
-#include "Func_div.h"
-#include "Func_mult.h"
-#include "Func_sub.h"
-#include "Func_uminus.h"
-
-/* Math functions */
+/* Math functions (in folder "functions/math") */
 #include "Func_abs.h"
 #include "Func_ceil.h"
 #include "Func_exp.h"
@@ -264,11 +274,19 @@
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_mean.h"
+#include "Func_normalizeVector.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
 #include "Func_round.h"
+#include "Func_simplex.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
+
+/* Statistics functions (in folder "functions/statistics") */
+/* These are functions related to statistical distributions */
+#include "RlDPPConcFromPriorMean.h"
+#include "RlDPPNumFromConcentration.h"
+#include "RlDppNumTablesStatistic.h"
 
 
 #include <sstream>
