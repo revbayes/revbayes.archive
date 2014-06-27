@@ -1,13 +1,13 @@
 //
-//  RlPrecisionMatrixSimpleMove.h
+//  Move_PrecisionMatrixSimple.h
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#ifndef __revbayes__RlPrecisionMatrixSimpleMove__
-#define __revbayes__RlPrecisionMatrixSimpleMove__
+#ifndef __revbayes__Move_PrecisionMatrixSimple__
+#define __revbayes__Move_PrecisionMatrixSimple__
 
 #include <iostream>
 
@@ -18,14 +18,14 @@
 
 namespace RevLanguage {
     
-    class PrecisionMatrixSimpleMove : public Move {
+    class Move_PrecisionMatrixSimple : public Move {
         
     public:
         
-        PrecisionMatrixSimpleMove(void);                                                                                      //!< Default constructor (0.0)
+        Move_PrecisionMatrixSimple(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual PrecisionMatrixSimpleMove*          clone(void) const;                                                      //!< Clone object
+        virtual Move_PrecisionMatrixSimple*          clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -47,4 +47,4 @@ namespace RevLanguage {
 }
 
 
-#endif /* defined(__revbayes__RlPrecisionMatrixSimpleMove__) */
+#endif /* defined(__revbayes__Move_PrecisionMatrixSimple__) */

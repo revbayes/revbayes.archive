@@ -834,7 +834,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		addFunction( "mean",        new Func_mean()  );
         
         // normalize vector function
-		addFunction( "normalize", new Func_normalizeVector()  );
+		addFunction( "normalize", new Func_normalize()  );
 
 		// power function
         addFunction( "power",     new Func_power() );
@@ -897,16 +897,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnorm() ) );
         addFunction("qlnorm", new DistributionFunctionQuantile( new Dist_lnorm() ) );
         addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new Dist_lnorm() ) );
-        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new OffsetDist_lnorm() ) );
-        addFunction("plnorm", new DistributionFunctionCdf( new OffsetDist_lnorm() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantile( new OffsetDist_lnorm() ) );
-        addFunction("rlnorm", new DistributionFunctionRv<Real>( new OffsetDist_lnorm() ) );
+        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new Dist_offsetLnorm() ) );
+        addFunction("plnorm", new DistributionFunctionCdf( new Dist_offsetLnorm() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantile( new Dist_offsetLnorm() ) );
+        addFunction("rlnorm", new DistributionFunctionRv<Real>( new Dist_offsetLnorm() ) );
         
         // normal distribution
-        addFunction("dnorm", new DistributionFunctionPdf<Real>( new Dist_normal() ) );
-        addFunction("pnorm", new DistributionFunctionCdf( new Dist_normal() ) );
-        addFunction("qnorm", new DistributionFunctionQuantile( new Dist_normal() ) );
-        addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_normal() ) );
+        addFunction("dnorm", new DistributionFunctionPdf<Real>( new Dist_norm() ) );
+        addFunction("pnorm", new DistributionFunctionCdf( new Dist_norm() ) );
+        addFunction("qnorm", new DistributionFunctionQuantile( new Dist_norm() ) );
+        addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_norm() ) );
         
         // uniform distribution
         addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );

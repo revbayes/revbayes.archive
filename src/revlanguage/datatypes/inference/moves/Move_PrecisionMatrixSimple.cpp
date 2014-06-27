@@ -1,46 +1,45 @@
 //
-//  RlPrecisionMatrixSimpleMove.cpp
+//  Move_PrecisionMatrixSimple.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "RlPrecisionMatrixSimpleMove.h"
+#include "Move_PrecisionMatrixSimple.h"
 
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "Natural.h"
-#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "Vector.h"
+#include "RevObject.h"
+#include "RlBoolean.h"
 #include "PrecisionMatrix.h"
-#include "RealSymmetricMatrix.h"
-#include "RlPrecisionMatrixSimpleMove.h"
 #include "PrecisionMatrixSimpleMove.h"
+#include "RealSymmetricMatrix.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 
 
 using namespace RevLanguage;
 
-PrecisionMatrixSimpleMove::PrecisionMatrixSimpleMove() : Move() {
+Move_PrecisionMatrixSimple::Move_PrecisionMatrixSimple() : Move() {
     
 }
 
 /** Clone object */
-PrecisionMatrixSimpleMove* PrecisionMatrixSimpleMove::clone(void) const {
+Move_PrecisionMatrixSimple* Move_PrecisionMatrixSimple::clone(void) const {
     
-	return new PrecisionMatrixSimpleMove(*this);
+	return new Move_PrecisionMatrixSimple(*this);
 }
 
 
-void PrecisionMatrixSimpleMove::constructInternalObject( void ) {
+void Move_PrecisionMatrixSimple::constructInternalObject( void ) {
     // we free the memory first
     delete value;
   
@@ -56,7 +55,7 @@ void PrecisionMatrixSimpleMove::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& PrecisionMatrixSimpleMove::getClassName(void) {
+const std::string& Move_PrecisionMatrixSimple::getClassName(void) {
     
     static std::string rbClassName = "Move_VectorSingleElement";
     
@@ -64,7 +63,7 @@ const std::string& PrecisionMatrixSimpleMove::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& PrecisionMatrixSimpleMove::getClassTypeSpec(void) {
+const TypeSpec& Move_PrecisionMatrixSimple::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -74,7 +73,7 @@ const TypeSpec& PrecisionMatrixSimpleMove::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& PrecisionMatrixSimpleMove::getMemberRules(void) const {
+const MemberRules& Move_PrecisionMatrixSimple::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -95,7 +94,7 @@ const MemberRules& PrecisionMatrixSimpleMove::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& PrecisionMatrixSimpleMove::getTypeSpec( void ) const {
+const TypeSpec& Move_PrecisionMatrixSimple::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -104,9 +103,9 @@ const TypeSpec& PrecisionMatrixSimpleMove::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void PrecisionMatrixSimpleMove::printValue(std::ostream &o) const {
+void Move_PrecisionMatrixSimple::printValue(std::ostream &o) const {
     
-    o << "PrecisionMatrixSimpleMove(";
+    o << "Move_PrecisionMatrixSimple(";
     if (mat != NULL) {
         o << mat->getName();
     }
@@ -118,7 +117,7 @@ void PrecisionMatrixSimpleMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PrecisionMatrixSimpleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_PrecisionMatrixSimple::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         mat = var;
