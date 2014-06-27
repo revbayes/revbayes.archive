@@ -1,10 +1,10 @@
 /**
  * @file
  * This file contains the declaration and implementation
- * of the templated Func_mult, which is used to mult two
+ * of the templated Func__sub, which is used to sub two
  * variables.
  *
- * @brief Declaration and implementation of Func_mult
+ * @brief Declaration and implementation of Func__sub
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -12,11 +12,11 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_mult.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__sub.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef Func_mult_H
-#define Func_mult_H
+#ifndef Func_sub_H
+#define Func_sub_H
 
 #include "Function.h"
 
@@ -26,13 +26,13 @@
 namespace RevLanguage {
     
     template <typename firstValType, typename secondValType, typename retType>
-    class Func_mult :  public Function {
+    class Func__sub :  public Function {
         
     public:
-        Func_mult( void );
+        Func__sub( void );
         
         // Basic utility functions
-        Func_mult*                                       clone(void) const;                                                              //!< Clone the object
+        Func__sub*                                       clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -49,30 +49,30 @@ namespace RevLanguage {
 }
 
 #include "DeterministicNode.h"
-#include "BinaryMultiplication.h"
+#include "BinarySubtraction.h"
 #include "TypedDagNode.h"
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func_mult<firstValType, secondValType, retType>::Func_mult( void ) : Function( ) {
+RevLanguage::Func__sub<firstValType, secondValType, retType>::Func__sub( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func_mult<firstValType, secondValType, retType>* RevLanguage::Func_mult<firstValType, secondValType, retType>::clone( void ) const {
+RevLanguage::Func__sub<firstValType, secondValType, retType>* RevLanguage::Func__sub<firstValType, secondValType, retType>::clone( void ) const {
     
-    return new Func_mult( *this );
+    return new Func__sub( *this );
 }
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func_mult<firstValType, secondValType, retType>::execute() {
+RevLanguage::RevObject* RevLanguage::Func__sub<firstValType, secondValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::BinaryMultiplication<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinaryMultiplication<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
+    RevBayesCore::BinarySubtraction<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinarySubtraction<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
     RevBayesCore::DeterministicNode<typename retType::valueType> *detNode = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
     
     retType* value = new retType( detNode );
@@ -83,7 +83,7 @@ RevLanguage::RevObject* RevLanguage::Func_mult<firstValType, secondValType, retT
 
 /* Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_mult<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func__sub<firstValType, secondValType, retType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -100,16 +100,16 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mult<firstValType, secondVal
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const std::string& RevLanguage::Func_mult<firstValType, secondValType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func__sub<firstValType, secondValType, retType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func__mult<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__sub<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mult<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__sub<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -119,7 +119,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_mult<firstValType, secondValType,
 
 /* Get return type */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mult<firstValType, secondValType, retType>::getReturnType( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__sub<firstValType, secondValType, retType>::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
     
@@ -128,7 +128,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_mult<firstValType, secondValType,
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mult<firstValType, secondValType, retType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__sub<firstValType, secondValType, retType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

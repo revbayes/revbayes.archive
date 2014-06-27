@@ -12,7 +12,7 @@
  * @version 1.0
  * @since Version 1.0, 2012-08-06
  *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
 #ifndef RlUniformDistribution_H

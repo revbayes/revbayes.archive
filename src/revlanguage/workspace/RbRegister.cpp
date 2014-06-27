@@ -260,11 +260,11 @@
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
-#include "Func_add.h"
-#include "Func_div.h"
-#include "Func_mult.h"
-#include "Func_sub.h"
-#include "Func_uminus.h"
+#include "Func__add.h"
+#include "Func__div.h"
+#include "Func__mult.h"
+#include "Func__sub.h"
+#include "Func__uminus.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -711,7 +711,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_or",       new Func__or()    );
         addFunction( "_unot",     new Func__unot()  );
         
-        // miscellaneous functions
+        // range function (x:y)
         addFunction( "_range",    new Func_range()  );
         
         // logical templated functions
@@ -744,49 +744,49 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_ne",       new Func__ne<           RlBoolean,      RlBoolean >()             );
         
         // unary minus (e.g. -a)
-        addFunction( "_uminus",   new Func_uminus<Integer, Integer>() );
-        addFunction( "_uminus",   new Func_uminus<Natural, Integer>() );
-        addFunction( "_uminus",   new Func_uminus<Real, Real>() );
-        addFunction( "_uminus",   new Func_uminus<RealPos, Real>() );
+        addFunction( "_uminus",   new Func__uminus<Integer, Integer>()  );
+        addFunction( "_uminus",   new Func__uminus<Natural, Integer>()  );
+        addFunction( "_uminus",   new Func__uminus<Real, Real>()        );
+        addFunction( "_uminus",   new Func__uminus<RealPos, Real>()     );
         
         // addition (e.g. a+b )
-        addFunction( "_add",      new Func_add< Natural         , Natural           , Natural           >(  ) );
-        addFunction( "_add",      new Func_add< Integer         , Integer           , Integer           >(  ) );
-        addFunction( "_add",      new Func_add< Real            , Real              , Real              >(  ) );
-        addFunction( "_add",      new Func_add< RealPos         , RealPos           , RealPos           >(  ) );
-        addFunction( "_add",      new Func_add< RlString        , RlString          , RlString          >(  ) );
-        addFunction( "_add",      new Func_add< RlString        , Real              , RlString          >(  ) );
-        addFunction( "_add",      new Func_add< RlString        , Integer           , RlString          >(  ) );
-        addFunction( "_add",      new Func_add< Vector<Natural> , Vector<Natural>   , Vector<Natural>   >(  ) );
-        addFunction( "_add",      new Func_add< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  ) );
-        addFunction( "_add",      new Func_add< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  ) );
-        addFunction( "_add",      new Func_add< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  ) );
+        addFunction( "_add",      new Func__add< Natural         , Natural           , Natural           >(  )  );
+        addFunction( "_add",      new Func__add< Integer         , Integer           , Integer           >(  )  );
+        addFunction( "_add",      new Func__add< Real            , Real              , Real              >(  )  );
+        addFunction( "_add",      new Func__add< RealPos         , RealPos           , RealPos           >(  )  );
+        addFunction( "_add",      new Func__add< RlString        , RlString          , RlString          >(  )  );
+        addFunction( "_add",      new Func__add< RlString        , Real              , RlString          >(  )  );
+        addFunction( "_add",      new Func__add< RlString        , Integer           , RlString          >(  )  );
+        addFunction( "_add",      new Func__add< Vector<Natural> , Vector<Natural>   , Vector<Natural>   >(  )  );
+        addFunction( "_add",      new Func__add< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
+        addFunction( "_add",      new Func__add< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  )  );
+        addFunction( "_add",      new Func__add< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
         
         // division
-        addFunction( "_div",      new Func_div< Natural         , Natural           , RealPos           >(  ) );
-        addFunction( "_div",      new Func_div< Integer         , Integer           , Real              >(  ) );
-        addFunction( "_div",      new Func_div< Real            , Real              , Real              >(  ) );
-        addFunction( "_div",      new Func_div< RealPos         , RealPos           , RealPos           >(  ) );
-        addFunction( "_div",      new Func_div< Vector<Natural> , Vector<Natural>   , Vector<RealPos>   >(  ) );
-        addFunction( "_div",      new Func_div< Vector<Integer> , Vector<Integer>   , Vector<Real>      >(  ) );
-        addFunction( "_div",      new Func_div< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  ) );
-        addFunction( "_div",      new Func_div< Vector<Real>    , Vector<Real>      , Vector<RealPos>   >(  ) );
+        addFunction( "_div",      new Func__div< Natural         , Natural           , RealPos           >(  )  );
+        addFunction( "_div",      new Func__div< Integer         , Integer           , Real              >(  )  );
+        addFunction( "_div",      new Func__div< Real            , Real              , Real              >(  )  );
+        addFunction( "_div",      new Func__div< RealPos         , RealPos           , RealPos           >(  )  );
+        addFunction( "_div",      new Func__div< Vector<Natural> , Vector<Natural>   , Vector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< Vector<Integer> , Vector<Integer>   , Vector<Real>      >(  )  );
+        addFunction( "_div",      new Func__div< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< Vector<Real>    , Vector<Real>      , Vector<RealPos>   >(  )  );
         
         // multiplication
-        addFunction( "_mul",      new Func_mult< Natural            , Natural           , Natural           >(  ) );
-        addFunction( "_mul",      new Func_mult< Integer            , Integer           , Integer           >(  ) );
-        addFunction( "_mul",      new Func_mult< Real               , Real              , Real              >(  ) );
-        addFunction( "_mul",      new Func_mult< RealPos            , RealPos           , RealPos           >(  ) );
-        addFunction( "_mul",      new Func_mult< Vector<Natural>    , Vector<Natural>   , Vector<Natural>   >(  ) );
-        addFunction( "_mul",      new Func_mult< Vector<Integer>    , Vector<Integer>   , Vector<Integer>   >(  ) );
-        addFunction( "_mul",      new Func_mult< Vector<RealPos>    , Vector<RealPos>   , Vector<RealPos>   >(  ) );
-        addFunction( "_mul",      new Func_mult< Vector<Real>       , Vector<Real>      , Vector<Real>      >(  ) );
+        addFunction( "_mul",      new Func__mult< Natural            , Natural           , Natural           >(  )  );
+        addFunction( "_mul",      new Func__mult< Integer            , Integer           , Integer           >(  )  );
+        addFunction( "_mul",      new Func__mult< Real               , Real              , Real              >(  )  );
+        addFunction( "_mul",      new Func__mult< RealPos            , RealPos           , RealPos           >(  )  );
+        addFunction( "_mul",      new Func__mult< Vector<Natural>    , Vector<Natural>   , Vector<Natural>   >(  )  );
+        addFunction( "_mul",      new Func__mult< Vector<Integer>    , Vector<Integer>   , Vector<Integer>   >(  )  );
+        addFunction( "_mul",      new Func__mult< Vector<RealPos>    , Vector<RealPos>   , Vector<RealPos>   >(  )  );
+        addFunction( "_mul",      new Func__mult< Vector<Real>       , Vector<Real>      , Vector<Real>      >(  )  );
         
         // subtraction
-        addFunction( "_sub",      new Func_sub< Integer         , Integer           , Integer           >(  ) );
-        addFunction( "_sub",      new Func_sub< Real            , Real              , Real              >(  ) );
-        addFunction( "_sub",      new Func_sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  ) );
-        addFunction( "_sub",      new Func_sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  ) );
+        addFunction( "_sub",      new Func__sub< Integer         , Integer           , Integer           >(  )  );
+        addFunction( "_sub",      new Func__sub< Real            , Real              , Real              >(  )  );
+        addFunction( "_sub",      new Func__sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
+        addFunction( "_sub",      new Func__sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
         
         // exponentiation
         addFunction( "_exp",      new Func_power() );
@@ -820,17 +820,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "exp",         new Func_exp() );
 		
 		// floor function
-        addFunction( "floor",     new Func_floor<Real,Integer>()  );
-        addFunction( "floor",     new Func_floor<RealPos,Natural>()  );
+        addFunction( "floor",       new Func_floor<Real,Integer>()  );
+        addFunction( "floor",       new Func_floor<RealPos,Natural>()  );
         
         // natural log function
-        addFunction( "ln",        new Func_ln()  );
+        addFunction( "ln",          new Func_ln()  );
         
         // log function
-		addFunction( "log",       new Func_log()  );
+		addFunction( "log",         new Func_log()  );
         
         // mean function
-		addFunction( "mean",      new Func_mean()  );
+		addFunction( "mean",        new Func_mean()  );
         
         // normalize vector function
 		addFunction( "normalize", new Func_normalizeVector()  );
@@ -858,7 +858,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
  		/* Statistics functions (in folder "functions/statistics") */
         addFunction("dppConcFromMean",  new DPPConcFromPriorMean( )     );
-        addFunction("dppMeanFromConc",   new DPPNumFromConcentration( )  );
+        addFunction("dppMeanFromConc",  new DPPNumFromConcentration( )  );
 
         // nonstandard forms form backward compatibility
         addFunction("dppCPFromNum",     new DPPConcFromPriorMean( )     );
