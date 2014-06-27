@@ -1,10 +1,10 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage model variable wrapper, which is
- * the RevLanguage abstract base class for all language objects wrapping core datatypes that can be stored inside
- * DAG nodes and hence used in model graphs.
+ * This file contains the declaration of the Rev language ModelObject, which is
+ * the Rev abstract base class for all language objects wrapping core datatypes
+ * that can be stored inside DAG nodes and hence used in model graphs.
  *
- * @brief Declaration of RlModelVariableWrapper
+ * @brief Declaration of ModelObject
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-03 17:51:49 +0200 (Fri, 03 Aug 2012) $
@@ -12,36 +12,36 @@
  * @license GPL version 3
  * @since Version 1.0, 2012-08-06
  *
- * $Id: RbLanguageObject.h 1734 2012-08-03 15:51:49Z hoehna $
+ * $Id: RevObject.h 1734 2012-08-03 15:51:49Z hoehna $
  */
 
-#ifndef RlModelVariableWrapper_H
-#define RlModelVariableWrapper_H
+#ifndef ModelObject_H
+#define ModelObject_H
 
 #include "MethodTable.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "TypedDagNode.h"
 
 namespace RevLanguage {
     
     template <typename rbType>
-    class RlModelVariableWrapper : public RbLanguageObject {
+    class ModelObject : public RevObject {
     
     public:
-        virtual                                ~RlModelVariableWrapper(void);                                              //!< Virtual destructor
+        virtual                                ~ModelObject(void);                                                          //!< Virtual destructor
 
-        RlModelVariableWrapper&                 operator=(const RlModelVariableWrapper& x);                                 //!< Assignment operator    
+        ModelObject&                            operator=(const ModelObject& x);                                            //!< Assignment operator
         
         // the value type definition
         typedef rbType valueType;
        
         // Basic utility functions you have to override
-        virtual RlModelVariableWrapper*         clone(void) const = 0;                                                      //!< Clone object
-        RlModelVariableWrapper<rbType>*         dagReference(void);                                                         //!< Make reference to object
+        virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
+        ModelObject<rbType>*                    dagReference(void);                                                         //!< Make reference to object
     
         // function you might want to overwrite
-        virtual RbLanguageObject*               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual RbLanguageObject*               getMember(const std::string& name) const;                                   //!< Get member variable 
+        virtual RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevObject*                      getMember(const std::string& name) const;                                   //!< Get member variable
         virtual const MethodTable&              getMethods(void) const;                                                     //!< Get member methods (const)
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
@@ -52,9 +52,9 @@ namespace RevLanguage {
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
-        void                                    replaceVariable(RbLanguageObject *newVar);                                  //!< Replace the internal DAG node (and prepare to replace me...)
+        void                                    replaceVariable(RevObject *newVar);                                         //!< Replace the internal DAG node (and prepare to replace me...)
 
-        RlModelVariableWrapper<rbType>*         shallowCopy(void);      // Testing...
+        ModelObject<rbType>*                    shallowCopy(void);      // Testing...
         
         // getters and setters
         virtual const rbType&                   getValue(void) const;                                                       //!< Get the value
@@ -62,10 +62,10 @@ namespace RevLanguage {
         void                                    setValueNode(RevBayesCore::DagNode *newVal);                                //!< Set or replace the internal dag node (and keep me)
         
     protected:
-        RlModelVariableWrapper(void);
-        RlModelVariableWrapper(rbType *v);
-        RlModelVariableWrapper(RevBayesCore::TypedDagNode<rbType> *v);
-        RlModelVariableWrapper(const RlModelVariableWrapper &v);
+        ModelObject(void);
+        ModelObject(rbType *v);
+        ModelObject(RevBayesCore::TypedDagNode<rbType> *v);
+        ModelObject(const ModelObject &v);
         
         RevBayesCore::TypedDagNode<rbType>*     value;
         mutable MethodTable                     methods;
@@ -91,7 +91,7 @@ namespace RevLanguage {
 #include <cassert>
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLanguageObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject() : RevObject(), 
     value( NULL ), 
     methods() 
 {
@@ -103,7 +103,7 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper() : RbLangua
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) : RbLanguageObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : RevObject(), 
     value( new RevBayesCore::ConstantNode<rbType>("",v) ), 
     methods() 
 {
@@ -117,7 +117,7 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(rbType *v) :
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore::TypedDagNode<rbType> *v) : RbLanguageObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) : RevObject(), 
     value( v ), 
     methods() 
 {
@@ -133,7 +133,7 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(RevBayesCore
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlModelVariableWrapper &v) : RbLanguageObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) : RevObject(), 
     value( NULL ), 
     methods() 
 {
@@ -154,7 +154,7 @@ RevLanguage::RlModelVariableWrapper<rbType>::RlModelVariableWrapper(const RlMode
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>::~RlModelVariableWrapper() 
+RevLanguage::ModelObject<rbType>::~ModelObject() 
 {
     
     // free the old value
@@ -169,7 +169,7 @@ RevLanguage::RlModelVariableWrapper<rbType>::~RlModelVariableWrapper()
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>& RevLanguage::RlModelVariableWrapper<rbType>::operator=(const RlModelVariableWrapper &v) {
+RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(const ModelObject &v) {
     
     if ( this != &v ) 
     {
@@ -200,12 +200,12 @@ RevLanguage::RlModelVariableWrapper<rbType>& RevLanguage::RlModelVariableWrapper
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>* RevLanguage::RlModelVariableWrapper<rbType>::dagReference(void) {
+RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::dagReference(void) {
     
     RevBayesCore::TypedReferenceFunction< rbType >* f = new RevBayesCore::TypedReferenceFunction< rbType >(value);
     RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
     
-    RevLanguage::RlModelVariableWrapper<rbType>* newObj = this->clone();
+    RevLanguage::ModelObject<rbType>* newObj = this->clone();
 
     // replace value with deterministic reference and attempt memory management
     newObj->value->decrementReferenceCount();
@@ -218,7 +218,7 @@ RevLanguage::RlModelVariableWrapper<rbType>* RevLanguage::RlModelVariableWrapper
 
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "clamp") 
     {
@@ -232,7 +232,7 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
         RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
         
         // get the observation
-        const rbType &observation = static_cast<const RlModelVariableWrapper<rbType> &>( args[0].getVariable()->getValue() ).getValue();
+        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getValue() ).getValue();
         
         // clamp
         stochNode->clamp( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
@@ -251,7 +251,7 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
         RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
         
         // get the observation
-        const rbType &observation = static_cast<const RlModelVariableWrapper<rbType> &>( args[0].getVariable()->getValue() ).getValue();
+        const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getValue() ).getValue();
         
         // set value
         stochNode->setValue( RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( observation ) );
@@ -275,13 +275,13 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::exec
         return NULL;
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
 /* Find member variables */
 template <typename rbType>
-RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getMember(std::string const &name) const
+RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::getMember(std::string const &name) const
 {
     
     // check whether the variable is actually a stochastic node
@@ -292,7 +292,7 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getM
             // convert the node
             RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
             double lnProb = stochNode->getLnProbability();
-            RbLanguageObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
+            RevObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
             
             return p;
         } 
@@ -301,7 +301,7 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getM
             // convert the node
             RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
             double lnProb = stochNode->getLnProbability();
-            RbLanguageObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
+            RevObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
             
             return p;
             
@@ -309,13 +309,13 @@ RevLanguage::RbLanguageObject* RevLanguage::RlModelVariableWrapper<rbType>::getM
     }
 
     
-    return RbLanguageObject::getMember( name );
+    return RevObject::getMember( name );
 }
 
 
 /* Get method specifications */
 template <typename rbType>
-const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::getMethods(void) const {
+const RevLanguage::MethodTable&  RevLanguage::ModelObject<rbType>::getMethods(void) const {
     
 //    static MethodTable methods      = MethodTable();
     // Sebastian: Static variables don't work because derived classes, e.g. PosReal from Real
@@ -338,7 +338,7 @@ const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::ge
         methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
 //        methodsSet = true;
 //    }
     
@@ -348,7 +348,7 @@ const RevLanguage::MethodTable&  RevLanguage::RlModelVariableWrapper<rbType>::ge
 
 
 template <typename rbType>
-const rbType& RevLanguage::RlModelVariableWrapper<rbType>::getValue( void ) const {
+const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
     return value->getValue();
 }
@@ -356,7 +356,7 @@ const rbType& RevLanguage::RlModelVariableWrapper<rbType>::getValue( void ) cons
 
 
 template <typename rbType>
-RevBayesCore::TypedDagNode<rbType>* RevLanguage::RlModelVariableWrapper<rbType>::getValueNode( void ) const {
+RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getValueNode( void ) const {
     
     return value;
 }
@@ -368,7 +368,7 @@ RevBayesCore::TypedDagNode<rbType>* RevLanguage::RlModelVariableWrapper<rbType>:
  *
  */
 template<typename rbType>
-bool RevLanguage::RlModelVariableWrapper<rbType>::hasMember(std::string const &name) const 
+bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const 
 {
     // first the general members ...
     // if ( name == )
@@ -395,7 +395,7 @@ bool RevLanguage::RlModelVariableWrapper<rbType>::hasMember(std::string const &n
 
 
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::initMethods( void )
+void RevLanguage::ModelObject<rbType>::initMethods( void )
 {
     
     ArgumentRules* clampArgRules = new ArgumentRules();
@@ -410,20 +410,20 @@ void RevLanguage::RlModelVariableWrapper<rbType>::initMethods( void )
     methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
     
     // necessary call for proper inheritance
-    methods.setParentTable( &RbLanguageObject::getMethods() );
+    methods.setParentTable( &RevObject::getMethods() );
 
 }
 
 
 template <typename rbType>
-bool RevLanguage::RlModelVariableWrapper<rbType>::isConstant( void ) const {
+bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
     
     return value->isConstant();
 }
 
 
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::makeConstantValue( void ) {
+void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     
     if ( value == NULL )
     {
@@ -452,7 +452,7 @@ void RevLanguage::RlModelVariableWrapper<rbType>::makeConstantValue( void ) {
 
 /** Print structure info for user */
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::printStructure(std::ostream &o) const {
+void RevLanguage::ModelObject<rbType>::printStructure(std::ostream &o) const {
     
     value->printStructureInfo(o);
 }
@@ -460,14 +460,14 @@ void RevLanguage::RlModelVariableWrapper<rbType>::printStructure(std::ostream &o
 
 /** Print value for user */
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::printValue(std::ostream &o) const {
+void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
     
     value->printValue(o,"");
 }
 
 
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::replaceVariable(RbLanguageObject *newVar) {
+void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getValueNode();
     
@@ -480,7 +480,7 @@ void RevLanguage::RlModelVariableWrapper<rbType>::replaceVariable(RbLanguageObje
 
 
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) {
+void RevLanguage::ModelObject<rbType>::setName(std::string const &n) {
     
     if ( value == NULL ) 
     {
@@ -495,7 +495,7 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setName(std::string const &n) 
 
 
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
+void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     
     RevBayesCore::ConstantNode<rbType>* newVal;
     
@@ -524,7 +524,7 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setValue(rbType *x) {
 
 
 template <typename rbType>
-void RevLanguage::RlModelVariableWrapper<rbType>::setValueNode(RevBayesCore::DagNode* newVal) {
+void RevLanguage::ModelObject<rbType>::setValueNode(RevBayesCore::DagNode* newVal) {
     
     assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newVal) != NULL );
     
@@ -551,7 +551,7 @@ void RevLanguage::RlModelVariableWrapper<rbType>::setValueNode(RevBayesCore::Dag
 
 
 template <typename rbType>
-RevLanguage::RlModelVariableWrapper<rbType>* RevLanguage::RlModelVariableWrapper<rbType>::shallowCopy(void) {
+RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::shallowCopy(void) {
     
 }
 

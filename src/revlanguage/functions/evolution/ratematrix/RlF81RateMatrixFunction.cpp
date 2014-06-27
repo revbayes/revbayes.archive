@@ -31,7 +31,7 @@ F81RateMatrixFunction* F81RateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* F81RateMatrixFunction::execute() {
+RevObject* F81RateMatrixFunction::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::F81RateMatrixFunction* f = new RevBayesCore::F81RateMatrixFunction( bf );

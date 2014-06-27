@@ -35,7 +35,7 @@ DPPConcFromPriorMean* DPPConcFromPriorMean::clone( void ) const {
 }
 
 
-RbLanguageObject* DPPConcFromPriorMean::execute() {
+RevObject* DPPConcFromPriorMean::execute() {
 
     double nc = static_cast<const RealPos &>( args[0].getVariable()->getValue() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getValue() ).getValue();

@@ -19,15 +19,15 @@
 #define RlMonitor_H
 
 #include "Monitor.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Monitor : public RlControlVariableWrapper<RevBayesCore::Monitor> {
+    class Monitor : public WorkspaceObject<RevBayesCore::Monitor> {
         
     public:
         

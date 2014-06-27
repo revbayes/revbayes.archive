@@ -31,7 +31,7 @@ HkyRateMatrixFunction* HkyRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* HkyRateMatrixFunction::execute() {
+RevObject* HkyRateMatrixFunction::execute() {
     
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getValue() ).getValueNode();

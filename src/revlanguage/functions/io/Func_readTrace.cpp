@@ -44,7 +44,7 @@ Func_readTrace* Func_readTrace::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTrace::execute( void ) {
+RevObject* Func_readTrace::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() );

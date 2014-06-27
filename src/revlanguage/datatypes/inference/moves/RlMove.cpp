@@ -3,7 +3,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "Move.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlMove.h"
 #include "TypeSpec.h"
@@ -12,12 +12,12 @@
 
 using namespace RevLanguage;
 
-Move::Move(void) : RlControlVariableWrapper<RevBayesCore::Move>() {
+Move::Move(void) : WorkspaceObject<RevBayesCore::Move>() {
     
 }
 
 
-Move::Move(const Move &m) : RlControlVariableWrapper<RevBayesCore::Move>( m ) {
+Move::Move(const Move &m) : WorkspaceObject<RevBayesCore::Move>( m ) {
     
 }
 
@@ -33,7 +33,7 @@ const std::string& Move::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Move::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Move>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Move>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -49,8 +49,8 @@ const MemberRules& Move::getMemberRules(void) const {
     if ( !rulesSet ) {
         moveMemberRules.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
         
-        /* Inherit variables from RlControlVariableWrapper, put them last */
-        const MemberRules& inheritedRules = RlControlVariableWrapper<RevBayesCore::Move>::getMemberRules();
+        /* Inherit variables from WorkspaceObject, put them last */
+        const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getMemberRules();
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
@@ -69,8 +69,8 @@ const MethodTable& Move::getMethods(void) const {
     if ( !methodsSet ) {
 //        memberMethods.push_back( new ArgumentRule( "weight", false, RealPos::getClassTypeSpec() ) );
         
-        /* Inherit methods from RlControlVariableWrapper, put them last */
-        //const MemberRules& inheritedRules = RlControlVariableWrapper<RevBayesCore::Move>::getMemberRules();
+        /* Inherit methods from WorkspaceObject, put them last */
+        //const MemberRules& inheritedRules = WorkspaceObject<RevBayesCore::Move>::getMemberRules();
         //moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         methodsSet = true;
@@ -90,7 +90,7 @@ void Move::setConstMemberVariable(const std::string& name, const RbPtr<const Var
     }
     else 
     {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }
 

@@ -37,7 +37,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RbLanguageObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                               execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -69,7 +69,7 @@ RevLanguage::DppNumTablesStatistic<valType>* RevLanguage::DppNumTablesStatistic<
 }
 
 template <typename valType>
-RevLanguage::RbLanguageObject* RevLanguage::DppNumTablesStatistic<valType>::execute() {
+RevLanguage::RevObject* RevLanguage::DppNumTablesStatistic<valType>::execute() {
     
     RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* dppVec = static_cast<const std::vector<typename valType::valueType> >( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::DppNumTablesStatistic<typename valType::valueType>* f = new RevBayesCore::DppNumTablesStatistic<typename valType::valueType>( dppVec );

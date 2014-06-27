@@ -19,8 +19,8 @@
 #define RlTreeTrace_H
 
 #include "TreeTrace.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
@@ -28,7 +28,7 @@
 namespace RevLanguage {
     
     template <typename treeType>
-    class TreeTrace : public RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> > {
+    class TreeTrace : public WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> > {
         
     public:
         
@@ -47,7 +47,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
@@ -66,18 +66,18 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace() : RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
+RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
     
 }
 
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
+RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
     
 }
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
+RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
     
 }
 
@@ -98,7 +98,7 @@ void RevLanguage::TreeTrace<treeType>::constructInternalObject( void ) {
 
 /* Map calls to member methods */
 template <typename treeType>
-RevLanguage::RbLanguageObject* RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "summarize") {
         
@@ -110,7 +110,7 @@ RevLanguage::RbLanguageObject* RevLanguage::TreeTrace<treeType>::executeMethod(s
         return NULL;
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -127,7 +127,7 @@ const std::string& RevLanguage::TreeTrace<treeType>::getClassName(void) {
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -167,7 +167,7 @@ const RevLanguage::MethodTable& RevLanguage::TreeTrace<treeType>::getMethods(voi
         methods.addFunction("summarize", new MemberFunction( RlUtils::Void, summarizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -200,7 +200,7 @@ void RevLanguage::TreeTrace<treeType>::setConstMemberVariable(const std::string&
         
     } 
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }
 

@@ -16,17 +16,17 @@
 
 using namespace RevLanguage;
 
-Trace::Trace() : RlControlVariableWrapper<RevBayesCore::Trace>() {
+Trace::Trace() : WorkspaceObject<RevBayesCore::Trace>() {
     
 }
 
 
-Trace::Trace(const RevBayesCore::Trace &t) : RlControlVariableWrapper<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) ) {
+Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) ) {
     
 }
 
 
-Trace::Trace(const Trace &t) : RlControlVariableWrapper<RevBayesCore::Trace>( t ) {
+Trace::Trace(const Trace &t) : WorkspaceObject<RevBayesCore::Trace>( t ) {
     
 }
 
@@ -49,7 +49,7 @@ void Trace::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "summarize") {
         
@@ -61,7 +61,7 @@ RbLanguageObject* Trace::executeMethod(std::string const &name, const std::vecto
         return NULL;
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -76,7 +76,7 @@ const std::string& Trace::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Trace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Trace>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -114,7 +114,7 @@ const MethodTable& Trace::getMethods(void) const {
         methods.addFunction("summarize", new MemberFunction( RlUtils::Void, summarizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -154,6 +154,6 @@ void Trace::setConstMemberVariable(const std::string& name, const RbPtr<const Va
         
     } 
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

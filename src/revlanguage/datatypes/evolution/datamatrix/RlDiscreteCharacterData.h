@@ -2,8 +2,8 @@
 #define RlDiscreteCharacterData_H
 
 #include "DiscreteCharacterData.h"
+#include "ModelObject.h"
 #include "RlAbstractCharacterData.h"
-#include "RlModelVariableWrapper.h"
 
 #include <set>
 #include <string>
@@ -44,7 +44,7 @@ namespace RevLanguage {
          
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
             
     };
     
@@ -88,7 +88,7 @@ RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData
 
 /* Map calls to member methods */
 template <typename charType>
-RevLanguage::RbLanguageObject* RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") 
     {

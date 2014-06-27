@@ -1,9 +1,9 @@
 /**
  * @file
  * This file contains the implementation of some of the functions
- * in the abstract base class for language objects, RbLanguageObject.
+ * in the abstract base class for language objects, RevObject.
  *
- * @brief Partial implementation of RbLanguageObject
+ * @brief Partial implementation of RevObject
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date$
@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  * @since 2009-09-02, version 1.0
- * @extends RbLanguageObject
+ * @extends RevObject
  *
  * $Id$
  */
@@ -20,7 +20,7 @@
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RbUtil.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RlUtils.h"
 #include "Vector.h"
 #include "RlString.h"
@@ -36,7 +36,7 @@ using namespace RevLanguage;
 
 
 /** Constructor: we set member variables here from member rules */
-RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
+RevObject::RevObject(const MemberRules& memberRules) {
     
 }
 
@@ -45,7 +45,7 @@ RbLanguageObject::RbLanguageObject(const MemberRules& memberRules) {
  * Destructor. 
  * Nothing to do here because we don't own anything.
  */
-RbLanguageObject::~RbLanguageObject( void )
+RevObject::~RevObject( void )
 {
     
 }
@@ -59,7 +59,7 @@ RbLanguageObject::~RbLanguageObject( void )
  *
  * \return              NULL
  */
-RbLanguageObject* RbLanguageObject::add(const RbLanguageObject &rhs) const
+RevObject* RevObject::add(const RevObject &rhs) const
 {
     throw RbException("Cannot add a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
     
@@ -67,14 +67,14 @@ RbLanguageObject* RbLanguageObject::add(const RbLanguageObject &rhs) const
 }
 
 /** The default implementation does nothing because we don't have an internal object */
-void RbLanguageObject::constructInternalObject( void ) {
+void RevObject::constructInternalObject( void ) {
     // nothing to do
 }
 
 
 
 /** Convert to type and dim. The caller manages the returned object. */
-RbLanguageObject* RbLanguageObject::convertTo(const TypeSpec& typeSpec) const {
+RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
         
     throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
     
@@ -86,7 +86,7 @@ RbLanguageObject* RbLanguageObject::convertTo(const TypeSpec& typeSpec) const {
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
-RbLanguageObject* RbLanguageObject::dagReference(void) {
+RevObject* RevObject::dagReference(void) {
     
     throw RbException( "Dynamic reference to this object type not supported");
 }
@@ -96,7 +96,7 @@ RbLanguageObject* RbLanguageObject::dagReference(void) {
  * Decrement operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
  */
-void RbLanguageObject::decrement( void ) 
+void RevObject::decrement( void ) 
 {
     throw RbException("Cannot decrement a value of type '" + this->getType() + "'.");
 
@@ -111,7 +111,7 @@ void RbLanguageObject::decrement( void )
  *
  * \return              NULL
  */
-RbLanguageObject* RbLanguageObject::divide(const RbLanguageObject &rhs) const
+RevObject* RevObject::divide(const RevObject &rhs) const
 {
     throw RbException("Cannot divide a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
     
@@ -122,7 +122,7 @@ RbLanguageObject* RbLanguageObject::divide(const RbLanguageObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "get") 
     {
@@ -160,7 +160,7 @@ RbLanguageObject* RbLanguageObject::executeMethod(std::string const &name, const
 
 
 /** Get class vector describing type of object */
-const std::string& RbLanguageObject::getClassName(void) { 
+const std::string& RevObject::getClassName(void) { 
     
     static std::string rbClassName = "language object";
 	return rbClassName; 
@@ -168,7 +168,7 @@ const std::string& RbLanguageObject::getClassName(void) {
 
 
 /** Get class vector describing type of object */
-const TypeSpec& RbLanguageObject::getClassTypeSpec(void) { 
+const TypeSpec& RevObject::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec(getClassName() );
 	
@@ -178,7 +178,7 @@ const TypeSpec& RbLanguageObject::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& RbLanguageObject::getMemberRules(void) const {
+const MemberRules& RevObject::getMemberRules(void) const {
     
     static const MemberRules rules = MemberRules();
     
@@ -187,7 +187,7 @@ const MemberRules& RbLanguageObject::getMemberRules(void) const {
 
 
 /** Get a member variable */
-RbLanguageObject* RbLanguageObject::getMember(const std::string& name) const {
+RevObject* RevObject::getMember(const std::string& name) const {
     throw RbException("No Member named '" + name + "' available.");
 }
 
@@ -198,7 +198,7 @@ RbLanguageObject* RbLanguageObject::getMember(const std::string& name) const {
  * 1) memberNames()
  * 2) get("name")
  */
-const MethodTable& RbLanguageObject::getMethods(void) const {
+const MethodTable& RevObject::getMethods(void) const {
     
     static MethodTable methods = MethodTable();
     static bool        methodsSet = false;
@@ -217,7 +217,7 @@ const MethodTable& RbLanguageObject::getMethods(void) const {
         
         // add the 'memberNames()' method
         getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
-        methods.addFunction("get", new MemberFunction(RbLanguageObject::getClassTypeSpec(), getArgRules) );
+        methods.addFunction("get", new MemberFunction(RevObject::getClassTypeSpec(), getArgRules) );
         
         methodsSet = true;
     }   
@@ -232,7 +232,7 @@ const MethodTable& RbLanguageObject::getMethods(void) const {
  * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
  * return "Mcmc", etc.
  */
-const std::string& RbLanguageObject::getTemplateValueType( void ) const {
+const std::string& RevObject::getTemplateValueType( void ) const {
     
     throw RbException("No value template type implemented for this object (lazy RevBayes programmers...)");
 }
@@ -241,7 +241,7 @@ const std::string& RbLanguageObject::getTemplateValueType( void ) const {
 /**
  * Get the value as a DAG node. This default implementation throws an error.
  */
-const std::string& RbLanguageObject::getType( void ) const {
+const std::string& RevObject::getType( void ) const {
     
     return getTypeSpec().getType();
 }
@@ -250,7 +250,7 @@ const std::string& RbLanguageObject::getType( void ) const {
 /**
  * Get the value as a DAG node. This default implementation throws an error.
  */
-RevBayesCore::DagNode* RbLanguageObject::getValueNode( void ) const {
+RevBayesCore::DagNode* RevObject::getValueNode( void ) const {
     
     throw RbException("RevLanguage only objects cannot be used inside DAG's!");
     
@@ -259,13 +259,13 @@ RevBayesCore::DagNode* RbLanguageObject::getValueNode( void ) const {
 
 
 /** Does this object have a member called "name" */
-bool RbLanguageObject::hasMember(std::string const &name) const {
+bool RevObject::hasMember(std::string const &name) const {
     return false;
 }
 
 
 /** Does this object have an internal value node? Default implementation returns false. */
-bool RbLanguageObject::hasValueNode(void) const {
+bool RevObject::hasValueNode(void) const {
     return false;
 }
 
@@ -274,7 +274,7 @@ bool RbLanguageObject::hasValueNode(void) const {
  * Increment operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
  */
-void RbLanguageObject::increment( void ) 
+void RevObject::increment( void ) 
 {
     throw RbException("Cannot increment a value of type '" + this->getType() + "'.");
     
@@ -285,20 +285,20 @@ void RbLanguageObject::increment( void )
  * The default implementation is that the variable is constant. Only variables which actually store
  * internally DAG nodes have to ask the DAG nodes if they are constant.
  */
-bool RbLanguageObject::isConstant( void ) const {
+bool RevObject::isConstant( void ) const {
     return true;
 }
 
 
 /** Is convertible to type? */
-bool RbLanguageObject::isConvertibleTo(const TypeSpec& type) const {
+bool RevObject::isConvertibleTo(const TypeSpec& type) const {
     
     return false;
 }
 
 
 /* Are we of specified language type? */
-bool RbLanguageObject::isTypeSpec(const TypeSpec& typeSpec) const {
+bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const {
     
     return getTypeSpec().isDerivedOf( typeSpec );
 }
@@ -308,7 +308,7 @@ bool RbLanguageObject::isTypeSpec(const TypeSpec& typeSpec) const {
   * Converting the value of the internal variable to a constant. The default implementation does nothing because we don't have a DAG node as our internal variable.
   * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
   */
-void RbLanguageObject::makeConstantValue( void ) {
+void RevObject::makeConstantValue( void ) {
     // do nothing
 }
 
@@ -321,7 +321,7 @@ void RbLanguageObject::makeConstantValue( void ) {
  *
  * \return              NULL
  */
-RbLanguageObject* RbLanguageObject::multiply(const RbLanguageObject &rhs) const
+RevObject* RevObject::multiply(const RevObject &rhs) const
 {
     throw RbException("Cannot multiply a value of type '" + this->getType() + "' to a value of type '" + rhs.getType() + "'.");
     
@@ -333,13 +333,13 @@ RbLanguageObject* RbLanguageObject::multiply(const RbLanguageObject &rhs) const
 /**
  * Replace the variable. This default implementation does nothing.
  */
-void RbLanguageObject::replaceVariable(RbLanguageObject *newVar) {
+void RevObject::replaceVariable(RevObject *newVar) {
     
 }
 
 
 /** Set a member variable */
-void RbLanguageObject::setConstMember(const std::string& name, const RbPtr<const Variable> &var) {
+void RevObject::setConstMember(const std::string& name, const RbPtr<const Variable> &var) {
     
     // here, we might want to do some general stuff like catching all members so that we can provide general functions as
     // 1) getNames()
@@ -351,7 +351,7 @@ void RbLanguageObject::setConstMember(const std::string& name, const RbPtr<const
 
 
 /** Set a member variable */
-void RbLanguageObject::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RevObject::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
     
     throw RbException("No constant member with name \"" + name + "\" found to set.");
 }
@@ -362,7 +362,7 @@ void RbLanguageObject::setConstMemberVariable(const std::string& name, const RbP
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
  */
-void RbLanguageObject::setMember(const std::string& name, const RbPtr<Variable> &var) {
+void RevObject::setMember(const std::string& name, const RbPtr<Variable> &var) {
     
     // here, we might want to do some general stuff like catching all members so that we can provide general functions as
     // 1) getNames()
@@ -378,7 +378,7 @@ void RbLanguageObject::setMember(const std::string& name, const RbPtr<Variable> 
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
  */
-void RbLanguageObject::setMemberVariable(const std::string& name, const RbPtr<Variable> &var) {
+void RevObject::setMemberVariable(const std::string& name, const RbPtr<Variable> &var) {
     
     setConstMemberVariable(name, RbPtr<const Variable>( var ) );
     
@@ -390,7 +390,7 @@ void RbLanguageObject::setMemberVariable(const std::string& name, const RbPtr<Va
  * Setting the name of the internal variable. The default implementation does nothing because we don't have a DAG node as our internal variable.
  * Note, RevLanguage types which can be used as types in the DAG should override this method.
  */
-void RbLanguageObject::setName(std::string const &n) {
+void RevObject::setName(std::string const &n) {
     // do nothing
 }
 
@@ -399,7 +399,7 @@ void RbLanguageObject::setName(std::string const &n) {
  * Setting the value node, potentially replacing the existing value node. The default implementation
  * throws an error because we do not have a value node.
  */
-void RbLanguageObject::setValueNode(RevBayesCore::DagNode* newVal) {
+void RevObject::setValueNode(RevBayesCore::DagNode* newVal) {
     
     if ( this->hasValueNode() )
         throw RbException( "Replacing or setting of the internal value node of this type of object not supported yet (lazy developers...)");
@@ -416,7 +416,7 @@ void RbLanguageObject::setValueNode(RevBayesCore::DagNode* newVal) {
  *
  * \return              NULL
  */
-RbLanguageObject* RbLanguageObject::subtract(const RbLanguageObject &rhs) const
+RevObject* RevObject::subtract(const RevObject &rhs) const
 {
     throw RbException("Cannot subtract a value of type '" + rhs.getType() + "' from a value of type '" + this->getType() + "'.");
     
@@ -429,7 +429,7 @@ RbLanguageObject* RbLanguageObject::subtract(const RbLanguageObject &rhs) const
  * By default we simply call the overloaded operator<<.
  *
  */
-std::string RbLanguageObject::toString( void ) const
+std::string RevObject::toString( void ) const
 {
     std::stringstream o;
     printValue(o);
@@ -438,7 +438,7 @@ std::string RbLanguageObject::toString( void ) const
 }
 
 /** Make sure we can print the value of the object easily */
-std::ostream& operator<<(std::ostream& o, const RbLanguageObject& x) {
+std::ostream& operator<<(std::ostream& o, const RevObject& x) {
     
     x.printValue(o);
     return o;

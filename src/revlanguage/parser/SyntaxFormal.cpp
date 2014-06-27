@@ -27,7 +27,7 @@
 using namespace RevLanguage;
 
 /** Constructor with implicit type */
-SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement() , argType( TypeSpec(RbLanguageObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement() , argType( TypeSpec(RevObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
     
     // Make argument rule from element
     if (defaultExpr == NULL)
@@ -40,7 +40,7 @@ SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : 
 
 
 /** Constructor with explicit type */
-SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement(), argType( TypeSpec(RbLanguageObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement(), argType( TypeSpec(RevObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
 
     // Count dimensions and check if reference
     int         nDim        = 0;
@@ -152,7 +152,7 @@ void SyntaxFormal::printValue(std::ostream& o) const {
  * We only change the default expression.
  * Some crazy kids might declare functions inside loops!?!
  */
-void SyntaxFormal::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxFormal::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     defaultExpr->replaceVariableWithConstant(name, c);
     

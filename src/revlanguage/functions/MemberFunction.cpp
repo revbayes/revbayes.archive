@@ -47,7 +47,7 @@ MemberFunction* MemberFunction::clone(void) const
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject* MemberFunction::execute( void ) 
+RevObject* MemberFunction::execute( void ) 
 {
     
     return object->getValue().executeMethod( funcName, args );

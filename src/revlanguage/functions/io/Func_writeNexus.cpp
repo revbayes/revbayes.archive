@@ -33,7 +33,7 @@ Func_writeNexus* Func_writeNexus::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RbLanguageObject* Func_writeNexus::execute( void ) 
+RevObject* Func_writeNexus::execute( void ) 
 {
     
     // get the information from the arguments for reading the file

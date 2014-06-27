@@ -23,7 +23,7 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_structure::execute( void ) {
+RevObject* Func_structure::execute( void ) {
     
     std::ostringstream o;
 
@@ -47,7 +47,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

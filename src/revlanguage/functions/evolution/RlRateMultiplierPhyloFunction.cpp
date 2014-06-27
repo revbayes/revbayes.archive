@@ -22,7 +22,7 @@ RateMultiplierPhyloFunction* RateMultiplierPhyloFunction::clone( void ) const
 }
 
 
-RbLanguageObject* RateMultiplierPhyloFunction::execute() 
+RevObject* RateMultiplierPhyloFunction::execute() 
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getValue() ).getValueNode();

@@ -2,8 +2,8 @@
 #ifndef RlTaxon_H
 #define RlTaxon_H
 
+#include "ModelObject.h"
 #include "Taxon.h"
-#include "RlModelVariableWrapper.h"
 
 #include <set>
 #include <string>
@@ -27,7 +27,7 @@ namespace RevLanguage {
     *
     */
     
-    class Taxon : public RlModelVariableWrapper<RevBayesCore::Taxon> {
+    class Taxon : public ModelObject<RevBayesCore::Taxon> {
         
     public:
         Taxon(void);                                                                                                                         //!< Constructor requires character type
@@ -48,7 +48,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         void                                setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable

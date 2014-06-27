@@ -10,21 +10,21 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData(void) : RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>(), methods() {
+AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(), methods() {
     
     initMethods();
     
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>( v ), methods() {
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ), methods() {
     
     initMethods();
     
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>( d ), methods() {
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ), methods() {
     
     initMethods();
     
@@ -39,7 +39,7 @@ AbstractCharacterData* AbstractCharacterData::clone() const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     
     if (name == "chartype") 
@@ -49,7 +49,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     }
     else if (name == "excludeCharacter")
     {
-        const RbLanguageObject& argument = args[0].getVariable()->getValue();
+        const RevObject& argument = args[0].getVariable()->getValue();
         if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
         {
             size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
@@ -115,22 +115,22 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     //    else if (name == "nexcludedtaxa")
     //    {
     //        int n = (int)deletedTaxa.size();
-    //        return RbPtr<RbLanguageObject>( new Natural(n) );
+    //        return RbPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "nexcludedchars")
     //    {
     //        int n = (int)deletedCharacters.size();
-    //        return RbPtr<RbLanguageObject>( new Natural(n) );
+    //        return RbPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "nincludedtaxa")
     //    {
     //        int n = (int)(data.getNumberOfTaxa() - deletedTaxa.size());
-    //        return RbPtr<RbLanguageObject>( new Natural(n) );
+    //        return RbPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "nincludedchars")
     //    {
     //        int n = (int)(data.getNumberOfCharacters() - deletedCharacters.size());
-    //        return RbPtr<RbLanguageObject>( new Natural(n) );
+    //        return RbPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "excludedtaxa")
     //    {
@@ -172,12 +172,12 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
     //    else if (name == "nconstantpatterns")
     //    {
     //        int n = (int)numConstantPatterns();
-    //        return RbPtr<RbLanguageObject>( new Natural(n) );
+    //        return RbPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "ncharswithambiguity")
     //    {
     //        int n = (int)numMissAmbig();
-    //        return RbPtr<RbLanguageObject>( new Natural(n) );
+    //        return RbPtr<RevObject>( new Natural(n) );
     //    }
     else if (name == "show") 
     {
@@ -215,7 +215,7 @@ RbLanguageObject* AbstractCharacterData::executeMethod(std::string const &name, 
         return new RlBoolean(ih);
     } 
     
-    return RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::AbstractCharacterData>::executeMethod( name, args );
 }
 
 
@@ -230,7 +230,7 @@ const std::string& AbstractCharacterData::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& AbstractCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -304,7 +304,7 @@ void AbstractCharacterData::initMethods(void) {
     methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
     // necessary call for proper inheritance
-    methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::AbstractCharacterData>::getMethods() );
+    methods.setParentTable( &ModelObject<RevBayesCore::AbstractCharacterData>::getMethods() );
     
     
 }

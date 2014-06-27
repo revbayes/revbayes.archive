@@ -34,7 +34,7 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTreeTrace::execute( void ) {
+RevObject* Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() ).getValue();
@@ -61,7 +61,7 @@ RbLanguageObject* Func_readTreeTrace::execute( void ) {
         myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
     }
     
-    RbLanguageObject *rv;
+    RevObject *rv;
     if ( treetype == "clock" ) {
         rv = readTimeTrees(vectorOfFileNames);
     } else if ( treetype == "non-clock" ) {

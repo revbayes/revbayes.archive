@@ -1,8 +1,8 @@
 #ifndef RlString_H
 #define RlString_H
 
+#include "ModelObject.h"
 #include "RlBoolean.h"
-#include "RlModelVariableWrapper.h"
 #include "TypedDagNode.h"
 
 #include <fstream>
@@ -10,7 +10,7 @@
 
 namespace RevLanguage {
 
-    class RlString : public RlModelVariableWrapper<std::string> {
+    class RlString : public ModelObject<std::string> {
 
         public:
             RlString(void);                                                                         //!< Default: empty RlString
@@ -20,7 +20,7 @@ namespace RevLanguage {
             RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
         
             // Basic operator functions
-            RbLanguageObject*               add(const RbLanguageObject &rhs) const;                 //!< Addition operator used for example in '+=' statements
+            RevObject*               add(const RevObject &rhs) const;                 //!< Addition operator used for example in '+=' statements
             RlString*                       add(const RlString &rhs) const;                         //!< Addition operator used for example in '+=' statements
 
             // Basic utility functions

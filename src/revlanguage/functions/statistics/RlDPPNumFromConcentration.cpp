@@ -35,7 +35,7 @@ DPPNumFromConcentration* DPPNumFromConcentration::clone( void ) const {
 }
 
 
-RbLanguageObject* DPPNumFromConcentration::execute() {
+RevObject* DPPNumFromConcentration::execute() {
 	
     double cp = static_cast<const RealPos &>( args[0].getVariable()->getValue() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getValue() ).getValue();

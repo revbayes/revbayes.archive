@@ -20,7 +20,7 @@
 #define RlDnaState_H
 
 #include "DnaState.h"
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -28,7 +28,7 @@
 
 namespace RevLanguage {
     
-    class DnaState : public RlModelVariableWrapper<RevBayesCore::DnaState> {
+    class DnaState : public ModelObject<RevBayesCore::DnaState> {
         
     public:
         DnaState(void);                                                          //!< Default constructor
@@ -38,7 +38,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         DnaState*                       clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object

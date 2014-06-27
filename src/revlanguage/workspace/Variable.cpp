@@ -39,11 +39,11 @@ Variable::Variable(const TypeSpec& ts) :
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(RbLanguageObject *v, const std::string &n) : 
+Variable::Variable(RevObject *v, const std::string &n) : 
 name( n ), 
 refCount( 0 ),
 value( NULL ),
-valueTypeSpec( RbLanguageObject::getClassTypeSpec() )
+valueTypeSpec( RevObject::getClassTypeSpec() )
 {
     
     setValue( v );
@@ -127,7 +127,7 @@ size_t Variable::getReferenceCount(void) const {
 
 
 /* Get the value of the variable */
-const RbLanguageObject& Variable::getValue(void) const {
+const RevObject& Variable::getValue(void) const {
 
     if (value == NULL) 
     {
@@ -138,7 +138,7 @@ const RbLanguageObject& Variable::getValue(void) const {
 }
 
 /** Get the value of the variable */
-RbLanguageObject& Variable::getValue(void) {
+RevObject& Variable::getValue(void) {
     
     if (value == NULL) 
     {
@@ -177,7 +177,7 @@ void Variable::printValue(std::ostream& o) const {
 
 
 /** Set variable */
-void Variable::setValue( RbLanguageObject *newValue ) {
+void Variable::setValue( RevObject *newValue ) {
     
     // change the old variable with the new variable in the parent and children
     replaceValue( newValue );
@@ -193,7 +193,7 @@ void Variable::setName(std::string const &n) {
 
 
 /** Replace DAG node, only keep the children */
-void Variable::replaceValue( RbLanguageObject *newValue ) {
+void Variable::replaceValue( RevObject *newValue ) {
     
     if (value != NULL) 
     {

@@ -16,8 +16,8 @@
 #ifndef RlTopology_H
 #define RlTopology_H
 
+#include "ModelObject.h"
 #include "Topology.h"
-#include "RlModelVariableWrapper.h"
 
 #include <set>
 #include <string>
@@ -27,7 +27,7 @@
 namespace RevLanguage {
     
     
-    class Topology : public RlModelVariableWrapper<RevBayesCore::Topology> {
+    class Topology : public ModelObject<RevBayesCore::Topology> {
         
     public:
         Topology(void);                                                                                                                         //!< Constructor requires character type
@@ -46,7 +46,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     };
     

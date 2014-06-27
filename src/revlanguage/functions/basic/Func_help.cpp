@@ -37,7 +37,7 @@ Func_help* Func_help::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_help::execute( void ) {
+RevObject* Func_help::execute( void ) {
     
     
     RBOUT( "\n" );

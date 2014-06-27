@@ -19,7 +19,7 @@
 #ifndef FunctionTable_H
 #define FunctionTable_H
 
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbPtr.h"
 
 #include <map>
@@ -51,7 +51,7 @@ class FunctionTable {
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, Function *func);                                    //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
-        RbLanguageObject*                       executeFunction(const std::string&           name,
+        RevObject*                              executeFunction(const std::string&           name,
                                                                 const std::vector<Argument>& args);                                     //!< Evaluate function (once)
         bool                                    existsFunction(const std::string &name) const;                                          //!< Does this table contain a function with given name?
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)

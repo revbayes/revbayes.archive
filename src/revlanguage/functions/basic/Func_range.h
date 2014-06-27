@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions
     
-        RbLanguageObject*                       execute(void);                                                              //!< Execute function
+        RevObject*                              execute(void);                                                              //!< Execute function
     
     };
     

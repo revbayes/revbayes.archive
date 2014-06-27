@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "Real.h"
@@ -12,7 +12,7 @@
 
 using namespace RevLanguage;
 
-PathSampler::PathSampler() : RlControlVariableWrapper<RevBayesCore::PathSampler>() {
+PathSampler::PathSampler() : WorkspaceObject<RevBayesCore::PathSampler>() {
     
 }
 
@@ -40,7 +40,7 @@ void PathSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "marginal")
     {
@@ -50,7 +50,7 @@ RbLanguageObject* PathSampler::executeMethod(std::string const &name, const std:
         return new Real( ml );
     }
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -67,7 +67,7 @@ const std::string& PathSampler::getClassName(void)
 const TypeSpec& PathSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -106,7 +106,7 @@ const MethodTable& PathSampler::getMethods(void) const {
         methods.addFunction("marginal", new MemberFunction( Real::getClassTypeSpec(), marginalArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -150,6 +150,6 @@ void PathSampler::setConstMemberVariable(const std::string& name, const RbPtr<co
     }
     else
     {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

@@ -32,9 +32,9 @@ class ArgumentRule {
 
     public: 
         ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp);                                             //!< Constructor of rule without default value
-        ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal);             //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RevObject *defVal);             //!< Constructor of rule without default value
         ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp);                                             //!< Constructor of rule without default value
-        ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal);             //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RevObject *defVal);             //!< Constructor of rule without default value
         virtual                            ~ArgumentRule(void) {}
         
         // Basic utility functions
@@ -53,7 +53,7 @@ class ArgumentRule {
 
     protected:
 
-//        bool                                isArgumentValid(const RbLanguageObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
+//        bool                                isArgumentValid(const RevObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
             
         std::vector<TypeSpec>               argTypeSpecs;
         Variable*                           defaultVar;

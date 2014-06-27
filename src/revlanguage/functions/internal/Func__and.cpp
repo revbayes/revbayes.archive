@@ -30,7 +30,7 @@ Func__and* Func__and::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RbLanguageObject* Func__and::execute( void ) {
+RevObject* Func__and::execute( void ) {
     
     const RevBayesCore::TypedDagNode<bool>* leftVal = static_cast<const RlBoolean &>( args[0].getVariable()->getValue() ).getValueNode();
     const RevBayesCore::TypedDagNode<bool>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getValue() ).getValueNode();

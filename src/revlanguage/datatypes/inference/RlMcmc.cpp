@@ -5,7 +5,6 @@
 #include "Mcmc.h"
 #include "Model.h"
 #include "OptionRule.h"
-#include "RbLanguageObject.h"
 #include "RbException.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
@@ -18,7 +17,7 @@
 
 using namespace RevLanguage;
 
-Mcmc::Mcmc() : RlControlVariableWrapper<RevBayesCore::Mcmc>() {
+Mcmc::Mcmc() : WorkspaceObject<RevBayesCore::Mcmc>() {
     
 }
 
@@ -45,7 +44,7 @@ void Mcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") 
     {
@@ -71,7 +70,7 @@ RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector
         return NULL;
     }
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -86,7 +85,7 @@ const std::string& Mcmc::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mcmc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -138,7 +137,7 @@ const MethodTable& Mcmc::getMethods(void) const {
         methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -177,6 +176,6 @@ void Mcmc::setConstMemberVariable(const std::string& name, const RbPtr<const Var
         moveSchedule = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

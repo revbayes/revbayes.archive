@@ -43,10 +43,10 @@ namespace RevLanguage {
         RbPtr<Variable>             evaluateContent( Environment& env );                                            //!< Get semantic value
         void                        finalizeLoop(void);                                                             //!< Finalize loop
         const std::string&          getIndexVarName(void) const;                                                    //!< Get the name of the index variable
-        RbLanguageObject*           getNextLoopState(void);                                                         //!< Get next state of loop
+        RevObject*           getNextLoopState(void);                                                         //!< Get next state of loop
         bool                        isFinished() const;                                                             //!< Have we iterated over the whole loop?
         void                        initializeLoop(Environment& env);                                               //!< Initialize loop
-        void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                 varName;                                                                        //!< The name of the loop variable

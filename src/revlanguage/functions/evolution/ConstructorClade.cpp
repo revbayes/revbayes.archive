@@ -26,7 +26,7 @@ ConstructorClade* ConstructorClade::clone( void ) const {
 }
 
 
-RbLanguageObject* ConstructorClade::execute() {
+RevObject* ConstructorClade::execute() {
     
     // now allocate a new Clade
     const std::vector<std::string>& n = static_cast<const Vector<RlString> &>( args[0].getVariable()->getValue() ).getValue();

@@ -87,7 +87,7 @@ void RevBayesCore::TypedUserFunction<valueType>::update( void ) {
 
     // We can rely on the fact that only objects with value nodes have a TypedUserFunction
     
-    RevLanguage::RbLanguageObject* retValue = userFunction->executeCode();
+    RevLanguage::RevObject* retValue = userFunction->executeCode();
     
     if(TypedFunction<valueType>::value != NULL)
         delete TypedFunction<valueType>::value;

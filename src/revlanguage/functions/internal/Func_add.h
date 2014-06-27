@@ -38,7 +38,7 @@ public:
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
 
     // Function functions you have to override
-    RbLanguageObject*                               execute(void);                                                                  //!< Execute function
+    RevObject*                                      execute(void);                                                                  //!< Execute function
     const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
 
@@ -69,7 +69,7 @@ RevLanguage::Func_add<firstValType, secondValType, retType>* RevLanguage::Func_a
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_add<firstValType, secondValType, retType>::execute() {
+RevLanguage::RevObject* RevLanguage::Func_add<firstValType, secondValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getValue() ).getValueNode();

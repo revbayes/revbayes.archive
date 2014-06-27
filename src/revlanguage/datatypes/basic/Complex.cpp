@@ -30,31 +30,31 @@ using namespace RevLanguage;
 
 
 /** Default constructor */
-Complex::Complex(void) : RlModelVariableWrapper<std::complex<double> >() {
+Complex::Complex(void) : ModelObject<std::complex<double> >() {
 
 }
 
 
 /** Copy constructor */
-Complex::Complex(const Complex& c) : RlModelVariableWrapper<std::complex<double> >( c ) {
+Complex::Complex(const Complex& c) : ModelObject<std::complex<double> >( c ) {
 
 }
 
 
 /** Construct from double */
-Complex::Complex(double x) : RlModelVariableWrapper<std::complex<double> >( new std::complex<double>( x, 0.0 ) ) {
+Complex::Complex(double x) : ModelObject<std::complex<double> >( new std::complex<double>( x, 0.0 ) ) {
 
 }
 
 
 /** Construct from int */
-Complex::Complex(int x) : RlModelVariableWrapper<std::complex<double> >( new std::complex<double>( double(x), 0.0 ) ) {
+Complex::Complex(int x) : ModelObject<std::complex<double> >( new std::complex<double>( double(x), 0.0 ) ) {
 
 }
 
 
 /** Construct from complex */
-Complex::Complex(const std::complex<double>& c) : RlModelVariableWrapper<std::complex<double> >( new std::complex<double>(c) ) {
+Complex::Complex(const std::complex<double>& c) : ModelObject<std::complex<double> >( new std::complex<double>(c) ) {
 
 }
 
@@ -77,7 +77,7 @@ const std::string& Complex::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Complex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

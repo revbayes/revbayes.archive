@@ -44,7 +44,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& a
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new Variable( defVal ) ),
     isConst( c ),
@@ -72,7 +72,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
     defaultVar( new Variable( defVal ) ),
     isConst( c ),
@@ -160,7 +160,7 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                 if ( convert ) 
                 {
                 
-                    RbLanguageObject* convObj = var->getValue().convertTo( *it );
+                    RevObject* convObj = var->getValue().convertTo( *it );
                     const_cast<Variable*>( (const Variable *) var )->setValue( convObj );
 
                     // set the new type spec of the variable

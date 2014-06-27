@@ -41,7 +41,7 @@ Func_range* Func_range::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_range::execute( void ) {
+RevObject* Func_range::execute( void ) {
     
     int f = static_cast<const Integer &>( args[0].getVariable()->getValue() ).getValue();
     int l = static_cast<const Integer &>( args[1].getVariable()->getValue() ).getValue();

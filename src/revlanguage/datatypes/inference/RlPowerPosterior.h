@@ -19,15 +19,15 @@
 #define RlPowerPosterior_H
 
 #include "PowerPosteriorMcmc.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class PowerPosterior : public RlControlVariableWrapper<RevBayesCore::PowerPosteriorMcmc> {
+    class PowerPosterior : public WorkspaceObject<RevBayesCore::PowerPosteriorMcmc> {
         
     public:
         
@@ -44,7 +44,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         

@@ -31,12 +31,12 @@
 
 namespace RevLanguage {
 
-    class RbLanguageObject;
+    class RevObject;
     class Distribution;
     class RandomNumberGenerator;
     class Function;
 
-    typedef std::map<std::string, RbLanguageObject*> TypeTable;
+    typedef std::map<std::string, RevObject*> TypeTable;
 
     /**
      * @brief Workspace
@@ -80,13 +80,13 @@ namespace RevLanguage {
         bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution on continuous variable
         //        bool                            addDistribution(const std::string& name, DistributionContinuous *dist);                       //!< Add distribution on continuous variable
         //        bool                            addType(RlMo *exampleObj);                                                          //!< Add type
-        bool                    addType(RbLanguageObject *exampleObj);                                      //!< Add type (auto-generated name = rbClassName)
-        bool                    addType(const std::string& name, RbLanguageObject *exampleObj);             //!< Add special abstract type (synonym)
-        bool                    addTypeWithConstructor(const std::string& name, RbLanguageObject *templ);   //!< Add type with constructor
+        bool                    addType(RevObject *exampleObj);                                      //!< Add type (auto-generated name = rbClassName)
+        bool                    addType(const std::string& name, RevObject *exampleObj);             //!< Add special abstract type (synonym)
+        bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);   //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const TypeSpec& name) const;                                     //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
-        RbLanguageObject*       getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
+        RevObject*       getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
         const std::string&      getTemplateValueType(const std::string& type) const;                        //!< Get the templated internal value type of the object
         TypeTable               getTypeTable(void){ return typeTable; }
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace

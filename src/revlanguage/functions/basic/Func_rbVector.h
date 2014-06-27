@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RbLanguageObject*           execute(void);                                              //!< Execute function
+        RevObject*                  execute(void);                                              //!< Execute function
         
     };
     
@@ -75,7 +75,7 @@ RevLanguage::Func_rbVector<valType>* RevLanguage::Func_rbVector<valType>::clone(
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_rbVector<valType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func_rbVector<valType>::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {

@@ -44,7 +44,7 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_clear::execute( void ) {
+RevObject* Func_clear::execute( void ) {
     
     // we clear the entire workspace if there were no arguments
     if ( args.size() == 0 )
@@ -71,7 +71,7 @@ const ArgumentRules& Func_clear::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

@@ -19,7 +19,7 @@
 #define RlModel_H
 
 #include "Model.h"
-#include "RlControlVariableWrapper.h"
+#include "WorkspaceObject.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -27,7 +27,7 @@
 
 namespace RevLanguage {
     
-    class Model : public RlControlVariableWrapper<RevBayesCore::Model> {
+    class Model : public WorkspaceObject<RevBayesCore::Model> {
         
     public:
         

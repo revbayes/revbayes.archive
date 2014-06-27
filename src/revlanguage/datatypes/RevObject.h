@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of RbLanguageObject, which is
+ * This file contains the declaration of RevObject, which is
  * the RevBayes abstract base class for all language objects.
  *
  * @brief Declaration of RbObject
@@ -14,8 +14,8 @@
  * $Id$
  */
 
-#ifndef RbLanguageObject_H
-#define RbLanguageObject_H
+#ifndef RevObject_H
+#define RevObject_H
 
 #include "DagNode.h"
 #include "RbPtr.h"
@@ -38,27 +38,27 @@ typedef ArgumentRules MemberRules;                                              
 
 
 
-class RbLanguageObject {
+class RevObject {
     
 public:
-    virtual                            ~RbLanguageObject(void);                                                                         //!< Virtual destructor
+    virtual                            ~RevObject(void);                                                                         //!< Virtual destructor
     
     // overloaded operators
-    bool                                operator==(const RbLanguageObject& x) const { return &x == this; }
-    bool                                operator!=(const RbLanguageObject& x) const { return !operator==(x); }
-    bool                                operator<(const RbLanguageObject& x) const { return false; }
+    bool                                operator==(const RevObject& x) const { return &x == this; }
+    bool                                operator!=(const RevObject& x) const { return !operator==(x); }
+    bool                                operator<(const RevObject& x) const { return false; }
     
     // Basic operator functions
-    virtual RbLanguageObject*           add(const RbLanguageObject &rhs) const;                                                         //!< Addition operator used for example in '+=' statements
+    virtual RevObject*           add(const RevObject &rhs) const;                                                         //!< Addition operator used for example in '+=' statements
     virtual void                        decrement(void);                                                                                //!< Decrement operator used for example in 'a--' statements
-    virtual RbLanguageObject*           divide(const RbLanguageObject &rhs) const;                                                      //!< Division operator used for example in '/=' statements
+    virtual RevObject*           divide(const RevObject &rhs) const;                                                      //!< Division operator used for example in '/=' statements
     virtual void                        increment(void);                                                                                //!< Increment operator used for example in 'a++' statements
-    virtual RbLanguageObject*           multiply(const RbLanguageObject &rhs) const;                                                    //!< Multiplication operator used for example in '-=' statements
-    virtual RbLanguageObject*           subtract(const RbLanguageObject &rhs) const;                                                    //!< Subtraction operator used for example in '*=' statements
+    virtual RevObject*           multiply(const RevObject &rhs) const;                                                    //!< Multiplication operator used for example in '-=' statements
+    virtual RevObject*           subtract(const RevObject &rhs) const;                                                    //!< Subtraction operator used for example in '*=' statements
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
-    virtual RbLanguageObject*           clone(void) const = 0;                                                                          //!< Clone object
-    virtual RbLanguageObject*           dagReference(void);                                                                             //!< Make an object referencing the dag node of this object
+    virtual RevObject*           clone(void) const = 0;                                                                          //!< Clone object
+    virtual RevObject*           dagReference(void);                                                                             //!< Make an object referencing the dag node of this object
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const std::string&          getTemplateValueType(void) const;                                                               //!< Get the type spec of the instance
@@ -68,7 +68,7 @@ public:
     
     // Basic utility functions you may want to override
     virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
-    virtual RbLanguageObject*           convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
+    virtual RevObject*           convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
     virtual RevBayesCore::DagNode*      getValueNode(void) const;                                                                       //!< Get my internal value node (if applicable)
     virtual bool                        hasValueNode(void) const;                                                                       //!< Do I have an internal value node?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
@@ -76,13 +76,13 @@ public:
     // Functions that wrapper objects containing RB core objects might want to override
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual void                        replaceVariable(RbLanguageObject *newVar);                                                      //!< Replace the internal DAG node and prepare to replace me
+    virtual void                        replaceVariable(RevObject *newVar);                                                      //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
     virtual void                        setValueNode(RevBayesCore::DagNode *newVal);                                                    //!< Set or replace the internal dag node (and keep me)
 
     // Member variable functions you may want to override
-    virtual RbLanguageObject*           executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
-    virtual RbLanguageObject*           getMember(const std::string& name) const;                                                       //!< Get member variable 
+    virtual RevObject*           executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
+    virtual RevObject*           getMember(const std::string& name) const;                                                       //!< Get member variable 
     virtual const MemberRules&          getMemberRules(void) const;                                                                     //!< Get member rules
     virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods (const)
     virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
@@ -95,8 +95,8 @@ public:
     bool                                isTypeSpec(const TypeSpec& typeSpec) const;                                                     //!< Does the language type of the object fit type specification typeSpec?
 
 protected:
-    RbLanguageObject(void) {}                                                                                                           //!< No objects of this class
-    RbLanguageObject(const MemberRules& memberRules);                                                                                   //!< Standard constructor
+    RevObject(void) {}                                                                                                           //!< No objects of this class
+    RevObject(const MemberRules& memberRules);                                                                                   //!< Standard constructor
 
     virtual void                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
     virtual void                        setMemberVariable(const std::string& name, const RbPtr<Variable> &var);                         //!< Set member variable
@@ -107,7 +107,7 @@ protected:
 }
 
 // Global functions using the class
-std::ostream&                       operator<<(std::ostream& o, const RevLanguage::RbLanguageObject& x);                                             //!< Overloaded output operator
+std::ostream&                       operator<<(std::ostream& o, const RevLanguage::RevObject& x);                                             //!< Overloaded output operator
 
 
 

@@ -28,7 +28,7 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_sqrt::execute() {
+RevObject* Func_sqrt::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::SqrtFunction* f = new RevBayesCore::SqrtFunction( arg );

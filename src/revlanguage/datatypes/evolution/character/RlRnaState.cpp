@@ -27,12 +27,12 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-RnaState::RnaState(void) : RlModelVariableWrapper<RevBayesCore::RnaState>() {
+RnaState::RnaState(void) : ModelObject<RevBayesCore::RnaState>() {
     
 }
 
 /** Construct from bool */
-RnaState::RnaState(const RevBayesCore::RnaState &d) : RlModelVariableWrapper<RevBayesCore::RnaState>( new RevBayesCore::RnaState(d) ) {
+RnaState::RnaState(const RevBayesCore::RnaState &d) : ModelObject<RevBayesCore::RnaState>( new RevBayesCore::RnaState(d) ) {
     
 }
 
@@ -45,9 +45,9 @@ RnaState* RnaState::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* RnaState::convertTo(const TypeSpec& type) const {
+RevObject* RnaState::convertTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::convertTo(type);
+    return RevObject::convertTo(type);
 }
 
 
@@ -62,7 +62,7 @@ const std::string& RnaState::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RnaState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -80,6 +80,6 @@ const TypeSpec& RnaState::getTypeSpec( void ) const {
 /** Is convertible to type? */
 bool RnaState::isConvertibleTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 

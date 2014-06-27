@@ -49,11 +49,11 @@ namespace RevLanguage {
         void                                        makeConstantValue();                                                //!< Convert the stored variable to a constant variable (if applicable)
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                        setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
-        void                                        replaceVariable(RbLanguageObject *newVar);                          //!< Replace the internal DAG node
+        void                                        replaceVariable(RevObject *newVar);                          //!< Replace the internal DAG node
 
         // function you might want to overwrite
-        virtual RbLanguageObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-        virtual RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        virtual RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
 
         // Container functions you should not have to override
@@ -62,13 +62,13 @@ namespace RevLanguage {
         void                                        clear(void);                                                    //!< Clear
         iterator                                    end(void);                                                      //!< Iterator to the end of the Vector
         const_iterator                              end(void) const;                                                //!< Const-iterator to the end of the Vector
-        int                                         findIndex(const RbLanguageObject& x) const;                     //!< Find the index if the element being equal to that one
+        int                                         findIndex(const RevObject& x) const;                     //!< Find the index if the element being equal to that one
         void                                        pop_back(void);                                                 //!< Drop element at back
         void                                        pop_front(void);                                                //!< Drop element from front
         size_t                                      size(void) const;                                               //!< get the number of elements in the AbstractVector
   
         // Container functions you have to overwrite
-        virtual RbLanguageObject*                   getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
+        virtual RevObject*                   getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
         virtual void                                sort(void) = 0;                                                 //!< sort the AbstractVector
         virtual void                                unique(void)= 0 ;                                               //!< removes consecutive duplicates
 
@@ -201,7 +201,7 @@ void RevLanguage::TypedContainer<rlType>::clear( void ) {
 
 /** Clear the container. */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rlType>::convertTo(const RevLanguage::TypeSpec &type ) const {
+RevLanguage::RevObject* RevLanguage::TypedContainer<rlType>::convertTo(const RevLanguage::TypeSpec &type ) const {
     
     return Container::convertTo( type );
 }
@@ -225,7 +225,7 @@ typename rlType::const_iterator RevLanguage::TypedContainer<rlType>::end( void )
 
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::TypedContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "clamp") 
     {
@@ -306,7 +306,7 @@ RevLanguage::RbLanguageObject* RevLanguage::TypedContainer<rbType>::executeMetho
  * \return The index or -1 if we didn't find it.
  */
 template <typename rbType>
-int RevLanguage::TypedContainer<rbType>::findIndex(const RbLanguageObject& x) const {
+int RevLanguage::TypedContainer<rbType>::findIndex(const RevObject& x) const {
     
     // get the iterator to the first element
     typename rbType::const_iterator i;
@@ -437,7 +437,7 @@ void RevLanguage::TypedContainer<rbType>::printValue(std::ostream &o) const {
 
 
 template <typename rbType>
-void RevLanguage::TypedContainer<rbType>::replaceVariable(RbLanguageObject *newVar) {
+void RevLanguage::TypedContainer<rbType>::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getValueNode();
     

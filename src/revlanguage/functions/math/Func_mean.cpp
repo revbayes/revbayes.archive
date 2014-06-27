@@ -29,7 +29,7 @@ Func_mean* Func_mean::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_mean::execute() {
+RevObject* Func_mean::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const Vector<Real> &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::MeanFunction* f = new RevBayesCore::MeanFunction( arg );

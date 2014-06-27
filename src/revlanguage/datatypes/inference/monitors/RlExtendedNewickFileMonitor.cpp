@@ -3,7 +3,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ExtendedNewickTreeMonitor.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlExtendedNewickFileMonitor.h"
 #include "RlString.h"
@@ -75,7 +75,7 @@ const MemberRules& ExtendedNewickFileMonitor::getMemberRules(void) const {
     if ( !rulesSet ) {
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        ExtendedNewickFileMonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
@@ -133,6 +133,6 @@ void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, 
         likelihood = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

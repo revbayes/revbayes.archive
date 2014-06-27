@@ -92,7 +92,7 @@ Simplex* Simplex::clone( void ) const {
 
 
 /** Clear the container. */
-RbLanguageObject* Simplex::convertTo(const TypeSpec &type ) const {
+RevObject* Simplex::convertTo(const TypeSpec &type ) const {
     
     return Container::convertTo( type );
 }
@@ -113,7 +113,7 @@ Simplex::const_iterator Simplex::end( void ) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* Simplex::executeMethod(std::string const &name, const std::vector<Argument> &args) {
         
     if ( name == "[]") 
     {
@@ -145,7 +145,7 @@ RbLanguageObject* Simplex::executeMethod(std::string const &name, const std::vec
  * \param x the element we are looking for. 
  * \return The index or -1 if we didn't find it.
  */
-int Simplex::findIndex(const RbLanguageObject& x) const {
+int Simplex::findIndex(const RevObject& x) const {
     
     // get the iterator to the first element
     const_iterator i;
@@ -183,7 +183,7 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
 }
 
 
-RbLanguageObject* Simplex::getElement(size_t index) {
+RevObject* Simplex::getElement(size_t index) {
     
     return new RealPos( value->getValue()[index] );
 }
@@ -287,7 +287,7 @@ void Simplex::printValue(std::ostream &o) const {
 }
 
 
-void Simplex::replaceVariable(RbLanguageObject *newVar) {
+void Simplex::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getValueNode();
     

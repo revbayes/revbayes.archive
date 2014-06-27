@@ -33,7 +33,7 @@ TreeAssemblyFunction* TreeAssemblyFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* TreeAssemblyFunction::execute() {
+RevObject* TreeAssemblyFunction::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getValue() ).getValueNode();

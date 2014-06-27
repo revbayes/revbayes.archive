@@ -42,7 +42,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_quit::execute( void ) {
+RevObject* Func_quit::execute( void ) {
     
     throw RbException( RbException::QUIT );
     

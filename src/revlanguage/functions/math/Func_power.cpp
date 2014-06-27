@@ -28,7 +28,7 @@ Func_power* Func_power::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_power::execute() {
+RevObject* Func_power::execute() {
     
     RevBayesCore::TypedDagNode<double>* b = static_cast<const Real &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<double>* e = static_cast<const Real &>( this->args[1].getVariable()->getValue() ).getValueNode();

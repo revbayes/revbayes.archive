@@ -20,7 +20,7 @@
 #include "Ellipsis.h"
 #include "RbException.h"
 #include "Function.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbUtil.h"
 #include "Vector.h"
 #include "Workspace.h"
@@ -30,13 +30,13 @@
 using namespace RevLanguage;
 
 /** Basic constructor. */
-Function::Function(void) : RbLanguageObject(), args( ) {
+Function::Function(void) : RevObject(), args( ) {
 
     argsProcessed = false;
 }
 
 /** Copy constructor. */
-Function::Function(const Function &x) : RbLanguageObject( x ), 
+Function::Function(const Function &x) : RevObject( x ), 
     argsProcessed( x.argsProcessed ),
     args( x.args ),
     env( x.env ),
@@ -354,7 +354,7 @@ const std::string& Function::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Function::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

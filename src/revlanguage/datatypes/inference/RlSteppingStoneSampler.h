@@ -2,8 +2,8 @@
 #define RlSteppingStoneSampler_H
 
 #include "SteppingStoneSampler.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
@@ -23,7 +23,7 @@ namespace RevLanguage {
      * @since Version 1.0, 2012-06-17
      *
      */
-    class SteppingStoneSampler : public RlControlVariableWrapper<RevBayesCore::SteppingStoneSampler> {
+    class SteppingStoneSampler : public WorkspaceObject<RevBayesCore::SteppingStoneSampler> {
         
     public:
         
@@ -40,7 +40,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                                 //!< Get methods
-        RbLanguageObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         

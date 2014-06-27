@@ -216,14 +216,14 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 void Environment::addVariable(const std::string& name, const RbPtr<Variable>& theVar) {
 
     // create a new slot
-    VariableSlot* theSlot = new VariableSlot(name, RbLanguageObject::getClassTypeSpec(), theVar);
+    VariableSlot* theSlot = new VariableSlot(name, RevObject::getClassTypeSpec(), theVar);
 
     // call function to add the slot
     addVariable(name, theSlot);
 }
 
 /** Add variable to frame */
-void Environment::addVariable(const std::string& name, RbLanguageObject* val) {
+void Environment::addVariable(const std::string& name, RevObject* val) {
     // create a new variable object
     RbPtr<Variable> var = RbPtr<Variable>(new Variable(val));
 
@@ -282,7 +282,7 @@ void Environment::eraseVariable(const std::string& name) {
 }
 
 /* Execute function to get its value (workspaces only evaluate functions once) */
-RbLanguageObject* Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+RevObject* Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     /* Using this calling convention indicates that we are only interested in
      evaluating the function once */
@@ -359,7 +359,7 @@ const std::string& Environment::getName(size_t i) const {
 }
 
 /** Get value, alternative method */
-const RbLanguageObject& Environment::getValue(const std::string& name) const {
+const RevObject& Environment::getValue(const std::string& name) const {
 
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find(name);
@@ -376,7 +376,7 @@ const RbLanguageObject& Environment::getValue(const std::string& name) const {
 }
 
 /** Get value, alternative method */
-RbLanguageObject& Environment::getValue(const std::string& name) {
+RevObject& Environment::getValue(const std::string& name) {
 
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find(name);

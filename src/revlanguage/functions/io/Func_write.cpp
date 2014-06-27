@@ -38,7 +38,7 @@ Func_write* Func_write::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_write::execute( void ) {
+RevObject* Func_write::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
@@ -101,8 +101,8 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "", true, RbLanguageObject::getClassTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, RevObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec(), new RlString("") ) );
         argumentRules.push_back( new ArgumentRule( "append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "separator", true, RlString::getClassTypeSpec(), new RlString("\t") ) );

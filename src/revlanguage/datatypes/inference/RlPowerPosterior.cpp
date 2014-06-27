@@ -5,7 +5,7 @@
 #include "DistributionBeta.h"
 #include "PowerPosteriorMcmc.h"
 #include "Model.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RbNullObject.h"
 #include "Real.h"
@@ -20,7 +20,7 @@
 
 using namespace RevLanguage;
 
-PowerPosterior::PowerPosterior() : RlControlVariableWrapper<RevBayesCore::PowerPosteriorMcmc>() {
+PowerPosterior::PowerPosterior() : WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>() {
     
 }
 
@@ -63,7 +63,7 @@ void PowerPosterior::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") {
         // get the member with give index
@@ -81,7 +81,7 @@ RbLanguageObject* PowerPosterior::executeMethod(std::string const &name, const s
         return NULL;
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -96,7 +96,7 @@ const std::string& PowerPosterior::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& PowerPosterior::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -141,7 +141,7 @@ const MethodTable& PowerPosterior::getMethods(void) const {
         
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -185,6 +185,6 @@ void PowerPosterior::setConstMemberVariable(const std::string& name, const RbPtr
     }
     else
     {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

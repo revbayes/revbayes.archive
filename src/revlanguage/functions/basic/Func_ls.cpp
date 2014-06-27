@@ -45,7 +45,7 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_ls::execute( void ) {
+RevObject* Func_ls::execute( void ) {
     
     bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getValue() ).getValue();
     

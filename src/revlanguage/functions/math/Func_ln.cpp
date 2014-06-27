@@ -28,7 +28,7 @@ Func_ln* Func_ln::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_ln::execute() {
+RevObject* Func_ln::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const RealPos &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::LnFunction* f = new RevBayesCore::LnFunction( arg );

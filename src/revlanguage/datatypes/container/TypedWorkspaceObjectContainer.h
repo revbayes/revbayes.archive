@@ -16,8 +16,8 @@
  * $Id: Container.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef TypedControlVariableContainer_H
-#define TypedControlVariableContainer_H
+#ifndef TypedWorkspaceObjectContainer_H
+#define TypedWorkspaceObjectContainer_H
 
 #include "Container.h"
 #include "TypeSpec.h"
@@ -29,7 +29,7 @@ namespace RevLanguage {
     
     
     template <typename rbType>
-    class TypedControlVariableContainer : public Container {
+    class TypedWorkspaceObjectContainer : public Container {
         
     public:
         // the value type definition
@@ -37,10 +37,10 @@ namespace RevLanguage {
         typedef typename rbType::iterator iterator;
         typedef typename rbType::const_iterator const_iterator;
         
-        virtual                                    ~TypedControlVariableContainer(void);                                //!< Destructor        
+        virtual                                    ~TypedWorkspaceObjectContainer(void);                                //!< Destructor        
         
         // Basic utility functions you have to override
-        virtual TypedControlVariableContainer*      clone(void) const = 0;                                              //!< Clone object
+        virtual TypedWorkspaceObjectContainer*      clone(void) const = 0;                                              //!< Clone object
         
         // Basic utility functions you should not have to override
         const rbType&                               getValue(void) const;
@@ -48,11 +48,11 @@ namespace RevLanguage {
         void                                        makeConstantValue();                                                //!< Convert the stored variable to a constant variable (if applicable)
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                        setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
-        void                                        replaceVariable(RbLanguageObject *newVar);                          //!< Replace the internal DAG node
+        void                                        replaceVariable(RevObject *newVar);                          //!< Replace the internal DAG node
         
         // function you might want to overwrite
-        virtual RbLanguageObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-        virtual RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        virtual RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
         
         // Container functions you should not have to override
@@ -61,21 +61,21 @@ namespace RevLanguage {
         void                                        clear(void);                                                    //!< Clear
         iterator                                    end(void);                                                      //!< Iterator to the end of the Vector
         const_iterator                              end(void) const;                                                //!< Const-iterator to the end of the Vector
-        int                                         findIndex(const RbLanguageObject& x) const;                     //!< Find the index if the element being equal to that one
+        int                                         findIndex(const RevObject& x) const;                     //!< Find the index if the element being equal to that one
         //        const std::vector<elementType>&             getValue(void) const;                                           //!< Get the stl Vector of elements
         void                                        pop_back(void);                                                 //!< Drop element at back
         void                                        pop_front(void);                                                //!< Drop element from front
         size_t                                      size(void) const;                                               //!< get the number of elements in the AbstractVector
         
         // Container functions you have to overwrite
-        virtual RbLanguageObject*                   getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
+        virtual RevObject*                   getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
         
     protected:
-        TypedControlVariableContainer(const TypeSpec &elemType);                                                                       //!< Set type spec of container from type of elements
-        TypedControlVariableContainer(const TypeSpec &elemType, const rbType& v);                                                      //!< Set type spec of container from type of elements
-        TypedControlVariableContainer(const TypedControlVariableContainer<rbType> &c);                                                                //!< Set type spec of container from type of elements
+        TypedWorkspaceObjectContainer(const TypeSpec &elemType);                                                                       //!< Set type spec of container from type of elements
+        TypedWorkspaceObjectContainer(const TypeSpec &elemType, const rbType& v);                                                      //!< Set type spec of container from type of elements
+        TypedWorkspaceObjectContainer(const TypedWorkspaceObjectContainer<rbType> &c);                                                                //!< Set type spec of container from type of elements
         
-        TypedControlVariableContainer&              operator=(const TypedControlVariableContainer& x);                                 //!< Assignment operator
+        TypedWorkspaceObjectContainer&              operator=(const TypedWorkspaceObjectContainer& x);                                 //!< Assignment operator
         
         rbType                                      value;
         
@@ -94,35 +94,35 @@ namespace RevLanguage {
 #include "StochasticNode.h"
 
 template <typename rbType>
-RevLanguage::TypedControlVariableContainer<rbType>::TypedControlVariableContainer(const TypeSpec &elemType) : Container(elemType), value() {
+RevLanguage::TypedWorkspaceObjectContainer<rbType>::TypedWorkspaceObjectContainer(const TypeSpec &elemType) : Container(elemType), value() {
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedControlVariableContainer<rbType>::TypedControlVariableContainer(const TypeSpec &elemType, const rbType &v) : Container(elemType), value( v ) {
+RevLanguage::TypedWorkspaceObjectContainer<rbType>::TypedWorkspaceObjectContainer(const TypeSpec &elemType, const rbType &v) : Container(elemType), value( v ) {
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedControlVariableContainer<rbType>::TypedControlVariableContainer(const TypedControlVariableContainer &v) : Container( v ), value( v.value ) {
+RevLanguage::TypedWorkspaceObjectContainer<rbType>::TypedWorkspaceObjectContainer(const TypedWorkspaceObjectContainer &v) : Container( v ), value( v.value ) {
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::TypedControlVariableContainer<rbType>::~TypedControlVariableContainer() {
+RevLanguage::TypedWorkspaceObjectContainer<rbType>::~TypedWorkspaceObjectContainer() {
     
 //    delete value;
 }
 
 
 template <typename rbType>
-RevLanguage::TypedControlVariableContainer<rbType>& RevLanguage::TypedControlVariableContainer<rbType>::operator=(const TypedControlVariableContainer &v) {
+RevLanguage::TypedWorkspaceObjectContainer<rbType>& RevLanguage::TypedWorkspaceObjectContainer<rbType>::operator=(const TypedWorkspaceObjectContainer &v) {
     
     if ( this != &v ) {
         // delegate to base class
@@ -138,49 +138,49 @@ RevLanguage::TypedControlVariableContainer<rbType>& RevLanguage::TypedControlVar
 
 /** Get iterator to the beginning of the Container. */
 template <typename rlType>
-typename rlType::iterator RevLanguage::TypedControlVariableContainer<rlType>::begin( void ) {
+typename rlType::iterator RevLanguage::TypedWorkspaceObjectContainer<rlType>::begin( void ) {
     return value.begin();
 }
 
 
 /** Get const-iterator to the beginning of the Container. */
 template <typename rlType>
-typename rlType::const_iterator RevLanguage::TypedControlVariableContainer<rlType>::begin( void ) const {
+typename rlType::const_iterator RevLanguage::TypedWorkspaceObjectContainer<rlType>::begin( void ) const {
     return value.begin();
 }
 
 
 /** Clear the container. */
 template <typename rlType>
-void RevLanguage::TypedControlVariableContainer<rlType>::clear( void ) {
+void RevLanguage::TypedWorkspaceObjectContainer<rlType>::clear( void ) {
     return value.clear();
 }
 
 
 /** Clear the container. */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::TypedControlVariableContainer<rlType>::convertTo(const RevLanguage::TypeSpec &type ) const {
+RevLanguage::RevObject* RevLanguage::TypedWorkspaceObjectContainer<rlType>::convertTo(const RevLanguage::TypeSpec &type ) const {
     return Container::convertTo( type );
 }
 
 
 /** Get iterator to the end of the Vector. */
 template <typename rlType>
-typename rlType::iterator RevLanguage::TypedControlVariableContainer<rlType>::end( void ) {
+typename rlType::iterator RevLanguage::TypedWorkspaceObjectContainer<rlType>::end( void ) {
     return value.end();
 }
 
 
 /** Get const-iterator to the end of the Vector. */
 template <typename rlType>
-typename rlType::const_iterator RevLanguage::TypedControlVariableContainer<rlType>::end( void ) const {
+typename rlType::const_iterator RevLanguage::TypedWorkspaceObjectContainer<rlType>::end( void ) const {
     return value.end();
 }
 
 
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RbLanguageObject* RevLanguage::TypedControlVariableContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::TypedWorkspaceObjectContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     return Container::executeMethod( name, args );
 }
@@ -195,7 +195,7 @@ RevLanguage::RbLanguageObject* RevLanguage::TypedControlVariableContainer<rbType
  * \return The index or -1 if we didn't find it.
  */
 template <typename rbType>
-int RevLanguage::TypedControlVariableContainer<rbType>::findIndex(const RbLanguageObject& x) const {
+int RevLanguage::TypedWorkspaceObjectContainer<rbType>::findIndex(const RevObject& x) const {
     
     // get the iterator to the first element
     typename rbType::const_iterator i;
@@ -217,7 +217,7 @@ int RevLanguage::TypedControlVariableContainer<rbType>::findIndex(const RbLangua
 
 /* Get method specifications */
 template <typename rbType>
-const RevLanguage::MethodTable&  RevLanguage::TypedControlVariableContainer<rbType>::getMethods(void) const {
+const RevLanguage::MethodTable&  RevLanguage::TypedWorkspaceObjectContainer<rbType>::getMethods(void) const {
     
     static MethodTable methods      = MethodTable();
     static bool        methodsSet   = false;
@@ -235,27 +235,27 @@ const RevLanguage::MethodTable&  RevLanguage::TypedControlVariableContainer<rbTy
 
 
 template <typename rbType>
-const rbType& RevLanguage::TypedControlVariableContainer<rbType>::getValue( void ) const {
+const rbType& RevLanguage::TypedWorkspaceObjectContainer<rbType>::getValue( void ) const {
     
     return value;
 }
 
 
 template <typename rbType>
-bool RevLanguage::TypedControlVariableContainer<rbType>::isConstant( void ) const {
+bool RevLanguage::TypedWorkspaceObjectContainer<rbType>::isConstant( void ) const {
     return true;
 }
 
 
 template <typename rbType>
-void RevLanguage::TypedControlVariableContainer<rbType>::makeConstantValue( void ) {
+void RevLanguage::TypedWorkspaceObjectContainer<rbType>::makeConstantValue( void ) {
     
     // nothing to do
 }
 
 
 template <typename rbType>
-void RevLanguage::TypedControlVariableContainer<rbType>::setName(std::string const &n) {
+void RevLanguage::TypedWorkspaceObjectContainer<rbType>::setName(std::string const &n) {
     
 }
 
@@ -264,14 +264,14 @@ void RevLanguage::TypedControlVariableContainer<rbType>::setName(std::string con
 
 /** Print value for user */
 template <typename rbType>
-void RevLanguage::TypedControlVariableContainer<rbType>::printValue(std::ostream &o) const {
+void RevLanguage::TypedWorkspaceObjectContainer<rbType>::printValue(std::ostream &o) const {
     
     o << "Some container";
 }
 
 
 template <typename rbType>
-void RevLanguage::TypedControlVariableContainer<rbType>::replaceVariable(RbLanguageObject *newVar) {
+void RevLanguage::TypedWorkspaceObjectContainer<rbType>::replaceVariable(RevObject *newVar) {
     
 //    value = newVar;
     
@@ -280,7 +280,7 @@ void RevLanguage::TypedControlVariableContainer<rbType>::replaceVariable(RbLangu
 
 /** Get the size of the vector */
 template <typename rbType>
-size_t RevLanguage::TypedControlVariableContainer<rbType>::size( void ) const {
+size_t RevLanguage::TypedWorkspaceObjectContainer<rbType>::size( void ) const {
     
     return value.size();
     

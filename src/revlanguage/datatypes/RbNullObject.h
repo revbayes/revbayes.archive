@@ -17,14 +17,14 @@
 #ifndef RbNullObject_H
 #define RbNullObject_H
 
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
 
-class RbNullObject : public RbLanguageObject {
+class RbNullObject : public RevObject {
     
 public:
     RbNullObject(void);    
@@ -33,7 +33,7 @@ public:
     
     bool                                operator==(void* ptr);                                                  //!< Compare to NULL pointer
     bool                                operator==(const RbNullObject& obj);                                                  //!< Compare to NULL pointer
-    bool                                operator==(const RbLanguageObject& obj);                                                  //!< Compare to NULL pointer
+    bool                                operator==(const RevObject& obj);                                                  //!< Compare to NULL pointer
     
     static RbNullObject&     getInstance(void)                                           //!< Get the memory manager
     {

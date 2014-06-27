@@ -47,7 +47,7 @@ OptimalBurninFunction* OptimalBurninFunction::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* OptimalBurninFunction::execute( void ) {
+RevObject* OptimalBurninFunction::execute( void ) {
     
     
     const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[0].getVariable()->getValue() ).getValue();

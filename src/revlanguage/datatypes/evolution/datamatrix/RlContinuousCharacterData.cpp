@@ -20,12 +20,12 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-ContinuousCharacterData::ContinuousCharacterData(void) : RlModelVariableWrapper<RevBayesCore::ContinuousCharacterData>() {
+ContinuousCharacterData::ContinuousCharacterData(void) : ModelObject<RevBayesCore::ContinuousCharacterData>() {
     
 }
 
 /** Construct from bool */
-ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d) : RlModelVariableWrapper<RevBayesCore::ContinuousCharacterData>( new RevBayesCore::ContinuousCharacterData(*d) ) {
+ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d) : ModelObject<RevBayesCore::ContinuousCharacterData>( new RevBayesCore::ContinuousCharacterData(*d) ) {
     
 }
 
@@ -38,9 +38,9 @@ ContinuousCharacterData* ContinuousCharacterData::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
+RevObject* ContinuousCharacterData::convertTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::convertTo(type);
+    return RevObject::convertTo(type);
 }
 
 
@@ -55,7 +55,7 @@ const std::string& ContinuousCharacterData::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -73,6 +73,6 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
 /** Is convertible to type? */
 bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 

@@ -43,7 +43,7 @@ class SyntaxVariableDecl : public SyntaxElement {
         
         // Regular functions
         RbPtr<Variable>             evaluateContent(Environment& env);                                                                                      //!< Get semantic value
-        void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);                                        //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);                                        //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
         
     protected:
         std::string                 elementTypeName;                                                                //!< Element type of the variable

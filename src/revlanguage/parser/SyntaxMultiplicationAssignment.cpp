@@ -134,7 +134,7 @@ RbPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& en
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in multiplication assignment" );
     
-    const RbLanguageObject& lhs_value = theVariable->getValue();
+    const RevObject& lhs_value = theVariable->getValue();
     
     
     // Calculate the value of the rhs expression
@@ -143,9 +143,9 @@ RbPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& en
         throw RbException( "Invalid NULL variable returned by rhs expression in multiplication assignment" );
     
     // fill the slot with the new variable
-    const RbLanguageObject& rhs_value = rhs->getValue();
+    const RevObject& rhs_value = rhs->getValue();
     
-    RbLanguageObject *newValue = lhs_value.multiply( rhs_value );
+    RevObject *newValue = lhs_value.multiply( rhs_value );
     
     // set the value of the variable
     theVariable->setValue( newValue );
@@ -191,7 +191,7 @@ void SyntaxMultiplicationAssignment::printValue(std::ostream& o) const
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxMultiplicationAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxMultiplicationAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);
 }

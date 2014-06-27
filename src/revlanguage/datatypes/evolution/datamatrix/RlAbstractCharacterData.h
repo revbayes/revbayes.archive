@@ -2,7 +2,7 @@
 #define RlAbstractCharacterData_H
 
 #include "AbstractCharacterData.h"
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 
 #include <set>
 #include <string>
@@ -12,7 +12,7 @@
 namespace RevLanguage {
     
     
-    class AbstractCharacterData : public RlModelVariableWrapper<RevBayesCore::AbstractCharacterData> {
+    class AbstractCharacterData : public ModelObject<RevBayesCore::AbstractCharacterData> {
         
     public:
         AbstractCharacterData(void);                                                                                                //!< Constructor requires character type
@@ -29,7 +29,7 @@ namespace RevLanguage {
         
         // Member method inits
         virtual const MethodTable&          getMethods(void) const;                                                                 //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
         
     private: 
         void                                initMethods(void);
