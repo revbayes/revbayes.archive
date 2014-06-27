@@ -1,12 +1,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "Mntr_Model.h"
 #include "Model.h"
 #include "ModelMonitor.h"
-#include "RevObject.h"
 #include "RbException.h"
+#include "RevObject.h"
 #include "RlModel.h"
-#include "RlModelMonitor.h"
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "Vector.h"
@@ -14,21 +14,21 @@
 
 using namespace RevLanguage;
 
-ModelMonitor::ModelMonitor(void) : Monitor() 
+Mntr_Model::Mntr_Model(void) : Monitor() 
 {
     
 }
 
 
 /** Clone object */
-ModelMonitor* ModelMonitor::clone(void) const 
+Mntr_Model* Mntr_Model::clone(void) const 
 {
     
-	return new ModelMonitor(*this);
+	return new Mntr_Model(*this);
 }
 
 
-void ModelMonitor::constructInternalObject( void ) 
+void Mntr_Model::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
@@ -57,7 +57,7 @@ void ModelMonitor::constructInternalObject( void )
 
 
 /** Get class name of object */
-const std::string& ModelMonitor::getClassName(void) 
+const std::string& Mntr_Model::getClassName(void) 
 { 
     
     static std::string rbClassName = "Mntr_Model";
@@ -66,7 +66,7 @@ const std::string& ModelMonitor::getClassName(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ModelMonitor::getClassTypeSpec(void) 
+const TypeSpec& Mntr_Model::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
@@ -77,7 +77,7 @@ const TypeSpec& ModelMonitor::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& ModelMonitor::getMemberRules(void) const {
+const MemberRules& Mntr_Model::getMemberRules(void) const {
     
     static MemberRules modelMonitorMemberRules;
     static bool rulesSet = false;
@@ -101,7 +101,7 @@ const MemberRules& ModelMonitor::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& ModelMonitor::getTypeSpec( void ) const 
+const TypeSpec& Mntr_Model::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -111,15 +111,15 @@ const TypeSpec& ModelMonitor::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void ModelMonitor::printValue(std::ostream &o) const 
+void Mntr_Model::printValue(std::ostream &o) const 
 {
     
-    o << "ModelMonitor";
+    o << "Mntr_Model";
 }
 
 
 /** Set a member variable */
-void ModelMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Mntr_Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "filename" ) 

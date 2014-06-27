@@ -1,8 +1,8 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage wrapper of a file monitor.
+ * This file contains the declaration of the RevLanguage wrapper of an extended newick file monitor.
  *
- * @brief Declaration of RlFilemonitor
+ * @brief Declaration of Mntr_ExtendedNewickFile
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
@@ -15,10 +15,10 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlFileMonitor_H
-#define RlFileMonitor_H
+#ifndef Mntr_ExtendedNewickFile_H
+#define Mntr_ExtendedNewickFile_H
 
-#include "FileMonitor.h"
+#include "ExtendedNewickTreeMonitor.h"
 #include "RlMonitor.h"
 #include "TypedDagNode.h"
 
@@ -27,15 +27,15 @@
 
 namespace RevLanguage {
     
-    class FileMonitor : public Monitor {
+    class Mntr_ExtendedNewickFile : public Monitor {
         
     public:
         
-        FileMonitor(void);                                                                                      //!< Default constructor (0.0)
+        Mntr_ExtendedNewickFile(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual FileMonitor*                        clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Filemonitor.
+        virtual Mntr_ExtendedNewickFile*          clone(void) const;                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Mntr_ExtendedNewickFile.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                     //!< Get member rules (const)
@@ -48,14 +48,13 @@ namespace RevLanguage {
         
         std::set<RevPtr<const Variable> >           vars;
         RevPtr<const Variable>                      filename;
+        RevPtr<const Variable>                      tree;
         RevPtr<const Variable>                      printgen;
         RevPtr<const Variable>                      separator;
         RevPtr<const Variable>                      prior;
         RevPtr<const Variable>                      posterior;
         RevPtr<const Variable>                      likelihood;
-        RevPtr<const Variable>                      append;
-        RevPtr<const Variable>                      chainHeat;
-        RevPtr<const Variable>                      chainIdx;
+        
     };
     
 }
