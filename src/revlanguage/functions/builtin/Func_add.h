@@ -48,8 +48,9 @@ private:
     
 }
 
-#include "DeterministicNode.h"
 #include "BinaryAddition.h"
+#include "DeterministicNode.h"
+#include "StringUtilities.h"
 #include "TypedDagNode.h"
 
 /** default constructor */
