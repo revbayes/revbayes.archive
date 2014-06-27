@@ -834,7 +834,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 		addFunction( "mean",        new Func_mean()  );
         
         // normalize vector function
-		addFunction( "normalize", new Func_normalizeVector()  );
+		addFunction( "normalize", new Func_normalize()  );
 
 		// power function
         addFunction( "power",     new Func_power() );
