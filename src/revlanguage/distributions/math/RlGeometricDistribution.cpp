@@ -46,7 +46,7 @@ GeometricDistribution* GeometricDistribution::clone( void ) const
 RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* prob    = static_cast<const Probability &>( p->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* prob    = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
     RevBayesCore::GeometricDistribution* d      = new RevBayesCore::GeometricDistribution( prob );
     
     return d;
@@ -62,7 +62,7 @@ RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( 
 const std::string& GeometricDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Geometric distribution";
+    static std::string rbClassName = "Dist_geom";
     
 	return rbClassName; 
 }
@@ -133,7 +133,7 @@ const TypeSpec& GeometricDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void GeometricDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void GeometricDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "p" ) 

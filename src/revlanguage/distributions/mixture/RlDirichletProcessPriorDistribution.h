@@ -12,7 +12,7 @@
  * @version 1.0
  * @since Version 1.0, 2012-08-06
  *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
 #ifndef RlDirichletProcessPriorDistribution_H
@@ -47,13 +47,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
-        RbPtr<const Variable>                           concentration;
-        RbPtr<const Variable>                           baseDistribution;
-        RbPtr<const Variable>                           numElements;
+        RevPtr<const Variable>                          concentration;
+        RevPtr<const Variable>                          baseDistribution;
+        RevPtr<const Variable>                          numElements;
         
     };
     
@@ -96,11 +96,11 @@ template <typename valType>
 RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* RevLanguage::DirichletProcessPriorDistribution<valType>::createDistribution( void ) const {
 	
     // get the parameters
-    const Distribution& rlDistribution									= static_cast<const Distribution &>( baseDistribution->getValue() );
+    const Distribution& rlDistribution									= static_cast<const Distribution &>( baseDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<typename valType::valueType>* g0    = static_cast<RevBayesCore::TypedDistribution<typename valType::valueType>* >( rlDistribution.createDistribution() );    
-    RevBayesCore::TypedDagNode<double>* cp								= static_cast<const RealPos &>( concentration->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* cp								= static_cast<const RealPos &>( concentration->getRevObject() ).getDagNode();
 
-    int ne = static_cast<const RealPos &>( numElements->getValue() ).getValue();
+    int ne = static_cast<const RealPos &>( numElements->getRevObject() ).getValue();
     RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* d		= new RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>(g0, cp, ne);
     
     return d;
@@ -112,7 +112,7 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
 template <typename valType>
 const std::string& RevLanguage::DirichletProcessPriorDistribution<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Dirichlet process prior distribution";
+    static std::string rbClassName = "Dist_dpp";
     
 	return rbClassName; 
 }
@@ -160,7 +160,7 @@ const RevLanguage::TypeSpec& RevLanguage::DirichletProcessPriorDistribution<valT
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::DirichletProcessPriorDistribution<valType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RevLanguage::DirichletProcessPriorDistribution<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "concentration" ) {
         concentration = var;

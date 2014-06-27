@@ -3,8 +3,8 @@
 
 #include "Workspace.h"
 
-#include "RbLanguageObject.h"
-#include "RbPtr.h"
+#include "RevObject.h"
+#include "RevPtr.h"
 
 #include "VariableSlot.h"
 #include "RlFunction.h"
@@ -24,7 +24,7 @@ typedef std::vector<RevLanguage::Function *> FunctionVector;
 typedef std::vector<RevLanguage::Argument> ArgumentVector;
 typedef std::multimap<std::string, RevLanguage::Function*> FunctionMap;
 typedef std::map<std::string, RevLanguage::VariableSlot* > VariableTable;
-typedef std::map<std::string, RevLanguage::RbLanguageObject*> TypeTable;
+typedef std::map<std::string, RevLanguage::RevObject*> TypeTable;
 
 class WorkspaceUtils {
 public:
@@ -123,7 +123,7 @@ public:
             return sv;
         }
      
-        RevLanguage::RbLanguageObject *type = RevLanguage::Workspace::globalWorkspace().getNewTypeObject(typeName);
+        RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().getNewTypeObject(typeName);
         RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (type->getMethods());
 
         std::multimap<std::string, RevLanguage::Function*> printTable = methods.getTableCopy(false);
@@ -168,7 +168,7 @@ public:
             return sv;
         }
 
-        RevLanguage::RbLanguageObject *type = RevLanguage::Workspace::globalWorkspace().getNewTypeObject(name);
+        RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().getNewTypeObject(name);
         RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (type->getMethods());
 
         std::multimap<std::string, RevLanguage::Function*> printTable = methods.getTableCopy(false);

@@ -36,8 +36,8 @@ UniformTimeTreeDistribution* UniformTimeTreeDistribution::clone( void ) const {
 RevBayesCore::UniformTimeTreeDistribution* UniformTimeTreeDistribution::createDistribution( void ) const {
 
     // Get the parameters
-    RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getValue() ).getValueNode();
-    const std::vector<std::string>      &names  = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getRevObject() ).getDagNode();
+    const std::vector<std::string>      &names  = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
 
     RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( originT, names );
 
@@ -49,7 +49,7 @@ RevBayesCore::UniformTimeTreeDistribution* UniformTimeTreeDistribution::createDi
 /* Get class name of object */
 const std::string& UniformTimeTreeDistribution::getClassName(void) {
     
-    static std::string rbClassName = "UniformTimeTreeDistribution";
+    static std::string rbClassName = "Dist_uniformTimeTree";
     
 	return rbClassName;
 }
@@ -91,7 +91,7 @@ const TypeSpec& UniformTimeTreeDistribution::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void UniformTimeTreeDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void UniformTimeTreeDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "originTime" ) {
         originTime = var;

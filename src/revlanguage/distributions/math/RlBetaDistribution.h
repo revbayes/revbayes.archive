@@ -12,7 +12,7 @@
  * @version 1.0
  * @since Version 1.0, 2012-08-06
  *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
 #ifndef RlBetaDistribution_H
@@ -45,12 +45,12 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
-        RbPtr<const Variable>                           alpha;
-        RbPtr<const Variable>                           beta;
+        RevPtr<const Variable>                          alpha;
+        RevPtr<const Variable>                          beta;
         
     };
     

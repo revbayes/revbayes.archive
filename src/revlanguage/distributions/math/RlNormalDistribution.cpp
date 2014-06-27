@@ -34,8 +34,8 @@ RevBayesCore::NormalDistribution* NormalDistribution::createDistribution( void )
 {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m = static_cast<const Real &>( mean->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( sd->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* m = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
     RevBayesCore::NormalDistribution*   d = new RevBayesCore::NormalDistribution(m, s);
     
     return d;
@@ -63,7 +63,7 @@ NormalDistribution* NormalDistribution::clone( void ) const
 const std::string& NormalDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Normal distribution";
+    static std::string rbClassName = "Dist_norm";
     
 	return rbClassName; 
 }
@@ -153,7 +153,7 @@ void NormalDistribution::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void NormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void NormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "mean" ) 

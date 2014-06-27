@@ -20,7 +20,7 @@
 #include "RlFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "RbPtr.h"
+#include "RevPtr.h"
 #include "TypeSpec.h"
 #include "Variable.h"
 #include "VariableSlot.h"
@@ -34,14 +34,14 @@ using namespace RevLanguage;
 std::ostream& operator<<(std::ostream& o, const VariableSlot& x);
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RbPtr<Variable>& var) : label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const TypeSpec& typeSp, const RevPtr<Variable>& var) : label(lbl) {
     
     variable.push_back( var );
     
 }
 
 /** Constructor of filled slot with type specification. */
-VariableSlot::VariableSlot(const std::string &lbl, const RbPtr<Variable>& var) : label(lbl) {
+VariableSlot::VariableSlot(const std::string &lbl, const RevPtr<Variable>& var) : label(lbl) {
     
     variable.push_back( var );
     
@@ -81,7 +81,7 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
     }
     else {
         std::vector<int> oldLengths = lengths;
-        std::vector<RbPtr<Variable> > oldVars = variable;
+        std::vector<RevPtr<Variable> > oldVars = variable;
         
         lengths.clear();
         variable.clear();
@@ -131,16 +131,16 @@ size_t VariableSlot::getDim( void ) const {
 
 
 /** Get the value of the variable */
-const RbLanguageObject& VariableSlot::getValue( void ) const {
+const RevObject& VariableSlot::getRevObject( void ) const {
     
-    return variable[0]->getValue();
+    return variable[0]->getRevObject();
 }
 
 
 /** Get the value of the variable */
-RbLanguageObject& VariableSlot::getValue( void ) {
+RevObject& VariableSlot::getRevObject( void ) {
     
-    return variable[0]->getValue();
+    return variable[0]->getRevObject();
 }
 
 
@@ -154,7 +154,7 @@ RbLanguageObject& VariableSlot::getValue( void ) {
 //}
 
 
-RbPtr<const Variable> VariableSlot::getVariable(const std::vector<int> &indices) const {
+RevPtr<const Variable> VariableSlot::getVariable(const std::vector<int> &indices) const {
     size_t index = 0;
     size_t elements = 1;
     
@@ -172,11 +172,11 @@ RbPtr<const Variable> VariableSlot::getVariable(const std::vector<int> &indices)
     }
     
     
-    return RbPtr<const Variable>( variable[index] );
+    return RevPtr<const Variable>( variable[index] );
 }
 
 
-RbPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
+RevPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
     
     size_t index = 0;
     size_t elements = 1;
@@ -184,7 +184,7 @@ RbPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
     if (indices.size() < lengths.size()) 
     {
         
-        RbPtr<Variable> var = getVectorizedVariable( indices );
+        RevPtr<Variable> var = getVectorizedVariable( indices );
         var->setName( label );
         
         return var;
@@ -209,12 +209,12 @@ RbPtr<Variable> VariableSlot::getVariable(const std::vector<int> &indices) {
 }
 
 
-//const RbPtr<Variable>& VariableSlot::getVariablePtr(void) const {
+//const RevPtr<Variable>& VariableSlot::getVariablePtr(void) const {
 //    return variable[0];
 //}
 
 
-RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indices) const {
+RevPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indices) const {
     
     int size = lengths[indices.size()];
     
@@ -256,7 +256,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
     func->processArguments( args );
     func->setExecutionEnviroment( &env );
     
-    RbLanguageObject* v = func->execute();
+    RevObject* v = func->execute();
     delete func;
     
     return new Variable( v );
@@ -264,7 +264,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
 
 
 /** Is variable valid for the slot? Additional type checking here */
-bool VariableSlot::isValidVariable( const RbLanguageObject& newVariable ) const {
+bool VariableSlot::isValidVariable( const RevObject& newVariable ) const {
     
     return true;    // No additional requirements here, but see MemberSlot
 }
@@ -312,7 +312,7 @@ void VariableSlot::resetNames(std::string const &l, size_t level, int &index) {
 }
 
 
-void VariableSlot::resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<int> &l, std::vector<int> &indices) {
+void VariableSlot::resetVariables(std::vector<RevPtr<Variable> > &v, std::vector<int> &l, std::vector<int> &indices) {
     
     int length = l[indices.size()];
     indices.push_back(0);
@@ -350,7 +350,7 @@ void VariableSlot::resetVariables(std::vector<RbPtr<Variable> > &v, std::vector<
 
 
 /** Set variable */
-void VariableSlot::setVariable(const RbPtr<Variable>& var) {
+void VariableSlot::setVariable(const RevPtr<Variable>& var) {
     
     // set the new variable
     variable[0] = var;
@@ -370,7 +370,7 @@ std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
     if ( x.getLabel() != "" )
         o << " " << x.getLabel();
     o << " = ";
-    x.getValue().printValue(o);
+    x.getRevObject().printValue(o);
 
     return o;
 }

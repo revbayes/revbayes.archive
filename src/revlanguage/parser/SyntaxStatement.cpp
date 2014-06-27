@@ -16,8 +16,8 @@
 #include "RlBoolean.h"
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
 #include "Signals.h"
 #include "SyntaxForLoop.h"
 #include "SyntaxStatement.h"
@@ -139,9 +139,9 @@ SyntaxStatement* SyntaxStatement::clone () const {
 
 
 /** Get semantic value: it is here that we execute the statement */
-RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 
-    RbPtr<Variable> result = NULL;
+    RevPtr<Variable> result = NULL;
     
     if (statementType == For) {
 
@@ -163,7 +163,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         // Now loop over statements inside the for loop
         while ( forLoop->isFinished() ) {
             
-            RbLanguageObject* indexValue = forLoop->getNextLoopState();
+            RevObject* indexValue = forLoop->getNextLoopState();
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 SyntaxElement* theSyntaxElement = *i;
@@ -173,9 +173,9 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getValue() != RbNullObject::getInstance()) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 
@@ -229,7 +229,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 	 
@@ -272,7 +272,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 
@@ -297,7 +297,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
                 
@@ -316,7 +316,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Print result if it is not an assign expression (==NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
                     std::ostringstream msg;
-                    result->getValue().printValue(msg);
+                    result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
                     
@@ -339,20 +339,20 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
     
-    RbPtr<Variable> temp = expr->evaluateContent( env );
+    RevPtr<Variable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;
     
-    if ( temp->getValue().isTypeSpec( RlBoolean::getClassTypeSpec() ) ) {
+    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) ) {
         
-        bool retValue = static_cast<const RlBoolean&>( temp->getValue() ).getValue();
+        bool retValue = static_cast<const RlBoolean&>( temp->getRevObject() ).getValue();
         
         return retValue;
     }
     else {
         
-        RbLanguageObject *tempObject = temp->getValue().convertTo( RlBoolean::getClassTypeSpec() );
+        RevObject *tempObject = temp->getRevObject().convertTo( RlBoolean::getClassTypeSpec() );
         RlBoolean* tempBool = static_cast<RlBoolean*>( tempObject );
         bool     retValue = tempBool->getValue();
         
@@ -425,7 +425,7 @@ void SyntaxStatement::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the elements.
  */
-void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     // the first set of statements
     if ( statements1 != NULL ) {

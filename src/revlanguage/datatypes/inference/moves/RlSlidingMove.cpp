@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ContinuousStochasticNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -31,10 +31,10 @@ void SlidingMove::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double d = static_cast<const RealPos &>( delta->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const Real &>( x->getValue() ).getValueNode();
+    double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const Real &>( x->getRevObject() ).getDagNode();
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
     value = new RevBayesCore::SlidingMove(n, d, t, w);
     
@@ -44,7 +44,7 @@ void SlidingMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SlidingMove::getClassName(void) { 
     
-    static std::string rbClassName = "Sliding move";
+    static std::string rbClassName = "Move_Slide";
     
 	return rbClassName; 
 }
@@ -101,7 +101,7 @@ void SlidingMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SlidingMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void SlidingMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) 
     {

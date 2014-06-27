@@ -3,7 +3,7 @@
 #include "ConstantNode.h"
 #include "Model.h"
 #include "ModelMonitor.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
 #include "RlModelMonitor.h"
@@ -34,14 +34,14 @@ void ModelMonitor::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    const std::string&                  fn      = static_cast<const RlString &>( filename->getValue() ).getValue();
-    const std::string&                  sep     = static_cast<const RlString &>( separator->getValue() ).getValue();
-    int                                 g       = static_cast<const Natural  &>( printgen->getValue() ).getValue();
-    bool                                pp      = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
-    bool                                l       = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
-    bool                                pr      = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
-    bool                                ap      = static_cast<const RlBoolean &>( append->getValue() ).getValue();
-    bool                                so      = static_cast<const RlBoolean &>( stochOnly->getValue() ).getValue();
+    const std::string&                  fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const std::string&                  sep     = static_cast<const RlString &>( separator->getRevObject() ).getValue();
+    int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
+    bool                                pp      = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
+    bool                                l       = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
+    bool                                pr      = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
+    bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool                                so      = static_cast<const RlBoolean &>( stochOnly->getRevObject() ).getValue();
     RevBayesCore::ModelMonitor *m = new RevBayesCore::ModelMonitor((unsigned long)g, fn, sep);
     
     // now set the flags
@@ -60,7 +60,7 @@ void ModelMonitor::constructInternalObject( void )
 const std::string& ModelMonitor::getClassName(void) 
 { 
     
-    static std::string rbClassName = "ModelMonitor";
+    static std::string rbClassName = "Mntr_Model";
     
 	return rbClassName; 
 }
@@ -119,7 +119,7 @@ void ModelMonitor::printValue(std::ostream &o) const
 
 
 /** Set a member variable */
-void ModelMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void ModelMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "filename" ) 

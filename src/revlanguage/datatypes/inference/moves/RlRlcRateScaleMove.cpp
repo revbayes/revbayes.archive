@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "BranchRateJumpProcess.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlRlcRateScaleMove.h"
@@ -54,10 +54,10 @@ void RlcRateScaleMove::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    double w                                                    = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    double l                                                    = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    bool t                                                      = static_cast<const RlBoolean &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const Vector<RealPos> &>( v->getValue() ).getValueNode();
+    double w                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double l                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    bool t                                                      = static_cast<const RlBoolean &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const Vector<RealPos> &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< std::vector<double> > *n      = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     
     // just to make sure also test that the stochastic node has the correct distribution
@@ -81,7 +81,7 @@ void RlcRateScaleMove::constructInternalObject( void )
 const std::string& RlcRateScaleMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "RlcRateScaleMove";
+    static std::string rbClassName = "Move_RLCRateScale";
     
 	return rbClassName; 
 }
@@ -174,7 +174,7 @@ void RlcRateScaleMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void RlcRateScaleMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void RlcRateScaleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

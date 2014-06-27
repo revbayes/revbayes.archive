@@ -82,18 +82,17 @@ RbFileManager::RbFileManager(std::string s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-    {
+        {
         fullFileName = ".";
-    }
+        }
     fullFileName += pathSeparator + fileName;
     
-    
-    if ( !testFile() || !testDirectory() ) {
+    if ( !testDirectory() )
+        {
         std::string errorStr = "";
         formatError(errorStr);
         throw( RbException(errorStr) );
-    }
-    
+        }
 }
 
 
@@ -364,42 +363,42 @@ bool RbFileManager::parsePathFileNames(std::string s)
     bool isDPresent = isDirectoryPresent(s);
     bool isFPresent = isFilePresent(s);
     if (isDPresent == false && isFPresent == false)
-    {
+        {
         fileName = "";
         filePath = "";
         return false;
-    }
+        }
     if (isDPresent == true && isFPresent == false)
-    {
+        {
         fileName = "";
         int location = (int)s.find_last_of( pathSeparator );
         if ( location == (int)s.length() - 1 )
             s.erase( location );
         filePath = s;
         return true;
-    }
+        }
     
     /* the string that is supposed to hold the
      path/file information is empty. */
 	if ( s.length() == 0 )
-    {
+        {
 		return false;
-    }
+        }
     
 	/* Find the location of the last "/". This is where
      we will divide the path/file string into two. */
 	size_t location = s.find_last_of( pathSeparator );
 	
 	if ( location == std::string::npos )
-    {
+        {
 		/* There is no path in this string. We 
          must have only the file name, and the
          file should be in our current directory. */
 		fileName = s;
 		filePath = "";
-    }
+        }
 	else if ( location == s.length() - 1 )
-    {
+        {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. However,
          it also means that the directory that has been provided
@@ -408,26 +407,74 @@ bool RbFileManager::parsePathFileNames(std::string s)
 		fileName = "";
 		filePath = "";
 		return false;
-    }
+        }
 	else
-    {
+        {
 		/* We can divide the path into the path and the file. */
 		fileName = s.substr( location+1, s.length()-location-1 );
 		s.erase( location );
 		filePath = s;
         if ( isDirectoryPresent(filePath) == false )
             filePath = "";
-    }
+        }
     
 	return true;
 }
 
+std::string RbFileManager::getLastPathComponent(std::string& s) {
+
+    std::string tempS = s;
+	size_t location = tempS.find_last_of( pathSeparator );
+	if ( location == std::string::npos )
+        {
+		/* There is no path in this string. We 
+         must have only the file name. */
+		return tempS;
+        }
+	else if ( location == tempS.length() - 1 )
+        {
+		/* It looks like the last character is "/", which
+         means that no file name has been provided. */
+		return "";
+        }
+	else
+        {
+		/* We can divide the path into the path and the file. */
+		std::string lpc = tempS.substr( location+1, tempS.length()-location-1 );
+        return lpc;
+        }
+    return "";
+}
+
+std::string RbFileManager::getStringByDeletingLastPathComponent(std::string& s) {
+
+    std::string tempS = s;
+	size_t location = tempS.find_last_of( pathSeparator );
+	if ( location == std::string::npos )
+        {
+		/* There is no path in this string. We 
+         must have only the file name. */
+		return "";
+        }
+	else if ( location == tempS.length() - 1 )
+        {
+		/* It looks like the last character is "/", which
+         means that no file name has been provided. */
+		return tempS;
+        }
+	else
+        {
+		/* We can divide the path into the path and the file. */
+		tempS.erase( location );
+		return tempS;
+        }
+    return "";
+}
 
 void RbFileManager::setCurrentDirectory(std::string const &s)
 {
     curDirectory = s;
 }
-
 
 void RbFileManager::setFileName(std::string const &s)
 {
@@ -435,13 +482,12 @@ void RbFileManager::setFileName(std::string const &s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-    {
+        {
         fullFileName = ".";
-    }
+        }
     fullFileName += pathSeparator + fileName;
     
 }
-
 
 void RbFileManager::setFilePath(std::string const &s)
 {
@@ -449,13 +495,12 @@ void RbFileManager::setFilePath(std::string const &s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-    {
+        {
         fullFileName = ".";
-    }
+        }
     fullFileName += pathSeparator + fileName;
     
 }
-
 
 /** Recursively fills in a vector with the names of the files in the directory filePath */
 bool RbFileManager::setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv) 

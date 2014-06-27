@@ -35,11 +35,11 @@ RevBayesCore::BimodalLognormalDistribution* BimodalLognormalDistribution::create
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m1 = static_cast<const Real &>( mean1->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* m2 = static_cast<const Real &>( mean2->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s1 = static_cast<const RealPos &>( sd1->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s2 = static_cast<const RealPos &>( sd2->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* p  = static_cast<const Probability &>( prob->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* m1 = static_cast<const Real &>( mean1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* m2 = static_cast<const Real &>( mean2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s1 = static_cast<const RealPos &>( sd1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s2 = static_cast<const RealPos &>( sd2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* p  = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
     RevBayesCore::BimodalLognormalDistribution*   d = new RevBayesCore::BimodalLognormalDistribution(m1, m2, s1, s2, p);
     
     return d;
@@ -67,7 +67,7 @@ BimodalLognormalDistribution* BimodalLognormalDistribution::clone( void ) const
 const std::string& BimodalLognormalDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "BimodalLognormalDistribution";
+    static std::string rbClassName = "Dist_blnorm";
     
 	return rbClassName; 
 }
@@ -195,7 +195,7 @@ void BimodalLognormalDistribution::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BimodalLognormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void BimodalLognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
  
     if ( name == "mean1" ) 

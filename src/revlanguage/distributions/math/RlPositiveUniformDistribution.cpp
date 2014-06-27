@@ -35,8 +35,8 @@ PositiveUniformDistribution* PositiveUniformDistribution::clone( void ) const {
 
 RevBayesCore::UniformDistribution* PositiveUniformDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l   = static_cast<const RealPos &>( lower->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* u   = static_cast<const RealPos &>( upper->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l   = static_cast<const RealPos &>( lower->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* u   = static_cast<const RealPos &>( upper->getRevObject() ).getDagNode();
     RevBayesCore::UniformDistribution* d    = new RevBayesCore::UniformDistribution(l, u);
     
     return d;
@@ -47,7 +47,7 @@ RevBayesCore::UniformDistribution* PositiveUniformDistribution::createDistributi
 /* Get class name of object */
 const std::string& PositiveUniformDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Uniform distribution";
+    static std::string rbClassName = "Dist_unif";
     
 	return rbClassName; 
 }
@@ -108,7 +108,7 @@ void PositiveUniformDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void PositiveUniformDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void PositiveUniformDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lower" ) 
     {

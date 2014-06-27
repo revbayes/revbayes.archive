@@ -3,7 +3,7 @@
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -55,11 +55,11 @@ void ScaleMove::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    double d = static_cast<const RealPos &>( lambda->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getValue() ).getValueNode();
+    double d = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
     // finally create the internal move object
 //    value = new RevBayesCore::ScaleMove(n, d, t, w);
@@ -78,7 +78,7 @@ void ScaleMove::constructInternalObject( void )
 const std::string& ScaleMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Scaling move";
+    static std::string rbClassName = "Move_Scale";
     
 	return rbClassName; 
 }
@@ -172,7 +172,7 @@ void ScaleMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ScaleMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void ScaleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

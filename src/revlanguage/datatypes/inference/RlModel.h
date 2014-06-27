@@ -19,7 +19,7 @@
 #define RlModel_H
 
 #include "Model.h"
-#include "RlControlVariableWrapper.h"
+#include "WorkspaceObject.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -27,7 +27,7 @@
 
 namespace RevLanguage {
     
-    class Model : public RlControlVariableWrapper<RevBayesCore::Model> {
+    class Model : public WorkspaceObject<RevBayesCore::Model> {
         
     public:
         
@@ -44,9 +44,9 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        std::set<RbPtr<const Variable> >            sources;
+        std::set<RevPtr<const Variable> >           sources;
         
     };
     

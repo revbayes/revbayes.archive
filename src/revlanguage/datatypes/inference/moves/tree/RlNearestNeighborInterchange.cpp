@@ -8,7 +8,7 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlNearestNeighborInterchange.h"
@@ -36,8 +36,8 @@ void NearestNeighborInterchange::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     value = new RevBayesCore::NearestNeighborInterchange(t, w);
 }
@@ -46,7 +46,7 @@ void NearestNeighborInterchange::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& NearestNeighborInterchange::getClassName(void) { 
     
-    static std::string rbClassName = "NNI";
+    static std::string rbClassName = "Move_NNI";
     
 	return rbClassName; 
 }
@@ -105,7 +105,7 @@ void NearestNeighborInterchange::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NearestNeighborInterchange::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void NearestNeighborInterchange::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

@@ -16,8 +16,8 @@
 #ifndef RlTimeTree_H
 #define RlTimeTree_H
 
+#include "ModelObject.h"
 #include "TimeTree.h"
-#include "RlModelVariableWrapper.h"
 
 #include <set>
 #include <string>
@@ -27,7 +27,7 @@
 namespace RevLanguage {
     
     
-    class TimeTree : public RlModelVariableWrapper<RevBayesCore::TimeTree> {
+    class TimeTree : public ModelObject<RevBayesCore::TimeTree> {
         
     public:
         TimeTree(void);                                                                                                                         //!< Constructor requires character type
@@ -46,7 +46,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     };
     

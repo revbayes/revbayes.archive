@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "Natural.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -32,9 +32,9 @@ void SingleElementScale::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( x->getValue() ).getValueNode();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( x->getRevObject() ).getDagNode();
     const std::set<const RevBayesCore::DagNode*> &p = tmp->getParents();
     std::vector< RevBayesCore::StochasticNode<double> *> n;
     for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) 
@@ -42,7 +42,7 @@ void SingleElementScale::constructInternalObject( void ) {
         const RevBayesCore::StochasticNode<double> *theNode = static_cast< const RevBayesCore::StochasticNode<double>* >( *it );
         n.push_back( const_cast< RevBayesCore::StochasticNode<double>* >( theNode ) );
     }
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::SingleElementScaleMove(n, l, t, w);
 }
 
@@ -50,7 +50,7 @@ void SingleElementScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SingleElementScale::getClassName(void) { 
     
-    static std::string rbClassName = "SingleElementScale";
+    static std::string rbClassName = "Move_SingleElementScale";
     
 	return rbClassName; 
 }
@@ -110,7 +110,7 @@ void SingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SingleElementScale::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void SingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;

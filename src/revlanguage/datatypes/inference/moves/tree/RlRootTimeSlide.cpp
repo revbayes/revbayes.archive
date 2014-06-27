@@ -8,7 +8,7 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
@@ -37,10 +37,10 @@ void RootTimeSlide::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
-    double d = static_cast<const RealPos &>( delta->getValue() ).getValue();
-    bool at = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
+    bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     value = new RevBayesCore::RootTimeSlide(t, d, at, w);
 }
@@ -49,7 +49,7 @@ void RootTimeSlide::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& RootTimeSlide::getClassName(void) { 
     
-    static std::string rbClassName = "RootTimeSlide";
+    static std::string rbClassName = "Move_RootTimeSlide";
     
 	return rbClassName; 
 }
@@ -110,7 +110,7 @@ void RootTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void RootTimeSlide::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RootTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

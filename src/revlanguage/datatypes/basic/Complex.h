@@ -19,7 +19,7 @@
 #ifndef Complex_H
 #define Complex_H
 
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 #include "TypedDagNode.h"
 
 #include <complex>
@@ -28,7 +28,7 @@
 
 namespace RevLanguage {
 
-    class Complex : public RlModelVariableWrapper<std::complex<double> > {
+    class Complex : public ModelObject<std::complex<double> > {
 
         public:
             Complex(void);                                                                                      //!< Default constructor (0.0, 0.0)

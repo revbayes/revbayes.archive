@@ -11,7 +11,7 @@
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "Natural.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -40,11 +40,11 @@ void VectorSingleElementScaleMove::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( v->getValue() ).getValueNode();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::VectorSingleElementScaleMove(n, l, t, w);
 }
 
@@ -52,7 +52,7 @@ void VectorSingleElementScaleMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& VectorSingleElementScaleMove::getClassName(void) { 
     
-    static std::string rbClassName = "VectorSingleElementMove";
+    static std::string rbClassName = "Move_VectorSingleElementScale";
     
 	return rbClassName; 
 }
@@ -112,7 +112,7 @@ void VectorSingleElementScaleMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void VectorSingleElementScaleMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void VectorSingleElementScaleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         v = var;

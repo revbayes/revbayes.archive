@@ -9,7 +9,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "NearestNeighborInterchange_nonClock.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlNearestNeighborInterchange_nonClock.h"
@@ -38,8 +38,8 @@ void NearestNeighborInterchange_nonClock::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getValue() ).getValueNode();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
     value = new RevBayesCore::NearestNeighborInterchange_nonClock(t, w);
 }
@@ -48,7 +48,7 @@ void NearestNeighborInterchange_nonClock::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& NearestNeighborInterchange_nonClock::getClassName(void) { 
     
-    static std::string rbClassName = "NNI";
+    static std::string rbClassName = "Move_NNI";
     
 	return rbClassName; 
 }
@@ -107,7 +107,7 @@ void NearestNeighborInterchange_nonClock::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NearestNeighborInterchange_nonClock::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void NearestNeighborInterchange_nonClock::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

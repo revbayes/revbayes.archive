@@ -17,7 +17,7 @@
 #ifndef RlUtil_H
 #define RlUtil_H
 
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 
 #include <string>
 
@@ -30,8 +30,8 @@ namespace RevLanguage {
 
         class RlTypeConverter {
             public:
-            static RbLanguageObject*                toReal(double x);
-            static RbLanguageObject*                toString(const std::string &x);
+            static RevObject*                toReal(double x);
+            static RevObject*                toString(const std::string &x);
         };
     }
 

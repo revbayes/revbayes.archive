@@ -35,8 +35,8 @@ OneOverXDistribution* OneOverXDistribution::clone( void ) const {
 
 RevBayesCore::OneOverXDistribution* OneOverXDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* mi   = static_cast<const Real &>( min->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* ma   = static_cast<const Real &>( max->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* mi   = static_cast<const Real &>( min->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ma   = static_cast<const Real &>( max->getRevObject() ).getDagNode();
     RevBayesCore::OneOverXDistribution* d    = new RevBayesCore::OneOverXDistribution( mi, ma );
     
     return d;
@@ -47,7 +47,7 @@ RevBayesCore::OneOverXDistribution* OneOverXDistribution::createDistribution( vo
 /* Get class name of object */
 const std::string& OneOverXDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "1/x distribution";
+    static std::string rbClassName = "Dist_oneOverX";
     
 	return rbClassName; 
 }
@@ -116,7 +116,7 @@ void OneOverXDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OneOverXDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void OneOverXDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "max" )
     {

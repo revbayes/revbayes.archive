@@ -37,8 +37,8 @@ BetaDistribution* BetaDistribution::clone( void ) const {
 RevBayesCore::BetaDistribution* BetaDistribution::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* b   = static_cast<const RealPos &>( beta->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* b   = static_cast<const RealPos &>( beta->getRevObject() ).getDagNode();
     RevBayesCore::BetaDistribution* d       = new RevBayesCore::BetaDistribution(a, b);
     
     return d;
@@ -59,7 +59,7 @@ Probability* BetaDistribution::createRandomVariable(void) const {
 /* Get class name of object */
 const std::string& BetaDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Beta distribution";
+    static std::string rbClassName = "Dist_beta";
     
 	return rbClassName; 
 }
@@ -121,7 +121,7 @@ void BetaDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void BetaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void BetaDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "alpha" ) 
     {

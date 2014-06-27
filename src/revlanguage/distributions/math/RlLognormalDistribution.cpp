@@ -28,9 +28,9 @@ LognormalDistribution* LognormalDistribution::clone( void ) const {
 
 RevBayesCore::LognormalDistribution* LognormalDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* o   = static_cast<const RealPos &>( offset->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o   = static_cast<const RealPos &>( offset->getRevObject() ).getDagNode();
     RevBayesCore::LognormalDistribution* d  = new RevBayesCore::LognormalDistribution(m, s, o);
     
     return d;
@@ -41,7 +41,7 @@ RevBayesCore::LognormalDistribution* LognormalDistribution::createDistribution( 
 /* Get class name of object */
 const std::string& LognormalDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Lognormal distribution";
+    static std::string rbClassName = "Dist_lnorm";
     
 	return rbClassName; 
 }
@@ -110,7 +110,7 @@ void LognormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void LognormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void LognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

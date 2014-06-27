@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "Integer.h"
 #include "Probability.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
@@ -53,11 +53,11 @@ void RandomGeometricWalkMove::constructInternalObject( void )
     delete value;
     
     // now allocate a new random-geometric-walk move
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getValue() ).getValueNode();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<int> *n = static_cast<RevBayesCore::StochasticNode<int> *>( tmp );
-    double q = static_cast<const Probability &>( p->getValue() ).getValue();
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    double q = static_cast<const Probability &>( p->getRevObject() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
 
     // finally create the internal move object
     value = new RevBayesCore::RandomGeometricWalkMove(n, q, t, w);
@@ -73,7 +73,7 @@ void RandomGeometricWalkMove::constructInternalObject( void )
 const std::string& RandomGeometricWalkMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Random-Geometric-Walk move";
+    static std::string rbClassName = "Move_RandomGeometricWalk";
     
 	return rbClassName; 
 }
@@ -165,7 +165,7 @@ void RandomGeometricWalkMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void RandomGeometricWalkMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void RandomGeometricWalkMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

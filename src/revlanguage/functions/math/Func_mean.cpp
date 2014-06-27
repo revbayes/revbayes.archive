@@ -29,9 +29,9 @@ Func_mean* Func_mean::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_mean::execute() {
+RevObject* Func_mean::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const Vector<Real> &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const Vector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::MeanFunction* f = new RevBayesCore::MeanFunction( arg );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
@@ -60,7 +60,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 
 const std::string& Func_mean::getClassName(void) { 
     
-    static std::string rbClassName = "mean";
+    static std::string rbClassName = "Func_mean";
     
 	return rbClassName; 
 }

@@ -32,12 +32,12 @@
 using namespace RevLanguage;
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType) : RbLanguageObject(), elementType(elemType) {
+Container::Container(const TypeSpec& elemType) : RevObject(), elementType(elemType) {
     
 }
 
 /** Set type of elements */
-Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : RbLanguageObject(memberRules), elementType(elemType) {
+Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : RevObject(memberRules), elementType(elemType) {
     
 }
 
@@ -57,9 +57,9 @@ Container& Container::operator=( const Container& x ) {
 
 
 /** Convert this object into another type. */
-RbLanguageObject* Container::convertTo(const TypeSpec& typeSpec) const {
+RevObject* Container::convertTo(const TypeSpec& typeSpec) const {
     
-    return RbLanguageObject::convertTo( typeSpec );
+    return RevObject::convertTo( typeSpec );
 }
 
 
@@ -74,7 +74,7 @@ const std::string& Container::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Container::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -92,7 +92,7 @@ const MethodTable& Container::getMethods(void) const {
         methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -101,7 +101,7 @@ const MethodTable& Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "size") 
     {
@@ -111,19 +111,19 @@ RbLanguageObject* Container::executeMethod(std::string const &name, const std::v
     else if ( name == "[]") 
     {
         // get the member with give index
-        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 
         if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
         {
             throw RbException("Index out of bounds in []");
         }
         
-        RbLanguageObject* element = getElement( size_t(index.getValue()) - 1);
+        RevObject* element = getElement( size_t(index.getValue()) - 1);
         return element;
         
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -132,7 +132,7 @@ RbLanguageObject* Container::executeMethod(std::string const &name, const std::v
 /** Is convertible to type? */
 bool Container::isConvertibleTo(const TypeSpec& typeSpec) const {
     
-    return RbLanguageObject::isConvertibleTo( typeSpec );
+    return RevObject::isConvertibleTo( typeSpec );
 }
 
 

@@ -20,7 +20,7 @@
 #include "Ellipsis.h"
 #include "Func_write.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 
@@ -38,12 +38,12 @@ Func_write* Func_write::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_write::execute( void ) {
+RevObject* Func_write::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
-    bool  append = static_cast<const RlBoolean&>( args[2].getVariable()->getValue() ).getValue();
-    const std::string& separator = static_cast<const RlString&>( args[3].getVariable()->getValue() ).getValue();
+    const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    bool  append = static_cast<const RlBoolean&>( args[2].getVariable()->getRevObject() ).getValue();
+    const std::string& separator = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     
     if ( fn != "" ) 
     {
@@ -63,11 +63,11 @@ RbLanguageObject* Func_write::execute( void ) {
         }
         
         // print the arguments
-        args[0].getVariable()->getValue().printValue(outStream);
+        args[0].getVariable()->getRevObject().printValue(outStream);
         for (size_t i = 4; i < args.size(); i++) 
         {
             outStream << separator;
-            args[i].getVariable()->getValue().printValue(outStream);
+            args[i].getVariable()->getRevObject().printValue(outStream);
         }
         outStream << std::endl;
         outStream.close();
@@ -77,11 +77,11 @@ RbLanguageObject* Func_write::execute( void ) {
         std::ostream& o = std::cout;
         
         // print the arguments
-        args[0].getVariable()->getValue().printValue( o );
+        args[0].getVariable()->getRevObject().printValue( o );
         for (size_t i = 4; i < args.size(); i++) 
         {
             o << separator;
-            args[i].getVariable()->getValue().printValue( o );
+            args[i].getVariable()->getRevObject().printValue( o );
         }
         o << std::endl;
     }
@@ -101,8 +101,8 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const {
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "", true, RbLanguageObject::getClassTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, RevObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec(), new RlString("") ) );
         argumentRules.push_back( new ArgumentRule( "append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "separator", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
@@ -116,7 +116,7 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_write::getClassName(void) { 
     
-    static std::string rbClassName = "Write function";
+    static std::string rbClassName = "Func_write";
     
 	return rbClassName; 
 }
@@ -141,7 +141,7 @@ const TypeSpec& Func_write::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_write::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
     return returnTypeSpec;
 }
 
