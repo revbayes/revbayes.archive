@@ -82,18 +82,17 @@ RbFileManager::RbFileManager(std::string s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-    {
+        {
         fullFileName = ".";
-    }
+        }
     fullFileName += pathSeparator + fileName;
     
-    
-    if ( !testFile() || !testDirectory() ) {
+    if ( !testDirectory() )
+        {
         std::string errorStr = "";
         formatError(errorStr);
         throw( RbException(errorStr) );
-    }
-    
+        }
 }
 
 

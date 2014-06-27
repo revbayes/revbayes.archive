@@ -58,8 +58,6 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
         {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
         }
-    for (std::vector<std::string>::iterator it = vectorOfFileNames.begin(); it != vectorOfFileNames.end(); it++)
-        std::cout << "file = \"" << *it << "\"" << std::endl;
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();

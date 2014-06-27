@@ -177,7 +177,6 @@
               alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
-NSLog(@"alnDirectory = \"%@\"", alnDirectory);
 
     // write the data matrix/matrices in this tool to the temporary directory
     for (size_t i=0; i<[dataMatrices count]; i++)
@@ -190,19 +189,15 @@ NSLog(@"alnDirectory = \"%@\"", alnDirectory);
             dFilePath = [dFilePath stringByAppendingString:@".nex"];
         else
             dFilePath = [dFilePath stringByAppendingString:@".fas"];
-NSLog(@"dFilePath = \"%@\"", dFilePath);
-NSLog(@"[d name] = \"%@\"", [d name]);
         [d writeToFile:dFilePath];
         }
 
     // check the workspace and make certain that we use an unused name for the data variable
     std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
-NSLog(@"nsVariableName = \"%@\"", nsVariableName);
 		  
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
-#   if 0
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
@@ -213,25 +208,12 @@ NSLog(@"nsVariableName = \"%@\"", nsVariableName);
         [self stopProgressIndicator];
         return;
         }
-#   else
-    const char* cmdAsCStr = [alnDirectory UTF8String];
-    std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
-std::cout << "command = " << line << std::endl;
-    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
-    if (coreResult != 0)
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return;
-        }
-#   endif
 
     // set the variable name for this tool
     [self setDataWorkspaceName:nsVariableName];
 
     // remove all of the files from the temporary directory
-    //[self removeFilesFromTemporaryDirectory];
+    [self removeFilesFromTemporaryDirectory];
 }
 
 - (void)makeDataInspector {

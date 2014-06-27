@@ -328,8 +328,6 @@
 		NSString *pathLessFilename = [fileToOpen stringByDeletingLastPathComponent];
 		[self setFileName:lastComponent];
 		[self setPathName:pathLessFilename];
-        NSLog(@"lastComponent = \"%@\"", lastComponent);
-        NSLog(@"pathLessFilename = \"%@\"", pathLessFilename);
         }
 	else 
         {
@@ -340,8 +338,6 @@
 	// set the information in the tool
 	[self setFileName:fileName];
 	[self setPathName:pathName];
-        NSLog(@"fileName = \"%@\"", fileName);
-        NSLog(@"pathName = \"%@\"", pathName);
     
     // check the workspace and make certain that we use an unused name for the
     // data variable
@@ -353,7 +349,6 @@
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
-std::cout << "line = \"" << line << "\"" << std::endl;
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
