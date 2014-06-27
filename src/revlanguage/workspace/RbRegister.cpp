@@ -298,9 +298,9 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
-#include "RlDPPConcFromPriorMean.h"
-#include "RlDPPNumFromConcentration.h"
-#include "RlDppNumTablesStatistic.h"
+#include "Func_dppConcFromMean.h"
+#include "Func_dppMeanFromConc.h"
+#include "Func_dppNumTablesStatistic.h"
 
 
 /** Initialize global workspace */
@@ -857,12 +857,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
  		/* Statistics functions (in folder "functions/statistics") */
-        addFunction("dppConcFromMean",  new DPPConcFromPriorMean( )     );
-        addFunction("dppMeanFromConc",  new DPPNumFromConcentration( )  );
+        addFunction("dppConcFromMean",  new Func_dppConcFromMean( )     );
+        addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
 
         // nonstandard forms form backward compatibility
-        addFunction("dppCPFromNum",     new DPPConcFromPriorMean( )     );
-        addFunction("dppNumFromCP",     new DPPNumFromConcentration( )  );
+        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
+        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
 
         
         ///////////////////////////////////////////////////////////////////////////
