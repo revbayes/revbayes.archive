@@ -103,7 +103,7 @@
 
     NSString* myTip = @" Matrix Filter Tool ";
     if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
+        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", (int)[self numDataMatrices]];
     else 
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
