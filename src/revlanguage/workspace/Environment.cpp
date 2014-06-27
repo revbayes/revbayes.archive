@@ -213,19 +213,19 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 }
 
 /** Add variable */
-void Environment::addVariable(const std::string& name, const RbPtr<Variable>& theVar) {
+void Environment::addVariable(const std::string& name, const RevPtr<Variable>& theVar) {
 
     // create a new slot
-    VariableSlot* theSlot = new VariableSlot(name, RbLanguageObject::getClassTypeSpec(), theVar);
+    VariableSlot* theSlot = new VariableSlot(name, RevObject::getClassTypeSpec(), theVar);
 
     // call function to add the slot
     addVariable(name, theSlot);
 }
 
 /** Add variable to frame */
-void Environment::addVariable(const std::string& name, RbLanguageObject* val) {
+void Environment::addVariable(const std::string& name, RevObject* val) {
     // create a new variable object
-    RbPtr<Variable> var = RbPtr<Variable>(new Variable(val));
+    RevPtr<Variable> var = RevPtr<Variable>(new Variable(val));
 
     // add the object to the list
     addVariable(name, var);
@@ -234,7 +234,7 @@ void Environment::addVariable(const std::string& name, RbLanguageObject* val) {
 /** Add variable to frame */
 void Environment::addVariable(const std::string& name) {
     // create a new variable object
-    RbPtr<Variable> var = RbPtr<Variable>(new Variable(NULL));
+    RevPtr<Variable> var = RevPtr<Variable>(new Variable(NULL));
 
     // add the object to the list
     addVariable(name, var);
@@ -282,7 +282,7 @@ void Environment::eraseVariable(const std::string& name) {
 }
 
 /* Execute function to get its value (workspaces only evaluate functions once) */
-RbLanguageObject* Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+RevObject* Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     /* Using this calling convention indicates that we are only interested in
      evaluating the function once */
@@ -359,7 +359,7 @@ const std::string& Environment::getName(size_t i) const {
 }
 
 /** Get value, alternative method */
-const RbLanguageObject& Environment::getValue(const std::string& name) const {
+const RevObject& Environment::getValue(const std::string& name) const {
 
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find(name);
@@ -372,11 +372,11 @@ const RbLanguageObject& Environment::getValue(const std::string& name) const {
 
     // set the slot
     const VariableSlot* theSlot = it->second;
-    return theSlot->getValue();
+    return theSlot->getRevObject();
 }
 
 /** Get value, alternative method */
-RbLanguageObject& Environment::getValue(const std::string& name) {
+RevObject& Environment::getValue(const std::string& name) {
 
     // find the variable slot first
     const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find(name);
@@ -389,7 +389,7 @@ RbLanguageObject& Environment::getValue(const std::string& name) {
 
     // set the slot
     VariableSlot* theSlot = it->second;
-    return theSlot->getValue();
+    return theSlot->getRevObject();
 }
 
 /** 
@@ -447,7 +447,7 @@ size_t Environment::size(void) const {
     return varNames.size();
 }
 
-void Environment::remove(const RbPtr<Variable> &var) {
+void Environment::remove(const RevPtr<Variable> &var) {
 
     // delegate call
     eraseVariable(var->getName());

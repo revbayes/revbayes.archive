@@ -35,8 +35,8 @@ GammaDistribution* GammaDistribution::clone( void ) const {
 
 RevBayesCore::GammaDistribution* GammaDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* sh  = static_cast<const RealPos &>( shape->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* r   = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* sh  = static_cast<const RealPos &>( shape->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* r   = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
     RevBayesCore::GammaDistribution* d      = new RevBayesCore::GammaDistribution(sh, r);
     
     return d;
@@ -47,7 +47,7 @@ RevBayesCore::GammaDistribution* GammaDistribution::createDistribution( void ) c
 /* Get class name of object */
 const std::string& GammaDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "GammaDistribution";
+    static std::string rbClassName = "Dist_gamma";
     
 	return rbClassName; 
 }
@@ -115,7 +115,7 @@ void GammaDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void GammaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void GammaDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "shape" ) 
     {

@@ -19,35 +19,35 @@
 #define RlMove_H
 
 #include "Move.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Move : public RlControlVariableWrapper<RevBayesCore::Move> {
+    class Move : public WorkspaceObject<RevBayesCore::Move> {
         
     public:
         
-        Move(void);                                                                                      //!< Default constructor (0.0)
-        Move(const Move& x);                                                                      //!< Copy constructor
+                                                    Move(void);                                                             //!< Default constructor (0.0)
+                                                    Move(const Move& x);                                                    //!< Copy constructor
         
         // Overloaded operators
         
         // Basic utility functions
-        virtual Move*                               clone(void) const = 0;                                                      //!< Clone object
+        virtual Move*                               clone(void) const = 0;                                                  //!< Clone object
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        virtual const MemberRules&                  getMemberRules(void) const;                                                     //!< Get member rules (const)
-        virtual const MethodTable&                  getMethods(void) const;                         //!< Get member methods (const)
+        virtual const MemberRules&                  getMemberRules(void) const;                                             //!< Get member rules (const)
+        virtual const MethodTable&                  getMethods(void) const;                                                 //!< Get member methods (const)
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
 
-        RbPtr<const Variable>                       weight;
+        RevPtr<const Variable>                      weight;
 
     };
     

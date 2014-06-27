@@ -2,7 +2,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlScreenMonitor.h"
 #include "RlString.h"
@@ -30,16 +30,16 @@ void ScreenMonitor::constructInternalObject( void ) {
     delete value;
     
     // now allocate space for a new ScreenMonitor object
-    const std::string& sep = static_cast<const RlString &>( separator->getValue() ).getValue();
-    int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
+    const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
+    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     std::set<RevBayesCore::DagNode *> n;
-    for (std::set<RbPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::DagNode* node = (*i)->getValue().getValueNode();
+    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+        RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.insert( node );
     }
-    bool pp = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
-    bool l = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
-    bool pr = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
+    bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
+    bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
+    bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     value = new RevBayesCore::ScreenMonitor(n, g, sep, pp, l, pr);
 }
 
@@ -47,7 +47,7 @@ void ScreenMonitor::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& ScreenMonitor::getClassName(void) { 
     
-    static std::string rbClassName = "Screenmonitor";
+    static std::string rbClassName = "Mntr_Screen";
     
 	return rbClassName; 
 }
@@ -69,7 +69,7 @@ const MemberRules& ScreenMonitor::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        filemonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
         filemonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
@@ -100,7 +100,7 @@ void ScreenMonitor::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void ScreenMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void ScreenMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );
@@ -121,6 +121,6 @@ void ScreenMonitor::setConstMemberVariable(const std::string& name, const RbPtr<
         likelihood = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

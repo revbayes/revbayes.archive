@@ -3,7 +3,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "Model.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
 #include "TypeSpec.h"
@@ -13,7 +13,7 @@
 
 using namespace RevLanguage;
 
-Model::Model() : RlControlVariableWrapper<RevBayesCore::Model>() {
+Model::Model() : WorkspaceObject<RevBayesCore::Model>() {
     
 }
 
@@ -31,8 +31,8 @@ void Model::constructInternalObject( void ) {
     
     // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
-    for (std::set<RbPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
-        RevBayesCore::DagNode* n = (*it)->getValue().getValueNode();
+    for (std::set<RevPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
+        RevBayesCore::DagNode* n = (*it)->getRevObject().getDagNode();
         s.insert( n );
     }
     value = new RevBayesCore::Model( s );
@@ -50,7 +50,7 @@ const std::string& Model::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -64,8 +64,8 @@ const MemberRules& Model::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("x", true, RbLanguageObject::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("x", true, RevObject::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -106,12 +106,12 @@ void Model::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Model::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" || name == "x") {
         sources.insert( var );
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

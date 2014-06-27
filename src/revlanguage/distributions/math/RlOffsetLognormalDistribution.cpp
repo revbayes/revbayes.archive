@@ -22,9 +22,9 @@ OffsetLognormalDistribution* OffsetLognormalDistribution::clone( void ) const
 
 RevBayesCore::LognormalDistribution* OffsetLognormalDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* o   = static_cast<const Real &>( offset->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o   = static_cast<const Real &>( offset->getRevObject() ).getDagNode();
     RevBayesCore::LognormalDistribution* d  = new RevBayesCore::LognormalDistribution(m, s, o);
     
     return d;
@@ -35,7 +35,7 @@ RevBayesCore::LognormalDistribution* OffsetLognormalDistribution::createDistribu
 /* Get class name of object */
 const std::string& OffsetLognormalDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Lognormal with offset distribution";
+    static std::string rbClassName = "Dist_offsetLnorm";
     
 	return rbClassName; 
 }
@@ -104,7 +104,7 @@ void OffsetLognormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OffsetLognormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void OffsetLognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

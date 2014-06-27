@@ -48,7 +48,7 @@ RevBayesCore::TypedUserFunction<valueType>::TypedUserFunction(RevLanguage::UserF
 {
     
     for ( std::vector<RevLanguage::Argument>::iterator it=args.begin(); it!=args.end(); ++it )
-        this->addParameter( it->getVariable()->getValue().getValueNode() );
+        this->addParameter( it->getVariable()->getRevObject().getDagNode() );
     
     /* Update value */
     update();
@@ -87,12 +87,12 @@ void RevBayesCore::TypedUserFunction<valueType>::update( void ) {
 
     // We can rely on the fact that only objects with value nodes have a TypedUserFunction
     
-    RevLanguage::RbLanguageObject* retValue = userFunction->executeCode();
+    RevLanguage::RevObject* retValue = userFunction->executeCode();
     
     if(TypedFunction<valueType>::value != NULL)
         delete TypedFunction<valueType>::value;
     
-    *(TypedFunction<valueType>::value) = static_cast< RevBayesCore::TypedDagNode<valueType>* >(userFunction->executeCode()->getValueNode())->getValue();
+    *(TypedFunction<valueType>::value) = static_cast< RevBayesCore::TypedDagNode<valueType>* >(userFunction->executeCode()->getDagNode())->getValue();
 
     delete retValue;
 }

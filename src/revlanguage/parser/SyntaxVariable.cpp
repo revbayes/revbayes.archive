@@ -23,7 +23,7 @@
 #include "Integer.h"
 #include "Natural.h"
 #include "RbException.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "Vector.h"
@@ -154,12 +154,12 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
         
         else {
             
-            RbPtr<Variable> indexVar = (*i)->evaluateContent( env );
+            RevPtr<Variable> indexVar = (*i)->evaluateContent( env );
             
-            if ( indexVar->getValue().isTypeSpec( Integer::getClassTypeSpec() ) ) {
+            if ( indexVar->getRevObject().isTypeSpec( Integer::getClassTypeSpec() ) ) {
                 
                 // Calculate (or get) an integer index
-                int intIndex = static_cast<Integer &>( indexVar->getValue() ).getValue(); 
+                int intIndex = static_cast<Integer &>( indexVar->getRevObject() ).getValue(); 
                 
                 if ( intIndex < 1 ) {
                     
@@ -176,7 +176,7 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
                 theIndex.push_back( intIndex-1 );
             }
             
-            else if ( indexVar->getValue().isTypeSpec( RlString::getClassTypeSpec() ) ) {
+            else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) ) {
                 
                 // Push RlString index onto index vector
 //                theIndex.push_back( indexVar->getValue()->clone() );
@@ -209,7 +209,7 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
  * frame; instead, we return a NULL pointer and set theSlot pointer
  * to NULL as well.
  */
-RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
+RevPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
     
     /* Get index */
     std::vector<int> indices = computeIndex(env);
@@ -222,7 +222,7 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
 
             if ( !env.existsVariable( identifier ) ) {
                 // create a new slot
-                RbPtr<Variable> theVar = RbPtr<Variable>( new Variable( NULL ) );
+                RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( NULL ) );
                 env.addVariable(identifier,theVar);
                 theVar->setName( identifier );
             }
@@ -237,7 +237,7 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
                 }
             }
             
-            RbPtr<Variable> theVar  = theSlot->getVariable( indices );
+            RevPtr<Variable> theVar  = theSlot->getVariable( indices );
                 
         }
         else {
@@ -280,7 +280,7 @@ RbPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
  * indirect reference to it. Among other things, this takes care of
  * reassignment and proper updating of the variable that is returned.
  */
-RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environment& env) {
+RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environment& env) {
     
     // @todo Fredrik: Deal with control variables and loop variables. Do we want to throw
     // an error or generate references to immutable constants?
@@ -288,7 +288,7 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
         throw RbException( "Loop variables in deterministic expressions not supported (yet)" );
     
     /* Get variable */
-    RbPtr<Variable> theVar = NULL;
+    RevPtr<Variable> theVar = NULL;
     
     size_t usedIndices = 0;
     
@@ -306,14 +306,14 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
                 std::list<SyntaxElement*>::const_iterator it=index->begin();
                 for (size_t i = 0; i < theSlot.getDim() && i < index->size(); ++i, ++it, ++usedIndices) {
                     SyntaxElement*         indexSyntaxElement     = *it;
-                    RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+                    RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
                     
                     // we assume that the indices have to be natural values
-                    if ( indexVar->getValue().isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                        Natural &n = static_cast<Natural &>( indexVar->getValue() );
+                    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                        Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
                         slotIndices.push_back( n.getValue()-1 );
-                    } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        RbLanguageObject* convObj = indexVar->getValue().convertTo( Natural::getClassTypeSpec() );
+                    } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
+                        RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
                         Natural *n = static_cast<Natural *>( convObj );
                         int tmp = n->getValue()-1;
                         slotIndices.push_back( tmp );
@@ -328,15 +328,15 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
                     throw RbException( "Dynamic reference to field variables not supported yet" );
 
                 // First get the variable we want to reference
-                RbLanguageObject* theObj = &(theSlot.getVariable(slotIndices)->getValue());
-                RbLanguageObject* theReference = theObj->dagReference();
+                RevObject* theObj = &(theSlot.getVariable(slotIndices)->getRevObject());
+                RevObject* theReference = theObj->dagReference();
 
                 // Now make a new variable, which is a reference to that variable
-                theVar = RbPtr<Variable>( new Variable( theReference, "" ) );
+                theVar = RevPtr<Variable>( new Variable( theReference, "" ) );
             }
             else if ( env.existsFunction( identifier ) ) {
                 const Function& theFunction = env.getFunction( identifier );
-                theVar = RbPtr<Variable>( new Variable( theFunction.clone() ) );
+                theVar = RevPtr<Variable>( new Variable( theFunction.clone() ) );
             }
             else {
                 // there is no variable with that name and also no function
@@ -352,13 +352,13 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
             
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
-            const RbPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
+            const RevPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
             
             if ( identifier == "" )
                 throw RbException( "Member variable identifier missing" );
             
-            const RbLanguageObject &theMemberObject = baseVar->getValue();
-            const RbLanguageObject* member = theMemberObject.getMember( identifier );
+            const RevObject &theMemberObject = baseVar->getRevObject();
+            const RevObject* member = theMemberObject.getMember( identifier );
             
             // test whether we actually got a variable back
             if ( member != NULL ) {
@@ -386,15 +386,15 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
         {
             /* The index variables are going to be inserted as arguments in the index operator function, so we can use standard evaluateContent fxn */
             SyntaxElement*         indexSyntaxElement     = *it;
-            RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+            RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
             
-            //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
+            //theVar = new Variable( new ConstantNode( static_cast<RevObject*>( subElement.clone() ) ) );
             
             // create the new variable name
-            std::string varName = theVar->getName() + "[" + indexVar->getValue().toString() + "]";
+            std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
             
             // convert the value into a member object
-            RbLanguageObject &mObject = theVar->getValue();
+            RevObject &mObject = theVar->getRevObject();
             
             // get the method table for this member object
             // \TODO: We should not allow const casts
@@ -411,12 +411,12 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
             
             // set the member object for the member function
             theMemberFunction->setMemberObject( theVar );
-            //            RbPtr<Function> func( theMemberFunction );
+            //            RevPtr<Function> func( theMemberFunction );
             
-            RbLanguageObject* subElement = theMemberFunction->execute();
+            RevObject* subElement = theMemberFunction->execute();
             delete theMemberFunction;
             
-            theVar = RbPtr<Variable>( new Variable( subElement, varName ) );
+            theVar = RevPtr<Variable>( new Variable( subElement, varName ) );
         }
     }
 
@@ -436,17 +436,17 @@ RbPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environm
  * The function call is NULL unless we have a base variable, in which case
  * the function call can replace the identifier.
  */
-RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
+RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     
     // test whether this variable was replace inside a loop
     if ( replacementValue != NULL ) 
     {
-        RbPtr<Variable> theVar = RbPtr<Variable>( new Variable( replacementValue->clone() ) );
+        RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( replacementValue->clone() ) );
         return theVar;
     }
 
     /* Get variable */
-    RbPtr<Variable> theVar = NULL;
+    RevPtr<Variable> theVar = NULL;
     
     size_t usedIndices = 0;
     
@@ -463,14 +463,14 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                 std::list<SyntaxElement*>::const_iterator it=index->begin();
                 for (size_t i = 0; i < theSlot.getDim() && i < index->size(); ++i, ++it, ++usedIndices) {
                     SyntaxElement*         indexSyntaxElement     = *it;
-                    RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+                    RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
                     
                     // we assume that the indices have to be natural values
-                    if ( indexVar->getValue().isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                        Natural &n = static_cast<Natural &>( indexVar->getValue() );
+                    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
+                        Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
                         slotIndices.push_back( n.getValue()-1 );
-                    } else if (indexVar->getValue().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        RbLanguageObject* convObj = indexVar->getValue().convertTo( Natural::getClassTypeSpec() );
+                    } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
+                        RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
                         Natural *n = static_cast<Natural *>( convObj );
                         int tmp = n->getValue()-1;
                         slotIndices.push_back( tmp );
@@ -485,7 +485,7 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             } 
             else if ( env.existsFunction( identifier ) ) {
                 const Function& theFunction = env.getFunction( identifier );
-                theVar = RbPtr<Variable>( new Variable( theFunction.clone() ) );
+                theVar = RevPtr<Variable>( new Variable( theFunction.clone() ) );
             } 
             else {
                 // there is no variable with that name and also no function
@@ -501,13 +501,13 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
 
             // The call to getValue of baseVariable either returns
             // a value or results in the throwing of an exception
-            const RbPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
+            const RevPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
         
             if ( identifier == "" )
                 throw RbException( "Member variable identifier missing" );
 
-            const RbLanguageObject &theMemberObject = baseVar->getValue();
-            const RbLanguageObject* member = theMemberObject.getMember( identifier );
+            const RevObject &theMemberObject = baseVar->getRevObject();
+            const RevObject* member = theMemberObject.getMember( identifier );
 
             // test whether we actually got a variable back
             if ( member != NULL ) {
@@ -535,16 +535,16 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
         for (; it!=index->end(); it++) 
         {
             SyntaxElement*         indexSyntaxElement     = *it;
-            RbPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
+            RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
             
             
-            //theVar = new Variable( new ConstantNode( static_cast<RbLanguageObject*>( subElement.clone() ) ) );
+            //theVar = new Variable( new ConstantNode( static_cast<RevObject*>( subElement.clone() ) ) );
             
             // create the new variable name
-            std::string varName = theVar->getName() + "[" + indexVar->getValue().toString() + "]";
+            std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
             
             // convert the value into a member object
-            RbLanguageObject &mObject = theVar->getValue();
+            RevObject &mObject = theVar->getRevObject();
             
             // get the method table for this member object
             // \TODO: We should not allow const casts
@@ -561,12 +561,12 @@ RbPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             
             // set the member object for the member function
             theMemberFunction->setMemberObject( theVar );
-//            RbPtr<Function> func( theMemberFunction );
+//            RevPtr<Function> func( theMemberFunction );
             
-            RbLanguageObject* subElement = theMemberFunction->execute();
+            RevObject* subElement = theMemberFunction->execute();
             delete theMemberFunction;
             
-            theVar = RbPtr<Variable>( new Variable( subElement, varName ) );
+            theVar = RevPtr<Variable>( new Variable( subElement, varName ) );
         }
     }
         
@@ -628,7 +628,7 @@ void SyntaxVariable::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * 
  */
-void SyntaxVariable::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxVariable::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     // test whether this variable is the one we are looking for
     if ( identifier != "" && name == identifier ) {
         delete replacementValue;

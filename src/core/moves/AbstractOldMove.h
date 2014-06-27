@@ -24,14 +24,14 @@ namespace RevBayesCore {
         virtual                                                ~AbstractOldMove(void);                                                                     //!< Destructor
         
         // pure virtual public methods
-        void                                                    perform(double heat, bool raiseLikelihoodOnly);                                                                          //!< Perform the move.
+        void                                                    perform(double heat, bool raiseLikelihoodOnly);                                         //!< Perform the move.
         
         virtual void                                            accept(void) = 0;
-        virtual void                                            autoTune(void) = 0;                                                                         //!< Automatic tuning of the move.
+        virtual void                                            autoTune(void) = 0;                                                                     //!< Automatic tuning of the move.
         virtual AbstractOldMove*                                clone(void) const = 0;
         virtual const std::set<DagNode*>&                       getDagNodes(void) const = 0;                                                            //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                                                            //!< Get the name of the move for summary printing
-        virtual double                                          getUpdateWeight(void) const = 0;                                                            //!< Get update weight of InferenceMove
+        virtual double                                          getUpdateWeight(void) const = 0;                                                        //!< Get update weight of InferenceMove
         virtual bool                                            isGibbs(void) const = 0;
         virtual double                                          performOld(double &pr) = 0;
         virtual void                                            performGibbs(void) = 0;

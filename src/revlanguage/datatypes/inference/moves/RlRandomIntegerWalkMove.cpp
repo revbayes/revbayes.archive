@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Integer.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlRandomIntegerWalkMove.h"
@@ -51,8 +51,8 @@ void RandomIntegerWalkMove::constructInternalObject( void )
     delete value;
     
     // now allocate a new random-integer-walk move
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getValue() ).getValueNode();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<int>* tmp = static_cast<const Integer &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<int> *n = static_cast<RevBayesCore::StochasticNode<int> *>( tmp );
     
     // finally create the internal move object
@@ -69,7 +69,7 @@ void RandomIntegerWalkMove::constructInternalObject( void )
 const std::string& RandomIntegerWalkMove::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Random-Integer-Walk move";
+    static std::string rbClassName = "Move_RandomIntegerWalk";
     
 	return rbClassName; 
 }
@@ -159,7 +159,7 @@ void RandomIntegerWalkMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void RandomIntegerWalkMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void RandomIntegerWalkMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

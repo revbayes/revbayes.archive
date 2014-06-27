@@ -14,8 +14,8 @@
 #include "Probability.h"
 #include "ProbabilityDensityFunction.h"
 #include "QuantileFunction.h"
-#include "RbLanguageObject.h"
 #include "Real.h"
+#include "RevObject.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -104,10 +104,10 @@ DistributionFunctionQuantile* DistributionFunctionQuantile::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbLanguageObject* DistributionFunctionQuantile::execute( void ) {
+RevObject* DistributionFunctionQuantile::execute( void ) {
     
     Real* value = NULL;
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     if ( templateObject != NULL ) {
         ContinuousDistribution* copyObject = templateObject->clone();
@@ -115,7 +115,7 @@ RbLanguageObject* DistributionFunctionQuantile::execute( void ) {
         for ( size_t i = 1; i < args.size(); i++ ) {
         
             if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RbPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
             } else {
                 copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
             }
@@ -133,7 +133,7 @@ RbLanguageObject* DistributionFunctionQuantile::execute( void ) {
         for ( size_t i = 1; i < args.size(); i++ ) {
             
             if ( args[i].isConstant() ) {
-                copyObject->setConstMember( args[i].getLabel(), RbPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+                copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
             } else {
                 copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
             }
@@ -161,7 +161,7 @@ const ArgumentRules& DistributionFunctionQuantile::getArgumentRules(void) const 
 /** Get class name of object */
 const std::string& DistributionFunctionQuantile::getClassName(void) { 
     
-    static std::string rbClassName = "Quantile";
+    static std::string rbClassName = "DistributionFunctionQuantile";
     
 	return rbClassName; 
 }

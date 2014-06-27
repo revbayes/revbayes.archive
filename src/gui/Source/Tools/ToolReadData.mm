@@ -7,7 +7,7 @@
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlAbstractCharacterData.h"
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
@@ -358,8 +358,8 @@
         }
     
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
-    if ( dv == RevLanguage::RbNullObject::getInstance() )
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
@@ -368,14 +368,14 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *>( &dv );
+    const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *>( &dv );
 
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[i];
+            const RevLanguage::RevObject& theDagNode = (*dnc)[i];
             const RevLanguage::AbstractCharacterData *rlan = dynamic_cast<const RevLanguage::AbstractCharacterData *>( &(theDagNode) );
             RbData* newMatrix = NULL;
             

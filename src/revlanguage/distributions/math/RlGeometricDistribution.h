@@ -40,11 +40,11 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
         
     private:
-        RbPtr<const Variable>                           p;                                                                                         //!< The rate of the distribution
+        RevPtr<const Variable>                          p;                                                                                              //!< The rate of the distribution
         
     };
     

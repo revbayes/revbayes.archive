@@ -38,8 +38,8 @@ MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) co
 RevBayesCore::MultivariateNormalDistribution* MultivariateNormalDistribution::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const Vector<Real> &>( mean->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix >* p = static_cast<const RealSymmetricMatrix &>( precision->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const Vector<Real> &>( mean->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix >* p = static_cast<const RealSymmetricMatrix &>( precision->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution* d    = new RevBayesCore::MultivariateNormalDistribution( m,p );
     
     return d;
@@ -50,7 +50,7 @@ RevBayesCore::MultivariateNormalDistribution* MultivariateNormalDistribution::cr
 /* Get class name of object */
 const std::string& MultivariateNormalDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "MultivariateNormal distribution";
+    static std::string rbClassName = "Dist_multivariateNormal";
     
 	return rbClassName; 
 }
@@ -111,7 +111,7 @@ void MultivariateNormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void MultivariateNormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void MultivariateNormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

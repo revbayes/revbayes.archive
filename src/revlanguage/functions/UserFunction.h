@@ -47,11 +47,11 @@ namespace RevLanguage {
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions   
-        virtual RbLanguageObject*                   execute(void);                                                              //!< Execute function
-        virtual RbLanguageObject*                   executeCode(void);                                                          //!< Execute Rev code of function
+        virtual RevObject*                   execute(void);                                                              //!< Execute function
+        virtual RevObject*                   executeCode(void);                                                          //!< Execute Rev code of function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
-        void                                        setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var);             
+        void                                        setArgumentVariable(const std::string& name, const RevPtr<const Variable> &var);             
         
         
     protected:

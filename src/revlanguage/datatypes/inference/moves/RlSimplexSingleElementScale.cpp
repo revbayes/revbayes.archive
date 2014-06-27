@@ -11,7 +11,7 @@
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "Natural.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -41,11 +41,11 @@ void SimplexSingleElementScale::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double a = static_cast<const RealPos &>( alpha->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getValue() ).getValueNode();
+    double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::SimplexSingleElementScale(n, a, t, w);
 }
 
@@ -53,7 +53,7 @@ void SimplexSingleElementScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& SimplexSingleElementScale::getClassName(void) { 
     
-    static std::string rbClassName = "SimplexSingleElementScale";
+    static std::string rbClassName = "Move_SimplexSingleElementScale";
     
 	return rbClassName; 
 }
@@ -113,7 +113,7 @@ void SimplexSingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SimplexSingleElementScale::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void SimplexSingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;

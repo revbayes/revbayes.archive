@@ -16,9 +16,9 @@
  */
 
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RevNullObject.h"
 #include "TypeSpec.h"
 #include "Variable.h"
 
@@ -32,21 +32,21 @@ using namespace RevLanguage;
 Variable::Variable(const TypeSpec& ts) : 
     name(""),
     refCount( 0 ),
-    value( NULL ), 
-    valueTypeSpec( ts )
+    revObject( NULL ),
+    revObjectTypeSpec( ts )
 {
     
 }
 
 /** Constructor of filled variable. */
-Variable::Variable(RbLanguageObject *v, const std::string &n) : 
-name( n ), 
-refCount( 0 ),
-value( NULL ),
-valueTypeSpec( RbLanguageObject::getClassTypeSpec() )
+Variable::Variable(RevObject *v, const std::string &n) : 
+    name( n ),
+    refCount( 0 ),
+    revObject( NULL ),
+    revObjectTypeSpec( RevObject::getClassTypeSpec() )
 {
     
-    setValue( v );
+    setRevObject( v );
     
 }
 
@@ -55,13 +55,13 @@ valueTypeSpec( RbLanguageObject::getClassTypeSpec() )
 Variable::Variable(const Variable &v) : 
     name( v.name ), 
     refCount( 0 ),
-    value( NULL ),
-    valueTypeSpec( v.valueTypeSpec )
+    revObject( NULL ),
+    revObjectTypeSpec( v.revObjectTypeSpec )
 {
     
-    if ( v.value != NULL )
+    if ( v.revObject != NULL )
     {
-        setValue( v.value->clone() );
+        setRevObject( v.revObject->clone() );
     }
         
     
@@ -70,7 +70,7 @@ Variable::Variable(const Variable &v) :
 
 Variable::~Variable( void )
 {
-    delete value;
+    delete revObject;
 }
 
 
@@ -81,14 +81,14 @@ Variable& Variable::operator=(const Variable &v)
     {
         
         name = v.name;
-        valueTypeSpec = v.valueTypeSpec;
+        revObjectTypeSpec = v.revObjectTypeSpec;
         
-        delete value;
-        value = NULL;
+        delete revObject;
+        revObject = NULL;
         
-        if ( v.value != NULL )
+        if ( v.revObject != NULL )
         {
-            setValue( v.value->clone() );
+            setRevObject( v.revObject->clone() );
         }
         
     }
@@ -127,32 +127,32 @@ size_t Variable::getReferenceCount(void) const {
 
 
 /* Get the value of the variable */
-const RbLanguageObject& Variable::getValue(void) const {
+const RevObject& Variable::getRevObject(void) const {
 
-    if (value == NULL) 
+    if (revObject == NULL)
     {
-        return RbNullObject::getInstance();
+        return RevNullObject::getInstance();
     }
     
-    return *value;
+    return *revObject;
 }
 
 /** Get the value of the variable */
-RbLanguageObject& Variable::getValue(void) {
+RevObject& Variable::getRevObject(void) {
     
-    if (value == NULL) 
+    if (revObject == NULL)
     {
-        return RbNullObject::getInstance();
+        return RevNullObject::getInstance();
     }
     
-    return *value;
+    return *revObject;
 }
 
 
 /** Get the required type specs for values stored inside this variable */
-const TypeSpec& Variable::getValueTypeSpec(void) const {
+const TypeSpec& Variable::getRevObjectTypeSpec(void) const {
     
-    return valueTypeSpec;
+    return revObjectTypeSpec;
 }
 
 
@@ -168,19 +168,19 @@ void Variable::incrementReferenceCount( void ) const {
 /* Print value of the variable variable */
 void Variable::printValue(std::ostream& o) const {
     
-    if (value == NULL)
+    if (revObject == NULL)
         o << "NULL";
     else
-        value->printValue( o );
+        revObject->printValue( o );
     
 }
 
 
 /** Set variable */
-void Variable::setValue( RbLanguageObject *newValue ) {
+void Variable::setRevObject( RevObject *newValue ) {
     
     // change the old variable with the new variable in the parent and children
-    replaceValue( newValue );
+    replaceRevObject( newValue );
     
 }
 
@@ -193,30 +193,30 @@ void Variable::setName(std::string const &n) {
 
 
 /** Replace DAG node, only keep the children */
-void Variable::replaceValue( RbLanguageObject *newValue ) {
+void Variable::replaceRevObject( RevObject *newObj ) {
     
-    if (value != NULL) 
+    if (revObject != NULL)
     {
         
         // I need to tell my children that I'm being exchanged
-        value->replaceVariable( newValue );
+        revObject->replaceMe( newObj );
         
-        delete value;
+        delete revObject;
 
     }
     
-    value = newValue;
+    revObject = newObj;
     
-    if ( value != NULL )
-        value->setName( name );
+    if ( revObject != NULL )
+        revObject->setName( name );
     
 }
 
 
 /** We set here the required value type spec. */
-void Variable::setValueTypeSpec(const TypeSpec &ts) {
+void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
     
-    valueTypeSpec = ts;
+    revObjectTypeSpec = ts;
     
 }
 

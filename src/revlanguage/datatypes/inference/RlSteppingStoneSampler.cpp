@@ -1,10 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "Real.h"
+#include "RevNullObject.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlString.h"
 #include "TypeSpec.h"
@@ -12,7 +12,7 @@
 
 using namespace RevLanguage;
 
-SteppingStoneSampler::SteppingStoneSampler() : RlControlVariableWrapper<RevBayesCore::SteppingStoneSampler>() {
+SteppingStoneSampler::SteppingStoneSampler() : WorkspaceObject<RevBayesCore::SteppingStoneSampler>() {
     
 }
 
@@ -29,10 +29,10 @@ void SteppingStoneSampler::constructInternalObject( void ) {
     delete value;
     
     // get the parameter values
-    const std::string&   fn      = static_cast<const RlString &>( filename->getValue() ).getValue();
-    const std::string&   pn      = static_cast<const RlString &>( powerColumnName->getValue() ).getValue();
-    const std::string&   ln      = static_cast<const RlString &>( likelihoodColumnName->getValue() ).getValue();
-    const std::string&   del     = static_cast<const RlString &>( delimmiter->getValue() ).getValue();
+    const std::string&   fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const std::string&   pn      = static_cast<const RlString &>( powerColumnName->getRevObject() ).getValue();
+    const std::string&   ln      = static_cast<const RlString &>( likelihoodColumnName->getRevObject() ).getValue();
+    const std::string&   del     = static_cast<const RlString &>( delimmiter->getRevObject() ).getValue();
     
     value = new RevBayesCore::SteppingStoneSampler(fn, pn, ln, del);
     
@@ -40,7 +40,7 @@ void SteppingStoneSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "marginal")
     {
@@ -50,7 +50,7 @@ RbLanguageObject* SteppingStoneSampler::executeMethod(std::string const &name, c
         return new Real( ml );
     }
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -67,7 +67,7 @@ const std::string& SteppingStoneSampler::getClassName(void)
 const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -106,7 +106,7 @@ const MethodTable& SteppingStoneSampler::getMethods(void) const {
         methods.addFunction("marginal", new MemberFunction( Real::getClassTypeSpec(), marginalArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -130,7 +130,7 @@ void SteppingStoneSampler::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SteppingStoneSampler::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void SteppingStoneSampler::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "likelihoodColumnName")
     {
@@ -150,6 +150,6 @@ void SteppingStoneSampler::setConstMemberVariable(const std::string& name, const
     }
     else
     {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

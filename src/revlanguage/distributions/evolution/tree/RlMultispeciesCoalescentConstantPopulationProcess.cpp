@@ -58,11 +58,11 @@ RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationPr
     
     // get the parameters
     // species tree
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* RbSpeciesTree       = static_cast<const TimeTree &>( speciesTree->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* RbSpeciesTree       = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
 
     // taxons
     std::map <std::string, std::string> g2s;
-    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> > *t = static_cast<const Vector<Taxon> &>( taxons->getValue() ).getValueNode(); 
+    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> > *t = static_cast<const Vector<Taxon> &>( taxons->getRevObject() ).getDagNode(); 
     for (size_t i = 0 ; i < t->getValue().size(); ++i)  {
         g2s[t->getValue()[i].getName()] = g2s[t->getValue()[i].getSpeciesName()];
     }
@@ -72,19 +72,19 @@ RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationPr
 
     // the effective population size
     RevBayesCore::TypedDagNode<std::vector<double> >* RbNes;
-    if ( Ne->getValueTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) ) 
+    if ( Ne->getRevObjectTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) )
         {
-            RbNes = static_cast<const Vector<RealPos> &>( Ne->getValue() ).getValueNode();
+            RbNes = static_cast<const Vector<RealPos> &>( Ne->getRevObject() ).getDagNode();
             d->setNes(RbNes);
 
         }
         else 
         {
-            RevBayesCore::TypedDagNode< double >* NeValue = static_cast<const RealPos &>( Ne->getValue() ).getValueNode();
-            RevBayesCore::TypedDagNode< double >* RbNe = static_cast<const RealPos &>( Ne->getValue() ).getValueNode();
+            RevBayesCore::TypedDagNode< double >* NeValue = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< double >* RbNe = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
             d->setNe(RbNe);
         }
-    //RevBayesCore::TypedDagNode<std::vector< double> >* RbNe       = static_cast<const Vector<RealPos> &>( Ne->getValue() ).getValueNode();
+    //RevBayesCore::TypedDagNode<std::vector< double> >* RbNe       = static_cast<const Vector<RealPos> &>( Ne->getRevObject() ).getDagNode();
     
     return d;
 }
@@ -99,7 +99,7 @@ RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationPr
 const std::string& MultispeciesCoalescentConstantPopulationProcess::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Multispecies Coalescent Constant Population Process";
+    static std::string rbClassName = "Dist_constPopMultispCoal";
     
 	return rbClassName; 
 }
@@ -162,7 +162,7 @@ const MemberRules& MultispeciesCoalescentConstantPopulationProcess::getMemberRul
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "speciesTree" ) 

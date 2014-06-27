@@ -3,7 +3,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ExtendedNewickTreeMonitor.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlExtendedNewickFileMonitor.h"
 #include "RlString.h"
@@ -32,18 +32,18 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    const std::string& fn = static_cast<const RlString &>( filename->getValue() ).getValue();
-    const std::string& sep = static_cast<const RlString &>( separator->getValue() ).getValue();
-    int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
+    const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
+    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
-    for (std::set<RbPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getValue()).getValueNode();
+    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
-    bool pp = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
-    bool l = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
-    bool pr = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
+    bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
+    bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
+    bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, size_t(g), fn, sep, pp, l, pr);
 }
 
@@ -51,7 +51,7 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& ExtendedNewickFileMonitor::getClassName(void) { 
     
-    static std::string rbClassName = "ExtendedNewickFileMonitor";
+    static std::string rbClassName = "Mntr_ExtendedNewickFile";
     
 	return rbClassName; 
 }
@@ -75,7 +75,7 @@ const MemberRules& ExtendedNewickFileMonitor::getMemberRules(void) const {
     if ( !rulesSet ) {
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        ExtendedNewickFileMonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
         ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
@@ -106,7 +106,7 @@ void ExtendedNewickFileMonitor::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );
@@ -133,6 +133,6 @@ void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, 
         likelihood = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

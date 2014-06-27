@@ -42,19 +42,19 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     /*
     if (omega != NULL)  {
-        om = static_cast<const RealSymmetricMatrix &>( omega->getValue() ).getValueNode();
+        om = static_cast<const RealSymmetricMatrix &>( omega->getRevObject() ).getDagNode();
     }
      */
     if (kappa != NULL)  {
-        ka = static_cast<const RealPos&>( kappa->getValue() ).getValueNode();
+        ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     }
     
-    RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getValue()).getValueNode();
+    RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
 
     RevBayesCore::TypedDagNode<int>* dm = NULL;
 //    int dm = -1;
     if (dim != NULL)    {
-        dm = static_cast<const Natural &>( dim->getValue()).getValueNode();
+        dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
 //        dm = static_cast<const Natural &>( dim->getValue()).getValue();
     }
     RevBayesCore::WishartDistribution* w    =  0;
@@ -76,7 +76,7 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
 /* Get class name of object */
 const std::string& WishartDistribution::getClassName(void) {
     
-    static std::string rbClassName = "Wishart distribution";
+    static std::string rbClassName = "Dist_wishart";
     
 	return rbClassName;
 }
@@ -144,7 +144,7 @@ void WishartDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void WishartDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void WishartDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "omega" ) {
 //        omega = var;

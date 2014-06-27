@@ -9,7 +9,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Natural.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlWeightedNodeTimeSlide.h"
@@ -37,9 +37,9 @@ void WeightedNodeTimeSlide::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
-    int b = static_cast<const Natural &>( blocks->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    int b = static_cast<const Natural &>( blocks->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
     value = new RevBayesCore::WeightedNodeTimeSlide(t, size_t(b), w);
 }
@@ -48,7 +48,7 @@ void WeightedNodeTimeSlide::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& WeightedNodeTimeSlide::getClassName(void) { 
     
-    static std::string rbClassName = "WeightedNodeTimeSlide";
+    static std::string rbClassName = "Move_WeightedNodeTimeSlide";
     
 	return rbClassName; 
 }
@@ -108,7 +108,7 @@ void WeightedNodeTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void WeightedNodeTimeSlide::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void WeightedNodeTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

@@ -5,10 +5,10 @@
 #include "DistributionBeta.h"
 #include "PowerPosteriorMcmc.h"
 #include "Model.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "Real.h"
+#include "RevNullObject.h"
 #include "RlPowerPosterior.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
@@ -20,7 +20,7 @@
 
 using namespace RevLanguage;
 
-PowerPosterior::PowerPosterior() : RlControlVariableWrapper<RevBayesCore::PowerPosteriorMcmc>() {
+PowerPosterior::PowerPosterior() : WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>() {
     
 }
 
@@ -37,16 +37,16 @@ void PowerPosterior::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
-    const std::string&                          fn      = static_cast<const RlString &>( filename->getValue() ).getValue();
+    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
     
     std::vector<double> beta;
-    if ( powers->getValue() != RbNullObject::getInstance() )
+    if ( powers->getRevObject() != RevNullObject::getInstance() )
     {
-        beta = static_cast<const Vector<RealPos> &>( powers->getValue() ).getValue();
+        beta = static_cast<const Vector<RealPos> &>( powers->getRevObject() ).getValue();
     }
     else
     {
@@ -63,25 +63,25 @@ void PowerPosterior::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( size_t(gen) );
         
         return NULL;
     } 
     else if (name == "burnin") {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( size_t(gen), size_t(tuningInterval) );
         
         return NULL;
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -96,7 +96,7 @@ const std::string& PowerPosterior::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& PowerPosterior::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -141,7 +141,7 @@ const MethodTable& PowerPosterior::getMethods(void) const {
         
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -165,7 +165,7 @@ void PowerPosterior::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PowerPosterior::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void PowerPosterior::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "model")
     {
@@ -185,6 +185,6 @@ void PowerPosterior::setConstMemberVariable(const std::string& name, const RbPtr
     }
     else
     {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

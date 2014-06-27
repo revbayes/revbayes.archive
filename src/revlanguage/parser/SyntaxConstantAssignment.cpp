@@ -93,23 +93,23 @@ SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
     printf( "Evaluating assign expression\n" );
 #endif
     
     // Get variable info from lhs
-    const RbPtr<Variable>& theSlot = variable->createVariable( env );
+    const RevPtr<Variable>& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    RbPtr<Variable> theVariable = NULL;
+    RevPtr<Variable> theVariable = NULL;
         
 #ifdef DEBUG_PARSER
     printf("Constant assignment\n");
 #endif
         
-    RbLanguageObject *newValue;
+    RevObject *newValue;
         
     // Calculate the value of the rhs expression
     theVariable = expression->evaluateContent( env );
@@ -117,21 +117,21 @@ RbPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
         throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
     // fill the slot with the new variable
-    const RbLanguageObject& value = theVariable->getValue();
+    const RevObject& value = theVariable->getRevObject();
         
     // check if the type is valid. This is necessary for reassignments
-    if ( !value.getTypeSpec().isDerivedOf( theSlot->getValueTypeSpec() ) ) {
+    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) ) {
         // We are not of a derived type (or the same type)
         // since this will create a constant node we are allowed to type cast
-        if (value.isConvertibleTo( theSlot->getValueTypeSpec() ) ) {
-            newValue = value.convertTo( theSlot->getValueTypeSpec() );
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) ) {
+            newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
                 
         }
         else {
             std::ostringstream msg;
             msg << "Cannot reassign variable '" << theSlot->getName() << "' with type " << value.getTypeSpec() << " with value ";
             value.printValue(msg);
-            msg << " because the variable requires type " << theSlot->getValueTypeSpec() << "." << std::endl;
+            msg << " because the variable requires type " << theSlot->getRevObjectTypeSpec() << "." << std::endl;
             throw RbException( msg );
         }
     }
@@ -143,7 +143,7 @@ RbPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
     }
         
     // set the value of the variable
-    theSlot->setValue( newValue );
+    theSlot->setRevObject( newValue );
         
     // set the name of the DAG node. This will ensure nicer outputs about the DAG.
     newValue->setName( theSlot->getName() );
@@ -179,7 +179,7 @@ void SyntaxConstantAssignment::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxConstantAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxConstantAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);
 }

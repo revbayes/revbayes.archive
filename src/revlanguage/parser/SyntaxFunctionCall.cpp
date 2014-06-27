@@ -97,7 +97,7 @@ SyntaxFunctionCall* SyntaxFunctionCall::clone () const {
 
 
 /** Convert element to a deterministic function node. */
-RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
     std::vector<Argument> args;
@@ -109,7 +109,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 #endif
         
         const RlString& theLabel = (*i)->getLabel();
-        RbPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
+        RevPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
         
         Argument theArg = Argument( theVar, theLabel.getValue() );
         args.push_back( theArg );
@@ -122,7 +122,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         // first, we test if the function corresponds to a user-defined variable
         if ( env.existsVariable( functionName ) ) 
         {
-            const RbLanguageObject &theValue = env.getValue( functionName );
+            const RevObject &theValue = env.getValue( functionName );
             if ( theValue.isTypeSpec( Function::getClassTypeSpec() ) ) 
             {
                 const Function &theFunc = static_cast<const Function&>( theValue );
@@ -147,9 +147,9 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     else 
     {
 
-        RbPtr<Variable> theVar = variable->evaluateContent( env );
+        RevPtr<Variable> theVar = variable->evaluateContent( env );
             
-        RbLanguageObject &theMemberObject = theVar->getValue();
+        RevObject &theMemberObject = theVar->getRevObject();
             
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
@@ -162,10 +162,10 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     }
     
-    RbLanguageObject* funcReturnValue = func->execute();
+    RevObject* funcReturnValue = func->execute();
     delete func;
 
-    return RbPtr<Variable>( new Variable( funcReturnValue ) );
+    return RevPtr<Variable>( new Variable( funcReturnValue ) );
 }
 
 
@@ -226,7 +226,7 @@ void SyntaxFunctionCall::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the arguments.
  */
-void SyntaxFunctionCall::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxFunctionCall::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     for (std::list<SyntaxLabeledExpr*>::iterator i = arguments->begin(); i != arguments->end(); i++) {
         (*i)->replaceVariableWithConstant(name, c);

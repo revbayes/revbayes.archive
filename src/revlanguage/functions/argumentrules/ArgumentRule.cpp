@@ -44,7 +44,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& a
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new Variable( defVal ) ),
     isConst( c ),
@@ -72,7 +72,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector
 /**
  * Construct rule without default value; use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
     defaultVar( new Variable( defVal ) ),
     isConst( c ),
@@ -120,7 +120,7 @@ bool ArgumentRule::hasDefault(void) const {
 
 
 /** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool convert) const {
+bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool convert) const {
     
     if ( var == NULL )
         return false;
@@ -128,18 +128,18 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
         // first we check if the type we want is already guaranteed by the variable
-        if ( var->getValueTypeSpec().isDerivedOf( *it ) ) 
+        if ( var->getRevObjectTypeSpec().isDerivedOf( *it ) )
         {
             return true;
         }
 
         // we can only change the REQUIRED value type of the variable if we want a derived type of the current value type
         // the actual variable type may be different to the required type
-        if ( it->isDerivedOf( var->getValueTypeSpec() ) ) 
+        if ( it->isDerivedOf( var->getRevObjectTypeSpec() ) )
         {
                           
             // first we check if the argument needs to be converted
-            if ( var->getValue().isTypeSpec( *it ) ) 
+            if ( var->getRevObject().isTypeSpec( *it ) )
             {
                 // No, we don't.
             
@@ -147,12 +147,12 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                 if ( convert ) 
                 {
                     // this is a safe const cast (Sebastian)
-                    const_cast<Variable*>( (const Variable *)var )->setValueTypeSpec( *it );
+                    const_cast<Variable*>( (const Variable *)var )->setRevObjectTypeSpec( *it );
                 }
             
                 return true;
             } 
-            else if ( var->getValue().isConstant() && var->getValue().isConvertibleTo( *it ) ) 
+            else if ( var->getRevObject().isConstant() && var->getRevObject().isConvertibleTo( *it ) )
             {
                 // Yes, we can and have to convert
             
@@ -160,11 +160,11 @@ bool ArgumentRule::isArgumentValid(const RbPtr<const Variable> &var, bool conver
                 if ( convert ) 
                 {
                 
-                    RbLanguageObject* convObj = var->getValue().convertTo( *it );
-                    const_cast<Variable*>( (const Variable *) var )->setValue( convObj );
+                    RevObject* convObj = var->getRevObject().convertTo( *it );
+                    const_cast<Variable*>( (const Variable *) var )->setRevObject( convObj );
 
                     // set the new type spec of the variable
-                    const_cast<Variable*>( (const Variable *) var )->setValueTypeSpec( *it );
+                    const_cast<Variable*>( (const Variable *) var )->setRevObjectTypeSpec( *it );
                 }
                 return true;
             }

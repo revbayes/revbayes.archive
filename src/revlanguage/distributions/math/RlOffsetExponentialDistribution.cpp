@@ -35,8 +35,8 @@ OffsetExponentialDistribution* OffsetExponentialDistribution::clone( void ) cons
 
 RevBayesCore::ExponentialDistribution* OffsetExponentialDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l     = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* o     = static_cast<const Real    &>( offset->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l     = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o     = static_cast<const Real    &>( offset->getRevObject() ).getDagNode();
     RevBayesCore::ExponentialDistribution* d  = new RevBayesCore::ExponentialDistribution( l, o );
     
     return d;
@@ -47,7 +47,7 @@ RevBayesCore::ExponentialDistribution* OffsetExponentialDistribution::createDist
 /* Get class name of object */
 const std::string& OffsetExponentialDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "offset Exponential distribution";
+    static std::string rbClassName = "Dist_offsetExponential";
     
 	return rbClassName; 
 }
@@ -108,7 +108,7 @@ void OffsetExponentialDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OffsetExponentialDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void OffsetExponentialDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lambda" ) 
     {

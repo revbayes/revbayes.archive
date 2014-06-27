@@ -14,7 +14,7 @@
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "Natural.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -45,11 +45,11 @@ void PrecisionMatrixSimpleMove::constructInternalObject( void ) {
     delete value;
   
     // now allocate a new wishart simple move
-    double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getValue() ).getValueNode();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix > *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::PrecisionMatrixMove(matrix, l, t, w);
         
 }
@@ -58,7 +58,7 @@ void PrecisionMatrixSimpleMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& PrecisionMatrixSimpleMove::getClassName(void) {
     
-    static std::string rbClassName = "VectorSingleElementMove";
+    static std::string rbClassName = "Move_VectorSingleElement";
     
 	return rbClassName;
 }
@@ -118,7 +118,7 @@ void PrecisionMatrixSimpleMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void PrecisionMatrixSimpleMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void PrecisionMatrixSimpleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         mat = var;

@@ -38,7 +38,7 @@ DirichletDistribution* DirichletDistribution::clone( void ) const {
 RevBayesCore::DirichletDistribution* DirichletDistribution::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const Vector<RealPos> &>( alpha->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const Vector<RealPos> &>( alpha->getRevObject() ).getDagNode();
     RevBayesCore::DirichletDistribution* d    = new RevBayesCore::DirichletDistribution( a );
     
     return d;
@@ -49,7 +49,7 @@ RevBayesCore::DirichletDistribution* DirichletDistribution::createDistribution( 
 /* Get class name of object */
 const std::string& DirichletDistribution::getClassName(void) { 
     
-    static std::string rbClassName = "Dirichlet distribution";
+    static std::string rbClassName = "Dist_dirichlet";
     
 	return rbClassName; 
 }
@@ -103,7 +103,7 @@ void DirichletDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void DirichletDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void DirichletDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "alpha" ) 
     {

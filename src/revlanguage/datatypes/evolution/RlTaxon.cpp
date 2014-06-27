@@ -11,29 +11,29 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Taxon::Taxon(void) : RlModelVariableWrapper<RevBayesCore::Taxon>() {
+Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>() {
     
 }
 
 /** Construct from core Taxon */
-Taxon::Taxon(RevBayesCore::Taxon *c) : RlModelVariableWrapper<RevBayesCore::Taxon>( c ) {
+Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c ) {
     
 }
 
 /** Construct from core Taxon */
-Taxon::Taxon(const RevBayesCore::Taxon &t) : RlModelVariableWrapper<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) ) {
+Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( new RevBayesCore::Taxon( t ) ) {
     
 }
 
 /** Construct from DAG node */
-Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : RlModelVariableWrapper<RevBayesCore::Taxon>( n ) {
+Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<RevBayesCore::Taxon>( n ) {
     
 }
 
 
 
 /** Construct */
-Taxon::Taxon(const Taxon &t) : RlModelVariableWrapper<RevBayesCore::Taxon>( t ) {
+Taxon::Taxon(const Taxon &t) : ModelObject<RevBayesCore::Taxon>( t ) {
     
 }
 
@@ -57,9 +57,9 @@ void Taxon::constructInternalObject( void )
     }
     
     // now allocate a new Taxon
-    std::string taxonName = static_cast<const RlString &>( (taxon)->getValue() ).getValue() ;
-    std::string taxonSpecies = static_cast<const RlString &>( (species)->getValue() ).getValue() ;
-//    std::string taxonDate = static_cast<const RlDate &>( (date)->getValue() ).getValue() ;
+    std::string taxonName = static_cast<const RlString &>( (taxon)->getRevObject() ).getValue() ;
+    std::string taxonSpecies = static_cast<const RlString &>( (species)->getRevObject() ).getValue() ;
+//    std::string taxonDate = static_cast<const RlDate &>( (date)->getRevObject() ).getValue() ;
 //    RevBayesCore::TimeAndDate d = RevBayesCore::TimeAndDate();
     
     value = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName, taxonSpecies ) );
@@ -69,7 +69,7 @@ void Taxon::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RbLanguageObject* Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
 //    if (name == "nnodes") {
 //        size_t n = this->value->getValue().getNumberOfNodes();
@@ -80,7 +80,7 @@ RevLanguage::RbLanguageObject* Taxon::executeMethod(std::string const &name, con
 //        return new Vector<RlString>( n );
 //    } 
     
-    return RlModelVariableWrapper<RevBayesCore::Taxon>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args );
 }
 
 
@@ -114,7 +114,7 @@ const std::string& Taxon::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Taxon::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
     return rbClass; 
 }
@@ -135,7 +135,7 @@ const RevLanguage::MethodTable& Taxon::getMethods(void) const {
 //        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -154,7 +154,7 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "taxonName") 
     {
@@ -169,7 +169,7 @@ void Taxon::setConstMemberVariable(const std::string& name, const RbPtr<const Va
         date = var ;
     } 
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }
 

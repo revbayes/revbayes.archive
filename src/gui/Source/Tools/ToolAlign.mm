@@ -17,7 +17,7 @@
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -232,8 +232,8 @@
     // read in by the core
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
-    if ( dv == RevLanguage::RbNullObject::getInstance() )
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
@@ -249,7 +249,7 @@
 //        [self removeAllDataMatrices];
 //        for (int i=0; i<dnc->size(); i++)
 //            {
-//            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
+//            const RevPtr<RbObject>& theDagNode = dnc->getElement( i );
 //            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
 //            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
 //            [newMatrix setAlignmentMethod:@"Unknown"];

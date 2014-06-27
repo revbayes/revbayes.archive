@@ -55,31 +55,31 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstant
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     // speciation rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const Vector<RealPos> &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const Vector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const Vector<RealPos> &>( lambdaTimes->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const Vector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
     // extinction rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const Vector<RealPos> &>( mu->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const Vector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // extinction rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const Vector<RealPos> &>( muTimes->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const Vector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
     // sampling rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const Vector<RealPos> &>( psi->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const Vector<RealPos> &>( psi->getRevObject() ).getDagNode();
     // sampling rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const Vector<RealPos> &>( psiTimes->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const Vector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
     // sampling probabilities
-    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const Vector<Probability> &>( rho->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const Vector<Probability> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const Vector<Probability> &>( rhoTimes->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const Vector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
     // time between now and most recent sample
-    double tLastSample                          = static_cast<const RealPos &>( tLast->getValue() ).getValue();
+    double tLastSample                          = static_cast<const RealPos &>( tLast->getRevObject() ).getValue();
     // condition
-    const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
+    const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
     
     std::vector<RevBayesCore::Taxon> taxa;
     for (size_t i = 0; i < names.size(); ++i) 
@@ -103,7 +103,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstant
 const std::string& PiecewiseConstantSerialSampledBirthDeathProcess::getClassName( void ) 
 { 
     
-    static std::string rbClassName = "PiecewiseConstantSerialSampledBirthDeathProcess";
+    static std::string rbClassName = "Dist_skySerialBDP";
     
 	return rbClassName; 
 }
@@ -194,7 +194,7 @@ const TypeSpec& PiecewiseConstantSerialSampledBirthDeathProcess::getTypeSpec( vo
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void PiecewiseConstantSerialSampledBirthDeathProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void PiecewiseConstantSerialSampledBirthDeathProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

@@ -51,6 +51,7 @@ namespace RevBayesCore {
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
         std::string                                         getDatatype(void) const;
         const std::string&                                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
+        const std::string&                                  getFilePath(void) const;                                                    //!< Returns the name of the file the data came from
         const bool                                          getHomologyEstablished(void) const;                                         //!< Returns whether the homology of the characters has been established
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
@@ -72,6 +73,7 @@ namespace RevBayesCore {
         void                                                restoreTaxon(size_t i);                                                     //!< Restore taxon
         void                                                restoreTaxon(std::string& s);                                               //!< Restore taxon
         void                                                setFileName(const std::string &fn);                                         //!< Set the file name
+        void                                                setFilePath(const std::string &fn);                                         //!< Set the file name
         void                                                setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
         
     protected:
@@ -86,6 +88,7 @@ namespace RevBayesCore {
         std::set<size_t>                                    deletedTaxa;                                                                //!< Set of deleted taxa
         std::set<size_t>                                    deletedCharacters;                                                          //!< Set of deleted characters
         std::string                                         fileName;                                                                   //!< The path/filename from where this matrix originated
+        std::string                                         filePath;                                                                   //!< The path/filename from where this matrix originated
         std::vector<std::string>                            sequenceNames;                                                              //!< names of the sequences
         size_t                                              sequenceLength;                                                             //!< The length of each sequence
         bool                                                homologyEstablished;                                                        //!< Whether the homology of the characters has been established
@@ -416,6 +419,19 @@ const std::string& RevBayesCore::DiscreteCharacterData<charType>::getFileName(vo
     
     return fileName;
 }
+
+/**
+ * Get the file path from which the character data object was read in.
+ *
+ * \return    The original file path.
+ */
+template<class charType>
+const std::string& RevBayesCore::DiscreteCharacterData<charType>::getFilePath(void) const
+{
+    
+    return filePath;
+}
+
 
 /** 
  * Get whether the homology of the characters has been established, or not.
@@ -927,6 +943,20 @@ void RevBayesCore::DiscreteCharacterData<charType>::setFileName(const std::strin
 {
     
     fileName = fn;
+    
+}
+
+
+/**
+ * Set the original file name for this character data object.
+ *
+ * \param[in]    fn    The new file name.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::setFilePath(const std::string& fn)
+{
+    
+    filePath = fn;
     
 }
 

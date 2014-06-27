@@ -26,7 +26,7 @@ using namespace RevLanguage;
 
 
 /** Construct from argument label and DAG node */
-Argument::Argument(const RbPtr<Variable> &v, const std::string& argLabel, bool c) :
+Argument::Argument(const RevPtr<Variable> &v, const std::string& argLabel, bool c) :
     var( v ),
     isConst( c ),
     label( argLabel )
@@ -45,7 +45,7 @@ Argument* Argument::clone( void ) const {
 }
 
 
-const RbPtr<Variable>& Argument::getReferenceVariable(void) const {
+const RevPtr<Variable>& Argument::getReferenceVariable(void) const {
     if ( isConst ) {
         throw RbException("Illegal attempt to get a non-const reference to a constant variable.");
     }
@@ -53,13 +53,13 @@ const RbPtr<Variable>& Argument::getReferenceVariable(void) const {
 }
 
 
-RbPtr<Variable>& Argument::getVariable(void) {
+RevPtr<Variable>& Argument::getVariable(void) {
     return var;
 }
 
 
-RbPtr<const Variable> Argument::getVariable(void) const {
-    return RbPtr<const Variable>( var );
+RevPtr<const Variable> Argument::getVariable(void) const {
+    return RevPtr<const Variable>( var );
 }
 
 

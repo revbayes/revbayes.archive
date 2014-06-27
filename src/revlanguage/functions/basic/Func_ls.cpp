@@ -45,9 +45,9 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_ls::execute( void ) {
+RevObject* Func_ls::execute( void ) {
     
-    bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getValue() ).getValue();
+    bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
     
     RBOUT( "User workspace:" );
     RBOUT( "===============" );
@@ -89,7 +89,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_ls::getClassName(void) { 
     
-    static std::string rbClassName = "ls function";
+    static std::string rbClassName = "Func_ls";
     
 	return rbClassName; 
 }

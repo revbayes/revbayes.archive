@@ -46,7 +46,7 @@ PoissonDistribution* PoissonDistribution::clone( void ) const
 RevBayesCore::PoissonDistribution* PoissonDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* rate    = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* rate    = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     RevBayesCore::PoissonDistribution* d      = new RevBayesCore::PoissonDistribution( rate );
     
     return d;
@@ -62,7 +62,7 @@ RevBayesCore::PoissonDistribution* PoissonDistribution::createDistribution( void
 const std::string& PoissonDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Poisson distribution";
+    static std::string rbClassName = "Dist_poisson";
     
 	return rbClassName; 
 }
@@ -133,7 +133,7 @@ const TypeSpec& PoissonDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void PoissonDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void PoissonDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" )

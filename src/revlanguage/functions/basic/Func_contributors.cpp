@@ -37,7 +37,7 @@ Func_contributors* Func_contributors::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_contributors::execute( void ) {
+RevObject* Func_contributors::execute( void ) {
     
     
     RBOUT( "\n" );

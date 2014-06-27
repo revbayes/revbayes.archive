@@ -49,8 +49,8 @@ UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const
 RevBayesCore::UniformTopologyDistribution* UniformTopologyDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    int n = static_cast<const Natural &>( numTaxa->getValue() ).getValueNode()->getValue();
-    const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    int n = static_cast<const Natural &>( numTaxa->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
     
     return d;
@@ -65,7 +65,7 @@ RevBayesCore::UniformTopologyDistribution* UniformTopologyDistribution::createDi
 const std::string& UniformTopologyDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "uniform topology distribution";
+    static std::string rbClassName = "Dist_uniformTopology";
     
 	return rbClassName; 
 }
@@ -137,7 +137,7 @@ const TypeSpec& UniformTopologyDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void UniformTopologyDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void UniformTopologyDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "nTaxa" ) 

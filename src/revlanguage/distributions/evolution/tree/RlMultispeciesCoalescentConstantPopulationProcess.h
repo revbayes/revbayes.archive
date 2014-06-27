@@ -26,26 +26,26 @@ namespace RevLanguage {
         MultispeciesCoalescentConstantPopulationProcess( void );
         
         // Basic utility functions
-        MultispeciesCoalescentConstantPopulationProcess*                  clone(void) const;                                                                      //!< Clone the object
-        static const std::string&                       getClassName(void);                                                                     //!< Get class name
-        static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                             //!< Get member rules (const)
+        MultispeciesCoalescentConstantPopulationProcess*    clone(void) const;                                                                      //!< Clone the object
+        static const std::string&                           getClassName(void);                                                                     //!< Get class name
+        static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        const TypeSpec&                                     getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
+        const MemberRules&                                  getMemberRules(void) const;                                                             //!< Get member rules (const)
         
         
         // Distribution functions you have to override
-        RevBayesCore::MultispeciesCoalescent*    createDistribution(void) const;
+        RevBayesCore::MultispeciesCoalescent*               createDistribution(void) const;
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);      //!< Set member variable
+        void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
 
-        RbPtr<const Variable>                           Ne;                                                                                 //!< The population size
-        RbPtr<const Variable>                           speciesTree;                                                          //!< The species tree
-        RbPtr<const Variable>                           taxons;                                                              //!< The taxons
+        RevPtr<const Variable>                              Ne;                                                                                     //!< The population size
+        RevPtr<const Variable>                              speciesTree;                                                                            //!< The species tree
+        RevPtr<const Variable>                              taxons;                                                                                 //!< The taxons
         
         
     };

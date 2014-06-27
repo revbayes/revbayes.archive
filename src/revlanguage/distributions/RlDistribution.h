@@ -21,11 +21,11 @@
 #define RlDistribution_H
 
 #include "Distribution.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 
 namespace RevLanguage {
 
-    class Distribution : public RbLanguageObject {
+    class Distribution : public RevObject {
     
     public:
         virtual                                         ~Distribution(void);                                                                //!< Destructor
@@ -40,7 +40,7 @@ namespace RevLanguage {
         void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
     
         // Distribution functions you have to override
-        virtual RbLanguageObject*                       createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
+        virtual RevObject*                       createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
         virtual RevBayesCore::Distribution*             createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
     
     

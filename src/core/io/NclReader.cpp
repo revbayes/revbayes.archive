@@ -109,7 +109,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
             
 			if (m != NULL)
                 {
-                m->setFileName( fileName );
+                m->setFileName( StringUtilities::getLastPathComponent(fileName) );
+                m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
 				cmv.push_back( m );
                 }
             }
@@ -152,7 +153,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
             
 			if (m != NULL)
                 {
-                m->setFileName( fileName );
+                m->setFileName( StringUtilities::getLastPathComponent(fileName) );
+                m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
 				cmv.push_back( m );
                 }
             }
@@ -1201,8 +1203,6 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 /** Reads a single file using NCL */
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
-    RBOUT( "Attempting to read the contents of file \"" + std::string(fileName) + "\"\n" );
-	
     // check that the file exists
 	if ( !fileExists(fileName) )	
     {
@@ -1536,7 +1536,7 @@ BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleT
     TopologyNode* root = new TopologyNode(name);
     
     // create a map which holds for each node a map of name value pairs.
-    //    std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> > nodeParameters;
+    //    std::map<const TopologyNode*, std::map<std::string, RevObject*> > nodeParameters;
     
     // the vector of nodes so that we remember the ordering (and matching) which node belongs to which parameter
     std::vector<TopologyNode*> nodes;

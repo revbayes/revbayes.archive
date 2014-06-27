@@ -46,8 +46,8 @@ ExponentialDistribution* ExponentialDistribution::clone( void ) const
 RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( offset->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( offset->getRevObject() ).getDagNode();
     RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l, o );
     
     return d;
@@ -63,7 +63,7 @@ RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistributi
 const std::string& ExponentialDistribution::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Exponential distribution";
+    static std::string rbClassName = "Dist_exponential";
     
 	return rbClassName; 
 }
@@ -135,7 +135,7 @@ const TypeSpec& ExponentialDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ExponentialDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) 
+void ExponentialDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

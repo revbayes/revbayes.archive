@@ -1,6 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
@@ -31,12 +31,12 @@ void RateAgeBetaShift::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
-    double d = static_cast<const RealPos &>( delta->getValue() ).getValue();
-    bool at = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
+    bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const Vector<RealPos> &>( rates->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const Vector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode<std::vector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode<std::vector<double> > *>( tmpRates );
     const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = static_cast< const RevBayesCore::VectorFunction<double> &>( dnode->getFunction() ).getParams();
@@ -53,7 +53,7 @@ void RateAgeBetaShift::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& RateAgeBetaShift::getClassName(void) { 
     
-    static std::string rbClassName = "RateAgeBetaShift";
+    static std::string rbClassName = "Move_RateAgeBetaShift";
     
 	return rbClassName; 
 }
@@ -115,7 +115,7 @@ void RateAgeBetaShift::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void RateAgeBetaShift::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RateAgeBetaShift::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

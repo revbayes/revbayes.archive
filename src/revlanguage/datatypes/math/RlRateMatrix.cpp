@@ -17,17 +17,17 @@
 
 using namespace RevLanguage;
 
-RateMatrix::RateMatrix(void) : RlModelVariableWrapper<RevBayesCore::RateMatrix>() {
+RateMatrix::RateMatrix(void) : ModelObject<RevBayesCore::RateMatrix>() {
     
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RlModelVariableWrapper<RevBayesCore::RateMatrix>( v ) {
+RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : ModelObject<RevBayesCore::RateMatrix>( v ) {
     
 }
 
 
-RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *m) : RlModelVariableWrapper<RevBayesCore::RateMatrix>( m ) {
+RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *m) : ModelObject<RevBayesCore::RateMatrix>( m ) {
     
 }
 
@@ -38,11 +38,11 @@ RateMatrix* RateMatrix::clone() const {
 
 
 /* Map calls to member methods */
-RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") {
         // get the member with give index
-        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getValue() );
+        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         
         if (this->value->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in []");
@@ -60,7 +60,7 @@ RbLanguageObject* RateMatrix::executeMethod(std::string const &name, const std::
         return new Natural(n);
     }
     
-    return RlModelVariableWrapper<RevBayesCore::RateMatrix>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::RateMatrix>::executeMethod( name, args );
 }
 
 
@@ -75,7 +75,7 @@ const std::string& RateMatrix::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& RateMatrix::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -101,7 +101,7 @@ const MethodTable& RateMatrix::getMethods(void) const {
         methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::RateMatrix>::getMethods() );
+        methods.setParentTable( &ModelObject<RevBayesCore::RateMatrix>::getMethods() );
         methodsSet = true;
     }
     
