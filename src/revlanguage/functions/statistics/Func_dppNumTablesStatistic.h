@@ -15,8 +15,8 @@
  */
 
 
-#ifndef RlDppNumTablesStatistic_H
-#define RlDppNumTablesStatistic_H
+#ifndef Func_dppNumTablesStatistic_H
+#define Func_dppNumTablesStatistic_H
 
 #include "RlFunction.h"
 
@@ -25,19 +25,19 @@
 namespace RevLanguage {
     
     template <typename valType>
-    class DppNumTablesStatistic :  public Function {
+    class Func_dppNumTablesStatistic :  public Function {
         
     public:
-        DppNumTablesStatistic( void );
+        Func_dppNumTablesStatistic( void );
         
         // Basic utility functions
-        DppNumTablesStatistic*                                 clone(void) const;                                                              //!< Clone the object
+        Func_dppNumTablesStatistic*                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -56,20 +56,20 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType>
-RevLanguage::DppNumTablesStatistic<valType>::DppNumTablesStatistic( void ) : Function( ) {
+RevLanguage::Func_dppNumTablesStatistic<valType>::Func_dppNumTablesStatistic( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
 template <typename valType>
-RevLanguage::DppNumTablesStatistic<valType>* RevLanguage::DppNumTablesStatistic<valType>::clone( void ) const {
+RevLanguage::Func_dppNumTablesStatistic<valType>* RevLanguage::Func_dppNumTablesStatistic<valType>::clone( void ) const {
     
-    return new RevLanguage::DppNumTablesStatistic<valType>( *this );
+    return new RevLanguage::Func_dppNumTablesStatistic<valType>( *this );
 }
 
 template <typename valType>
-RevLanguage::RevObject* RevLanguage::DppNumTablesStatistic<valType>::execute() {
+RevLanguage::RevObject* RevLanguage::Func_dppNumTablesStatistic<valType>::execute() {
     
     RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* dppVec = static_cast<const std::vector<typename valType::valueType> >( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::DppNumTablesStatistic<typename valType::valueType>* f = new RevBayesCore::DppNumTablesStatistic<typename valType::valueType>( dppVec );
@@ -83,7 +83,7 @@ RevLanguage::RevObject* RevLanguage::DppNumTablesStatistic<valType>::execute() {
 
 /* Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::DppNumTablesStatistic<valType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_dppNumTablesStatistic<valType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -100,7 +100,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DppNumTablesStatistic<valType>::g
 
 
 template <typename valType>
-const std::string& RevLanguage::DppNumTablesStatistic<valType>::getClassName(void) { 
+const std::string& RevLanguage::Func_dppNumTablesStatistic<valType>::getClassName(void) { 
     
     static std::string rbClassName = "Func_dppNumTablesStatistic";
     
@@ -109,7 +109,7 @@ const std::string& RevLanguage::DppNumTablesStatistic<valType>::getClassName(voi
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::DppNumTablesStatistic<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -119,7 +119,7 @@ const RevLanguage::TypeSpec& RevLanguage::DppNumTablesStatistic<valType>::getCla
 
 /* Get return type */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::DppNumTablesStatistic<valType>::getReturnType( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -128,7 +128,7 @@ const RevLanguage::TypeSpec& RevLanguage::DppNumTablesStatistic<valType>::getRet
 
 
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::DppNumTablesStatistic<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

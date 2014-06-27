@@ -9,8 +9,8 @@
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "Func_tmrca.h"
-#include "RlDPPConcFromPriorMean.h"
+#include "Func_dppMeanFromConc.h"
+#include "RbStatisticsHelper.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
@@ -18,46 +18,45 @@
 #include "Topology.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
-#include "RbStatisticsHelper.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-DPPConcFromPriorMean::DPPConcFromPriorMean( void ) : Function( ) {
+Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-DPPConcFromPriorMean* DPPConcFromPriorMean::clone( void ) const {
+Func_dppMeanFromConc* Func_dppMeanFromConc::clone( void ) const {
     
-    return new DPPConcFromPriorMean( *this );
+    return new Func_dppMeanFromConc( *this );
 }
 
 
-RevObject* DPPConcFromPriorMean::execute() {
-
-    double nc = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
+RevObject* Func_dppMeanFromConc::execute() {
+	
+    double cp = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
 	
-	double meanCP = RevBayesCore::RbStatistics::Helper::dppConcParamFromNumTables(nc, ne);
+	double meanCP = RevBayesCore::RbStatistics::Helper::dppExpectNumTableFromConcParam(cp, ne);
     RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));
 	
 	RealPos* value = new RealPos( constNode );
 	return value;
-
+	
 }
 
 
 /* Get argument rules */
-const ArgumentRules& DPPConcFromPriorMean::getArgumentRules( void ) const {
+const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "num_cats", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "concentration", true, RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "num_elements", true, RealPos::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -67,15 +66,15 @@ const ArgumentRules& DPPConcFromPriorMean::getArgumentRules( void ) const {
 }
 
 
-const std::string& DPPConcFromPriorMean::getClassName(void) { 
+const std::string& Func_dppMeanFromConc::getClassName(void) { 
     
-    static std::string rbClassName = "Func_dppConcFromMean";
+    static std::string rbClassName = "Func_dppMeanFromConc";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& DPPConcFromPriorMean::getClassTypeSpec(void) { 
+const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -84,7 +83,7 @@ const TypeSpec& DPPConcFromPriorMean::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& DPPConcFromPriorMean::getReturnType( void ) const {
+const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -92,7 +91,7 @@ const TypeSpec& DPPConcFromPriorMean::getReturnType( void ) const {
 }
 
 
-const TypeSpec& DPPConcFromPriorMean::getTypeSpec( void ) const {
+const TypeSpec& Func_dppMeanFromConc::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

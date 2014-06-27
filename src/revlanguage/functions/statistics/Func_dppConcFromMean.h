@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage gtr function, which
- * is used to created deterministic variable associated with the gtr function.
+ * This file contains the declaration of the RevLanguage dppConcFromMean function, which
+ * is used to create deterministic variable associated with the dppConcFromMean function.
  *
  * @brief Declaration and implementation of Func_gtr
  *
@@ -15,8 +15,8 @@
  */
 
 
-#ifndef RlDPPNumFromConcentration_H
-#define RlDPPNumFromConcentration_H
+#ifndef RlFunc_dppConcFromMean_H
+#define RlFunc_dppConcFromMean_H
 
 #include "RlFunction.h"
 
@@ -24,19 +24,19 @@
 
 namespace RevLanguage {
     
-    class DPPNumFromConcentration :  public Function {
+    class Func_dppConcFromMean :  public Function {
         
     public:
-        DPPNumFromConcentration( void );
+        Func_dppConcFromMean( void );
         
         // Basic utility functions
-        DPPNumFromConcentration*                                 clone(void) const;                                                              //!< Clone the object
+        Func_dppConcFromMean*                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         

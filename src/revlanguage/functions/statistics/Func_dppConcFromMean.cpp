@@ -9,54 +9,54 @@
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "RlDPPNumFromConcentration.h"
+#include "Func_dppConcFromMean.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
+#include "RbStatisticsHelper.h"
 #include "RealPos.h"
 #include "Topology.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
-#include "RbStatisticsHelper.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-DPPNumFromConcentration::DPPNumFromConcentration( void ) : Function( ) {
+Func_dppConcFromMean::Func_dppConcFromMean( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-DPPNumFromConcentration* DPPNumFromConcentration::clone( void ) const {
+Func_dppConcFromMean* Func_dppConcFromMean::clone( void ) const {
     
-    return new DPPNumFromConcentration( *this );
+    return new Func_dppConcFromMean( *this );
 }
 
 
-RevObject* DPPNumFromConcentration::execute() {
-	
-    double cp = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
+RevObject* Func_dppConcFromMean::execute() {
+
+    double nc = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
 	
-	double meanCP = RevBayesCore::RbStatistics::Helper::dppExpectNumTableFromConcParam(cp, ne);
+	double meanCP = RevBayesCore::RbStatistics::Helper::dppConcParamFromNumTables(nc, ne);
     RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));
 	
 	RealPos* value = new RealPos( constNode );
 	return value;
-	
+
 }
 
 
 /* Get argument rules */
-const ArgumentRules& DPPNumFromConcentration::getArgumentRules( void ) const {
+const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "concentration", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "num_cats", true, RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "num_elements", true, RealPos::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -66,15 +66,15 @@ const ArgumentRules& DPPNumFromConcentration::getArgumentRules( void ) const {
 }
 
 
-const std::string& DPPNumFromConcentration::getClassName(void) { 
+const std::string& Func_dppConcFromMean::getClassName(void) { 
     
-    static std::string rbClassName = "Func_dppMeanFromConc";
+    static std::string rbClassName = "Func_dppConcFromMean";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& DPPNumFromConcentration::getClassTypeSpec(void) { 
+const TypeSpec& Func_dppConcFromMean::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -83,7 +83,7 @@ const TypeSpec& DPPNumFromConcentration::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& DPPNumFromConcentration::getReturnType( void ) const {
+const TypeSpec& Func_dppConcFromMean::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -91,7 +91,7 @@ const TypeSpec& DPPNumFromConcentration::getReturnType( void ) const {
 }
 
 
-const TypeSpec& DPPNumFromConcentration::getTypeSpec( void ) const {
+const TypeSpec& Func_dppConcFromMean::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
