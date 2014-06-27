@@ -109,7 +109,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
             
 			if (m != NULL)
                 {
-                m->setFileName( fileName );
+                m->setFileName( StringUtilities::getLastPathComponent(fileName) );
+                m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
 				cmv.push_back( m );
                 }
             }
@@ -152,7 +153,8 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
             
 			if (m != NULL)
                 {
-                m->setFileName( fileName );
+                m->setFileName( StringUtilities::getLastPathComponent(fileName) );
+                m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
 				cmv.push_back( m );
                 }
             }
@@ -950,6 +952,7 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& isInterl
 
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &fn) {
     
+    std::cout << " in 1 " << std::endl;
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn );
     if ( myFileManager.getFileName() == "" && myFileManager.getFilePath() == "" )
@@ -1088,6 +1091,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
 /** Read a list of file names contained in a map (with file format info too) */
 std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &fn, const std::string &ft) {
     
+    std::cout << " in 2 " << std::endl;
     // instantiate a vector of matrices
     std::vector<AbstractCharacterData* > cmv;
     
@@ -1124,6 +1128,7 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
 /** Read a list of file names contained in a map (with file format info too) */
 std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::map<std::string,std::string>& fileMap) {
     
+    std::cout << " in 3 " << std::endl;
     // instantiate a vector of matrices
     std::vector<AbstractCharacterData* > cmv;
     
@@ -1169,6 +1174,7 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::map<std:
 /** Read a list of file names contained in a vector of strings */
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
+    std::cout << " in 4 " << std::endl;
 	// instantiate a vector of matrices
 	std::vector<AbstractCharacterData*> cmv;
     
@@ -1201,6 +1207,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 /** Reads a single file using NCL */
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
+    std::cout << " in 5 " << std::endl;
     RBOUT( "Attempting to read the contents of file \"" + std::string(fileName) + "\"\n" );
 	
     // check that the file exists
