@@ -1,11 +1,11 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBoolean.h"
 #include "BranchRateJumpProcess.h"
-#include "RevObject.h"
+#include "Move_RLCRateScale.h"
 #include "RbException.h"
+#include "RevObject.h"
 #include "RealPos.h"
-#include "RlRlcRateScaleMove.h"
+#include "RlBoolean.h"
 #include "RlcRateScaleMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -19,7 +19,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-RlcRateScaleMove::RlcRateScaleMove() : Move() 
+Move_RLCRateScale::Move_RLCRateScale() : Move() 
 {
     
 }
@@ -31,10 +31,10 @@ RlcRateScaleMove::RlcRateScaleMove() : Move()
  *
  * \return A new copy of the move. 
  */
-RlcRateScaleMove* RlcRateScaleMove::clone(void) const 
+Move_RLCRateScale* Move_RLCRateScale::clone(void) const 
 {
     
-	return new RlcRateScaleMove(*this);
+	return new Move_RLCRateScale(*this);
 }
 
 
@@ -48,7 +48,7 @@ RlcRateScaleMove* RlcRateScaleMove::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void RlcRateScaleMove::constructInternalObject( void ) 
+void Move_RLCRateScale::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
@@ -78,7 +78,7 @@ void RlcRateScaleMove::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& RlcRateScaleMove::getClassName(void) 
+const std::string& Move_RLCRateScale::getClassName(void) 
 { 
     
     static std::string rbClassName = "Move_RLCRateScale";
@@ -92,7 +92,7 @@ const std::string& RlcRateScaleMove::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& RlcRateScaleMove::getClassTypeSpec(void) 
+const TypeSpec& Move_RLCRateScale::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -110,7 +110,7 @@ const TypeSpec& RlcRateScaleMove::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& RlcRateScaleMove::getMemberRules(void) const 
+const MemberRules& Move_RLCRateScale::getMemberRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -138,7 +138,7 @@ const MemberRules& RlcRateScaleMove::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& RlcRateScaleMove::getTypeSpec( void ) const 
+const TypeSpec& Move_RLCRateScale::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -148,9 +148,9 @@ const TypeSpec& RlcRateScaleMove::getTypeSpec( void ) const
 
 
 
-void RlcRateScaleMove::printValue(std::ostream &o) const {
+void Move_RLCRateScale::printValue(std::ostream &o) const {
     
-    o << "RlcRateScaleMove(";
+    o << "Move_RLCRateScale(";
     if (v != NULL) 
     {
         o << v->getName();
@@ -174,7 +174,7 @@ void RlcRateScaleMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void RlcRateScaleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RLCRateScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

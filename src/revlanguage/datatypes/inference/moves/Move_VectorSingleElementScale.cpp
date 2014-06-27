@@ -10,13 +10,13 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "Move_VectorSingleElementScale.h"
 #include "Natural.h"
-#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RevObject.h"
 #include "Vector.h"
-#include "RlVectorSingleElementScaleMove.h"
 #include "VectorSingleElementScaleMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -24,18 +24,18 @@
 
 using namespace RevLanguage;
 
-VectorSingleElementScaleMove::VectorSingleElementScaleMove() : Move() {
+Move_VectorSingleElementScale::Move_VectorSingleElementScale() : Move() {
     
 }
 
 /** Clone object */
-VectorSingleElementScaleMove* VectorSingleElementScaleMove::clone(void) const {
+Move_VectorSingleElementScale* Move_VectorSingleElementScale::clone(void) const {
     
-	return new VectorSingleElementScaleMove(*this);
+	return new Move_VectorSingleElementScale(*this);
 }
 
 
-void VectorSingleElementScaleMove::constructInternalObject( void ) {
+void Move_VectorSingleElementScale::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -50,7 +50,7 @@ void VectorSingleElementScaleMove::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& VectorSingleElementScaleMove::getClassName(void) { 
+const std::string& Move_VectorSingleElementScale::getClassName(void) { 
     
     static std::string rbClassName = "Move_VectorSingleElementScale";
     
@@ -58,7 +58,7 @@ const std::string& VectorSingleElementScaleMove::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& VectorSingleElementScaleMove::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorSingleElementScale::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -68,7 +68,7 @@ const TypeSpec& VectorSingleElementScaleMove::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& VectorSingleElementScaleMove::getMemberRules(void) const {
+const MemberRules& Move_VectorSingleElementScale::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -89,7 +89,7 @@ const MemberRules& VectorSingleElementScaleMove::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& VectorSingleElementScaleMove::getTypeSpec( void ) const {
+const TypeSpec& Move_VectorSingleElementScale::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -98,9 +98,9 @@ const TypeSpec& VectorSingleElementScaleMove::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void VectorSingleElementScaleMove::printValue(std::ostream &o) const {
+void Move_VectorSingleElementScale::printValue(std::ostream &o) const {
     
-    o << "VectorSingleElementScaleMove(";
+    o << "Move_VectorSingleElementScale(";
     if (v != NULL) {
         o << v->getName();
     }
@@ -112,7 +112,7 @@ void VectorSingleElementScaleMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void VectorSingleElementScaleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_VectorSingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         v = var;

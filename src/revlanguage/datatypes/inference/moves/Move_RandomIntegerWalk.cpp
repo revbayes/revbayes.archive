@@ -1,10 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Integer.h"
-#include "RevObject.h"
+#include "Move_RandomIntegerWalk.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlRandomIntegerWalkMove.h"
+#include "RevObject.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-RandomIntegerWalkMove::RandomIntegerWalkMove() : Move() 
+Move_RandomIntegerWalk::Move_RandomIntegerWalk() : Move() 
 {
     
 }
@@ -28,10 +28,10 @@ RandomIntegerWalkMove::RandomIntegerWalkMove() : Move()
  *
  * \return A new copy of the model. 
  */
-RandomIntegerWalkMove* RandomIntegerWalkMove::clone(void) const 
+Move_RandomIntegerWalk* Move_RandomIntegerWalk::clone(void) const 
 {
     
-	return new RandomIntegerWalkMove(*this);
+	return new Move_RandomIntegerWalk(*this);
 }
 
 
@@ -45,7 +45,7 @@ RandomIntegerWalkMove* RandomIntegerWalkMove::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void RandomIntegerWalkMove::constructInternalObject( void ) 
+void Move_RandomIntegerWalk::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
@@ -66,7 +66,7 @@ void RandomIntegerWalkMove::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& RandomIntegerWalkMove::getClassName(void) 
+const std::string& Move_RandomIntegerWalk::getClassName(void) 
 { 
     
     static std::string rbClassName = "Move_RandomIntegerWalk";
@@ -80,7 +80,7 @@ const std::string& RandomIntegerWalkMove::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& RandomIntegerWalkMove::getClassTypeSpec(void) 
+const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -97,7 +97,7 @@ const TypeSpec& RandomIntegerWalkMove::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& RandomIntegerWalkMove::getMemberRules(void) const 
+const MemberRules& Move_RandomIntegerWalk::getMemberRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -123,7 +123,7 @@ const MemberRules& RandomIntegerWalkMove::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& RandomIntegerWalkMove::getTypeSpec( void ) const 
+const TypeSpec& Move_RandomIntegerWalk::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -133,9 +133,9 @@ const TypeSpec& RandomIntegerWalkMove::getTypeSpec( void ) const
 
 
 
-void RandomIntegerWalkMove::printValue(std::ostream &o) const {
+void Move_RandomIntegerWalk::printValue(std::ostream &o) const {
     
-    o << "RandomIntegerWalkMove(";
+    o << "Move_RandomIntegerWalk(";
     if (x != NULL) 
     {
         o << x->getName();
@@ -159,7 +159,7 @@ void RandomIntegerWalkMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void RandomIntegerWalkMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_RandomIntegerWalk::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

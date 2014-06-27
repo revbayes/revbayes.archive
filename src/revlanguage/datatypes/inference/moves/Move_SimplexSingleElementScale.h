@@ -15,8 +15,8 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlSimplexSingleElementScale_H
-#define RlSimplexSingleElementScale_H
+#ifndef Move_SimplexSingleElementScale_H
+#define Move_SimplexSingleElementScale_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -27,14 +27,14 @@
 
 namespace RevLanguage {
     
-    class SimplexSingleElementScale : public Move {
+    class Move_SimplexSingleElementScale : public Move {
         
     public:
         
-        SimplexSingleElementScale(void);                                                                                      //!< Default constructor (0.0)
+        Move_SimplexSingleElementScale(void);                                                                               //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual SimplexSingleElementScale*          clone(void) const;                                                      //!< Clone object
+        virtual Move_SimplexSingleElementScale*     clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

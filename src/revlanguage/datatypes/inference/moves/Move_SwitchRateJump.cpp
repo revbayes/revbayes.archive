@@ -4,7 +4,7 @@
 #include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlSwitchRateJumpMove.h"
+#include "Move_SwitchRateJump.h"
 #include "SwitchRateJumpMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -18,7 +18,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-SwitchRateJumpMove::SwitchRateJumpMove() : Move() 
+Move_SwitchRateJump::Move_SwitchRateJump() : Move() 
 {
     
 }
@@ -30,10 +30,10 @@ SwitchRateJumpMove::SwitchRateJumpMove() : Move()
  *
  * \return A new copy of the move. 
  */
-SwitchRateJumpMove* SwitchRateJumpMove::clone(void) const 
+Move_SwitchRateJump* Move_SwitchRateJump::clone(void) const 
 {
     
-	return new SwitchRateJumpMove(*this);
+	return new Move_SwitchRateJump(*this);
 }
 
 
@@ -47,7 +47,7 @@ SwitchRateJumpMove* SwitchRateJumpMove::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void SwitchRateJumpMove::constructInternalObject( void ) 
+void Move_SwitchRateJump::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
@@ -61,7 +61,7 @@ void SwitchRateJumpMove::constructInternalObject( void )
     RevBayesCore::BranchRateJumpProcess *brj = dynamic_cast< RevBayesCore::BranchRateJumpProcess* >( &n->getDistribution() );
     if ( brj == NULL )
     {
-        throw RbException("The SwitchRateJumpMove can only operate on a random variable drawn from a BranchRateJumpProcess.");
+        throw RbException("The Move_SwitchRateJump can only operate on a random variable drawn from a BranchRateJumpProcess.");
     }
     
     // finally create the internal move object
@@ -75,7 +75,7 @@ void SwitchRateJumpMove::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& SwitchRateJumpMove::getClassName(void) 
+const std::string& Move_SwitchRateJump::getClassName(void) 
 { 
     
     static std::string rbClassName = "Move_SwitchRateJump";
@@ -89,7 +89,7 @@ const std::string& SwitchRateJumpMove::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& SwitchRateJumpMove::getClassTypeSpec(void) 
+const TypeSpec& Move_SwitchRateJump::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -107,7 +107,7 @@ const TypeSpec& SwitchRateJumpMove::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& SwitchRateJumpMove::getMemberRules(void) const 
+const MemberRules& Move_SwitchRateJump::getMemberRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -133,7 +133,7 @@ const MemberRules& SwitchRateJumpMove::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& SwitchRateJumpMove::getTypeSpec( void ) const 
+const TypeSpec& Move_SwitchRateJump::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -143,9 +143,9 @@ const TypeSpec& SwitchRateJumpMove::getTypeSpec( void ) const
 
 
 
-void SwitchRateJumpMove::printValue(std::ostream &o) const {
+void Move_SwitchRateJump::printValue(std::ostream &o) const {
     
-    o << "SwitchRateJumpMove(";
+    o << "Move_SwitchRateJump(";
     if (v != NULL) 
     {
         o << v->getName();
@@ -169,7 +169,7 @@ void SwitchRateJumpMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void SwitchRateJumpMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_SwitchRateJump::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

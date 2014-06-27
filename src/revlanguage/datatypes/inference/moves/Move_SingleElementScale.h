@@ -1,5 +1,5 @@
-#ifndef RlSingleElementScale_H
-#define RlSingleElementScale_H
+#ifndef Move_SingleElementScale_H
+#define Move_SingleElementScale_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -19,14 +19,14 @@ namespace RevLanguage {
      * @copyright GPL version 3
      * @since 2013-11-17, version 1.0
      */
-    class SingleElementScale : public Move {
+    class Move_SingleElementScale : public Move {
         
     public:
         
-        SingleElementScale(void);                                                                                                                   //!< Default constructor
+        Move_SingleElementScale(void);                                                                                                                   //!< Default constructor
         
         // Basic utility functions
-        virtual SingleElementScale*                 clone(void) const;                                                                              //!< Clone the object
+        virtual Move_SingleElementScale*            clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec

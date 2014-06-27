@@ -1,12 +1,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBoolean.h"
+#include "Move_VectorScale.h"
 #include "Natural.h"
-#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlVectorScale.h"
+#include "RevObject.h"
+#include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "Vector.h"
@@ -15,19 +15,19 @@
 
 using namespace RevLanguage;
 
-VectorScale::VectorScale() : Move() {
+Move_VectorScale::Move_VectorScale() : Move() {
     
 }
 
 
 /** Clone object */
-VectorScale* VectorScale::clone(void) const {
+Move_VectorScale* Move_VectorScale::clone(void) const {
     
-	return new VectorScale(*this);
+	return new Move_VectorScale(*this);
 }
 
 
-void VectorScale::constructInternalObject( void ) {
+void Move_VectorScale::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -48,15 +48,15 @@ void VectorScale::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& VectorScale::getClassName(void) { 
+const std::string& Move_VectorScale::getClassName(void) { 
     
-    static std::string rbClassName = "Move_VectorScale";
+    static std::string rbClassName = "Move_Move_VectorScale";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& VectorScale::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorScale::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -66,7 +66,7 @@ const TypeSpec& VectorScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& VectorScale::getMemberRules(void) const {
+const MemberRules& Move_VectorScale::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -87,7 +87,7 @@ const MemberRules& VectorScale::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& VectorScale::getTypeSpec( void ) const {
+const TypeSpec& Move_VectorScale::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -96,9 +96,9 @@ const TypeSpec& VectorScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void VectorScale::printValue(std::ostream &o) const {
+void Move_VectorScale::printValue(std::ostream &o) const {
     
-    o << "VectorScale(";
+    o << "Move_VectorScale(";
     if (x != NULL) {
         o << x->getName();
     }
@@ -110,7 +110,7 @@ void VectorScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void VectorScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_VectorScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;

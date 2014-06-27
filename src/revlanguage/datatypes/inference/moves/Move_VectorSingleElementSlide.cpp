@@ -10,32 +10,32 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "Move_VectorSingleElementSlide.h"
 #include "Natural.h"
-#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "Vector.h"
-#include "RlVectorSingleElementSlidingMove.h"
-#include "VectorSingleElementSlidingMove.h"
+#include "RevObject.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Vector.h"
+#include "VectorSingleElementSlidingMove.h"
 
 
 using namespace RevLanguage;
 
-VectorSingleElementSlidingMove::VectorSingleElementSlidingMove() : Move() {
+Move_VectorSingleElementSlide::Move_VectorSingleElementSlide() : Move() {
     
 }
 
 /** Clone object */
-VectorSingleElementSlidingMove* VectorSingleElementSlidingMove::clone(void) const {
+Move_VectorSingleElementSlide* Move_VectorSingleElementSlide::clone(void) const {
     
-	return new VectorSingleElementSlidingMove(*this);
+	return new Move_VectorSingleElementSlide(*this);
 }
 
 
-void VectorSingleElementSlidingMove::constructInternalObject( void ) {
+void Move_VectorSingleElementSlide::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -50,7 +50,7 @@ void VectorSingleElementSlidingMove::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& VectorSingleElementSlidingMove::getClassName(void) { 
+const std::string& Move_VectorSingleElementSlide::getClassName(void) { 
     
     static std::string rbClassName = "Move_VectorSingleElementSlide";
     
@@ -58,7 +58,7 @@ const std::string& VectorSingleElementSlidingMove::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& VectorSingleElementSlidingMove::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorSingleElementSlide::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -68,7 +68,7 @@ const TypeSpec& VectorSingleElementSlidingMove::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& VectorSingleElementSlidingMove::getMemberRules(void) const {
+const MemberRules& Move_VectorSingleElementSlide::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -89,7 +89,7 @@ const MemberRules& VectorSingleElementSlidingMove::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& VectorSingleElementSlidingMove::getTypeSpec( void ) const {
+const TypeSpec& Move_VectorSingleElementSlide::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -98,9 +98,9 @@ const TypeSpec& VectorSingleElementSlidingMove::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void VectorSingleElementSlidingMove::printValue(std::ostream &o) const {
+void Move_VectorSingleElementSlide::printValue(std::ostream &o) const {
     
-    o << "VectorSingleElementSlidingMove(";
+    o << "Move_VectorSingleElementSlide(";
     if (v != NULL) {
         o << v->getName();
     }
@@ -112,7 +112,7 @@ void VectorSingleElementSlidingMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void VectorSingleElementSlidingMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_VectorSingleElementSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         v = var;

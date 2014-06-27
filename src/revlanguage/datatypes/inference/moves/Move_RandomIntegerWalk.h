@@ -1,5 +1,5 @@
-#ifndef RlRandomIntegerWalkMove_H
-#define RlRandomIntegerWalkMove_H
+#ifndef Move_RandomIntegerWalk_H
+#define Move_RandomIntegerWalk_H
 
 #include "RandomIntegerWalkMove.h"
 #include "RlMove.h"
@@ -26,14 +26,14 @@ namespace RevLanguage {
      * @since 2014-01-28, version 1.0
      *
      */
-    class RandomIntegerWalkMove : public Move {
+    class Move_RandomIntegerWalk : public Move {
         
     public:
         
-        RandomIntegerWalkMove(void);                                                                                                            //!< Default constructor
+        Move_RandomIntegerWalk(void);                                                                                                            //!< Default constructor
         
         // Basic utility functions
-        virtual RandomIntegerWalkMove*              clone(void) const;                                                                          //!< Clone object
+        virtual Move_RandomIntegerWalk*              clone(void) const;                                                                          //!< Clone object
         void                                        constructInternalObject(void);                                                              //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                                         //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec

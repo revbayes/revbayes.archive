@@ -1,5 +1,5 @@
-#ifndef RlRlcRateScaleMove_H
-#define RlRlcRateScaleMove_H
+#ifndef Move_RLCRateScale_H
+#define Move_RLCRateScale_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -19,14 +19,14 @@ namespace RevLanguage {
      * @copyright GPL version 3
      * @since 2014-04-08, version 1.0
      */
-    class RlcRateScaleMove : public Move {
+    class Move_RLCRateScale : public Move {
         
     public:
         
-        RlcRateScaleMove(void);                                                                                             //!< Default constructor
+        Move_RLCRateScale(void);                                                                                             //!< Default constructor
         
         // Basic utility functions
-        virtual RlcRateScaleMove*                   clone(void) const;                                                      //!< Clone object
+        virtual Move_RLCRateScale*                   clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

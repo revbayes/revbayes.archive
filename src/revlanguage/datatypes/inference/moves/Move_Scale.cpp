@@ -3,11 +3,11 @@
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
 #include "MetropolisHastingsMove.h"
-#include "RevObject.h"
+#include "Move_Scale.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlScaleMove.h"
+#include "RevObject.h"
 #include "ScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -20,7 +20,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ScaleMove::ScaleMove() : Move() 
+Move_Scale::Move_Scale() : Move() 
 {
     
 }
@@ -32,10 +32,10 @@ ScaleMove::ScaleMove() : Move()
  *
  * \return A new copy of the move. 
  */
-ScaleMove* ScaleMove::clone(void) const 
+Move_Scale* Move_Scale::clone(void) const 
 {
     
-	return new ScaleMove(*this);
+	return new Move_Scale(*this);
 }
 
 
@@ -49,7 +49,7 @@ ScaleMove* ScaleMove::clone(void) const
  *
  * \return A new internal distribution object.
  */
-void ScaleMove::constructInternalObject( void ) 
+void Move_Scale::constructInternalObject( void ) 
 {
     // we free the memory first
     delete value;
@@ -62,7 +62,7 @@ void ScaleMove::constructInternalObject( void )
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
     // finally create the internal move object
-//    value = new RevBayesCore::ScaleMove(n, d, t, w);
+//    value = new RevBayesCore::Move_Scale(n, d, t, w);
     
     RevBayesCore::Proposal *p = new RevBayesCore::ScaleProposal(n,d);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
@@ -75,7 +75,7 @@ void ScaleMove::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& ScaleMove::getClassName(void) 
+const std::string& Move_Scale::getClassName(void) 
 { 
     
     static std::string rbClassName = "Move_Scale";
@@ -89,7 +89,7 @@ const std::string& ScaleMove::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ScaleMove::getClassTypeSpec(void) 
+const TypeSpec& Move_Scale::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -108,7 +108,7 @@ const TypeSpec& ScaleMove::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& ScaleMove::getMemberRules(void) const 
+const MemberRules& Move_Scale::getMemberRules(void) const 
 {
     
     static MemberRules scalingMoveMemberRules;
@@ -136,7 +136,7 @@ const MemberRules& ScaleMove::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ScaleMove::getTypeSpec( void ) const 
+const TypeSpec& Move_Scale::getTypeSpec( void ) const 
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -146,7 +146,7 @@ const TypeSpec& ScaleMove::getTypeSpec( void ) const
 
 
 
-void ScaleMove::printValue(std::ostream &o) const {
+void Move_Scale::printValue(std::ostream &o) const {
     
     o << "Scale(";
     if (x != NULL) 
@@ -172,7 +172,7 @@ void ScaleMove::printValue(std::ostream &o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ScaleMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Move_Scale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "x" ) 

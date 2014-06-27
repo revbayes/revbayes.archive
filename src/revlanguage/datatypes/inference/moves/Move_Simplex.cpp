@@ -15,7 +15,7 @@
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlSimplexMove.h"
+#include "Move_simplex.h"
 #include "RlSimplex.h"
 #include "SimplexMove.h"
 #include "TypedDagNode.h"
@@ -24,19 +24,19 @@
 
 using namespace RevLanguage;
 
-SimplexMove::SimplexMove() : Move() {
+Move_Simplex::Move_Simplex() : Move() {
     
 }
 
 
 /** Clone object */
-SimplexMove* SimplexMove::clone(void) const {
+Move_Simplex* Move_Simplex::clone(void) const {
     
-	return new SimplexMove(*this);
+	return new Move_Simplex(*this);
 }
 
 
-void SimplexMove::constructInternalObject( void ) {
+void Move_Simplex::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -53,7 +53,7 @@ void SimplexMove::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& SimplexMove::getClassName(void) { 
+const std::string& Move_Simplex::getClassName(void) { 
     
     static std::string rbClassName = "Move_Simplex";
     
@@ -61,7 +61,7 @@ const std::string& SimplexMove::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& SimplexMove::getClassTypeSpec(void) { 
+const TypeSpec& Move_Simplex::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -71,7 +71,7 @@ const TypeSpec& SimplexMove::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& SimplexMove::getMemberRules(void) const {
+const MemberRules& Move_Simplex::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -94,7 +94,7 @@ const MemberRules& SimplexMove::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& SimplexMove::getTypeSpec( void ) const {
+const TypeSpec& Move_Simplex::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -103,9 +103,9 @@ const TypeSpec& SimplexMove::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void SimplexMove::printValue(std::ostream &o) const {
+void Move_Simplex::printValue(std::ostream &o) const {
     
-    o << "SimplexMove(";
+    o << "Move_Simplex(";
     if (x != NULL) {
         o << x->getName();
     }
@@ -117,7 +117,7 @@ void SimplexMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SimplexMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_Simplex::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;
