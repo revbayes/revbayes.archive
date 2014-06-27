@@ -480,6 +480,7 @@
             }
         else
             {
+            NSLog(@"Writing file to temporary directory %@", fn); // JPH
             // write a non-morphological data file
             NSMutableString* outStr = [NSMutableString stringWithCapacity:100];
             [outStr appendString:@"#NEXUS\n\n"];
@@ -512,6 +513,7 @@
 
             NSError* myError;
             [outStr writeToFile:fn atomically:YES encoding:NSUTF8StringEncoding error:&myError];
+            NSLog(@"Finished writing file to temporary directory %@", fn); // JPH
             }
         }
     else
