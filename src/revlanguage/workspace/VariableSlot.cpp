@@ -164,7 +164,7 @@ RevPtr<const Variable> VariableSlot::getVariable(const std::vector<int> &indices
     
     for (int i = int(lengths.size())-1; i >= 0; --i) {
         // test for boundaries
-        if (indices[i] >= lengths[i]) {
+        if (indices[i] >= lengths[i] || indices[i] <= 0) {
             throw RbException("Index out of bounds! Cannot access variable with index ...");
         }
         index += indices[i] * elements;

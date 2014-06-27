@@ -24,9 +24,9 @@ power(2,2)			# power function: power(a,b) = a^b
 
 
 # distribution functions
-dexponential(1,1)
+dexponential(x=1,lambda=1)
+qexponential(0.5,1)
 rexponential(n=10,1)
-#qexponential(0.5,1)
 dnorm(-2.0,0.0,1.0)
 rnorm(n=10,0,1)
 
@@ -56,7 +56,8 @@ e
 lambda <- 1			# assign constant node 'lambda' with value '1'
 x ~ exponential(lambda)		# create stochastic node with exponential distribution and parameter 'lambda'
 x				# print value of stochastic node 'x'
-#x.probability			# print the probability if 'x'
+x.probability			# print the probability if 'x'
+x.lnProbability			# print the log-probability if 'x'
 mu <- 0
 sigma <- 1
 y ~ norm(mu,sigma)	
@@ -76,8 +77,10 @@ sum
 # Fibonacci series
 fib[1] <- 1
 fib[2] <- 1
-for (j in 3:10) {
+j <- 3
+while (j <= 3) {
 fib[j] <- fib[j - 1] + fib[j - 2]
+j++
 }
 fib
 
