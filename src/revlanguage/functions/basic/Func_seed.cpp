@@ -13,8 +13,8 @@
 #include "Natural.h"
 #include "RandomNumberGenerator.h"
 #include "RandomNumberFactory.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
 #include "RealPos.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -95,5 +95,5 @@ const TypeSpec& Func_seed::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_seed::getReturnType( void ) const {
     
-    return RbNullObject::getClassTypeSpec();
+    return RevNullObject::getClassTypeSpec();
 }

@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "Func_writeFasta.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlAbstractCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
@@ -124,7 +124,7 @@ const TypeSpec& Func_writeFasta::getTypeSpec( void ) const
 const TypeSpec& Func_writeFasta::getReturnType( void ) const 
 {
     
-    static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
     return returnTypeSpec;
 }
 

@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "Func_writeNexus.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
@@ -126,7 +126,7 @@ const TypeSpec& Func_writeNexus::getTypeSpec( void ) const
 const TypeSpec& Func_writeNexus::getReturnType( void ) const 
 {
     
-    static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
     return returnTypeSpec;
 }
 
