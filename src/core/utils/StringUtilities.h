@@ -24,6 +24,7 @@ namespace StringUtilities {
                                                         std::string         hangingPad,
                                                         size_t              screenWidth);                           //!< Format RlString for output to screen
     std::string                 getFileContentsAsString(std::string& s);                                            //!< Convert the file contents to a RlString
+    std::string                 getStringWithDeletedLastPathComponent(const std::string& s);                                            //!< Convert the file contents to a RlString
     std::string                 getLastPathComponent(const std::string& s);                                         //!< Find the last component of a file path
     void                        stringSplit(std::string str, std::string delim, std::vector<std::string>& results); //!< Split a RlString into pieces
     void                        toLower(std::string& str);                                                          //!< Convert RlString's characters to lower case

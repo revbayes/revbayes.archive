@@ -190,9 +190,11 @@ NSLog(@"alnDirectory = \"%@\"", alnDirectory);
             dFilePath = [dFilePath stringByAppendingString:@".nex"];
         else
             dFilePath = [dFilePath stringByAppendingString:@".fas"];
+NSLog(@"dFilePath = \"%@\"", dFilePath);
+NSLog(@"[d name] = \"%@\"", [d name]);
         [d writeToFile:dFilePath];
         }
-    
+
     // check the workspace and make certain that we use an unused name for the data variable
     std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
@@ -215,6 +217,7 @@ NSLog(@"nsVariableName = \"%@\"", nsVariableName);
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
     std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
+std::cout << "command = " << line << std::endl;
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -228,7 +231,7 @@ NSLog(@"nsVariableName = \"%@\"", nsVariableName);
     [self setDataWorkspaceName:nsVariableName];
 
     // remove all of the files from the temporary directory
-    [self removeFilesFromTemporaryDirectory];
+    //[self removeFilesFromTemporaryDirectory];
 }
 
 - (void)makeDataInspector {
@@ -264,7 +267,7 @@ NSLog(@"nsVariableName = \"%@\"", nsVariableName);
         [m setDataType:CONTINUOUS];
 
     for (size_t i=0; i<cd.getNumberOfTaxa(); i++)
-    {        
+        {
         const RevBayesCore::AbstractTaxonData& td = cd.getTaxonData(i);
         NSString* taxonName = [NSString stringWithCString:td.getTaxonName().c_str() encoding:NSUTF8StringEncoding];
         [m cleanName:taxonName];
@@ -272,12 +275,12 @@ NSLog(@"nsVariableName = \"%@\"", nsVariableName);
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
         for (size_t j=0; j<cd.getNumberOfCharacters(i); j++)
-        {
+            {
             const RevBayesCore::CharacterState& theChar = td.getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )
-            {
+                {
                 unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
@@ -289,22 +292,22 @@ NSLog(@"nsVariableName = \"%@\"", nsVariableName);
                     [cell setIsGapState:YES];
                 else
                     [cell setIsGapState:NO];
-            }
+                }
             else 
-            {
+                {
                 double x = static_cast<const RevBayesCore::ContinuousCharacterState &>(theChar).getMean();
                 NSNumber* n = [NSNumber numberWithDouble:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:NO];
                 [cell setNumStates:0];
-            }
+                }
             [cell setRow:i];
             [cell setColumn:j];
             [rbTaxonData addObservation:cell];
             [cell release];
-        }
+            }
         [m addTaxonData:rbTaxonData];
-    }
+        }
         
     //[m print];
         

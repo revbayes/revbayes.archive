@@ -42,22 +42,24 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
     if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
-    {
+        {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
         throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
-    }
+        }
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
     if ( myFileManager.isDirectory() )
-    {
+        {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    }
+        }
     else 
-    {
+        {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
-    }
+        }
+    for (std::vector<std::string>::iterator it = vectorOfFileNames.begin(); it != vectorOfFileNames.end(); it++)
+        std::cout << "file = \"" << *it << "\"" << std::endl;
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
