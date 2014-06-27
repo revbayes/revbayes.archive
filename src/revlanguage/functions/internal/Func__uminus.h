@@ -1,9 +1,9 @@
 /**
  * @file
  * This file contains the declaration and implementation
- * of the templated Func_uminus, which is used to take the negative value of a variable.
+ * of the templated Func__uminus, which is used to take the negative value of a variable.
  *
- * @brief Declaration and implementation of Func_add
+ * @brief Declaration and implementation of Func__add
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
 #ifndef Func_uminus_H
@@ -25,13 +25,13 @@
 namespace RevLanguage {
 
 template <typename firstValType, typename retType>
-class Func_uminus :  public Function {
+class Func__uminus :  public Function {
     
 public:
-    Func_uminus( void );
+    Func__uminus( void );
     
     // Basic utility functions
-    Func_uminus*                                    clone(void) const;                                                              //!< Clone the object
+    Func__uminus*                                    clone(void) const;                                                              //!< Clone the object
     static const std::string&                       getClassName(void);                                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -53,21 +53,21 @@ private:
 
 /** default constructor */
 template <typename firstValType, typename retType>
-RevLanguage::Func_uminus<firstValType, retType>::Func_uminus( void ) : Function( ) {
+RevLanguage::Func__uminus<firstValType, retType>::Func__uminus( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
 template <typename firstValType, typename retType>
-RevLanguage::Func_uminus<firstValType, retType>* RevLanguage::Func_uminus<firstValType, retType>::clone( void ) const {
+RevLanguage::Func__uminus<firstValType, retType>* RevLanguage::Func__uminus<firstValType, retType>::clone( void ) const {
     
-    return new Func_uminus( *this );
+    return new Func__uminus( *this );
 }
 
 
 template <typename firstValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func_uminus<firstValType, retType>::execute() {
+RevLanguage::RevObject* RevLanguage::Func__uminus<firstValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::UnaryMinus<typename firstValType::valueType> *func = new RevBayesCore::UnaryMinus<typename firstValType::valueType>(firstArg);
@@ -80,7 +80,7 @@ RevLanguage::RevObject* RevLanguage::Func_uminus<firstValType, retType>::execute
 
 /* Get argument rules */
 template <typename firstValType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_uminus<firstValType, retType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func__uminus<firstValType, retType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -96,7 +96,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_uminus<firstValType, retType
 
 
 template <typename firstValType, typename retType>
-const std::string& RevLanguage::Func_uminus<firstValType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassName(void) { 
     
     static std::string rbClassName = "Func__uminus<" + firstValType::getClassName() + "," + retType::getClassName() + ">";
     
@@ -105,7 +105,7 @@ const std::string& RevLanguage::Func_uminus<firstValType, retType>::getClassName
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_uminus<firstValType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -115,7 +115,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_uminus<firstValType, retType>::ge
 
 /* Get return type */
 template <typename firstValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_uminus<firstValType, retType>::getReturnType( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
     
@@ -124,7 +124,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_uminus<firstValType, retType>::ge
 
 
 template <typename firstValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_uminus<firstValType, retType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
