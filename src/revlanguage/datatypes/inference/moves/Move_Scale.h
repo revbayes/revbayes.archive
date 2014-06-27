@@ -1,5 +1,5 @@
-#ifndef RlScaleMove_H
-#define RlScaleMove_H
+#ifndef Move_Scale_H
+#define Move_Scale_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -25,14 +25,14 @@ namespace RevLanguage {
      * @since 2014-01-28, version 1.0
      *
      */
-    class ScaleMove : public Move {
+    class Move_Scale : public Move {
         
     public:
         
-        ScaleMove(void);                                                                                                                        //!< Default constructor
+        Move_Scale(void);                                                                                                                        //!< Default constructor
         
         // Basic utility functions
-        virtual ScaleMove*                          clone(void) const;                                                                          //!< Clone object
+        virtual Move_Scale*                          clone(void) const;                                                                          //!< Clone object
         void                                        constructInternalObject(void);                                                              //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                                         //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec

@@ -1,5 +1,5 @@
-#ifndef RlRandomGeometricWalkMove_H
-#define RlRandomGeometricWalkMove_H
+#ifndef RlMove_RandomGeometricWalk_H
+#define RlMove_RandomGeometricWalk_H
 
 #include "RandomGeometricWalkMove.h"
 #include "RlMove.h"
@@ -18,21 +18,21 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal move object can be constructed and hooked up
      * in a DAG-nove (variable) that it works on.
-     * See the RandomGeometricWalkMove.h for more details.
+     * See the Move_RandomGeometricWalk.h for more details.
      *
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      *
      */
-    class RandomGeometricWalkMove : public Move {
+    class Move_RandomGeometricWalk : public Move {
         
     public:
         
-        RandomGeometricWalkMove(void);                                                                                                          //!< Default constructor
+        Move_RandomGeometricWalk(void);                                                                                                          //!< Default constructor
         
         // Basic utility functions
-        virtual RandomGeometricWalkMove*            clone(void) const;                                                                          //!< Clone object
+        virtual Move_RandomGeometricWalk*            clone(void) const;                                                                          //!< Clone object
         void                                        constructInternalObject(void);                                                              //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                                         //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec

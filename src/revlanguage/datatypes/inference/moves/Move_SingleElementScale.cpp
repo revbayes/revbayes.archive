@@ -1,12 +1,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBoolean.h"
+#include "Move_SingleElementScale.h"
 #include "Natural.h"
-#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlSingleElementScale.h"
+#include "RevObject.h"
+#include "RlBoolean.h"
 #include "SingleElementScaleMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -15,19 +15,19 @@
 
 using namespace RevLanguage;
 
-SingleElementScale::SingleElementScale() : Move() {
+Move_SingleElementScale::Move_SingleElementScale() : Move() {
     
 }
 
 
 /** Clone object */
-SingleElementScale* SingleElementScale::clone(void) const {
+Move_SingleElementScale* Move_SingleElementScale::clone(void) const {
     
-	return new SingleElementScale(*this);
+	return new Move_SingleElementScale(*this);
 }
 
 
-void SingleElementScale::constructInternalObject( void ) {
+void Move_SingleElementScale::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -48,7 +48,7 @@ void SingleElementScale::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& SingleElementScale::getClassName(void) { 
+const std::string& Move_SingleElementScale::getClassName(void) {
     
     static std::string rbClassName = "Move_SingleElementScale";
     
@@ -56,7 +56,7 @@ const std::string& SingleElementScale::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& SingleElementScale::getClassTypeSpec(void) { 
+const TypeSpec& Move_SingleElementScale::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -66,7 +66,7 @@ const TypeSpec& SingleElementScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& SingleElementScale::getMemberRules(void) const {
+const MemberRules& Move_SingleElementScale::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -87,7 +87,7 @@ const MemberRules& SingleElementScale::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& SingleElementScale::getTypeSpec( void ) const {
+const TypeSpec& Move_SingleElementScale::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -96,7 +96,7 @@ const TypeSpec& SingleElementScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void SingleElementScale::printValue(std::ostream &o) const {
+void Move_SingleElementScale::printValue(std::ostream &o) const {
     
     o << "SingleElementScale(";
     if (x != NULL) {
@@ -110,7 +110,7 @@ void SingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_SingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;

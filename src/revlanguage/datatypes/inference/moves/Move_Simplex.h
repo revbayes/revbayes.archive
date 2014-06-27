@@ -15,8 +15,8 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlSimplexMove_H
-#define RlSimplexMove_H
+#ifndef Move_simplex_H
+#define Move_simplex_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -27,14 +27,14 @@
 
 namespace RevLanguage {
     
-    class SimplexMove : public Move {
+    class Move_Simplex : public Move {
         
     public:
         
-        SimplexMove(void);                                                                                      //!< Default constructor (0.0)
+        Move_Simplex(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual SimplexMove*                        clone(void) const;                                                      //!< Clone object
+        virtual Move_Simplex*                       clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

@@ -1,5 +1,5 @@
-#ifndef RlSwitchRateJumpMove_H
-#define RlSwitchRateJumpMove_H
+#ifndef Move_SwitchRateJump_H
+#define Move_SwitchRateJump_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -19,14 +19,14 @@ namespace RevLanguage {
      * @copyright GPL version 3
      * @since 2014-04-08, version 1.0
      */
-    class SwitchRateJumpMove : public Move {
+    class Move_SwitchRateJump : public Move {
         
     public:
         
-        SwitchRateJumpMove(void);                                                                                         //!< Default constructor
+        Move_SwitchRateJump(void);                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual SwitchRateJumpMove*                 clone(void) const;                                                      //!< Clone object
+        virtual Move_SwitchRateJump*                 clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

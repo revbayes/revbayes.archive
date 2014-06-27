@@ -1,5 +1,5 @@
-#ifndef RlVectorScale_H
-#define RlVectorScale_H
+#ifndef Move_VectorScale_H
+#define Move_VectorScale_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -19,14 +19,14 @@ namespace RevLanguage {
      * @copyright GPL version 3
      * @since 2013-11-17, version 1.0
      */
-    class VectorScale : public Move {
+    class Move_VectorScale : public Move {
         
     public:
         
-        VectorScale(void);                                                                                                                   //!< Default constructor
+        Move_VectorScale(void);                                                                                                                   //!< Default constructor
         
         // Basic utility functions
-        virtual VectorScale*                        clone(void) const;                                                                              //!< Clone the object
+        virtual Move_VectorScale*                        clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec

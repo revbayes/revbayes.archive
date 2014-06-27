@@ -7,26 +7,26 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
-#include "RlSlidingMove.h"
+#include "Move_Slide.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-SlidingMove::SlidingMove() : Move() {
+Move_Slide::Move_Slide() : Move() {
     
 }
 
 
 /** Clone object */
-SlidingMove* SlidingMove::clone(void) const {
+Move_Slide* Move_Slide::clone(void) const {
     
-	return new SlidingMove(*this);
+	return new Move_Slide(*this);
 }
 
 
-void SlidingMove::constructInternalObject( void ) {
+void Move_Slide::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -42,7 +42,7 @@ void SlidingMove::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& SlidingMove::getClassName(void) { 
+const std::string& Move_Slide::getClassName(void) { 
     
     static std::string rbClassName = "Move_Slide";
     
@@ -50,7 +50,7 @@ const std::string& SlidingMove::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& SlidingMove::getClassTypeSpec(void) { 
+const TypeSpec& Move_Slide::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -60,7 +60,7 @@ const TypeSpec& SlidingMove::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& SlidingMove::getMemberRules(void) const {
+const MemberRules& Move_Slide::getMemberRules(void) const {
     
     static MemberRules slidingMoveMemberRules;
     static bool rulesSet = false;
@@ -82,7 +82,7 @@ const MemberRules& SlidingMove::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& SlidingMove::getTypeSpec( void ) const {
+const TypeSpec& Move_Slide::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -93,15 +93,15 @@ const TypeSpec& SlidingMove::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void SlidingMove::printValue(std::ostream &o) const {
+void Move_Slide::printValue(std::ostream &o) const {
     
-    o << "SlidingMove";
+    o << "Move_Slide";
     
 }
 
 
 /** Set a member variable */
-void SlidingMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_Slide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) 
     {

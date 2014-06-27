@@ -10,12 +10,12 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "Move_SimplexSingleElementScale.h"
 #include "Natural.h"
-#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlSimplexSingleElementScale.h"
+#include "RevObject.h"
 #include "RlSimplex.h"
 #include "SimplexSingleElementScale.h"
 #include "TypedDagNode.h"
@@ -24,19 +24,19 @@
 
 using namespace RevLanguage;
 
-SimplexSingleElementScale::SimplexSingleElementScale() : Move() {
+Move_SimplexSingleElementScale::Move_SimplexSingleElementScale() : Move() {
     
 }
 
 
 /** Clone object */
-SimplexSingleElementScale* SimplexSingleElementScale::clone(void) const {
+Move_SimplexSingleElementScale* Move_SimplexSingleElementScale::clone(void) const {
     
-	return new SimplexSingleElementScale(*this);
+	return new Move_SimplexSingleElementScale(*this);
 }
 
 
-void SimplexSingleElementScale::constructInternalObject( void ) {
+void Move_SimplexSingleElementScale::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -51,15 +51,15 @@ void SimplexSingleElementScale::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& SimplexSingleElementScale::getClassName(void) { 
+const std::string& Move_SimplexSingleElementScale::getClassName(void) {
     
-    static std::string rbClassName = "Move_SimplexSingleElementScale";
+    static std::string rbClassName = "Move_Move_SimplexMove_SingleElementScale";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& SimplexSingleElementScale::getClassTypeSpec(void) { 
+const TypeSpec& Move_SimplexSingleElementScale::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -69,7 +69,7 @@ const TypeSpec& SimplexSingleElementScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& SimplexSingleElementScale::getMemberRules(void) const {
+const MemberRules& Move_SimplexSingleElementScale::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -90,7 +90,7 @@ const MemberRules& SimplexSingleElementScale::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& SimplexSingleElementScale::getTypeSpec( void ) const {
+const TypeSpec& Move_SimplexSingleElementScale::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -99,9 +99,9 @@ const TypeSpec& SimplexSingleElementScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void SimplexSingleElementScale::printValue(std::ostream &o) const {
+void Move_SimplexSingleElementScale::printValue(std::ostream &o) const {
     
-    o << "SimplexSingleElementScale(";
+    o << "Move_SimplexMove_SingleElementScale(";
     if (x != NULL) {
         o << x->getName();
     }
@@ -113,7 +113,7 @@ void SimplexSingleElementScale::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SimplexSingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_SimplexSingleElementScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         x = var;

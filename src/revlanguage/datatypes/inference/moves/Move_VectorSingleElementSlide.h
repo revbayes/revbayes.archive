@@ -2,7 +2,7 @@
  * @file
  * This file contains the declaration of RevLanguage wrapper of VectorSingleElementSlidingMove.
  *
- * @brief Declaration of RlVectorSingleElementSlidingMove
+ * @brief Declaration of Move_VectorSingleElementSlide
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
@@ -15,8 +15,8 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlVectorSingleElementSlidingMove_H
-#define RlVectorSingleElementSlidingMove_H
+#ifndef Move_VectorSingleElementSlide_H
+#define Move_VectorSingleElementSlide_H
 
 #include "SimpleMove.h"
 #include "RlMove.h"
@@ -27,14 +27,14 @@
 
 namespace RevLanguage {
     
-    class VectorSingleElementSlidingMove : public Move {
+    class Move_VectorSingleElementSlide : public Move {
         
     public:
         
-        VectorSingleElementSlidingMove(void);                                                                                      //!< Default constructor (0.0)
+        Move_VectorSingleElementSlide(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual VectorSingleElementSlidingMove*     clone(void) const;                                                      //!< Clone object
+        virtual Move_VectorSingleElementSlide*     clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

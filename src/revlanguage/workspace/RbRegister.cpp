@@ -87,27 +87,27 @@
 #include "RlMove.h"
 
 /* Moves on real values */
-#include "RlScaleMove.h"
-#include "RlSlidingMove.h"
+#include "Move_Scale.h"
+#include "Move_Slide.h"
 
 /* Moves on integer values */
-#include "RlRandomIntegerWalkMove.h"
-#include "RlRandomGeometricWalkMove.h"
+#include "Move_RandomGeometricWalk.h"
+#include "Move_RandomIntegerWalk.h"
 
 /* Moves on simplices */
-#include "RlSimplexMove.h"
-#include "RlSimplexSingleElementScale.h"
+#include "Move_Simplex.h"
+#include "Move_SimplexSingleElementScale.h"
 
 /* Moves on real valued vectors */
-#include "RlRlcRateScaleMove.h"
-#include "RlSingleElementScale.h"
-#include "RlSwitchRateJumpMove.h"
-#include "RlVectorSingleElementScaleMove.h"
-#include "RlVectorSingleElementSlidingMove.h"
-#include "RlVectorScale.h"
+#include "Move_RLCRateScale.h"
+#include "Move_SingleElementScale.h"
+#include "Move_SwitchRateJump.h"
+#include "Move_VectorSingleElementScale.h"
+#include "Move_VectorSingleElementSlide.h"
+#include "Move_VectorScale.h"
 
 /* Moves on precision matrices */
-#include "RlVectorSingleElementSlidingMove.h"
+#include "Move_VectorSingleElementSlide.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "RlFixedNodeheightPruneRegraft.h"
@@ -370,46 +370,46 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         ///////////////////////////////////////////////////////////////////////////////////
         
         /* Moves on real values */
-        addTypeWithConstructor("mvScale",               new ScaleMove() );
-        addTypeWithConstructor("mvSlide",               new SlidingMove() );
+        addTypeWithConstructor("mvScale",               new Move_Scale() );
+        addTypeWithConstructor("mvSlide",               new Move_Slide() );
         
         // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mScale",                new ScaleMove() );
-        addTypeWithConstructor("mSlide",                new SlidingMove() );
+        addTypeWithConstructor("mScale",                new Move_Scale() );
+        addTypeWithConstructor("mSlide",                new Move_Slide() );
         
 
         /* Moves on integer values */
-        addTypeWithConstructor("mvRandomIntegerWalk",   new RandomIntegerWalkMove() );
-        addTypeWithConstructor("mvRandomGeometricWalk", new RandomGeometricWalkMove() );
+        addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
+        addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
 
-        addTypeWithConstructor("mRandomIntegerWalk",    new RandomIntegerWalkMove() );
-        addTypeWithConstructor("mRandomGeometricWalk",  new RandomGeometricWalkMove() );
+        addTypeWithConstructor("mRandomIntegerWalk",    new Move_RandomIntegerWalk() );
+        addTypeWithConstructor("mRandomGeometricWalk",  new Move_RandomGeometricWalk() );
 
 
         /* Moves on simplices */
-        addTypeWithConstructor("mvSimplex",             new SimplexMove() );
-        addTypeWithConstructor("mvSimplexElementScale", new SimplexSingleElementScale() );
+        addTypeWithConstructor("mvSimplex",             new Move_Simplex() );
+        addTypeWithConstructor("mvSimplexElementScale", new Move_SimplexSingleElementScale() );
 
         // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mSimplex",              new SimplexMove() );
-        addTypeWithConstructor("mSimplexElementScale",  new SimplexSingleElementScale() );
+        addTypeWithConstructor("mSimplex",              new Move_Simplex() );
+        addTypeWithConstructor("mSimplexElementScale",  new Move_SimplexSingleElementScale() );
         
 
         /* Moves on vectors of real values */
-        addTypeWithConstructor("mvRlcRateScale",                new RlcRateScaleMove() );
-        addTypeWithConstructor("mvSingleElementScale",          new SingleElementScale() );
-        addTypeWithConstructor("mvSwitchRateJump",              new SwitchRateJumpMove() );
-        addTypeWithConstructor("mvVectorScale",                 new VectorScale() );
-        addTypeWithConstructor("mvVectorSingleElementScale",    new VectorSingleElementScaleMove() );
-        addTypeWithConstructor("mvVectorSingleElementSliding",  new VectorSingleElementSlidingMove() );
+        addTypeWithConstructor("mvRlcRateScale",                new Move_RLCRateScale() );
+        addTypeWithConstructor("mvSingleElementScale",          new Move_SingleElementScale() );
+        addTypeWithConstructor("mvSwitchRateJump",              new Move_SwitchRateJump() );
+        addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
+        addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
+        addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
 
         // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mRlcRateScale",                 new RlcRateScaleMove() );
-        addTypeWithConstructor("mSingleElementScale",           new SingleElementScale() );
-        addTypeWithConstructor("mSwitchRateJump",               new SwitchRateJumpMove() );
-        addTypeWithConstructor("mVectorScale",                  new VectorScale() );
-        addTypeWithConstructor("mVectorSingleElementScale",     new VectorSingleElementScaleMove() );
-        addTypeWithConstructor("mVectorSingleElementSliding",   new VectorSingleElementSlidingMove() );
+        addTypeWithConstructor("mRlcRateScale",                 new Move_RLCRateScale() );
+        addTypeWithConstructor("mSingleElementScale",           new Move_SingleElementScale() );
+        addTypeWithConstructor("mSwitchRateJump",               new Move_SwitchRateJump() );
+        addTypeWithConstructor("mVectorScale",                  new Move_VectorScale() );
+        addTypeWithConstructor("mVectorSingleElementScale",     new Move_VectorSingleElementScale() );
+        addTypeWithConstructor("mVectorSingleElementSliding",   new Move_VectorSingleElementSlide() );
 
         
         /* Add tree proposals (in folder "datatypes/inference/moves/tree") */
