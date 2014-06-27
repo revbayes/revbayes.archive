@@ -76,10 +76,10 @@
 
 /* Monitor types (in folder "datatypes/inference/monitors) */
 #include "RlMonitor.h"
-#include "RlFileMonitor.h"
-#include "RlExtendedNewickFileMonitor.h"
-#include "RlModelMonitor.h"
-#include "RlScreenMonitor.h"
+#include "Mntr_File.h"
+#include "Mntr_ExtendedNewickFile.h"
+#include "Mntr_Model.h"
+#include "Mntr_Screen.h"
 
 /// Moves ///
 
@@ -353,16 +353,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
-        addTypeWithConstructor("mnExtNewick", new ExtendedNewickFileMonitor());
-        addTypeWithConstructor("mnFile",      new FileMonitor());
-        addTypeWithConstructor("mnModel",     new ModelMonitor());
-        addTypeWithConstructor("mnScreen",    new ScreenMonitor());
+        addTypeWithConstructor("mnExtNewick", new Mntr_ExtendedNewickFile());
+        addTypeWithConstructor("mnFile",      new Mntr_File());
+        addTypeWithConstructor("mnModel",     new Mntr_Model());
+        addTypeWithConstructor("mnScreen",    new Mntr_Screen());
 
         // Nonstandard constructor names (for backward compatibility)
-        addTypeWithConstructor("extNewickmonitor", new ExtendedNewickFileMonitor());
-        addTypeWithConstructor("filemonitor",      new FileMonitor());
-        addTypeWithConstructor("modelmonitor",     new ModelMonitor());
-        addTypeWithConstructor("screenmonitor",    new ScreenMonitor());
+        addTypeWithConstructor("extNewickmonitor", new Mntr_ExtendedNewickFile());
+        addTypeWithConstructor("filemonitor",      new Mntr_File());
+        addTypeWithConstructor("modelmonitor",     new Mntr_Model());
+        addTypeWithConstructor("screenmonitor",    new Mntr_Screen());
         
         
         ///////////////////////////////////////////////////////////////////////////////////

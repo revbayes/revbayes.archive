@@ -3,9 +3,9 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ExtendedNewickTreeMonitor.h"
-#include "RevObject.h"
+#include "Mntr_ExtendedNewickFile.h"
 #include "RbException.h"
-#include "RlExtendedNewickFileMonitor.h"
+#include "RevObject.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
@@ -15,19 +15,19 @@
 
 using namespace RevLanguage;
 
-ExtendedNewickFileMonitor::ExtendedNewickFileMonitor(void) : Monitor() {
+Mntr_ExtendedNewickFile::Mntr_ExtendedNewickFile(void) : Monitor() {
     
 }
 
 
 /** Clone object */
-ExtendedNewickFileMonitor* ExtendedNewickFileMonitor::clone(void) const {
+Mntr_ExtendedNewickFile* Mntr_ExtendedNewickFile::clone(void) const {
     
-	return new ExtendedNewickFileMonitor(*this);
+	return new Mntr_ExtendedNewickFile(*this);
 }
 
 
-void ExtendedNewickFileMonitor::constructInternalObject( void ) {
+void Mntr_ExtendedNewickFile::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -49,7 +49,7 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& ExtendedNewickFileMonitor::getClassName(void) { 
+const std::string& Mntr_ExtendedNewickFile::getClassName(void) { 
     
     static std::string rbClassName = "Mntr_ExtendedNewickFile";
     
@@ -57,7 +57,7 @@ const std::string& ExtendedNewickFileMonitor::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ExtendedNewickFileMonitor::getClassTypeSpec(void) { 
+const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
@@ -67,30 +67,30 @@ const TypeSpec& ExtendedNewickFileMonitor::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& ExtendedNewickFileMonitor::getMemberRules(void) const {
+const MemberRules& Mntr_ExtendedNewickFile::getMemberRules(void) const {
     
-    static MemberRules ExtendedNewickFileMonitorMemberRules;
+    static MemberRules Mntr_ExtendedNewickFileMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        ExtendedNewickFileMonitorMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        Mntr_ExtendedNewickFileMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
         
         rulesSet = true;
     }
     
-    return ExtendedNewickFileMonitorMemberRules;
+    return Mntr_ExtendedNewickFileMemberRules;
 }
 
 /** Get type spec */
-const TypeSpec& ExtendedNewickFileMonitor::getTypeSpec( void ) const {
+const TypeSpec& Mntr_ExtendedNewickFile::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -99,14 +99,14 @@ const TypeSpec& ExtendedNewickFileMonitor::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void ExtendedNewickFileMonitor::printValue(std::ostream &o) const {
+void Mntr_ExtendedNewickFile::printValue(std::ostream &o) const {
     
-    o << "ExtendedNewickFileMonitor";
+    o << "Mntr_ExtendedNewickFile";
 }
 
 
 /** Set a member variable */
-void ExtendedNewickFileMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_ExtendedNewickFile::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );

@@ -2,35 +2,34 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "FileMonitor.h"
-#include "RevObject.h"
+#include "Mntr_Screen.h"
 #include "RbException.h"
-#include "RlFileMonitor.h"
+#include "RevObject.h"
 #include "RlString.h"
+#include "ScreenMonitor.h"
 #include "TypeSpec.h"
 #include "Vector.h"
 
 
 using namespace RevLanguage;
 
-FileMonitor::FileMonitor(void) : Monitor() {
+Mntr_Screen::Mntr_Screen(void) : Monitor() {
     
 }
 
 
 /** Clone object */
-FileMonitor* FileMonitor::clone(void) const {
+Mntr_Screen* Mntr_Screen::clone(void) const {
     
-	return new FileMonitor(*this);
+	return new Mntr_Screen(*this);
 }
 
 
-void FileMonitor::constructInternalObject( void ) {
+void Mntr_Screen::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
-    const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    // now allocate space for a new Mntr_Screen object
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     std::set<RevBayesCore::DagNode *> n;
@@ -41,24 +40,20 @@ void FileMonitor::constructInternalObject( void ) {
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
-    bool app = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
-    bool ci = static_cast<const RlBoolean &>( chainIdx->getRevObject() ).getValue();
-    bool ch = static_cast<const RlBoolean &>( chainHeat->getRevObject() ).getValue();
-    
-    value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, ci, ch);
+    value = new RevBayesCore::ScreenMonitor(n, g, sep, pp, l, pr);
 }
 
 
 /** Get class name of object */
-const std::string& FileMonitor::getClassName(void) { 
+const std::string& Mntr_Screen::getClassName(void) { 
     
-    static std::string rbClassName = "Mntr_File";
+    static std::string rbClassName = "Mntr_Screen";
     
 	return rbClassName; 
-    }
+}
 
 /** Get class type spec describing type of object */
-const TypeSpec& FileMonitor::getClassTypeSpec(void) { 
+const TypeSpec& Mntr_Screen::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
@@ -68,22 +63,20 @@ const TypeSpec& FileMonitor::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& FileMonitor::getMemberRules(void) const {
+const MemberRules& Mntr_Screen::getMemberRules(void) const {
     
     static MemberRules filemonitorMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        filemonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
         filemonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("chainIdx", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("chainHeat", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        
+        
         rulesSet = true;
     }
     
@@ -91,7 +84,7 @@ const MemberRules& FileMonitor::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& FileMonitor::getTypeSpec( void ) const {
+const TypeSpec& Mntr_Screen::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -100,20 +93,17 @@ const TypeSpec& FileMonitor::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void FileMonitor::printValue(std::ostream &o) const {
+void Mntr_Screen::printValue(std::ostream &o) const {
     
-    o << "FileMonitor";
+    o << "Mntr_Screen";
 }
 
 
 /** Set a member variable */
-void FileMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_Screen::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );
-    }
-    else if ( name == "filename" ) {
-        filename = var;
     }
     else if ( name == "separator" ) {
         separator = var;
@@ -129,15 +119,6 @@ void FileMonitor::setConstMemberVariable(const std::string& name, const RevPtr<c
     }
     else if ( name == "likelihood" ) {
         likelihood = var;
-    }
-    else if (name == "chainIdx") {
-        chainIdx = var;
-    }
-    else if (name == "chainHeat") {
-        chainHeat = var;
-    }
-    else if (name == "append") {
-        append = var;
     }
     else {
         RevObject::setConstMemberVariable(name, var);
