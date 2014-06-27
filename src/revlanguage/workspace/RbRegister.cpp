@@ -233,8 +233,8 @@
 /* Inference functions (in folder "functions/inference") */
 
 /* Convergence functions (in folder "functions/inference/convergence") */
-#include "OptimalBurninFunction.h"
-#include "BurninEstimationConvergenceAssessmentFunction.h"
+#include "Func_beca.h"
+#include "Func_estimateBurnin.h"
 
 
 /* Internal functions (in folder ("functions/internal") */
@@ -697,8 +697,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Inference functions (in folder "functions/inference") */
 
         /* Convergence functions (in folder "functions/inference/convergence") */
-        addFunction( "beca",           new BurninEstimationConvergenceAssessmentFunction() );
-        addFunction( "estimateBurnin", new OptimalBurninFunction() );
+        addFunction( "beca",           new Func_beca() );
+        addFunction( "estimateBurnin", new Func_estimateBurnin() );
 
         
         /* Internal functions (in folder "functions/internal") */

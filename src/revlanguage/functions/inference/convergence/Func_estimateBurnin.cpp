@@ -1,7 +1,7 @@
 /**
  * @file
- * This file contains the implementation of Func_type, which is
- * the function used to get the type of a variable.
+ * This file contains the implementation of Func_estimateBurnin, which is
+ * the function used to estimate the optimal burnin length.
  *
  * @brief Implementation of Func_quit
  *
@@ -20,7 +20,7 @@
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "EssMax.h"
-#include "OptimalBurninFunction.h"
+#include "Func_estimateBurnin.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlString.h"
@@ -34,20 +34,20 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-OptimalBurninFunction::OptimalBurninFunction( void ) : Function() {
+Func_estimateBurnin::Func_estimateBurnin( void ) : Function() {
     
 }
 
 
 /** Clone object */
-OptimalBurninFunction* OptimalBurninFunction::clone( void ) const {
+Func_estimateBurnin* Func_estimateBurnin::clone( void ) const {
     
-    return new OptimalBurninFunction( *this );
+    return new Func_estimateBurnin( *this );
 }
 
 
 /** Execute function */
-RevObject* OptimalBurninFunction::execute( void ) {
+RevObject* Func_estimateBurnin::execute( void ) {
     
     
     const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -78,7 +78,7 @@ RevObject* OptimalBurninFunction::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& OptimalBurninFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_estimateBurnin::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -99,7 +99,7 @@ const ArgumentRules& OptimalBurninFunction::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& OptimalBurninFunction::getClassName(void) { 
+const std::string& Func_estimateBurnin::getClassName(void) { 
     
     static std::string rbClassName = "Func_estimateBurnin";
     
@@ -107,7 +107,7 @@ const std::string& OptimalBurninFunction::getClassName(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& OptimalBurninFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_estimateBurnin::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -115,7 +115,7 @@ const TypeSpec& OptimalBurninFunction::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& OptimalBurninFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_estimateBurnin::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -124,7 +124,7 @@ const TypeSpec& OptimalBurninFunction::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& OptimalBurninFunction::getReturnType( void ) const {
+const TypeSpec& Func_estimateBurnin::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Vector<Natural>::getClassTypeSpec();
     

@@ -1,26 +1,19 @@
 /**
  * @file
- * This file contains the implementation of Func_type, which is
- * the function used to get the type of a variable.
+ * This file contains the implementation of Func_beca, which is
+ * the function used to do Burnin Estimation and Convergence Assessment (BECA)
  *
- * @brief Implementation of Func_quit
+ * @brief Implementation of Func_beca
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2012-09-07
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
  */
 
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "EssMax.h"
-#include "BurninEstimationConvergenceAssessmentFunction.h"
+#include "Func_beca.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlBoolean.h"
@@ -35,20 +28,20 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-BurninEstimationConvergenceAssessmentFunction::BurninEstimationConvergenceAssessmentFunction( void ) : Function() {
+Func_beca::Func_beca( void ) : Function() {
     
 }
 
 
 /** Clone object */
-BurninEstimationConvergenceAssessmentFunction* BurninEstimationConvergenceAssessmentFunction::clone( void ) const {
+Func_beca* Func_beca::clone( void ) const {
     
-    return new BurninEstimationConvergenceAssessmentFunction( *this );
+    return new Func_beca( *this );
 }
 
 
 /** Execute function */
-RevObject* BurninEstimationConvergenceAssessmentFunction::execute( void ) {
+RevObject* Func_beca::execute( void ) {
     
     bool converged = false;
     
@@ -116,7 +109,7 @@ RevObject* BurninEstimationConvergenceAssessmentFunction::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& BurninEstimationConvergenceAssessmentFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_beca::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -140,7 +133,7 @@ const ArgumentRules& BurninEstimationConvergenceAssessmentFunction::getArgumentR
 
 
 /** Get class name of object */
-const std::string& BurninEstimationConvergenceAssessmentFunction::getClassName(void) { 
+const std::string& Func_beca::getClassName(void) { 
     
     static std::string rbClassName = "Func_beca";
     
@@ -148,7 +141,7 @@ const std::string& BurninEstimationConvergenceAssessmentFunction::getClassName(v
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& BurninEstimationConvergenceAssessmentFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_beca::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -156,7 +149,7 @@ const TypeSpec& BurninEstimationConvergenceAssessmentFunction::getClassTypeSpec(
 }
 
 /** Get type spec */
-const TypeSpec& BurninEstimationConvergenceAssessmentFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_beca::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -165,7 +158,7 @@ const TypeSpec& BurninEstimationConvergenceAssessmentFunction::getTypeSpec( void
 
 
 /** Get return type */
-const TypeSpec& BurninEstimationConvergenceAssessmentFunction::getReturnType( void ) const {
+const TypeSpec& Func_beca::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = Vector<RlBoolean>::getClassTypeSpec();
     
