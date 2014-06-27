@@ -152,8 +152,8 @@
 /* Distributions on simple variables (in folder "distributions/math") */
 #include "Dist_bernoulli.h"
 #include "Dist_beta.h"
-#include "Dist_blnorm.h"
-#include "Dist_bnorm.h"
+#include "Dist_bimodallnorm.h"
+#include "Dist_bimodalnorm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_gamma.h"
@@ -450,7 +450,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
         // branch-rate jump process
-        addDistribution( "dnBranchRateJumpProcess", new Dist_branchRateJumpProcess() );
+        addDistribution( "dnDist_branchRateJumpProcess", new Dist_branchRateJumpProcess() );
         addDistribution( "branchRateJumpProcess",   new Dist_branchRateJumpProcess() );
         
         // brownian motion
@@ -535,12 +535,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "beta",            new Dist_beta() );
         
         // bimodal normal distribution
-        addDistribution( "dnBnorm",         new Dist_bnorm() );
-        addDistribution( "bnorm",           new Dist_bnorm() );
+        addDistribution( "dnBimodalnorm",   new Dist_bimodalNorm() );
+        addDistribution( "bimodalNorm",     new Dist_bimodalNorm() );
+        addDistribution( "bnorm",           new Dist_bimodalNorm() );
         
         // bimodal lognormal distribution
-        addDistribution( "dnBlnorm",        new Dist_blnorm() );
-        addDistribution( "blnorm",          new Dist_blnorm() );
+        addDistribution( "dnBimodalLnorm",  new Dist_bimodalLnorm() );
+        addDistribution( "bimodalLnorm",    new Dist_bimodalLnorm() );
+        addDistribution( "blnorm",          new Dist_bimodalLnorm() );
         
         // dirichlet distribution
         addDistribution( "dnDirichlet",     new Dist_dirichlet() );
@@ -873,48 +875,48 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new Dist_bernoulli() ) );
         
         // beta distribution
-        addFunction("dbeta", new DistributionFunctionPdf<Probability>( new BetaDistribution() ) );
-        //        addFunction("pbeta", new DistributionFunctionCdf( new BetaDistribution() ) );
-        //        addFunction("qbeta", new DistributionFunctionQuantile( new BetaDistribution() ) );
-        addFunction("rbeta", new DistributionFunctionRv<Probability>( new BetaDistribution() ) );
+        addFunction("dbeta", new DistributionFunctionPdf<Probability>( new Dist_beta() ) );
+        //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
+        //        addFunction("qbeta", new DistributionFunctionQuantile( new Dist_beta() ) );
+        addFunction("rbeta", new DistributionFunctionRv<Probability>( new Dist_beta() ) );
         
         // exponential distribution
-        addFunction("dexponential", new DistributionFunctionPdf<RealPos>( new ExponentialDistribution() ) );
-        addFunction("pexponential", new DistributionFunctionCdf( new ExponentialDistribution() ) );
-        addFunction("qexponential", new DistributionFunctionQuantile( new ExponentialDistribution() ) );
-        addFunction("rexponential", new DistributionFunctionRv<RealPos>( new ExponentialDistribution() ) );
+        addFunction("dexponential", new DistributionFunctionPdf<RealPos>( new Dist_exponential() ) );
+        addFunction("pexponential", new DistributionFunctionCdf( new Dist_exponential() ) );
+        addFunction("qexponential", new DistributionFunctionQuantile( new Dist_exponential() ) );
+        addFunction("rexponential", new DistributionFunctionRv<RealPos>( new Dist_exponential() ) );
         
         // gamma distribution
-        addFunction("dgamma", new DistributionFunctionPdf<RealPos>( new GammaDistribution() ) );
-        addFunction("pgamma", new DistributionFunctionCdf( new GammaDistribution() ) );
-        addFunction("qgamma", new DistributionFunctionQuantile( new GammaDistribution() ) );
-        addFunction("rgamma", new DistributionFunctionRv<RealPos>( new GammaDistribution() ) );
+        addFunction("dgamma", new DistributionFunctionPdf<RealPos>( new Dist_gamma() ) );
+        addFunction("pgamma", new DistributionFunctionCdf( new Dist_gamma() ) );
+        addFunction("qgamma", new DistributionFunctionQuantile( new Dist_gamma() ) );
+        addFunction("rgamma", new DistributionFunctionRv<RealPos>( new Dist_gamma() ) );
         
         // lognormal distribution
-        addFunction("dlnorm", new DistributionFunctionPdf<RealPos>( new LognormalDistribution() ) );
-        addFunction("plnorm", new DistributionFunctionCdf( new LognormalDistribution() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantile( new LognormalDistribution() ) );
-        addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new LognormalDistribution() ) );
-        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new OffsetLognormalDistribution() ) );
-        addFunction("plnorm", new DistributionFunctionCdf( new OffsetLognormalDistribution() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantile( new OffsetLognormalDistribution() ) );
-        addFunction("rlnorm", new DistributionFunctionRv<Real>( new OffsetLognormalDistribution() ) );
+        addFunction("dlnorm", new DistributionFunctionPdf<RealPos>( new Dist_lnorm() ) );
+        addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnorm() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantile( new Dist_lnorm() ) );
+        addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new Dist_lnorm() ) );
+        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new OffsetDist_lnorm() ) );
+        addFunction("plnorm", new DistributionFunctionCdf( new OffsetDist_lnorm() ) );
+        addFunction("qlnorm", new DistributionFunctionQuantile( new OffsetDist_lnorm() ) );
+        addFunction("rlnorm", new DistributionFunctionRv<Real>( new OffsetDist_lnorm() ) );
         
         // normal distribution
-        addFunction("dnorm", new DistributionFunctionPdf<Real>( new NormalDistribution() ) );
-        addFunction("pnorm", new DistributionFunctionCdf( new NormalDistribution() ) );
-        addFunction("qnorm", new DistributionFunctionQuantile( new NormalDistribution() ) );
-        addFunction("rnorm", new DistributionFunctionRv<Real>( new NormalDistribution() ) );
+        addFunction("dnorm", new DistributionFunctionPdf<Real>( new Dist_normal() ) );
+        addFunction("pnorm", new DistributionFunctionCdf( new Dist_normal() ) );
+        addFunction("qnorm", new DistributionFunctionQuantile( new Dist_normal() ) );
+        addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_normal() ) );
         
         // uniform distribution
-        addFunction("dunif", new DistributionFunctionPdf<Real>( new UniformDistribution() ) );
-        addFunction("punif", new DistributionFunctionCdf( new UniformDistribution() ) );
-        addFunction("qunif", new DistributionFunctionQuantile( new UniformDistribution() ) );
-        addFunction("runif", new DistributionFunctionRv<Real>( new UniformDistribution() ) );
-        addFunction("dunif", new DistributionFunctionPdf<RealPos>( new PositiveUniformDistribution() ) );
-        addFunction("punif", new DistributionFunctionCdf( new PositiveUniformDistribution() ) );
-        addFunction("qunif", new DistributionFunctionQuantile( new PositiveUniformDistribution() ) );
-        addFunction("runif", new DistributionFunctionRv<RealPos>( new PositiveUniformDistribution() ) );
+        addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );
+        addFunction("punif", new DistributionFunctionCdf( new Dist_unif() ) );
+        addFunction("qunif", new DistributionFunctionQuantile( new Dist_unif() ) );
+        addFunction("runif", new DistributionFunctionRv<Real>( new Dist_unif() ) );
+        addFunction("dunif", new DistributionFunctionPdf<RealPos>( new Dist_positiveUnif() ) );
+        addFunction("punif", new DistributionFunctionCdf( new Dist_positiveUnif() ) );
+        addFunction("qunif", new DistributionFunctionQuantile( new Dist_positiveUnif() ) );
+        addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_positiveUnif() ) );
 
 
     }

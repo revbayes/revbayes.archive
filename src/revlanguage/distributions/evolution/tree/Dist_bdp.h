@@ -1,5 +1,5 @@
-#ifndef RlConstantRateBirthDeathProcess_H
-#define RlConstantRateBirthDeathProcess_H
+#ifndef Dist_bdp_H
+#define Dist_bdp_H
 
 #include "ConstantRateBirthDeathProcess.h"
 #include "RlBirthDeathProcess.h"
@@ -8,11 +8,11 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the ConstantRateBirthDeathProcess
+     * The RevLanguage wrapper of the Dist_bdp
      *
      * The RevLanguage wrapper of the constant-rate birth-death process connects
-     * the variables/parameters of the process and creates the internal ConstantRateBirthDeathProcess object.
-     * Please read the ConstantRateBirthDeathProcess.h for more info.
+     * the variables/parameters of the process and creates the internal Dist_bdp object.
+     * Please read the Dist_bdp.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class ConstantRateBirthDeathProcess :  public BirthDeathProcess {
+    class Dist_bdp :  public BirthDeathProcess {
         
     public:
-        ConstantRateBirthDeathProcess( void );
+        Dist_bdp( void );
         
         // Basic utility functions
-        ConstantRateBirthDeathProcess*                  clone(void) const;                                                                      //!< Clone the object
+        Dist_bdp*                  clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassName(void);                                                                     //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance

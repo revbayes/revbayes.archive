@@ -3,7 +3,7 @@
  * This file contains the declaration of the lognormal distribution, which is used create
  * random variables of uniform distributions.
  *
- * @brief Declaration and implementation of LognormalDistribution
+ * @brief Declaration and implementation of Dist_lnorm
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,21 +15,21 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlLognormalDistribution_H
-#define RlLognormalDistribution_H
+#ifndef Dist_lnorm_H
+#define Dist_lnorm_H
 
 #include "LognormalDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
 
 namespace RevLanguage {
     
-    class LognormalDistribution :  public PositiveContinuousDistribution {
+    class Dist_lnorm :  public PositiveContinuousDistribution {
         
     public:
-        LognormalDistribution( void );
+        Dist_lnorm( void );
         
         // Basic utility functions
-        LognormalDistribution*                          clone(void) const;                                                              //!< Clone the object
+        Dist_lnorm*                          clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

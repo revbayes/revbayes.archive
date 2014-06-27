@@ -1,5 +1,5 @@
-#ifndef RlDiversityDependentPureBirthProcess_H
-#define RlDiversityDependentPureBirthProcess_H
+#ifndef Dist_divDepYuleProcess_H
+#define Dist_divDepYuleProcess_H
 
 #include "DiversityDependentPureBirthProcess.h"
 #include "RlTypedDistribution.h"
@@ -8,11 +8,11 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the DiversityDependentPureBirthProcess
+     * The RevLanguage wrapper of the Dist_divDepYuleProcess
      *
      * The RevLanguage wrapper of the diversity-dependent pure-birth process connects
-     * the variables/parameters of the process and creates the internal DiversityDependentPureBirthProcess object.
-     * Please read the DiversityDependentPureBirthProcess.h for more info.
+     * the variables/parameters of the process and creates the internal Dist_divDepYuleProcess object.
+     * Please read the Dist_divDepYuleProcess.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class DiversityDependentPureBirthProcess :  public TypedDistribution<TimeTree> {
+    class Dist_divDepYuleProcess :  public TypedDistribution<TimeTree> {
         
     public:
-        DiversityDependentPureBirthProcess( void );
+        Dist_divDepYuleProcess( void );
         
         // Basic utility functions
-        DiversityDependentPureBirthProcess*                 clone(void) const;                                                                  //!< Clone the object
+        Dist_divDepYuleProcess*                 clone(void) const;                                                                  //!< Clone the object
         static const std::string&                           getClassName(void);                                                                 //!< Get class name
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&                                     getTypeSpec(void) const;                                                            //!< Get the type spec of the instance

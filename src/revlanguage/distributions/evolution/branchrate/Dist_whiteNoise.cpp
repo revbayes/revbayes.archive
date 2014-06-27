@@ -10,34 +10,34 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "WhiteNoisePhyloProcess.h"
-#include "RlWhiteNoisePhyloProcess.h"
+#include "Dist_whiteNoise.h"
 #include "Real.h"
-#include "RlTimeTree.h"
-#include "TimeTree.h"
 #include "RealPos.h"
+#include "RlTimeTree.h"
 #include "StochasticNode.h"
+#include "TimeTree.h"
 #include "Vector.h"
+#include "WhiteNoisePhyloProcess.h"
 
 using namespace RevLanguage;
 
-WhiteNoisePhyloProcess::WhiteNoisePhyloProcess() : TypedDistribution< Vector<RealPos> >() {
+Dist_whiteNoise::Dist_whiteNoise() : TypedDistribution< Vector<RealPos> >() {
     
 }
 
 
-WhiteNoisePhyloProcess::~WhiteNoisePhyloProcess() {
+Dist_whiteNoise::~Dist_whiteNoise() {
     
 }
 
 
 
-WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::clone( void ) const {
-    return new WhiteNoisePhyloProcess(*this);
+Dist_whiteNoise* Dist_whiteNoise::clone( void ) const {
+    return new Dist_whiteNoise(*this);
 }
 
 
-RevBayesCore::WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::createDistribution( void ) const {
+RevBayesCore::WhiteNoisePhyloProcess* Dist_whiteNoise::createDistribution( void ) const {
     // get the parameters
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
@@ -53,7 +53,7 @@ RevBayesCore::WhiteNoisePhyloProcess* WhiteNoisePhyloProcess::createDistribution
 
 
 /* Get class name of object */
-const std::string& WhiteNoisePhyloProcess::getClassName(void) {
+const std::string& Dist_whiteNoise::getClassName(void) {
     
     static std::string rbClassName = "Dist_whiteNoise";
     
@@ -61,7 +61,7 @@ const std::string& WhiteNoisePhyloProcess::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& WhiteNoisePhyloProcess::getClassTypeSpec(void) {
+const TypeSpec& Dist_whiteNoise::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -71,7 +71,7 @@ const TypeSpec& WhiteNoisePhyloProcess::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& WhiteNoisePhyloProcess::getMemberRules(void) const {
+const MemberRules& Dist_whiteNoise::getMemberRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -87,7 +87,7 @@ const MemberRules& WhiteNoisePhyloProcess::getMemberRules(void) const {
 }
 
 
-const TypeSpec& WhiteNoisePhyloProcess::getTypeSpec( void ) const {
+const TypeSpec& Dist_whiteNoise::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -99,7 +99,7 @@ const TypeSpec& WhiteNoisePhyloProcess::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void WhiteNoisePhyloProcess::printValue(std::ostream& o) const {
+ void Dist_whiteNoise::printValue(std::ostream& o) const {
     
     o << " whitenoise(";
     
@@ -122,7 +122,7 @@ const TypeSpec& WhiteNoisePhyloProcess::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void WhiteNoisePhyloProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_whiteNoise::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {

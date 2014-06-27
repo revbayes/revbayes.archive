@@ -1,5 +1,5 @@
-#ifndef RlCharacterStateEvolutionAlongTree_H
-#define RlCharacterStateEvolutionAlongTree_H
+#ifndef Dist_phyloCTMC_H
+#define Dist_phyloCTMC_H
 
 #include "AbstractDiscreteCharacterData.h"
 #include "RlAbstractDiscreteCharacterData.h"
@@ -9,14 +9,14 @@
 namespace RevLanguage {
     
     template <class treeType>
-    class CharacterStateEvolutionAlongTree :  public TypedDistribution< AbstractDiscreteCharacterData > {
+    class Dist_phyloCTMC :  public TypedDistribution< AbstractDiscreteCharacterData > {
         
     public:
-        CharacterStateEvolutionAlongTree( void );
-        virtual ~CharacterStateEvolutionAlongTree();
+        Dist_phyloCTMC( void );
+        virtual ~Dist_phyloCTMC();
         
         // Basic utility functions
-        CharacterStateEvolutionAlongTree*               clone(void) const;                                                              //!< Clone the object
+        Dist_phyloCTMC*               clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -59,27 +59,27 @@ namespace RevLanguage {
 
 
 template <class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<treeType>::CharacterStateEvolutionAlongTree() : TypedDistribution< AbstractDiscreteCharacterData >() {
+RevLanguage::Dist_phyloCTMC<treeType>::Dist_phyloCTMC() : TypedDistribution< AbstractDiscreteCharacterData >() {
     
 }
 
 
 template <class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<treeType>::~CharacterStateEvolutionAlongTree() {
+RevLanguage::Dist_phyloCTMC<treeType>::~Dist_phyloCTMC() {
     
 }
 
 
 
 template <class treeType>
-RevLanguage::CharacterStateEvolutionAlongTree<treeType>* RevLanguage::CharacterStateEvolutionAlongTree<treeType>::clone( void ) const {
+RevLanguage::Dist_phyloCTMC<treeType>* RevLanguage::Dist_phyloCTMC<treeType>::clone( void ) const {
   
-    return new CharacterStateEvolutionAlongTree(*this);
+    return new Dist_phyloCTMC(*this);
 }
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::CharacterStateEvolutionAlongTree<treeType>::createDistribution( void ) const {
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::Dist_phyloCTMC<treeType>::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
@@ -327,7 +327,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 
 /* Get class name of object */
 template <class treeType>
-const std::string& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getClassName(void) { 
+const std::string& RevLanguage::Dist_phyloCTMC<treeType>::getClassName(void) { 
     
     static std::string rbClassName = "Dist_phyloCTMC";
     
@@ -336,7 +336,7 @@ const std::string& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getC
 
 /* Get class type spec describing type of object */
 template <class treeType>
-const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -348,7 +348,7 @@ const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<treeT
 
 /** Return member rules (no members) */
 template <class treeType>
-const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMemberRules(void) const {
     
     static MemberRules distCharStateEvolutionMemberRules;
     static bool rulesSet = false;
@@ -391,7 +391,7 @@ const RevLanguage::MemberRules& RevLanguage::CharacterStateEvolutionAlongTree<tr
 
 
 template <class treeType>
-const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<treeType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -401,7 +401,7 @@ const RevLanguage::TypeSpec& RevLanguage::CharacterStateEvolutionAlongTree<treeT
 
 /** Print value for user */
 template <class treeType>
-void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::printValue(std::ostream& o) const {
+void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const {
     
     o << "Character-State-Evolution-Along-Tree Process(tree=";
     if ( tree != NULL ) {
@@ -439,7 +439,7 @@ void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::printValue(std::os
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::CharacterStateEvolutionAlongTree<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) 
     {

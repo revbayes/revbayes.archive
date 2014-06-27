@@ -1,5 +1,5 @@
-#ifndef RlPiecewiseConstantFossilizedBirthDeathProcess_H
-#define RlPiecewiseConstantFossilizedBirthDeathProcess_H
+#ifndef Dist_skyFossilBDP_H
+#define Dist_skyFossilBDP_H
 
 #include "PiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "RlTypedDistribution.h"
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-03-19, version 1.0
      *
      */
-    class PiecewiseConstantFossilizedBirthDeathProcess :  public TypedDistribution<TimeTree> {
+    class Dist_skyFossilBDP :  public TypedDistribution<TimeTree> {
         
     public:
-        PiecewiseConstantFossilizedBirthDeathProcess( void );
+        Dist_skyFossilBDP( void );
         
         // Basic utility functions
-        PiecewiseConstantFossilizedBirthDeathProcess*   clone(void) const;          //!< Clone the object
+        Dist_skyFossilBDP*   clone(void) const;          //!< Clone the object
         static const std::string&                       getClassName(void);         //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);     //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;    //!< Get the type spec of the instance

@@ -1,5 +1,5 @@
-#ifndef RlMultispeciesCoalescentConstantPopulationProcess_H
-#define RlMultispeciesCoalescentConstantPopulationProcess_H
+#ifndef Dist_constPopMultispCoal_H
+#define Dist_constPopMultispCoal_H
 
 #include "MultispeciesCoalescent.h"
 #include "RlTimeTree.h"
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class MultispeciesCoalescentConstantPopulationProcess :  public  TypedDistribution<TimeTree> {
+    class Dist_constPopMultispCoal :  public  TypedDistribution<TimeTree> {
         
     public:
-        MultispeciesCoalescentConstantPopulationProcess( void );
+        Dist_constPopMultispCoal( void );
         
         // Basic utility functions
-        MultispeciesCoalescentConstantPopulationProcess*    clone(void) const;                                                                      //!< Clone the object
+        Dist_constPopMultispCoal*    clone(void) const;                                                                      //!< Clone the object
         static const std::string&                           getClassName(void);                                                                     //!< Get class name
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                                     getTypeSpec(void) const;                                                                //!< Get the type spec of the instance

@@ -1,13 +1,13 @@
 //
-//  RlPoissonDistribution.h
+//  RlDist_poisson.h
 //  RevBayes
 //
 //  Created by Nicolas Lartillot on 2014-03-18.
 //
 //
 
-#ifndef RlPoissonDistribution_h
-#define RlPoissonDistribution_h
+#ifndef Dist_poisson_h
+#define Dist_poisson_h
 
 #include "PoissonDistribution.h"
 #include "Natural.h"
@@ -22,7 +22,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the PoissonDistribution.h for more details.
+     * See the Dist_poisson.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -30,13 +30,13 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class PoissonDistribution :  public TypedDistribution<Natural> {
+    class Dist_poisson :  public TypedDistribution<Natural> {
         
     public:
-        PoissonDistribution( void );                                                                                                                //!< Default constructor
+        Dist_poisson( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        PoissonDistribution*                            clone(void) const;                                                                              //!< Clone the object
+        Dist_poisson*                            clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance

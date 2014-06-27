@@ -9,31 +9,31 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_gamma.h"
 #include "GammaDistribution.h"
-#include "RlGammaDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 
 using namespace RevLanguage;
 
-GammaDistribution::GammaDistribution() : PositiveContinuousDistribution() {
+Dist_gamma::Dist_gamma() : PositiveContinuousDistribution() {
     
 }
 
 
-GammaDistribution::~GammaDistribution() {
+Dist_gamma::~Dist_gamma() {
     
 }
 
 
 
-GammaDistribution* GammaDistribution::clone( void ) const {
+Dist_gamma* Dist_gamma::clone( void ) const {
     
-    return new GammaDistribution(*this);
+    return new Dist_gamma(*this);
 }
 
 
-RevBayesCore::GammaDistribution* GammaDistribution::createDistribution( void ) const {
+RevBayesCore::GammaDistribution* Dist_gamma::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* sh  = static_cast<const RealPos &>( shape->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* r   = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
@@ -45,7 +45,7 @@ RevBayesCore::GammaDistribution* GammaDistribution::createDistribution( void ) c
 
 
 /* Get class name of object */
-const std::string& GammaDistribution::getClassName(void) { 
+const std::string& Dist_gamma::getClassName(void) { 
     
     static std::string rbClassName = "Dist_gamma";
     
@@ -53,7 +53,7 @@ const std::string& GammaDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& GammaDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_gamma::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -64,7 +64,7 @@ const TypeSpec& GammaDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& GammaDistribution::getMemberRules(void) const {
+const MemberRules& Dist_gamma::getMemberRules(void) const {
     
     static MemberRules distGammaMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& GammaDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& GammaDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_gamma::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -90,7 +90,7 @@ const TypeSpec& GammaDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void GammaDistribution::printValue(std::ostream& o) const {
+void Dist_gamma::printValue(std::ostream& o) const {
     
     o << "gamma(shape=";
     if ( shape != NULL ) 
@@ -115,7 +115,7 @@ void GammaDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void GammaDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_gamma::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "shape" ) 
     {

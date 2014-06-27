@@ -3,7 +3,7 @@
  * This file contains the declaration of the OneOverX distribution, which is used create
  * random variables of OneOverX distributions.
  *
- * @brief Declaration and implementation of OneOverXDistribution
+ * @brief Declaration and implementation of Dist_oneOverX
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,22 +15,22 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlOneOverXDistribution_H
-#define RlOneOverXDistribution_H
+#ifndef Dist_oneOverX_H
+#define Dist_oneOverX_H
 
 #include "OneOverXDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
 
 namespace RevLanguage {
     
-    class OneOverXDistribution :  public PositiveContinuousDistribution {
+    class Dist_oneOverX :  public PositiveContinuousDistribution {
         
     public:
-        OneOverXDistribution( void );
-        virtual ~OneOverXDistribution();
+        Dist_oneOverX( void );
+        virtual ~Dist_oneOverX();
         
         // Basic utility functions
-        OneOverXDistribution*                           clone(void) const;                                                              //!< Clone the object
+        Dist_oneOverX*                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

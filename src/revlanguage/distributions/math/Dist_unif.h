@@ -3,7 +3,7 @@
  * This file contains the declaration of the uniform distribution, which is used create
  * random variables of uniform distributions.
  *
- * @brief Declaration and implementation of UniformDistribution
+ * @brief Declaration and implementation of Dist_unif
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,22 +15,22 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlUniformDistribution_H
-#define RlUniformDistribution_H
+#ifndef Dist_unif_H
+#define Dist_unif_H
 
 #include "UniformDistribution.h"
 #include "RlContinuousDistribution.h"
 
 namespace RevLanguage {
     
-class UniformDistribution :  public ContinuousDistribution {
+class Dist_unif :  public ContinuousDistribution {
     
 public:
-    UniformDistribution( void );
-    virtual ~UniformDistribution();
+    Dist_unif( void );
+    virtual ~Dist_unif();
     
     // Basic utility functions
-    UniformDistribution*                            clone(void) const;                                                              //!< Clone the object
+    Dist_unif*                            clone(void) const;                                                              //!< Clone the object
     static const std::string&                       getClassName(void);                                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

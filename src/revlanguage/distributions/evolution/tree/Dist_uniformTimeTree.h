@@ -1,5 +1,5 @@
-#ifndef RlUniformTimeTreeDistribution_H
-#define RlUniformTimeTreeDistribution_H
+#ifndef Dist_uniformTimeTree_H
+#define Dist_uniformTimeTree_H
 
 #include "UniformTimeTreeDistribution.h"
 #include "RlTimeTree.h"
@@ -15,14 +15,14 @@ namespace RevLanguage {
      *
      * @author Fredrik Ronquist
      */
- class UniformTimeTreeDistribution :  public TypedDistribution<TimeTree> {
+ class Dist_uniformTimeTree :  public TypedDistribution<TimeTree> {
         
     public:
-                UniformTimeTreeDistribution( void );        //!< Constructor
-        virtual ~UniformTimeTreeDistribution();             //!< Virtual destructor
+                Dist_uniformTimeTree( void );        //!< Constructor
+        virtual ~Dist_uniformTimeTree();             //!< Virtual destructor
         
         // Basic utility functions
-        UniformTimeTreeDistribution*                    clone(void) const;                                                              //!< Clone the object
+        Dist_uniformTimeTree*                    clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

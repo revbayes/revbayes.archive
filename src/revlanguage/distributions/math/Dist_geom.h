@@ -1,5 +1,5 @@
-#ifndef RlGeometricDistribution_H
-#define RlGeometricDistribution_H
+#ifndef Dist_geom_H
+#define Dist_geom_H
 
 #include "GeometricDistribution.h"
 #include "Natural.h"
@@ -14,7 +14,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the GeometricDistribution.h for more details.
+     * See the Dist_geom.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -22,13 +22,13 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class GeometricDistribution :  public TypedDistribution<Natural> {
+    class Dist_geom :  public TypedDistribution<Natural> {
         
     public:
-        GeometricDistribution( void );                                                                                                                //!< Default constructor
+        Dist_geom( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        GeometricDistribution*                          clone(void) const;                                                                              //!< Clone the object
+        Dist_geom*                          clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance

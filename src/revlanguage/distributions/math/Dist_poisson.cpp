@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_poisson.h"
 #include "PoissonDistribution.h"
-#include "RlPoissonDistribution.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "StochasticNode.h"
@@ -14,7 +14,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-PoissonDistribution::PoissonDistribution() : TypedDistribution<Natural>() 
+Dist_poisson::Dist_poisson() : TypedDistribution<Natural>() 
 {
     
 }
@@ -26,10 +26,10 @@ PoissonDistribution::PoissonDistribution() : TypedDistribution<Natural>()
  *
  * \return A new copy of the model. 
  */
-PoissonDistribution* PoissonDistribution::clone( void ) const 
+Dist_poisson* Dist_poisson::clone( void ) const 
 {
     
-    return new PoissonDistribution(*this);
+    return new Dist_poisson(*this);
 }
 
 
@@ -43,11 +43,11 @@ PoissonDistribution* PoissonDistribution::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::PoissonDistribution* PoissonDistribution::createDistribution( void ) const 
+RevBayesCore::PoissonDistribution* Dist_poisson::createDistribution( void ) const
 {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* rate    = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
-    RevBayesCore::PoissonDistribution* d      = new RevBayesCore::PoissonDistribution( rate );
+    RevBayesCore::PoissonDistribution* d        = new RevBayesCore::PoissonDistribution( rate );
     
     return d;
 }
@@ -59,7 +59,7 @@ RevBayesCore::PoissonDistribution* PoissonDistribution::createDistribution( void
  *
  * \return The class' name.
  */
-const std::string& PoissonDistribution::getClassName(void) 
+const std::string& Dist_poisson::getClassName(void) 
 { 
     
     static std::string rbClassName = "Dist_poisson";
@@ -73,7 +73,7 @@ const std::string& PoissonDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& PoissonDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_poisson::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
@@ -91,7 +91,7 @@ const TypeSpec& PoissonDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& PoissonDistribution::getMemberRules(void) const 
+const MemberRules& Dist_poisson::getMemberRules(void) const 
 {
     
     static MemberRules distPoisMemberRules;
@@ -113,7 +113,7 @@ const MemberRules& PoissonDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& PoissonDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_poisson::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -133,7 +133,7 @@ const TypeSpec& PoissonDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void PoissonDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_poisson::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" )

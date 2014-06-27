@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_geom.h"
 #include "GeometricDistribution.h"
-#include "RlGeometricDistribution.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "StochasticNode.h"
@@ -14,7 +14,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-GeometricDistribution::GeometricDistribution() : TypedDistribution<Natural>() 
+Dist_geom::Dist_geom() : TypedDistribution<Natural>() 
 {
     
 }
@@ -26,10 +26,10 @@ GeometricDistribution::GeometricDistribution() : TypedDistribution<Natural>()
  *
  * \return A new copy of the model. 
  */
-GeometricDistribution* GeometricDistribution::clone( void ) const 
+Dist_geom* Dist_geom::clone( void ) const 
 {
     
-    return new GeometricDistribution(*this);
+    return new Dist_geom(*this);
 }
 
 
@@ -43,7 +43,7 @@ GeometricDistribution* GeometricDistribution::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( void ) const 
+RevBayesCore::GeometricDistribution* Dist_geom::createDistribution( void ) const
 {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* prob    = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
@@ -59,7 +59,7 @@ RevBayesCore::GeometricDistribution* GeometricDistribution::createDistribution( 
  *
  * \return The class' name.
  */
-const std::string& GeometricDistribution::getClassName(void) 
+const std::string& Dist_geom::getClassName(void) 
 { 
     
     static std::string rbClassName = "Dist_geom";
@@ -73,7 +73,7 @@ const std::string& GeometricDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& GeometricDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_geom::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
@@ -91,7 +91,7 @@ const TypeSpec& GeometricDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& GeometricDistribution::getMemberRules(void) const 
+const MemberRules& Dist_geom::getMemberRules(void) const 
 {
     
     static MemberRules distGeomMemberRules;
@@ -113,7 +113,7 @@ const MemberRules& GeometricDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& GeometricDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_geom::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -133,7 +133,7 @@ const TypeSpec& GeometricDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void GeometricDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_geom::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "p" ) 

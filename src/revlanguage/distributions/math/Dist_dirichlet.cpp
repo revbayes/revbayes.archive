@@ -10,7 +10,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "DirichletDistribution.h"
-#include "RlDirichletDistribution.h"
+#include "Dist_dirichlet.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlSimplex.h"
@@ -19,27 +19,27 @@
 
 using namespace RevLanguage;
 
-DirichletDistribution::DirichletDistribution() : TypedDistribution<Simplex>() {
+Dist_dirichlet::Dist_dirichlet() : TypedDistribution<Simplex>() {
     
 }
 
 
-DirichletDistribution::~DirichletDistribution() {
+Dist_dirichlet::~Dist_dirichlet() {
     
 }
 
 
 
-DirichletDistribution* DirichletDistribution::clone( void ) const {
-    return new DirichletDistribution(*this);
+Dist_dirichlet* Dist_dirichlet::clone( void ) const {
+    return new Dist_dirichlet(*this);
 }
 
 
-RevBayesCore::DirichletDistribution* DirichletDistribution::createDistribution( void ) const {
+RevBayesCore::DirichletDistribution* Dist_dirichlet::createDistribution( void ) const {
 
     // get the parameters
     RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const Vector<RealPos> &>( alpha->getRevObject() ).getDagNode();
-    RevBayesCore::DirichletDistribution* d    = new RevBayesCore::DirichletDistribution( a );
+    RevBayesCore::DirichletDistribution* d              = new RevBayesCore::DirichletDistribution( a );
     
     return d;
 }
@@ -47,7 +47,7 @@ RevBayesCore::DirichletDistribution* DirichletDistribution::createDistribution( 
 
 
 /* Get class name of object */
-const std::string& DirichletDistribution::getClassName(void) { 
+const std::string& Dist_dirichlet::getClassName(void) { 
     
     static std::string rbClassName = "Dist_dirichlet";
     
@@ -55,7 +55,7 @@ const std::string& DirichletDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& DirichletDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -66,7 +66,7 @@ const TypeSpec& DirichletDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& DirichletDistribution::getMemberRules(void) const {
+const MemberRules& Dist_dirichlet::getMemberRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& DirichletDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& DirichletDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -90,7 +90,7 @@ const TypeSpec& DirichletDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void DirichletDistribution::printValue(std::ostream& o) const {
+void Dist_dirichlet::printValue(std::ostream& o) const {
     
     o << " dirichlet(alpha=";
     if ( alpha != NULL ) {
@@ -103,7 +103,7 @@ void DirichletDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void DirichletDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_dirichlet::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "alpha" ) 
     {

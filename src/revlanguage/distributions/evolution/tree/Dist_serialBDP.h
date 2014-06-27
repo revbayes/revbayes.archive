@@ -1,5 +1,5 @@
-#ifndef RlConstantRateSerialSampledBirthDeathProcess_H
-#define RlConstantRateSerialSampledBirthDeathProcess_H
+#ifndef Dist_serialBDP_H
+#define Dist_serialBDP_H
 
 #include "ConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlTypedDistribution.h"
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-03-19, version 1.0
      *
      */
-    class ConstantRateSerialSampledBirthDeathProcess :  public TypedDistribution<TimeTree> {
+    class Dist_serialBDP :  public TypedDistribution<TimeTree> {
         
     public:
-        ConstantRateSerialSampledBirthDeathProcess( void );
+        Dist_serialBDP( void );
         
         // Basic utility functions
-        ConstantRateSerialSampledBirthDeathProcess*                 clone(void) const;                                                                  //!< Clone the object
+        Dist_serialBDP*                 clone(void) const;                                                                  //!< Clone the object
         static const std::string&                                   getClassName(void);                                                                 //!< Get class name
         static const TypeSpec&                                      getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&                                             getTypeSpec(void) const;                                                            //!< Get the type spec of the instance

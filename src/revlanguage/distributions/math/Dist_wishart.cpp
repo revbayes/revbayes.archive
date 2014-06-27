@@ -1,41 +1,38 @@
 //
-//  RlWishartDistribution.cpp
+//  Dist_wishart.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-27.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "RlWishartDistribution.h"
-
-
 #include "ArgumentRule.h"
-#include "WishartDistribution.h"
-#include "RlWishartDistribution.h"
-#include "RealPos.h"
+#include "Dist_wishart.h"
 #include "Natural.h"
+#include "RealPos.h"
 #include "RealSymmetricMatrix.h"
 #include "StochasticNode.h"
+#include "WishartDistribution.h"
 
 using namespace RevLanguage;
 
-WishartDistribution::WishartDistribution() : TypedDistribution<RealSymmetricMatrix>() {
+Dist_wishart::Dist_wishart() : TypedDistribution<RealSymmetricMatrix>() {
     
 }
 
 
-WishartDistribution::~WishartDistribution() {
+Dist_wishart::~Dist_wishart() {
     
 }
 
 
 
-WishartDistribution* WishartDistribution::clone( void ) const {
-    return new WishartDistribution(*this);
+Dist_wishart* Dist_wishart::clone( void ) const {
+    return new Dist_wishart(*this);
 }
 
 
-RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void ) const {
+RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om = NULL;
@@ -64,7 +61,7 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
     }
     else{
         if (! dm || ! ka)   {
-            throw RbException("error in WishartDistribution: should specify arguments");
+            throw RbException("error in Dist_wishart: should specify arguments");
         }
         w = new RevBayesCore::WishartDistribution( dm, ka, deg );
     }
@@ -74,7 +71,7 @@ RevBayesCore::WishartDistribution* WishartDistribution::createDistribution( void
 
 
 /* Get class name of object */
-const std::string& WishartDistribution::getClassName(void) {
+const std::string& Dist_wishart::getClassName(void) {
     
     static std::string rbClassName = "Dist_wishart";
     
@@ -82,7 +79,7 @@ const std::string& WishartDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& WishartDistribution::getClassTypeSpec(void) {
+const TypeSpec& Dist_wishart::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -93,7 +90,7 @@ const TypeSpec& WishartDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& WishartDistribution::getMemberRules(void) const {
+const MemberRules& Dist_wishart::getMemberRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -112,7 +109,7 @@ const MemberRules& WishartDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& WishartDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_wishart::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -121,7 +118,7 @@ const TypeSpec& WishartDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void WishartDistribution::printValue(std::ostream& o) const {
+void Dist_wishart::printValue(std::ostream& o) const {
     
     o << " Wishart(omega=";
 /*
@@ -144,7 +141,7 @@ void WishartDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void WishartDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_wishart::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "omega" ) {
 //        omega = var;

@@ -1,5 +1,5 @@
-#ifndef RlBranchRateJumpProcess_H
-#define RlBranchRateJumpProcess_H
+#ifndef Dist_branchRateJumpProcess_H
+#define Dist_branchRateJumpProcess_H
 
 #include "BranchRateJumpProcess.h"
 #include "RlTypedDistribution.h"
@@ -22,13 +22,13 @@ namespace RevLanguage {
      * @since 2014-03-29, version 1.0
      *
      */
-    class BranchRateJumpProcess :  public TypedDistribution< Vector<RealPos>  > {
+    class Dist_branchRateJumpProcess :  public TypedDistribution< Vector<RealPos>  > {
         
     public:
-        BranchRateJumpProcess( void );
+        Dist_branchRateJumpProcess( void );
         
         // Basic utility functions
-        BranchRateJumpProcess*                      clone(void) const;                                                                              //!< Clone the object
+        Dist_branchRateJumpProcess*                      clone(void) const;                                                                              //!< Clone the object
         static const std::string&                   getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                             getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance

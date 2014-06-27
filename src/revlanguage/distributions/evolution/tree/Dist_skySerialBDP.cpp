@@ -1,13 +1,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "PiecewiseConstantSerialSampledBirthDeathProcess.h"
+#include "Dist_skySerialBDP.h"
 #include "Natural.h"
 #include "OptionRule.h"
+#include "PiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlPiecewiseConstantSerialSampledBirthDeathProcess.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
@@ -21,7 +21,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess() : TypedDistribution<TimeTree>() 
+Dist_skySerialBDP::Dist_skySerialBDP() : TypedDistribution<TimeTree>() 
 {
     
 }
@@ -33,9 +33,9 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
  *
  * \return A new copy of the model. 
  */
-PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledBirthDeathProcess::clone( void ) const 
+Dist_skySerialBDP* Dist_skySerialBDP::clone( void ) const 
 {
-    return new PiecewiseConstantSerialSampledBirthDeathProcess(*this);
+    return new Dist_skySerialBDP(*this);
 }
 
 
@@ -49,7 +49,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledB
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstantSerialSampledBirthDeathProcess::createDistribution( void ) const 
+RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP::createDistribution( void ) const 
 {
     
     // get the parameters
@@ -100,7 +100,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* PiecewiseConstant
  *
  * \return The class' name.
  */
-const std::string& PiecewiseConstantSerialSampledBirthDeathProcess::getClassName( void ) 
+const std::string& Dist_skySerialBDP::getClassName( void ) 
 { 
     
     static std::string rbClassName = "Dist_skySerialBDP";
@@ -114,7 +114,7 @@ const std::string& PiecewiseConstantSerialSampledBirthDeathProcess::getClassName
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& PiecewiseConstantSerialSampledBirthDeathProcess::getClassTypeSpec( void ) 
+const TypeSpec& Dist_skySerialBDP::getClassTypeSpec( void ) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -133,7 +133,7 @@ const TypeSpec& PiecewiseConstantSerialSampledBirthDeathProcess::getClassTypeSpe
  *
  * \return The member rules.
  */
-const MemberRules& PiecewiseConstantSerialSampledBirthDeathProcess::getMemberRules(void) const 
+const MemberRules& Dist_skySerialBDP::getMemberRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -175,7 +175,7 @@ const MemberRules& PiecewiseConstantSerialSampledBirthDeathProcess::getMemberRul
  *
  * \return The type spec of this object.
  */
-const TypeSpec& PiecewiseConstantSerialSampledBirthDeathProcess::getTypeSpec( void ) const 
+const TypeSpec& Dist_skySerialBDP::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -194,7 +194,7 @@ const TypeSpec& PiecewiseConstantSerialSampledBirthDeathProcess::getTypeSpec( vo
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void PiecewiseConstantSerialSampledBirthDeathProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_skySerialBDP::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

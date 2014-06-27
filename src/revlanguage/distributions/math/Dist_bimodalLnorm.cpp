@@ -2,10 +2,10 @@
 #include "ArgumentRules.h"
 #include "BimodalLognormalDistribution.h"
 #include "ContinuousStochasticNode.h"
+#include "Dist_bimodalLnorm.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlBimodalLognormalDistribution.h"
 
 using namespace RevLanguage;
 
@@ -15,7 +15,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-BimodalLognormalDistribution::BimodalLognormalDistribution() : ContinuousDistribution() 
+Dist_bimodalLnorm::Dist_bimodalLnorm() : ContinuousDistribution() 
 {
     
 }
@@ -31,15 +31,15 @@ BimodalLognormalDistribution::BimodalLognormalDistribution() : ContinuousDistrib
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::BimodalLognormalDistribution* BimodalLognormalDistribution::createDistribution( void ) const 
+RevBayesCore::BimodalLognormalDistribution* Dist_bimodalLnorm::createDistribution( void ) const
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m1 = static_cast<const Real &>( mean1->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* m2 = static_cast<const Real &>( mean2->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* s1 = static_cast<const RealPos &>( sd1->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* s2 = static_cast<const RealPos &>( sd2->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* p  = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* m1          = static_cast<const Real &>( mean1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* m2          = static_cast<const Real &>( mean2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s1          = static_cast<const RealPos &>( sd1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s2          = static_cast<const RealPos &>( sd2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* p           = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
     RevBayesCore::BimodalLognormalDistribution*   d = new RevBayesCore::BimodalLognormalDistribution(m1, m2, s1, s2, p);
     
     return d;
@@ -52,10 +52,10 @@ RevBayesCore::BimodalLognormalDistribution* BimodalLognormalDistribution::create
  *
  * \return A new copy of the process. 
  */
-BimodalLognormalDistribution* BimodalLognormalDistribution::clone( void ) const 
+Dist_bimodalLnorm* Dist_bimodalLnorm::clone( void ) const 
 {
     
-    return new BimodalLognormalDistribution(*this);
+    return new Dist_bimodalLnorm(*this);
 }
 
 
@@ -64,10 +64,10 @@ BimodalLognormalDistribution* BimodalLognormalDistribution::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& BimodalLognormalDistribution::getClassName(void) 
+const std::string& Dist_bimodalLnorm::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Dist_blnorm";
+    static std::string rbClassName = "Dist_bimodalLnorm";
     
 	return rbClassName; 
 }
@@ -78,7 +78,7 @@ const std::string& BimodalLognormalDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& BimodalLognormalDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -99,7 +99,7 @@ const TypeSpec& BimodalLognormalDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& BimodalLognormalDistribution::getMemberRules(void) const 
+const MemberRules& Dist_bimodalLnorm::getMemberRules(void) const 
 {
     
     static MemberRules distNormMemberRules;
@@ -125,7 +125,7 @@ const MemberRules& BimodalLognormalDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& BimodalLognormalDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_bimodalLnorm::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -135,7 +135,7 @@ const TypeSpec& BimodalLognormalDistribution::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void BimodalLognormalDistribution::printValue(std::ostream& o) const {
+void Dist_bimodalLnorm::printValue(std::ostream& o) const {
     
     o << "blnorm(mean1=";
     if ( mean1 != NULL ) {
@@ -195,7 +195,7 @@ void BimodalLognormalDistribution::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BimodalLognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_bimodalLnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
  
     if ( name == "mean1" ) 

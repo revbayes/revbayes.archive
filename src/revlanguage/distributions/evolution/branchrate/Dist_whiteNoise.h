@@ -20,14 +20,14 @@
 
 namespace RevLanguage {
 
-    class WhiteNoisePhyloProcess :  public TypedDistribution< Vector<RealPos>  > {
+    class Dist_whiteNoise :  public TypedDistribution< Vector<RealPos>  > {
         
     public:
-        WhiteNoisePhyloProcess( void );
-        virtual ~WhiteNoisePhyloProcess();
+        Dist_whiteNoise( void );
+        virtual ~Dist_whiteNoise();
         
         // Basic utility functions
-        WhiteNoisePhyloProcess*                         clone(void) const;                                                              //!< Clone the object
+        Dist_whiteNoise*                         clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

@@ -1,10 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "ContinuousStochasticNode.h"
+#include "Dist_exponential.h"
 #include "ExponentialDistribution.h"
-#include "RlExponentialDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
@@ -14,7 +14,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ExponentialDistribution::ExponentialDistribution() : PositiveContinuousDistribution() 
+Dist_exponential::Dist_exponential() : PositiveContinuousDistribution() 
 {
     
 }
@@ -26,10 +26,10 @@ ExponentialDistribution::ExponentialDistribution() : PositiveContinuousDistribut
  *
  * \return A new copy of the model. 
  */
-ExponentialDistribution* ExponentialDistribution::clone( void ) const 
+Dist_exponential* Dist_exponential::clone( void ) const 
 {
 
-    return new ExponentialDistribution(*this);
+    return new Dist_exponential(*this);
 }
 
 
@@ -43,7 +43,7 @@ ExponentialDistribution* ExponentialDistribution::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistribution( void ) const 
+RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( void ) const
 {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
@@ -60,7 +60,7 @@ RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistributi
  *
  * \return The class' name.
  */
-const std::string& ExponentialDistribution::getClassName(void) 
+const std::string& Dist_exponential::getClassName(void) 
 { 
     
     static std::string rbClassName = "Dist_exponential";
@@ -74,7 +74,7 @@ const std::string& ExponentialDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ExponentialDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_exponential::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
@@ -92,7 +92,7 @@ const TypeSpec& ExponentialDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& ExponentialDistribution::getMemberRules(void) const 
+const MemberRules& Dist_exponential::getMemberRules(void) const 
 {
     
     static MemberRules distExpMemberRules;
@@ -115,7 +115,7 @@ const MemberRules& ExponentialDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ExponentialDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_exponential::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -135,7 +135,7 @@ const TypeSpec& ExponentialDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ExponentialDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_exponential::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

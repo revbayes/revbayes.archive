@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlBranchRateJumpProcess.h"
 #include "BranchRateJumpProcess.h"
+#include "Dist_branchRateJumpProcess.h"
 #include "Probability.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-BranchRateJumpProcess::BranchRateJumpProcess( void ) : TypedDistribution< Vector<RealPos> >(),
+Dist_branchRateJumpProcess::Dist_branchRateJumpProcess( void ) : TypedDistribution< Vector<RealPos> >(),
     valueDistribution( NULL ),
     tree( NULL ),
     lambda( NULL ),
@@ -36,7 +36,7 @@ BranchRateJumpProcess::BranchRateJumpProcess( void ) : TypedDistribution< Vector
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::BranchRateJumpProcess* BranchRateJumpProcess::createDistribution( void ) const 
+RevBayesCore::BranchRateJumpProcess* Dist_branchRateJumpProcess::createDistribution( void ) const 
 {
     
     // get the parameters
@@ -64,9 +64,9 @@ RevBayesCore::BranchRateJumpProcess* BranchRateJumpProcess::createDistribution( 
  *
  * \return A new copy of the process. 
  */
-BranchRateJumpProcess* BranchRateJumpProcess::clone( void ) const 
+Dist_branchRateJumpProcess* Dist_branchRateJumpProcess::clone( void ) const 
 {
-    return new BranchRateJumpProcess(*this);
+    return new Dist_branchRateJumpProcess(*this);
 }
 
 
@@ -75,7 +75,7 @@ BranchRateJumpProcess* BranchRateJumpProcess::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& BranchRateJumpProcess::getClassName(void) 
+const std::string& Dist_branchRateJumpProcess::getClassName(void) 
 { 
     
     static std::string rbClassName = "Dist_branchRateJumpProcess";
@@ -89,7 +89,7 @@ const std::string& BranchRateJumpProcess::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& BranchRateJumpProcess::getClassTypeSpec(void) 
+const TypeSpec& Dist_branchRateJumpProcess::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector<RealPos> >::getClassTypeSpec() ) );
@@ -109,23 +109,23 @@ const TypeSpec& BranchRateJumpProcess::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& BranchRateJumpProcess::getMemberRules(void) const 
+const MemberRules& Dist_branchRateJumpProcess::getMemberRules(void) const 
 {
     
-    static MemberRules distBranchRateJumpProcessMemberRules;
+    static MemberRules distDist_branchRateJumpProcessMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distBranchRateJumpProcessMemberRules.push_back( new ArgumentRule( "valueDistribution",  true, Distribution::getClassTypeSpec() ) );
-        distBranchRateJumpProcessMemberRules.push_back( new ArgumentRule( "tree",               true, TimeTree::getClassTypeSpec() ) );
-        distBranchRateJumpProcessMemberRules.push_back( new ArgumentRule( "lambda",             true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
-        distBranchRateJumpProcessMemberRules.push_back( new ArgumentRule( "rho",                true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "valueDistribution",  true, Distribution::getClassTypeSpec() ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "tree",               true, TimeTree::getClassTypeSpec() ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "lambda",             true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
+        distDist_branchRateJumpProcessMemberRules.push_back( new ArgumentRule( "rho",                true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
         
         rulesSet = true;
     }
     
-    return distBranchRateJumpProcessMemberRules;
+    return distDist_branchRateJumpProcessMemberRules;
 }
 
 
@@ -134,7 +134,7 @@ const MemberRules& BranchRateJumpProcess::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& BranchRateJumpProcess::getTypeSpec( void ) const 
+const TypeSpec& Dist_branchRateJumpProcess::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -153,7 +153,7 @@ const TypeSpec& BranchRateJumpProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BranchRateJumpProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_branchRateJumpProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "tree" ) 
