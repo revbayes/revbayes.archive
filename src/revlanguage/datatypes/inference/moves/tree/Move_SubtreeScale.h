@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of RevLanguage wrapper of TreeScale.
+ * This file contains the declaration of RevLanguage wrapper of NNI.
  *
  * @brief Declaration of RlSlidingMove
  *
@@ -15,10 +15,10 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlWeightedNodeTimeSlide_H
-#define RlWeightedNodeTimeSlide_H
+#ifndef Move_SubtreeScale_H
+#define Move_SubtreeScale_H
 
-#include "WeightedNodeTimeSlide.h"
+#include "SubtreeScale.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -27,15 +27,15 @@
 
 namespace RevLanguage {
     
-    class WeightedNodeTimeSlide : public Move {
+    class Move_SubtreeScale : public Move {
         
     public:
         
-        WeightedNodeTimeSlide(void);                                                                                        //!< Default constructor
+        Move_SubtreeScale(void);                                                                                                 //!< Default constructor
         
         // Basic utility functions
-        virtual WeightedNodeTimeSlide*              clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
+        virtual Move_SubtreeScale*                       clone(void) const;                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
@@ -46,7 +46,6 @@ namespace RevLanguage {
         
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        RevPtr<const Variable>                      blocks;
         RevPtr<const Variable>                      tree;
         
     };

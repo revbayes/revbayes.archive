@@ -15,10 +15,10 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlNodeTimeSlideUniform_H
-#define RlNodeTimeSlideUniform_H
+#ifndef Move_TreeScale_H
+#define Move_TreeScale_H
 
-#include "NodeTimeSlideUniform.h"
+#include "TreeScale.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -27,14 +27,14 @@
 
 namespace RevLanguage {
     
-    class NodeTimeSlideUniform : public Move {
+    class Move_TreeScale : public Move {
         
     public:
         
-        NodeTimeSlideUniform(void);                                                                                         //!< Default constructor
+        Move_TreeScale(void);                                                                                                    //!< Default constructor
         
         // Basic utility functions
-        virtual NodeTimeSlideUniform*               clone(void) const;                                                      //!< Clone object
+        virtual Move_TreeScale*                          clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -47,6 +47,8 @@ namespace RevLanguage {
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         RevPtr<const Variable>                      tree;
+        RevPtr<const Variable>                      lambda;
+        RevPtr<const Variable>                      tuning;
         
     };
     

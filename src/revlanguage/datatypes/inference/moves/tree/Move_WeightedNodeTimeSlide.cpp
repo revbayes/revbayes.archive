@@ -8,53 +8,53 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "NearestNeighborInterchange_nonClock.h"
-#include "RevObject.h"
+#include "Move_WeightedNodeTimeSlide.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlNearestNeighborInterchange_nonClock.h"
-#include "RlTopology.h"
-#include "Topology.h"
+#include "RevObject.h"
+#include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-NearestNeighborInterchange_nonClock::NearestNeighborInterchange_nonClock() : Move() {
+Move_WeightedNodeTimeSlide::Move_WeightedNodeTimeSlide() : Move() {
     
 }
 
 
 /** Clone object */
-NearestNeighborInterchange_nonClock* NearestNeighborInterchange_nonClock::clone(void) const {
+Move_WeightedNodeTimeSlide* Move_WeightedNodeTimeSlide::clone(void) const {
     
-	return new NearestNeighborInterchange_nonClock(*this);
+	return new Move_WeightedNodeTimeSlide(*this);
 }
 
 
-void NearestNeighborInterchange_nonClock::constructInternalObject( void ) {
+void Move_WeightedNodeTimeSlide::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    int b = static_cast<const Natural &>( blocks->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
-    value = new RevBayesCore::NearestNeighborInterchange_nonClock(t, w);
+    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    value = new RevBayesCore::WeightedNodeTimeSlide(t, size_t(b), w);
 }
 
 
 /** Get class name of object */
-const std::string& NearestNeighborInterchange_nonClock::getClassName(void) { 
+const std::string& Move_WeightedNodeTimeSlide::getClassName(void) { 
     
-    static std::string rbClassName = "Move_NNI";
+    static std::string rbClassName = "Move_Move_WeightedNodeTimeSlide";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& NearestNeighborInterchange_nonClock::getClassTypeSpec(void) { 
+const TypeSpec& Move_WeightedNodeTimeSlide::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -64,13 +64,14 @@ const TypeSpec& NearestNeighborInterchange_nonClock::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& NearestNeighborInterchange_nonClock::getMemberRules(void) const {
+const MemberRules& Move_WeightedNodeTimeSlide::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "tree", false, Topology::getClassTypeSpec() ) );
+        nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
+        nniMemberRules.push_back( new ArgumentRule( "blocks", true, Natural::getClassTypeSpec(), new Natural(8) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
@@ -83,7 +84,7 @@ const MemberRules& NearestNeighborInterchange_nonClock::getMemberRules(void) con
 }
 
 /** Get type spec */
-const TypeSpec& NearestNeighborInterchange_nonClock::getTypeSpec( void ) const {
+const TypeSpec& Move_WeightedNodeTimeSlide::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -93,9 +94,9 @@ const TypeSpec& NearestNeighborInterchange_nonClock::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void NearestNeighborInterchange_nonClock::printValue(std::ostream &o) const {
+void Move_WeightedNodeTimeSlide::printValue(std::ostream &o) const {
     
-    o << "NNI(";
+    o << "Move_WeightedNodeTimeSlide(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -107,10 +108,13 @@ void NearestNeighborInterchange_nonClock::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NearestNeighborInterchange_nonClock::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_WeightedNodeTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
+    }
+    else if ( name == "blocks" ) {
+        blocks = var;
     }
     else {
         Move::setConstMemberVariable(name, var);

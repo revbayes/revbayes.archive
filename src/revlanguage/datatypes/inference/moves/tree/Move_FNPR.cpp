@@ -8,11 +8,10 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "Natural.h"
-#include "RevObject.h"
+#include "Move_FNPR.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlWeightedNodeTimeSlide.h"
+#include "RevObject.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -20,41 +19,40 @@
 
 using namespace RevLanguage;
 
-WeightedNodeTimeSlide::WeightedNodeTimeSlide() : Move() {
+Move_FNPR::Move_FNPR() : Move() {
     
 }
 
 
 /** Clone object */
-WeightedNodeTimeSlide* WeightedNodeTimeSlide::clone(void) const {
+Move_FNPR* Move_FNPR::clone(void) const {
     
-	return new WeightedNodeTimeSlide(*this);
+	return new Move_FNPR(*this);
 }
 
 
-void WeightedNodeTimeSlide::constructInternalObject( void ) {
+void Move_FNPR::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    int b = static_cast<const Natural &>( blocks->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::WeightedNodeTimeSlide(t, size_t(b), w);
+    value = new RevBayesCore::FixedNodeheightPruneRegraft(t, w);
 }
 
 
 /** Get class name of object */
-const std::string& WeightedNodeTimeSlide::getClassName(void) { 
+const std::string& Move_FNPR::getClassName(void) { 
     
-    static std::string rbClassName = "Move_WeightedNodeTimeSlide";
+    static std::string rbClassName = "Move_FNPR";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& WeightedNodeTimeSlide::getClassTypeSpec(void) { 
+const TypeSpec& Move_FNPR::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -64,14 +62,13 @@ const TypeSpec& WeightedNodeTimeSlide::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& WeightedNodeTimeSlide::getMemberRules(void) const {
+const MemberRules& Move_FNPR::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
         nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
-        nniMemberRules.push_back( new ArgumentRule( "blocks", true, Natural::getClassTypeSpec(), new Natural(8) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
@@ -84,7 +81,7 @@ const MemberRules& WeightedNodeTimeSlide::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& WeightedNodeTimeSlide::getTypeSpec( void ) const {
+const TypeSpec& Move_FNPR::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -94,9 +91,9 @@ const TypeSpec& WeightedNodeTimeSlide::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void WeightedNodeTimeSlide::printValue(std::ostream &o) const {
+void Move_FNPR::printValue(std::ostream &o) const {
     
-    o << "WeightedNodeTimeSlide(";
+    o << "FNPR(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -108,13 +105,10 @@ void WeightedNodeTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void WeightedNodeTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_FNPR::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
-    }
-    else if ( name == "blocks" ) {
-        blocks = var;
     }
     else {
         Move::setConstMemberVariable(name, var);

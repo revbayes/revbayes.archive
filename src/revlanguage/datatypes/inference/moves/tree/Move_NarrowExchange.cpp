@@ -8,10 +8,10 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RevObject.h"
+#include "Move_NarrowExchange.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlNarrowExchange.h"
+#include "RevObject.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -19,19 +19,19 @@
 
 using namespace RevLanguage;
 
-NarrowExchange::NarrowExchange() : Move() {
+Move_NarrowExchange::Move_NarrowExchange() : Move() {
     
 }
 
 
 /** Clone object */
-NarrowExchange* NarrowExchange::clone(void) const {
+Move_NarrowExchange* Move_NarrowExchange::clone(void) const {
     
-	return new NarrowExchange(*this);
+	return new Move_NarrowExchange(*this);
 }
 
 
-void NarrowExchange::constructInternalObject( void ) {
+void Move_NarrowExchange::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -44,15 +44,15 @@ void NarrowExchange::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& NarrowExchange::getClassName(void) { 
+const std::string& Move_NarrowExchange::getClassName(void) { 
     
-    static std::string rbClassName = "Move_NarrowExchange";
+    static std::string rbClassName = "Move_Move_NarrowExchange";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& NarrowExchange::getClassTypeSpec(void) { 
+const TypeSpec& Move_NarrowExchange::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -62,7 +62,7 @@ const TypeSpec& NarrowExchange::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& NarrowExchange::getMemberRules(void) const {
+const MemberRules& Move_NarrowExchange::getMemberRules(void) const {
     
     static MemberRules narrowMemberRules;
     static bool rulesSet = false;
@@ -82,7 +82,7 @@ const MemberRules& NarrowExchange::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& NarrowExchange::getTypeSpec( void ) const {
+const TypeSpec& Move_NarrowExchange::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -92,7 +92,7 @@ const TypeSpec& NarrowExchange::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void NarrowExchange::printValue(std::ostream &o) const {
+void Move_NarrowExchange::printValue(std::ostream &o) const {
     
     o << "Narrow(";
     if (tree != NULL) {
@@ -106,7 +106,7 @@ void NarrowExchange::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NarrowExchange::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NarrowExchange::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) 
     {

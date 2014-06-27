@@ -1,7 +1,24 @@
-#ifndef RlRateAgeBetaShift_H
-#define RlRateAgeBetaShift_H
+/**
+ * @file
+ * This file contains the declaration of RevLanguage wrapper of TreeScale.
+ *
+ * @brief Declaration of RlSlidingMove
+ *
+ * (c) Copyright 2009-
+ * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ * @since 2009-11-20, version 1.0
+ * @extends RbObject
+ *
+ * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
+ */
 
-#include "RateAgeBetaShift.h"
+#ifndef Move_RootTimeSlide_H
+#define Move_RootTimeSlide_H
+
+#include "RootTimeSlide.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -10,26 +27,14 @@
 
 namespace RevLanguage {
     
-    /**
-     * @brief Rev wrapper class for the rate-age-beta-shift move.
-     *
-     * This class is the Rev wrapper class for the rate-age-beta-shift move,
-     * a move that proposes a new node age and branch rates so that the actual
-     * branch lengths remain constant. The new node age is proposed from a scaled
-     * beta distribution between its parent age and its oldest child age.
-     *
-     *
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @copyright GPL version 3
-     */
-    class RateAgeBetaShift : public Move {
+    class Move_RootTimeSlide : public Move {
         
     public:
         
-        RateAgeBetaShift(void);                                                                                                //!< Default constructor
+        Move_RootTimeSlide(void);                                                                                                //!< Default constructor
         
         // Basic utility functions
-        virtual RateAgeBetaShift*                   clone(void) const;                                                      //!< Clone object
+        virtual Move_RootTimeSlide*                      clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -43,7 +48,6 @@ namespace RevLanguage {
         
         RevPtr<const Variable>                      tree;
         RevPtr<const Variable>                      delta;
-        RevPtr<const Variable>                      rates;
         RevPtr<const Variable>                      tune;
         
     };

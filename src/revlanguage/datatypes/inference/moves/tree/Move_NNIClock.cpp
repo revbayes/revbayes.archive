@@ -8,10 +8,10 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RevObject.h"
+#include "Move_NNIClock.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlSubtreeScale.h"
+#include "RevObject.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -19,19 +19,19 @@
 
 using namespace RevLanguage;
 
-SubtreeScale::SubtreeScale() : Move() {
+Move_NNIClock::Move_NNIClock() : Move() {
     
 }
 
 
 /** Clone object */
-SubtreeScale* SubtreeScale::clone(void) const {
+Move_NNIClock* Move_NNIClock::clone(void) const {
     
-	return new SubtreeScale(*this);
+	return new Move_NNIClock(*this);
 }
 
 
-void SubtreeScale::constructInternalObject( void ) {
+void Move_NNIClock::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -39,20 +39,20 @@ void SubtreeScale::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::SubtreeScale(t, w);
+    value = new RevBayesCore::NearestNeighborInterchange(t, w);
 }
 
 
 /** Get class name of object */
-const std::string& SubtreeScale::getClassName(void) { 
+const std::string& Move_NNIClock::getClassName(void) { 
     
-    static std::string rbClassName = "Move_SubtreeScale";
+    static std::string rbClassName = "Move_NNI";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& SubtreeScale::getClassTypeSpec(void) { 
+const TypeSpec& Move_NNIClock::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -62,7 +62,7 @@ const TypeSpec& SubtreeScale::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& SubtreeScale::getMemberRules(void) const {
+const MemberRules& Move_NNIClock::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& SubtreeScale::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& SubtreeScale::getTypeSpec( void ) const {
+const TypeSpec& Move_NNIClock::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -91,9 +91,9 @@ const TypeSpec& SubtreeScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void SubtreeScale::printValue(std::ostream &o) const {
+void Move_NNIClock::printValue(std::ostream &o) const {
     
-    o << "SubtreeScale(";
+    o << "NNI(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -104,8 +104,8 @@ void SubtreeScale::printValue(std::ostream &o) const {
 }
 
 
-/** Set a NearestNeighborInterchange variable */
-void SubtreeScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+/** Set a Move_NNIClock variable */
+void Move_NNIClock::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
