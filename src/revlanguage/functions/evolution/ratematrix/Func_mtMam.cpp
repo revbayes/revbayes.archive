@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_mtMam.h"
 #include "Natural.h"
-#include "RlCpRevRateMatrixFunction.h"
-#include "RateMatrix_CpRev.h"
+#include "RateMatrix_MtMam.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-CpRevRateMatrixFunction::CpRevRateMatrixFunction( void ) : Function( ) {
+Func_mtMam::Func_mtMam( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-CpRevRateMatrixFunction* CpRevRateMatrixFunction::clone( void ) const {
+Func_mtMam* Func_mtMam::clone( void ) const {
     
-    return new CpRevRateMatrixFunction( *this );
+    return new Func_mtMam( *this );
 }
 
 
-RevObject* CpRevRateMatrixFunction::execute() {
+RevObject* Func_mtMam::execute() {
     
     
-    RevBayesCore::RateMatrix_CpRev *rmj = new RevBayesCore::RateMatrix_CpRev();
+    RevBayesCore::RateMatrix_MtMam *rmj = new RevBayesCore::RateMatrix_MtMam();
     RateMatrix* value = new RateMatrix( rmj );
     
     return value;
@@ -42,7 +42,7 @@ RevObject* CpRevRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& CpRevRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_mtMam::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,15 +50,15 @@ const ArgumentRules& CpRevRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& CpRevRateMatrixFunction::getClassName(void) { 
+const std::string& Func_mtMam::getClassName(void) { 
     
-    static std::string rbClassName = "Func_cpRev";
+    static std::string rbClassName = "Func_mtMam";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& CpRevRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_mtMam::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& CpRevRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& CpRevRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_mtMam::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& CpRevRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& CpRevRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_mtMam::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_rtRev.h"
 #include "Natural.h"
-#include "RlWagRateMatrixFunction.h"
-#include "RateMatrix_Wag.h"
+#include "RateMatrix_RtRev.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-WagRateMatrixFunction::WagRateMatrixFunction( void ) : Function( ) {
+Func_rtRev::Func_rtRev( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-WagRateMatrixFunction* WagRateMatrixFunction::clone( void ) const {
+Func_rtRev* Func_rtRev::clone( void ) const {
     
-    return new WagRateMatrixFunction( *this );
+    return new Func_rtRev( *this );
 }
 
 
-RevObject* WagRateMatrixFunction::execute() {
+RevObject* Func_rtRev::execute() {
     
     
-    RevBayesCore::RateMatrix_Wag *rmj = new RevBayesCore::RateMatrix_Wag();
+    RevBayesCore::RateMatrix_RtRev *rmj = new RevBayesCore::RateMatrix_RtRev();
     RateMatrix* value = new RateMatrix( rmj );
     
     return value;
@@ -42,7 +42,7 @@ RevObject* WagRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& WagRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_rtRev::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,15 +50,15 @@ const ArgumentRules& WagRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& WagRateMatrixFunction::getClassName(void) { 
+const std::string& Func_rtRev::getClassName(void) { 
     
-    static std::string rbClassName = "Func_wag";
+    static std::string rbClassName = "Func_rtRev";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& WagRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_rtRev::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& WagRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& WagRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_rtRev::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& WagRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& WagRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_rtRev::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

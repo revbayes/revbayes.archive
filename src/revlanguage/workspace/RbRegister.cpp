@@ -215,19 +215,19 @@
 #include "Func_treeAssembly.h"
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
+#include "Func_blosum62.h"
+#include "Func_cpRev.h"
+#include "Func_dayhoff.h"
+#include "Func_f81.h"
 #include "Func_gtr.h"
-#include "RlBlosum62RateMatrixFunction.h"
-#include "RlCpRevRateMatrixFunction.h"
-#include "RlDayhoffRateMatrixFunction.h"
-#include "RlF81RateMatrixFunction.h"
-#include "RlHkyRateMatrixFunction.h"
-#include "RlJcRateMatrixFunction.h"
-#include "RlJonesRateMatrixFunction.h"
-#include "RlMtRevRateMatrixFunction.h"
-#include "RlMtMamRateMatrixFunction.h"
-#include "RlRtRevRateMatrixFunction.h"
-#include "RlVtRateMatrixFunction.h"
-#include "RlWagRateMatrixFunction.h"
+#include "Func_hky.h"
+#include "Func_jc.h"
+#include "Func_jones.h"
+#include "Func_mtRev.h"
+#include "Func_mtMam.h"
+#include "Func_rtRev.h"
+#include "Func_vt.h"
+#include "Func_wag.h"
 
 
 /* Inference functions (in folder "functions/inference") */
@@ -665,33 +665,33 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "rateMultiplierPhyloFunction", new Func_phyloRateMultiplier()      );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
-        addFunction( "blosum62", new Blosum62RateMatrixFunction() );
-        addFunction( "cpRev",    new CpRevRateMatrixFunction()    );
-        addFunction( "dayhoff",  new DayhoffRateMatrixFunction()  );
-        addFunction( "f81",      new F81RateMatrixFunction() );
-        addFunction( "gtr",      new Func_gtr() );
-        addFunction( "hky",      new HkyRateMatrixFunction() );
-        addFunction( "jc",       new JcRateMatrixFunction() );
-        addFunction( "jones",    new JonesRateMatrixFunction()    );
-        addFunction( "mtMam",    new MtMamRateMatrixFunction()    );
-        addFunction( "mtRev",    new MtRevRateMatrixFunction()    );
-        addFunction( "rtRev",    new RtRevRateMatrixFunction()    );
-        addFunction( "vt",       new VtRateMatrixFunction()       );
-        addFunction( "wag",      new WagRateMatrixFunction()      );
+        addFunction( "blosum62", new Func_blosum62());
+        addFunction( "cpRev",    new Func_cpRev()   );
+        addFunction( "dayhoff",  new Func_dayhoff() );
+        addFunction( "f81",      new Func_f81()     );
+        addFunction( "gtr",      new Func_gtr()     );
+        addFunction( "hky",      new Func_hky()     );
+        addFunction( "jc",       new Func_jc()      );
+        addFunction( "jones",    new Func_jones()   );
+        addFunction( "mtMam",    new Func_mtMam()   );
+        addFunction( "mtRev",    new Func_mtRev()   );
+        addFunction( "rtRev",    new Func_rtRev()   );
+        addFunction( "vt",       new Func_vt()      );
+        addFunction( "wag",      new Func_wag()     );
         
         // nonstandard names (for backwards compatibility)
-        addFunction( "Blosum62", new Blosum62RateMatrixFunction() );
-        addFunction( "CpRev",    new CpRevRateMatrixFunction()    );
-        addFunction( "Dayhoff",  new DayhoffRateMatrixFunction()  );
-        addFunction( "F81",      new F81RateMatrixFunction() );
-        addFunction( "HKY",      new HkyRateMatrixFunction() );
-        addFunction( "JC",       new JcRateMatrixFunction() );
-        addFunction( "Jones",    new JonesRateMatrixFunction()    );
-        addFunction( "MtMam",    new MtMamRateMatrixFunction()    );
-        addFunction( "MtRev",    new MtRevRateMatrixFunction()    );
-        addFunction( "RtRev",    new RtRevRateMatrixFunction()    );
-        addFunction( "VT",       new VtRateMatrixFunction()       );
-        addFunction( "WAG",      new WagRateMatrixFunction()      );
+        addFunction( "Blosum62", new Func_blosum62());
+        addFunction( "CpRev",    new Func_cpRev()   );
+        addFunction( "Dayhoff",  new Func_dayhoff() );
+        addFunction( "F81",      new Func_f81()     );
+        addFunction( "HKY",      new Func_hky()     );
+        addFunction( "JC",       new Func_jc()      );
+        addFunction( "Jones",    new Func_jones()   );
+        addFunction( "MtMam",    new Func_mtMam()   );
+        addFunction( "MtRev",    new Func_mtRev()   );
+        addFunction( "RtRev",    new Func_rtRev()   );
+        addFunction( "VT",       new Func_vt()      );
+        addFunction( "WAG",      new Func_wag()     );
 
 
         /* Inference functions (in folder "functions/inference") */

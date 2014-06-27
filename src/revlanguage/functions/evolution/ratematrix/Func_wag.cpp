@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_wag.h"
 #include "Natural.h"
-#include "RlJonesRateMatrixFunction.h"
-#include "RateMatrix_Jones.h"
+#include "RateMatrix_Wag.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-JonesRateMatrixFunction::JonesRateMatrixFunction( void ) : Function( ) {
+Func_wag::Func_wag( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-JonesRateMatrixFunction* JonesRateMatrixFunction::clone( void ) const {
+Func_wag* Func_wag::clone( void ) const {
     
-    return new JonesRateMatrixFunction( *this );
+    return new Func_wag( *this );
 }
 
 
-RevObject* JonesRateMatrixFunction::execute() {
+RevObject* Func_wag::execute() {
     
-
-    RevBayesCore::RateMatrix_Jones *rmj = new RevBayesCore::RateMatrix_Jones();
+    
+    RevBayesCore::RateMatrix_Wag *rmj = new RevBayesCore::RateMatrix_Wag();
     RateMatrix* value = new RateMatrix( rmj );
     
     return value;
@@ -42,7 +42,7 @@ RevObject* JonesRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& JonesRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_wag::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,15 +50,15 @@ const ArgumentRules& JonesRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& JonesRateMatrixFunction::getClassName(void) { 
+const std::string& Func_wag::getClassName(void) { 
     
-    static std::string rbClassName = "Func_jones";
+    static std::string rbClassName = "Func_wag";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& JonesRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_wag::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& JonesRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& JonesRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_wag::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& JonesRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& JonesRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_wag::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
