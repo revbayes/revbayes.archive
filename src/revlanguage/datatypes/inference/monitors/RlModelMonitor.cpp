@@ -3,7 +3,7 @@
 #include "ConstantNode.h"
 #include "Model.h"
 #include "ModelMonitor.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
 #include "RlModelMonitor.h"

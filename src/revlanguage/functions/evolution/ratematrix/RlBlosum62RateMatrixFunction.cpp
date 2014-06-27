@@ -31,7 +31,7 @@ Blosum62RateMatrixFunction* Blosum62RateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* Blosum62RateMatrixFunction::execute() {
+RevObject* Blosum62RateMatrixFunction::execute() {
     
     
     RevBayesCore::RateMatrix_Blosum62 *rmj = new RevBayesCore::RateMatrix_Blosum62();

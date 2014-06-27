@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ContinuousStochasticNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"

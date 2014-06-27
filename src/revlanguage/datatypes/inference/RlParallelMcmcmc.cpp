@@ -13,7 +13,7 @@
 #include "Model.h"
 #include "OptionRule.h"
 #include "ParallelMcmcmc.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
@@ -27,12 +27,12 @@
 
 using namespace RevLanguage;
 
-ParallelMcmcmc::ParallelMcmcmc() : RlControlVariableWrapper<RevBayesCore::ParallelMcmcmc>() {
+ParallelMcmcmc::ParallelMcmcmc() : WorkspaceObject<RevBayesCore::ParallelMcmcmc>() {
     
 }
 
 
-ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : RlControlVariableWrapper<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
+ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : WorkspaceObject<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
     
 }
 
@@ -71,7 +71,7 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
 
     
     if (name == "run")
@@ -98,7 +98,7 @@ RbLanguageObject* ParallelMcmcmc::executeMethod(std::string const &name, const s
         return NULL;
     }
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -113,7 +113,7 @@ const std::string& ParallelMcmcmc::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -171,7 +171,7 @@ const MethodTable& ParallelMcmcmc::getMethods(void) const {
         methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -232,6 +232,6 @@ void ParallelMcmcmc::setConstMemberVariable(const std::string& name, const RbPtr
         swapInterval = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

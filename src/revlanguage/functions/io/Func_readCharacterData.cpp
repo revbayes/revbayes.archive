@@ -34,7 +34,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readCharacterData::execute( void ) {
+RevObject* Func_readCharacterData::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
@@ -64,7 +64,7 @@ RbLanguageObject* Func_readCharacterData::execute( void ) {
     reader.clearWarnings();
     
     // the return value
-    VectorRlPointer<RbLanguageObject> *m = new VectorRlPointer<RbLanguageObject>();
+    VectorRlPointer<RevObject> *m = new VectorRlPointer<RevObject>();
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
@@ -263,7 +263,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRlPointer<RbLanguageObject>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = VectorRlPointer<RevObject>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

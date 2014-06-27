@@ -358,7 +358,7 @@
         }
     
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
     if ( dv == RevLanguage::RbNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -368,14 +368,14 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *>( &dv );
+    const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *>( &dv );
 
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[i];
+            const RevLanguage::RevObject& theDagNode = (*dnc)[i];
             const RevLanguage::AbstractCharacterData *rlan = dynamic_cast<const RevLanguage::AbstractCharacterData *>( &(theDagNode) );
             RbData* newMatrix = NULL;
             

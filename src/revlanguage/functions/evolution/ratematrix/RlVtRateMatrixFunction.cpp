@@ -31,7 +31,7 @@ VtRateMatrixFunction* VtRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* VtRateMatrixFunction::execute() {
+RevObject* VtRateMatrixFunction::execute() {
     
     
     RevBayesCore::RateMatrix_Vt *rmj = new RevBayesCore::RateMatrix_Vt();

@@ -3,7 +3,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "FileMonitor.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlFileMonitor.h"
 #include "RlString.h"
@@ -83,7 +83,7 @@ const MemberRules& FileMonitor::getMemberRules(void) const {
         filemonitorMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("chainIdx", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("chainHeat", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -140,6 +140,6 @@ void FileMonitor::setConstMemberVariable(const std::string& name, const RbPtr<co
         append = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

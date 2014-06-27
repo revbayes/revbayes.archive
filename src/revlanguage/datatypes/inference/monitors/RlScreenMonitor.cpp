@@ -2,7 +2,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlScreenMonitor.h"
 #include "RlString.h"
@@ -69,7 +69,7 @@ const MemberRules& ScreenMonitor::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        filemonitorMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
         filemonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
@@ -121,6 +121,6 @@ void ScreenMonitor::setConstMemberVariable(const std::string& name, const RbPtr<
         likelihood = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

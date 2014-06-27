@@ -31,7 +31,7 @@ DayhoffRateMatrixFunction* DayhoffRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* DayhoffRateMatrixFunction::execute() {
+RevObject* DayhoffRateMatrixFunction::execute() {
     
     
     RevBayesCore::RateMatrix_Dayhoff *rmj = new RevBayesCore::RateMatrix_Dayhoff();

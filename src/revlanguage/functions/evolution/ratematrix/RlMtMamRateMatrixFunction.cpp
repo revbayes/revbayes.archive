@@ -31,7 +31,7 @@ MtMamRateMatrixFunction* MtMamRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* MtMamRateMatrixFunction::execute() {
+RevObject* MtMamRateMatrixFunction::execute() {
     
     
     RevBayesCore::RateMatrix_MtMam *rmj = new RevBayesCore::RateMatrix_MtMam();

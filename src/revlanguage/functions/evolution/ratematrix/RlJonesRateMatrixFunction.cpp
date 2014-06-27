@@ -31,7 +31,7 @@ JonesRateMatrixFunction* JonesRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* JonesRateMatrixFunction::execute() {
+RevObject* JonesRateMatrixFunction::execute() {
     
 
     RevBayesCore::RateMatrix_Jones *rmj = new RevBayesCore::RateMatrix_Jones();

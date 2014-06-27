@@ -25,12 +25,12 @@ using namespace RevLanguage;
 // Declarations
 std::ostream& operator<<(std::ostream& o, const RbNullObject& x);
 
-RbNullObject::RbNullObject(void) : RbLanguageObject() {
+RbNullObject::RbNullObject(void) : RevObject() {
     
 }
 
 
-RbNullObject::RbNullObject(const RbNullObject& n) : RbLanguageObject(n) {
+RbNullObject::RbNullObject(const RbNullObject& n) : RevObject(n) {
     
 }
 
@@ -50,7 +50,7 @@ bool RbNullObject::operator==(const RbNullObject& obj) {
 }
 
 
-bool RbNullObject::operator==(const RbLanguageObject& obj) {
+bool RbNullObject::operator==(const RevObject& obj) {
     return obj.isTypeSpec( getClassTypeSpec() );
 }
 
@@ -66,7 +66,7 @@ const std::string& RbNullObject::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RbNullObject::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

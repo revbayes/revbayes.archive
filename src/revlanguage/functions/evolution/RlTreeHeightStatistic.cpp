@@ -31,7 +31,7 @@ TreeHeightStatistic* TreeHeightStatistic::clone( void ) const {
 }
 
 
-RbLanguageObject* TreeHeightStatistic::execute() {
+RevObject* TreeHeightStatistic::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TreeHeightStatistic* f = new RevBayesCore::TreeHeightStatistic( tau );

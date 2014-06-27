@@ -163,7 +163,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         // Now loop over statements inside the for loop
         while ( forLoop->isFinished() ) {
             
-            RbLanguageObject* indexValue = forLoop->getNextLoopState();
+            RevObject* indexValue = forLoop->getNextLoopState();
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
 
                 SyntaxElement* theSyntaxElement = *i;
@@ -352,7 +352,7 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
     }
     else {
         
-        RbLanguageObject *tempObject = temp->getValue().convertTo( RlBoolean::getClassTypeSpec() );
+        RevObject *tempObject = temp->getValue().convertTo( RlBoolean::getClassTypeSpec() );
         RlBoolean* tempBool = static_cast<RlBoolean*>( tempObject );
         bool     retValue = tempBool->getValue();
         
@@ -425,7 +425,7 @@ void SyntaxStatement::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the elements.
  */
-void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     // the first set of statements
     if ( statements1 != NULL ) {

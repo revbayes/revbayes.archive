@@ -29,7 +29,7 @@
 namespace RevLanguage {
 
 class ArgumentRule;
-class RbLanguageObject;
+class RevObject;
 
 class MemberFunction :  public Function {
     
@@ -43,10 +43,10 @@ public:
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     
     // Regular functions   
-    virtual RbLanguageObject*           execute(void);                                                              //!< Execute function
+    virtual RevObject*                  execute(void);                                                              //!< Execute function
     const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
-//    void                                setMemberObject(RbLanguageObject* obj);                                     //!< Set the member object to which this function belongs
+//    void                                setMemberObject(RevObject* obj);                                            //!< Set the member object to which this function belongs
     void                                setMemberObject(const RbPtr<Variable> &obj);                                //!< Set the member object to which this function belongs
     void                                setMethodName(const std::string& name);                                     //!< Set name of member method
         
@@ -54,7 +54,7 @@ public:
 protected:
     const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
     std::string                         funcName;                                                                   //!< Name of member method
-//    RbLanguageObject*                   object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
+//    RevObject*                          object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
     RbPtr<Variable>                     object;
     const TypeSpec                      returnType;                                                                  //!< Return type (different for different member functions)
     

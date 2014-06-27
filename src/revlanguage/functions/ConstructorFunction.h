@@ -29,7 +29,7 @@ namespace RevLanguage {
 class ConstructorFunction :  public Function {
     
 public:
-    ConstructorFunction(RbLanguageObject *obj);                                                                             //!< Object constructor
+    ConstructorFunction(RevObject *obj);                                                                             //!< Object constructor
     ConstructorFunction(const ConstructorFunction& obj);                                                                    //!< Copy constructor
     
     // overloaded operators
@@ -42,14 +42,14 @@ public:
     const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
     
     // Regular functions
-    RbLanguageObject*                       execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+    RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
     const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     
 protected:
     
     const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
-    RbLanguageObject*                       templateObject;                                                                 //!< The template object
+    RevObject*                              templateObject;                                                                 //!< The template object
     
 };
     

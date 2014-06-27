@@ -32,7 +32,7 @@ Func_powermix* Func_powermix::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_powermix::execute() {
+RevObject* Func_powermix::execute() {
     
     std::vector<const RevBayesCore::TypedDagNode< std::vector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {

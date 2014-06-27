@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RbLanguageObject*           execute(void);                                              //!< Execute function
+        RevObject*                  execute(void);                                              //!< Execute function
         
     };
     
@@ -73,7 +73,7 @@ RevLanguage::Func__eq<leftValType,rightValType>* RevLanguage::Func__eq<leftValTy
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename leftValType, typename rightValType>
-RevLanguage::RbLanguageObject* RevLanguage::Func__eq<leftValType,rightValType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func__eq<leftValType,rightValType>::execute( void ) {
         
     const RevBayesCore::TypedDagNode<typename leftValType::valueType>* leftVal = static_cast<const leftValType &>( args[0].getVariable()->getValue() ).getValueNode();
     const RevBayesCore::TypedDagNode<typename rightValType::valueType>* rightVal = static_cast<const rightValType &>( args[1].getVariable()->getValue() ).getValueNode();

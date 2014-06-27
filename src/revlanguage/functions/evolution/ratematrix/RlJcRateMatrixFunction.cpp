@@ -32,7 +32,7 @@ JcRateMatrixFunction* JcRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* JcRateMatrixFunction::execute() {
+RevObject* JcRateMatrixFunction::execute() {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getValue() ).getValue();
     RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );

@@ -25,17 +25,17 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealSymmetricMatrix::RealSymmetricMatrix(void) : RlModelVariableWrapper<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(1) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(1) ) {
 }
 
 
 /* Construct from double */
-RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> * mat ) : RlModelVariableWrapper<RevBayesCore::PrecisionMatrix>( mat ) {
+RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> * mat ) : ModelObject<RevBayesCore::PrecisionMatrix>( mat ) {
 }
 
 
 /* Copy Construct */
-RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : RlModelVariableWrapper<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(from.getValue().getDim()) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : ModelObject<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(from.getValue().getDim()) ) {
     
 }
 
@@ -47,9 +47,9 @@ RealSymmetricMatrix* RealSymmetricMatrix::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* RealSymmetricMatrix::convertTo( const TypeSpec& type ) const {
+RevObject* RealSymmetricMatrix::convertTo( const TypeSpec& type ) const {
     
-    return RbLanguageObject::convertTo( type );
+    return RevObject::convertTo( type );
 }
 
 /** Get class name of object */
@@ -63,7 +63,7 @@ const std::string& RealSymmetricMatrix::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RealSymmetricMatrix::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -81,7 +81,7 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
 /*
 bool RealSymmetricMatrix::isConvertibleTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 */
 

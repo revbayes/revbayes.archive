@@ -19,15 +19,15 @@
 #define RlTrace_H
 
 #include "Trace.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Trace : public RlControlVariableWrapper<RevBayesCore::Trace> {
+    class Trace : public WorkspaceObject<RevBayesCore::Trace> {
         
     public:
         
@@ -47,7 +47,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         

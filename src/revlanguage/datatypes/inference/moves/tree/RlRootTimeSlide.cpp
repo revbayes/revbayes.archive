@@ -8,7 +8,7 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlBoolean.h"

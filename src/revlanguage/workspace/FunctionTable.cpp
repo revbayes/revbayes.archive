@@ -126,10 +126,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RbLanguageObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+RevObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     Function&         theFunction = findFunction(name, args);
-    RbLanguageObject*   theValue    = theFunction.execute();
+    RevObject*   theValue    = theFunction.execute();
 
     theFunction.clear();
 

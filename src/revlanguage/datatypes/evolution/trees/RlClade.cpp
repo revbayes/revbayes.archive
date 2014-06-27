@@ -29,29 +29,29 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Clade::Clade(void) : RlModelVariableWrapper<RevBayesCore::Clade>() {
+Clade::Clade(void) : ModelObject<RevBayesCore::Clade>() {
     
 }
 
 /** Construct from core Clade */
-Clade::Clade(RevBayesCore::Clade *c) : RlModelVariableWrapper<RevBayesCore::Clade>( c ) {
+Clade::Clade(RevBayesCore::Clade *c) : ModelObject<RevBayesCore::Clade>( c ) {
     
 }
 
 /** Construct from core Clade */
-Clade::Clade(const RevBayesCore::Clade &t) : RlModelVariableWrapper<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) ) {
+Clade::Clade(const RevBayesCore::Clade &t) : ModelObject<RevBayesCore::Clade>( new RevBayesCore::Clade( t ) ) {
     
 }
 
 /** Construct from DAG node */
-Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : RlModelVariableWrapper<RevBayesCore::Clade>( n ) {
+Clade::Clade(RevBayesCore::TypedDagNode<RevBayesCore::Clade> *n) : ModelObject<RevBayesCore::Clade>( n ) {
     
 }
 
 
 
 /** Construct */
-Clade::Clade(const Clade &t) : RlModelVariableWrapper<RevBayesCore::Clade>( t ) {
+Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t ) {
     
 }
 
@@ -87,7 +87,7 @@ void Clade::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RbLanguageObject* Clade::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* Clade::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
 //    if (name == "nnodes") {
 //        size_t n = this->value->getValue().getNumberOfNodes();
@@ -98,7 +98,7 @@ RevLanguage::RbLanguageObject* Clade::executeMethod(std::string const &name, con
 //        return new Vector<RlString>( n );
 //    } 
     
-    return RlModelVariableWrapper<RevBayesCore::Clade>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::Clade>::executeMethod( name, args );
 }
 
 
@@ -131,7 +131,7 @@ const std::string& Clade::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Clade::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -152,7 +152,7 @@ const RevLanguage::MethodTable& Clade::getMethods(void) const {
 //        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -178,7 +178,7 @@ void Clade::setConstMemberVariable(const std::string& name, const RbPtr<const Va
         names.push_back( var );
     } 
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }
 

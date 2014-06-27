@@ -134,7 +134,7 @@ RbPtr<Variable> SyntaxDivisionAssignment::evaluateContent( Environment& env )
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in division assignment" );
     
-    const RbLanguageObject& lhs_value = theVariable->getValue();
+    const RevObject& lhs_value = theVariable->getValue();
     
     
     // Calculate the value of the rhs expression
@@ -143,9 +143,9 @@ RbPtr<Variable> SyntaxDivisionAssignment::evaluateContent( Environment& env )
         throw RbException( "Invalid NULL variable returned by rhs expression in division assignment" );
     
     // fill the slot with the new variable
-    const RbLanguageObject& rhs_value = rhs->getValue();
+    const RevObject& rhs_value = rhs->getValue();
     
-    RbLanguageObject *newValue = lhs_value.divide( rhs_value );
+    RevObject *newValue = lhs_value.divide( rhs_value );
     
     // set the value of the variable
     theVariable->setValue( newValue );
@@ -191,7 +191,7 @@ void SyntaxDivisionAssignment::printValue(std::ostream& o) const
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxDivisionAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxDivisionAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);
 }

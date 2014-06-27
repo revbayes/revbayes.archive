@@ -93,7 +93,7 @@ const TypeSpec& ExponentialBranchTree::getTypeSpec( void ) const {
 }
 
 
-RbLanguageObject* ExponentialBranchTree::execute() {
+RevObject* ExponentialBranchTree::execute() {
     
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( args[0].getVariable()->getValue() ).getValueNode();

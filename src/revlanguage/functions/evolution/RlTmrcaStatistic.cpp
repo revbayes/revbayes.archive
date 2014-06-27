@@ -33,7 +33,7 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const {
 }
 
 
-RbLanguageObject* TmrcaStatistic::execute() {
+RevObject* TmrcaStatistic::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getValue() ).getValueNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getValue() ).getValue();

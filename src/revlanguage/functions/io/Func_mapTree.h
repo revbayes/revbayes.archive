@@ -36,7 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RbLanguageObject*               execute(void);                                                          //!< Execute function
+        RevObject*                      execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         
@@ -80,7 +80,7 @@ RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone(
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
     
     
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getValue() );

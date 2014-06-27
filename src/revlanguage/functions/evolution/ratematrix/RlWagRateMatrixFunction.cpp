@@ -31,7 +31,7 @@ WagRateMatrixFunction* WagRateMatrixFunction::clone( void ) const {
 }
 
 
-RbLanguageObject* WagRateMatrixFunction::execute() {
+RevObject* WagRateMatrixFunction::execute() {
     
     
     RevBayesCore::RateMatrix_Wag *rmj = new RevBayesCore::RateMatrix_Wag();

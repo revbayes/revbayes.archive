@@ -32,7 +32,7 @@ Func_simplex* Func_simplex::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RbLanguageObject* Func_simplex::execute( void ) {
+RevObject* Func_simplex::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<double>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {

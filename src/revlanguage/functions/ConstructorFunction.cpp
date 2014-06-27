@@ -18,7 +18,7 @@
 
 #include "ArgumentRule.h"
 #include "ConstructorFunction.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -26,7 +26,7 @@
 using namespace RevLanguage;
 
 /** Constructor */
-ConstructorFunction::ConstructorFunction( RbLanguageObject *obj ) : Function(), templateObject(obj) {
+ConstructorFunction::ConstructorFunction( RevObject *obj ) : Function(), templateObject(obj) {
     
     // Hack: we know that we will not own the argRules.
     argRules = &templateObject->getMemberRules();
@@ -66,9 +66,9 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbLanguageObject* ConstructorFunction::execute( void ) {
+RevObject* ConstructorFunction::execute( void ) {
     
-    RbLanguageObject* copyObject = templateObject->clone();
+    RevObject* copyObject = templateObject->clone();
     
     for ( size_t i = 0; i < args.size(); i++ ) {
         

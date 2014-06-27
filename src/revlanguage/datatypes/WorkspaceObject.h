@@ -1,10 +1,12 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage control variable wrapper, which is
- * the RevLanguage abstract base class for all language objects wrapping core datatypes that are used
- * to control the analysis, such as monitors, moves, etc.
+ * This file contains the declaration of WorkspaceObject, which is the
+ * the Rev abstract base class for all language objects wrapping core
+ * datatypes that are used to control the analysis and manipulate model
+ * objects, such as monitors, moves, models. All workspace objects have
+ * in common that they cannot be included in model DAGs.
  *
- * @brief Declaration of RlControlVariableWrapper
+ * @brief Declaration of WorkspaceObject
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-03 17:51:49 +0200 (Fri, 03 Aug 2012) $
@@ -12,30 +14,30 @@
  * @license GPL version 3
  * @since Version 1.0, 2012-08-06
  *
- * $Id: RbLanguageObject.h 1734 2012-08-03 15:51:49Z hoehna $
+ * $Id: RevObject.h 1734 2012-08-03 15:51:49Z hoehna $
  */
 
-#ifndef RlControlVariableWrapper_H
-#define RlControlVariableWrapper_H
+#ifndef WorkspaceObject_H
+#define WorkspaceObject_H
 
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "TypedDagNode.h"
 
 namespace RevLanguage {
     
     template <typename rbType>
-    class RlControlVariableWrapper : public RbLanguageObject {
+    class WorkspaceObject : public RevObject {
         
     public:
-        virtual                            ~RlControlVariableWrapper(void);                                         //!< Virtual destructor
+        virtual                            ~WorkspaceObject(void);                                                  //!< Virtual destructor
         
-        RlControlVariableWrapper&           operator=(const RlControlVariableWrapper& x);                           //!< Assignment operator    
+        WorkspaceObject&                    operator=(const WorkspaceObject& x);                                    //!< Assignment operator
         
         // the value type definition
         typedef rbType valueType;
         
         // Basic utility functions you have to override (also getClassTypeSpec()!)
-        virtual RlControlVariableWrapper*   clone(void) const = 0;                                                  //!< Clone object
+        virtual WorkspaceObject*            clone(void) const = 0;                                                  //!< Clone object
         virtual void                        constructInternalObject(void) = 0;                                      //!< We construct the a new internal object.
         static const std::string&           getClassName(void);                                                     //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -49,9 +51,9 @@ namespace RevLanguage {
         void                                setValue(const rbType& x);
         
     protected:
-        RlControlVariableWrapper(void);
-        RlControlVariableWrapper(rbType *v);
-        RlControlVariableWrapper(const RlControlVariableWrapper &v);
+        WorkspaceObject(void);
+        WorkspaceObject(rbType *v);
+        WorkspaceObject(const WorkspaceObject &v);
         
         rbType*                             value;
     };
@@ -63,21 +65,21 @@ namespace RevLanguage {
 #include "TypeSpec.h"
 
 template <typename rbType>
-RevLanguage::RlControlVariableWrapper<rbType>::RlControlVariableWrapper() : RbLanguageObject(), value( NULL ) {
+RevLanguage::WorkspaceObject<rbType>::WorkspaceObject() : RevObject(), value( NULL ) {
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::RlControlVariableWrapper<rbType>::RlControlVariableWrapper(rbType *v) : RbLanguageObject(), value( v ) {
+RevLanguage::WorkspaceObject<rbType>::WorkspaceObject(rbType *v) : RevObject(), value( v ) {
     
 }
 
 
 
 template <typename rbType>
-RevLanguage::RlControlVariableWrapper<rbType>::RlControlVariableWrapper(const RlControlVariableWrapper &v) : RbLanguageObject( v ), value( NULL ) {
+RevLanguage::WorkspaceObject<rbType>::WorkspaceObject(const WorkspaceObject &v) : RevObject( v ), value( NULL ) {
     
     if ( v.value != NULL )
     {
@@ -88,14 +90,14 @@ RevLanguage::RlControlVariableWrapper<rbType>::RlControlVariableWrapper(const Rl
 
 
 template <typename rbType>
-RevLanguage::RlControlVariableWrapper<rbType>::~RlControlVariableWrapper() {
+RevLanguage::WorkspaceObject<rbType>::~WorkspaceObject() {
     
     delete value;
 }
 
 
 template <typename rbType>
-RevLanguage::RlControlVariableWrapper<rbType>& RevLanguage::RlControlVariableWrapper<rbType>::operator=(const RlControlVariableWrapper &v) {
+RevLanguage::WorkspaceObject<rbType>& RevLanguage::WorkspaceObject<rbType>::operator=(const WorkspaceObject &v) {
     
     if ( this != &v ) {
         // free the memory
@@ -113,7 +115,7 @@ RevLanguage::RlControlVariableWrapper<rbType>& RevLanguage::RlControlVariableWra
 
 
 template <typename rbType>
-const std::string& RevLanguage::RlControlVariableWrapper<rbType>::getClassName(void) { 
+const std::string& RevLanguage::WorkspaceObject<rbType>::getClassName(void) { 
     
     static std::string className = "Control variable";
     
@@ -123,16 +125,16 @@ const std::string& RevLanguage::RlControlVariableWrapper<rbType>::getClassName(v
 
 /** Get class type spec describing type of object */
 template <typename rlType>
-const RevLanguage::TypeSpec& RevLanguage::RlControlVariableWrapper<rlType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::WorkspaceObject<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
 
 
 template <typename rbType>
-const rbType& RevLanguage::RlControlVariableWrapper<rbType>::getValue( void ) const {
+const rbType& RevLanguage::WorkspaceObject<rbType>::getValue( void ) const {
     
     return *value;
 }
@@ -140,7 +142,7 @@ const rbType& RevLanguage::RlControlVariableWrapper<rbType>::getValue( void ) co
 
 
 template <typename rbType>
-void RevLanguage::RlControlVariableWrapper<rbType>::setValue(const rbType &x) {
+void RevLanguage::WorkspaceObject<rbType>::setValue(const rbType &x) {
     
     // free memory
     delete value;

@@ -42,11 +42,11 @@ public:
     const std::string&                      getLabel(void) const { return label; }                                  //!< Get the label of the slot
     //    const Variable&                         getVariable(void) const;                                                //!< Get the variable
     //    Variable&                               getVariable(void);                                                      //!< Get the variable (non-const to return non-const variable)
-    const RbLanguageObject&                 getValue(void) const;                                                   //!< Get the value of the variable
-    RbLanguageObject&                       getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
+    const RevObject&                 getValue(void) const;                                                   //!< Get the value of the variable
+    RevObject&                       getValue(void);                                                         //!< Get the value of the variable (non-const to return non-const value)
     RbPtr<const Variable>                   getVariable(const std::vector<int> &indices) const;                     //!< Get the variable
     RbPtr<Variable>                         getVariable(const std::vector<int> &indices);                           //!< Get the variable (non-const to return non-const variable)
-    virtual bool                            isValidVariable(const RbLanguageObject& newVariable ) const;            //!< Is newVariable valid for the slot?
+    virtual bool                            isValidVariable(const RevObject& newVariable ) const;            //!< Is newVariable valid for the slot?
     void                                    printValue(std::ostream& o) const;                                      //!< Print value of slot
     void                                    setLabel(const std::string l) { label = l; }
     void                                    setVariable(const RbPtr<Variable>& var);                                //!< Set a slot with a variable

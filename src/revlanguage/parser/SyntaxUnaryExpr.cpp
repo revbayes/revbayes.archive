@@ -86,7 +86,7 @@ RbPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
     Function* func = Workspace::globalWorkspace().getFunction(funcName, arg).clone();
     func->processArguments( arg );
     
-    RbLanguageObject *funcReturnValue = func->execute();
+    RevObject *funcReturnValue = func->execute();
     delete func;
 
     // Return new function node
@@ -120,7 +120,7 @@ void SyntaxUnaryExpr::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element.
  */
-void SyntaxUnaryExpr::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxUnaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     // the expression itself
     expression->replaceVariableWithConstant(name, c);

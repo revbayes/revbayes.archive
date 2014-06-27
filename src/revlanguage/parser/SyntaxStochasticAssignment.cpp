@@ -115,7 +115,7 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
     theVariable = expression->evaluateContent(env);
         
     // Get distribution, which should be the return value of the rhs function
-    const RbLanguageObject& exprValue = theVariable->getValue();
+    const RevObject& exprValue = theVariable->getValue();
     if ( !exprValue.isTypeSpec( Distribution::getClassTypeSpec() ) ) 
     {
         throw RbException( "Expression on the right-hand-side of '~' did not return a distribution object." );
@@ -123,7 +123,7 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
     const Distribution &dist = dynamic_cast<const Distribution &>( exprValue );
         
     // Create new stochastic node
-    RbLanguageObject* rv = dist.createRandomVariable();
+    RevObject* rv = dist.createRandomVariable();
         
     // fill the slot with the new variable
     theSlot->setValue( rv );
@@ -165,7 +165,7 @@ void SyntaxStochasticAssignment::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxStochasticAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxStochasticAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);

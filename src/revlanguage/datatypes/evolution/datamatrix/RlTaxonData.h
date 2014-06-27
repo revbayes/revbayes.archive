@@ -2,7 +2,7 @@
 #define RlDiscreteTaxonData_H
 
 #include "DiscreteTaxonData.h"
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 
 #include <set>
 #include <string>
@@ -13,7 +13,7 @@ namespace RevLanguage {
     
     
     template <class rlCharType>
-    class DiscreteTaxonData : public RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> > {
+    class DiscreteTaxonData : public ModelObject<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> > {
         
     public:
         DiscreteTaxonData(void);                                                                                                                    //!< Constructor requires character type
@@ -29,7 +29,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
                 
     };
     
@@ -44,13 +44,13 @@ namespace RevLanguage {
 
 
 template <class rlCharType>
-RevLanguage::DiscreteTaxonData<rlCharType>::DiscreteTaxonData(void) : RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> >() {
+RevLanguage::DiscreteTaxonData<rlCharType>::DiscreteTaxonData(void) : ModelObject<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> >() {
     
 }
 
 
 template <class rlCharType>
-RevLanguage::DiscreteTaxonData<rlCharType>::DiscreteTaxonData( RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v) : RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> >( v ) {
+RevLanguage::DiscreteTaxonData<rlCharType>::DiscreteTaxonData( RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v) : ModelObject<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> >( v ) {
     
 }
 
@@ -64,7 +64,7 @@ RevLanguage::DiscreteTaxonData<charType>* RevLanguage::DiscreteTaxonData<charTyp
 
 /* Map calls to member methods */
 template <typename charType>
-RevLanguage::RbLanguageObject* RevLanguage::DiscreteTaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::DiscreteTaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if ( name == "[]") 
     {
@@ -76,11 +76,11 @@ RevLanguage::RbLanguageObject* RevLanguage::DiscreteTaxonData<charType>::execute
             throw RbException("Index out of bounds in []");
         }
             
-        RbLanguageObject* element = new charType( this->value->getValue().getElement( size_t(index.getValue()) - 1) );
+        RevObject* element = new charType( this->value->getValue().getElement( size_t(index.getValue()) - 1) );
         return element;
     } 
     
-    return RlModelVariableWrapper<RevBayesCore::DiscreteTaxonData<typename charType::valueType> >::executeMethod( name, args );
+    return ModelObject<RevBayesCore::DiscreteTaxonData<typename charType::valueType> >::executeMethod( name, args );
 }
 
 
@@ -97,7 +97,7 @@ const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassName(void) {
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -120,7 +120,7 @@ const RevLanguage::MethodTable& RevLanguage::DiscreteTaxonData<rlType>::getMetho
         
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     

@@ -25,17 +25,17 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealMatrix::RealMatrix(void) : RlModelVariableWrapper<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(1,1,0) ) {
+RealMatrix::RealMatrix(void) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(1,1,0) ) {
 }
 
 
 /* Construct from double */
-RealMatrix::RealMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : RlModelVariableWrapper<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(mat->getValue().getNumberOfRows(),mat->getValue().getNumberOfColumns(),0) ) {
+RealMatrix::RealMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(mat->getValue().getNumberOfRows(),mat->getValue().getNumberOfColumns(),0) ) {
 }
 
 
 /* Copy Construct */
-RealMatrix::RealMatrix(const RealMatrix& from) : RlModelVariableWrapper<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(from.getValue()) ) {
+RealMatrix::RealMatrix(const RealMatrix& from) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(from.getValue()) ) {
     
 }
 
@@ -47,9 +47,9 @@ RealMatrix* RealMatrix::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* RealMatrix::convertTo( const TypeSpec& type ) const {
+RevObject* RealMatrix::convertTo( const TypeSpec& type ) const {
     
-    return RbLanguageObject::convertTo( type );
+    return RevObject::convertTo( type );
 }
 
 /** Get class name of object */
@@ -63,7 +63,7 @@ const std::string& RealMatrix::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RealMatrix::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -80,7 +80,7 @@ const TypeSpec& RealMatrix::getTypeSpec( void ) const {
 /** Is convertible to type? */
 bool RealMatrix::isConvertibleTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 
 

@@ -9,13 +9,13 @@
 #include "DistributionFunctionCdf.h"
 
 #include "ArgumentRule.h"
+#include "CummulativeDistributionFunction.h"
 #include "DeterministicNode.h"
 #include "DistributionFunctionPdf.h"
 #include "Probability.h"
 #include "ProbabilityDensityFunction.h"
-#include "CummulativeDistributionFunction.h"
-#include "RbLanguageObject.h"
 #include "Real.h"
+#include "RevObject.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -97,7 +97,7 @@ DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RbLanguageObject* DistributionFunctionCdf::execute( void ) {
+RevObject* DistributionFunctionCdf::execute( void ) {
     
     RevBayesCore::ContinuousDistribution *d = NULL;
     

@@ -44,7 +44,7 @@ Func_type* Func_type::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_type::execute( void ) {
+RevObject* Func_type::execute( void ) {
     
     RlString* type = new RlString( args[0].getVariable()->getValue().getType() );
     
@@ -60,7 +60,7 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

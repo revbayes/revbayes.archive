@@ -19,15 +19,15 @@
 #define RlMove_H
 
 #include "Move.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Move : public RlControlVariableWrapper<RevBayesCore::Move> {
+    class Move : public WorkspaceObject<RevBayesCore::Move> {
         
     public:
         

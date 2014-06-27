@@ -40,7 +40,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RbLanguageObject*           execute(void);                                              //!< Execute function
+        RevObject*                  execute(void);                                              //!< Execute function
         
     };
     

@@ -58,11 +58,11 @@ namespace RevLanguage {
         void                                        makeConstantValue();                                                //!< Convert the stored variable to a constant variable (if applicable)
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                        setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
-        void                                        replaceVariable(RbLanguageObject *newVar);                          //!< Replace the internal DAG node
+        void                                        replaceVariable(RevObject *newVar);                          //!< Replace the internal DAG node
         
         // function you might want to overwrite
-        virtual RbLanguageObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-        virtual RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        virtual RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
         
         // Container functions you should not have to override
@@ -71,13 +71,13 @@ namespace RevLanguage {
         void                                        clear(void);                                                    //!< Clear
         iterator                                    end(void);                                                      //!< Iterator to the end of the Vector
         const_iterator                              end(void) const;                                                //!< Const-iterator to the end of the Vector
-        int                                         findIndex(const RbLanguageObject& x) const;                     //!< Find the index if the element being equal to that one
+        int                                         findIndex(const RevObject& x) const;                     //!< Find the index if the element being equal to that one
         void                                        pop_back(void);                                                 //!< Drop element at back
         void                                        pop_front(void);                                                //!< Drop element from front
         size_t                                      size(void) const;                                               //!< get the number of elements in the AbstractVector
         
         // Container functions you have to overwrite
-        virtual RbLanguageObject*                   getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        virtual RevObject*                   getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         virtual void                                sort(void);                                                 //!< sort the AbstractVector
         virtual void                                unique(void);                                               //!< removes consecutive duplicates
         

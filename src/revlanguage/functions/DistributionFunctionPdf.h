@@ -42,7 +42,7 @@ namespace RevLanguage {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RbLanguageObject*                       execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -60,7 +60,7 @@ namespace RevLanguage {
 #include "DistributionFunctionPdf.h"
 #include "Probability.h"
 #include "ProbabilityDensityFunction.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RlBoolean.h"
 #include "Real.h"
 #include "TypeSpec.h"
@@ -114,7 +114,7 @@ RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFuncti
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RbLanguageObject* RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     

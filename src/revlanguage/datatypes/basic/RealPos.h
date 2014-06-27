@@ -34,13 +34,13 @@ namespace RevLanguage {
         RealPos(int x);                                                             //!< Construct from int 
 
         // Basic operator functions
-        virtual RbLanguageObject*       add(const RbLanguageObject &rhs) const;     //!< Addition operator used for example in '+=' statements
+        virtual RevObject*       add(const RevObject &rhs) const;     //!< Addition operator used for example in '+=' statements
         RealPos*                        add(const Natural &rhs) const;              //!< Addition operator used for example in '+=' statements
         RealPos*                        add(const RealPos &rhs) const;              //!< Addition operator used for example in '+=' statements
-        virtual RbLanguageObject*       divide(const RbLanguageObject &rhs) const;  //!< Division operator used for example in '/=' statements
+        virtual RevObject*       divide(const RevObject &rhs) const;  //!< Division operator used for example in '/=' statements
         RealPos*                        divide(const Natural &rhs) const;           //!< Division operator used for example in '/=' statements
         RealPos*                        divide(const RealPos &rhs) const;           //!< Division operator used for example in '/=' statements
-        virtual RbLanguageObject*       multiply(const RbLanguageObject &rhs) const;//!< Multiplication operator used for example in '*=' statements
+        virtual RevObject*       multiply(const RevObject &rhs) const;//!< Multiplication operator used for example in '*=' statements
         RealPos*                        multiply(const Natural &rhs) const;         //!< Multiplication operator used for example in '*=' statements
         RealPos*                        multiply(const RealPos &rhs) const;         //!< Multiplication operator used for example in '*=' statements
 

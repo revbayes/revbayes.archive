@@ -31,7 +31,7 @@ Func_gtr* Func_gtr::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_gtr::execute() {
+RevObject* Func_gtr::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* er = static_cast<const Simplex &>( this->args[0].getVariable()->getValue() ).getValueNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getValue() ).getValueNode();

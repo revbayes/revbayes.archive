@@ -48,7 +48,7 @@ BurninEstimationConvergenceAssessmentFunction* BurninEstimationConvergenceAssess
 
 
 /** Execute function */
-RbLanguageObject* BurninEstimationConvergenceAssessmentFunction::execute( void ) {
+RevObject* BurninEstimationConvergenceAssessmentFunction::execute( void ) {
     
     bool converged = false;
     

@@ -16,14 +16,14 @@
 #include <iostream>
 #include <vector>
 
+#include "ModelObject.h"
 #include "PrecisionMatrix.h"
-#include "RlModelVariableWrapper.h"
 #include "TypedDagNode.h"
 
 
 namespace RevLanguage {
     
-    class RealSymmetricMatrix : public RlModelVariableWrapper<RevBayesCore::PrecisionMatrix>  {
+    class RealSymmetricMatrix : public ModelObject<RevBayesCore::PrecisionMatrix>  {
         
     public:
         
@@ -34,7 +34,7 @@ namespace RevLanguage {
         
         // the value type definition
         virtual RealSymmetricMatrix*    clone(void) const;                                                      //!< Clone object
-        virtual RbLanguageObject*       convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        virtual RevObject*       convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object

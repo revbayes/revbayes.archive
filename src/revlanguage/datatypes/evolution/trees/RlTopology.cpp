@@ -31,29 +31,29 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Topology::Topology(void) : RlModelVariableWrapper<RevBayesCore::Topology>() {
+Topology::Topology(void) : ModelObject<RevBayesCore::Topology>() {
     
 }
 
 /** Construct from core topology */
-Topology::Topology(RevBayesCore::Topology *t) : RlModelVariableWrapper<RevBayesCore::Topology>( t ) {
+Topology::Topology(RevBayesCore::Topology *t) : ModelObject<RevBayesCore::Topology>( t ) {
     
 }
 
 /** Construct from core topology */
-Topology::Topology(const RevBayesCore::Topology &t) : RlModelVariableWrapper<RevBayesCore::Topology>( new RevBayesCore::Topology( t ) ) {
+Topology::Topology(const RevBayesCore::Topology &t) : ModelObject<RevBayesCore::Topology>( new RevBayesCore::Topology( t ) ) {
     
 }
 
 /** Construct from DAG node */
-Topology::Topology(RevBayesCore::TypedDagNode<RevBayesCore::Topology> *n) : RlModelVariableWrapper<RevBayesCore::Topology>( n ) {
+Topology::Topology(RevBayesCore::TypedDagNode<RevBayesCore::Topology> *n) : ModelObject<RevBayesCore::Topology>( n ) {
     
 }
 
 
 
 /** Construct */
-Topology::Topology(const Topology &t) : RlModelVariableWrapper<RevBayesCore::Topology>( t ) {
+Topology::Topology(const Topology &t) : ModelObject<RevBayesCore::Topology>( t ) {
     
 }
 
@@ -66,7 +66,7 @@ Topology* Topology::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RbLanguageObject* Topology::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* Topology::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") {
         size_t n = this->value->getValue().getNumberOfNodes();
@@ -77,7 +77,7 @@ RevLanguage::RbLanguageObject* Topology::executeMethod(std::string const &name, 
         return new Vector<RlString>( n );
     } 
     
-    return RlModelVariableWrapper<RevBayesCore::Topology>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::Topology>::executeMethod( name, args );
 }
 
 
@@ -92,7 +92,7 @@ const std::string& Topology::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Topology::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -113,7 +113,7 @@ const RevLanguage::MethodTable& Topology::getMethods(void) const {
         methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     

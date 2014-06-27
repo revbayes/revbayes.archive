@@ -57,7 +57,7 @@ class SyntaxBinaryExpr : public SyntaxElement {
         // Regular functions
         RbPtr<Variable>             evaluateContent(Environment& env);                                              //!< Get semantic value
         bool                        isConstExpression(void) const;                                                  //!< Is the expression constant?
-        void                        replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         SyntaxElement*              leftOperand;                                                                    //!< The left operand

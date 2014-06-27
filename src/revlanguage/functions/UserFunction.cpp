@@ -126,7 +126,7 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject* UserFunction::execute( void ) {
+RevObject* UserFunction::execute( void ) {
     
     // For now, use the old way
     return executeCode();
@@ -139,7 +139,7 @@ RbLanguageObject* UserFunction::execute( void ) {
     if ( templateValueType == "" )
         return executeCode();
     
-    RbLanguageObject* retValue = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
+    RevObject* retValue = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
     
     /* Generate the required internal function object */
     if ( templateValueType == "double" )
@@ -148,7 +148,7 @@ RbLanguageObject* UserFunction::execute( void ) {
         RevBayesCore::TypedUserFunction<double>* f       = new RevBayesCore::TypedUserFunction<double>( this, args );
         RevBayesCore::DeterministicNode<double>* detNode = new RevBayesCore::DeterministicNode<double>("", f);
 
-        static_cast< RlModelVariableWrapper<double>* >( retValue )->setValueNode( detNode );
+        static_cast< ModelObject<double>* >( retValue )->setValueNode( detNode );
     }
     else
     {
@@ -164,7 +164,7 @@ RbLanguageObject* UserFunction::execute( void ) {
 
     
 /** In this function we execute the Rev code for the function (uncompiled syntax tree for now) */
-RbLanguageObject* UserFunction::executeCode( void ) {
+RevObject* UserFunction::executeCode( void ) {
     
     // Clear signals
     Signals::getSignals().clearFlags();
@@ -193,7 +193,7 @@ RbLanguageObject* UserFunction::executeCode( void ) {
             break;
     }
     
-    RbLanguageObject* retValue = retVar->getValue().clone();
+    RevObject* retValue = retVar->getValue().clone();
         
     // Return the return value
     return retValue;

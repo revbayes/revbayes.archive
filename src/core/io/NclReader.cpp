@@ -1536,7 +1536,7 @@ BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleT
     TopologyNode* root = new TopologyNode(name);
     
     // create a map which holds for each node a map of name value pairs.
-    //    std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> > nodeParameters;
+    //    std::map<const TopologyNode*, std::map<std::string, RevObject*> > nodeParameters;
     
     // the vector of nodes so that we remember the ordering (and matching) which node belongs to which parameter
     std::vector<TopologyNode*> nodes;

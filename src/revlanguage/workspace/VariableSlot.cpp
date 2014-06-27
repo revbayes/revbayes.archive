@@ -131,14 +131,14 @@ size_t VariableSlot::getDim( void ) const {
 
 
 /** Get the value of the variable */
-const RbLanguageObject& VariableSlot::getValue( void ) const {
+const RevObject& VariableSlot::getValue( void ) const {
     
     return variable[0]->getValue();
 }
 
 
 /** Get the value of the variable */
-RbLanguageObject& VariableSlot::getValue( void ) {
+RevObject& VariableSlot::getValue( void ) {
     
     return variable[0]->getValue();
 }
@@ -256,7 +256,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
     func->processArguments( args );
     func->setExecutionEnviroment( &env );
     
-    RbLanguageObject* v = func->execute();
+    RevObject* v = func->execute();
     delete func;
     
     return new Variable( v );
@@ -264,7 +264,7 @@ RbPtr<Variable> VariableSlot::getVectorizedVariable(const std::vector<int> &indi
 
 
 /** Is variable valid for the slot? Additional type checking here */
-bool VariableSlot::isValidVariable( const RbLanguageObject& newVariable ) const {
+bool VariableSlot::isValidVariable( const RevObject& newVariable ) const {
     
     return true;    // No additional requirements here, but see MemberSlot
 }

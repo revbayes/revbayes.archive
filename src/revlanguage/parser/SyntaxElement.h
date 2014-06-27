@@ -18,7 +18,7 @@
 #ifndef SyntaxElement_H
 #define SyntaxElement_H
 
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbPtr.h"
 #include "Variable.h"
 
@@ -60,7 +60,7 @@ class Environment;
         virtual RbPtr<Variable>         evaluateDeterministicExpressionContent(Environment& env);                           //!< Get semantic value if part of a deterministic expression
         virtual bool                    isAssignment(void) const;
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
-        virtual void                    replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) = 0;//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        virtual void                    replaceVariableWithConstant(const std::string& name, const RevObject& c) = 0;//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
                                         SyntaxElement(void) {}                                                              //!< Protected constructor, just in case

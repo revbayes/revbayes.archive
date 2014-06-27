@@ -100,7 +100,7 @@ const std::string& SyntaxForLoop::getIndexVarName( void ) const {
 
 
 /** Get next loop state */
-RbLanguageObject* SyntaxForLoop::getNextLoopState( void ) {
+RevObject* SyntaxForLoop::getNextLoopState( void ) {
 
     // We do not check here for the loop initialization or finalization. The caller needs to do some work! (Sebastian)
 //    if ( nextElement < 0 )
@@ -114,11 +114,11 @@ RbLanguageObject* SyntaxForLoop::getNextLoopState( void ) {
     // We do not have the index variable inserted in the environment but replace it with a constant (Sebastian)
 //    Variable& theVar = env[ *varName ].getVariable();
 //    // set the new value of the iterator variable
-//    theVar.setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ).clone() ) ) );
+//    theVar.setDagNode( new ConstantNode( static_cast<RevObject*>( vector->getElement( nextElement ).clone() ) ) );
 //    // the setting of the new iterator might have affected other nodes; therefore we call a keep
 //    theVar.getDagNode()->keep();
     
-    RbLanguageObject *elm = stateSpace->getElement( size_t(nextElement) );
+    RevObject *elm = stateSpace->getElement( size_t(nextElement) );
     
     nextElement++;
 
@@ -140,7 +140,7 @@ void SyntaxForLoop::initializeLoop(Environment& env) {
 
     // Evaluate expression and check that we get a vector
     const RbPtr<Variable>&              theVar      = inExpression->evaluateContent(env);
-    const RbLanguageObject&             theValue    = theVar->getValue();
+    const RevObject&             theValue    = theVar->getValue();
 
     // Check that it is a vector
     if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false ) {
@@ -175,7 +175,7 @@ void SyntaxForLoop::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the inExpression.
  */
-void SyntaxForLoop::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxForLoop::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     inExpression->replaceVariableWithConstant(name, c);
     

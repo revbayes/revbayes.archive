@@ -98,7 +98,7 @@ RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
     Function* theFunction = Workspace::globalWorkspace().getFunction(funcName, args).clone();
     theFunction->processArguments( args );
     
-    RbLanguageObject* theReturnValue = theFunction->execute();
+    RevObject* theReturnValue = theFunction->execute();
     
     // free the memory of the function
     delete theFunction;
@@ -137,7 +137,7 @@ void SyntaxBinaryExpr::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to both elements.
  */
-void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     leftOperand->replaceVariableWithConstant(name, c);
     rightOperand->replaceVariableWithConstant(name, c);
 }

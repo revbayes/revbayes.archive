@@ -3,7 +3,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "Model.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
 #include "TypeSpec.h"
@@ -13,7 +13,7 @@
 
 using namespace RevLanguage;
 
-Model::Model() : RlControlVariableWrapper<RevBayesCore::Model>() {
+Model::Model() : WorkspaceObject<RevBayesCore::Model>() {
     
 }
 
@@ -50,7 +50,7 @@ const std::string& Model::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -64,8 +64,8 @@ const MemberRules& Model::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        modelMemberRules.push_back( new ArgumentRule("x", true, RbLanguageObject::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new Ellipsis( RbLanguageObject::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("x", true, RevObject::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -112,6 +112,6 @@ void Model::setConstMemberVariable(const std::string& name, const RbPtr<const Va
         sources.insert( var );
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

@@ -71,7 +71,7 @@ TreeTrace<TimeTree> TestMultispeciesCoalescentWithSequences::readTreeTrace(const
 //    args.push_back( RevLanguage::Argument(var2,"treetype") );
 //    reader.processArguments(args);
 //    
-//    RevLanguage::RbLanguageObject* trace = reader.execute();
+//    RevLanguage::RevObject* trace = reader.execute();
 //    
 //    TreeTrace<TimeTree> rv = static_cast<RevLanguage::TreeTrace<RevLanguage::TimeTree>* >( trace )->getValue();
 //    
