@@ -27,11 +27,17 @@
  *
  */
 
+#include <sstream>
+#include <vector>
+#include <set>
+#include <cstdlib>
 
 /* Files including helper classes */
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
+
+/// Miscellaneous types ///
 
 /* Primitive types (in folder "datatypes/basic") */
 #include "Complex.h"
@@ -169,11 +175,22 @@
 
 /// Functions ///
 
+/* Helper functions for creating functions (in folder "functions") */
+#include "DistributionFunctionCdf.h"
+#include "DistributionFunctionPdf.h"
+#include "DistributionFunctionQuantile.h"
+#include "DistributionFunctionRv.h"
+
+
 /* Argument rules (in folder "functions/argumentrules") */
 #include "ArgumentRule.h"
 
+
 /* Basic functions (in folder "functions/basic"). */
-/* These are core functions providing user help and other essential functionality. */
+
+/* These are core functions for the Rev environment, providing user help
+   and other essential services. */
+
 #include "Func_citation.h"
 #include "Func_clear.h"
 #include "Func_contributors.h"
@@ -182,20 +199,58 @@
 #include "Func_ls.h"
 #include "Func_quit.h"
 #include "Func_range.h"
+#include "Func_rlvector.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
-#include "Func_type.h"
 #include "Func_structure.h"
+#include "Func_type.h"
+#include "Func_vector.h"
+
+
+/* Functions related to evolution (in folder "functions/evolution") */
+#include "ConstructorClade.h"
+#include "RlRateMultiplierPhyloFunction.h"
+#include "RlTmrcaStatistic.h"
+#include "RlTreeHeightStatistic.h"
+#include "RlTreeAssemblyFunction.h"
+
+/* Rate matrix functions (in folder "functions/evolution/ratematrix") */
+#include "Func_gtr.h"
+#include "RlBlosum62RateMatrixFunction.h"
+#include "RlCpRevRateMatrixFunction.h"
+#include "RlDayhoffRateMatrixFunction.h"
+#include "RlF81RateMatrixFunction.h"
+#include "RlHkyRateMatrixFunction.h"
+#include "RlJcRateMatrixFunction.h"
+#include "RlJonesRateMatrixFunction.h"
+#include "RlMtRevRateMatrixFunction.h"
+#include "RlMtMamRateMatrixFunction.h"
+#include "RlRtRevRateMatrixFunction.h"
+#include "RlVtRateMatrixFunction.h"
+#include "RlWagRateMatrixFunction.h"
+
+
+/* Inference functions (in folder "functions/inference") */
+
+/* Convergence functions (in folder "functions/inference/convergence") */
+#include "OptimalBurninFunction.h"
+#include "BurninEstimationConvergenceAssessmentFunction.h"
+
 
 /* Internal functions (in folder ("functions/internal") */
+
 /* These are functions that are typically not called explicitly but implicitly
    through parsing of a Rev statement. Examples include a statement like '1 + 2',
-   which results in the builtin '_add' function to be called. The exception is
-   the Func_range function, which is called implicitly in a 'x:y' statement but
-   also exists as an explicit function called 'range' and therefore is grouped
-   among basic functions. All internal functions have function calls that start
-   with an underscore character, and therefore their class names have two underscore
-   characters. */
+   which results in the builtin '_add' function being called.
+ 
+   Exceptions include Func_range and Func_vector, which are both used for implicit
+   and explicit calls. They are therefore considered basic functions instead of
+   internal functions.
+ 
+   All internal functions have function calls that start with an underscore character,
+   and therefore their class names have two underscore characters. They are typically
+   templated. */
+
 #include "Func__and.h"
 #include "Func__eq.h"
 #include "Func__ge.h"
@@ -205,12 +260,12 @@
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
-
 #include "Func_add.h"
 #include "Func_div.h"
 #include "Func_mult.h"
 #include "Func_sub.h"
 #include "Func_uminus.h"
+
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_mapTree.h"
@@ -222,48 +277,6 @@
 #include "Func_write.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
-
-/* Builtin templated functions */
-#include "Func_vector.h"
-#include "Func_rlvector.h"
-
-/* Constructor functions */
-#include "ConstructorClade.h"
-
-
-/* Phylogeny functions */
-#include "RlTmrcaStatistic.h"
-#include "RlTreeHeightStatistic.h"
-#include "RlTreeAssemblyFunction.h"
-
-#include "RlF81RateMatrixFunction.h"
-#include "Func_gtr.h"
-#include "RlHkyRateMatrixFunction.h"
-#include "RlJcRateMatrixFunction.h"
-
-#include "RlJonesRateMatrixFunction.h"
-#include "RlDayhoffRateMatrixFunction.h"
-#include "RlMtRevRateMatrixFunction.h"
-#include "RlMtMamRateMatrixFunction.h"
-#include "RlWagRateMatrixFunction.h"
-#include "RlRtRevRateMatrixFunction.h"
-#include "RlCpRevRateMatrixFunction.h"
-#include "RlVtRateMatrixFunction.h"
-#include "RlBlosum62RateMatrixFunction.h"
-
-#include "RlRateMultiplierPhyloFunction.h"
-
-
-
-/* Inference functions */
-#include "OptimalBurninFunction.h"
-#include "BurninEstimationConvergenceAssessmentFunction.h"
-
-/* Distribution functions */
-#include "DistributionFunctionCdf.h"
-#include "DistributionFunctionPdf.h"
-#include "DistributionFunctionQuantile.h"
-#include "DistributionFunctionRv.h"
 
 
 /* Math functions (in folder "functions/math") */
@@ -282,17 +295,13 @@
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
 
+
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
 #include "RlDPPConcFromPriorMean.h"
 #include "RlDPPNumFromConcentration.h"
 #include "RlDppNumTablesStatistic.h"
 
-
-#include <sstream>
-#include <vector>
-#include <set>
-#include <cstdlib>
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
@@ -304,24 +313,22 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
-        addType( new Complex()                        );
-        addType( new Integer()                        );
-        addType( new Natural()                        );
-        addType( new Probability()                    );
-        addType( new Real()                           );
-        addType( new RealPos()                        );
-        addType( new RlBoolean()                      );
-        addType( new RlString()                       );
+        addType( new Complex()                  );
+        addType( new Integer()                  );
+        addType( new Natural()                  );
+        addType( new Probability()              );
+        addType( new Real()                     );
+        addType( new RealPos()                  );
+        addType( new RlBoolean()                );
+        addType( new RlString()                 );
         
         /* Add container types (in folder "datatypes/container") (alphabetic order) */
-        addType( new RealMatrix() );
-        addType( new Simplex() );
-        addType( new Vector<Integer>()            );
-        addType( new Vector<Natural>()            );
-        addType( new Vector<Real>()               );
-        addType( new Vector<RealPos>()            );
-        addType( new Vector<RlBoolean>()          );
-        addType( new Vector<RlString>()           );
+        addType( new Vector<Integer>()          );
+        addType( new Vector<Natural>()          );
+        addType( new Vector<Real>()             );
+        addType( new Vector<RealPos>()          );
+        addType( new Vector<RlBoolean>()        );
+        addType( new Vector<RlString>()         );
         
 
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
@@ -430,106 +437,36 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         /* Add math types (in folder "datatypes/math") */
-        addType( new RateMatrix() );
+        addType( new RateMatrix()           );
+        addType( new RealMatrix()           );
+        addType( new Simplex()              );
         
 
-        ///////////////////////
-        /* Add distributions */
-        ///////////////////////
+        ///////////////////////////////////////////////////
+        /* Add distributions (in folder "distributions") */
+        ///////////////////////////////////////////////////
         
-        /* Pure statistical distributions (in folder "distributions/math") */
-        
-        // bernoulli distribution
-        addDistribution( "dnBernoulli",     new BernoulliDistribution() );
-        addDistribution( "bernoulli",       new BernoulliDistribution() );
-        
-        // beta distribution
-        addDistribution( "dnBeta",          new BetaDistribution() );
-        addDistribution( "beta",            new BetaDistribution() );
-        
-        // bimodal normal distribution
-        addDistribution( "dnBnorm",         new BimodalNormalDistribution() );
-        addDistribution( "bnorm",           new BimodalNormalDistribution() );
-        
-        // bimodal lognormal distribution
-        addDistribution( "dnBlnorm",        new BimodalLognormalDistribution() );
-        addDistribution( "blnorm",          new BimodalLognormalDistribution() );
-        
-        // dirichlet distribution
-        addDistribution( "dnDirichlet",     new DirichletDistribution() );
-        addDistribution( "dirichlet",       new DirichletDistribution() );
-		
-		// dirichlet process prior distribution
-        addDistribution( "dpp",				new DirichletProcessPriorDistribution<Real>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<RealPos>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Natural>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Integer>() );
-		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Probability>() );
-		  // TAH: thes don't semm to work with the moves, probably need to figure this out
-		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Topology>() );
-		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Simplex>() );
-		//addDistribution( "dpp",				new DirichletProcessPriorDistribution< Vector<RealPos> >() );
-        
-        // gamma distribution
-        addDistribution( "dnGamma",         new GammaDistribution() );
-        addDistribution( "gamma",           new GammaDistribution() );
-        
-        // geometric distribution
-        addDistribution( "dnGeom",          new GeometricDistribution() );
-        addDistribution( "geom",            new GeometricDistribution() );
-        
-        // poisson distribution
-        addDistribution( "dnPoisson",       new PoissonDistribution() );
-        addDistribution( "poisson",         new PoissonDistribution() );
-        
-        // exponential distribution
-        addDistribution( "dnExponential",   new ExponentialDistribution() );
-        addDistribution( "dnExponential",   new OffsetExponentialDistribution() );
-        addDistribution( "exponential",     new ExponentialDistribution() );
-        addDistribution( "exponential",     new OffsetExponentialDistribution() );
-        
-        // lognormal distribution
-        addDistribution( "dnLnorm",         new LognormalDistribution() );
-        addDistribution( "dnLnorm",         new OffsetLognormalDistribution() );
-        addDistribution( "lnorm",           new LognormalDistribution() );
-        addDistribution( "lnorm",           new OffsetLognormalDistribution() );
-        
-        // normal distribution
-        addDistribution( "dnNorm",          new NormalDistribution() );
-        addDistribution( "norm",            new NormalDistribution() );
-                
-        // 1/x distribution
-        addDistribution( "dnOneOverX",      new OneOverXDistribution() );
-        addDistribution( "oneOverX",        new OneOverXDistribution() );
-        
-        // uniform distribution
-        addDistribution( "dnUnif",          new UniformDistribution() );
-        addDistribution( "dnUnif",          new PositiveUniformDistribution() );
-        addDistribution( "unif",            new UniformDistribution() );
-        addDistribution( "unif",            new PositiveUniformDistribution() );
-        
-        // wishart distribution
-        addDistribution( "dnWishart",       new WishartDistribution() );
-        addDistribution( "wishart",         new WishartDistribution() );
-        
-        
-        /* Branch rate processes (in folder "distributions/evolution/tree" or "distributions/evolution") */
+        /* Evolutionary processes (in folder "distributions/evolution") */
+
+        /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
         // branch-rate jump process
         addDistribution( "dnBranchRateJumpProcess", new BranchRateJumpProcess() );
         addDistribution( "branchRateJumpProcess",   new BranchRateJumpProcess() );
-
+        
         // brownian motion
         addDistribution( "dnBrownian",  new BrownianPhyloProcess() );
         addDistribution( "brownian",    new BrownianPhyloProcess() );
-
+        
         // white noise process
         addDistribution( "dnWhiteNoise",    new WhiteNoisePhyloProcess() );
         addDistribution( "whiteNoise",      new WhiteNoisePhyloProcess() );
         addDistribution( "whitenoise",      new WhiteNoisePhyloProcess() );
-
+        
         
         /* Character state evolution processes (in folder "distributions/evolution/character") */
+        
+        // simple phylogenetic CTMC on fixed number of discrete states
         addDistribution( "dnPhyloCTMC", new CharacterStateEvolutionAlongTree<TimeTree>() );
         addDistribution( "dnPhyloCTMC", new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
         addDistribution( "phyloCTMC",   new CharacterStateEvolutionAlongTree<TimeTree>() );
@@ -537,6 +474,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "substModel",  new CharacterStateEvolutionAlongTree<TimeTree>() );
         addDistribution( "substModel",  new CharacterStateEvolutionAlongTree<BranchLengthTree>() );
 
+        
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
@@ -581,15 +519,103 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "uniformTopology"              , new UniformTopologyDistribution() );
         
         
+        /* Statistical distributions on simple variables (in folder "distributions/math") */
+        
+        // bernoulli distribution
+        addDistribution( "dnBernoulli",     new BernoulliDistribution() );
+        addDistribution( "bernoulli",       new BernoulliDistribution() );
+        
+        // beta distribution
+        addDistribution( "dnBeta",          new BetaDistribution() );
+        addDistribution( "beta",            new BetaDistribution() );
+        
+        // bimodal normal distribution
+        addDistribution( "dnBnorm",         new BimodalNormalDistribution() );
+        addDistribution( "bnorm",           new BimodalNormalDistribution() );
+        
+        // bimodal lognormal distribution
+        addDistribution( "dnBlnorm",        new BimodalLognormalDistribution() );
+        addDistribution( "blnorm",          new BimodalLognormalDistribution() );
+        
+        // dirichlet distribution
+        addDistribution( "dnDirichlet",     new DirichletDistribution() );
+        addDistribution( "dirichlet",       new DirichletDistribution() );
+		
+        // gamma distribution
+        addDistribution( "dnGamma",         new GammaDistribution() );
+        addDistribution( "gamma",           new GammaDistribution() );
+        
+        // geometric distribution
+        addDistribution( "dnGeom",          new GeometricDistribution() );
+        addDistribution( "geom",            new GeometricDistribution() );
+        
+        // poisson distribution
+        addDistribution( "dnPoisson",       new PoissonDistribution() );
+        addDistribution( "poisson",         new PoissonDistribution() );
+        
+        // exponential distribution
+        addDistribution( "dnExponential",   new ExponentialDistribution() );
+        addDistribution( "dnExponential",   new OffsetExponentialDistribution() );
+        addDistribution( "exponential",     new ExponentialDistribution() );
+        addDistribution( "exponential",     new OffsetExponentialDistribution() );
+        
+        // lognormal distribution
+        addDistribution( "dnLnorm",         new LognormalDistribution() );
+        addDistribution( "dnLnorm",         new OffsetLognormalDistribution() );
+        addDistribution( "lnorm",           new LognormalDistribution() );
+        addDistribution( "lnorm",           new OffsetLognormalDistribution() );
+        
+        // normal distribution
+        addDistribution( "dnNorm",          new NormalDistribution() );
+        addDistribution( "norm",            new NormalDistribution() );
+        
+        // 1/x distribution
+        addDistribution( "dnOneOverX",      new OneOverXDistribution() );
+        addDistribution( "oneOverX",        new OneOverXDistribution() );
+        
+        // uniform distribution
+        addDistribution( "dnUnif",          new UniformDistribution() );
+        addDistribution( "dnUnif",          new PositiveUniformDistribution() );
+        addDistribution( "unif",            new UniformDistribution() );
+        addDistribution( "unif",            new PositiveUniformDistribution() );
+        
+        // wishart distribution
+        addDistribution( "dnWishart",       new WishartDistribution() );
+        addDistribution( "wishart",         new WishartDistribution() );
+        
+        
+        /* Mixture distributions (in folder "distributions/mixture") */
+        
+        // dirichlet process prior distribution
+        addDistribution( "dnDPP",		    new DirichletProcessPriorDistribution<Real>() );
+		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<RealPos>() );
+		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<Natural>() );
+		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<Integer>() );
+		addDistribution( "dnDPP",			new DirichletProcessPriorDistribution<Probability>() );
+        addDistribution( "dpp",				new DirichletProcessPriorDistribution<Real>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<RealPos>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Natural>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Integer>() );
+		addDistribution( "dpp",				new DirichletProcessPriorDistribution<Probability>() );
+        
+        // TAH: these don't seem to work with the moves, probably need to figure this out
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Topology>() );
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution<Simplex>() );
+		//addDistribution( "dpp",				new DirichletProcessPriorDistribution< Vector<RealPos> >() );
+        
+
         /* Now we have added all primitive and complex data types and can start type checking */
         Workspace::globalWorkspace().typesInitialized = true;
         Workspace::userWorkspace().typesInitialized   = true;
         
-        //////////////////////////////////////////////////
-        /* Add parser functions (in "functions" folder) */
-        //////////////////////////////////////////////////
+
+        ///////////////////////////////////////////
+        /* Add functions (in "functions" folder) */
+        ///////////////////////////////////////////
         
-        /* Add basic functions (in "functions/basic" directory) (alphabetical order) */
+        /* Basic functions (in folder "functions/basic") */
+        
+        // regular functions
         addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "contributors",             new Func_contributors()             );
@@ -598,37 +624,91 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "ls",                       new Func_ls()                       );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
-        addFunction( "range",                    new Func_range()                    );     // Same as _range; cf. R
+        addFunction( "range",                    new Func_range()                    );
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "seq",                      new Func_seq<Real>()                );
-        addFunction( "simplex",                  new Func_simplex()                  );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
+
+        // vector functions
+        addFunction( "v",         new Func_rlvector<Monitor>()                  );
+        addFunction( "v",         new Func_rlvector<Move>()                     );
+        addFunction( "v",         new Func_rlvector<AbstractCharacterData>()    );
+        addFunction( "v",         new Func_vector<Natural>()                    );
+        addFunction( "v",         new Func_vector<Integer>()                    );
+        addFunction( "v",         new Func_vector<Real>()                       );
+        addFunction( "v",         new Func_vector<RealPos>()                    );
+        addFunction( "v",         new Func_vector<RlBoolean>()                  );
+        addFunction( "v",         new Func_vector<Clade>()                      );
+        addFunction( "v",         new Func_vector<RlString>()                   );
+        addFunction( "v",         new Func_vector<TimeTree>()                   );
         
-        // @TODO: To be moved to other directories
-        // normalizeVector  to math
-        // rbVector
-        // rlVector
-        // source   to io
-        // vector
+        
+        /* Evolution-related functions (in folder "functions/evolution") */
+        addFunction( "clade",                       new ConstructorClade()                 );
+        addFunction( "expBranchTree",               new ExponentialBranchTree()            );
+        addFunction( "phyloRateMultiplier",         new RateMultiplierPhyloFunction()      );
+        addFunction( "tmrca",                       new TmrcaStatistic()                   );
+        addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
+        addFunction( "treeHeight",                  new TreeHeightStatistic()              );
+        
+        // nonstandard names (for backward compatibility)
+        addFunction( "expbranchtree",               new ExponentialBranchTree()            );
+        addFunction( "rateMultiplierPhyloFunction", new RateMultiplierPhyloFunction()      );
+
+        /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
+        addFunction( "blosum62", new Blosum62RateMatrixFunction() );
+        addFunction( "cpRev",    new CpRevRateMatrixFunction()    );
+        addFunction( "dayhoff",  new DayhoffRateMatrixFunction()  );
+        addFunction( "f81",      new F81RateMatrixFunction() );
+        addFunction( "gtr",      new Func_gtr() );
+        addFunction( "hky",      new HkyRateMatrixFunction() );
+        addFunction( "jc",       new JcRateMatrixFunction() );
+        addFunction( "jones",    new JonesRateMatrixFunction()    );
+        addFunction( "mtMam",    new MtMamRateMatrixFunction()    );
+        addFunction( "mtRev",    new MtRevRateMatrixFunction()    );
+        addFunction( "rtRev",    new RtRevRateMatrixFunction()    );
+        addFunction( "vt",       new VtRateMatrixFunction()       );
+        addFunction( "wag",      new WagRateMatrixFunction()      );
+        
+        // nonstandard names (for backwards compatibility)
+        addFunction( "Blosum62", new Blosum62RateMatrixFunction() );
+        addFunction( "CpRev",    new CpRevRateMatrixFunction()    );
+        addFunction( "Dayhoff",  new DayhoffRateMatrixFunction()  );
+        addFunction( "F81",      new F81RateMatrixFunction() );
+        addFunction( "HKY",      new HkyRateMatrixFunction() );
+        addFunction( "JC",       new JcRateMatrixFunction() );
+        addFunction( "Jones",    new JonesRateMatrixFunction()    );
+        addFunction( "MtMam",    new MtMamRateMatrixFunction()    );
+        addFunction( "MtRev",    new MtRevRateMatrixFunction()    );
+        addFunction( "RtRev",    new RtRevRateMatrixFunction()    );
+        addFunction( "VT",       new VtRateMatrixFunction()       );
+        addFunction( "WAG",      new WagRateMatrixFunction()      );
+
+
+        /* Inference functions (in folder "functions/inference") */
+
+        /* Convergence functions (in folder "functions/inference/convergence") */
+        addFunction( "beca",           new BurninEstimationConvergenceAssessmentFunction() );
+        addFunction( "estimateBurnin", new OptimalBurninFunction() );
 
         
-        /* Add builtin functions (in folder "functions/builtin") */
+        /* Internal functions (in folder "functions/internal") */
         
-        // Note: Builtin functions are usually called implicitly. An explicit function
-        // name starting with an underscore is also provided to allow explicit calls.
-        // The exception is "range", which does not have an underscore to be compatible
-        // with the R range function
-
-        // not templated
+        /* Note: These are functions that are called implicitly, and the name of which, if
+         called explicitly, starts with an underscore character. */
+        
+        // not templated logical functions
         addFunction( "_and",      new Func__and()   );
         addFunction( "_or",       new Func__or()    );
         addFunction( "_unot",     new Func__unot()  );
-        addFunction( "_range",     new Func_range()  );
-
-        // templated
+        
+        // miscellaneous functions
+        addFunction( "_range",    new Func_range()  );
+        
+        // logical templated functions
         addFunction( "_eq",       new Func__eq<             Integer,        Integer >()             );
         addFunction( "_eq",       new Func__eq<                Real,           Real >()             );
         addFunction( "_eq",       new Func__eq<             Integer,           Real >()             );
@@ -657,80 +737,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_ne",       new Func__ne<                Real,        Integer >()             );
         addFunction( "_ne",       new Func__ne<           RlBoolean,      RlBoolean >()             );
         
-        /* Add evolution functions (in folder "functions/evolution") */
-
-        // rate matrix functions
-        addFunction( "blosum62", new Blosum62RateMatrixFunction() );
-        addFunction( "cpRev",    new CpRevRateMatrixFunction()    );
-        addFunction( "dayhoff",  new DayhoffRateMatrixFunction()  );
-        addFunction( "f81",      new F81RateMatrixFunction() );
-        addFunction( "gtr",      new Func_gtr() );
-        addFunction( "hky",      new HkyRateMatrixFunction() );
-        addFunction( "jc",       new JcRateMatrixFunction() );
-        addFunction( "jones",    new JonesRateMatrixFunction()    );
-        addFunction( "mtMam",    new MtMamRateMatrixFunction()    );
-        addFunction( "mtRev",    new MtRevRateMatrixFunction()    );
-        addFunction( "rtRev",    new RtRevRateMatrixFunction()    );
-        addFunction( "vt",       new VtRateMatrixFunction()       );
-        addFunction( "wag",      new WagRateMatrixFunction()      );
-        
-        // rate matrix functions, nonstandard names (for backwards compatibility)
-        addFunction( "Blosum62", new Blosum62RateMatrixFunction() );
-        addFunction( "CpRev",    new CpRevRateMatrixFunction()    );
-        addFunction( "Dayhoff",  new DayhoffRateMatrixFunction()  );
-        addFunction( "F81",      new F81RateMatrixFunction() );
-        addFunction( "HKY",      new HkyRateMatrixFunction() );
-        addFunction( "JC",       new JcRateMatrixFunction() );
-        addFunction( "Jones",    new JonesRateMatrixFunction()    );
-        addFunction( "MtMam",    new MtMamRateMatrixFunction()    );
-        addFunction( "MtRev",    new MtRevRateMatrixFunction()    );
-        addFunction( "RtRev",    new RtRevRateMatrixFunction()    );
-        addFunction( "VT",       new VtRateMatrixFunction()       );
-        addFunction( "WAG",      new WagRateMatrixFunction()      );
-        
-        // other evolution functions
-        addFunction( "expBranchTree",               new ExponentialBranchTree()            );
-        addFunction( "phyloRateMultiplier",         new RateMultiplierPhyloFunction()      );
-        addFunction( "tmrca",                       new TmrcaStatistic()                   );
-        addFunction( "treeAssembly",                new TreeAssemblyFunction()             );
-        addFunction( "treeHeight",                  new TreeHeightStatistic()              );
-
-        // other evolution functions, nonstandard names (for backward compatibility)
-        addFunction( "expbranchtree",               new ExponentialBranchTree()            );
-        addFunction( "rateMultiplierPhyloFunction", new RateMultiplierPhyloFunction()      );
-
-
-        /* Add inference functions (in folder "functions/inference/convergence") */
-        addFunction( "beca",           new BurninEstimationConvergenceAssessmentFunction() );
-        addFunction( "estimateBurnin", new OptimalBurninFunction() );
-
-        
-        /////////////////////////////////////
-        // Add distribution functions here //
-        /////////////////////////////////////
-
-        /* Add io functions (in folder "functions/io") */
-        addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
-        addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
-        addFunction( "readCharacterData",           new Func_readCharacterData()           );
-        addFunction( "readTrace",                   new Func_readTrace()                   );
-        addFunction( "readTrees",                   new Func_readTrees()                   );
-        addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
-        addFunction( "source",                      new Func_source()                      );   // Move here!!
-        addFunction( "write",                       new Func_write()                       );
-        addFunction( "writeFasta",                  new Func_writeFasta()                  );
-        addFunction( "writeNexus",                  new Func_writeNexus()                  );
-
-        /* Add math functions (in folder "functions/math") */
-
-        // templated builtin math functions @TODO: move to builtin
-
         // unary minus (e.g. -a)
         addFunction( "_uminus",   new Func_uminus<Integer, Integer>() );
         addFunction( "_uminus",   new Func_uminus<Natural, Integer>() );
         addFunction( "_uminus",   new Func_uminus<Real, Real>() );
         addFunction( "_uminus",   new Func_uminus<RealPos, Real>() );
-
+        
         // addition (e.g. a+b )
         addFunction( "_add",      new Func_add< Natural         , Natural           , Natural           >(  ) );
         addFunction( "_add",      new Func_add< Integer         , Integer           , Integer           >(  ) );
@@ -770,12 +782,24 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_sub",      new Func_sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  ) );
         addFunction( "_sub",      new Func_sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  ) );
         
-        // nontemplated builtin functions (move to builtin!)
-        
         // exponentiation
         addFunction( "_exp",      new Func_power() );
         
-        // proper math functions
+
+        /* Input/output functions (in folder "functions/io") */
+        addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
+        addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
+        addFunction( "readCharacterData",           new Func_readCharacterData()           );
+        addFunction( "readTrace",                   new Func_readTrace()                   );
+        addFunction( "readTrees",                   new Func_readTrees()                   );
+        addFunction( "readTreeTrace",               new Func_readTreeTrace()               );
+        addFunction( "source",                      new Func_source()                      );
+        addFunction( "write",                       new Func_write()                       );
+        addFunction( "writeFasta",                  new Func_writeFasta()                  );
+        addFunction( "writeNexus",                  new Func_writeNexus()                  );
+
+        
+        /* Math functions (in folder "functions/math") */
 		
 		// absolute function
         addFunction( "abs",         new Func_abs()  );
@@ -790,20 +814,20 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "exp",         new Func_exp() );
 		
 		// floor function
-        addFunction( "floor",       new Func_floor<Real,Integer>()  );
-        addFunction( "floor",       new Func_floor<RealPos,Natural>()  );
+        addFunction( "floor",     new Func_floor<Real,Integer>()  );
+        addFunction( "floor",     new Func_floor<RealPos,Natural>()  );
         
         // natural log function
-        addFunction( "ln",          new Func_ln()  );
+        addFunction( "ln",        new Func_ln()  );
         
         // log function
-		addFunction( "log",         new Func_log()  );	
+		addFunction( "log",       new Func_log()  );
         
         // mean function
-		addFunction( "mean",        new Func_mean()  );
+		addFunction( "mean",      new Func_mean()  );
         
         // normalize vector function
-		addFunction( "normalize",   new Func_normalizeVector()  );
+		addFunction( "normalize", new Func_normalizeVector()  );
 
 		// power function
         addFunction( "power",     new Func_power() );
@@ -815,6 +839,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "round",     new Func_round<Real,Integer>()  );
         addFunction( "round",     new Func_round<RealPos,Natural>()  );
 		
+        // simplex constructor function
+        addFunction( "simplex",   new Func_simplex()                  );
+
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
 		
@@ -822,29 +849,21 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "trunc",     new Func_trunc<Real,Integer>()  );
         addFunction( "trunc",     new Func_trunc<RealPos,Natural>()  );
 
-        
-        /* Add constructor functions (in folder "functions/constructor") (alphabetical order) */
-        addFunction( "clade",                       new ConstructorClade()                 );   // TODO! mMove to evolution
-        
-        /* Add vector functions (in folder "functions/basic" currently) */
-        addFunction( "v",         new Func_rlvector<Monitor>() );
-        addFunction( "v",         new Func_rlvector<Move>() );
-        addFunction( "v",         new Func_rlvector<AbstractCharacterData>() );
-        addFunction( "v",         new Func_vector<Natural>() );
-        addFunction( "v",         new Func_vector<Integer>() );
-        addFunction( "v",         new Func_vector<Real>() );
-        addFunction( "v",         new Func_vector<RealPos>() );
-        addFunction( "v",         new Func_vector<RlBoolean>() );
-        addFunction( "v",         new Func_vector<Clade>() );
-        addFunction( "v",         new Func_vector<RlString>() );
-        addFunction( "v",         new Func_vector<TimeTree>() );
+
+ 		/* Statistics functions (in folder "functions/statistics") */
+        addFunction("dppConcFromNum",   new DPPConcFromPriorMean( )     );
+        addFunction("dppNumFromConc",   new DPPNumFromConcentration( )  );
+
+        // nonstandard forms form backward compatibility
+        addFunction("dppCPFromNum",     new DPPConcFromPriorMean( )     );
+        addFunction("dppNumFromCP",     new DPPNumFromConcentration( )  );
 
         
-        //////////////////////////////////////////////////////////////////////
-        /* Add distribution functions (using classes in folder "functions") */
-        //////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////
+        /* Add distribution functions (using help classes in folder "functions") */
+        ///////////////////////////////////////////////////////////////////////////
         
-        // Bernoulli distribution
+        // bernoulli distribution
         addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new BernoulliDistribution() ) );
         addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new BernoulliDistribution() ) );
         
@@ -892,10 +911,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("qunif", new DistributionFunctionQuantile( new PositiveUniformDistribution() ) );
         addFunction("runif", new DistributionFunctionRv<RealPos>( new PositiveUniformDistribution() ) );
 
-		// distribution helper function
-		addFunction("dppCPFromNum", new DPPConcFromPriorMean( ) );
-		addFunction("dppNumFromCP", new DPPNumFromConcentration( ) );
-    
+
     }
     catch(RbException& rbException) {
         
