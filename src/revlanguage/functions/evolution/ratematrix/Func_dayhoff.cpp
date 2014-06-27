@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_dayhoff.h"
 #include "Natural.h"
-#include "RlRtRevRateMatrixFunction.h"
-#include "RateMatrix_RtRev.h"
+#include "RateMatrix_Dayhoff.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-RtRevRateMatrixFunction::RtRevRateMatrixFunction( void ) : Function( ) {
+Func_dayhoff::Func_dayhoff( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-RtRevRateMatrixFunction* RtRevRateMatrixFunction::clone( void ) const {
+Func_dayhoff* Func_dayhoff::clone( void ) const {
     
-    return new RtRevRateMatrixFunction( *this );
+    return new Func_dayhoff( *this );
 }
 
 
-RevObject* RtRevRateMatrixFunction::execute() {
+RevObject* Func_dayhoff::execute() {
     
     
-    RevBayesCore::RateMatrix_RtRev *rmj = new RevBayesCore::RateMatrix_RtRev();
+    RevBayesCore::RateMatrix_Dayhoff *rmj = new RevBayesCore::RateMatrix_Dayhoff();
     RateMatrix* value = new RateMatrix( rmj );
     
     return value;
@@ -42,7 +42,7 @@ RevObject* RtRevRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& RtRevRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_dayhoff::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,15 +50,15 @@ const ArgumentRules& RtRevRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& RtRevRateMatrixFunction::getClassName(void) { 
+const std::string& Func_dayhoff::getClassName(void) { 
     
-    static std::string rbClassName = "Func_rtRev";
+    static std::string rbClassName = "Func_dayhoff";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& RtRevRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_dayhoff::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& RtRevRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& RtRevRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_dayhoff::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& RtRevRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& RtRevRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_dayhoff::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

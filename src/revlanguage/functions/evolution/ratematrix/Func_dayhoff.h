@@ -1,9 +1,9 @@
 /**
  * @file
  * This file contains the declaration of the RevLanguage Dayhoff function, which
- * is used to created deterministic variable associated with the gtr function.
+ * is used to create deterministic variable associated with the Dayhoff function.
  *
- * @brief Declaration and implementation of RlDayhoffRateMatrixFunction
+ * @brief Declaration and implementation of Func_dayhoff
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -15,8 +15,8 @@
  */
 
 
-#ifndef RlDayhoffRateMatrixFunction_H
-#define RlDayhoffRateMatrixFunction_H
+#ifndef Func_dayhoff_H
+#define Func_dayhoff_H
 
 #include "RlFunction.h"
 
@@ -25,19 +25,19 @@
 
 namespace RevLanguage {
     
-    class DayhoffRateMatrixFunction :  public Function {
+    class Func_dayhoff :  public Function {
         
     public:
-        DayhoffRateMatrixFunction( void );
+        Func_dayhoff( void );
         
         // Basic utility functions
-        DayhoffRateMatrixFunction*                        clone(void) const;                                                              //!< Clone the object
+        Func_dayhoff*                                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         

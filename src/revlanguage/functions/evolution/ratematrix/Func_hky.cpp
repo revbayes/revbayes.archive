@@ -1,5 +1,5 @@
 //
-//  Func_exp.cpp
+//  Func_hky.cpp
 //  RevBayesCore
 //
 //  Created by Sebastian Hoehna on 8/7/12.
@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
-#include "F81RateMatrixFunction.h"
-#include "RlF81RateMatrixFunction.h"
-#include "RateMatrix_F81.h"
+#include "Func_hky.h"
+#include "HkyRateMatrixFunction.h"
+#include "RateMatrix_HKY.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,23 @@
 using namespace RevLanguage;
 
 /** default constructor */
-F81RateMatrixFunction::F81RateMatrixFunction( void ) : Function( ) {
+Func_hky::Func_hky( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-F81RateMatrixFunction* F81RateMatrixFunction::clone( void ) const {
+Func_hky* Func_hky::clone( void ) const {
     
-    return new F81RateMatrixFunction( *this );
+    return new Func_hky( *this );
 }
 
 
-RevObject* F81RateMatrixFunction::execute() {
+RevObject* Func_hky::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::F81RateMatrixFunction* f = new RevBayesCore::F81RateMatrixFunction( bf );
+    RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::HkyRateMatrixFunction* f = new RevBayesCore::HkyRateMatrixFunction( ka, bf );
     RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix>("", f);
     
     RateMatrix* value = new RateMatrix( detNode );
@@ -44,13 +45,14 @@ RevObject* F81RateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& F81RateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_hky::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
+        argumentRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "baseFrequencies", true, Simplex::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -60,15 +62,15 @@ const ArgumentRules& F81RateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& F81RateMatrixFunction::getClassName(void) { 
+const std::string& Func_hky::getClassName(void) { 
     
-    static std::string rbClassName = "Func_f81";
+    static std::string rbClassName = "Func_hky";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& F81RateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_hky::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -77,7 +79,7 @@ const TypeSpec& F81RateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& F81RateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_hky::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -85,7 +87,7 @@ const TypeSpec& F81RateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& F81RateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_hky::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

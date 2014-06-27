@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_blosum62.h"
 #include "Natural.h"
-#include "RlMtRevRateMatrixFunction.h"
-#include "RateMatrix_MtRev24.h"
+#include "RateMatrix_Blosum62.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-MtRevRateMatrixFunction::MtRevRateMatrixFunction( void ) : Function( ) {
+Func_blosum62::Func_blosum62( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-MtRevRateMatrixFunction* MtRevRateMatrixFunction::clone( void ) const {
+Func_blosum62* Func_blosum62::clone( void ) const {
     
-    return new MtRevRateMatrixFunction( *this );
+    return new Func_blosum62( *this );
 }
 
 
-RevObject* MtRevRateMatrixFunction::execute() {
+RevObject* Func_blosum62::execute() {
     
     
-    RevBayesCore::RateMatrix_MtRev24 *rmj = new RevBayesCore::RateMatrix_MtRev24();
+    RevBayesCore::RateMatrix_Blosum62 *rmj = new RevBayesCore::RateMatrix_Blosum62();
     RateMatrix* value = new RateMatrix( rmj );
     
     return value;
@@ -42,7 +42,7 @@ RevObject* MtRevRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& MtRevRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_blosum62::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,15 +50,15 @@ const ArgumentRules& MtRevRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& MtRevRateMatrixFunction::getClassName(void) { 
+const std::string& Func_blosum62::getClassName(void) { 
     
-    static std::string rbClassName = "Func_mtRev";
+    static std::string rbClassName = "Func_blosum62";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& MtRevRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_blosum62::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& MtRevRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& MtRevRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_blosum62::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& MtRevRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& MtRevRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_blosum62::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

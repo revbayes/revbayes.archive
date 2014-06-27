@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_jc.h"
 #include "JcRateMatrixFunction.h"
 #include "Natural.h"
-#include "RlJcRateMatrixFunction.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -20,19 +20,19 @@
 using namespace RevLanguage;
 
 /** default constructor */
-JcRateMatrixFunction::JcRateMatrixFunction( void ) : Function( ) {
+Func_jc::Func_jc( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-JcRateMatrixFunction* JcRateMatrixFunction::clone( void ) const {
+Func_jc* Func_jc::clone( void ) const {
     
-    return new JcRateMatrixFunction( *this );
+    return new Func_jc( *this );
 }
 
 
-RevObject* JcRateMatrixFunction::execute() {
+RevObject* Func_jc::execute() {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );
@@ -45,7 +45,7 @@ RevObject* JcRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& JcRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_jc::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -61,7 +61,7 @@ const ArgumentRules& JcRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& JcRateMatrixFunction::getClassName(void) { 
+const std::string& Func_jc::getClassName(void) { 
     
     static std::string rbClassName = "Func_jc";
     
@@ -69,7 +69,7 @@ const std::string& JcRateMatrixFunction::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& JcRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_jc::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -78,7 +78,7 @@ const TypeSpec& JcRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& JcRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_jc::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -86,7 +86,7 @@ const TypeSpec& JcRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& JcRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_jc::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

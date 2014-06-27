@@ -7,8 +7,8 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_vt.h"
 #include "Natural.h"
-#include "RlVtRateMatrixFunction.h"
 #include "RateMatrix_Vt.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -19,19 +19,19 @@
 using namespace RevLanguage;
 
 /** default constructor */
-VtRateMatrixFunction::VtRateMatrixFunction( void ) : Function( ) {
+Func_vt::Func_vt( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-VtRateMatrixFunction* VtRateMatrixFunction::clone( void ) const {
+Func_vt* Func_vt::clone( void ) const {
     
-    return new VtRateMatrixFunction( *this );
+    return new Func_vt( *this );
 }
 
 
-RevObject* VtRateMatrixFunction::execute() {
+RevObject* Func_vt::execute() {
     
     
     RevBayesCore::RateMatrix_Vt *rmj = new RevBayesCore::RateMatrix_Vt();
@@ -42,7 +42,7 @@ RevObject* VtRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& VtRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_vt::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,7 +50,7 @@ const ArgumentRules& VtRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& VtRateMatrixFunction::getClassName(void) { 
+const std::string& Func_vt::getClassName(void) { 
     
     static std::string rbClassName = "Func_vt";
     
@@ -58,7 +58,7 @@ const std::string& VtRateMatrixFunction::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& VtRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_vt::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& VtRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& VtRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_vt::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& VtRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& VtRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_vt::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -7,9 +7,9 @@
 //
 
 #include "DeterministicNode.h"
+#include "Func_jones.h"
 #include "Natural.h"
-#include "RlMtMamRateMatrixFunction.h"
-#include "RateMatrix_MtMam.h"
+#include "RateMatrix_Jones.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlRateMatrix.h"
@@ -19,22 +19,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-MtMamRateMatrixFunction::MtMamRateMatrixFunction( void ) : Function( ) {
+Func_jones::Func_jones( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-MtMamRateMatrixFunction* MtMamRateMatrixFunction::clone( void ) const {
+Func_jones* Func_jones::clone( void ) const {
     
-    return new MtMamRateMatrixFunction( *this );
+    return new Func_jones( *this );
 }
 
 
-RevObject* MtMamRateMatrixFunction::execute() {
+RevObject* Func_jones::execute() {
     
-    
-    RevBayesCore::RateMatrix_MtMam *rmj = new RevBayesCore::RateMatrix_MtMam();
+
+    RevBayesCore::RateMatrix_Jones *rmj = new RevBayesCore::RateMatrix_Jones();
     RateMatrix* value = new RateMatrix( rmj );
     
     return value;
@@ -42,7 +42,7 @@ RevObject* MtMamRateMatrixFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& MtMamRateMatrixFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_jones::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,15 +50,15 @@ const ArgumentRules& MtMamRateMatrixFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& MtMamRateMatrixFunction::getClassName(void) { 
+const std::string& Func_jones::getClassName(void) { 
     
-    static std::string rbClassName = "Func_mtMam";
+    static std::string rbClassName = "Func_jones";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& MtMamRateMatrixFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_jones::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -67,7 +67,7 @@ const TypeSpec& MtMamRateMatrixFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& MtMamRateMatrixFunction::getReturnType( void ) const {
+const TypeSpec& Func_jones::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMatrix::getClassTypeSpec();
     
@@ -75,7 +75,7 @@ const TypeSpec& MtMamRateMatrixFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& MtMamRateMatrixFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_jones::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
