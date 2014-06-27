@@ -6,12 +6,14 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
+#include "Clade.h"
 #include "DeterministicNode.h"
-#include "TreeHeightStatistic.h"
-#include "RlTreeHeightStatistic.h"
+#include "Func_tmrca.h"
+#include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
 #include "RealPos.h"
+#include "TmrcaStatistic.h"
 #include "Topology.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
@@ -19,22 +21,23 @@
 using namespace RevLanguage;
 
 /** default constructor */
-TreeHeightStatistic::TreeHeightStatistic( void ) : Function( ) {
+Func_tmrca::Func_tmrca( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-TreeHeightStatistic* TreeHeightStatistic::clone( void ) const {
+Func_tmrca* Func_tmrca::clone( void ) const {
     
-    return new TreeHeightStatistic( *this );
+    return new Func_tmrca( *this );
 }
 
 
-RevObject* TreeHeightStatistic::execute() {
+RevObject* Func_tmrca::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TreeHeightStatistic* f = new RevBayesCore::TreeHeightStatistic( tau );
+    const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
     RealPos* value = new RealPos( detNode );
@@ -44,15 +47,15 @@ RevObject* TreeHeightStatistic::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& TreeHeightStatistic::getArgumentRules( void ) const {
+const ArgumentRules& Func_tmrca::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) 
-    {
+    if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, TimeTree::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "clade", true, Clade::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -61,15 +64,15 @@ const ArgumentRules& TreeHeightStatistic::getArgumentRules( void ) const {
 }
 
 
-const std::string& TreeHeightStatistic::getClassName(void) { 
+const std::string& Func_tmrca::getClassName(void) { 
     
-    static std::string rbClassName = "Func_treeHeight";
+    static std::string rbClassName = "Func_tmrca";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& TreeHeightStatistic::getClassTypeSpec(void) { 
+const TypeSpec& Func_tmrca::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -78,7 +81,7 @@ const TypeSpec& TreeHeightStatistic::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& TreeHeightStatistic::getReturnType( void ) const {
+const TypeSpec& Func_tmrca::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -86,7 +89,7 @@ const TypeSpec& TreeHeightStatistic::getReturnType( void ) const {
 }
 
 
-const TypeSpec& TreeHeightStatistic::getTypeSpec( void ) const {
+const TypeSpec& Func_tmrca::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

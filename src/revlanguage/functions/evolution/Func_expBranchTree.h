@@ -1,5 +1,5 @@
 //
-//  RlExponentialBranchTree.h
+//  Func_expBranchTree.h
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-24.
@@ -15,25 +15,25 @@
 
 #include "Vector.h"
 #include "RealPos.h"
-#include "ExponentialBranchTree.h"
+#include "Func_expBranchTree.h"
 #include "RlTypedFunction.h"
 #include "TypedDagNode.h"
 
 
 namespace RevLanguage {
     
-    class ExponentialBranchTree :  public Function {
+    class Func_expBranchTree :  public Function {
         
     public:
-        // ExponentialBranchTree( void ) : tree(NULL), nodeval(NULL) {}
+        // Func_expBranchTree( void ) : tree(NULL), nodeval(NULL) {}
 
-        ExponentialBranchTree( void ) {}
-        ~ExponentialBranchTree() {}
+        Func_expBranchTree( void ) {}
+        ~Func_expBranchTree() {}
         
                                                         // Basic utility functions
-                                                        ExponentialBranchTree(const ExponentialBranchTree &x);                          //!< Copy constuctor
+                                                        Func_expBranchTree(const Func_expBranchTree &x);                                //!< Copy constuctor
 
-        ExponentialBranchTree*                          clone(void) const;                                                              //!< Clone the object
+        Func_expBranchTree*                             clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -65,19 +65,19 @@ namespace RevLanguage {
 
 namespace RevLanguage {
     
-    class ExponentialBranchTree : public TypedFunction<Vector<RealPos> > {
+    class Func_expBranchTree : public TypedFunction<Vector<RealPos> > {
         
     public:
-        ExponentialBranchTree(void);
-        //        ExponentialBranchTree(RevBayesCore::TypedDagNode<RevBayesCore::ExponentialBranchTree> *n);
-        virtual                                         ~ExponentialBranchTree(void);                                                  //!< Destructor
-        ExponentialBranchTree(const ExponentialBranchTree &x);                                                                            //!< Copy constuctor
+        Func_expBranchTree(void);
+        //        Func_expBranchTree(RevBayesCore::TypedDagNode<RevBayesCore::Func_expBranchTree> *n);
+        virtual                                         ~Func_expBranchTree(void);                                                  //!< Destructor
+        Func_expBranchTree(const Func_expBranchTree &x);                                                                            //!< Copy constuctor
         
         // the value type definition
-        //         typedef RevBayesCore::ExponentialBranchTree valueType;
+        //         typedef RevBayesCore::Func_expBranchTree valueType;
         
         // Basic utility functions you have to override
-        virtual ExponentialBranchTree*                     clone(void) const;                                                          //!< Clone object
+        virtual Func_expBranchTree*                     clone(void) const;                                                          //!< Clone object
         static const std::string&                       getClassName(void);                                                         //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                     //!< Get class type spec
         virtual const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
@@ -86,7 +86,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        virtual RevBayesCore::ExponentialBranchTree*       createFunction(void) const;                                                 //!< Create a random variable from this distribution
+        virtual RevBayesCore::Func_expBranchTree*       createFunction(void) const;                                                 //!< Create a random variable from this distribution
         
         
     protected:                                                                                                 //!< Basic constructor

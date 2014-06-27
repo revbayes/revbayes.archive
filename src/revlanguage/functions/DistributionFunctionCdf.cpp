@@ -157,7 +157,7 @@ const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const {
 /** Get class name of object */
 const std::string& DistributionFunctionCdf::getClassName(void) { 
     
-    static std::string rbClassName = "Func_cdf";
+    static std::string rbClassName = "DistributionFunctionCdf";
     
 	return rbClassName; 
 }

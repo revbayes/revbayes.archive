@@ -7,33 +7,33 @@
 //
 
 #include "DeterministicNode.h"
-#include "TreeAssemblyFunction.h"
-#include "RlTreeAssemblyFunction.h"
+#include "Func_treeAssembly.h"
 #include "RateMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBranchLengthTree.h"
 #include "RlTopology.h"
 #include "Topology.h"
+#include "TreeAssemblyFunction.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-TreeAssemblyFunction::TreeAssemblyFunction( void ) : Function( ) {
+Func_treeAssembly::Func_treeAssembly( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-TreeAssemblyFunction* TreeAssemblyFunction::clone( void ) const {
+Func_treeAssembly* Func_treeAssembly::clone( void ) const {
     
-    return new TreeAssemblyFunction( *this );
+    return new Func_treeAssembly( *this );
 }
 
 
-RevObject* TreeAssemblyFunction::execute() {
+RevObject* Func_treeAssembly::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -47,7 +47,7 @@ RevObject* TreeAssemblyFunction::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& TreeAssemblyFunction::getArgumentRules( void ) const {
+const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -64,7 +64,7 @@ const ArgumentRules& TreeAssemblyFunction::getArgumentRules( void ) const {
 }
 
 
-const std::string& TreeAssemblyFunction::getClassName(void) { 
+const std::string& Func_treeAssembly::getClassName(void) { 
     
     static std::string rbClassName = "Func_treeAssembly";
     
@@ -72,7 +72,7 @@ const std::string& TreeAssemblyFunction::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& TreeAssemblyFunction::getClassTypeSpec(void) { 
+const TypeSpec& Func_treeAssembly::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,7 +81,7 @@ const TypeSpec& TreeAssemblyFunction::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& TreeAssemblyFunction::getReturnType( void ) const {
+const TypeSpec& Func_treeAssembly::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = BranchLengthTree::getClassTypeSpec();
     
@@ -89,7 +89,7 @@ const TypeSpec& TreeAssemblyFunction::getReturnType( void ) const {
 }
 
 
-const TypeSpec& TreeAssemblyFunction::getTypeSpec( void ) const {
+const TypeSpec& Func_treeAssembly::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

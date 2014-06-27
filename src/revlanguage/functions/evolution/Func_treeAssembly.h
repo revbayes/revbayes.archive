@@ -15,28 +15,29 @@
  */
 
 
-#ifndef RlTmrcaStatistic_H
-#define RlTmrcaStatistic_H
+#ifndef Func_treeAssemblyn_H
+#define Func_treeAssemblyn_H
 
 #include "RlFunction.h"
 
+#include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class TmrcaStatistic :  public Function {
+    class Func_treeAssembly :  public Function {
         
     public:
-        TmrcaStatistic( void );
+        Func_treeAssembly( void );
         
         // Basic utility functions
-        TmrcaStatistic*                                 clone(void) const;                                                              //!< Clone the object
+        Func_treeAssembly*                              clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
