@@ -49,7 +49,7 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     }
     else if (name == "excludeCharacter")
     {
-        const RevObject& argument = args[0].getVariable()->getValue();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
         if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) ) 
         {
             size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );

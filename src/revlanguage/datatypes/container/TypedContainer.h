@@ -44,7 +44,7 @@ namespace RevLanguage {
 
         // Basic utility functions you should not have to override
         const rbType&                               getValue(void) const;
-        RevBayesCore::TypedDagNode<rbType>*         getValueNode(void) const;
+        RevBayesCore::TypedDagNode<rbType>*         getDagNode(void) const;
         bool                                        isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
         void                                        makeConstantValue();                                                //!< Convert the stored variable to a constant variable (if applicable)
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
@@ -238,7 +238,7 @@ RevLanguage::RevObject* RevLanguage::TypedContainer<rbType>::executeMethod(std::
         RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
         
         // get the observation
-        const rbType &observation = static_cast<const TypedContainer<rbType> &>( args[0].getVariable()->getValue() ).getValue();
+        const rbType &observation = static_cast<const TypedContainer<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
         
         // clamp
         stochNode->clamp( new rbType(observation) );
@@ -257,7 +257,7 @@ RevLanguage::RevObject* RevLanguage::TypedContainer<rbType>::executeMethod(std::
         RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
         
         // get the observation
-        const rbType &observation = static_cast<const TypedContainer<rbType> &>( args[0].getVariable()->getValue() ).getValue();
+        const rbType &observation = static_cast<const TypedContainer<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
         
         // clamp
         stochNode->setValue( new rbType(observation) );
@@ -375,7 +375,7 @@ const rbType& RevLanguage::TypedContainer<rbType>::getValue( void ) const {
 
 
 template <typename rbType>
-RevBayesCore::TypedDagNode<rbType>* RevLanguage::TypedContainer<rbType>::getValueNode( void ) const {
+RevBayesCore::TypedDagNode<rbType>* RevLanguage::TypedContainer<rbType>::getDagNode( void ) const {
     
     return value;
 }
@@ -439,7 +439,7 @@ void RevLanguage::TypedContainer<rbType>::printValue(std::ostream &o) const {
 template <typename rbType>
 void RevLanguage::TypedContainer<rbType>::replaceVariable(RevObject *newVar) {
     
-    RevBayesCore::DagNode* newParent = newVar->getValueNode();
+    RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
     while ( value->getNumberOfChildren() > 0 ) 
     {

@@ -78,7 +78,7 @@ void Clade::constructInternalObject( void )
     std::vector<std::string> n;
     for (std::vector<RevPtr<const Variable> >::iterator it = names.begin(); it != names.end(); ++it) 
     {
-        n.push_back( static_cast<const RlString &>( (*it)->getValue() ).getValue() );
+        n.push_back( static_cast<const RlString &>( (*it)->getRevObject() ).getValue() );
     }
     value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n,0.0));
     value->incrementReferenceCount();

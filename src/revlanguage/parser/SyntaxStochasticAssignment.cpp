@@ -115,7 +115,7 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     theVariable = expression->evaluateContent(env);
         
     // Get distribution, which should be the return value of the rhs function
-    const RevObject& exprValue = theVariable->getValue();
+    const RevObject& exprValue = theVariable->getRevObject();
     if ( !exprValue.isTypeSpec( Distribution::getClassTypeSpec() ) ) 
     {
         throw RbException( "Expression on the right-hand-side of '~' did not return a distribution object." );
@@ -126,10 +126,10 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     RevObject* rv = dist.createRandomVariable();
         
     // fill the slot with the new variable
-    theSlot->setValue( rv );
+    theSlot->setRevObject( rv );
         
     // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-    theVariable->getValue().setName( theSlot->getName() );
+    theVariable->getRevObject().setName( theSlot->getName() );
         
     
 #ifdef DEBUG_PARSER

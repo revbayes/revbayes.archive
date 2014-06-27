@@ -101,7 +101,7 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
     
-    RevObject& lhs_value = theVariable->getValue();
+    RevObject& lhs_value = theVariable->getRevObject();
     lhs_value.increment();
     
 #ifdef DEBUG_PARSER

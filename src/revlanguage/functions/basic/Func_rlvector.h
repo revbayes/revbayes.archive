@@ -76,7 +76,7 @@ RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
     
     std::vector<typename valType::valueType*> params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const valType &val = static_cast<const valType &>( args[i].getVariable()->getValue() );
+        const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
         params.push_back( val.getValue().clone() );
     }
     

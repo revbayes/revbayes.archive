@@ -34,10 +34,10 @@ void Mcmc::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new MCMC object
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
-    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getValue() ).getValue();
+    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     value->setScheduleType( sched );
 }
@@ -49,7 +49,7 @@ RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argume
     if (name == "run") 
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( gen );
         
         return NULL;
@@ -57,8 +57,8 @@ RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argume
     else if (name == "burnin") 
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( gen, tuningInterval );
         
         return NULL;

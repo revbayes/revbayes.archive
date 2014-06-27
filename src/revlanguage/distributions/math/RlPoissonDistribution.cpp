@@ -46,7 +46,7 @@ PoissonDistribution* PoissonDistribution::clone( void ) const
 RevBayesCore::PoissonDistribution* PoissonDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* rate    = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* rate    = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     RevBayesCore::PoissonDistribution* d      = new RevBayesCore::PoissonDistribution( rate );
     
     return d;

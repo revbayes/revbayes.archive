@@ -35,8 +35,8 @@ UniformDistribution* UniformDistribution::clone( void ) const {
 
 RevBayesCore::UniformDistribution* UniformDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l   = static_cast<const Real &>( lower->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* u   = static_cast<const Real &>( upper->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l   = static_cast<const Real &>( lower->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* u   = static_cast<const Real &>( upper->getRevObject() ).getDagNode();
     RevBayesCore::UniformDistribution* d    = new RevBayesCore::UniformDistribution(l, u);
     
     return d;

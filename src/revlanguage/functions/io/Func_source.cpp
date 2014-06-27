@@ -51,11 +51,11 @@ Func_source* Func_source::clone( void ) const {
 RevObject* Func_source::execute( void ) {
     
     /* Open file */
-    std::string fname = static_cast<const RlString &>( args[0].getVariable()->getValue() ).getValue();
+    std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
     std::ifstream inFile( fname.c_str() );
     
     
-    bool echo_on = static_cast<const RlBoolean &>( args[1].getVariable()->getValue() ).getValue();
+    bool echo_on = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
     
     if ( !inFile )
         throw RbException( "Could not open file \"" + fname + "\"" );

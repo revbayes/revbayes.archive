@@ -32,10 +32,10 @@ MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::clone( void 
 RevBayesCore::MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::createDistribution( void ) const {
     // get the parameters
 
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om  = static_cast<const RealSymmetricMatrix&>( omega->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const Vector<Real>&>( rootval->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om  = static_cast<const RealSymmetricMatrix&>( omega->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const Vector<Real>&>( rootval->getRevObject() ).getDagNode();
     
     RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
     

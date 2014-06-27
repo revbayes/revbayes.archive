@@ -35,8 +35,8 @@ OneOverXDistribution* OneOverXDistribution::clone( void ) const {
 
 RevBayesCore::OneOverXDistribution* OneOverXDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* mi   = static_cast<const Real &>( min->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* ma   = static_cast<const Real &>( max->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* mi   = static_cast<const Real &>( min->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ma   = static_cast<const Real &>( max->getRevObject() ).getDagNode();
     RevBayesCore::OneOverXDistribution* d    = new RevBayesCore::OneOverXDistribution( mi, ma );
     
     return d;

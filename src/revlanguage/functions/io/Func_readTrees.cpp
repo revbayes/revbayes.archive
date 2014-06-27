@@ -33,7 +33,7 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 RevObject* Func_readTrees::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();

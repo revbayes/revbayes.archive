@@ -32,18 +32,18 @@ void ExtendedNewickFileMonitor::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    const std::string& fn = static_cast<const RlString &>( filename->getValue() ).getValue();
-    const std::string& sep = static_cast<const RlString &>( separator->getValue() ).getValue();
-    int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
+    const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
+    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
     for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getValue()).getValueNode();
+        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
-    bool pp = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
-    bool l = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
-    bool pr = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
+    bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
+    bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
+    bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     value = new RevBayesCore::ExtendedNewickTreeMonitor(t, n, size_t(g), fn, sep, pp, l, pr);
 }
 

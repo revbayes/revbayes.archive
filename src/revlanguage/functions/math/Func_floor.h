@@ -71,7 +71,7 @@ RevLanguage::Func_floor<valType, retType>* RevLanguage::Func_floor<valType, retT
 template <typename valType, typename retType>
 RevLanguage::RevObject* RevLanguage::Func_floor<valType, retType>::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FloorFunction* f = new RevBayesCore::FloorFunction( arg );
     RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
     

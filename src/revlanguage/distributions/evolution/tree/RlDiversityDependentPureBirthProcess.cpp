@@ -55,17 +55,17 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     // speciation rate
-    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( initialLambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( initialLambda->getRevObject() ).getDagNode();
     // extinction rate
-    RevBayesCore::TypedDagNode<int>* k          = static_cast<const Natural &>( capacity->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<int>* k          = static_cast<const Natural &>( capacity->getRevObject() ).getDagNode();
     // condition
-    const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
+    const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
     
     std::vector<RevBayesCore::Taxon> taxa;
     for (size_t i = 0; i < names.size(); ++i) 

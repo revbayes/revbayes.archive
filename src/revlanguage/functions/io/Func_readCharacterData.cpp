@@ -37,7 +37,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 RevObject* Func_readCharacterData::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );

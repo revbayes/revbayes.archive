@@ -46,8 +46,8 @@ ExponentialDistribution* ExponentialDistribution::clone( void ) const
 RevBayesCore::ExponentialDistribution* ExponentialDistribution::createDistribution( void ) const 
 {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( offset->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* l       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( offset->getRevObject() ).getDagNode();
     RevBayesCore::ExponentialDistribution* d    = new RevBayesCore::ExponentialDistribution( l, o );
     
     return d;

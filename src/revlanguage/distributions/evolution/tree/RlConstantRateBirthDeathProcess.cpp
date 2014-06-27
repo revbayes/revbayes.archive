@@ -54,23 +54,23 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     // speciation rate
-    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
-    RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
     // sampling probability
-    RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // sampling strategy
-    const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getValue() ).getValue();
+    const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
     // condition
-    const std::string& cond                     = static_cast<const RlString &>( condition->getValue() ).getValue();
+    const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // number of taxa
-    int n                                       = static_cast<const Natural &>( numTaxa->getValue() ).getValue();
+    int n                                       = static_cast<const Natural &>( numTaxa->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getValue() ).getValueNode()->getValue();
+    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getValue() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
     
     // create the internal distribution object
     RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, s, e, r, strategy, cond, size_t(n), names, c);

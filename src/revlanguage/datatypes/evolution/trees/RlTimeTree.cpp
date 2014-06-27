@@ -86,7 +86,7 @@ RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const s
     } 
     else if (name == "rescale")
     {
-        double f = static_cast<const RealPos&>( args[0].getVariable()->getValue() ).getValue();
+        double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TimeTree &tree = value->getValue();
         RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
         

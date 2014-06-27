@@ -79,8 +79,8 @@ RevLanguage::RevObject* RevLanguage::Func_rbVector<valType>::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const valType &val = static_cast<const valType &>( args[i].getVariable()->getValue() );
-        params.push_back( val.getValueNode() );
+        const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
+        params.push_back( val.getDagNode() );
     }
     
     RevBayesCore::RbVectorFunction<typename valType::valueType> *func = new RevBayesCore::RbVectorFunction<typename valType::valueType>( params );

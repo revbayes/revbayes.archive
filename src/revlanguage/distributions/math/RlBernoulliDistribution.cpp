@@ -37,7 +37,7 @@ BernoulliDistribution* BernoulliDistribution::clone( void ) const {
 RevBayesCore::BernoulliDistribution* BernoulliDistribution::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* q   = static_cast<const Probability &>( p->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* q   = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
     RevBayesCore::BernoulliDistribution* d  = new RevBayesCore::BernoulliDistribution( q );
     
     return d;

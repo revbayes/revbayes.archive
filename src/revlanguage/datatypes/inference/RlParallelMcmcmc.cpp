@@ -54,16 +54,16 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 #endif
     
     // now allocate a new MCMC object
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
-    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getValue() ).getValue();
-    const int                                   nc      = static_cast<const Natural&>( numChains->getValue() ).getValue();
-    const int                                   np      = static_cast<const Natural&>( numProcessors->getValue() ).getValue();
-    const int                                   si      = static_cast<const Natural&>( swapInterval->getValue() ).getValue();
-    const double                                sh      = static_cast<const Real&>( startHeat->getValue() ).getValue();
-    const double                                delth   = static_cast<const Real&>( deltaHeat->getValue() ).getValue();
-    const double                                sigh    = static_cast<const Real&>( sigmaHeat->getValue() ).getValue();
+    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
+    const int                                   nc      = static_cast<const Natural&>( numChains->getRevObject() ).getValue();
+    const int                                   np      = static_cast<const Natural&>( numProcessors->getRevObject() ).getValue();
+    const int                                   si      = static_cast<const Natural&>( swapInterval->getRevObject() ).getValue();
+    const double                                sh      = static_cast<const Real&>( startHeat->getRevObject() ).getValue();
+    const double                                delth   = static_cast<const Real&>( deltaHeat->getRevObject() ).getValue();
+    const double                                sigh    = static_cast<const Real&>( sigmaHeat->getRevObject() ).getValue();
     
     value = new RevBayesCore::ParallelMcmcmc(mdl, mvs, mntr, sched, nc, np, si, delth, sigh, sh);
     
@@ -77,7 +77,7 @@ RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vec
     if (name == "run")
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( gen );
         
         return NULL;
@@ -85,8 +85,8 @@ RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vec
     else if (name == "burnin")
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( gen, tuningInterval );
         
         return NULL;

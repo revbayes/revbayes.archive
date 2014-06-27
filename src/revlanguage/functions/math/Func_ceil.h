@@ -71,7 +71,7 @@ RevLanguage::Func_ceil<valType, retType>* RevLanguage::Func_ceil<valType, retTyp
 template <typename valType, typename retType>
 RevLanguage::RevObject* RevLanguage::Func_ceil<valType, retType>::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::CeilFunction* f = new RevBayesCore::CeilFunction( arg );
     RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
     

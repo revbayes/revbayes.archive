@@ -37,8 +37,8 @@ BetaDistribution* BetaDistribution::clone( void ) const {
 RevBayesCore::BetaDistribution* BetaDistribution::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* b   = static_cast<const RealPos &>( beta->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* b   = static_cast<const RealPos &>( beta->getRevObject() ).getDagNode();
     RevBayesCore::BetaDistribution* d       = new RevBayesCore::BetaDistribution(a, b);
     
     return d;

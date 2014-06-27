@@ -38,8 +38,8 @@ void NearestNeighborInterchange_nonClock::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getValue() ).getValueNode();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
     value = new RevBayesCore::NearestNeighborInterchange_nonClock(t, w);
 }

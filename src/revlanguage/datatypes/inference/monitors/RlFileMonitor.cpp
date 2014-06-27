@@ -30,20 +30,20 @@ void FileMonitor::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    const std::string& fn = static_cast<const RlString &>( filename->getValue() ).getValue();
-    const std::string& sep = static_cast<const RlString &>( separator->getValue() ).getValue();
-    int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
+    const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
+    const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
+    int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
     std::set<RevBayesCore::DagNode *> n;
     for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::DagNode* node = (*i)->getValue().getValueNode();
+        RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.insert( node );
     }
-    bool pp = static_cast<const RlBoolean &>( posterior->getValue() ).getValue();
-    bool l = static_cast<const RlBoolean &>( likelihood->getValue() ).getValue();
-    bool pr = static_cast<const RlBoolean &>( prior->getValue() ).getValue();
-    bool app = static_cast<const RlBoolean &>( append->getValue() ).getValue();
-    bool ci = static_cast<const RlBoolean &>( chainIdx->getValue() ).getValue();
-    bool ch = static_cast<const RlBoolean &>( chainHeat->getValue() ).getValue();
+    bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
+    bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
+    bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
+    bool app = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool ci = static_cast<const RlBoolean &>( chainIdx->getRevObject() ).getValue();
+    bool ch = static_cast<const RlBoolean &>( chainHeat->getRevObject() ).getValue();
     
     value = new RevBayesCore::FileMonitor(n, (unsigned long)g, fn, sep, pp, l, pr, app, ci, ch);
 }

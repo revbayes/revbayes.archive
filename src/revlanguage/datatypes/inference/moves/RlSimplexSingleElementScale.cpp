@@ -41,11 +41,11 @@ void SimplexSingleElementScale::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    double a = static_cast<const RealPos &>( alpha->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getValue() ).getValueNode();
+    double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Simplex &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::SimplexSingleElementScale(n, a, t, w);
 }
 

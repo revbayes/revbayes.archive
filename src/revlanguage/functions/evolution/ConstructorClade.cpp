@@ -29,7 +29,7 @@ ConstructorClade* ConstructorClade::clone( void ) const {
 RevObject* ConstructorClade::execute() {
     
     // now allocate a new Clade
-    const std::vector<std::string>& n = static_cast<const Vector<RlString> &>( args[0].getVariable()->getValue() ).getValue();
+    const std::vector<std::string>& n = static_cast<const Vector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::Clade *c = new RevBayesCore::Clade(n,0.0);
     
     return new Clade(c);

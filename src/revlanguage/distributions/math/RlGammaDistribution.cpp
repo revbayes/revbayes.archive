@@ -35,8 +35,8 @@ GammaDistribution* GammaDistribution::clone( void ) const {
 
 RevBayesCore::GammaDistribution* GammaDistribution::createDistribution( void ) const {
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* sh  = static_cast<const RealPos &>( shape->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* r   = static_cast<const RealPos &>( rate->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* sh  = static_cast<const RealPos &>( shape->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* r   = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
     RevBayesCore::GammaDistribution* d      = new RevBayesCore::GammaDistribution(sh, r);
     
     return d;

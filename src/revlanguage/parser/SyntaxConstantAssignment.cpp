@@ -117,21 +117,21 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
         throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
         
     // fill the slot with the new variable
-    const RevObject& value = theVariable->getValue();
+    const RevObject& value = theVariable->getRevObject();
         
     // check if the type is valid. This is necessary for reassignments
-    if ( !value.getTypeSpec().isDerivedOf( theSlot->getValueTypeSpec() ) ) {
+    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) ) {
         // We are not of a derived type (or the same type)
         // since this will create a constant node we are allowed to type cast
-        if (value.isConvertibleTo( theSlot->getValueTypeSpec() ) ) {
-            newValue = value.convertTo( theSlot->getValueTypeSpec() );
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) ) {
+            newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
                 
         }
         else {
             std::ostringstream msg;
             msg << "Cannot reassign variable '" << theSlot->getName() << "' with type " << value.getTypeSpec() << " with value ";
             value.printValue(msg);
-            msg << " because the variable requires type " << theSlot->getValueTypeSpec() << "." << std::endl;
+            msg << " because the variable requires type " << theSlot->getRevObjectTypeSpec() << "." << std::endl;
             throw RbException( msg );
         }
     }
@@ -143,7 +143,7 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
     }
         
     // set the value of the variable
-    theSlot->setValue( newValue );
+    theSlot->setRevObject( newValue );
         
     // set the name of the DAG node. This will ensure nicer outputs about the DAG.
     newValue->setName( theSlot->getName() );

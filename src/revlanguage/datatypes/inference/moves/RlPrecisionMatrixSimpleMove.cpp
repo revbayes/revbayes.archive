@@ -45,11 +45,11 @@ void PrecisionMatrixSimpleMove::constructInternalObject( void ) {
     delete value;
   
     // now allocate a new wishart simple move
-    double l = static_cast<const RealPos &>( lambda->getValue() ).getValue();
-    double w = static_cast<const RealPos &>( weight->getValue() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getValue() ).getValueNode();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix > *>( tmp );
-    bool t = static_cast<const RlBoolean &>( tune->getValue() ).getValue();
+    bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::PrecisionMatrixMove(matrix, l, t, w);
         
 }

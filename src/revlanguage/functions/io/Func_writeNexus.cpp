@@ -37,8 +37,8 @@ RevObject* Func_writeNexus::execute( void )
 {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
-    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getValue() ).getValue();
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
+    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::NexusWriter fw( fn.getValue() );
     fw.openStream();

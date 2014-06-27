@@ -288,7 +288,7 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
    
     int     score = 10000;   // Needs to be larger than the max depth of the class hierarchy
 
-    const TypeSpec& argClass = var->getValue().getTypeSpec();
+    const TypeSpec& argClass = var->getRevObject().getTypeSpec();
     const std::vector<TypeSpec> &ruleArgTypes = rule.getArgumentTypeSpec();
     for ( std::vector<TypeSpec>::const_iterator it = ruleArgTypes.begin(); it != ruleArgTypes.end(); ++it) 
     {
@@ -325,7 +325,7 @@ std::string Function::callSignature(void) const {
     
     for ( size_t i = 0;  i < args.size(); i++ ) {
         o << " args[" << i << "] = ";
-        args[i].getVariable()->getValue().printValue(o);
+        args[i].getVariable()->getRevObject().printValue(o);
         o << std::endl;
     }
     
@@ -397,7 +397,7 @@ void Function::printStructure(std::ostream& o) const {
     
     o << "_variableType = " << getType() << std::endl;
     o << "_declaration  = " << getRevDeclaration() << std::endl;
-    o << "_value        = " << getValueNode();
+    o << "_value        = " << getDagNode();
 }
 
 
@@ -595,7 +595,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         
         /* Final test if we found a match */
         if ( !taken[i] ) {
-            throw RbException("Argument of type \"" + passedArgs[i].getVariable()->getValue().getTypeSpec() + "\" is not valid for function " + getTypeSpec() + ".");
+            throw RbException("Argument of type \"" + passedArgs[i].getVariable()->getRevObject().getTypeSpec() + "\" is not valid for function " + getTypeSpec() + ".");
         }
     }
 
@@ -614,7 +614,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
         const ArgumentRule& theRule = theRules[i];
         RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
-        theVar->setValueTypeSpec( theRule.getDefaultVariable().getValueTypeSpec() );
+        theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
         pArgs.push_back( Argument( theVar, "" ) );

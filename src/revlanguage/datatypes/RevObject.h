@@ -61,24 +61,24 @@ public:
     virtual RevObject*                  dagReference(void);                                                                             //!< Make an object referencing the dag node of this object
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
-    virtual const std::string&          getTemplateValueType(void) const;                                                               //!< Get the type spec of the instance
-    virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the type spec of the instance
+    virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
+    virtual const std::string&          getValueType(void) const;                                                                       //!< Get the value type (RevBayesCore object or primitive C++ object)
     virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
     
     // Basic utility functions you may want to override
     virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
     virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
-    virtual RevBayesCore::DagNode*      getValueNode(void) const;                                                                       //!< Get my internal value node (if applicable)
-    virtual bool                        hasValueNode(void) const;                                                                       //!< Do I have an internal value node?
+    virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
+    virtual bool                        hasDagNode(void) const;                                                                         //!< Do I have an internal value node?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
 
     // Functions that wrapper objects containing RB core objects might want to override
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual void                        replaceVariable(RevObject *newVar);                                                             //!< Replace the internal DAG node and prepare to replace me
+    virtual void                        replaceMe(RevObject *newObj);                                                                   //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
-    virtual void                        setValueNode(RevBayesCore::DagNode *newVal);                                                    //!< Set or replace the internal dag node (and keep me)
+    virtual void                        setDagNode(RevBayesCore::DagNode *newNode);                                                     //!< Set or replace the internal dag node (and keep me)
 
     // Member variable functions you may want to override
     virtual RevObject*                  executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions

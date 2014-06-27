@@ -72,7 +72,7 @@ RevLanguage::Func_trunc<valType, retType>* RevLanguage::Func_trunc<valType, retT
 template <typename valType, typename retType>
 RevLanguage::RevObject* RevLanguage::Func_trunc<valType, retType>::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TruncateFunction* f = new RevBayesCore::TruncateFunction( arg );
     RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
     

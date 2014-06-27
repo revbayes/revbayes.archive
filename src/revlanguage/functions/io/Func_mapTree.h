@@ -83,8 +83,8 @@ template <typename treeType>
 RevLanguage::RevObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
     
     
-    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getValue() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
+    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
+    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
     typename treeType::valueType* tree = summary.map();
     

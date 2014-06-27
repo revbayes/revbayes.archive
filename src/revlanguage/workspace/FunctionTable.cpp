@@ -223,7 +223,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 {
                     msg << ",";
                 }
-                msg << " " << it->getVariable()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
+                msg << " " << it->getVariable()->getRevObject().getTypeSpec() << " \"" << it->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -299,7 +299,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 }
 //                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
                 const RevPtr<const Variable>& theVar = j->getVariable();
-                msg << " " << theVar->getValue().getTypeSpec();
+                msg << " " << theVar->getRevObject().getTypeSpec();
                 
             }
             msg << " )" << std::endl;

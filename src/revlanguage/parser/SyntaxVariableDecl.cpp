@@ -111,7 +111,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
         else {
             
             RevPtr<Variable> temp    = (*i)->evaluateContent( env );
-            const RevObject& value   = temp->getValue();
+            const RevObject& value   = temp->getRevObject();
             
             if ( value.isTypeSpec( Integer::getClassTypeSpec() ) )
                 length.push_back( static_cast<const Integer&>( value ).getValue() );

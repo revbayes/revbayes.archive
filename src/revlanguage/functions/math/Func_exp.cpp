@@ -30,7 +30,7 @@ Func_exp* Func_exp::clone( void ) const {
 
 RevObject* Func_exp::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ExponentialFunction* f = new RevBayesCore::ExponentialFunction( arg, getRevDeclaration() );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     

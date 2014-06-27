@@ -30,7 +30,7 @@ Func_ln* Func_ln::clone( void ) const {
 
 RevObject* Func_ln::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const RealPos &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::LnFunction* f = new RevBayesCore::LnFunction( arg );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     

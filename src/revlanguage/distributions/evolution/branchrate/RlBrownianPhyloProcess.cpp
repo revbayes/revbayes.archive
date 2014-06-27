@@ -30,10 +30,10 @@ BrownianPhyloProcess* BrownianPhyloProcess::clone( void ) const {
 RevBayesCore::BrownianPhyloProcess* BrownianPhyloProcess::createDistribution( void ) const {
     // get the parameters
 
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<double>* s  = static_cast<const Real&>( sigma->getValue() ).getValueNode();
-    RevBayesCore::TypedDagNode<double>* r  = static_cast<const Real&>( rootval->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* s  = static_cast<const Real&>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* r  = static_cast<const Real&>( rootval->getRevObject() ).getDagNode();
     
     RevBayesCore::BrownianPhyloProcess* d    = new RevBayesCore::BrownianPhyloProcess( tau, s, r );
     

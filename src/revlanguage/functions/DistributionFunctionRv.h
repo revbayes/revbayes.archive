@@ -126,7 +126,7 @@ RevLanguage::RevObject* RevLanguage::DistributionFunctionRv<valueType>::execute(
     
     
     
-    int n = static_cast<const Natural &>( this->args[0].getVariable()->getValue() ).getValue();
+    int n = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
     Vector<valueType> *values = new Vector<valueType>();
     for (int i = 0;  i < n; ++i) {
         valueType* value = copyObject->createRandomVariable();

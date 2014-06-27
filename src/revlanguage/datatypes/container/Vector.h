@@ -405,10 +405,10 @@ RevLanguage::Vector<rlType>* RevLanguage::Vector<rlType>::clone() const {
 //    
 //    if ( name == "[]") {
 //        // get the member with give index
-//        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+//        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 //        
 //        
-//        RevBayesCore::VectorIndexOperator<elementType>* f = new RevBayesCore::VectorIndexOperator<elementType>( this->value, index.getValueNode() );
+//        RevBayesCore::VectorIndexOperator<elementType>* f = new RevBayesCore::VectorIndexOperator<elementType>( this->value, index.getDagNode() );
 //        RevBayesCore::DeterministicNode<elementType> *detNode = new RevBayesCore::DeterministicNode<elementType>("", f);
 //        
 //        rlType* value = new rlType( detNode );
