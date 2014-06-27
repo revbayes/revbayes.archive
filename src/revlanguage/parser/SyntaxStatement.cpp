@@ -152,9 +152,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         // Initialize for loop
         Signals::getSignals().clearFlags();
         
-        // create a new environment for the loop
-        // we need a new environment so that the elements will not be visible from the outside
-//        Environment *loopEnv = new Environment(env);
+        // use the current environment so that the variables are available outside the loop
         Environment& loopEnv = env;
         
         // here we initialize the loop
@@ -223,11 +221,13 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 
             for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
 	 
+                SyntaxElement* theSyntaxElement = *i;
+
                 // Execute statement
-	            result = (*i)->evaluateContent( env );
+	            result = theSyntaxElement->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );

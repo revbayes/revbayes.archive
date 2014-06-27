@@ -468,6 +468,9 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                     // we assume that the indices have to be natural values
                     if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
                         Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
+                        if ( n.getValue() <= 0 )
+                            throw RbException("Only natural numbers are allowed as indices for variable slots. Also, we start counting indices from 1.");
+                        
                         slotIndices.push_back( n.getValue()-1 );
                     } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
                         RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
@@ -477,7 +480,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                         
                         delete n;
                     } else {
-                        throw RbException("Only natural numbers are allowed as indices for variable slots.");
+                        throw RbException("Only natural numbers without 0 are allowed as indices for variable slots.");
                     }
                 }
                 
