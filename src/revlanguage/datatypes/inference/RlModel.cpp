@@ -31,7 +31,7 @@ void Model::constructInternalObject( void ) {
     
     // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
-    for (std::set<RbPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
+    for (std::set<RevPtr<const Variable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
         RevBayesCore::DagNode* n = (*it)->getValue().getValueNode();
         s.insert( n );
     }
@@ -106,7 +106,7 @@ void Model::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Model::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" || name == "x") {
         sources.insert( var );

@@ -77,7 +77,7 @@ SyntaxElement* SyntaxForLoop::clone () const {
 }
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env ) {
     
     return NULL;
 }
@@ -139,7 +139,7 @@ void SyntaxForLoop::initializeLoop(Environment& env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    const RbPtr<Variable>&              theVar      = inExpression->evaluateContent(env);
+    const RevPtr<Variable>&      theVar      = inExpression->evaluateContent(env);
     const RevObject&             theValue    = theVar->getValue();
 
     // Check that it is a vector

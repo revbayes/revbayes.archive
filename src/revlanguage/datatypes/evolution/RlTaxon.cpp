@@ -154,7 +154,7 @@ const TypeSpec& Taxon::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void Taxon::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "taxonName") 
     {

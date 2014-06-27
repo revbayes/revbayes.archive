@@ -28,7 +28,7 @@ using namespace RevLanguage;
  *  sufficient for all other types of syntax elements.
  *
  */
-RbPtr<Variable> SyntaxElement::evaluateDeterministicExpressionContent(Environment& env) {
+RevPtr<Variable> SyntaxElement::evaluateDeterministicExpressionContent(Environment& env) {
 
     return evaluateContent(env);
 }

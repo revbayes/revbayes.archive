@@ -34,7 +34,7 @@
 #define Variable_H
 
 #include "RevObject.h"
-#include "RbPtr.h"
+#include "RevPtr.h"
 #include "TypeSpec.h"
 
 #include <string>

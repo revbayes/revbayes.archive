@@ -37,24 +37,24 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
         // Member method inits
-        const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        const MethodTable&                          getMethods(void) const;                                                 //!< Get methods
+        RevObject*                                  executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        RbPtr<const Variable>                       model;
-        RbPtr<const Variable>                       moves;
-        RbPtr<const Variable>                       monitors;
-        RbPtr<const Variable>                       moveSchedule;
-        RbPtr<const Variable>                       numChains;
-        RbPtr<const Variable>                       numProcessors;
-        RbPtr<const Variable>                       startHeat;
-        RbPtr<const Variable>                       deltaHeat;
-        RbPtr<const Variable>                       sigmaHeat;
-        RbPtr<const Variable>                       swapInterval;
-        RbPtr<const Variable>                       append;
+        RevPtr<const Variable>                      model;
+        RevPtr<const Variable>                      moves;
+        RevPtr<const Variable>                      monitors;
+        RevPtr<const Variable>                      moveSchedule;
+        RevPtr<const Variable>                      numChains;
+        RevPtr<const Variable>                      numProcessors;
+        RevPtr<const Variable>                      startHeat;
+        RevPtr<const Variable>                      deltaHeat;
+        RevPtr<const Variable>                      sigmaHeat;
+        RevPtr<const Variable>                      swapInterval;
+        RevPtr<const Variable>                      append;
     };
     
 }

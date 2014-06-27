@@ -42,8 +42,8 @@ class SyntaxClassDef : public SyntaxElement {
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RbPtr<Variable>             evaluateContent( Environment& env );                                            //!< Get semantic value
-        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);//!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
+        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                 className;                                                                      //!< The name of the class

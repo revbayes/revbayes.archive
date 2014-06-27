@@ -115,22 +115,22 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     //    else if (name == "nexcludedtaxa")
     //    {
     //        int n = (int)deletedTaxa.size();
-    //        return RbPtr<RevObject>( new Natural(n) );
+    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "nexcludedchars")
     //    {
     //        int n = (int)deletedCharacters.size();
-    //        return RbPtr<RevObject>( new Natural(n) );
+    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "nincludedtaxa")
     //    {
     //        int n = (int)(data.getNumberOfTaxa() - deletedTaxa.size());
-    //        return RbPtr<RevObject>( new Natural(n) );
+    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "nincludedchars")
     //    {
     //        int n = (int)(data.getNumberOfCharacters() - deletedCharacters.size());
-    //        return RbPtr<RevObject>( new Natural(n) );
+    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "excludedtaxa")
     //    {
@@ -172,12 +172,12 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     //    else if (name == "nconstantpatterns")
     //    {
     //        int n = (int)numConstantPatterns();
-    //        return RbPtr<RevObject>( new Natural(n) );
+    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     //    else if (name == "ncharswithambiguity")
     //    {
     //        int n = (int)numMissAmbig();
-    //        return RbPtr<RevObject>( new Natural(n) );
+    //        return RevPtr<RevObject>( new Natural(n) );
     //    }
     else if (name == "show") 
     {

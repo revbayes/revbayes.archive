@@ -101,7 +101,7 @@ void SlidingMove::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void SlidingMove::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void SlidingMove::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) 
     {

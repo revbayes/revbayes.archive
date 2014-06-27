@@ -121,7 +121,7 @@ SyntaxMultiplicationAssignment* SyntaxMultiplicationAssignment::clone () const
  * Evaluate the content of this syntax element.
  * This will perform an Multiplication assignment operation.
  */
-RbPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& env ) 
 {
     
 #ifdef DEBUG_PARSER
@@ -129,7 +129,7 @@ RbPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& en
 #endif
     
     // Get variable info from lhs
-    RbPtr<Variable> theVariable = variable->createVariable( env );
+    RevPtr<Variable> theVariable = variable->createVariable( env );
     
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in multiplication assignment" );
@@ -138,7 +138,7 @@ RbPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& en
     
     
     // Calculate the value of the rhs expression
-    const RbPtr<Variable>& rhs = expression->evaluateContent( env );
+    const RevPtr<Variable>& rhs = expression->evaluateContent( env );
     if ( rhs == NULL )
         throw RbException( "Invalid NULL variable returned by rhs expression in multiplication assignment" );
     

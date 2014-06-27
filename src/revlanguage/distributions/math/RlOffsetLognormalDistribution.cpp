@@ -104,7 +104,7 @@ void OffsetLognormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OffsetLognormalDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void OffsetLognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

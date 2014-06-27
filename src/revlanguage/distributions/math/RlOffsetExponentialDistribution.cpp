@@ -108,7 +108,7 @@ void OffsetExponentialDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OffsetExponentialDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void OffsetExponentialDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lambda" ) 
     {

@@ -121,7 +121,7 @@ RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute
     for ( size_t i = 1; i < (args.size()-1); i++ ) {
         
         if ( args[i].isConstant() ) {
-            copyObject->setConstMember( args[i].getLabel(), RbPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
         } else {
             copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
         }

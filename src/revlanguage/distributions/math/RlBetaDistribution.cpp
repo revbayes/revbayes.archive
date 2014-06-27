@@ -121,7 +121,7 @@ void BetaDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void BetaDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void BetaDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "alpha" ) 
     {

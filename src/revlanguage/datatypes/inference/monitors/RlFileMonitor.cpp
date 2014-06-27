@@ -34,7 +34,7 @@ void FileMonitor::constructInternalObject( void ) {
     const std::string& sep = static_cast<const RlString &>( separator->getValue() ).getValue();
     int g = static_cast<const Natural &>( printgen->getValue() ).getValue();
     std::set<RevBayesCore::DagNode *> n;
-    for (std::set<RbPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::DagNode* node = (*i)->getValue().getValueNode();
         n.insert( node );
     }
@@ -107,7 +107,7 @@ void FileMonitor::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void FileMonitor::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void FileMonitor::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
         vars.insert( var );

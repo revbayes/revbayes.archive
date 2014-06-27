@@ -139,9 +139,9 @@ SyntaxStatement* SyntaxStatement::clone () const {
 
 
 /** Get semantic value: it is here that we execute the statement */
-RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 
-    RbPtr<Variable> result = NULL;
+    RevPtr<Variable> result = NULL;
     
     if (statementType == For) {
 
@@ -339,7 +339,7 @@ RbPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
     
-    RbPtr<Variable> temp = expr->evaluateContent( env );
+    RevPtr<Variable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;

@@ -58,9 +58,9 @@ class SyntaxVariable : public SyntaxElement {
 
         // Regular functions
         std::vector<int>                    computeIndex(Environment& env);                                                         //!< Evaluate index
-        RbPtr<Variable>                     createVariable(Environment& env);                                                       //!< Get semantic value 
-        RbPtr<Variable>                     evaluateDeterministicExpressionContent(Environment& env);                               //!< Get semantic value (deterministic variable lookup/reference) if part of a deterministic expression
-        RbPtr<Variable>                     evaluateContent(Environment& env);                                                      //!< Get semantic value
+        RevPtr<Variable>                    createVariable(Environment& env);                                                       //!< Get semantic value
+        RevPtr<Variable>                    evaluateDeterministicExpressionContent(Environment& env);                               //!< Get semantic value (deterministic variable lookup/reference) if part of a deterministic expression
+        RevPtr<Variable>                    evaluateContent(Environment& env);                                                      //!< Get semantic value
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                hasFunctionCall(void) const;                                                            //!< Does this variable have a function call (e.g. a.xxx() )
@@ -72,7 +72,7 @@ class SyntaxVariable : public SyntaxElement {
         SyntaxFunctionCall*                 functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
         std::list<SyntaxElement*>*          index;                                                                                  //!< Vector of int indices to variable element
         SyntaxVariable*                     baseVariable;                                                                           //!< Base variable (pointing to a composite node)
-        RevObject*                   replacementValue;
+        RevObject*                          replacementValue;
 };
     
 }

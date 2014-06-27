@@ -298,7 +298,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                     msg << ",";
                 }
 //                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
-                const RbPtr<const Variable>& theVar = j->getVariable();
+                const RevPtr<const Variable>& theVar = j->getVariable();
                 msg << " " << theVar->getValue().getTypeSpec();
                 
             }

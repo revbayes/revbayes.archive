@@ -33,27 +33,27 @@ namespace RevLanguage {
         
         PowerPosterior(void);                                                                                                        //!< Default constructor
         
-        // Basic utility functions
-        virtual PowerPosterior*                     clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal PowerPosterior object.
-        static const std::string&                   getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+                                                    // Basic utility functions
+        virtual PowerPosterior*                     clone(void) const;                                                          //!< Clone object
+        void                                        constructInternalObject(void);                                              //!< We construct the a new internal PowerPosterior object.
+        static const std::string&                   getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
+        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
         
-        // Member method inits
-        const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RevObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+                                                    // Member method inits
+        const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
+        RevObject*                                  executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        RbPtr<const Variable>                       model;
-        RbPtr<const Variable>                       moves;
-        RbPtr<const Variable>                       powers;
-        RbPtr<const Variable>                       filename;
+        RevPtr<const Variable>                      model;
+        RevPtr<const Variable>                      moves;
+        RevPtr<const Variable>                      powers;
+        RevPtr<const Variable>                      filename;
         
     };
     

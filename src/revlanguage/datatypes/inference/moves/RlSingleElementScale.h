@@ -35,12 +35,12 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
+    
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);             //!< Set member variable
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
-        
-        RbPtr<const Variable>                       x;                                                                                              //!< The variable holding the real valued vector.
-        RbPtr<const Variable>                       lambda;                                                                                         //!< The variable for the tuning parameter.
-        RbPtr<const Variable>                       tune;                                                                                           //!< The variable telling if to tune or not.
+        RevPtr<const Variable>                      x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const Variable>                      lambda;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const Variable>                      tune;                                                                                           //!< The variable telling if to tune or not.
         
     };
     

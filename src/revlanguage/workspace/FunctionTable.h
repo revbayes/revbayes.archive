@@ -20,7 +20,7 @@
 #define FunctionTable_H
 
 #include "RevObject.h"
-#include "RbPtr.h"
+#include "RevPtr.h"
 
 #include <map>
 #include <ostream>

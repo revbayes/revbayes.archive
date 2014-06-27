@@ -35,7 +35,7 @@ class RangeRule : public ArgumentRule {
         void                        printValue(std::ostream& o) const;                                                  //!< Print value for user
 
         // MinmaxRule functions
-        bool                        isArgumentValid(const RbPtr<const Variable>& var, bool convert = false) const;              //!< Is var valid argument?
+        bool                        isArgumentValid(const RevPtr<const Variable>& var, bool convert = false) const;     //!< Is var valid argument?
 
     protected:
         valType                     minVal;                                                                             //!< Min value
@@ -73,7 +73,7 @@ RangeRule<valType>::RangeRule( const std::string& argName, valType* defVal, valT
 
 /** Check whether argument is constant and within the permissible range */
 template <typename valType>
-bool RangeRule<valType>::isArgumentValid( const RbPtr<const Variable>& var, bool convert ) const {
+bool RangeRule<valType>::isArgumentValid( const RevPtr<const Variable>& var, bool convert ) const {
 
     if ( !var->isTypeSpec( ConstantNode::getClassTypeSpec() ) )
         return false;

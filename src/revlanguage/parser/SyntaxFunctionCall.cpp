@@ -97,7 +97,7 @@ SyntaxFunctionCall* SyntaxFunctionCall::clone () const {
 
 
 /** Convert element to a deterministic function node. */
-RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 
     // Package arguments
     std::vector<Argument> args;
@@ -109,7 +109,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
 #endif
         
         const RlString& theLabel = (*i)->getLabel();
-        RbPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
+        RevPtr<Variable> theVar = (*i)->getExpression().evaluateContent(env);
         
         Argument theArg = Argument( theVar, theLabel.getValue() );
         args.push_back( theArg );
@@ -147,7 +147,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     else 
     {
 
-        RbPtr<Variable> theVar = variable->evaluateContent( env );
+        RevPtr<Variable> theVar = variable->evaluateContent( env );
             
         RevObject &theMemberObject = theVar->getValue();
             
@@ -165,7 +165,7 @@ RbPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     RevObject* funcReturnValue = func->execute();
     delete func;
 
-    return RbPtr<Variable>( new Variable( funcReturnValue ) );
+    return RevPtr<Variable>( new Variable( funcReturnValue ) );
 }
 
 

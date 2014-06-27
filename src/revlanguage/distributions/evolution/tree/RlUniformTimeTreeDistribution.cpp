@@ -91,7 +91,7 @@ const TypeSpec& UniformTimeTreeDistribution::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void UniformTimeTreeDistribution::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void UniformTimeTreeDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "originTime" ) {
         originTime = var;

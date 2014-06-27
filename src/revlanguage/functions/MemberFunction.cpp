@@ -94,7 +94,7 @@ const TypeSpec& MemberFunction::getReturnType(void) const {
 }
 
 
-void MemberFunction::setMemberObject( const RbPtr<Variable> &obj) {
+void MemberFunction::setMemberObject( const RevPtr<Variable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;

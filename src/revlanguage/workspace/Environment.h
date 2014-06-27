@@ -30,7 +30,7 @@
 
 #include "FunctionTable.h"
 #include "RevObject.h"
-#include "RbPtr.h"
+#include "RevPtr.h"
 #include "Variable.h"
 #include "VariableSlot.h"
 
@@ -65,7 +65,7 @@ namespace RevLanguage {
         // Regular functions
         bool                                addFunction(const std::string& name, Function* func);                               //!< Add function
         void                                addVariable(const std::string& name, VariableSlot* slot);                           //!< Add variable
-        void                                addVariable(const std::string& name, const RbPtr<Variable>& var);                   //!< Add variable
+        void                                addVariable(const std::string& name, const RevPtr<Variable>& var);                   //!< Add variable
         void                                addVariable(const std::string& name, RevObject* variable);                   //!< Add variable
         void                                addVariable(const std::string& name);                                               //!< Add variable
         void                                clear(void);                                                                        //!< clears the variable table
@@ -88,7 +88,7 @@ namespace RevLanguage {
         void                                setName(size_t i, const std::string &n);                                            //!< Replace the name of the i'th variable
         void                                setParentEnvironment(Environment* newEnvironment);                                  //!< Set parent Environment
         size_t                              size(void) const;                                                                   //!< Get size of variable table 
-        void                                remove(const RbPtr<Variable>& var);                                                 //!< Remove variable from workspace
+        void                                remove(const RevPtr<Variable>& var);                                                 //!< Remove variable from workspace
         void                                remove(const std::string& var);                                                     //!< Remove variable from workspace
         
 

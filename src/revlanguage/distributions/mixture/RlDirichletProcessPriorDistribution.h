@@ -47,13 +47,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
-        RbPtr<const Variable>                           concentration;
-        RbPtr<const Variable>                           baseDistribution;
-        RbPtr<const Variable>                           numElements;
+        RevPtr<const Variable>                          concentration;
+        RevPtr<const Variable>                          baseDistribution;
+        RevPtr<const Variable>                          numElements;
         
     };
     
@@ -160,7 +160,7 @@ const RevLanguage::TypeSpec& RevLanguage::DirichletProcessPriorDistribution<valT
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::DirichletProcessPriorDistribution<valType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RevLanguage::DirichletProcessPriorDistribution<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "concentration" ) {
         concentration = var;

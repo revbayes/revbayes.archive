@@ -170,7 +170,7 @@ RevObject* UserFunction::executeCode( void ) {
     Signals::getSignals().clearFlags();
     
     // Set initial return value
-    RbPtr<Variable> retVar = NULL;
+    RevPtr<Variable> retVar = NULL;
     
     // Create new variable frame starting with the environment where we defined the function
     // If we can no longer access the variables we need, an error will be thrown, so referencing
@@ -179,7 +179,7 @@ RevObject* UserFunction::executeCode( void ) {
 
     // Add the arguments to the environment
     for (std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it) {
-        RbPtr<Variable> theVar = it->getVariable()->clone();
+        RevPtr<Variable> theVar = it->getVariable()->clone();
         functionEnvironment.addVariable( it->getLabel(), theVar );
     }
     
@@ -241,7 +241,7 @@ const TypeSpec& UserFunction::getReturnType(void) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void UserFunction::setArgumentVariable(std::string const &name, const RbPtr<const Variable> &var) {
+void UserFunction::setArgumentVariable(std::string const &name, const RevPtr<const Variable> &var) {
     
     // We actually just catch the call to the base class which would complain that the argument was not expected.
     // User functions handle their arguments in some unknown different way.

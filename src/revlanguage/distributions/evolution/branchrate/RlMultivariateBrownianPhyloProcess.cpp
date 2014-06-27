@@ -128,7 +128,7 @@ const TypeSpec& MultivariateBrownianPhyloProcess::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void MultivariateBrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void MultivariateBrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {

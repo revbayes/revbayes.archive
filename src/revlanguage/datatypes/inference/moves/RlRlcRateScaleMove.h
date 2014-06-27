@@ -36,11 +36,11 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        RbPtr<const Variable>                       v;
-        RbPtr<const Variable>                       lambda;
-        RbPtr<const Variable>                       tune;
+        RevPtr<const Variable>                      v;
+        RevPtr<const Variable>                      lambda;
+        RevPtr<const Variable>                      tune;
         
     };
     

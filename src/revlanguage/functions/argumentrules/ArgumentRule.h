@@ -19,9 +19,9 @@
 #ifndef ArgumentRule_H
 #define ArgumentRule_H
 
-#include "RbPtr.h"
-#include "TypeSpec.h"
 #include "Environment.h"
+#include "RevPtr.h"
+#include "TypeSpec.h"
 #include "VariableSlot.h"
 
 #include <string>
@@ -46,7 +46,7 @@ class ArgumentRule {
         const std::vector<TypeSpec>&        getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         virtual const Variable&             getDefaultVariable(void) const;                                                                     //!< Get default argument
         bool                                hasDefault(void) const;                                                                             //!< Has default?
-        virtual bool                        isArgumentValid(const RbPtr<const Variable> &var, bool convert = false) const;                      //!< Is var valid argument?
+        virtual bool                        isArgumentValid(const RevPtr<const Variable> &var, bool convert = false) const;                     //!< Is var valid argument?
         bool                                isConstant(void) const;
         virtual bool                        isEllipsis(void) const;
     

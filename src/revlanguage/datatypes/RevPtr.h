@@ -1,5 +1,5 @@
 /**
- * @file RbPtr.h
+ * @file RevPtr.h
  *
  * SuperSmartPointer:
  *
@@ -10,30 +10,25 @@
  * @brief Declaration of ReferenceCount
  *
  * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-03-07 15:57:47 +0100 (Wed, 07 Mar 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @since 2012-05-09, version 1.0
- *
- * $Id: RbPtr.h 1325 2012-03-07 14:57:47Z hoehna $
  */
 
-#ifndef RbPtr_H
-#define RbPtr_H
+#ifndef RevPtr_H
+#define RevPtr_H
 
 #include <string>
 
 namespace RevLanguage {
 
 template <typename ptrType>
-class RbPtr {
+class RevPtr {
     
 public:
-    RbPtr(ptrType* inPtr = NULL);
-    ~RbPtr(void);
-    RbPtr(const RbPtr<ptrType>& src);
-    RbPtr&                                      operator=(const RbPtr<ptrType>& rhs);
+    RevPtr(ptrType* inPtr = NULL);
+    ~RevPtr(void);
+    RevPtr(const RevPtr<ptrType>& src);
+    RevPtr&                                     operator=(const RevPtr<ptrType>& rhs);
     ptrType&                                    operator*(void) const;
     ptrType*                                    operator->(void) const;
     operator                                    ptrType*(void) const { return mPtr; }
@@ -57,25 +52,25 @@ private:
 
 
 template <typename ptrType>
-RevLanguage::RbPtr<ptrType>::RbPtr(ptrType* inPtr) {
+RevLanguage::RevPtr<ptrType>::RevPtr(ptrType* inPtr) {
     
     initializePointer(inPtr);
 }
 
 template <typename ptrType>
-RevLanguage::RbPtr<ptrType>::RbPtr(const RbPtr<ptrType>& src) {
+RevLanguage::RevPtr<ptrType>::RevPtr(const RevPtr<ptrType>& src) {
     
     initializePointer(src.mPtr);
 }
 
 template <typename ptrType>
-RevLanguage::RbPtr<ptrType>::~RbPtr(void) {
+RevLanguage::RevPtr<ptrType>::~RevPtr(void) {
     
     finalizePointer();
 }
 
 template <typename ptrType>
-RevLanguage::RbPtr<ptrType>& RevLanguage::RbPtr<ptrType>::operator=(const RbPtr<ptrType>& rhs) {
+RevLanguage::RevPtr<ptrType>& RevLanguage::RevPtr<ptrType>::operator=(const RevPtr<ptrType>& rhs) {
     
     if (this == &rhs) {
         return (*this);
@@ -87,7 +82,7 @@ RevLanguage::RbPtr<ptrType>& RevLanguage::RbPtr<ptrType>::operator=(const RbPtr<
 
 
 template <typename ptrType>
-void RevLanguage::RbPtr<ptrType>::initializePointer(ptrType* inPtr) {
+void RevLanguage::RevPtr<ptrType>::initializePointer(ptrType* inPtr) {
     
     mPtr = inPtr;
     
@@ -95,7 +90,7 @@ void RevLanguage::RbPtr<ptrType>::initializePointer(ptrType* inPtr) {
 }
 
 template <typename ptrType>
-void RevLanguage::RbPtr<ptrType>::finalizePointer(void) {
+void RevLanguage::RevPtr<ptrType>::finalizePointer(void) {
     
     if ( decrementCountForAddress(mPtr) ) { 
         delete mPtr;
@@ -103,13 +98,13 @@ void RevLanguage::RbPtr<ptrType>::finalizePointer(void) {
 }
 
 template <typename ptrType>
-ptrType* RevLanguage::RbPtr<ptrType>::operator->(void) const {
+ptrType* RevLanguage::RevPtr<ptrType>::operator->(void) const {
     
     return (mPtr);
 }
 
 template <typename ptrType>
-ptrType& RevLanguage::RbPtr<ptrType>::operator*(void) const {
+ptrType& RevLanguage::RevPtr<ptrType>::operator*(void) const {
     
     if ( mPtr == NULL ) {
         std::cerr << "Major BUG: Dereferencing NULL pointer!!!" << std::endl;
@@ -120,7 +115,7 @@ ptrType& RevLanguage::RbPtr<ptrType>::operator*(void) const {
 
 
 template <typename ptrType>
-size_t RevLanguage::RbPtr<ptrType>::countForAddress(const ptrType* qPtr) {
+size_t RevLanguage::RevPtr<ptrType>::countForAddress(const ptrType* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return RbConstants::Size_t::nan;
@@ -130,7 +125,7 @@ size_t RevLanguage::RbPtr<ptrType>::countForAddress(const ptrType* qPtr) {
 
 
 template <typename ptrType>
-void RevLanguage::RbPtr<ptrType>::incrementCountForAddress(ptrType* qPtr) {
+void RevLanguage::RevPtr<ptrType>::incrementCountForAddress(ptrType* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return;
@@ -139,7 +134,7 @@ void RevLanguage::RbPtr<ptrType>::incrementCountForAddress(ptrType* qPtr) {
 }
 
 template <typename ptrType>
-bool RevLanguage::RbPtr<ptrType>::decrementCountForAddress(ptrType* qPtr) {
+bool RevLanguage::RevPtr<ptrType>::decrementCountForAddress(ptrType* qPtr) {
     
     // check if we got the NULL pointer
     if (qPtr == 0) return false;

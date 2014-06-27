@@ -28,11 +28,11 @@ namespace RevLanguage {
     class MultivariateNormalDistribution :  public TypedDistribution< Vector<Real> > {
         
     public:
-        MultivariateNormalDistribution( void );
-        virtual ~MultivariateNormalDistribution();
+                                                        MultivariateNormalDistribution( void );
+                                               virtual ~MultivariateNormalDistribution();
         
         // Basic utility functions
-        MultivariateNormalDistribution*                          clone(void) const;                                                              //!< Clone the object
+        MultivariateNormalDistribution*                 clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -41,16 +41,16 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::MultivariateNormalDistribution*            createDistribution(void) const;
+        RevBayesCore::MultivariateNormalDistribution*   createDistribution(void) const;
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
-        RbPtr<const Variable>                           mean;
-        RbPtr<const Variable>                           precision;
+        RevPtr<const Variable>                          mean;
+        RevPtr<const Variable>                          precision;
         
     };
     

@@ -47,7 +47,7 @@ public:
     const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
     const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
 //    void                                setMemberObject(RevObject* obj);                                            //!< Set the member object to which this function belongs
-    void                                setMemberObject(const RbPtr<Variable> &obj);                                //!< Set the member object to which this function belongs
+    void                                setMemberObject(const RevPtr<Variable> &obj);                               //!< Set the member object to which this function belongs
     void                                setMethodName(const std::string& name);                                     //!< Set name of member method
         
     
@@ -55,7 +55,7 @@ protected:
     const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
     std::string                         funcName;                                                                   //!< Name of member method
 //    RevObject*                          object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
-    RbPtr<Variable>                     object;
+    RevPtr<Variable>                    object;
     const TypeSpec                      returnType;                                                                  //!< Return type (different for different member functions)
     
 };

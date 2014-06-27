@@ -249,7 +249,7 @@
 //        [self removeAllDataMatrices];
 //        for (int i=0; i<dnc->size(); i++)
 //            {
-//            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
+//            const RevPtr<RbObject>& theDagNode = dnc->getElement( i );
 //            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
 //            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
 //            [newMatrix setAlignmentMethod:@"Unknown"];

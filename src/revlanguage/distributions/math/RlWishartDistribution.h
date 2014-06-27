@@ -12,9 +12,9 @@
 #include <iostream>
 
 
-#include "WishartDistribution.h"
-#include "RlTypedDistribution.h"
 #include "RealSymmetricMatrix.h"
+#include "RlTypedDistribution.h"
+#include "WishartDistribution.h"
 
 namespace RevLanguage {
     
@@ -25,7 +25,7 @@ namespace RevLanguage {
         virtual ~WishartDistribution();
         
         // Basic utility functions
-        WishartDistribution*                             clone(void) const;                                                              //!< Clone the object
+        WishartDistribution*                            clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -34,18 +34,18 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::WishartDistribution*               createDistribution(void) const;
+        RevBayesCore::WishartDistribution*              createDistribution(void) const;
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         
     private:
- //       RbPtr<const Variable>                           omega;
-        RbPtr<const Variable>                           kappa;
-        RbPtr<const Variable>                           df;
-        RbPtr<const Variable>                           dim;
+ //       RevPtr<const Variable>                          omega;
+        RevPtr<const Variable>                          kappa;
+        RevPtr<const Variable>                          df;
+        RevPtr<const Variable>                          dim;
     };
     
 }
