@@ -7,7 +7,7 @@
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlAbstractCharacterData.h"
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
@@ -359,7 +359,7 @@
     
     // retrieve the value (character data matrix or matrices) from the workspace
     const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
-    if ( dv == RevLanguage::RbNullObject::getInstance() )
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];

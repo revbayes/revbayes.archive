@@ -53,7 +53,7 @@ namespace RevLanguage {
 #include "ConstantNode.h"
 #include "NexusWriter.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"

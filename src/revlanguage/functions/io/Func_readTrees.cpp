@@ -5,7 +5,7 @@
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTimeTree.h"

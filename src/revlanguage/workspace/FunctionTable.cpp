@@ -18,9 +18,9 @@
 #include "ConstantNode.h"
 #include "FunctionTable.h"
 #include "RbException.h"
-#include "RbNullObject.h"
-#include "RlFunction.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
+#include "RlFunction.h"
 #include "StochasticNode.h"
 
 #include <iomanip>

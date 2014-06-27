@@ -20,7 +20,7 @@
 #include "Ellipsis.h"
 #include "Func_write.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 
@@ -141,7 +141,7 @@ const TypeSpec& Func_write::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_write::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
     return returnTypeSpec;
 }
 

@@ -16,8 +16,8 @@
 #include "RlBoolean.h"
 #include "Environment.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
 #include "Signals.h"
 #include "SyntaxForLoop.h"
 #include "SyntaxStatement.h"
@@ -173,7 +173,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 result = theSyntaxElement->evaluateContent(loopEnv);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getValue() != RbNullObject::getInstance()) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getValue() != RevNullObject::getInstance()) {
                     std::ostringstream msg;
                     result->getValue().printValue(msg);
                     RBOUT( msg.str() );

@@ -7,8 +7,8 @@
 #include "Model.h"
 #include "RevObject.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "Real.h"
+#include "RevNullObject.h"
 #include "RlPowerPosterior.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
@@ -44,7 +44,7 @@ void PowerPosterior::constructInternalObject( void ) {
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
     
     std::vector<double> beta;
-    if ( powers->getValue() != RbNullObject::getInstance() )
+    if ( powers->getValue() != RevNullObject::getInstance() )
     {
         beta = static_cast<const Vector<RealPos> &>( powers->getValue() ).getValue();
     }

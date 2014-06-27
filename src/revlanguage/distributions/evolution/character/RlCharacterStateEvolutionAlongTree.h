@@ -50,7 +50,7 @@ namespace RevLanguage {
 #include "OptionRule.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "NucleotideBranchHeterogeneousCharEvoModel.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlRateMatrix.h"
 #include "RlString.h"
 #include "RateMatrix.h"
@@ -92,7 +92,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
-    if ( rootFrequencies->getValue() != RbNullObject::getInstance() )
+    if ( rootFrequencies->getValue() != RevNullObject::getInstance() )
     {
         rf = static_cast<const Simplex &>( rootFrequencies->getValue() ).getValueNode();
     }

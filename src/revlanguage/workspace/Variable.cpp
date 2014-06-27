@@ -16,9 +16,9 @@
  */
 
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RevNullObject.h"
 #include "TypeSpec.h"
 #include "Variable.h"
 
@@ -131,7 +131,7 @@ const RevObject& Variable::getValue(void) const {
 
     if (value == NULL) 
     {
-        return RbNullObject::getInstance();
+        return RevNullObject::getInstance();
     }
     
     return *value;
@@ -142,7 +142,7 @@ RevObject& Variable::getValue(void) {
     
     if (value == NULL) 
     {
-        return RbNullObject::getInstance();
+        return RevNullObject::getInstance();
     }
     
     return *value;

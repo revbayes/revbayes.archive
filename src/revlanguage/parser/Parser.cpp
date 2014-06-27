@@ -17,8 +17,8 @@
 #include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
 #include "RlString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"
@@ -179,7 +179,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     }
 
     // Print result if the root is not an assign expression
-    if ( !root->isAssignment() && result != NULL && result->getValue() != RbNullObject::getInstance()) {
+    if ( !root->isAssignment() && result != NULL && result->getValue() != RevNullObject::getInstance()) {
         std::ostringstream msg;
         result->getValue().printValue(msg);
         RBOUT( msg.str() );
