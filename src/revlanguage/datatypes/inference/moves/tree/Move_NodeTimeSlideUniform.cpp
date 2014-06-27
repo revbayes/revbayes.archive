@@ -8,10 +8,10 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RevObject.h"
+#include "Move_NodeTimeSlideUniform.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlNodeTimeSlideUniform.h"
+#include "RevObject.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -19,19 +19,19 @@
 
 using namespace RevLanguage;
 
-NodeTimeSlideUniform::NodeTimeSlideUniform() : Move() {
+Move_NodeTimeSlideUniform::Move_NodeTimeSlideUniform() : Move() {
     
 }
 
 
 /** Clone object */
-NodeTimeSlideUniform* NodeTimeSlideUniform::clone(void) const {
+Move_NodeTimeSlideUniform* Move_NodeTimeSlideUniform::clone(void) const {
     
-	return new NodeTimeSlideUniform(*this);
+	return new Move_NodeTimeSlideUniform(*this);
 }
 
 
-void NodeTimeSlideUniform::constructInternalObject( void ) {
+void Move_NodeTimeSlideUniform::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -44,15 +44,15 @@ void NodeTimeSlideUniform::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& NodeTimeSlideUniform::getClassName(void) { 
+const std::string& Move_NodeTimeSlideUniform::getClassName(void) { 
     
-    static std::string rbClassName = "Move_NodeTimeSlideUniform";
+    static std::string rbClassName = "Move_Move_NodeTimeSlideUniform";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& NodeTimeSlideUniform::getClassTypeSpec(void) { 
+const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -62,7 +62,7 @@ const TypeSpec& NodeTimeSlideUniform::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& NodeTimeSlideUniform::getMemberRules(void) const {
+const MemberRules& Move_NodeTimeSlideUniform::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& NodeTimeSlideUniform::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& NodeTimeSlideUniform::getTypeSpec( void ) const {
+const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -91,9 +91,9 @@ const TypeSpec& NodeTimeSlideUniform::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void NodeTimeSlideUniform::printValue(std::ostream &o) const {
+void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const {
     
-    o << "NodeTimeSlideUniform(";
+    o << "Move_NodeTimeSlideUniform(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -105,7 +105,7 @@ void NodeTimeSlideUniform::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NodeTimeSlideUniform::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_NodeTimeSlideUniform::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;

@@ -8,10 +8,11 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RevObject.h"
+#include "Move_TreeScale.h"
 #include "RbException.h"
 #include "RealPos.h"
-#include "RlNearestNeighborInterchange.h"
+#include "RevObject.h"
+#include "RlBoolean.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -19,40 +20,42 @@
 
 using namespace RevLanguage;
 
-NearestNeighborInterchange::NearestNeighborInterchange() : Move() {
+Move_TreeScale::Move_TreeScale() : Move() {
     
 }
 
 
 /** Clone object */
-NearestNeighborInterchange* NearestNeighborInterchange::clone(void) const {
+Move_TreeScale* Move_TreeScale::clone(void) const {
     
-	return new NearestNeighborInterchange(*this);
+	return new Move_TreeScale(*this);
 }
 
 
-void NearestNeighborInterchange::constructInternalObject( void ) {
+void Move_TreeScale::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
+    double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
+    bool tune = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::NearestNeighborInterchange(t, w);
+    value = new RevBayesCore::TreeScale(t, l, tune, w);
 }
 
 
 /** Get class name of object */
-const std::string& NearestNeighborInterchange::getClassName(void) { 
+const std::string& Move_TreeScale::getClassName(void) { 
     
-    static std::string rbClassName = "Move_NNI";
+    static std::string rbClassName = "Move_Move_TreeScale";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& NearestNeighborInterchange::getClassTypeSpec(void) { 
+const TypeSpec& Move_TreeScale::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -62,13 +65,15 @@ const TypeSpec& NearestNeighborInterchange::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& NearestNeighborInterchange::getMemberRules(void) const {
+const MemberRules& Move_TreeScale::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
         nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
+        nniMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
+        nniMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
@@ -81,7 +86,7 @@ const MemberRules& NearestNeighborInterchange::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& NearestNeighborInterchange::getTypeSpec( void ) const {
+const TypeSpec& Move_TreeScale::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -91,9 +96,9 @@ const TypeSpec& NearestNeighborInterchange::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void NearestNeighborInterchange::printValue(std::ostream &o) const {
+void Move_TreeScale::printValue(std::ostream &o) const {
     
-    o << "NNI(";
+    o << "Move_TreeScale(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -105,10 +110,16 @@ void NearestNeighborInterchange::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void NearestNeighborInterchange::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_TreeScale::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
+    }
+    else if ( name == "lambda" ) {
+        lambda = var;
+    }
+    else if ( name == "tune" ) {
+        tuning = var;
     }
     else {
         Move::setConstMemberVariable(name, var);

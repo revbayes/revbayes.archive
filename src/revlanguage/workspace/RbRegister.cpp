@@ -110,16 +110,16 @@
 #include "Move_VectorSingleElementSlide.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-#include "RlFixedNodeheightPruneRegraft.h"
-#include "RlNarrowExchange.h"
-#include "RlNearestNeighborInterchange.h"
-#include "RlNearestNeighborInterchange_nonClock.h"
-#include "RlNodeTimeSlideUniform.h"
-#include "RlRateAgeBetaShift.h"
-#include "RlRootTimeSlide.h"
-#include "RlSubtreeScale.h"
-#include "RlTreeScale.h"
-#include "RlWeightedNodeTimeSlide.h"
+#include "Move_FNPR.h"
+#include "Move_NarrowExchange.h"
+#include "Move_NNIClock.h"
+#include "Move_NNINonclock.h"
+#include "Move_NodeTimeSlideUniform.h"
+#include "Move_RateAgeBetaShift.h"
+#include "Move_RootTimeSlide.h"
+#include "Move_SubtreeScale.h"
+#include "Move_TreeScale.h"
+#include "Move_WeightedNodeTimeSlide.h"
 
 /* Math types (in folder "datatypes/math") */
 #include "RealMatrix.h"
@@ -369,6 +369,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Add moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
         ///////////////////////////////////////////////////////////////////////////////////
         
+        /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
+        
         /* Moves on real values */
         addTypeWithConstructor("mvScale",               new Move_Scale() );
         addTypeWithConstructor("mvSlide",               new Move_Slide() );
@@ -412,27 +414,27 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor("mVectorSingleElementSliding",   new Move_VectorSingleElementSlide() );
 
         
-        /* Add tree proposals (in folder "datatypes/inference/moves/tree") */
-        addTypeWithConstructor("mvFNPR",                    new FixedNodeheightPruneRegraft() );
-        addTypeWithConstructor("mvNarrow",                  new NarrowExchange() );
-        addTypeWithConstructor("mvNNI",                     new NearestNeighborInterchange() );
-        addTypeWithConstructor("mvNNI",                     new NearestNeighborInterchange_nonClock() );
-        addTypeWithConstructor("mvNodeTimeSlideUniform",    new NodeTimeSlideUniform() );
-        addTypeWithConstructor("mvRateAgeBetaShift",        new RateAgeBetaShift() );
-        addTypeWithConstructor("mvRootTimeSlide",           new RootTimeSlide() );
-        addTypeWithConstructor("mvSubtreeScale",            new SubtreeScale() );
-        addTypeWithConstructor("mvTreeScale",               new TreeScale() );
+        /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+        addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
+        addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
+        addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
+        addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
+        addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor("mvRateAgeBetaShift",        new Move_RateAgeBetaShift() );
+        addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
+        addTypeWithConstructor("mvSubtreeScale",            new Move_SubtreeScale() );
+        addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
 
         // nonstandard forms (for backward compatibility)
-        addTypeWithConstructor("mFNPR",                 new FixedNodeheightPruneRegraft() );
-        addTypeWithConstructor("mNarrow",               new NarrowExchange() );
-        addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange() );
-        addTypeWithConstructor("mNNI",                  new NearestNeighborInterchange_nonClock() );
-        addTypeWithConstructor("mNodeTimeSlideUniform", new NodeTimeSlideUniform() );
-        addTypeWithConstructor("mRateAgeBetaShift",     new RateAgeBetaShift() );
-        addTypeWithConstructor("mRootTimeSlide",        new RootTimeSlide() );
-        addTypeWithConstructor("mSubtreeScale",         new SubtreeScale() );
-        addTypeWithConstructor("mTreeScale",            new TreeScale() );
+        addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
+        addTypeWithConstructor("mNarrow",               new Move_NarrowExchange() );
+        addTypeWithConstructor("mNNI",                  new Move_NNIClock() );
+        addTypeWithConstructor("mNNI",                  new Move_NNINonclock() );
+        addTypeWithConstructor("mNodeTimeSlideUniform", new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor("mRateAgeBetaShift",     new Move_RateAgeBetaShift() );
+        addTypeWithConstructor("mRootTimeSlide",        new Move_RootTimeSlide() );
+        addTypeWithConstructor("mSubtreeScale",         new Move_SubtreeScale() );
+        addTypeWithConstructor("mTreeScale",            new Move_TreeScale() );
         
         
         /* Add math types (in folder "datatypes/math") */

@@ -1,24 +1,7 @@
-/**
- * @file
- * This file contains the declaration of RevLanguage wrapper of TreeScale.
- *
- * @brief Declaration of RlSlidingMove
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
+#ifndef Move_NarrowExchange_H
+#define Move_NarrowExchange_H
 
-#ifndef RlFixedNodeheightPruneRegraft_H
-#define RlFixedNodeheightPruneRegraft_H
-
-#include "FixedNodeheightPruneRegraft.h"
+#include "NarrowExchange.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -27,15 +10,15 @@
 
 namespace RevLanguage {
     
-    class FixedNodeheightPruneRegraft : public Move {
+    class Move_NarrowExchange : public Move {
         
     public:
         
-        FixedNodeheightPruneRegraft(void);                                                                                  //!< Default constructor
+                                                    Move_NarrowExchange(void);                                                   //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual FixedNodeheightPruneRegraft*        clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
+        virtual Move_NarrowExchange*                     clone(void) const;                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)

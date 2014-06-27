@@ -15,8 +15,8 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlNearestNeighborInterchange_H
-#define RlNearestNeighborInterchange_H
+#ifndef Move_NNIClock_H
+#define Move_NNIClock_H
 
 #include "NearestNeighborInterchange.h"
 #include "RlMove.h"
@@ -27,14 +27,14 @@
 
 namespace RevLanguage {
     
-    class NearestNeighborInterchange : public Move {
+    class Move_NNIClock : public Move {
         
     public:
         
-        NearestNeighborInterchange(void);                                                                                      //!< Default constructor (0.0)
+        Move_NNIClock(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual NearestNeighborInterchange*         clone(void) const;                                                      //!< Clone object
+        virtual Move_NNIClock*         clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

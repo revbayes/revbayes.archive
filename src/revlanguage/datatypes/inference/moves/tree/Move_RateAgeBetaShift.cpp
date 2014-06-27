@@ -1,38 +1,32 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RevObject.h"
+#include "Move_RateAgeBetaShift.h"
 #include "RbException.h"
 #include "RealPos.h"
+#include "RevObject.h"
 #include "RlBoolean.h"
-#include "RlRootTimeSlide.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Vector.h"
+#include "VectorFunction.h"
 
 
 using namespace RevLanguage;
 
-RootTimeSlide::RootTimeSlide() : Move() {
+Move_RateAgeBetaShift::Move_RateAgeBetaShift() : Move() {
     
 }
 
 
 /** Clone object */
-RootTimeSlide* RootTimeSlide::clone(void) const {
+Move_RateAgeBetaShift* Move_RateAgeBetaShift::clone(void) const {
     
-	return new RootTimeSlide(*this);
+	return new Move_RateAgeBetaShift(*this);
 }
 
 
-void RootTimeSlide::constructInternalObject( void ) {
+void Move_RateAgeBetaShift::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
@@ -42,20 +36,30 @@ void RootTimeSlide::constructInternalObject( void ) {
     bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::RootTimeSlide(t, d, at, w);
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const Vector<RealPos> &>( rates->getRevObject() ).getDagNode();
+    std::vector< RevBayesCore::StochasticNode<double> *> rates;
+    RevBayesCore::DeterministicNode<std::vector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode<std::vector<double> > *>( tmpRates );
+    const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = static_cast< const RevBayesCore::VectorFunction<double> &>( dnode->getFunction() ).getParams();
+
+    for (size_t i = 0; i < pars.size(); ++i)
+    {
+        rates.push_back( const_cast<RevBayesCore::StochasticNode<double>* >(static_cast<const RevBayesCore::StochasticNode<double>* >( pars[i] ) ) );
+    }
+    
+    value = new RevBayesCore::RateAgeBetaShift(t, rates, d, at, w);
 }
 
 
 /** Get class name of object */
-const std::string& RootTimeSlide::getClassName(void) { 
+const std::string& Move_RateAgeBetaShift::getClassName(void) { 
     
-    static std::string rbClassName = "Move_RootTimeSlide";
+    static std::string rbClassName = "Move_Move_RateAgeBetaShift";
     
 	return rbClassName; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& RootTimeSlide::getClassTypeSpec(void) { 
+const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -65,13 +69,14 @@ const TypeSpec& RootTimeSlide::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& RootTimeSlide::getMemberRules(void) const {
+const MemberRules& Move_RateAgeBetaShift::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
         nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
+        nniMemberRules.push_back( new ArgumentRule( "rates", false, Vector<RealPos>::getClassTypeSpec() ) );
         nniMemberRules.push_back( new ArgumentRule( "delta", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
         nniMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
@@ -86,7 +91,7 @@ const MemberRules& RootTimeSlide::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& RootTimeSlide::getTypeSpec( void ) const {
+const TypeSpec& Move_RateAgeBetaShift::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -96,9 +101,9 @@ const TypeSpec& RootTimeSlide::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void RootTimeSlide::printValue(std::ostream &o) const {
+void Move_RateAgeBetaShift::printValue(std::ostream &o) const {
     
-    o << "RootTimeSlide(";
+    o << "Move_RateAgeBetaShift(";
     if (tree != NULL) {
         o << tree->getName();
     }
@@ -110,10 +115,13 @@ void RootTimeSlide::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void RootTimeSlide::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_RateAgeBetaShift::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "tree" ) {
         tree = var;
+    }
+    else if ( name == "rates" ) {
+        rates = var;
     }
     else if ( name == "delta" ) {
         delta = var;
