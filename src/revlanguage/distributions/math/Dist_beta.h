@@ -1,22 +1,17 @@
 /**
  * @file
  * This file contains the declaration of the Beta distribution, which is used create
- * random variables of uniform distributions.
+ * random variables of beta distributions.
  *
- * @brief Declaration and implementation of BetaDistribution
+ * @brief Declaration and implementation of Dist_beta
  *
  * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlBetaDistribution_H
-#define RlBetaDistribution_H
+#ifndef Dist_beta_H
+#define Dist_beta_H
 
 #include "BetaDistribution.h"
 #include "Probability.h"
@@ -24,14 +19,14 @@
 
 namespace RevLanguage {
     
-    class BetaDistribution :  public TypedDistribution<Probability> {
+    class Dist_beta :  public TypedDistribution<Probability> {
         
     public:
-        BetaDistribution( void );
-        virtual ~BetaDistribution();
+        Dist_beta( void );
+        virtual ~Dist_beta();
         
         // Basic utility functions
-        BetaDistribution*                               clone(void) const;                                                              //!< Clone the object
+        Dist_beta*                                      clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

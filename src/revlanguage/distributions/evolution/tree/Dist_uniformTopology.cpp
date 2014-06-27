@@ -1,13 +1,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlUniformTopologyDistribution.h"
-#include "UniformTopologyDistribution.h"
+#include "Dist_uniformTopology.h"
 #include "Natural.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlString.h"
 #include "RlTopology.h"
 #include "StochasticNode.h"
+#include "UniformTopologyDistribution.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
@@ -17,7 +17,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-UniformTopologyDistribution::UniformTopologyDistribution() : TypedDistribution<Topology>() 
+Dist_uniformTopology::Dist_uniformTopology() : TypedDistribution<Topology>() 
 {
     
 }
@@ -29,10 +29,10 @@ UniformTopologyDistribution::UniformTopologyDistribution() : TypedDistribution<T
  *
  * \return A new copy of the model. 
  */
-UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const 
+Dist_uniformTopology* Dist_uniformTopology::clone( void ) const 
 {
 
-    return new UniformTopologyDistribution(*this);
+    return new Dist_uniformTopology(*this);
 }
 
 
@@ -46,7 +46,7 @@ UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::UniformTopologyDistribution* UniformTopologyDistribution::createDistribution( void ) const 
+RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribution( void ) const 
 {
     // get the parameters
     int n = static_cast<const Natural &>( numTaxa->getRevObject() ).getDagNode()->getValue();
@@ -62,7 +62,7 @@ RevBayesCore::UniformTopologyDistribution* UniformTopologyDistribution::createDi
  *
  * \return The class' name.
  */
-const std::string& UniformTopologyDistribution::getClassName(void) 
+const std::string& Dist_uniformTopology::getClassName(void) 
 { 
     
     static std::string rbClassName = "Dist_uniformTopology";
@@ -76,7 +76,7 @@ const std::string& UniformTopologyDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& UniformTopologyDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -94,7 +94,7 @@ const TypeSpec& UniformTopologyDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& UniformTopologyDistribution::getMemberRules(void) const 
+const MemberRules& Dist_uniformTopology::getMemberRules(void) const 
 {
     
     static MemberRules distUniformTopologyMemberRules;
@@ -117,7 +117,7 @@ const MemberRules& UniformTopologyDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& UniformTopologyDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -137,7 +137,7 @@ const TypeSpec& UniformTopologyDistribution::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void UniformTopologyDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_uniformTopology::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "nTaxa" ) 

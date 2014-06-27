@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#ifndef __revbayes__RlMultivariateBrownianPhyloProcess__
-#define __revbayes__RlMultivariateBrownianPhyloProcess__
+#ifndef __revbayes__Dist_mvtBrownian__
+#define __revbayes__Dist_mvtBrownian__
 
 #include <iostream>
 
@@ -19,14 +19,14 @@
 
 namespace RevLanguage {
 
-    class MultivariateBrownianPhyloProcess :  public TypedDistribution< RealMatrix  > {
+    class Dist_mvtBrownian :  public TypedDistribution< RealMatrix  > {
         
     public:
-        MultivariateBrownianPhyloProcess( void ) {};
-        virtual ~MultivariateBrownianPhyloProcess() {};
+        Dist_mvtBrownian( void ) {};
+        virtual ~Dist_mvtBrownian() {};
         
         // Basic utility functions
-        MultivariateBrownianPhyloProcess*               clone(void) const;                                                              //!< Clone the object
+        Dist_mvtBrownian*                               clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -35,7 +35,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::MultivariateBrownianPhyloProcess*            createDistribution(void) const;
+        RevBayesCore::MultivariateBrownianPhyloProcess* createDistribution(void) const;
         
     protected:
         
@@ -52,4 +52,4 @@ namespace RevLanguage {
     
 }
 
-#endif /* defined(__revbayes__RlMultivariateBrownianPhyloProcess__) */
+#endif /* defined(__revbayes__Dist_mvtBrownian__) */

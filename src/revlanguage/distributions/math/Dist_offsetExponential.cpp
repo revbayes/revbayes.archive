@@ -9,31 +9,31 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_offsetExponential.h"
 #include "ExponentialDistribution.h"
-#include "RlOffsetExponentialDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
-OffsetExponentialDistribution::OffsetExponentialDistribution() : ContinuousDistribution() {
+Dist_offsetExponential::Dist_offsetExponential() : ContinuousDistribution() {
     
 }
 
 
-OffsetExponentialDistribution::~OffsetExponentialDistribution() {
+Dist_offsetExponential::~Dist_offsetExponential() {
     
 }
 
 
 
-OffsetExponentialDistribution* OffsetExponentialDistribution::clone( void ) const {
-    return new OffsetExponentialDistribution(*this);
+Dist_offsetExponential* Dist_offsetExponential::clone( void ) const {
+    return new Dist_offsetExponential(*this);
 }
 
 
-RevBayesCore::ExponentialDistribution* OffsetExponentialDistribution::createDistribution( void ) const {
+RevBayesCore::ExponentialDistribution* Dist_offsetExponential::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l     = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* o     = static_cast<const Real    &>( offset->getRevObject() ).getDagNode();
@@ -45,7 +45,7 @@ RevBayesCore::ExponentialDistribution* OffsetExponentialDistribution::createDist
 
 
 /* Get class name of object */
-const std::string& OffsetExponentialDistribution::getClassName(void) { 
+const std::string& Dist_offsetExponential::getClassName(void) { 
     
     static std::string rbClassName = "Dist_offsetExponential";
     
@@ -53,7 +53,7 @@ const std::string& OffsetExponentialDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& OffsetExponentialDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_offsetExponential::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -64,7 +64,7 @@ const TypeSpec& OffsetExponentialDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& OffsetExponentialDistribution::getMemberRules(void) const {
+const MemberRules& Dist_offsetExponential::getMemberRules(void) const {
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -80,7 +80,7 @@ const MemberRules& OffsetExponentialDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& OffsetExponentialDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_offsetExponential::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -89,7 +89,7 @@ const TypeSpec& OffsetExponentialDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void OffsetExponentialDistribution::printValue(std::ostream& o) const {
+void Dist_offsetExponential::printValue(std::ostream& o) const {
     
     o << " exponential(lambda=";
     if ( lambda != NULL ) {
@@ -108,7 +108,7 @@ void OffsetExponentialDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OffsetExponentialDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_offsetExponential::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lambda" ) 
     {

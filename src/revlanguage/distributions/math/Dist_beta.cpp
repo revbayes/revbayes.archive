@@ -10,31 +10,31 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BetaDistribution.h"
-#include "RlBetaDistribution.h"
+#include "Dist_beta.h"
 #include "RealPos.h"
 #include "Probability.h"
 #include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
-BetaDistribution::BetaDistribution() : TypedDistribution<Probability>() {
+Dist_beta::Dist_beta() : TypedDistribution<Probability>() {
     
 }
 
 
-BetaDistribution::~BetaDistribution() {
+Dist_beta::~Dist_beta() {
     
 }
 
 
 
-BetaDistribution* BetaDistribution::clone( void ) const {
+Dist_beta* Dist_beta::clone( void ) const {
     
-    return new BetaDistribution(*this);
+    return new Dist_beta(*this);
 }
 
 
-RevBayesCore::BetaDistribution* BetaDistribution::createDistribution( void ) const {
+RevBayesCore::BetaDistribution* Dist_beta::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( alpha->getRevObject() ).getDagNode();
@@ -46,7 +46,7 @@ RevBayesCore::BetaDistribution* BetaDistribution::createDistribution( void ) con
 
 
 
-Probability* BetaDistribution::createRandomVariable(void) const { 
+Probability* Dist_beta::createRandomVariable(void) const { 
     
     RevBayesCore::ContinuousDistribution* d = createDistribution();
     RevBayesCore::TypedDagNode<double>* rv  = new RevBayesCore::ContinuousStochasticNode("", d);
@@ -57,7 +57,7 @@ Probability* BetaDistribution::createRandomVariable(void) const {
 
 
 /* Get class name of object */
-const std::string& BetaDistribution::getClassName(void) { 
+const std::string& Dist_beta::getClassName(void) { 
     
     static std::string rbClassName = "Dist_beta";
     
@@ -65,7 +65,7 @@ const std::string& BetaDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& BetaDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_beta::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -76,7 +76,7 @@ const TypeSpec& BetaDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& BetaDistribution::getMemberRules(void) const {
+const MemberRules& Dist_beta::getMemberRules(void) const {
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
@@ -93,7 +93,7 @@ const MemberRules& BetaDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& BetaDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_beta::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -102,7 +102,7 @@ const TypeSpec& BetaDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void BetaDistribution::printValue(std::ostream& o) const {
+void Dist_beta::printValue(std::ostream& o) const {
     
     o << "beta(alpha=";
     if ( alpha != NULL ) {
@@ -121,7 +121,7 @@ void BetaDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void BetaDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_beta::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
         
     if ( name == "alpha" ) 
     {

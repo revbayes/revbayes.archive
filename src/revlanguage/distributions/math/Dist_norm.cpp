@@ -1,10 +1,10 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlNormalDistribution.h"
+#include "ContinuousStochasticNode.h"
+#include "Dist_norm.h"
 #include "NormalDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
@@ -14,7 +14,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-NormalDistribution::NormalDistribution() : ContinuousDistribution() 
+Dist_norm::Dist_norm() : ContinuousDistribution()
 {
     
 }
@@ -30,7 +30,7 @@ NormalDistribution::NormalDistribution() : ContinuousDistribution()
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::NormalDistribution* NormalDistribution::createDistribution( void ) const 
+RevBayesCore::NormalDistribution* Dist_norm::createDistribution( void ) const
 {
 
     // get the parameters
@@ -48,10 +48,10 @@ RevBayesCore::NormalDistribution* NormalDistribution::createDistribution( void )
  *
  * \return A new copy of the process. 
  */
-NormalDistribution* NormalDistribution::clone( void ) const 
+Dist_norm* Dist_norm::clone( void ) const
 {
     
-    return new NormalDistribution(*this);
+    return new Dist_norm(*this);
 }
 
 
@@ -60,7 +60,7 @@ NormalDistribution* NormalDistribution::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& NormalDistribution::getClassName(void) 
+const std::string& Dist_norm::getClassName(void)
 { 
     
     static std::string rbClassName = "Dist_norm";
@@ -74,7 +74,7 @@ const std::string& NormalDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& NormalDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_norm::getClassTypeSpec(void)
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -92,7 +92,7 @@ const TypeSpec& NormalDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& NormalDistribution::getMemberRules(void) const 
+const MemberRules& Dist_norm::getMemberRules(void) const
 {
     
     static MemberRules distNormMemberRules;
@@ -115,7 +115,7 @@ const MemberRules& NormalDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& NormalDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_norm::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -125,7 +125,7 @@ const TypeSpec& NormalDistribution::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void NormalDistribution::printValue(std::ostream& o) const {
+void Dist_norm::printValue(std::ostream& o) const {
     
     o << " norm(mean=";
     if ( mean != NULL ) {
@@ -153,7 +153,7 @@ void NormalDistribution::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void NormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_norm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
 {
     
     if ( name == "mean" ) 

@@ -2,10 +2,10 @@
 #include "ArgumentRules.h"
 #include "BimodalNormalDistribution.h"
 #include "ContinuousStochasticNode.h"
+#include "Dist_bimodalNorm.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlBimodalNormalDistribution.h"
 
 using namespace RevLanguage;
 
@@ -15,7 +15,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-BimodalNormalDistribution::BimodalNormalDistribution() : ContinuousDistribution() 
+Dist_bimodalNorm::Dist_bimodalNorm() : ContinuousDistribution() 
 {
     
 }
@@ -31,16 +31,16 @@ BimodalNormalDistribution::BimodalNormalDistribution() : ContinuousDistribution(
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::BimodalNormalDistribution* BimodalNormalDistribution::createDistribution( void ) const 
+RevBayesCore::BimodalNormalDistribution* Dist_bimodalNorm::createDistribution( void ) const
 {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<double>* m1 = static_cast<const Real &>( mean1->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* m2 = static_cast<const Real &>( mean2->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* s1 = static_cast<const RealPos &>( sd1->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* s2 = static_cast<const RealPos &>( sd2->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* p = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
-    RevBayesCore::BimodalNormalDistribution*   d = new RevBayesCore::BimodalNormalDistribution(m1, m2, s1, s2, p);
+    RevBayesCore::TypedDagNode<double>* m1          = static_cast<const Real &>( mean1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* m2          = static_cast<const Real &>( mean2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s1          = static_cast<const RealPos &>( sd1->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s2          = static_cast<const RealPos &>( sd2->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* p           = static_cast<const Probability &>( prob->getRevObject() ).getDagNode();
+    RevBayesCore::BimodalNormalDistribution*   d    = new RevBayesCore::BimodalNormalDistribution(m1, m2, s1, s2, p);
     
     return d;
 }
@@ -52,10 +52,10 @@ RevBayesCore::BimodalNormalDistribution* BimodalNormalDistribution::createDistri
  *
  * \return A new copy of the process. 
  */
-BimodalNormalDistribution* BimodalNormalDistribution::clone( void ) const 
+Dist_bimodalNorm* Dist_bimodalNorm::clone( void ) const 
 {
     
-    return new BimodalNormalDistribution(*this);
+    return new Dist_bimodalNorm(*this);
 }
 
 
@@ -64,10 +64,10 @@ BimodalNormalDistribution* BimodalNormalDistribution::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& BimodalNormalDistribution::getClassName(void) 
+const std::string& Dist_bimodalNorm::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Dist_bnorm";
+    static std::string rbClassName = "Dist_bimodalNorm";
     
 	return rbClassName; 
 }
@@ -78,7 +78,7 @@ const std::string& BimodalNormalDistribution::getClassName(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& BimodalNormalDistribution::getClassTypeSpec(void) 
+const TypeSpec& Dist_bimodalNorm::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -99,7 +99,7 @@ const TypeSpec& BimodalNormalDistribution::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& BimodalNormalDistribution::getMemberRules(void) const 
+const MemberRules& Dist_bimodalNorm::getMemberRules(void) const 
 {
     
     static MemberRules distNormMemberRules;
@@ -125,7 +125,7 @@ const MemberRules& BimodalNormalDistribution::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& BimodalNormalDistribution::getTypeSpec( void ) const 
+const TypeSpec& Dist_bimodalNorm::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -135,7 +135,7 @@ const TypeSpec& BimodalNormalDistribution::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void BimodalNormalDistribution::printValue(std::ostream& o) const {
+void Dist_bimodalNorm::printValue(std::ostream& o) const {
     
     o << "bnorm(mean1=";
     if ( mean1 != NULL ) {
@@ -195,7 +195,7 @@ void BimodalNormalDistribution::printValue(std::ostream& o) const {
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BimodalNormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_bimodalNorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "mean1" ) 

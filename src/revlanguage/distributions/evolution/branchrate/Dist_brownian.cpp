@@ -1,5 +1,5 @@
 //
-//  RlWhiteNoiseProcess.cpp
+//  Dist_brownian.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-22.
@@ -11,23 +11,22 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BrownianPhyloProcess.h"
-#include "RlBrownianPhyloProcess.h"
+#include "Dist_brownian.h"
 #include "Real.h"
 #include "RlTimeTree.h"
-#include "TimeTree.h"
-#include "Real.h"
 #include "StochasticNode.h"
+#include "TimeTree.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
 
 
-BrownianPhyloProcess* BrownianPhyloProcess::clone( void ) const {
-    return new BrownianPhyloProcess(*this);
+Dist_brownian* Dist_brownian::clone( void ) const {
+    return new Dist_brownian(*this);
 }
 
 
-RevBayesCore::BrownianPhyloProcess* BrownianPhyloProcess::createDistribution( void ) const {
+RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) const {
     // get the parameters
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
@@ -44,7 +43,7 @@ RevBayesCore::BrownianPhyloProcess* BrownianPhyloProcess::createDistribution( vo
 
 
 /* Get class name of object */
-const std::string& BrownianPhyloProcess::getClassName(void) {
+const std::string& Dist_brownian::getClassName(void) {
     
     static std::string rbClassName = "Dist_brownian";
     
@@ -52,7 +51,7 @@ const std::string& BrownianPhyloProcess::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& BrownianPhyloProcess::getClassTypeSpec(void) {
+const TypeSpec& Dist_brownian::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -62,7 +61,7 @@ const TypeSpec& BrownianPhyloProcess::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& BrownianPhyloProcess::getMemberRules(void) const {
+const MemberRules& Dist_brownian::getMemberRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -79,7 +78,7 @@ const MemberRules& BrownianPhyloProcess::getMemberRules(void) const {
 }
 
 
-const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
+const TypeSpec& Dist_brownian::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -91,7 +90,7 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void BrownianPhyloProcess::printValue(std::ostream& o) const {
+ void Dist_brownian::printValue(std::ostream& o) const {
     
     o << " brownian(";
     
@@ -126,7 +125,7 @@ const TypeSpec& BrownianPhyloProcess::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void BrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_brownian::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {

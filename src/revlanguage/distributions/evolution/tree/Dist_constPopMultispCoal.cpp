@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "RlMultispeciesCoalescentConstantPopulationProcess.h"
+#include "Dist_constPopMultispCoal.h"
 #include "MultispeciesCoalescent.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -23,7 +23,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-MultispeciesCoalescentConstantPopulationProcess::MultispeciesCoalescentConstantPopulationProcess() : TypedDistribution<TimeTree>() 
+Dist_constPopMultispCoal::Dist_constPopMultispCoal() : TypedDistribution<TimeTree>() 
 {
     
 }
@@ -34,9 +34,9 @@ MultispeciesCoalescentConstantPopulationProcess::MultispeciesCoalescentConstantP
  * \return a clone of the object.
  */
 
-MultispeciesCoalescentConstantPopulationProcess* MultispeciesCoalescentConstantPopulationProcess::clone(void) const {
+Dist_constPopMultispCoal* Dist_constPopMultispCoal::clone(void) const {
     
-    return new MultispeciesCoalescentConstantPopulationProcess(*this);
+    return new Dist_constPopMultispCoal(*this);
     
 }
 
@@ -53,7 +53,7 @@ MultispeciesCoalescentConstantPopulationProcess* MultispeciesCoalescentConstantP
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationProcess::createDistribution( void ) const 
+RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistribution( void ) const 
 {
     
     // get the parameters
@@ -96,7 +96,7 @@ RevBayesCore::MultispeciesCoalescent* MultispeciesCoalescentConstantPopulationPr
  *
  * \return The class' name.
  */
-const std::string& MultispeciesCoalescentConstantPopulationProcess::getClassName(void) 
+const std::string& Dist_constPopMultispCoal::getClassName(void) 
 { 
     
     static std::string rbClassName = "Dist_constPopMultispCoal";
@@ -110,7 +110,7 @@ const std::string& MultispeciesCoalescentConstantPopulationProcess::getClassName
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& MultispeciesCoalescentConstantPopulationProcess::getClassTypeSpec(void) 
+const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -131,7 +131,7 @@ const TypeSpec& MultispeciesCoalescentConstantPopulationProcess::getClassTypeSpe
  *
  * \return The member rules.
  */
-const MemberRules& MultispeciesCoalescentConstantPopulationProcess::getMemberRules(void) const 
+const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const 
 {
     
     static MemberRules distMultiSpeCoalConstPopMemberRules;
@@ -162,7 +162,7 @@ const MemberRules& MultispeciesCoalescentConstantPopulationProcess::getMemberRul
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_constPopMultispCoal::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "speciesTree" ) 
@@ -186,7 +186,7 @@ void MultispeciesCoalescentConstantPopulationProcess::setConstMemberVariable(con
 
 
 /** Get type spec */
-const TypeSpec& MultispeciesCoalescentConstantPopulationProcess::getTypeSpec( void ) const {
+const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

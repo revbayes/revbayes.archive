@@ -15,8 +15,8 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlDirichletDistribution_H
-#define RlDirichletDistribution_H
+#ifndef Dist_dirichlet_H
+#define Dist_dirichlet_H
 
 #include "DirichletDistribution.h"
 #include "RlTypedDistribution.h"
@@ -24,14 +24,14 @@
 
 namespace RevLanguage {
     
-    class DirichletDistribution :  public TypedDistribution<Simplex> {
+    class Dist_dirichlet :  public TypedDistribution<Simplex> {
         
     public:
-        DirichletDistribution( void );
-        virtual ~DirichletDistribution();
+        Dist_dirichlet( void );
+        virtual ~Dist_dirichlet();
         
         // Basic utility functions
-        DirichletDistribution*                          clone(void) const;                                                              //!< Clone the object
+        Dist_dirichlet*                          clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

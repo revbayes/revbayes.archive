@@ -9,24 +9,24 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_lnorm.h"
 #include "LognormalDistribution.h"
-#include "RlLognormalDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 
 using namespace RevLanguage;
 
-LognormalDistribution::LognormalDistribution() : PositiveContinuousDistribution() {
+Dist_lnorm::Dist_lnorm() : PositiveContinuousDistribution() {
     
 }
 
 
-LognormalDistribution* LognormalDistribution::clone( void ) const {
-    return new LognormalDistribution(*this);
+Dist_lnorm* Dist_lnorm::clone( void ) const {
+    return new Dist_lnorm(*this);
 }
 
 
-RevBayesCore::LognormalDistribution* LognormalDistribution::createDistribution( void ) const {
+RevBayesCore::LognormalDistribution* Dist_lnorm::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
@@ -39,7 +39,7 @@ RevBayesCore::LognormalDistribution* LognormalDistribution::createDistribution( 
 
 
 /* Get class name of object */
-const std::string& LognormalDistribution::getClassName(void) { 
+const std::string& Dist_lnorm::getClassName(void) { 
     
     static std::string rbClassName = "Dist_lnorm";
     
@@ -47,7 +47,7 @@ const std::string& LognormalDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& LognormalDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_lnorm::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -58,7 +58,7 @@ const TypeSpec& LognormalDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& LognormalDistribution::getMemberRules(void) const {
+const MemberRules& Dist_lnorm::getMemberRules(void) const {
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
@@ -76,7 +76,7 @@ const MemberRules& LognormalDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& LognormalDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_lnorm::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -85,7 +85,7 @@ const TypeSpec& LognormalDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void LognormalDistribution::printValue(std::ostream& o) const {
+void Dist_lnorm::printValue(std::ostream& o) const {
     
     o << "lognormal(mean=";
     if ( mean != NULL ) {
@@ -110,7 +110,7 @@ void LognormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void LognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_lnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

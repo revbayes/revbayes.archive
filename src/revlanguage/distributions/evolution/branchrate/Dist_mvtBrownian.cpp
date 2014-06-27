@@ -10,26 +10,25 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_mvtBrownian.h"
 #include "MultivariateBrownianPhyloProcess.h"
-#include "RlMultivariateBrownianPhyloProcess.h"
-#include "Real.h"
-#include "RlTimeTree.h"
-#include "TimeTree.h"
-#include "Real.h"
-#include "StochasticNode.h"
 #include "PrecisionMatrix.h"
+#include "Real.h"
 #include "RealSymmetricMatrix.h"
+#include "RlTimeTree.h"
+#include "StochasticNode.h"
+#include "TimeTree.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
 
 
-MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::clone( void ) const {
-    return new MultivariateBrownianPhyloProcess(*this);
+Dist_mvtBrownian* Dist_mvtBrownian::clone( void ) const {
+    return new Dist_mvtBrownian(*this);
 }
 
 
-RevBayesCore::MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::createDistribution( void ) const {
+RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribution( void ) const {
     // get the parameters
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
@@ -46,7 +45,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess
 
 
 /* Get class name of object */
-const std::string& MultivariateBrownianPhyloProcess::getClassName(void) {
+const std::string& Dist_mvtBrownian::getClassName(void) {
     
     static std::string rbClassName = "Dist_multivariateBrownian";
     
@@ -54,7 +53,7 @@ const std::string& MultivariateBrownianPhyloProcess::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& MultivariateBrownianPhyloProcess::getClassTypeSpec(void) {
+const TypeSpec& Dist_mvtBrownian::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -64,7 +63,7 @@ const TypeSpec& MultivariateBrownianPhyloProcess::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& MultivariateBrownianPhyloProcess::getMemberRules(void) const {
+const MemberRules& Dist_mvtBrownian::getMemberRules(void) const {
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -81,7 +80,7 @@ const MemberRules& MultivariateBrownianPhyloProcess::getMemberRules(void) const 
 }
 
 
-const TypeSpec& MultivariateBrownianPhyloProcess::getTypeSpec( void ) const {
+const TypeSpec& Dist_mvtBrownian::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -93,7 +92,7 @@ const TypeSpec& MultivariateBrownianPhyloProcess::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void MultivariateBrownianPhyloProcess::printValue(std::ostream& o) const {
+ void Dist_mvtBrownian::printValue(std::ostream& o) const {
     
     o << " MultivariateBrownian(";
     
@@ -128,7 +127,7 @@ const TypeSpec& MultivariateBrownianPhyloProcess::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void MultivariateBrownianPhyloProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
 
     if ( name == "tree" )
     {

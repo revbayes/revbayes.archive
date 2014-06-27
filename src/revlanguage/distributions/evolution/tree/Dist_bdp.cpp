@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "RlConstantRateBirthDeathProcess.h"
 #include "ConstantRateBirthDeathProcess.h"
+#include "Dist_bdp.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
@@ -20,7 +20,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : BirthDeathProcess() 
+Dist_bdp::Dist_bdp() : BirthDeathProcess() 
 {
     
 }
@@ -32,9 +32,9 @@ ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess() : BirthDeathProce
  *
  * \return A new copy of the process. 
  */
-ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const 
+Dist_bdp* Dist_bdp::clone( void ) const 
 {
-    return new ConstantRateBirthDeathProcess(*this);
+    return new Dist_bdp(*this);
 }
 
 
@@ -48,7 +48,7 @@ ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) cons
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::createDistribution( void ) const 
+RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void ) const
 {
     
     // get the parameters
@@ -84,7 +84,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::crea
  *
  * \return The class' name.
  */
-const std::string& ConstantRateBirthDeathProcess::getClassName( void ) 
+const std::string& Dist_bdp::getClassName( void ) 
 { 
     
     static std::string rbClassName = "Dist_bdp";
@@ -98,7 +98,7 @@ const std::string& ConstantRateBirthDeathProcess::getClassName( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec( void ) 
+const TypeSpec& Dist_bdp::getClassTypeSpec( void ) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
@@ -117,7 +117,7 @@ const TypeSpec& ConstantRateBirthDeathProcess::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const 
+const MemberRules& Dist_bdp::getMemberRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -144,7 +144,7 @@ const MemberRules& ConstantRateBirthDeathProcess::getMemberRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const 
+const TypeSpec& Dist_bdp::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -163,7 +163,7 @@ const TypeSpec& ConstantRateBirthDeathProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ConstantRateBirthDeathProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_bdp::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

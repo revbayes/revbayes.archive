@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
+#include "Dist_uniformTimeTree.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
@@ -8,7 +9,6 @@
 #include "RlClade.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlUniformTimeTreeDistribution.h"
 #include "StochasticNode.h"
 #include "UniformTimeTreeDistribution.h"
 #include "Vector.h"
@@ -16,24 +16,24 @@
 using namespace RevLanguage;
 
 
-UniformTimeTreeDistribution::UniformTimeTreeDistribution() : TypedDistribution<TimeTree>() {
+Dist_uniformTimeTree::Dist_uniformTimeTree() : TypedDistribution<TimeTree>() {
     
 }
 
 
-UniformTimeTreeDistribution::~UniformTimeTreeDistribution() {
+Dist_uniformTimeTree::~Dist_uniformTimeTree() {
 
 }
 
 
 
-UniformTimeTreeDistribution* UniformTimeTreeDistribution::clone( void ) const {
+Dist_uniformTimeTree* Dist_uniformTimeTree::clone( void ) const {
 
-    return new UniformTimeTreeDistribution( *this );
+    return new Dist_uniformTimeTree( *this );
 }
 
 
-RevBayesCore::UniformTimeTreeDistribution* UniformTimeTreeDistribution::createDistribution( void ) const {
+RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribution( void ) const {
 
     // Get the parameters
     RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getRevObject() ).getDagNode();
@@ -47,7 +47,7 @@ RevBayesCore::UniformTimeTreeDistribution* UniformTimeTreeDistribution::createDi
 
 
 /* Get class name of object */
-const std::string& UniformTimeTreeDistribution::getClassName(void) {
+const std::string& Dist_uniformTimeTree::getClassName(void) {
     
     static std::string rbClassName = "Dist_uniformTimeTree";
     
@@ -56,7 +56,7 @@ const std::string& UniformTimeTreeDistribution::getClassName(void) {
 
 
 /* Get class type spec describing type of object. TODO: Check if the correct parent is TypedDistribution or Distribution */
-const TypeSpec& UniformTimeTreeDistribution::getClassTypeSpec(void) {
+const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
@@ -65,7 +65,7 @@ const TypeSpec& UniformTimeTreeDistribution::getClassTypeSpec(void) {
 
 
 /* Return member rules */
-const MemberRules& UniformTimeTreeDistribution::getMemberRules(void) const {
+const MemberRules& Dist_uniformTimeTree::getMemberRules(void) const {
     
     static MemberRules distUTTDMemberRules;
     static bool rulesSet = false;
@@ -82,7 +82,7 @@ const MemberRules& UniformTimeTreeDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& UniformTimeTreeDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -91,7 +91,7 @@ const TypeSpec& UniformTimeTreeDistribution::getTypeSpec( void ) const {
 
 
 /** Set a member variable */
-void UniformTimeTreeDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_uniformTimeTree::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "originTime" ) {
         originTime = var;

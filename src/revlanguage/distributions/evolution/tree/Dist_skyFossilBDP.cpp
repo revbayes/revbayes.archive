@@ -1,13 +1,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "PiecewiseConstantFossilizedBirthDeathProcess.h"
+#include "Dist_skyFossilBDP.h"
 #include "Natural.h"
 #include "OptionRule.h"
+#include "PiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlPiecewiseConstantFossilizedBirthDeathProcess.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
@@ -21,7 +21,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDeathProcess() : TypedDistribution<TimeTree>()
+Dist_skyFossilBDP::Dist_skyFossilBDP() : TypedDistribution<TimeTree>()
 {
     
 }
@@ -33,9 +33,9 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
  *
  * \return A new copy of the model. 
  */
-PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDeathProcess::clone( void ) const
+Dist_skyFossilBDP* Dist_skyFossilBDP::clone( void ) const
 {
-    return new PiecewiseConstantFossilizedBirthDeathProcess(*this);
+    return new Dist_skyFossilBDP(*this);
 }
 
 
@@ -49,7 +49,7 @@ PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDe
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDeathProcess::createDistribution( void ) const
+RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::createDistribution( void ) const
 {
     // get the parameters
     
@@ -97,7 +97,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFos
  *
  * \return The class' name.
  */
-const std::string& PiecewiseConstantFossilizedBirthDeathProcess::getClassName( void )
+const std::string& Dist_skyFossilBDP::getClassName( void )
 {
     static std::string rbClassName = "Dist_skyFossilBDP";
     
@@ -110,7 +110,7 @@ const std::string& PiecewiseConstantFossilizedBirthDeathProcess::getClassName( v
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& PiecewiseConstantFossilizedBirthDeathProcess::getClassTypeSpec( void )
+const TypeSpec& Dist_skyFossilBDP::getClassTypeSpec( void )
 {
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
@@ -128,7 +128,7 @@ const TypeSpec& PiecewiseConstantFossilizedBirthDeathProcess::getClassTypeSpec( 
  *
  * \return The member rules.
  */
-const MemberRules& PiecewiseConstantFossilizedBirthDeathProcess::getMemberRules(void) const
+const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
 {
     static MemberRules distcBirthDeathMemberRules;
     static bool rulesSet = false;
@@ -168,7 +168,7 @@ const MemberRules& PiecewiseConstantFossilizedBirthDeathProcess::getMemberRules(
  *
  * \return The type spec of this object.
  */
-const TypeSpec& PiecewiseConstantFossilizedBirthDeathProcess::getTypeSpec( void ) const
+const TypeSpec& Dist_skyFossilBDP::getTypeSpec( void ) const
 {
     static TypeSpec ts = getClassTypeSpec();
     
@@ -186,7 +186,7 @@ const TypeSpec& PiecewiseConstantFossilizedBirthDeathProcess::getTypeSpec( void 
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void PiecewiseConstantFossilizedBirthDeathProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_skyFossilBDP::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

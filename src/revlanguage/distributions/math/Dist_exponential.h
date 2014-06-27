@@ -1,5 +1,5 @@
-#ifndef RlExponentialDistribution_H
-#define RlExponentialDistribution_H
+#ifndef Dist_exponential_H
+#define Dist_exponential_H
 
 #include "ExponentialDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
@@ -13,7 +13,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal distribution object can be constructed and hooked up
      * in a model graph.
-     * See the ExponentialDistribution.h for more details.
+     * See the Dist_exponential.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -21,13 +21,13 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class ExponentialDistribution :  public PositiveContinuousDistribution {
+    class Dist_exponential :  public PositiveContinuousDistribution {
         
     public:
-        ExponentialDistribution( void );                                                                                                                //!< Default constructor
+        Dist_exponential( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        ExponentialDistribution*                        clone(void) const;                                                                              //!< Clone the object
+        Dist_exponential*                        clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance

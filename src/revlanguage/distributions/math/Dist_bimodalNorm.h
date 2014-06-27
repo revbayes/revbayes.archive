@@ -1,5 +1,5 @@
-#ifndef RlBimodalNormalDistribution_H
-#define RlBimodalNormalDistribution_H
+#ifndef Dist_bimodalNorm_H
+#define Dist_bimodalNorm_H
 
 #include "BimodalNormalDistribution.h"
 #include "RlContinuousDistribution.h"
@@ -19,13 +19,13 @@ namespace RevLanguage {
      * @since 2014-04-09, version 1.0
      *
      */
-    class BimodalNormalDistribution :  public ContinuousDistribution {
+    class Dist_bimodalNorm :  public ContinuousDistribution {
         
     public:
-        BimodalNormalDistribution( void );
+        Dist_bimodalNorm( void );
         
         // Basic utility functions
-        BimodalNormalDistribution*                      clone(void) const;                                                              //!< Clone the object
+        Dist_bimodalNorm*                      clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

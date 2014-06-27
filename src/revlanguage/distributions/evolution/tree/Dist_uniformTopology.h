@@ -1,5 +1,5 @@
-#ifndef RlUniformTopologyDistribution_H
-#define RlUniformTopologyDistribution_H
+#ifndef Dist_uniformTopology_H
+#define Dist_uniformTopology_H
 
 #include "UniformTopologyDistribution.h"
 #include "RlTopology.h"
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class UniformTopologyDistribution :  public TypedDistribution<Topology> {
+    class Dist_uniformTopology :  public TypedDistribution<Topology> {
         
     public:
-        UniformTopologyDistribution( void );                                                                                                            //!< Default constructor
+        Dist_uniformTopology( void );                                                                                                            //!< Default constructor
         
         // Basic utility functions
-        UniformTopologyDistribution*                    clone(void) const;                                                                              //!< Clone the object
+        Dist_uniformTopology*                    clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance

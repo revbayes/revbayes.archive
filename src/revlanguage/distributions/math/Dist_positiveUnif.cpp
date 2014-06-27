@@ -9,31 +9,31 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "UniformDistribution.h"
-#include "RlPositiveUniformDistribution.h"
+#include "ContinuousStochasticNode.h"
+#include "Dist_positiveUnif.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "ContinuousStochasticNode.h"
+#include "UniformDistribution.h"
 
 using namespace RevLanguage;
 
-PositiveUniformDistribution::PositiveUniformDistribution() : PositiveContinuousDistribution() {
+Dist_positiveUnif::Dist_positiveUnif() : PositiveContinuousDistribution() {
     
 }
 
 
-PositiveUniformDistribution::~PositiveUniformDistribution() {
+Dist_positiveUnif::~Dist_positiveUnif() {
     
 }
 
 
 
-PositiveUniformDistribution* PositiveUniformDistribution::clone( void ) const {
-    return new PositiveUniformDistribution(*this);
+Dist_positiveUnif* Dist_positiveUnif::clone( void ) const {
+    return new Dist_positiveUnif(*this);
 }
 
 
-RevBayesCore::UniformDistribution* PositiveUniformDistribution::createDistribution( void ) const {
+RevBayesCore::UniformDistribution* Dist_positiveUnif::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l   = static_cast<const RealPos &>( lower->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* u   = static_cast<const RealPos &>( upper->getRevObject() ).getDagNode();
@@ -45,7 +45,7 @@ RevBayesCore::UniformDistribution* PositiveUniformDistribution::createDistributi
 
 
 /* Get class name of object */
-const std::string& PositiveUniformDistribution::getClassName(void) { 
+const std::string& Dist_positiveUnif::getClassName(void) { 
     
     static std::string rbClassName = "Dist_unif";
     
@@ -53,7 +53,7 @@ const std::string& PositiveUniformDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& PositiveUniformDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_positiveUnif::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -64,7 +64,7 @@ const TypeSpec& PositiveUniformDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& PositiveUniformDistribution::getMemberRules(void) const {
+const MemberRules& Dist_positiveUnif::getMemberRules(void) const {
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
@@ -80,7 +80,7 @@ const MemberRules& PositiveUniformDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& PositiveUniformDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_positiveUnif::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -89,7 +89,7 @@ const TypeSpec& PositiveUniformDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void PositiveUniformDistribution::printValue(std::ostream& o) const {
+void Dist_positiveUnif::printValue(std::ostream& o) const {
     
     o << " unif (lower=";
     if ( lower != NULL ) {
@@ -108,7 +108,7 @@ void PositiveUniformDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void PositiveUniformDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_positiveUnif::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "lower" ) 
     {

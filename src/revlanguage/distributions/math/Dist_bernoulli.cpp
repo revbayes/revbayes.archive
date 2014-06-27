@@ -11,7 +11,7 @@
 #include "ArgumentRules.h"
 #include "BernoulliDistribution.h"
 #include "ContinuousStochasticNode.h"
-#include "RlBernoulliDistribution.h"
+#include "Dist_bernoulli.h"
 #include "Probability.h"
 #include "RealPos.h"
 
@@ -34,11 +34,11 @@ Dist_bernoulli* Dist_bernoulli::clone( void ) const {
 }
 
 
-RevBayesCore::Dist_bernoulli* Dist_bernoulli::createDistribution( void ) const {
+RevBayesCore::BernoulliDistribution* Dist_bernoulli::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<double>* q   = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
-    RevBayesCore::Dist_bernoulli* d  = new RevBayesCore::Dist_bernoulli( q );
+    RevBayesCore::BernoulliDistribution* d  = new RevBayesCore::BernoulliDistribution( q );
     
     return d;
 }

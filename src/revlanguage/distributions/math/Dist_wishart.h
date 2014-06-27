@@ -1,13 +1,13 @@
 //
-//  RlWishartDistribution.h
+//  RlDist_wishart.h
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-27.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#ifndef __revbayes__RlWishartDistribution__
-#define __revbayes__RlWishartDistribution__
+#ifndef __revbayes__Dist_wishart__
+#define __revbayes__Dist_wishart__
 
 #include <iostream>
 
@@ -18,14 +18,14 @@
 
 namespace RevLanguage {
     
-    class WishartDistribution :  public  TypedDistribution<RealSymmetricMatrix> {
+    class Dist_wishart :  public  TypedDistribution<RealSymmetricMatrix> {
         
     public:
-        WishartDistribution( void );
-        virtual ~WishartDistribution();
+        Dist_wishart( void );
+        virtual ~Dist_wishart();
         
         // Basic utility functions
-        WishartDistribution*                            clone(void) const;                                                              //!< Clone the object
+        Dist_wishart*                            clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -49,4 +49,4 @@ namespace RevLanguage {
     };
     
 }
-#endif /* defined(__revbayes__RlWishartDistribution__) */
+#endif /* defined(__revbayes__Dist_wishart__) */

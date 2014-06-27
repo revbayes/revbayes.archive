@@ -1,13 +1,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
+#include "Dist_divDepYuleProcess.h"
 #include "DiversityDependentPureBirthProcess.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlDiversityDependentPureBirthProcess.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
@@ -21,7 +21,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : TypedDistribution<TimeTree>() 
+Dist_divDepYuleProcess::Dist_divDepYuleProcess() : TypedDistribution<TimeTree>() 
 {
     
 }
@@ -33,9 +33,9 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess() : Typed
  *
  * \return A new copy of the process. 
  */
-DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( void ) const 
+Dist_divDepYuleProcess* Dist_divDepYuleProcess::clone( void ) const 
 {
-    return new DiversityDependentPureBirthProcess(*this);
+    return new Dist_divDepYuleProcess(*this);
 }
 
 
@@ -49,7 +49,7 @@ DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( v
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::createDistribution( void ) const 
+RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::createDistribution( void ) const 
 {
     
     // get the parameters
@@ -86,7 +86,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* DiversityDependentPureBirthPro
  *
  * \return The class' name.
  */
-const std::string& DiversityDependentPureBirthProcess::getClassName( void ) 
+const std::string& Dist_divDepYuleProcess::getClassName( void ) 
 { 
     
     static std::string rbClassName = "Dist_divDepYuleProcess";
@@ -100,7 +100,7 @@ const std::string& DiversityDependentPureBirthProcess::getClassName( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& DiversityDependentPureBirthProcess::getClassTypeSpec( void ) 
+const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void ) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -119,7 +119,7 @@ const TypeSpec& DiversityDependentPureBirthProcess::getClassTypeSpec( void )
  *
  * \return The member rules.
  */
-const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) const 
+const MemberRules& Dist_divDepYuleProcess::getMemberRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -155,7 +155,7 @@ const MemberRules& DiversityDependentPureBirthProcess::getMemberRules(void) cons
  *
  * \return The type spec of this object.
  */
-const TypeSpec& DiversityDependentPureBirthProcess::getTypeSpec( void ) const 
+const TypeSpec& Dist_divDepYuleProcess::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -174,7 +174,7 @@ const TypeSpec& DiversityDependentPureBirthProcess::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void DiversityDependentPureBirthProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_divDepYuleProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

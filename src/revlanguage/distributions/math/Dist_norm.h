@@ -1,5 +1,5 @@
-#ifndef RlNormalDistribution_H
-#define RlNormalDistribution_H
+#ifndef Dist_normal_H
+#define Dist_normal_H
 
 #include "NormalDistribution.h"
 #include "RlContinuousDistribution.h"
@@ -19,13 +19,13 @@ namespace RevLanguage {
      * @since 2012-08-06, version 1.0
      *
      */
-    class NormalDistribution :  public ContinuousDistribution {
+    class Dist_norm :  public ContinuousDistribution {
     
         public:
-        NormalDistribution( void );
+        Dist_norm( void );
     
         // Basic utility functions
-        NormalDistribution*                             clone(void) const;                                                              //!< Clone the object
+        Dist_norm*                                      clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

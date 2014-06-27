@@ -2,12 +2,12 @@
 #include "ArgumentRules.h"
 #include "Clade.h"
 #include "ConstantRateSerialSampledBirthDeathProcess.h"
+#include "Dist_serialBDP.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlConstantRateSerialSampledBirthDeathProcess.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
@@ -21,7 +21,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathProcess() : TypedDistribution<TimeTree>() 
+Dist_serialBDP::Dist_serialBDP() : TypedDistribution<TimeTree>() 
 {
     
 }
@@ -33,9 +33,9 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
  *
  * \return A new copy of the model. 
  */
-ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathProcess::clone( void ) const 
+Dist_serialBDP* Dist_serialBDP::clone( void ) const 
 {
-    return new ConstantRateSerialSampledBirthDeathProcess(*this);
+    return new Dist_serialBDP(*this);
 }
 
 
@@ -49,7 +49,7 @@ ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathP
  *
  * \return A new internal distribution object.
  */
-RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathProcess::createDistribution( void ) const 
+RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::createDistribution( void ) const
 {
     
     // get the parameters
@@ -92,7 +92,7 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSamp
  *
  * \return The class' name.
  */
-const std::string& ConstantRateSerialSampledBirthDeathProcess::getClassName( void ) 
+const std::string& Dist_serialBDP::getClassName( void ) 
 { 
     
     static std::string rbClassName = "Dist_serialBDP";
@@ -106,7 +106,7 @@ const std::string& ConstantRateSerialSampledBirthDeathProcess::getClassName( voi
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& ConstantRateSerialSampledBirthDeathProcess::getClassTypeSpec( void ) 
+const TypeSpec& Dist_serialBDP::getClassTypeSpec( void ) 
 { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
@@ -125,7 +125,7 @@ const TypeSpec& ConstantRateSerialSampledBirthDeathProcess::getClassTypeSpec( vo
  *
  * \return The member rules.
  */
-const MemberRules& ConstantRateSerialSampledBirthDeathProcess::getMemberRules(void) const 
+const MemberRules& Dist_serialBDP::getMemberRules(void) const 
 {
     
     static MemberRules distcBirthDeathMemberRules;
@@ -163,7 +163,7 @@ const MemberRules& ConstantRateSerialSampledBirthDeathProcess::getMemberRules(vo
  *
  * \return The type spec of this object.
  */
-const TypeSpec& ConstantRateSerialSampledBirthDeathProcess::getTypeSpec( void ) const 
+const TypeSpec& Dist_serialBDP::getTypeSpec( void ) const 
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -182,7 +182,7 @@ const TypeSpec& ConstantRateSerialSampledBirthDeathProcess::getTypeSpec( void ) 
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void ConstantRateSerialSampledBirthDeathProcess::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_serialBDP::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
 {
     
     if ( name == "lambda" ) 

@@ -15,8 +15,8 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlMultivariateNormalDistribution_H
-#define RlMultivariateNormalDistribution_H
+#ifndef Dist_mvtnormal_H
+#define Dist_mvtnormal_H
 
 #include "MultivariateNormalDistribution.h"
 #include "Vector.h"
@@ -25,14 +25,14 @@
 
 namespace RevLanguage {
     
-    class MultivariateNormalDistribution :  public TypedDistribution< Vector<Real> > {
+    class Dist_mvtnorm :  public TypedDistribution< Vector<Real> > {
         
     public:
-                                                        MultivariateNormalDistribution( void );
-                                               virtual ~MultivariateNormalDistribution();
+                                                        Dist_mvtnorm( void );
+                                               virtual ~Dist_mvtnorm();
         
         // Basic utility functions
-        MultivariateNormalDistribution*                 clone(void) const;                                                              //!< Clone the object
+        Dist_mvtnorm*                                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

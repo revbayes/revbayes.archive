@@ -15,22 +15,22 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlOffsetExponentialDistribution_H
-#define RlOffsetExponentialDistribution_H
+#ifndef Dist_offsetExponential_H
+#define Dist_offsetExponential_H
 
 #include "ExponentialDistribution.h"
 #include "RlContinuousDistribution.h"
 
 namespace RevLanguage {
     
-    class OffsetExponentialDistribution :  public ContinuousDistribution {
+    class Dist_offsetExponential :  public ContinuousDistribution {
         
     public:
-        OffsetExponentialDistribution( void );
-        virtual ~OffsetExponentialDistribution();
+        Dist_offsetExponential( void );
+        virtual ~Dist_offsetExponential();
         
         // Basic utility functions
-        OffsetExponentialDistribution*                  clone(void) const;                                                              //!< Clone the object
+        Dist_offsetExponential*                  clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

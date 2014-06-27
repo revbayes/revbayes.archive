@@ -1,26 +1,26 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "Dist_offsetLnorm.h"
 #include "LognormalDistribution.h"
-#include "RlOffsetLognormalDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
 
 using namespace RevLanguage;
 
-OffsetLognormalDistribution::OffsetLognormalDistribution() : ContinuousDistribution() 
+Dist_offsetLnorm::Dist_offsetLnorm() : ContinuousDistribution()
 {
     
 }
 
 
 
-OffsetLognormalDistribution* OffsetLognormalDistribution::clone( void ) const 
+Dist_offsetLnorm* Dist_offsetLnorm::clone( void ) const
 {
-    return new OffsetLognormalDistribution(*this);
+    return new Dist_offsetLnorm(*this);
 }
 
 
-RevBayesCore::LognormalDistribution* OffsetLognormalDistribution::createDistribution( void ) const {
+RevBayesCore::LognormalDistribution* Dist_offsetLnorm::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* m   = static_cast<const Real &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* s   = static_cast<const RealPos &>( sd->getRevObject() ).getDagNode();
@@ -33,7 +33,7 @@ RevBayesCore::LognormalDistribution* OffsetLognormalDistribution::createDistribu
 
 
 /* Get class name of object */
-const std::string& OffsetLognormalDistribution::getClassName(void) { 
+const std::string& Dist_offsetLnorm::getClassName(void) {
     
     static std::string rbClassName = "Dist_offsetLnorm";
     
@@ -41,7 +41,7 @@ const std::string& OffsetLognormalDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& OffsetLognormalDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_offsetLnorm::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
@@ -52,7 +52,7 @@ const TypeSpec& OffsetLognormalDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& OffsetLognormalDistribution::getMemberRules(void) const {
+const MemberRules& Dist_offsetLnorm::getMemberRules(void) const {
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
@@ -70,7 +70,7 @@ const MemberRules& OffsetLognormalDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& OffsetLognormalDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_offsetLnorm::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -79,7 +79,7 @@ const TypeSpec& OffsetLognormalDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void OffsetLognormalDistribution::printValue(std::ostream& o) const {
+void Dist_offsetLnorm::printValue(std::ostream& o) const {
     
     o << "lognormal(mean=";
     if ( mean != NULL ) {
@@ -104,7 +104,7 @@ void OffsetLognormalDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OffsetLognormalDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_offsetLnorm::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "mean" ) 
     {

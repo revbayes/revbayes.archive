@@ -15,26 +15,26 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlDirichletProcessPriorDistribution_H
-#define RlDirichletProcessPriorDistribution_H
+#ifndef Dist_dpp_H
+#define Dist_dpp_H
 
 #include "DirichletProcessPriorDistribution.h"
-#include "RlTypedDistribution.h"
-#include "Vector.h"
 #include "RealPos.h"
+#include "RlTypedDistribution.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 
 namespace RevLanguage {
     
     template <typename valType>
-    class DirichletProcessPriorDistribution :  public TypedDistribution< Vector<valType> >{
+    class Dist_dpp :  public TypedDistribution< Vector<valType> >{
         
     public:
-        DirichletProcessPriorDistribution( void );
-        virtual ~DirichletProcessPriorDistribution();
+        Dist_dpp( void );
+        virtual ~Dist_dpp();
         
         // Basic utility functions
-        DirichletProcessPriorDistribution*                          clone(void) const;                                                              //!< Clone the object
+        Dist_dpp*                                       clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -70,7 +70,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::DirichletProcessPriorDistribution<valType>::DirichletProcessPriorDistribution() : TypedDistribution< Vector<valType> >(), 
+RevLanguage::Dist_dpp<valType>::Dist_dpp() : TypedDistribution< Vector<valType> >(), 
 concentration( NULL ),
 baseDistribution( NULL ),
 numElements( NULL )
@@ -80,20 +80,20 @@ numElements( NULL )
 
 
 template <typename valType>
-RevLanguage::DirichletProcessPriorDistribution<valType>::~DirichletProcessPriorDistribution() {
+RevLanguage::Dist_dpp<valType>::~Dist_dpp() {
     
 }
 
 
 
 template <typename valType>
-RevLanguage::DirichletProcessPriorDistribution<valType>* RevLanguage::DirichletProcessPriorDistribution<valType>::clone( void ) const {
-    return new DirichletProcessPriorDistribution(*this);
+RevLanguage::Dist_dpp<valType>* RevLanguage::Dist_dpp<valType>::clone( void ) const {
+    return new Dist_dpp(*this);
 }
 
 
 template <typename valType>
-RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* RevLanguage::DirichletProcessPriorDistribution<valType>::createDistribution( void ) const {
+RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* RevLanguage::Dist_dpp<valType>::createDistribution( void ) const {
 	
     // get the parameters
     const Distribution& rlDistribution									= static_cast<const Distribution &>( baseDistribution->getRevObject() );
@@ -110,7 +110,7 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
 
 /* Get class name of object */
 template <typename valType>
-const std::string& RevLanguage::DirichletProcessPriorDistribution<valType>::getClassName(void) { 
+const std::string& RevLanguage::Dist_dpp<valType>::getClassName(void) { 
     
     static std::string rbClassName = "Dist_dpp";
     
@@ -119,7 +119,7 @@ const std::string& RevLanguage::DirichletProcessPriorDistribution<valType>::getC
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::DirichletProcessPriorDistribution<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector<RealPos> >::getClassTypeSpec() ) );
     
@@ -131,7 +131,7 @@ const RevLanguage::TypeSpec& RevLanguage::DirichletProcessPriorDistribution<valT
 
 /** Return member rules (no members) */
 template <typename valType>
-const RevLanguage::MemberRules& RevLanguage::DirichletProcessPriorDistribution<valType>::getMemberRules(void) const {
+const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(void) const {
     
     static MemberRules distDPPMemberRules;
     static bool rulesSet = false;
@@ -149,7 +149,7 @@ const RevLanguage::MemberRules& RevLanguage::DirichletProcessPriorDistribution<v
 
 
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::DirichletProcessPriorDistribution<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -160,7 +160,7 @@ const RevLanguage::TypeSpec& RevLanguage::DirichletProcessPriorDistribution<valT
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::DirichletProcessPriorDistribution<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_dpp<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "concentration" ) {
         concentration = var;

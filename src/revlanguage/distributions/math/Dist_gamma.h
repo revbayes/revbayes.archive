@@ -15,22 +15,22 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlGammaDistribution_H
-#define RlGammaDistribution_H
+#ifndef Dist_gamma_H
+#define Dist_gamma_H
 
 #include "GammaDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
 
 namespace RevLanguage {
     
-    class GammaDistribution :  public PositiveContinuousDistribution {
+    class Dist_gamma :  public PositiveContinuousDistribution {
         
     public:
-        GammaDistribution( void );
-        virtual ~GammaDistribution();
+        Dist_gamma( void );
+        virtual ~Dist_gamma();
         
         // Basic utility functions
-        GammaDistribution*                              clone(void) const;                                                              //!< Clone the object
+        Dist_gamma*                                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

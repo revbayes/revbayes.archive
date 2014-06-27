@@ -17,22 +17,22 @@
  * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
-#ifndef RlPositiveUniformDistribution_H
-#define RlPositiveUniformDistribution_H
+#ifndef Dist_positiveUnif_H
+#define Dist_positiveUnif_H
 
 #include "UniformDistribution.h"
 #include "RlPositiveContinuousDistribution.h"
 
 namespace RevLanguage {
     
-    class PositiveUniformDistribution :  public PositiveContinuousDistribution {
+    class Dist_positiveUnif :  public PositiveContinuousDistribution {
         
     public:
-        PositiveUniformDistribution( void );
-        virtual ~PositiveUniformDistribution();
+        Dist_positiveUnif( void );
+        virtual ~Dist_positiveUnif();
         
         // Basic utility functions
-        PositiveUniformDistribution*                    clone(void) const;                                                              //!< Clone the object
+        Dist_positiveUnif*                    clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

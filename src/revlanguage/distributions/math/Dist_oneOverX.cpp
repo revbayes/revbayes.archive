@@ -1,5 +1,5 @@
 //
-//  OneOverXDistribution.cpp
+//  Dist_oneOverX.cpp
 //  RevBayesCore
 //
 //  Created by Sebastian Hoehna on 8/6/12.
@@ -9,31 +9,31 @@
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "ContinuousStochasticNode.h"
+#include "Dist_oneOverX.h"
 #include "OneOverXDistribution.h"
-#include "RlOneOverXDistribution.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "ContinuousStochasticNode.h"
 
 using namespace RevLanguage;
 
-OneOverXDistribution::OneOverXDistribution() : PositiveContinuousDistribution() {
+Dist_oneOverX::Dist_oneOverX() : PositiveContinuousDistribution() {
     
 }
 
 
-OneOverXDistribution::~OneOverXDistribution() {
+Dist_oneOverX::~Dist_oneOverX() {
     
 }
 
 
 
-OneOverXDistribution* OneOverXDistribution::clone( void ) const {
-    return new OneOverXDistribution(*this);
+Dist_oneOverX* Dist_oneOverX::clone( void ) const {
+    return new Dist_oneOverX(*this);
 }
 
 
-RevBayesCore::OneOverXDistribution* OneOverXDistribution::createDistribution( void ) const {
+RevBayesCore::OneOverXDistribution* Dist_oneOverX::createDistribution( void ) const {
     // get the parameters
     RevBayesCore::TypedDagNode<double>* mi   = static_cast<const Real &>( min->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* ma   = static_cast<const Real &>( max->getRevObject() ).getDagNode();
@@ -45,7 +45,7 @@ RevBayesCore::OneOverXDistribution* OneOverXDistribution::createDistribution( vo
 
 
 /* Get class name of object */
-const std::string& OneOverXDistribution::getClassName(void) { 
+const std::string& Dist_oneOverX::getClassName(void) { 
     
     static std::string rbClassName = "Dist_oneOverX";
     
@@ -53,7 +53,7 @@ const std::string& OneOverXDistribution::getClassName(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& OneOverXDistribution::getClassTypeSpec(void) { 
+const TypeSpec& Dist_oneOverX::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -64,7 +64,7 @@ const TypeSpec& OneOverXDistribution::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& OneOverXDistribution::getMemberRules(void) const {
+const MemberRules& Dist_oneOverX::getMemberRules(void) const {
     
     static MemberRules distOneOverXMemberRules;
     static bool rulesSet = false;
@@ -81,7 +81,7 @@ const MemberRules& OneOverXDistribution::getMemberRules(void) const {
 }
 
 
-const TypeSpec& OneOverXDistribution::getTypeSpec( void ) const {
+const TypeSpec& Dist_oneOverX::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -90,7 +90,7 @@ const TypeSpec& OneOverXDistribution::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void OneOverXDistribution::printValue(std::ostream& o) const {
+void Dist_oneOverX::printValue(std::ostream& o) const {
     
     o << " OneOverX(min=";
     if ( min != NULL ) 
@@ -116,7 +116,7 @@ void OneOverXDistribution::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void OneOverXDistribution::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_oneOverX::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "max" )
     {
