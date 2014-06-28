@@ -71,7 +71,7 @@ namespace RevLanguage {
         void                                            setName(const std::string& nm);                                                     //!< Name the function
     
         // Function functions you have to override
-        virtual RevObject*                       execute(void) = 0;                                                                  //!< Execute function
+        virtual RevObject*                              execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 

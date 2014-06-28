@@ -25,7 +25,7 @@ namespace RevLanguage {
         Move_PrecisionMatrixSimple(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_PrecisionMatrixSimple*          clone(void) const;                                                      //!< Clone object
+        virtual Move_PrecisionMatrixSimple*         clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
