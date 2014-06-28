@@ -16,7 +16,7 @@ namespace RevLanguage {
         virtual ~Dist_phyloCTMC();
         
         // Basic utility functions
-        Dist_phyloCTMC*               clone(void) const;                                                              //!< Clone the object
+        Dist_phyloCTMC*                                 clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

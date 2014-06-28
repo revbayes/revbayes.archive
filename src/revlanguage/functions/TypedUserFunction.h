@@ -85,7 +85,7 @@ RevBayesCore::TypedUserFunction<valueType>* RevBayesCore::TypedUserFunction<valu
 template <class valueType>
 void RevBayesCore::TypedUserFunction<valueType>::update( void ) {
 
-    // We can rely on the fact that only objects with value nodes have a TypedUserFunction
+    // We can rely on the fact that only objects with dag nodes have a TypedUserFunction
     
     RevLanguage::RevObject* retValue = userFunction->executeCode();
     

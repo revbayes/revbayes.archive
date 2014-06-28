@@ -1,13 +1,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
-#include "RlBirthDeathProcess.h"
-#include "BirthDeathProcess.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlBirthDeathProcess.h"
 #include "RlClade.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
@@ -36,7 +35,7 @@ BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
 const std::string& BirthDeathProcess::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Dist_BDP";
+    static std::string rbClassName = "BirthDeathProcess";
     
 	return rbClassName; 
 }

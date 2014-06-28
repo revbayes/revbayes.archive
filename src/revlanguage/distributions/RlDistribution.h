@@ -40,7 +40,7 @@ namespace RevLanguage {
         void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
     
         // Distribution functions you have to override
-        virtual RevObject*                       createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
+        virtual RevObject*                              createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
         virtual RevBayesCore::Distribution*             createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
     
     
