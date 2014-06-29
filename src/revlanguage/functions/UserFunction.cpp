@@ -148,7 +148,7 @@ RevObject* UserFunction::execute( void ) {
         RevBayesCore::TypedUserFunction<double>* f       = new RevBayesCore::TypedUserFunction<double>( this, args );
         RevBayesCore::DeterministicNode<double>* detNode = new RevBayesCore::DeterministicNode<double>("", f);
 
-        static_cast< ModelObject<double>* >( retValue )->setValueNode( detNode );
+        static_cast< ModelObject<double>* >( retValue )->setDagNode( detNode );
     }
     else
     {
