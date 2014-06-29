@@ -86,7 +86,7 @@ RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
-RevObject* RevObject::dagReference(void) {
+RevObject* RevObject::makeDagReference(void) {
     
     throw RbException( "Dynamic reference to this object type not supported");
 }
@@ -232,7 +232,7 @@ const MethodTable& RevObject::getMethods(void) const {
  * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
  * return "Mcmc", etc.
  */
-const std::string& RevObject::getValueType( void ) const {
+const std::string& RevObject::getInternalValueType( void ) const {
     
     throw RbException("No value template type implemented for this object (lazy RevBayes programmers...)");
 }
@@ -333,7 +333,7 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 /**
  * Replace the variable. This default implementation does nothing.
  */
-void RevObject::replaceMe(RevObject *newVar) {
+void RevObject::replaceVariable(RevObject *newVar) {
     
 }
 
