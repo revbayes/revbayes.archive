@@ -38,21 +38,12 @@ namespace RevLanguage {
         DeterministicNode<valueType>*                       clone(void) const;
         Function<valueType>&                                getRlFunction(void);
         const Function<valueType>&                          getRlFunction(void) const;
-        valueType&                                          getValue(void);
-        const valueType&                                    getValue(void) const;
-        bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
         void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
-        void                                                update(void);                                                               //!< Update the current value by recomputation
-        void                                                redraw(void);
 
     protected:
-        void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
-        void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
-        void                                                touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
 
     private:
-        RevPtr<Function>                                    rlFunction;
+        Function*                                           rlFunction;
     };
     
 }
@@ -75,7 +66,8 @@ DeterministicNode<valueType>::DeterministicNode( const DeterministicNode<valueTy
 
 template<class valueType>
 DeterministicNode<valueType>::~DeterministicNode( void ) {
-    
+
+    delete rlFunction;
 }
 
 
