@@ -30,29 +30,29 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-BranchLengthTree::BranchLengthTree(void) : RlModelVariableWrapper<RevBayesCore::BranchLengthTree>() {
+BranchLengthTree::BranchLengthTree(void) : ModelObject<RevBayesCore::BranchLengthTree>() {
     
 }
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : RlModelVariableWrapper<RevBayesCore::BranchLengthTree>( t ) {
+BranchLengthTree::BranchLengthTree(RevBayesCore::BranchLengthTree *t) : ModelObject<RevBayesCore::BranchLengthTree>( t ) {
     
 }
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(const RevBayesCore::BranchLengthTree &t) : RlModelVariableWrapper<RevBayesCore::BranchLengthTree>( new RevBayesCore::BranchLengthTree( t ) ) {
+BranchLengthTree::BranchLengthTree(const RevBayesCore::BranchLengthTree &t) : ModelObject<RevBayesCore::BranchLengthTree>( new RevBayesCore::BranchLengthTree( t ) ) {
     
 }
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::BranchLengthTree> *n) : RlModelVariableWrapper<RevBayesCore::BranchLengthTree>( n ) {
+BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::BranchLengthTree> *n) : ModelObject<RevBayesCore::BranchLengthTree>( n ) {
     
 }
 
 
 
 /** Construct from bool */
-BranchLengthTree::BranchLengthTree(const BranchLengthTree &t) : RlModelVariableWrapper<RevBayesCore::BranchLengthTree>( t ) {
+BranchLengthTree::BranchLengthTree(const BranchLengthTree &t) : ModelObject<RevBayesCore::BranchLengthTree>( t ) {
     
 }
 
@@ -65,7 +65,7 @@ BranchLengthTree* BranchLengthTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RbLanguageObject* BranchLengthTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* BranchLengthTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") {
         size_t n = this->value->getValue().getNumberOfNodes();
@@ -80,7 +80,7 @@ RevLanguage::RbLanguageObject* BranchLengthTree::executeMethod(std::string const
         return new Vector<RlString>( n );
     } 
     
-    return RlModelVariableWrapper<RevBayesCore::BranchLengthTree>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args );
 }
 
 
@@ -95,7 +95,7 @@ const std::string& BranchLengthTree::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& BranchLengthTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -119,7 +119,7 @@ const RevLanguage::MethodTable& BranchLengthTree::getMethods(void) const {
         methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     

@@ -53,7 +53,7 @@ namespace RevBayesCore {
         virtual void                            setState(size_t pos, bool val) = 0;                 //!< Set the discrete observation
     
     protected:
-        DiscreteCharacterState() {}                                                                 //!< Constructor
+                                                DiscreteCharacterState() {}                         //!< Constructor
 
     };
     

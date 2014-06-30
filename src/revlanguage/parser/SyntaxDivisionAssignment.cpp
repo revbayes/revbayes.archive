@@ -121,7 +121,7 @@ SyntaxDivisionAssignment* SyntaxDivisionAssignment::clone () const
  * Evaluate the content of this syntax element.
  * This will perform an Division assignment operation.
  */
-RbPtr<Variable> SyntaxDivisionAssignment::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxDivisionAssignment::evaluateContent( Environment& env ) 
 {
     
 #ifdef DEBUG_PARSER
@@ -129,26 +129,26 @@ RbPtr<Variable> SyntaxDivisionAssignment::evaluateContent( Environment& env )
 #endif
     
     // Get variable info from lhs
-    RbPtr<Variable> theVariable = variable->createVariable( env );
+    RevPtr<Variable> theVariable = variable->createVariable( env );
     
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in division assignment" );
     
-    const RbLanguageObject& lhs_value = theVariable->getValue();
+    const RevObject& lhs_value = theVariable->getRevObject();
     
     
     // Calculate the value of the rhs expression
-    const RbPtr<Variable>& rhs = expression->evaluateContent( env );
+    const RevPtr<Variable>& rhs = expression->evaluateContent( env );
     if ( rhs == NULL )
         throw RbException( "Invalid NULL variable returned by rhs expression in division assignment" );
     
     // fill the slot with the new variable
-    const RbLanguageObject& rhs_value = rhs->getValue();
+    const RevObject& rhs_value = rhs->getRevObject();
     
-    RbLanguageObject *newValue = lhs_value.divide( rhs_value );
+    RevObject *newValue = lhs_value.divide( rhs_value );
     
     // set the value of the variable
-    theVariable->setValue( newValue );
+    theVariable->setRevObject( newValue );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
@@ -191,7 +191,7 @@ void SyntaxDivisionAssignment::printValue(std::ostream& o) const
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxDivisionAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxDivisionAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);
 }

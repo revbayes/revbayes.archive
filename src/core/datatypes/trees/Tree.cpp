@@ -27,7 +27,7 @@ using namespace RevBayesCore;
 Tree::Tree(void) : 
     topology( NULL ), 
     changeEventHandler(),
-    ownsTopology( false ) 
+    ownsTopology( true )
 {
     
 }
@@ -58,9 +58,15 @@ Tree::Tree(const Tree& t) :
 /* Destructor */
 Tree::~Tree(void) 
 {
-    if ( ownsTopology ) 
+    
+    if ( ownsTopology )
     {
         delete topology;
+    }
+    else
+    {
+        // remove the tree for each node
+        topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
     }
     
 }
@@ -249,9 +255,19 @@ bool Tree::isRooted(void) const
 void Tree::setTopology(const Topology *t, bool owns) 
 {
     // free the old topology if necessary
-    if ( ownsTopology && topology != NULL )
+    if ( topology != NULL )
     {
-        delete  topology;
+        // only delete if we own it
+        if ( ownsTopology )
+        {
+            delete topology;
+        }
+        else
+        {
+            // just remove the tree for each node
+            topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
+        }
+        
     }
     
     ownsTopology = owns;

@@ -4,6 +4,7 @@
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "NclReader.h"
+#include "NucleotideBranchHeterogeneousCharEvoModel.h"
 #include "NormalizeVectorFunction.h"
 #include "QuantileFunction.h"
 #include "RbFileManager.h"
@@ -94,7 +95,8 @@ bool TestGtrGammaLikelihood::run( void ) {
     
     // and the character model
     size_t numChar = data[0]->getNumberOfCharacters();
-    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, numChar );
+//    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, numChar );
+    NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *charModel = new NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, true, numChar );
     charModel->setRateMatrix( q );
     charModel->setSiteRates( site_rates_norm );
 //    charModel->setClockRate( clockRate );

@@ -177,6 +177,7 @@ double RevBayesCore::PathRejectionSampleMove<charType, treeType>::performMove( d
 //        std::cout << "move hr + probRatio " << hr + probRatio << " " << hr << " " << probRatio << "\n";
 //        std::cout << "!!!\n";
 //    }
+//    
 //    std::cout << "\n";
     
     return hr;

@@ -31,7 +31,9 @@ UniformTopologyDistribution::UniformTopologyDistribution(const UniformTopologyDi
 }
 
 
-UniformTopologyDistribution::~UniformTopologyDistribution() {
+UniformTopologyDistribution::~UniformTopologyDistribution()
+{
+    // the tree will be deleted automatically by the base class
     
 }
 

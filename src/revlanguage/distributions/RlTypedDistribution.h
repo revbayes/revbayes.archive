@@ -20,9 +20,9 @@
 #ifndef RlTypedDistribution_H
 #define RlTypedDistribution_H
 
+#include "Real.h"
 #include "RlDistribution.h"
 #include "TypedDistribution.h"
-#include "RlUnivariateFunction.h"
 
 namespace RevLanguage {
     

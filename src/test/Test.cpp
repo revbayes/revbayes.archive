@@ -313,7 +313,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-        testGtrGamma.run();
+//        testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -441,7 +441,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* The Bayes factors */
     try {
         TestBayesFactor testBF = TestBayesFactor(10000);
-//        testBF.run();
+        testBF.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

@@ -207,7 +207,8 @@ void MoveOld::reject( void ) {
     rejectMove();
     
     // call restore for each node
-    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+    {
         (*i)->restore();
     }
     

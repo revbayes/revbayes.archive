@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "Func_writeFasta.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlAbstractCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
@@ -33,12 +33,12 @@ Func_writeFasta* Func_writeFasta::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RbLanguageObject* Func_writeFasta::execute( void ) 
+RevObject* Func_writeFasta::execute( void ) 
 {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
-    const RevBayesCore::AbstractCharacterData &data = static_cast< const AbstractCharacterData & >( args[1].getVariable()->getValue() ).getValue();
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
+    const RevBayesCore::AbstractCharacterData &data = static_cast< const AbstractCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::FastaWriter fw;
     fw.writeData(fn.getValue(), data);
@@ -81,7 +81,7 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
 const std::string& Func_writeFasta::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Write fasta function";
+    static std::string rbClassName = "Func_writeFasta";
     
 	return rbClassName; 
 }
@@ -124,7 +124,7 @@ const TypeSpec& Func_writeFasta::getTypeSpec( void ) const
 const TypeSpec& Func_writeFasta::getReturnType( void ) const 
 {
     
-    static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
     return returnTypeSpec;
 }
 

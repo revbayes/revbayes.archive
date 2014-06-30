@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class DistanceDependentDispersalFunction : public TypedFunction<GeographicDistanceRateModifier> {
         
     public:
-        DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, TimeAtlas* ta);
+        DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false);
         DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n);                                                                    //!< Copy constructor
         virtual ~DistanceDependentDispersalFunction(void);                                                                                                  //!< Virtual destructor
         

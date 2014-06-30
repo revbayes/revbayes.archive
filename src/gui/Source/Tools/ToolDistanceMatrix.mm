@@ -10,7 +10,7 @@
 
 #include "DistanceMatrix.h"
 #include "Parser.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "Workspace.h"
 #include <iomanip>
 #include <iostream>
@@ -155,8 +155,8 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(distName);
-    if ( RevLanguage::RbNullObject::getInstance() == dv )
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(distName);
+    if ( RevLanguage::RevNullObject::getInstance() == dv )
         {
         //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
@@ -306,7 +306,7 @@
     line += " <- distances(";
     line += alnAsStlStr;
     line += ", \"jc69\", \"equal\", \"equal\", 0.5, 0.0)";
-    std::cout << "line = \"" << line << "\"" << std::cout;
+    //std::cout << "line = \"" << line << "\"" << std::cout;
     
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)

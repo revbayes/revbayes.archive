@@ -297,7 +297,7 @@
     
     if ([header isEqualToString:@"Burnin"] == YES)
     {
-        int n = t->getBurnin();
+        int n = (int)t->getBurnin();
         NSNumber* cellContent = [[NSNumber alloc] initWithInt:n];
         [cellContent autorelease];
         return cellContent;
@@ -407,7 +407,7 @@
     // iterate over each trace
     for (int i=0; i<data->size(); i++) {
         [progressTextField setEditable:YES];
-        [progressTextField setStringValue:[NSString stringWithFormat:@"Anaylising trace %lu",i+1]];
+        [progressTextField setStringValue:[NSString stringWithFormat:@"Anaylising trace %d",i+1]];
  //       [progressPanel abortEditing];
         [progressPanel setViewsNeedDisplay:YES];
         [progressPanel update];
@@ -418,7 +418,7 @@
             
             // calculate the burnin
             if (useFixPercentage) {
-                int burnin = t->size();
+                int burnin = (int)t->size();
                 burnin *= t->getStepSize();
                 burnin *= fixPercentage;
 //                [t setBurnin:(((int)[t count]) * fixPercentage * [t stepSize])];
@@ -436,7 +436,7 @@
                 if ([[[optimalBurninPuButton selectedItem] title] isEqualToString:@"ESS"] ) {
                     // estimate the burnin
                     EssMax* estimator = new EssMax();
-                    int burnin = estimator->estimateBurnin(t->getValues());
+                    int burnin = (int)estimator->estimateBurnin(t->getValues());
                     delete estimator;
                     // calculate the trace statistics
                     TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
@@ -450,7 +450,7 @@
                 else {
                     // estimate the burnin
                     SemMin* estimator = new SemMin();
-                    int burnin = estimator->estimateBurnin(t->getValues());
+                    int burnin = (int)estimator->estimateBurnin(t->getValues());
                     delete estimator;
                     // calculate the trace statistics
                     TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();

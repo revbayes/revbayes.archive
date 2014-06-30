@@ -22,17 +22,17 @@
 using namespace RevLanguage;
 
 /** Constructor from empty RlString */
-RlString::RlString( void ) : RlModelVariableWrapper<std::string>() {
+RlString::RlString( void ) : ModelObject<std::string>() {
 }
 
 
 /** Constructor from RlString */
-RlString::RlString(const std::string& v) : RlModelVariableWrapper<std::string>( new std::string(v) ) {
+RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::string(v) ) {
 }
 
 
 /** Constructor from int */
-RlString::RlString(int i) : RlModelVariableWrapper<std::string>() {
+RlString::RlString(int i) : ModelObject<std::string>() {
 
     std::ostringstream o;
     o << i;
@@ -42,7 +42,7 @@ RlString::RlString(int i) : RlModelVariableWrapper<std::string>() {
 
 
 /** Constructor from RlString */
-RlString::RlString(double x) : RlModelVariableWrapper<std::string>() {
+RlString::RlString(double x) : ModelObject<std::string>() {
 
     std::ostringstream o;
     o << x;
@@ -51,7 +51,7 @@ RlString::RlString(double x) : RlModelVariableWrapper<std::string>() {
 
 
 /* Construct from DAG node */
-RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : RlModelVariableWrapper<std::string>( v ) {
+RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<std::string>( v ) {
 }
 
 
@@ -63,13 +63,13 @@ RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : RlModelVariab
  *
  * \return              A new object holding the sum.
  */
-RbLanguageObject* RlString::add( const RbLanguageObject& rhs ) const 
+RevObject* RlString::add( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec() == RlString::getClassTypeSpec() )
         return add( static_cast<const RlString&>( rhs ) );
     
-    return RlModelVariableWrapper<std::string>::add( rhs );
+    return ModelObject<std::string>::add( rhs );
 }
 
 
@@ -108,7 +108,7 @@ const std::string& RlString::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RlString::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -126,7 +126,6 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 /** Print value */
 void RlString::printValue(std::ostream& o) const {
 
-	o << "\"" << value << "\"";
 	o << value->getValue();
 }
 

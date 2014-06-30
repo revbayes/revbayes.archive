@@ -113,9 +113,9 @@
                                 {
                                 for (size_t j=0; j<[tdToCopy numCharacters]; j++)
                                     {
-                                    RbDataCell* c = [tdToCopy dataCellIndexed:j];
+                                    RbDataCell* c = [tdToCopy dataCellIndexed:(int)j];
                                     RbDataCell* newC = [[RbDataCell alloc] initWithCell:c];
-                                    if ([d isCharacterExcluded:j] == YES)
+                                    if ([d isCharacterExcluded:(int)j] == YES)
                                         [newD excludeCharacterIndexed:k];
                                     [td addObservation:newC];
                                     k++;
@@ -127,7 +127,7 @@
                                     {
                                     RbDataCell* newC = [[RbDataCell alloc] init];
                                     [newC setDiscreteStateTo:(-1)];
-                                    if ([d isCharacterExcluded:j] == YES)
+                                    if ([d isCharacterExcluded:(int)j] == YES)
                                         [newD excludeCharacterIndexed:k];
                                     [td addObservation:newC];
                                     k++;
@@ -247,7 +247,7 @@
         Inlet* theInlet = [inlets objectAtIndex:i];
         for (size_t j=0; j<[theInlet numberOfConnections]; j++)
             {
-            Connection* c = [theInlet connectionWithIndex:j];
+            Connection* c = [theInlet connectionWithIndex:(int)j];
             Tool* t = [[c outlet] toolOwner];
             if ( [t isKindOfClass:[ToolData class]] == YES )
                 dataTool = (ToolData*)t;
@@ -415,7 +415,7 @@
 
     NSString* myTip = @" Sequence Concatenation Tool ";
     if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
+        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", (int)[self numDataMatrices]];
     else 
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)

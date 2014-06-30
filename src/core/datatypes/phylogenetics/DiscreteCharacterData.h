@@ -28,68 +28,72 @@ namespace RevBayesCore {
     class DiscreteCharacterData : public AbstractDiscreteCharacterData {
         
     public:
-        DiscreteCharacterData();                                                                                        //!< Default constructor
+                                                            DiscreteCharacterData();                                                                                        //!< Default constructor
         
         // Overloaded operators
-        const DiscreteTaxonData<charType>&  operator[](size_t i) const;                                                 //!< Subscript operator (const)
-        bool                                operator<(const DiscreteCharacterData& x) const;                            //!< Less than operator
+        const DiscreteTaxonData<charType>&                  operator[](size_t i) const;                                                 //!< Subscript operator (const)
+        bool                                                operator<(const DiscreteCharacterData& x) const;                            //!< Less than operator
         
         // implemented methods of the Cloneable interface
-        DiscreteCharacterData<charType>*    clone(void) const;
+        DiscreteCharacterData<charType>*                    clone(void) const;
         
         // Container functions
-        void                                clear(void);
+        void                                                clear(void);
         
         // CharacterData functions
-        void                                addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
-        void                                addTaxonData(const AbstractDiscreteTaxonData &obs);                         //!< Add discrete taxon data
-        void                                addTaxonData(const DiscreteTaxonData<charType> &obs);                               //!< Add taxon data
-        MatrixReal                          computeStateFrequencies(void) const;
-        void                                excludeCharacter(size_t i);                                                 //!< Exclude character
-        void                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
-        void                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
-        const charType&                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-        std::string                         getDatatype(void) const;
-        const std::string&                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
-        size_t                              getNumberOfCharacters(void) const;                                          //!< Number of characters
-        size_t                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
-        size_t                              getNumberOfIncludedCharacters(void) const;                                          //!< Number of characters
-        size_t                              getNumberOfIncludedCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
-        size_t                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
-        size_t                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
-        DiscreteTaxonData<charType>&        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
-        const DiscreteTaxonData<charType>&  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
-        DiscreteTaxonData<charType>&        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
-        const DiscreteTaxonData<charType>&  getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
-        const std::vector<std::string>&     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
-        const std::string&                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
-        bool                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
-        bool                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
-        bool                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
-        bool                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
-        void                                restoreCharacter(size_t i);                                                 //!< Restore character
-        void                                restoreTaxon(size_t i);                                                     //!< Restore taxon
-        void                                restoreTaxon(std::string& s);                                               //!< Restore taxon
-        void                                setFileName(const std::string &fn);                                         //!< Set the file name
-        void                                setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
+        void                                                addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
+        void                                                addTaxonData(const AbstractDiscreteTaxonData &obs);                         //!< Add discrete taxon data
+        void                                                addTaxonData(const DiscreteTaxonData<charType> &obs);                       //!< Add taxon data
+        MatrixReal                                          computeStateFrequencies(void) const;
+        void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
+        void                                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
+        void                                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
+        const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
+        std::string                                         getDatatype(void) const;
+        const std::string&                                  getFileName(void) const;                                                    //!< Returns the name of the file the data came from
+        const std::string&                                  getFilePath(void) const;                                                    //!< Returns the name of the file the data came from
+        const bool                                          getHomologyEstablished(void) const;                                         //!< Returns whether the homology of the characters has been established
+        size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
+        size_t                                              getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
+        size_t                                              getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
+        size_t                                              getNumberOfIncludedCharacters(size_t idx) const;                            //!< Number of characters for a specific taxon
+        size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
+        size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
+        const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
+        DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
+        const DiscreteTaxonData<charType>&                  getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
+        const std::vector<std::string>&                     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
+        const std::string&                                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
+        bool                                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
+        bool                                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
+        bool                                                isTaxonExcluded(std::string& s) const;                                      //!< Is the taxon excluded
+        void                                                restoreCharacter(size_t i);                                                 //!< Restore character
+        void                                                restoreTaxon(size_t i);                                                     //!< Restore taxon
+        void                                                restoreTaxon(std::string& s);                                               //!< Restore taxon
+        void                                                setFileName(const std::string &fn);                                         //!< Set the file name
+        void                                                setFilePath(const std::string &fn);                                         //!< Set the file name
+        void                                                setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
         
     protected:
         // Utility functions
-        size_t                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
-        bool                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
-        bool                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
-        size_t                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
-        size_t                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
+        size_t                                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
+        bool                                                isCharacterConstant(size_t idx) const;                                      //!< Is the idx-th character a constant pattern?
+        bool                                                isCharacterMissingOrAmbiguous(size_t idx) const;                            //!< Does the character have missing or ambiguous data?
+        size_t                                              numConstantPatterns(void) const;                                            //!< The number of constant patterns
+        size_t                                              numMissAmbig(void) const;                                                   //!< The number of patterns with missing or ambiguous characters
         
         // Member variables
-        std::set<size_t>                    deletedTaxa;                                                                //!< Set of deleted taxa
-        std::set<size_t>                    deletedCharacters;                                                          //!< Set of deleted characters
-        std::string                         fileName;                                                                   //!< The path/filename from where this matrix originated
-        std::vector<std::string>            sequenceNames;                                                              //!< names of the sequences
-        size_t                              sequenceLength;                                                             //!< The length of each sequence
-        bool                                homologyEstablished;                                                        //!< Whether the homology of the characters has been established
+        std::set<size_t>                                    deletedTaxa;                                                                //!< Set of deleted taxa
+        std::set<size_t>                                    deletedCharacters;                                                          //!< Set of deleted characters
+        std::string                                         fileName;                                                                   //!< The path/filename from where this matrix originated
+        std::string                                         filePath;                                                                   //!< The path/filename from where this matrix originated
+        std::vector<std::string>                            sequenceNames;                                                              //!< names of the sequences
+        size_t                                              sequenceLength;                                                             //!< The length of each sequence
+        bool                                                homologyEstablished;                                                        //!< Whether the homology of the characters has been established
         
-        std::map<std::string, DiscreteTaxonData<charType> >    taxonMap;
+        std::map<std::string, DiscreteTaxonData<charType> > taxonMap;
         
     };
     
@@ -416,6 +420,33 @@ const std::string& RevBayesCore::DiscreteCharacterData<charType>::getFileName(vo
     return fileName;
 }
 
+/**
+ * Get the file path from which the character data object was read in.
+ *
+ * \return    The original file path.
+ */
+template<class charType>
+const std::string& RevBayesCore::DiscreteCharacterData<charType>::getFilePath(void) const
+{
+    
+    return filePath;
+}
+
+
+/** 
+ * Get whether the homology of the characters has been established, or not.
+ * For continuous characters, this should always be "true." However, we still 
+ * return the state of the member variable (homologyEstablished) rather than
+ * simply returning true.
+ *
+ * \return    The homology state of the character
+ */
+template<class charType>
+const bool RevBayesCore::DiscreteCharacterData<charType>::getHomologyEstablished(void) const
+{
+
+    return homologyEstablished;
+}
 
 /** 
  * Get the number of characters in taxon data object. 
@@ -912,6 +943,20 @@ void RevBayesCore::DiscreteCharacterData<charType>::setFileName(const std::strin
 {
     
     fileName = fn;
+    
+}
+
+
+/**
+ * Set the original file name for this character data object.
+ *
+ * \param[in]    fn    The new file name.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::setFilePath(const std::string& fn)
+{
+    
+    filePath = fn;
     
 }
 

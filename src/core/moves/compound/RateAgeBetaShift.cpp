@@ -69,7 +69,6 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     do {
         double u = rng->uniform01();
         nodeIdx = size_t( std::floor(tau.getNumberOfNodes() * u) );
-        nodeIdx = 80;
         node = &tau.getNode(nodeIdx);
     } while ( node->isRoot() || node->isTip() ); 
     
@@ -102,7 +101,6 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     double a = delta * m + 1.0;
     double b = delta * (1.0-m) + 1.0;
     double new_m = RbStatistics::Beta::rv(a, b, *rng);
-    new_m = 0.2;
     double my_new_age = (parent_age-child_Age) * new_m + child_Age;
     
     // compute the Hastings ratio
@@ -137,15 +135,11 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     {
         (*it)->touch();
         lnProbRatio += (*it)->getLnProbabilityRatio();
-        if ( lnProbRatio != 0 )
-        {
-            std::cout << "Changed Likelihood of " << (*it)->getName() << " by " << (*it)->getLnProbabilityRatio() << std::endl;
-        }
     }
     
-    if ( lnProbRatio != 0 ) {
-        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
-//        std::cout << "Likelihood shortcut computation failed in rate-age-proposal." << std::endl;
+    if ( fabs(lnProbRatio) > 1E-6 ) {
+//        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
+        std::cout << "Likelihood shortcut computation failed in rate-age-proposal." << std::endl;
     }
     
     double hastingsRatio = backward - forward;
@@ -166,6 +160,13 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     else if (lnAcceptanceRatio < -300.0)
     {
         reject();
+        tree->restore();
+        rates[nodeIdx]->restore();
+        for (size_t i = 0; i < node->getNumberOfChildren(); i++)
+        {
+            size_t childIdx = node->getChild(i).getIndex();
+            rates[childIdx]->restore();
+        }
     }
     else
     {
@@ -188,6 +189,13 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
         else
         {
             reject();
+            tree->restore();
+            rates[nodeIdx]->restore();
+            for (size_t i = 0; i < node->getNumberOfChildren(); i++)
+            {
+                size_t childIdx = node->getChild(i).getIndex();
+                rates[childIdx]->restore();
+            }
         }
     }
 

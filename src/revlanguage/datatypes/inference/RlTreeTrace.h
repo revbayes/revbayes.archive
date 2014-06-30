@@ -19,8 +19,8 @@
 #define RlTreeTrace_H
 
 #include "TreeTrace.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
@@ -28,7 +28,7 @@
 namespace RevLanguage {
     
     template <typename treeType>
-    class TreeTrace : public RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> > {
+    class TreeTrace : public WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> > {
         
     public:
         
@@ -37,21 +37,21 @@ namespace RevLanguage {
         TreeTrace(const TreeTrace& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
-        virtual TreeTrace*                          clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual TreeTrace*                          clone(void) const;                                                          //!< Clone object
+        void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
+        static const std::string&                   getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
+        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
         
         // Member method inits
-        const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
+        RevObject*                                  executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
                 
     };
     
@@ -66,18 +66,18 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace() : RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
+RevLanguage::TreeTrace<treeType>::TreeTrace() : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >() {
     
 }
 
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
+RevLanguage::TreeTrace<treeType>::TreeTrace(const RevBayesCore::TreeTrace<typename treeType::valueType> &m) : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( new RevBayesCore::TreeTrace<typename treeType::valueType>( m ) ) {
     
 }
 
 template <typename treeType>
-RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
+RevLanguage::TreeTrace<treeType>::TreeTrace(const TreeTrace &m) : WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >( m ) {
     
 }
 
@@ -98,11 +98,11 @@ void RevLanguage::TreeTrace<treeType>::constructInternalObject( void ) {
 
 /* Map calls to member methods */
 template <typename treeType>
-RevLanguage::RbLanguageObject* RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "summarize") {
         
-        int b = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
         summary.summarize( b );
         summary.printTreeSummary(std::cerr);
@@ -110,7 +110,7 @@ RevLanguage::RbLanguageObject* RevLanguage::TreeTrace<treeType>::executeMethod(s
         return NULL;
     } 
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -127,7 +127,7 @@ const std::string& RevLanguage::TreeTrace<treeType>::getClassName(void) {
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -167,7 +167,7 @@ const RevLanguage::MethodTable& RevLanguage::TreeTrace<treeType>::getMethods(voi
         methods.addFunction("summarize", new MemberFunction( RlUtils::Void, summarizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -194,13 +194,13 @@ void RevLanguage::TreeTrace<treeType>::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 template <typename treeType>
-void RevLanguage::TreeTrace<treeType>::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void RevLanguage::TreeTrace<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "xxx") {
         
     } 
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }
 

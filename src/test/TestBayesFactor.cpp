@@ -5,8 +5,10 @@
 #include "DistributionBeta.h"
 #include "Model.h"
 #include "Move.h"
+#include "PathSampler.h"
 #include "PowerPosteriorMcmc.h"
 #include "SlidingMove.h"
+#include "SteppingStoneSampler.h"
 #include "StochasticNode.h"
 #include "TestBayesFactor.h"
 #include "UniformDistribution.h"
@@ -46,20 +48,27 @@ bool TestBayesFactor::run( void ) {
     Model myModel = Model(p);
     
     /* instiate and run the MCMC */
-    PowerPosteriorMcmc myMcmc = PowerPosteriorMcmc( myModel, moves );
+    std::string filename = "BayesFacter_test.ss";
+    PowerPosteriorMcmc myMcmc = PowerPosteriorMcmc( myModel, moves, filename );
     std::vector<double> beta;
-    int k = 20;
+    int k = 50;
     for (int i = k; i >= 0; --i) {
         double b = RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
         beta.push_back( b );
     }
-    myMcmc.setBeta( beta );
+    myMcmc.setPowers( beta );
     myMcmc.setSampleFreq( 10 );
     
     myMcmc.run(mcmcGenerations);
-    double sss = myMcmc.steppingStoneSampling();
-    double ps = myMcmc.pathSampling();
     
+    PathSampler pSampler = PathSampler(filename, "power", "likelihood", "\t");
+    SteppingStoneSampler sSampler = SteppingStoneSampler(filename, "power", "likelihood", "\t");
+    
+    
+    double sss = sSampler.marginalLikelihood();
+    double ps = pSampler.marginalLikelihood();
+    
+    std::cout << "True marginal likelihood:\t\t" << log(0.004975) << std::endl;
     std::cout << "Stepping-Stone-Sampling:\t\t" << sss << std::endl;
     std::cout << "Path-Sampling:\t\t\t\t\t" << ps << std::endl;
     
@@ -67,9 +76,9 @@ bool TestBayesFactor::run( void ) {
     
     /* clean up */
     delete x;
-    delete p;
-    delete l;
-    delete u;
+//    delete p;
+//    delete l;
+//    delete u;
     for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
         const Move *theMove = *it;
         delete theMove;

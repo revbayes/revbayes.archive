@@ -126,7 +126,7 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject* UserFunction::execute( void ) {
+RevObject* UserFunction::execute( void ) {
     
     // For now, use the old way
     return executeCode();
@@ -139,7 +139,7 @@ RbLanguageObject* UserFunction::execute( void ) {
     if ( templateValueType == "" )
         return executeCode();
     
-    RbLanguageObject* retValue = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
+    RevObject* retValue = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
     
     /* Generate the required internal function object */
     if ( templateValueType == "double" )
@@ -148,7 +148,7 @@ RbLanguageObject* UserFunction::execute( void ) {
         RevBayesCore::TypedUserFunction<double>* f       = new RevBayesCore::TypedUserFunction<double>( this, args );
         RevBayesCore::DeterministicNode<double>* detNode = new RevBayesCore::DeterministicNode<double>("", f);
 
-        static_cast< RlModelVariableWrapper<double>* >( retValue )->setValueNode( detNode );
+        static_cast< ModelObject<double>* >( retValue )->setDagNode( detNode );
     }
     else
     {
@@ -164,13 +164,13 @@ RbLanguageObject* UserFunction::execute( void ) {
 
     
 /** In this function we execute the Rev code for the function (uncompiled syntax tree for now) */
-RbLanguageObject* UserFunction::executeCode( void ) {
+RevObject* UserFunction::executeCode( void ) {
     
     // Clear signals
     Signals::getSignals().clearFlags();
     
     // Set initial return value
-    RbPtr<Variable> retVar = NULL;
+    RevPtr<Variable> retVar = NULL;
     
     // Create new variable frame starting with the environment where we defined the function
     // If we can no longer access the variables we need, an error will be thrown, so referencing
@@ -179,7 +179,7 @@ RbLanguageObject* UserFunction::executeCode( void ) {
 
     // Add the arguments to the environment
     for (std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it) {
-        RbPtr<Variable> theVar = it->getVariable()->clone();
+        RevPtr<Variable> theVar = it->getVariable()->clone();
         functionEnvironment.addVariable( it->getLabel(), theVar );
     }
     
@@ -193,7 +193,7 @@ RbLanguageObject* UserFunction::executeCode( void ) {
             break;
     }
     
-    RbLanguageObject* retValue = retVar->getValue().clone();
+    RevObject* retValue = retVar->getRevObject().clone();
         
     // Return the return value
     return retValue;
@@ -204,7 +204,7 @@ RbLanguageObject* UserFunction::executeCode( void ) {
 /** Get class name of object */
 const std::string& UserFunction::getClassName(void) { 
     
-    static std::string rbClassName = "User function";
+    static std::string rbClassName = "UserFunction";
     
 	return rbClassName; 
 }
@@ -241,7 +241,7 @@ const TypeSpec& UserFunction::getReturnType(void) const {
 
 
 /** We catch here the setting of the argument variables to store our parameters. */
-void UserFunction::setArgumentVariable(std::string const &name, const RbPtr<const Variable> &var) {
+void UserFunction::setArgumentVariable(std::string const &name, const RevPtr<const Variable> &var) {
     
     // We actually just catch the call to the base class which would complain that the argument was not expected.
     // User functions handle their arguments in some unknown different way.

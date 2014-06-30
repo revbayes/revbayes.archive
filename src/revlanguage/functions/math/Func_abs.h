@@ -11,7 +11,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
 
@@ -36,7 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RbLanguageObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         

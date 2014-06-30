@@ -12,7 +12,7 @@
  * @license GPL version 3
  * @version 1.0
  *
- * $Id: Func_add.h 1406 2012-04-20 02:06:14Z hoehna $
+ * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
  */
 
 
@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RbLanguageObject*                               execute(void);                                                                  //!< Execute function
+        RevObject*                                      execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -69,9 +69,9 @@ RevLanguage::Func_floor<valType, retType>* RevLanguage::Func_floor<valType, retT
 
 
 template <typename valType, typename retType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_floor<valType, retType>::execute() {
+RevLanguage::RevObject* RevLanguage::Func_floor<valType, retType>::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FloorFunction* f = new RevBayesCore::FloorFunction( arg );
     RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
     
@@ -102,8 +102,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::get
 
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_floor<valType, retType>::getClassName(void) { 
-    
-    static std::string rbClassName = "floor";
+
+    static std::string rbClassName = "Func_floor";
     
 	return rbClassName; 
 }

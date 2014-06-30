@@ -88,7 +88,7 @@ SyntaxIncrement* SyntaxIncrement::clone () const
  * Evaluate the content of this syntax element.
  * This will perform an addition assignment operation.
  */
-RbPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
 {
     
 #ifdef DEBUG_PARSER
@@ -96,12 +96,12 @@ RbPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
 #endif
     
     // Get variable info from lhs
-    RbPtr<Variable> theVariable = variable->createVariable( env );
+    RevPtr<Variable> theVariable = variable->createVariable( env );
     
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
     
-    RbLanguageObject& lhs_value = theVariable->getValue();
+    RevObject& lhs_value = theVariable->getRevObject();
     lhs_value.increment();
     
 #ifdef DEBUG_PARSER
@@ -131,7 +131,7 @@ void SyntaxIncrement::printValue(std::ostream& o) const
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxIncrement::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxIncrement::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     variable->replaceVariableWithConstant(name, c);
 }
 

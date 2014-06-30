@@ -20,7 +20,7 @@
 #ifndef Argument_H
 #define Argument_H
 
-#include "RbPtr.h"
+#include "RevPtr.h"
 #include "Variable.h"
 
 #include <ostream>
@@ -32,7 +32,7 @@ class Argument {
 
     public:
 
-    Argument(const RbPtr<Variable> &arg, const std::string& argLabel = "", bool isConst = true);                    //!< Constructor 
+    Argument(const RevPtr<Variable> &arg, const std::string& argLabel = "", bool isConst = true);                   //!< Constructor
     
     // Basic utility functions
     Argument*                           clone(void) const;                                                          //!< Clone object
@@ -40,13 +40,13 @@ class Argument {
     
     // Regular functions
     const std::string&                  getLabel(void) const;
-    RbPtr<Variable>&                    getVariable(void);                                                          //!< Get the variable contained in this argument
-    RbPtr<const Variable>               getVariable(void) const;                                                    //!< Get the variable contained in this argument
-    const RbPtr<Variable>&              getReferenceVariable(void) const;
+    RevPtr<Variable>&                   getVariable(void);                                                          //!< Get the variable contained in this argument
+    RevPtr<const Variable>              getVariable(void) const;                                                    //!< Get the variable contained in this argument
+    const RevPtr<Variable>&             getReferenceVariable(void) const;
     bool                                isConstant(void) const;
 
 private:
-    RbPtr<Variable>                     var;                                                                        //!< Pointer to the variable slot containing the variable (and value)
+    RevPtr<Variable>                    var;                                                                        //!< Pointer to the variable slot containing the variable (and value)
     bool                                isConst;                                                                    //!< Is this a constant variable?
     std::string                         label;                                                                      //!< Label of argument
     

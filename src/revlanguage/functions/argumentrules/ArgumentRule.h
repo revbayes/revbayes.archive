@@ -19,9 +19,9 @@
 #ifndef ArgumentRule_H
 #define ArgumentRule_H
 
-#include "RbPtr.h"
-#include "TypeSpec.h"
 #include "Environment.h"
+#include "RevPtr.h"
+#include "TypeSpec.h"
 #include "VariableSlot.h"
 
 #include <string>
@@ -32,9 +32,9 @@ class ArgumentRule {
 
     public: 
         ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp);                                             //!< Constructor of rule without default value
-        ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RbLanguageObject *defVal);             //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, bool c, const TypeSpec& argTypeSp, RevObject *defVal);             //!< Constructor of rule without default value
         ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp);                                             //!< Constructor of rule without default value
-        ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RbLanguageObject *defVal);             //!< Constructor of rule without default value
+        ArgumentRule(const std::string& argName, bool c, const std::vector<TypeSpec>& argTypeSp, RevObject *defVal);             //!< Constructor of rule without default value
         virtual                            ~ArgumentRule(void) {}
         
         // Basic utility functions
@@ -46,14 +46,14 @@ class ArgumentRule {
         const std::vector<TypeSpec>&        getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         virtual const Variable&             getDefaultVariable(void) const;                                                                     //!< Get default argument
         bool                                hasDefault(void) const;                                                                             //!< Has default?
-        virtual bool                        isArgumentValid(const RbPtr<const Variable> &var, bool convert = false) const;                      //!< Is var valid argument?
+        virtual bool                        isArgumentValid(const RevPtr<const Variable> &var, bool convert = false) const;                     //!< Is var valid argument?
         bool                                isConstant(void) const;
         virtual bool                        isEllipsis(void) const;
     
 
     protected:
 
-//        bool                                isArgumentValid(const RbLanguageObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
+//        bool                                isArgumentValid(const RevObject& arg, bool& conversionNeeded, TypeSpec &conversionType) const;
             
         std::vector<TypeSpec>               argTypeSpecs;
         Variable*                           defaultVar;
