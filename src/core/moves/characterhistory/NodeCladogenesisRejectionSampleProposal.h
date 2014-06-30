@@ -559,10 +559,7 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
         
         // get transition probs
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(qmap->getValue());
-        rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
-        rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix);
-        rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix);
-        
+                
         // states for conditional sampling probs
         const std::vector<CharacterEvent*>& nodeParentState  = histories[ node->getIndex()              ]->getParentCharacters();
         const std::vector<CharacterEvent*>& trunkChildState  = histories[ proposedTrunkNode->getIndex() ]->getChildCharacters();
@@ -610,6 +607,11 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
             unsigned int ancS = nodeParentState[*it]->getState();
             unsigned int desS1 = trunkChildState[*it]->getState();
             unsigned int desS2 = budChildState[*it]->getState();
+
+            
+            rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
+            rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix);
+            rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix);
 
             // Would prefer to sample from f(H_N, H_L, H_R, X_N, X_T, X_B | X_L, X_R, X_A).
             // Unfortunately, this does not seem to scale well with N, since it requires summing

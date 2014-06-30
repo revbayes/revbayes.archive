@@ -163,7 +163,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     // area does not exist and is lost
     if (!areaAvailable && s == 0)
     {
-        r = 10e10;
+        r = 1e10;
     }
     
     // area does not exist and is gained
@@ -175,6 +175,8 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     // area exists and is gained
     if (areaAvailable && s == 1)
     {
+        // ignore graph structure for now!
+//        return 1.0;
         
         // determine which areas are present and which are absent
         present.clear();
@@ -195,6 +197,9 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
             }
         }
         
+        if (present.size() == 0)
+            return 1.0;
+        
         std::set<CharacterEvent*>::iterator it_p;
         std::set<CharacterEvent*>::iterator it_a;
         for (it_p = present.begin(); it_p != present.end(); it_p++)
@@ -206,6 +211,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
                 size_t idx_a = (*it_a)->getIndex();
                 size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
                 
+//                std::cout << "  " << idx_p << " " << idx_a << " " << idx_p << "\n";
                 double d = adjacentAreaVector[idx_e];
                 if (useDistanceDependence && d != 0.0)
                 {
@@ -220,7 +226,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
         }
         
         r = absent.size() * rate / sum;
- 
+//        std::cout << "rateMod " << r << " = " << absent.size() << " * " << rate << " / " << sum << "\n";
     }
     
     return r;
@@ -291,7 +297,15 @@ double GeographicDistanceRateModifier::computeSiteRateModifier(const TopologyNod
 
     // force extinction if unavailable and present
     if (r == 0.0 && s == 0)
-        r = 10e10;
+    {
+        
+        r = 1e10;
+    }
+    else if (r == 0.0 && s == 1)
+    {
+        
+        ;
+    }
     
     return r;
 }
@@ -305,7 +319,15 @@ double GeographicDistanceRateModifier::computeSiteRateModifier(const TopologyNod
 
     // force extinction if unavailable and present
     if (r == 0.0 && to == 0)
-        r = 10e10;
+    {
+      
+        r = 1e10;
+    }
+    else if (r == 0.0 && to == 1)
+    {
+        
+        ;
+    }
     
     return r;
 }
@@ -390,6 +412,18 @@ void GeographicDistanceRateModifier::initializeAdjacentAreas(void)
     adjacentAreaSet.resize(numEpochs*numAreas);
     availableAreaSet.resize(numEpochs);
     
+    for (size_t i = 0; i < availableAreaSet.size(); i++)
+//    {
+        availableAreaSet[i].clear();
+//        std::set<size_t>::iterator it = availableAreaSet[i].begin();
+//        std::cout << i << ": ";
+//        for (; it != availableAreaSet[i].end(); it++)
+//        {
+//            std::cout << *it << " ";
+//        }
+//        std::cout << "\n";
+//    }
+    
     for (unsigned i = 0; i < numEpochs; i++)
     {
         for (unsigned j = 0; j < numAreas; j++)
@@ -410,12 +444,24 @@ void GeographicDistanceRateModifier::initializeAdjacentAreas(void)
                 if (j == k)
                 {
                     availableAreaVector[numAreas*i + j] = d;
-                    availableAreaSet[i].insert(k);
+                    if (d > 0.0)
+                        availableAreaSet[i].insert(k);
                 }
             }
         }
     }
     
+//    for (size_t i = 0; i < availableAreaSet.size(); i++)
+//    {
+//        std::set<size_t>::iterator it = availableAreaSet[i].begin();
+//        std::cout << i << ": ";
+//        for (; it != availableAreaSet[i].end(); it++)
+//        {
+//            std::cout << *it << " ";
+//        }
+//        std::cout << "\n";
+//    }
+//    
 //    std::cout << "\n";
 }
 
