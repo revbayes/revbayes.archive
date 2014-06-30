@@ -127,7 +127,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     const std::vector<double>& glr = ( branchHeterogeneousGainLossRates ? heterogeneousGainLossRates[node.getIndex()] : homogeneousGainLossRates );
 
     if (node.isRoot())
-        branchLength = 10e10;
+        branchLength = 1e10;
 
     double expPart = exp( -(glr[0] + glr[1]) * r * branchLength);
     double p = glr[0] / (glr[0] + glr[1]);
@@ -142,7 +142,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
 void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
 {
 
-    double startAge = ( node.isRoot() ? 10e10 : node.getParent().getAge() );
+    double startAge = ( node.isRoot() ? 1e10 : node.getParent().getAge() );
     double endAge = node.getAge();
     double currAge = startAge;
     
@@ -151,12 +151,15 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     
     // start at earliest epoch
     int epochIdx = getEpochIndex(startAge);
+    
 
     // initialize P = I
     P[0][0] = 1.0;
     P[0][1] = 0.0;
     P[1][0] = 0.0;
     P[1][1] = 1.0;
+    
+
     
     bool stop = false;
     while (!stop)
@@ -165,7 +168,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         size_t idx = this->numCharacters * epochIdx + charIdx;
         
         double dispersalRate  = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
-        double extinctionRate = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 10e10);
+        double extinctionRate = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
         
         // get age of start of next oldest epoch
         double epochAge = epochs[ epochIdx ];
