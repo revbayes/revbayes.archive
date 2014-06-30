@@ -29,7 +29,7 @@ using namespace RevLanguage;
 SyntaxFunctionDef::SyntaxFunctionDef( const std::string &type, const std::string &name, std::list<SyntaxFormal*>* formals, std::list<SyntaxElement*>* stmts) : SyntaxElement(), functionName(name), formalArgs(formals), code(stmts), returnType( type ) {
 
     if ( type == "" ) {
-        returnType = RbLanguageObject::getClassTypeSpec();
+        returnType = RevObject::getClassTypeSpec();
     }
     else {
         returnType  = TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType(type) );
@@ -110,7 +110,7 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone () const {
 
 
 /** Get semantic value: insert a user-defined function in the user workspace */
-RbPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
+RevPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();
@@ -172,7 +172,7 @@ void SyntaxFunctionDef::printValue(std::ostream& o) const {
  * 
  * \TODO: Currently we do not replace the variable inside the function
  */
-void SyntaxFunctionDef::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxFunctionDef::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     for (std::list<SyntaxFormal*>::iterator i = formalArgs->begin(); i != formalArgs->end(); i++) {
         (*i)->replaceVariableWithConstant(name, c);

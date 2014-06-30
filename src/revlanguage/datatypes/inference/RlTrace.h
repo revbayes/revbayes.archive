@@ -19,15 +19,15 @@
 #define RlTrace_H
 
 #include "Trace.h"
-#include "RlControlVariableWrapper.h"
 #include "TypedDagNode.h"
+#include "WorkspaceObject.h"
 
 #include <ostream>
 #include <string>
 
 namespace RevLanguage {
     
-    class Trace : public RlControlVariableWrapper<RevBayesCore::Trace> {
+    class Trace : public WorkspaceObject<RevBayesCore::Trace> {
         
     public:
         
@@ -36,22 +36,22 @@ namespace RevLanguage {
         Trace(const Trace& x);                    
         
         // Basic utility functions
-        virtual Trace*                              clone(void) const;                                                      //!< Clone object
+        virtual Trace*                              clone(void) const;                                                          //!< Clone object
         void                                        computeStatistics(void);
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getMemberRules(void) const;                                             //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
+        static const std::string&                   getClassName(void);                                                         //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
+        const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
         
         // Member method inits
-        const MethodTable&                          getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                           executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
+        RevObject*                                  executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
-        void                                        setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);              //!< Set member variable
+        void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
     };
     

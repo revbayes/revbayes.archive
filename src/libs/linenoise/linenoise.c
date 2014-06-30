@@ -322,7 +322,7 @@ static void cursorToLeft(struct current *current) {
 }
 
 static int outputChars(struct current *current, const char *buf, int len) {
-    return write(current->fd, buf, len);
+    return (int)write(current->fd, buf, len);
 }
 
 static void outputControlChar(struct current *current, char ch) {
@@ -795,7 +795,7 @@ static void refreshLine(const char *prompt, struct current *current) {
     /* Should intercept SIGWINCH. For now, just get the size every time */
     getWindowSize(current);
 
-    plen = strlen(prompt);
+    plen = (int)strlen(prompt);
     pchars = utf8_strlen(prompt, plen);
 
     /* Scan the prompt for embedded ansi color control sequences and
@@ -881,7 +881,7 @@ static void refreshLine(const char *prompt, struct current *current) {
 static void set_current(struct current *current, const char *str) {
     strncpy(current->buf, str, current->bufmax);
     current->buf[current->bufmax - 1] = 0;
-    current->len = strlen(current->buf);
+    current->len = (int)strlen(current->buf);
     current->pos = current->chars = utf8_strlen(current->buf, current->len);
     _current = current;
 }
@@ -1055,7 +1055,7 @@ static int completeLine(struct current *current) {
             if (i < lc.len) {
                 struct current tmp = *current;
                 tmp.buf = lc.cvec[i];
-                tmp.pos = tmp.len = strlen(tmp.buf);
+                tmp.pos = tmp.len = (int)strlen(tmp.buf);
                 tmp.chars = utf8_strlen(tmp.buf, tmp.len);
                 refreshLine(current->prompt, &tmp);
             } else {
@@ -1216,7 +1216,7 @@ process_char:
                         if (rchars) {
                             int p = utf8_index(rbuf, --rchars);
                             rbuf[p] = 0;
-                            rlen = strlen(rbuf);
+                            rlen = (int)strlen(rbuf);
                         }
                         continue;
                     }
@@ -1266,7 +1266,7 @@ process_char:
                             }
                             /* Copy the matching line and set the cursor position */
                             set_current(current, history[searchpos]);
-                            current->pos = utf8_strlen(history[searchpos], p - history[searchpos]);
+                            current->pos = (int)utf8_strlen(history[searchpos], p - history[searchpos]);
                             break;
                         }
                     }
@@ -1438,7 +1438,7 @@ char *linenoise(const char *prompt) {
         if (fgets(buf, sizeof (buf), stdin) == NULL) {
             return NULL;
         }
-        count = strlen(buf);
+        count = (int)strlen(buf);
         if (count && buf[count - 1] == '\n') {
             count--;
             buf[count] = '\0';

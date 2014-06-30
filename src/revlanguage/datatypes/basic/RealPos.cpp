@@ -45,7 +45,7 @@ RealPos::RealPos( int x ) : Real( x ) {
  *
  * \return              A new object holding the sum.
  */
-RbLanguageObject* RealPos::add( const RbLanguageObject& rhs ) const 
+RevObject* RealPos::add( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )
@@ -107,7 +107,7 @@ RealPos* RealPos::clone( void ) const {
  *
  * \return              A new object holding the ratio.
  */
-RbLanguageObject* RealPos::divide( const RbLanguageObject& rhs ) const 
+RevObject* RealPos::divide( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )
@@ -187,7 +187,7 @@ const TypeSpec& RealPos::getTypeSpec( void ) const {
  *
  * \return              A new object holding the product.
  */
-RbLanguageObject* RealPos::multiply( const RbLanguageObject& rhs ) const 
+RevObject* RealPos::multiply( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )

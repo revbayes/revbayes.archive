@@ -27,6 +27,7 @@
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -41,7 +42,7 @@
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SingleElementScaleMove.h"
@@ -191,8 +192,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	
 	/* add the moves */
     std::vector<Move*> moves;
-	moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
-	moves.push_back( new ScaleMove(turn, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), true, 2.0 ) );
 	//	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 	//	moves.push_back( new NarrowExchange( tau, 10.0 ) );
 	//	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -205,8 +206,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 0.5 ) ); 
 	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 0.5 ) );
 	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 0.5 ) );
-	moves.push_back( new ScaleMove(rootRate, 0.5, false, 3.0) );
-	moves.push_back( new ScaleMove(rootRate, 1.0, false, 3.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 0.5), false, 3.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 1.0), false, 3.0 ) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 

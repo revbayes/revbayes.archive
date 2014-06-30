@@ -86,7 +86,7 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
     printf( "Evaluating variable declaration\n" );
@@ -110,8 +110,8 @@ RbPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
         }
         else {
             
-            RbPtr<Variable>         temp    = (*i)->evaluateContent( env );
-            const RbLanguageObject& value   = temp->getValue();
+            RevPtr<Variable> temp    = (*i)->evaluateContent( env );
+            const RevObject& value   = temp->getRevObject();
             
             if ( value.isTypeSpec( Integer::getClassTypeSpec() ) )
                 length.push_back( static_cast<const Integer&>( value ).getValue() );
@@ -173,7 +173,7 @@ void SyntaxVariableDecl::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the elements.
  */
-void SyntaxVariableDecl::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxVariableDecl::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     // the first set of statements
     for (std::list<SyntaxElement*>::iterator i = lengthExpr->begin(); i != lengthExpr->end(); i++) {

@@ -77,7 +77,7 @@ SyntaxElement* SyntaxForLoop::clone () const {
 }
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env ) {
     
     return NULL;
 }
@@ -100,25 +100,10 @@ const std::string& SyntaxForLoop::getIndexVarName( void ) const {
 
 
 /** Get next loop state */
-RbLanguageObject* SyntaxForLoop::getNextLoopState( void ) {
-
-    // We do not check here for the loop initialization or finalization. The caller needs to do some work! (Sebastian)
-//    if ( nextElement < 0 )
-//        initializeLoop( env );
-//    
-//    if ( nextElement == static_cast<int>(vector->size()) ) {
-//        finalizeLoop();
-//        return false;
-//    }
-
-    // We do not have the index variable inserted in the environment but replace it with a constant (Sebastian)
-//    Variable& theVar = env[ *varName ].getVariable();
-//    // set the new value of the iterator variable
-//    theVar.setDagNode( new ConstantNode( static_cast<RbLanguageObject*>( vector->getElement( nextElement ).clone() ) ) );
-//    // the setting of the new iterator might have affected other nodes; therefore we call a keep
-//    theVar.getDagNode()->keep();
+RevObject* SyntaxForLoop::getNextLoopState( void )
+{
     
-    RbLanguageObject *elm = stateSpace->getElement( size_t(nextElement) );
+    RevObject *elm = stateSpace->getElement( size_t(nextElement) );
     
     nextElement++;
 
@@ -139,8 +124,8 @@ void SyntaxForLoop::initializeLoop(Environment& env) {
     assert ( nextElement < 0 );
 
     // Evaluate expression and check that we get a vector
-    const RbPtr<Variable>&              theVar      = inExpression->evaluateContent(env);
-    const RbLanguageObject&             theValue    = theVar->getValue();
+    const RevPtr<Variable>&      theVar      = inExpression->evaluateContent(env);
+    const RevObject&             theValue    = theVar->getRevObject();
 
     // Check that it is a vector
     if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false ) {
@@ -150,12 +135,6 @@ void SyntaxForLoop::initializeLoop(Environment& env) {
 
     // Initialize nextValue
     nextElement = 0;
-
-    // We do not add the index variable because we will replace the variable in all statements (Sebastian)
-//    // Add loop variable to frame if it is not there already
-//    if (!env.existsVariable(*varName)) {
-//        env.addVariable( *varName );
-//    }
     
 }
 
@@ -175,7 +154,7 @@ void SyntaxForLoop::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the inExpression.
  */
-void SyntaxForLoop::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxForLoop::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     inExpression->replaceVariableWithConstant(name, c);
     

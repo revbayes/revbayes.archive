@@ -11,7 +11,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Distribution::Distribution() : RbLanguageObject() 
+Distribution::Distribution() : RevObject() 
 {
     
 }
@@ -50,7 +50,7 @@ const std::string& Distribution::getClassName(void)
 const TypeSpec& Distribution::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

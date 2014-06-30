@@ -25,6 +25,7 @@
 #include "LnFunction.h"
 #include "LognormalDistribution.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -36,7 +37,7 @@
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SubtreeScale.h"
@@ -79,6 +80,7 @@ bool TestIndependentClockRates::run( void ) {
 	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
     ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
+//    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( 2.0 ) );
 	
 	//   Stochastic nodes
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
@@ -90,12 +92,13 @@ bool TestIndependentClockRates::run( void ) {
 	//    deathRate = (div * turn) / ( 1 - turn)
 	DeterministicNode<double> *deathRate = new DeterministicNode<double>("death_rate", new DeathRateConstBDStatistic(div, turn));
 	// For some datasets with large root ages, if div>1.0 (or so), the probability is NaN
-	RandomNumberGenerator* rng = GLOBAL_RNG;
-	div->setValue(rng->uniform01() / 1.5);
+//	RandomNumberGenerator* rng = GLOBAL_RNG;
+//	div->setValue(rng->uniform01() / 1.5);
 	
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
+//	tau->setValue( trees[0] );
 	
 	
 	// ##############################################
@@ -133,7 +136,6 @@ bool TestIndependentClockRates::run( void ) {
     std::cout << "Q:\t" << q->getValue() << std::endl;
     
 	
-	tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
 	std::cout << " ** origin   " << origin->getValue() << std::endl;
 	std::cout << " ** root age " << trees[0]->getRoot().getAge() << std::endl;
@@ -151,21 +153,21 @@ bool TestIndependentClockRates::run( void ) {
 	
 	/* add the moves */
     std::vector<Move*> moves;
-	moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
-	moves.push_back( new ScaleMove(turn, 1.0, true, 2.0) );
-	//	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
-	//	moves.push_back( new NarrowExchange( tau, 10.0 ) );
-	//	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
-	//	moves.push_back( new SubtreeScale( tau, 5.0 ) );
-	//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), true, 2.0 ) );
+	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
+	moves.push_back( new NarrowExchange( tau, 10.0 ) );
+	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
+	moves.push_back( new SubtreeScale( tau, 5.0 ) );
+	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 1.0 ) ); 
     moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 1.0 ) );
     moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 1.0 ) );
-	for( size_t i=0; i<numBranches; i++){
-		moves.push_back( new ScaleMove(bratesNotConst[i], log(2.0), true, 2.0) );
+	for( size_t i=0; i<numBranches; i++) {
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(bratesNotConst[i], log(2.0)), true, 2.0 ) );
 	}
 	
     // add some tree stats to monitor
@@ -177,7 +179,7 @@ bool TestIndependentClockRates::run( void ) {
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( meanBrRate );
 	monitoredNodes.push_back( treeHeight );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, "\t" ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, " \t" ) );
 	
 	monitoredNodes.push_back( div );
 	monitoredNodes.push_back( turn );
@@ -187,13 +189,13 @@ bool TestIndependentClockRates::run( void ) {
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( branchRates );
 	
-	std::string logFN = "clock_test/test_rb_IGR_6June_pr.log";
+	std::string logFN = "bird_dataset/birds_RBURG_1.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 	
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
 	
-	std::string treFN = "clock_test/test_rb_IGR_6June_pr.tre";
+	std::string treFN = "bird_dataset/birds_RBURG_1.tre";
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */

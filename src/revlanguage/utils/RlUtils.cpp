@@ -5,12 +5,12 @@
 using namespace RevLanguage;
 
 
-RbLanguageObject* RlUtils::RlTypeConverter::toReal(double x) 
+RevObject* RlUtils::RlTypeConverter::toReal(double x) 
 {
     return new Real( x );
 }
 
-RbLanguageObject* RlUtils::RlTypeConverter::toString(const std::string &x) 
+RevObject* RlUtils::RlTypeConverter::toString(const std::string &x) 
 {
     return new RlString( x );
 }

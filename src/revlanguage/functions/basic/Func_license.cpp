@@ -37,7 +37,7 @@ Func_license* Func_license::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_license::execute( void ) {
+RevObject* Func_license::execute( void ) {
     
     
     RBOUT( "\n" );

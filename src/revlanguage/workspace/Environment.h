@@ -29,8 +29,8 @@
 #define Environment_H
 
 #include "FunctionTable.h"
-#include "RbLanguageObject.h"
-#include "RbPtr.h"
+#include "RevObject.h"
+#include "RevPtr.h"
 #include "Variable.h"
 #include "VariableSlot.h"
 
@@ -65,12 +65,12 @@ namespace RevLanguage {
         // Regular functions
         bool                                addFunction(const std::string& name, Function* func);                               //!< Add function
         void                                addVariable(const std::string& name, VariableSlot* slot);                           //!< Add variable
-        void                                addVariable(const std::string& name, const RbPtr<Variable>& var);                   //!< Add variable
-        void                                addVariable(const std::string& name, RbLanguageObject* variable);                   //!< Add variable
+        void                                addVariable(const std::string& name, const RevPtr<Variable>& var);                   //!< Add variable
+        void                                addVariable(const std::string& name, RevObject* variable);                   //!< Add variable
         void                                addVariable(const std::string& name);                                               //!< Add variable
         void                                clear(void);                                                                        //!< clears the variable table
         void                                eraseVariable(const std::string& name);                                             //!< Erase a variable
-        RbLanguageObject*                   executeFunction(const std::string& name, const std::vector<Argument>& args);        //!< Execute function
+        RevObject*                          executeFunction(const std::string& name, const std::vector<Argument>& args);        //!< Execute function
         bool                                existsFunction(const std::string &name) const;                                      //!< Does a function exists with given name?
         bool                                existsVariable(const std::string& name) const;                                      //!< Does variable exist?
         std::string                         generateUniqueVariableName(void);                                                   //!< Automatically generate a unique variable name
@@ -80,15 +80,15 @@ namespace RevLanguage {
         const FunctionTable&                getFunctionTable(void) const;                                                       //!< Get function table (const)
         FunctionTable&                      getFunctionTable(void);                                                             //!< Get function table (non-const)
         const std::string&                  getName(size_t i) const;                                                            //!< Get name at position i.
-        const RbLanguageObject&             getValue(const std::string& name) const;                                            //!< Convenient alternative for [name]->getValue()
-        RbLanguageObject&                   getValue(const std::string& name);                                                  //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
+        const RevObject&                    getValue(const std::string& name) const;                                            //!< Convenient alternative for [name]->getValue()
+        RevObject&                          getValue(const std::string& name);                                                  //!< Convenient alternative for [name]->getValue() (non-const to return non-const value)
         const VariableTable&                getVariableTable(void) const;                                                       //!< Get the table with the variables (const)
         VariableTable&                      getVariableTable(void);                                                             //!< Get the table with the variables (non-const)
         virtual bool                        isSameOrParentOf(const Environment& otherEnvironment) const;                        //!< Is the Environment same or parent of other Environment?
         void                                setName(size_t i, const std::string &n);                                            //!< Replace the name of the i'th variable
         void                                setParentEnvironment(Environment* newEnvironment);                                  //!< Set parent Environment
         size_t                              size(void) const;                                                                   //!< Get size of variable table 
-        void                                remove(const RbPtr<Variable>& var);                                                 //!< Remove variable from workspace
+        void                                remove(const RevPtr<Variable>& var);                                                 //!< Remove variable from workspace
         void                                remove(const std::string& var);                                                     //!< Remove variable from workspace
         
 

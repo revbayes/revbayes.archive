@@ -19,7 +19,7 @@
 #ifndef Real_H
 #define Real_H
 
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -36,7 +36,7 @@ namespace RevLanguage {
     
     class Integer;
 
-    class Real : public RlModelVariableWrapper<double> {
+    class Real : public ModelObject<double> {
 
         public:
 
@@ -47,24 +47,24 @@ namespace RevLanguage {
         Real(const Real& x);                                                                                    //!< Copy constructor
         
         // Basic operator functions
-        virtual RbLanguageObject*       add(const RbLanguageObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
+        virtual RevObject*       add(const RevObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
         Real*                           add(const Real &rhs) const;                                             //!< Addition operator used for example in '+=' statements
         Real*                           add(const Integer &rhs) const;                                          //!< Addition operator used for example in '+=' statements
         void                            decrement(void);                                                        //!< Decrement operator used for example in 'a--' statements
-        virtual RbLanguageObject*       divide(const RbLanguageObject &rhs) const;                              //!< Division operator used for example in '/=' statements
+        virtual RevObject*       divide(const RevObject &rhs) const;                              //!< Division operator used for example in '/=' statements
         Real*                           divide(const Real &rhs) const;                                          //!< Division operator used for example in '/=' statements
         Real*                           divide(const Integer &rhs) const;                                       //!< Division operator used for example in '/=' statements
         void                            increment(void);                                                        //!< Decrement operator used for example in 'a++' statements
-        virtual RbLanguageObject*       multiply(const RbLanguageObject &rhs) const;                            //!< Multiplication operator used for example in '*=' statements
+        virtual RevObject*       multiply(const RevObject &rhs) const;                            //!< Multiplication operator used for example in '*=' statements
         Real*                           multiply(const Real &rhs) const;                                        //!< Multiplication operator used for example in '*=' statements
         Real*                           multiply(const Integer &rhs) const;                                     //!< Multiplication operator used for example in '*=' statements
-        virtual RbLanguageObject*       subtract(const RbLanguageObject &rhs) const;                            //!< Subtraction operator used for example in '-=' statements
+        virtual RevObject*       subtract(const RevObject &rhs) const;                            //!< Subtraction operator used for example in '-=' statements
         Real*                           subtract(const Real &rhs) const;                                        //!< Subtraction operator used for example in '-=' statements
         Real*                           subtract(const Integer &rhs) const;                                     //!< Subtraction operator used for example in '-=' statements
 
         // Basic utility functions
         virtual Real*                   clone(void) const;                                                      //!< Clone object
-        virtual RbLanguageObject*       convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        virtual RevObject*       convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object

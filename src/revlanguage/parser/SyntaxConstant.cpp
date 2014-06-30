@@ -16,13 +16,13 @@
 #include <iostream>
 
 #include "ConstantNode.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "SyntaxConstant.h"
 
 using namespace RevLanguage;
 
 /** Construct from value */
-SyntaxConstant::SyntaxConstant(RbLanguageObject* val) : SyntaxElement(), value(val) {
+SyntaxConstant::SyntaxConstant(RevObject* val) : SyntaxElement(), value(val) {
 }
 
 
@@ -64,13 +64,13 @@ SyntaxConstant* SyntaxConstant::clone (void) const {
 
 
 /** Get semantic value of element */
-RbPtr<Variable> SyntaxConstant::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxConstant::evaluateContent( Environment& env ) {
 
     // We return a clone in case this function is called repeatedly.
     if (value == NULL)
-        return RbPtr<Variable>( new Variable( NULL ) );
+        return RevPtr<Variable>( new Variable( NULL ) );
     else 
-        return RbPtr<Variable>( new Variable( value->clone() ) );
+        return RevPtr<Variable>( new Variable( value->clone() ) );
 }
 
 
@@ -95,7 +95,7 @@ void SyntaxConstant::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * Don't do anything.
  */
-void SyntaxConstant::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxConstant::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     
 }

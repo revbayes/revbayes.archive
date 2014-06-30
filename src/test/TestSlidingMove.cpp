@@ -6,7 +6,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "SlidingMove.h"
 #include "StochasticNode.h"
 #include "TestSlidingMove.h"

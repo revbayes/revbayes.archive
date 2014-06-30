@@ -34,11 +34,11 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTreeTrace::execute( void ) {
+RevObject* Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() ).getValue();
-    const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
+    const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+    const std::string&  treetype = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );
@@ -61,7 +61,7 @@ RbLanguageObject* Func_readTreeTrace::execute( void ) {
         myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
     }
     
-    RbLanguageObject *rv;
+    RevObject *rv;
     if ( treetype == "clock" ) {
         rv = readTimeTrees(vectorOfFileNames);
     } else if ( treetype == "non-clock" ) {
@@ -117,7 +117,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTreeTrace::getClassName(void) { 
     
-    static std::string rbClassName = "Read tree trace function";
+    static std::string rbClassName = "Func_readTreeTrace";
     
 	return rbClassName; 
 }

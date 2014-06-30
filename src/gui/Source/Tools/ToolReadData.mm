@@ -1,18 +1,17 @@
+#include <iostream>
 #include <map>
 #include <vector>
 #include <string>
 #include "CharacterState.h"
-#include "CharacterData.h"
+#include "AbstractCharacterData.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
+#include "RlAbstractCharacterData.h"
 #include "RlAminoAcidState.h"
-#include "RlCharacterData.h"
-//#include "RlContinuousCharacterState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
-//#include "RlStandardState.h"
 #include "VariableSlot.h"
 #include "VectorRlPointer.h"
 #include "Workspace.h"
@@ -298,7 +297,7 @@
     [oPanel setCanChooseDirectories:YES];
 
     // open the panel
-    NSString* fileToOpen;
+    NSString* fileToOpen = @"";
     [oPanel setAllowedFileTypes:fileTypes];
     int result = (int)[oPanel runModal];
     if ( result == NSFileHandlingPanelOKButton )
@@ -357,78 +356,87 @@
         [self stopProgressIndicator];
         return NO;
         }
-
+    
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
-    if ( dv == RevLanguage::RbNullObject::getInstance() )
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
         return NO;
         }
     
-    NSLog(@"isDataFormatAutomaticallyDetermined=%d", [controlWindow isDataFormatAutomaticallyDetermined]);
-    // instantiate data matrices for the gui, by reading the matrices that were 
+    // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RbLanguageObject> *>( &dv );
+    const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *>( &dv );
+
     if ( dnc != NULL )
-    {
+        {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
-        {
-            const RevLanguage::RbLanguageObject& theDagNode = (*dnc)[ i ];
-            // TODO: Maybe find a better solution than these ugly type cast checks (Sebastian)
+            {
+            const RevLanguage::RevObject& theDagNode = (*dnc)[i];
+            const RevLanguage::AbstractCharacterData *rlan = dynamic_cast<const RevLanguage::AbstractCharacterData *>( &(theDagNode) );
             RbData* newMatrix = NULL;
             
             // DNA
-            if ( NULL == newMatrix ) 
-            {
-                const RevLanguage::CharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::CharacterData<RevLanguage::DnaState> *>( &theDagNode );
-                if ( cd != NULL ) 
+            if ( NULL == newMatrix )
                 {
+                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
+                const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( an );
+                if ( cd != NULL )
+                    {
                     std::string type = "DNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue():type];
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
+                    }
                 }
-            }
             
             // RNA
             if ( NULL == newMatrix ) 
-            {
-                const RevLanguage::CharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::CharacterData<RevLanguage::RnaState> *>( &theDagNode );
-                if ( cd != NULL ) 
                 {
+                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
+                const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( an );
+                if ( cd != NULL )
+                    {
                     std::string type = "RNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue():type];
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
+                    }
                 }
-            }
             
             // Amino-Acid
             if ( NULL == newMatrix ) 
-            {
-                const RevLanguage::CharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::CharacterData<RevLanguage::AminoAcidState> *>( &theDagNode );
-                if ( cd != NULL ) 
                 {
+                const RevBayesCore::AbstractCharacterData *an = &(rlan->getValue()) ;
+                const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *cd = dynamic_cast<const RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( an );
+                if ( cd != NULL )
+                    {
                     std::string type = "Protein";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue():type];
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd)  andDataType:type];
+                    }
                 }
-            }
-            
+                
+            if (newMatrix == NULL)
+                {
+                [self stopProgressIndicator];
+                [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+                return NO;
+                }
             
             if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
-            {
+                {
                 if ([controlWindow dataAlignment] == 1)
                     [newMatrix setIsHomologyEstablished:NO];
-            }
+                }
             [newMatrix setAlignmentMethod:@"Unknown"];
             [self addMatrix:newMatrix];
+            }
         }
-    }
     else
-    {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        {
         [self stopProgressIndicator];
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         return NO;
-    }
+        }
         
     // erase the data in the core
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
@@ -469,7 +477,7 @@
 
     NSString* myTip = @" Read Data Tool ";
     if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", [self numDataMatrices]];
+        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %lu ", [self numDataMatrices]];
     else 
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)

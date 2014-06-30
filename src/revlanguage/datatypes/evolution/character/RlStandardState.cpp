@@ -27,12 +27,12 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-StandardState::StandardState(void) : RlModelVariableWrapper<RevBayesCore::StandardState>() {
+StandardState::StandardState(void) : ModelObject<RevBayesCore::StandardState>() {
     
 }
 
 /** Construct from bool */
-StandardState::StandardState(const RevBayesCore::StandardState &d) : RlModelVariableWrapper<RevBayesCore::StandardState>( new RevBayesCore::StandardState(d) ) {
+StandardState::StandardState(const RevBayesCore::StandardState &d) : ModelObject<RevBayesCore::StandardState>( new RevBayesCore::StandardState(d) ) {
     
 }
 
@@ -45,9 +45,9 @@ StandardState* StandardState::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* StandardState::convertTo(const TypeSpec& type) const {
+RevObject* StandardState::convertTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::convertTo(type);
+    return RevObject::convertTo(type);
 }
 
 
@@ -62,7 +62,7 @@ const std::string& StandardState::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& StandardState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -80,6 +80,6 @@ const TypeSpec& StandardState::getTypeSpec( void ) const {
 /** Is convertible to type? */
 bool StandardState::isConvertibleTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 

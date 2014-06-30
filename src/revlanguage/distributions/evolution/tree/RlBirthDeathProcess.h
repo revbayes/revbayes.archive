@@ -40,16 +40,16 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var);  //!< Set member variable
+        void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var); //!< Set member variable
     
         // members        
-        RbPtr<const Variable>                               origin;                                                                             //!< The time of the process since the origin
-        RbPtr<const Variable>                               rho;                                                                                //!< The sampling probability of a species at present
-        RbPtr<const Variable>                               samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
-        RbPtr<const Variable>                               condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
-        RbPtr<const Variable>                               numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
-        RbPtr<const Variable>                               taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
-        RbPtr<const Variable>                               constraints;                                                                        //!< Topological constraints that will be used for calibrations
+        RevPtr<const Variable>                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const Variable>                              rho;                                                                                //!< The sampling probability of a species at present
+        RevPtr<const Variable>                              samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
+        RevPtr<const Variable>                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const Variable>                              numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
+        RevPtr<const Variable>                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const Variable>                              constraints;                                                                        //!< Topological constraints that will be used for calibrations
         
     };
     

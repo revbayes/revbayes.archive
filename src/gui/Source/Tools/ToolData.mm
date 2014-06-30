@@ -6,14 +6,14 @@
 #include <string>
 #include "AminoAcidState.h"
 #include "CharacterState.h"
-#include "CharacterData.h"
+#include "AbstractCharacterData.h"
 #include "ContinuousCharacterState.h"
 #include "DnaState.h"
 #include "Parser.h"
-#include "RlCharacterData.h"
+#include "AbstractCharacterData.h"
 #include "RnaState.h"
 #include "StandardState.h"
-#include "TaxonData.h"
+#include "AbstractTaxonData.h"
 #include "Workspace.h"
 
 
@@ -177,7 +177,7 @@
               alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
-    
+
     // write the data matrix/matrices in this tool to the temporary directory
     for (size_t i=0; i<[dataMatrices count]; i++)
         {
@@ -191,16 +191,16 @@
             dFilePath = [dFilePath stringByAppendingString:@".fas"];
         [d writeToFile:dFilePath];
         }
-    
+
     // check the workspace and make certain that we use an unused name for the data variable
     std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
     NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
-		    
+		  
     // format a string command to read the data file(s) and send the
     // formatted string to the parser
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    std::string line = variableName + " <- readCharacterData(\"" + cmdAsStlStr + "\")";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -208,7 +208,7 @@
         [self stopProgressIndicator];
         return;
         }
-        
+
     // set the variable name for this tool
     [self setDataWorkspaceName:nsVariableName];
 
@@ -223,14 +223,14 @@
     [dataInspector window];
 }
 
-- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd:(const std::string&)dt {
+- (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {
 
     std::string fn = cd.getFileName();
     
     NSString* nsfn = [NSString stringWithCString:(fn.c_str()) encoding:NSUTF8StringEncoding];
     RbData* m = [[RbData alloc] init];
     [m setNumTaxa:(int)(cd.getNumberOfTaxa())];
-    if ( cd.getIsHomologyEstablished() == true )
+    if ( cd.getHomologyEstablished() == true )
         [m setIsHomologyEstablished:YES];
     else
         [m setIsHomologyEstablished:NO];
@@ -249,7 +249,7 @@
         [m setDataType:CONTINUOUS];
 
     for (size_t i=0; i<cd.getNumberOfTaxa(); i++)
-    {        
+        {
         const RevBayesCore::AbstractTaxonData& td = cd.getTaxonData(i);
         NSString* taxonName = [NSString stringWithCString:td.getTaxonName().c_str() encoding:NSUTF8StringEncoding];
         [m cleanName:taxonName];
@@ -257,13 +257,13 @@
         RbTaxonData* rbTaxonData = [[RbTaxonData alloc] init];
         [rbTaxonData setTaxonName:taxonName];
         for (size_t j=0; j<cd.getNumberOfCharacters(i); j++)
-        {
+            {
             const RevBayesCore::CharacterState& theChar = td.getCharacter(j);
             RbDataCell* cell = [[RbDataCell alloc] init];
             [cell setDataType:[m dataType]];
             if ( [m dataType] != CONTINUOUS )
-            {
-                unsigned int x = static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
+                {
+                unsigned int x = (unsigned int)static_cast<const RevBayesCore::DiscreteCharacterState &>(theChar).getState();
                 NSNumber* n = [NSNumber numberWithUnsignedInt:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:YES];
@@ -274,22 +274,22 @@
                     [cell setIsGapState:YES];
                 else
                     [cell setIsGapState:NO];
-            }
+                }
             else 
-            {
+                {
                 double x = static_cast<const RevBayesCore::ContinuousCharacterState &>(theChar).getMean();
                 NSNumber* n = [NSNumber numberWithDouble:x];
                 [cell setVal:n];
                 [cell setIsDiscrete:NO];
                 [cell setNumStates:0];
-            }
+                }
             [cell setRow:i];
             [cell setColumn:j];
             [rbTaxonData addObservation:cell];
             [cell release];
-        }
+            }
         [m addTaxonData:rbTaxonData];
-    }
+        }
         
     //[m print];
         

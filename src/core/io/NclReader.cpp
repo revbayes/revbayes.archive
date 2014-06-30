@@ -65,7 +65,7 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
     
 	size_t numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
 	for (unsigned tBlck=0; tBlck<numTaxaBlocks; tBlck++)
-    {
+        {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
 		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
@@ -73,91 +73,93 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
         
         // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
-        {
+            {
 			AbstractCharacterData* m = NULL;
 			NxsCharactersBlock* charBlock = nexusReader.GetCharactersBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
 			int dt = charBlock->GetDataType();
 			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
-            {
+                {
                 m = createDnaMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::rna)
-            {
+                {
                 m = createRnaMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::protein)
-            {
+                {
                 m = createAminoAcidMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::standard)
-            {
+                {
                 m = createStandardMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::continuous)
-            {
+                {
                 m = createContinuousMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::mixed)
-            {
+                {
                 addWarning("Mixed data types are not allowed");
-            }
+                }
             else 
-            {
+                {
                 addWarning("Unknown data type");
-            }
+                }
             
 			if (m != NULL)
-            {
-                m->setFileName( fileName );
+                {
+                m->setFileName( StringUtilities::getLastPathComponent(fileName) );
+                m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
 				cmv.push_back( m );
+                }
             }
-        }
         
         // create unaligned data objects
 		for (unsigned cBlck=0; cBlck<nUnalignedCharBlocks; cBlck++)
-        {
+            {
 			AbstractCharacterData* m = NULL;
 			NxsUnalignedBlock* charBlock = nexusReader.GetUnalignedBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
 			int dt = charBlock->GetDataType();
 			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
-            {
+                {
                 m = createUnalignedDnaMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::rna)
-            {
+                {
                 m = createUnalignedRnaMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::protein)
-            {
+                {
                 m = createUnalignedAminoAcidMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::standard)
-            {
+                {
                 //m = createStandardMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::continuous)
-            {
+                {
                 //m = createContinuousMatrix(charBlock);
-            }
+                }
 			else if (dt == NxsCharactersBlock::mixed)
-            {
+                {
                 addWarning("Mixed data types are not allowed");
-            }
+                }
             else 
-            {
+                {
                 addWarning("Unknown data type");
-            }
+                }
             
 			if (m != NULL)
-            {
-                m->setFileName( fileName );
+                {
+                m->setFileName( StringUtilities::getLastPathComponent(fileName) );
+                m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
 				cmv.push_back( m );
+                }
             }
-        }
         
-    }
+        }
     
 	return cmv;
 }
@@ -525,7 +527,7 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
-    {
+        {
         // add the taxon name
         NxsString   tLabel = taxonBlock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
@@ -536,15 +538,15 @@ DiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatrix(NxsUnaligne
         // add the sequence information for the sequence associated with the taxon
         std::string rowDataAsString = charblock->GetMatrixRowAsStr(origTaxIndex);
         for (size_t i=0; i<rowDataAsString.size(); i++)
-        {
+            {
             RnaState rnaState;
             rnaState.setState(rowDataAsString[i]);
             dataVec.addCharacter( rnaState );
-        }
+            }
         
         // add sequence to character matrix
         cMat->addTaxonData( dataVec );
-    }
+        }
     
     return cMat;
 }
@@ -626,10 +628,10 @@ bool NclReader::fileExists(const char* fn) const {
 	bool exists = false;
 	FILE *fp = fopen(fn, "r");
 	if (fp != NULL)
-    {
+        {
 		fclose(fp);
 		exists = true;
-    }
+        }
 	return exists;
 }
 
@@ -638,10 +640,10 @@ std::string NclReader::findFileNameFromPath(const std::string& fp) const {
     
     std::string::size_type pos = fp.find_last_of('/');
     if ( pos != std::string::npos )
-    {
+        {
         std::string fn = fp.substr(pos+1, fp.size()-pos-1);
         return fn;
-    }
+        }
     return "";
 }
 
@@ -1201,8 +1203,6 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 /** Reads a single file using NCL */
 std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
     
-    RBOUT( "Attempting to read the contents of file \"" + std::string(fileName) + "\"\n" );
-	
     // check that the file exists
 	if ( !fileExists(fileName) )	
     {
@@ -1536,7 +1536,7 @@ BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleT
     TopologyNode* root = new TopologyNode(name);
     
     // create a map which holds for each node a map of name value pairs.
-    //    std::map<const TopologyNode*, std::map<std::string, RbLanguageObject*> > nodeParameters;
+    //    std::map<const TopologyNode*, std::map<std::string, RevObject*> > nodeParameters;
     
     // the vector of nodes so that we remember the ordering (and matching) which node belongs to which parameter
     std::vector<TopologyNode*> nodes;

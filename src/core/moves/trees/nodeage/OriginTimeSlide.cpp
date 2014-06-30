@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-OriginTimeSlide::OriginTimeSlide( StochasticNode<double> *ot, StochasticNode<TimeTree> *tre, double d, bool t, double w) : SimpleMove( ot, w, t), variable( ot ), delta( d ), tree( tre ) {
+OriginTimeSlide::OriginTimeSlide( StochasticNode<double> *ot, StochasticNode<TimeTree> *tre, double d, bool t, double w) : SimpleMove( ot, w, t), variable( ot ), tree( tre ), delta( d ) {
     
 }
 

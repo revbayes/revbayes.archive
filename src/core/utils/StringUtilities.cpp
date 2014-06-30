@@ -23,6 +23,39 @@
 #include <string>
 
 
+std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s) {
+
+#	ifdef WIN32
+    std::string pathSeparator = "\\";
+#	else
+    std::string pathSeparator = "/";
+#   endif
+
+    std::string tempS = s;
+	size_t location = tempS.find_last_of( pathSeparator );
+	if ( location == std::string::npos )
+        {
+		/* There is no path in this string. We 
+         must have only the file name. */
+		return "";
+        }
+	else if ( location == tempS.length() - 1 )
+        {
+		/* It looks like the last character is "/", which
+         means that no file name has been provided. */
+		return tempS;
+        }
+	else
+        {
+		/* We can divide the path into the path and the file. */
+		tempS.erase( location );
+		return tempS;
+        }
+    return "";
+}
+
+
+
 /** Format string for printing to screen, with word wrapping, and various indents */
 std::string StringUtilities::formatStringForScreen(const std::string s, std::string firstLinePad, std::string hangingPad, size_t screenWidth) {
 
