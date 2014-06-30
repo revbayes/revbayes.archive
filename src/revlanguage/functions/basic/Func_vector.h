@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     
-        RbLanguageObject*           execute(void);                                              //!< Execute function
+        RevObject*                  execute(void);                                              //!< Execute function
     
     };
     
@@ -74,12 +74,12 @@ RevLanguage::Func_vector<valType>* RevLanguage::Func_vector<valType>::clone( voi
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_vector<valType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func_vector<valType>::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const valType &val = static_cast<const valType &>( args[i].getVariable()->getValue() );
-        params.push_back( val.getValueNode() );
+        const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
+        params.push_back( val.getDagNode() );
     }
     
     RevBayesCore::VectorFunction<typename valType::valueType> *func = new RevBayesCore::VectorFunction<typename valType::valueType>( params );
@@ -122,7 +122,7 @@ const std::string& RevLanguage::Func_vector<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_vector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_vector", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

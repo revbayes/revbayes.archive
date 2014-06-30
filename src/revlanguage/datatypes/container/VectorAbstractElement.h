@@ -54,19 +54,19 @@ namespace RevLanguage {
         
         // Basic utility functions 
         VectorAbstractElement*                          clone(void) const;                                              //!< Clone object
-        RbLanguageObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        RevObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
         static const std::string&                       getClassName(void);                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
         virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
         
         // Member object function
-        //        RbLanguageObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        //        RevObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RbLanguageObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(const rlType &x);                                     //!< Append element to end
         void                                            push_back(elementType *x);                                      //!< Append element to end
         void                                            push_front(const rlType &x);                                    //!< Append element to end
@@ -194,7 +194,7 @@ const typename rlType::valueType& RevLanguage::VectorAbstractElement<rlType>::op
 
 /** Convertible to: default implementation */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorAbstractElement<rlType>::convertTo(const TypeSpec &type) const {
+RevLanguage::RevObject* RevLanguage::VectorAbstractElement<rlType>::convertTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
     if ( type.getBaseType() == getClassName() ) {
@@ -235,7 +235,7 @@ const RevLanguage::TypeSpec& RevLanguage::VectorAbstractElement<rlType>::getClas
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorAbstractElement<rlType>::getElement(size_t index) {
+RevLanguage::RevObject* RevLanguage::VectorAbstractElement<rlType>::getElement(size_t index) {
     
 //    return this->value->getValue()[index];
     throw RbException("Cannot access element in pointer vector.");
@@ -393,7 +393,7 @@ void RevLanguage::VectorAbstractElement<rlType>::push_front( typename rlType::va
 //
 ///* Set element */
 //template <typename rlType>
-//void RevLanguage::Vector<rlType>::setElement(const size_t index, RbLanguageObject *elem) {
+//void RevLanguage::Vector<rlType>::setElement(const size_t index, RevObject *elem) {
 //    if (index >= elements.size()) {
 //        throw RbException("Cannot set element in Vector outside the current range.");
 //    }

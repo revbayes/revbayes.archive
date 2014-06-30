@@ -83,13 +83,13 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
  * We simply look up the function and calculate the value.
  *
  */
-RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
+RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
 
     // Package the arguments
     std::vector<Argument> args;
-    RbPtr<Variable> left = leftOperand->evaluateContent(env);
+    RevPtr<Variable> left = leftOperand->evaluateContent(env);
     args.push_back( Argument( left, "") );
-    RbPtr<Variable> right = rightOperand->evaluateContent(env);
+    RevPtr<Variable> right = rightOperand->evaluateContent(env);
     args.push_back( Argument( right, "") );
 
     // Get function and create deterministic DAG node
@@ -98,12 +98,12 @@ RbPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
     Function* theFunction = Workspace::globalWorkspace().getFunction(funcName, args).clone();
     theFunction->processArguments( args );
     
-    RbLanguageObject* theReturnValue = theFunction->execute();
+    RevObject* theReturnValue = theFunction->execute();
     
     // free the memory of the function
     delete theFunction;
     
-    return RbPtr<Variable>( new Variable( theReturnValue ) );
+    return RevPtr<Variable>( new Variable( theReturnValue ) );
 }
 
 
@@ -137,7 +137,7 @@ void SyntaxBinaryExpr::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to both elements.
  */
-void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     leftOperand->replaceVariableWithConstant(name, c);
     rightOperand->replaceVariableWithConstant(name, c);
 }

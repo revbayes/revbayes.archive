@@ -75,6 +75,7 @@ namespace RevBayesCore {
         
         // pure virtual methods
         virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r) = 0;
+        virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
@@ -251,19 +252,47 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     charMatrix.resize(tips);
     gapMatrix.resize(tips);
     
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
+    size_t siteIndex = 0;
+    for (size_t i = 0; i < numSites; ++i)
+    {
+        while ( this->value->isCharacterExcluded(siteIndex) )
+        {
+            siteIndex++;
+            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            {
+                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
+            }
+        }
+        siteIndices[i] = siteIndex;
+        siteIndex++;
+    }
+    // test if there were additional sites that we did not use
+    while ( siteIndex < this->value->getNumberOfCharacters() )
+    {
+        if ( !this->value->isCharacterExcluded(siteIndex)  )
+        {
+            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
+        }
+        siteIndex++;
+    }
+    
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
     // find the unique site patterns and compute their respective frequencies
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
     for (size_t site = 0; site < numSites; ++site) 
     {
+        
         for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
         {
             if ( (*it)->isTip() ) 
             {
                 // \todo modify this so that the distribution is actually defined on discrete character data
                 AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(site) );
+                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(siteIndices[site]) );
                 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
@@ -309,7 +338,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 if ( (*it)->isTip() ) 
                 {
                     AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                    CharacterState &c = taxon.getCharacter(site);
+                    CharacterState &c = taxon.getCharacter(siteIndices[site]);
                     pattern += c.getStringValue();
                 }
             }
@@ -365,7 +394,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 // only add this site if it is unique
                 if ( unique[site] ) 
                 {
-                    charType &c = static_cast<charType &>( taxon.getCharacter(site) );
+                    charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[site]) );
                     gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
                     if ( ambiguousCharacters ) 
@@ -427,24 +456,44 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
         dirtyNodes[rootIndex] = false;
         
         
-        // start by filling the likelihood vector for the two children of the root
-        const TopologyNode &left = root.getChild(0);
-        size_t leftIndex = left.getIndex();
-        fillLikelihoodVector( left, leftIndex );
-        const TopologyNode &right = root.getChild(1);
-        size_t rightIndex = right.getIndex();
-        fillLikelihoodVector( right, rightIndex );
+        // start by filling the likelihood vector for the children of the root
+        if ( root.getNumberOfChildren() == 2 )
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            
+            // compute the likelihood of the root
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex );
+        }
+        else if ( root.getNumberOfChildren() == 3 )
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            const TopologyNode &middle = root.getChild(2);
+            size_t middleIndex = middle.getIndex();
+            fillLikelihoodVector( middle, middleIndex );
+            
+            // compute the likelihood of the root
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
+        }
         
-        // compute the likelihood of the root
-        computeRootLikelihood( rootIndex, leftIndex, rightIndex );
         
 #ifdef USE_SCALING
         for (size_t i = 0; i<numNodes; ++i)
         {
             double sf = this->scalingFactors[this->activeLikelihood[i]*numNodes+i];
-            this->lnProb -= numSites * log( sf );
+            this->lnProb += numSites * log( sf );
         }
 #endif
+        
     }
     
     return this->lnProb;

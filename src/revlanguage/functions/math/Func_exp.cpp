@@ -28,9 +28,9 @@ Func_exp* Func_exp::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_exp::execute() {
+RevObject* Func_exp::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ExponentialFunction* f = new RevBayesCore::ExponentialFunction( arg, getRevDeclaration() );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
@@ -59,7 +59,7 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const {
 
 const std::string& Func_exp::getClassName(void) { 
     
-    static std::string rbClassName = "Exponential";
+    static std::string rbClassName = "Func_exp";
     
 	return rbClassName; 
 }

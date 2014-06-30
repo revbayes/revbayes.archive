@@ -18,6 +18,7 @@
 #define UserFunction_H
 
 #include "ArgumentRules.h"
+#include "DagNode.h"
 #include "RlFunction.h"
 #include "SyntaxElement.h"
 
@@ -30,14 +31,14 @@ namespace RevLanguage {
     class UserFunction :  public Function {
         
     public:
-        UserFunction(const ArgumentRules*        argRules,
-                     const TypeSpec&             retType,
-                     std::list<SyntaxElement*>*  stmts,
-                     Environment*                defineEnv);           //!< Constructor        
-        UserFunction(const UserFunction& x);                                    //!< Copy constructor
-        virtual ~UserFunction();                                                //!< Delete the code
+                                                    UserFunction(const ArgumentRules*        argRules,
+                                                                 const TypeSpec&             retType,
+                                                                 std::list<SyntaxElement*>*  stmts,
+                                                                 Environment*                defineEnv);
+                                                    UserFunction(const UserFunction& x);
+        virtual                                    ~UserFunction();
         
-        // overloaded operators
+        // Overloaded operators
         UserFunction&                               operator=(const UserFunction& f);
  
         // Basic utility functions
@@ -47,12 +48,11 @@ namespace RevLanguage {
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions   
-        virtual RbLanguageObject*                   execute(void);                                                              //!< Execute function
-        virtual RbLanguageObject*                   executeCode(void);                                                          //!< Execute Rev code of function
+        virtual RevObject*                          execute(void);                                                              //!< Execute function
+        virtual RevObject*                          executeCode(void);                                                          //!< Execute Rev code of function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
-        void                                        setArgumentVariable(const std::string& name, const RbPtr<const Variable> &var);             
-        
+        void                                        setArgumentVariable(const std::string& name, const RevPtr<const Variable> &var);             
         
     protected:
         const ArgumentRules*                        argumentRules;                      //!< The argument rules

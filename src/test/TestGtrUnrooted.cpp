@@ -8,13 +8,14 @@
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "NclReader.h"
 #include "NearestNeighborInterchange_nonClock.h"
 #include "RbFileManager.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
@@ -119,7 +120,7 @@ bool TestGtrUnrooted::run( void ) {
     moves.push_back( new NearestNeighborInterchange_nonClock( tau, 5.0 ) );
     
     for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
-        moves.push_back( new ScaleMove( branchLength_nonConst[i], 10.0, true, 0.5 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchLength_nonConst[i], 10.0), true, 0.5 ) );
     }
         
     /* add the monitors */

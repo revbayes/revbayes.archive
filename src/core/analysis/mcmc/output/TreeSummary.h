@@ -150,7 +150,7 @@ namespace RevBayesCore {
         double sampleSize = trace.size() - burnin;
         
         
-        double meanRootAge;
+        double meanRootAge = 0.0;
         for (size_t i = burnin; i < trace.size(); ++i) 
         {
             // get the sampled tree
@@ -261,7 +261,6 @@ namespace RevBayesCore {
                 {
                     std::vector<std::string> parentTaxa;
                     n->getParent().getTaxaStringVector(parentTaxa);
-                    Clade c( parentTaxa, 0.0 );
                     Clade parent( parentTaxa, 0.0 );
                     std::map<std::string, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent.toString()];
                     double parentCladeFreq = cladeFrequencies[parent.toString()];

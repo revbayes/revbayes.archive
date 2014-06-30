@@ -585,9 +585,9 @@
                 {
                 int n = 0;
                 if ( [theOutlet toolColor] == [NSColor greenColor] )
-                    n = [(ToolData*)element numAligned];
+                    n = (int)[(ToolData*)element numAligned];
                 else if ( [theOutlet toolColor] == [NSColor cyanColor] )
-                    n = [(ToolData*)element numUnaligned];
+                    n = (int)[(ToolData*)element numUnaligned];
                 [[[NSColor blackColor] colorWithAlphaComponent:0.4] set];
                 NSBezierPath* numPath = [self makePathForNumber:n];
                 NSRect numBounds = [numPath bounds];

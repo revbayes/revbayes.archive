@@ -8,6 +8,7 @@
 #include "FixedNodeheightPruneRegraft.h"
 #include "GammaDistribution.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "ModelMonitor.h"
 #include "MultispeciesCoalescent.h"
@@ -20,7 +21,7 @@
 #include "RandomNumberFactory.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "StochasticNode.h"
 #include "SubtreeScale.h"
@@ -51,13 +52,13 @@ TestMultispeciesCoalescent::~TestMultispeciesCoalescent() {
 TreeTrace<TimeTree> TestMultispeciesCoalescent::readTreeTrace(const std::string &fname) {
 //    RevLanguage::Func_readTreeTrace reader;
 //    std::vector<RevLanguage::Argument> args;
-//    RevLanguage::RbPtr<RevLanguage::Variable> var = new RevLanguage::Variable(new RevLanguage::RlString(fname) );
+//    RevLanguage::RevPtr<RevLanguage::Variable> var = new RevLanguage::Variable(new RevLanguage::RlString(fname) );
 //    args.push_back( RevLanguage::Argument(var,"filename") );
-//    RevLanguage::RbPtr<RevLanguage::Variable> var2 = new RevLanguage::Variable(new RevLanguage::RlString("clock") );
+//    RevLanguage::RevPtr<RevLanguage::Variable> var2 = new RevLanguage::Variable(new RevLanguage::RlString("clock") );
 //    args.push_back( RevLanguage::Argument(var2,"treetype") );
 //    reader.processArguments(args);
 //    
-//    RevLanguage::RbLanguageObject* trace = reader.execute();
+//    RevLanguage::RevObject* trace = reader.execute();
 //    
 //    TreeTrace<TimeTree> rv = static_cast<RevLanguage::TreeTrace<RevLanguage::TimeTree>* >( trace )->getValue();
 //    
@@ -137,7 +138,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     ConstantNode<double> *one = new ConstantNode<double>("one", new double(1.0) );
     DeterministicNode<double> *rate = new DeterministicNode<double>("rate", new BinaryDivision<double, double, double>(one,scale));
     
-    moves.push_back( new ScaleMove(scale, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(scale, 1.0), true, 2.0 ) );
 
     std::vector<const TypedDagNode<double> *> ne_nodes;
     for (size_t i = 0; i < nNodes; ++i) 
@@ -146,7 +147,7 @@ bool TestMultispeciesCoalescent::run( void ) {
         o << "Ne_" << i;
         StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new GammaDistribution(shape,rate) );
         ne_nodes.push_back( NePerNode );
-        moves.push_back( new ScaleMove(NePerNode, 1.0, true, 2.0) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(NePerNode, 1.0), true, 2.0 ) );
     }
     DeterministicNode< std::vector<double> > *Ne_inf = new DeterministicNode< std::vector<double > >("Ne", new VectorFunction<double>( ne_nodes ) );
 //    ConstantNode< std::vector<double> > *Ne_inf = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );

@@ -28,9 +28,9 @@ Func_abs* Func_abs::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_abs::execute() {
+RevObject* Func_abs::execute() {
     
-    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::AbsoluteValueFunction* f = new RevBayesCore::AbsoluteValueFunction( arg );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
@@ -59,7 +59,7 @@ const ArgumentRules& Func_abs::getArgumentRules( void ) const {
 
 const std::string& Func_abs::getClassName(void) { 
     
-    static std::string rbClassName = "Abs";
+    static std::string rbClassName = "Func_abs";
     
 	return rbClassName; 
 }

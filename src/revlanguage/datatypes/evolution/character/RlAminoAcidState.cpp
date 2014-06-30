@@ -27,12 +27,12 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-AminoAcidState::AminoAcidState(void) : RlModelVariableWrapper<RevBayesCore::AminoAcidState>() {
+AminoAcidState::AminoAcidState(void) : ModelObject<RevBayesCore::AminoAcidState>() {
     
 }
 
 /** Construct from bool */
-AminoAcidState::AminoAcidState(const RevBayesCore::AminoAcidState &d) : RlModelVariableWrapper<RevBayesCore::AminoAcidState>( new RevBayesCore::AminoAcidState(d) ) {
+AminoAcidState::AminoAcidState(const RevBayesCore::AminoAcidState &d) : ModelObject<RevBayesCore::AminoAcidState>( new RevBayesCore::AminoAcidState(d) ) {
     
 }
 
@@ -45,9 +45,9 @@ AminoAcidState* AminoAcidState::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* AminoAcidState::convertTo(const TypeSpec& type) const {
+RevObject* AminoAcidState::convertTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::convertTo(type);
+    return RevObject::convertTo(type);
 }
 
 
@@ -62,7 +62,7 @@ const std::string& AminoAcidState::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& AminoAcidState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -80,6 +80,6 @@ const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
 /** Is convertible to type? */
 bool AminoAcidState::isConvertibleTo(const TypeSpec& type) const {
     
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 

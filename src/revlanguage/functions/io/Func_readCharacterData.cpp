@@ -6,7 +6,7 @@
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlAminoAcidState.h"
 #include "RlDiscreteCharacterData.h"
@@ -34,37 +34,37 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readCharacterData::execute( void ) {
+RevObject* Func_readCharacterData::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
-    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
-    {
+    if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
+        {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
         throw RbException("Could not find file or path with name \"" + fn.getValue() + "\"");
-    }
+        }
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
     if ( myFileManager.isDirectory() )
-    {
+        {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-    }
+        }
     else 
-    {
+        {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
-    }
+        }
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
     reader.clearWarnings();
     
     // the return value
-    VectorRlPointer<RbLanguageObject> *m = new VectorRlPointer<RbLanguageObject>();
+    VectorRlPointer<RevObject> *m = new VectorRlPointer<RevObject>();
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
@@ -238,7 +238,7 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readCharacterData::getClassName(void) { 
     
-    static std::string rbClassName = "Read alignment function";
+    static std::string rbClassName = "Func_readCharacterData";
     
 	return rbClassName; 
 }
@@ -263,7 +263,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRlPointer<RbLanguageObject>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = VectorRlPointer<RevObject>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

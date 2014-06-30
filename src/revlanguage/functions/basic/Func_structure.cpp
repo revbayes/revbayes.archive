@@ -23,13 +23,13 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_structure::execute( void ) {
+RevObject* Func_structure::execute( void ) {
     
     std::ostringstream o;
 
     o << std::endl;
-    o << "_valueType    = " << args[0].getVariable()->getValue().getType() << std::endl;
-    args[0].getVariable()->getValue().printStructure( o );
+    o << "_valueType    = " << args[0].getVariable()->getRevObject().getType() << std::endl;
+    args[0].getVariable()->getRevObject().printStructure( o );
     o << std::endl;
 
     RBOUT( o.str() );
@@ -47,7 +47,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, RbLanguageObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -58,7 +58,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_structure::getClassName(void) { 
     
-    static std::string rbClassName = "type function";
+    static std::string rbClassName = "Func_type";
     
 	return rbClassName; 
 }

@@ -69,7 +69,7 @@ void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
   if (numTaxons==2)
     numberOfPossibleTreeTopologies=1;
   else
-    numberOfPossibleTreeTopologies=boost::math::double_factorial<long double>(2*numTaxons-5);
+    numberOfPossibleTreeTopologies=boost::math::double_factorial<long double>((unsigned)(2*numTaxons-5));
 
 //  taxons.clear();
 }
@@ -348,9 +348,9 @@ size_t ConditionalCladeProbabilityDistribution::set2id(boost::dynamic_bitset<> l
 
 double ConditionalCladeProbabilityDistribution::Bi(int n2) const
 {
-  int n1=numTaxons-n2;
+  int n1=(int)(numTaxons-n2);
   if (n2==1 or n1==1)
-    return boost::math::double_factorial<double>(2*numTaxons-5);
+    return boost::math::double_factorial<double>((unsigned int)(2*numTaxons-5));
   n1=std::max(2,n1);
   n2=std::max(2,n2);
   return boost::math::double_factorial<double>(2*n1-3)*boost::math::double_factorial<double>(2*n2-3);
@@ -359,7 +359,7 @@ double ConditionalCladeProbabilityDistribution::Bi(int n2) const
 
 double ConditionalCladeProbabilityDistribution::Tri(int n2,int n3) const
 {
-  int n1=numTaxons-n2-n3;
+  int n1= (int)(numTaxons-n2-n3);
   n1=std::max(2,n1);
   n2=std::max(2,n2);
   n3=std::max(2,n3);

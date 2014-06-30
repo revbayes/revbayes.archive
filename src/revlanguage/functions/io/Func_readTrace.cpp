@@ -44,12 +44,12 @@ Func_readTrace* Func_readTrace::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTrace::execute( void ) {
+RevObject* Func_readTrace::execute( void ) {
 
     // get the information from the arguments for reading the file
-    const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getValue() );
+    const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     // get the column delimmiter
-    const std::string& delimitter = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
+    const std::string& delimitter = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
         
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
@@ -193,7 +193,7 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTrace::getClassName(void) { 
     
-    static std::string rbClassName = "Read trace function";
+    static std::string rbClassName = "Func_readTrace";
     
 	return rbClassName; 
 }

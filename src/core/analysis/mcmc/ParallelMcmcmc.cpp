@@ -24,7 +24,10 @@ ParallelMcmcmc::ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, 
         
         // create chains
         bool a = (i == 0 ? true : false);
-        Mcmc* oneChain = new Mcmc(m, moves, mons, scheduleType, a, b);
+        Mcmc* oneChain = new Mcmc(m, moves, mons);
+        oneChain->setScheduleType( scheduleType );
+        oneChain->setChainActive( a );
+        oneChain->setChainHeat( b );
         oneChain->setChainIndex(i);
         oneChain->startMonitors();
         
@@ -138,7 +141,7 @@ void ParallelMcmcmc::run(size_t generations)
     for (size_t i = 1; i <= generations; i += swapInterval)
     {
         // start parallel job per block of swapInterval cycles
-        size_t np = numProcesses; // in fact, used by the macro below
+        size_t np = numProcesses;
         size_t pid = 0;
         
         #pragma omp parallel default(shared) private(np, pid)

@@ -25,9 +25,9 @@ namespace RevBayesCore {
     class RnaState : public DiscreteCharacterState {
     
     public:
-        RnaState(void);                                                                     //!< Default constructor
-        RnaState(const RnaState& s);                                                        //!< Copy constructor
-        RnaState(char s);                                                                   //!< Constructor with nucleotide observation
+                                        RnaState(void);                                     //!< Default constructor
+                                        RnaState(const RnaState& s);                        //!< Copy constructor
+                                        RnaState(char s);                                   //!< Constructor with nucleotide observation
     
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality

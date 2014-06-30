@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RbLanguageObject*           execute(void);                                              //!< Execute function
+        RevObject*                  execute(void);                                              //!< Execute function
         
     };
     
@@ -75,12 +75,12 @@ RevLanguage::Func_rbVector<valType>* RevLanguage::Func_rbVector<valType>::clone(
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_rbVector<valType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func_rbVector<valType>::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const valType &val = static_cast<const valType &>( args[i].getVariable()->getValue() );
-        params.push_back( val.getValueNode() );
+        const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
+        params.push_back( val.getDagNode() );
     }
     
     RevBayesCore::RbVectorFunction<typename valType::valueType> *func = new RevBayesCore::RbVectorFunction<typename valType::valueType>( params );
@@ -113,7 +113,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_vector<valType>::getArgument
 template <typename valType>
 const std::string& RevLanguage::Func_vector<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_rbVector<" + valType::getClassTypeSpec() + ">";
+    static std::string rbClassName = "Func_vector<" + valType::getClassTypeSpec() + ">";
     
 	return rbClassName; 
 }
@@ -123,7 +123,7 @@ const std::string& RevLanguage::Func_vector<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_vector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_rbVector", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

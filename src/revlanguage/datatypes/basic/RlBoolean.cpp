@@ -29,17 +29,17 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-RlBoolean::RlBoolean(void) : RlModelVariableWrapper<bool>() {
+RlBoolean::RlBoolean(void) : ModelObject<bool>() {
 
 }
 
 /** Construct from bool */
-RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<bool> *v) : RlModelVariableWrapper<bool>( v ) {
+RlBoolean::RlBoolean(RevBayesCore::TypedDagNode<bool> *v) : ModelObject<bool>( v ) {
     
 }
 
 /** Construct from bool */
-RlBoolean::RlBoolean(bool v) : RlModelVariableWrapper<bool>( new bool(v) ) {
+RlBoolean::RlBoolean(bool v) : ModelObject<bool>( new bool(v) ) {
 
 }
 
@@ -52,7 +52,7 @@ RlBoolean* RlBoolean::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* RlBoolean::convertTo(const TypeSpec& type) const {
+RevObject* RlBoolean::convertTo(const TypeSpec& type) const {
 
     if (type == Integer::getClassTypeSpec()) {
         if (value->getValue())
@@ -67,14 +67,14 @@ RbLanguageObject* RlBoolean::convertTo(const TypeSpec& type) const {
             return new Real(0.0);
     }
 
-    return RbLanguageObject::convertTo(type);
+    return RevObject::convertTo(type);
 }
 
 
 /** Get class name of object */
 const std::string& RlBoolean::getClassName(void) { 
     
-    static std::string rbClassName = "bool";
+    static std::string rbClassName = "Bool";
     
 	return rbClassName; 
 }
@@ -82,7 +82,7 @@ const std::string& RlBoolean::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RlBoolean::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -105,7 +105,7 @@ bool RlBoolean::isConvertibleTo(const TypeSpec& type) const {
     else if ( type == Real::getClassTypeSpec() )
         return true;
 
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 
 

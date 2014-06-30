@@ -25,9 +25,9 @@ namespace RevBayesCore {
     class AminoAcidState : public DiscreteCharacterState {
     
     public:
-        AminoAcidState(void);                                                               //!< Default constructor
-        AminoAcidState(const AminoAcidState& s);                                            //!< Copy constructor
-        AminoAcidState(char s);                                                             //!< Constructor with nucleotide observation
+                                        AminoAcidState(void);                               //!< Default constructor
+                                        AminoAcidState(const AminoAcidState& s);            //!< Copy constructor
+                                        AminoAcidState(char s);                             //!< Constructor with nucleotide observation
     
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality

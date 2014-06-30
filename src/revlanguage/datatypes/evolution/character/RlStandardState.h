@@ -19,8 +19,8 @@
 #ifndef RlStandardState_H
 #define RlStandardState_H
 
+#include "ModelObject.h"
 #include "StandardState.h"
-#include "RlModelVariableWrapper.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -28,7 +28,7 @@
 
 namespace RevLanguage {
     
-    class StandardState : public RlModelVariableWrapper<RevBayesCore::StandardState> {
+    class StandardState : public ModelObject<RevBayesCore::StandardState> {
         
     public:
         StandardState(void);                                                          //!< Default constructor
@@ -38,7 +38,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         StandardState*                  clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object

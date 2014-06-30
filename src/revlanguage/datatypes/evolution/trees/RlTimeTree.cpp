@@ -32,29 +32,29 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-TimeTree::TimeTree(void) : RlModelVariableWrapper<RevBayesCore::TimeTree>() {
+TimeTree::TimeTree(void) : ModelObject<RevBayesCore::TimeTree>() {
     
 }
 
 /** Construct from bool */
-TimeTree::TimeTree(RevBayesCore::TimeTree *t) : RlModelVariableWrapper<RevBayesCore::TimeTree>( t ) {
+TimeTree::TimeTree(RevBayesCore::TimeTree *t) : ModelObject<RevBayesCore::TimeTree>( t ) {
     
 }
 
 /** Construct from bool */
-TimeTree::TimeTree(const RevBayesCore::TimeTree &t) : RlModelVariableWrapper<RevBayesCore::TimeTree>( new RevBayesCore::TimeTree( t ) ) {
+TimeTree::TimeTree(const RevBayesCore::TimeTree &t) : ModelObject<RevBayesCore::TimeTree>( new RevBayesCore::TimeTree( t ) ) {
     
 }
 
 /** Construct from bool */
-TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n) : RlModelVariableWrapper<RevBayesCore::TimeTree>( n ) {
+TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n) : ModelObject<RevBayesCore::TimeTree>( n ) {
     
 }
 
 
 
 /** Construct from bool */
-TimeTree::TimeTree(const TimeTree &t) : RlModelVariableWrapper<RevBayesCore::TimeTree>( t ) {
+TimeTree::TimeTree(const TimeTree &t) : ModelObject<RevBayesCore::TimeTree>( t ) {
     
 }
 
@@ -67,7 +67,7 @@ TimeTree* TimeTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RbLanguageObject* TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") 
     {
@@ -86,14 +86,14 @@ RevLanguage::RbLanguageObject* TimeTree::executeMethod(std::string const &name, 
     } 
     else if (name == "rescale")
     {
-        double f = static_cast<const RealPos&>( args[0].getVariable()->getValue() ).getValue();
+        double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TimeTree &tree = value->getValue();
         RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
         
         return NULL;
     }
     
-    return RlModelVariableWrapper<RevBayesCore::TimeTree>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::TimeTree>::executeMethod( name, args );
 }
 
 
@@ -108,7 +108,7 @@ const std::string& TimeTree::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& TimeTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -138,7 +138,7 @@ const RevLanguage::MethodTable& TimeTree::getMethods(void) const
         methods.addFunction("rescale", new MemberFunction(RlUtils::Void,                       rescaleArgRules  ) );
 
         // necessary call for proper inheritance
-        methods.setParentTable( &RlModelVariableWrapper<RevBayesCore::TimeTree>::getMethods() );
+        methods.setParentTable( &ModelObject<RevBayesCore::TimeTree>::getMethods() );
         methodsSet = true;
     }
     

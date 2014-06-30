@@ -25,6 +25,7 @@
 #include "RlFunction.h"
 #include "TypedFunction.h"
 
+#if 0
 namespace RevLanguage {
     
     template <typename valueType>
@@ -105,6 +106,7 @@ const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassType
 	return rbClass; 
 }
 
+#endif
 
 #endif
 
