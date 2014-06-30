@@ -153,7 +153,7 @@
 #include "Dist_bernoulli.h"
 #include "Dist_beta.h"
 #include "Dist_bimodalLnorm.h"
-#include "Dist_bimodalnorm.h"
+#include "Dist_bimodalNorm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_gamma.h"
