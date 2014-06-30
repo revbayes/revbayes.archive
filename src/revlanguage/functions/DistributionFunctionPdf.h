@@ -42,7 +42,7 @@ namespace RevLanguage {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RbLanguageObject*                       execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -60,7 +60,7 @@ namespace RevLanguage {
 #include "DistributionFunctionPdf.h"
 #include "Probability.h"
 #include "ProbabilityDensityFunction.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RlBoolean.h"
 #include "Real.h"
 #include "TypeSpec.h"
@@ -114,14 +114,14 @@ RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFuncti
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RbLanguageObject* RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
     for ( size_t i = 1; i < (args.size()-1); i++ ) {
         
         if ( args[i].isConstant() ) {
-            copyObject->setConstMember( args[i].getLabel(), RbPtr<const Variable>( (Variable*) args[i].getVariable() ) );
+            copyObject->setConstMember( args[i].getLabel(), RevPtr<const Variable>( (Variable*) args[i].getVariable() ) );
         } else {
             copyObject->setMember( args[i].getLabel(), args[i].getReferenceVariable() );
         }
@@ -129,7 +129,7 @@ RevLanguage::RbLanguageObject* RevLanguage::DistributionFunctionPdf<valueType>::
     
     
     
-    RevBayesCore::TypedDagNode<typename valueType::valueType>* arg = static_cast<const valueType &>( this->args[0].getVariable()->getValue() ).getValueNode();
+    RevBayesCore::TypedDagNode<typename valueType::valueType>* arg = static_cast<const valueType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>* f = new RevBayesCore::ProbabilityDensityFunction<typename valueType::valueType>( arg, copyObject->createDistribution() );
     RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
     
@@ -151,7 +151,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionPdf<valueType
 template <class valueType>
 const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassName(void) { 
     
-    static std::string rbClassName = "PDF";
+    static std::string rbClassName = "DistributionFunctionPdf";
     
 	return rbClassName; 
 }

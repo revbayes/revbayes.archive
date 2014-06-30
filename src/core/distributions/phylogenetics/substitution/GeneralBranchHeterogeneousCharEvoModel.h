@@ -33,6 +33,7 @@ namespace RevBayesCore {
     protected:
         
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r);
+        void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
         void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
         const std::vector<double>&                          getRootFrequencies(void);
@@ -207,7 +208,85 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) 
+void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+{
+    
+    // reset the likelihood
+    this->lnProb = 0.0;
+    
+    // get the root frequencies
+    const std::vector<double> &f                    = getRootFrequencies();
+    std::vector<double>::const_iterator f_end       = f.end();
+    std::vector<double>::const_iterator f_begin     = f.begin();
+    
+    // get the pointers to the partial likelihoods of the left and right subtree
+    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
+    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+    const double* p_middle = this->partialLikelihoods + this->activeLikelihood[middle]*this->activeLikelihoodOffset + middle*this->nodeOffset;
+    
+    // create a vector for the per mixture likelihoods
+    // we need this vector to sum over the different mixture likelihoods
+    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
+    
+    // get pointers the likelihood for both subtrees
+    const double*   p_mixture_left     = p_left;
+    const double*   p_mixture_right    = p_right;
+    const double*   p_mixture_middle   = p_middle;
+    // iterate over all mixture categories
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        
+        // get pointers to the likelihood for this mixture category
+        const double*   p_site_mixture_left     = p_mixture_left;
+        const double*   p_site_mixture_right    = p_mixture_right;
+        const double*   p_site_mixture_middle   = p_mixture_middle;
+        // iterate over all sites
+        for (size_t site = 0; site < this->numPatterns; ++site)
+        {
+            // temporary variable storing the likelihood
+            double tmp = 0.0;
+            // get the pointer to the stationary frequencies
+            std::vector<double>::const_iterator f_j             = f_begin;
+            // get the pointers to the likelihoods for this site and mixture category
+            const double* p_site_left_j   = p_site_mixture_left;
+            const double* p_site_right_j  = p_site_mixture_right;
+            const double* p_site_middle_j = p_site_mixture_middle;
+            // iterate over all starting states
+            for (; f_j != f_end; ++f_j)
+            {
+                // add the probability of starting from this state
+                tmp += *p_site_left_j * *p_site_right_j * *p_site_middle_j * *f_j;
+                
+                // increment pointers
+                ++p_site_left_j; ++p_site_right_j; ++p_site_middle_j;
+            }
+            // add the likelihood for this mixture category
+            per_mixture_Likelihoods[site] += tmp;
+            
+            // increment the pointers to the next site
+            p_site_mixture_left+=this->siteOffset; p_site_mixture_right+=this->siteOffset; p_site_mixture_middle+=this->siteOffset;
+            
+        } // end-for over all sites (=patterns)
+        
+        // increment the pointers to the next mixture category
+        p_mixture_left+=this->mixtureOffset; p_mixture_right+=this->mixtureOffset; p_mixture_middle+=this->mixtureOffset;
+        
+    } // end-for over all mixtures (=rate categories)
+    
+    // sum the log-likelihoods for all sites together
+    std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
+    for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+    {
+        this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
+    }
+    // normalize the log-probability
+    this->lnProb -= log( this->numSiteRates ) * this->numSites;
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {   
     
     // compute the transition probability matrix

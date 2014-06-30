@@ -51,6 +51,8 @@ namespace RevBayesCore {
         virtual const DiscreteCharacterState&       getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
         virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual const std::string&                  getFileName(void) const = 0;                                                //!< Returns the name of the file the data came from
+        virtual const std::string&                  getFilePath(void) const = 0;                                                //!< Returns the name of the file path the data came from
+        virtual const bool                          getHomologyEstablished(void) const = 0;                                     //!< Returns whether the homology of the characters has been established
         virtual size_t                              getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
         virtual size_t                              getNumberOfCharacters(size_t idx) const = 0;                                //!< Number of characters for a specific taxon
         virtual size_t                              getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
@@ -69,15 +71,16 @@ namespace RevBayesCore {
         virtual void                                restoreTaxon(size_t i) = 0;                                                 //!< Restore taxon
         virtual void                                restoreTaxon(std::string& s) = 0;                                           //!< Restore taxon
         virtual void                                setFileName(const std::string &fn) = 0;                                     //!< Set the file name
+        virtual void                                setFilePath(const std::string &fn) = 0;                                     //!< Set the file path
         virtual void                                setHomologyEstablished(bool tf) = 0;                                        //!< Set whether the homology of the characters has been established
         
     protected:
-        AbstractDiscreteCharacterData() {}                                                                                      //!< Constructor requires character type
+                                                    AbstractDiscreteCharacterData() {}                                          //!< Constructor requires character type
         
     };
     
     // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const AbstractDiscreteCharacterData& x);                    //!< Overloaded output operator
+    std::ostream&                                   operator<<(std::ostream& o, const AbstractDiscreteCharacterData& x);        //!< Overloaded output operator
     
 }
 

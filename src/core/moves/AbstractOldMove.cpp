@@ -1,16 +1,11 @@
-//
-//  AbstractOldMove.cpp
-//  RevBayes
-//
-//  Created by Sebastian Hoehna on 6/11/14.
-//  Copyright (c) 2014 hoehna. All rights reserved.
-//
-
 #include "AbstractOldMove.h"
+#include "DagNode.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
 #include <cmath>
+#include <stdio.h>
+#include <iostream>
 
 using namespace RevBayesCore;
 
@@ -42,9 +37,40 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         double lnProbabilityRatio;
         double lnHastingsRatio = performOld(lnProbabilityRatio);
         
+        double lnPriorRatio = 0.0;
+        double lnLikelihoodRatio = lnProbabilityRatio;
+        if ( raiseLikelihoodOnly )
+        {
+            lnLikelihoodRatio = 0.0;
+            const std::set<DagNode*> &nodes = getDagNodes();
+            std::set<DagNode*> affectedNodes;
+            for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+            {
+                (*it)->getAffectedNodes( affectedNodes );
+            }
+            // compute the probability of the current value for each node
+            for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+            {
+                lnPriorRatio += (*it)->getLnProbabilityRatio();
+            }
+            
+            // then we recompute the probability for all the affected nodes
+            for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+            {
+                if ( (*it)->isClamped() )
+                {
+                    lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                }
+                else
+                {
+                    lnPriorRatio += (*it)->getLnProbabilityRatio();
+                }
+            }
+        }
+        
         
         // Calculate acceptance ratio
-        double lnR = heat * (lnProbabilityRatio) + lnHastingsRatio;
+        double lnR = heat * lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio;
         
         if (lnR >= 0.0)
         {

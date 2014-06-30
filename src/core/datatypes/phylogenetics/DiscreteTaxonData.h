@@ -125,12 +125,12 @@ template<class charType>
 void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const CharacterState &newChar ) 
 {
     
-#ifdef ASSERTIONS_ALL
+#   ifdef ASSERTIONS_ALL
     if ( dynamic_cast<const charType&>( newChar ) == NULL ) 
     {
         throw RbException("Inserting wrong character type into TaxonData!!!");
     }
-#endif
+#   endif
     
     addCharacter( static_cast<const charType &>(newChar) );
     
@@ -146,12 +146,12 @@ template<class charType>
 void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const DiscreteCharacterState &newChar ) 
 {
     
-#ifdef ASSERTIONS_ALL
+#   ifdef ASSERTIONS_ALL
     if ( dynamic_cast<const charType&>( newChar ) == NULL ) 
     {
         throw RbException("Inserting wrong character type into TaxonData!!!");
     }
-#endif
+#   endif
     
     addCharacter( static_cast<const charType &>(newChar) );
     

@@ -49,8 +49,6 @@ double BrownianPhyloProcess::computeLnProbability(void) {
 
 double BrownianPhyloProcess::recursiveLnProb( const TopologyNode& from ) {
     
-
-    double zob;
     double lnProb = 0.0;
     size_t index = from.getIndex();
     double val = (*value)[index];

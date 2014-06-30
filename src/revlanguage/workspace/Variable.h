@@ -33,8 +33,8 @@
 #ifndef Variable_H 
 #define Variable_H
 
-#include "RbLanguageObject.h"
-#include "RbPtr.h"
+#include "RevObject.h"
+#include "RevPtr.h"
 #include "TypeSpec.h"
 
 #include <string>
@@ -43,38 +43,38 @@ namespace RevLanguage {
 
     class Variable {
     public:
-        Variable(const TypeSpec& ts); //!< Constructor of filled variable
-        Variable(RbLanguageObject *val, const std::string &n = ""); //!< Constructor of filled, unnamed variable
-        Variable(const Variable &v); //!< Copy constructor
-        virtual ~Variable(void);
+                            Variable(const TypeSpec& ts);               //!< Constructor of filled variable
+                            Variable(RevObject *revObj, const std::string &n = "");     //!< Constructor of filled, unnamed variable
+                            Variable(const Variable &v);                //!< Copy constructor
+        virtual            ~Variable(void);
 
-        Variable& operator=(const Variable &v); //!< Assignment operator
+        Variable&           operator=(const Variable &v);               //!< Assignment operator
 
         // Regular functions
-        Variable* clone(void) const; //!< Clone variable
-        const std::string& getName(void) const; //!< Get the name of the variable
-        const RbLanguageObject& getValue(void) const; //!< Get the value of the variable
-        RbLanguageObject& getValue(void); //!< Get the value of the variable (non-const to return non-const value)
-        const TypeSpec& getValueTypeSpec(void) const; //!< Get the required value type spec
-        void printValue(std::ostream& o) const; //!< Print value of variable
-        void setValue(RbLanguageObject *newVar); //!< Set a variable with a value
-        void setName(const std::string &n); //!< Set the name of this variable
-        void setValueTypeSpec(const TypeSpec& ts); //!< set the required value type spec
+        Variable*           clone(void) const;                          //!< Clone variable
+        const std::string&  getName(void) const;                        //!< Get the name of the variable
+        const RevObject&    getRevObject(void) const;                   //!< Get the value of the variable
+        RevObject&          getRevObject(void);                         //!< Get the value of the variable (non-const to return non-const value)
+        const TypeSpec&     getRevObjectTypeSpec(void) const;           //!< Get the required Rev object type spec
+        void                printValue(std::ostream& o) const;          //!< Print value of variable
+        void                setRevObject(RevObject *newObj);            //!< Set a variable with a Rev object
+        void                setName(const std::string &n);              //!< Set the name of this variable
+        void                setRevObjectTypeSpec(const TypeSpec& ts);   //!< set the required Rev object type spec
 
-        // smart pointer functions
-        size_t decrementReferenceCount(void) const; //!< Decrement the reference count for reference counting in smart pointers
-        size_t getReferenceCount(void) const; //!< Get the reference count for reference counting in smart pointers
-        void incrementReferenceCount(void) const; //!< Increment the reference count for reference counting in smart pointers
+        // Smart pointer functions
+        size_t              decrementReferenceCount(void) const;        //!< Decrement the reference count for reference counting in smart pointers
+        size_t              getReferenceCount(void) const;              //!< Get the reference count for reference counting in smart pointers
+        void                incrementReferenceCount(void) const;        //!< Increment the reference count for reference counting in smart pointers
 
     private:
         // Help functions
-        void replaceValue(RbLanguageObject *newVariable); //!< Replace the old DAG node with the new one and set the children and parent
+        void                replaceRevObject(RevObject *newObj);        //!< Replace the old Rev object with the new one and set the children and parent
 
         // Member variables
-        std::string name;
-        mutable size_t refCount;
-        RbLanguageObject* value; //!< Pointer to the variable (reference or not)
-        TypeSpec valueTypeSpec;
+        std::string         name;
+        mutable size_t      refCount;
+        RevObject*          revObject;                                  //!< Pointer to the variable (reference or not)
+        TypeSpec            revObjectTypeSpec;
     };
 
 }

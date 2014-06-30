@@ -35,9 +35,9 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, bo
     const std::vector<std::vector<GeographicArea*> > tmpAreas = atlas->getAreas();
     numAreas = 0;
     epochs = atlas->getEpochs();
-    numEpochs = epochs.size();
+    numEpochs = (unsigned)epochs.size();
     if (numEpochs > 0)
-        numAreas = tmpAreas[0].size();
+        numAreas = (unsigned)tmpAreas[0].size();
     
     epochOffset = numAreas * numAreas;
     areaOffset = numAreas;
@@ -354,10 +354,10 @@ void GeographicDistanceRateModifier::update(void)
 {
     for (size_t i = 0; i < numEpochs; i++)
     {
-        unsigned iOffset = i*epochOffset;
+        unsigned iOffset = (unsigned)(i*epochOffset);
         for (size_t j = 0; j < numAreas; j++)
         {
-            unsigned jOffset = j*areaOffset;
+            unsigned jOffset = (unsigned)(j*areaOffset);
             for (size_t k = 0; k < j; k++)
             {
                 //double d = exp(-distancePower * geographicDistances[ iOffset + jOffset + k ]); //, -distancePower);

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 using namespace RevBayesCore;
 
@@ -127,8 +128,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     proposal->prepareProposal();
     double lnHastingsRatio = proposal->doProposal();
     
-    double lnAcceptanceRatio = 0.0;
-    
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -136,26 +135,64 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
         (*it)->touch();
     }
     
+    double lnPriorRatio = 0.0;
+    double lnLikelihoodRatio = 0.0;
+    
+    // compute the probability of the current value for each node
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        lnPriorRatio += (*it)->getLnProbabilityRatio();
+    }
+    
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
-        lnAcceptanceRatio += (*it)->getLnProbabilityRatio();
+        if ( (*it)->isClamped() )
+        {
+            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+        }
+        else
+        {
+            lnPriorRatio += (*it)->getLnProbabilityRatio();
+        }
     }
     
     // exponentiate with the chain heat
-    lnAcceptanceRatio *= heat;
+    double lnPosteriorRatio;
+    if ( raiseLikelihoodOnly )
+    {
+        lnPosteriorRatio = heat * lnLikelihoodRatio + lnPriorRatio;
+    }
+    else
+    {
+        lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
+    }
+    
     
     // finally add the Hastings ratio
-    lnAcceptanceRatio += lnHastingsRatio;
+    double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
     
     if (lnAcceptanceRatio >= 0.0)
     {
         numAccepted++;
+        
+        // call accept for each node
+        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        {
+            (*i)->keep();
+        }
+        
 //        lnProbability += lnProbabilityRatio;
     }
     else if (lnAcceptanceRatio < -300.0)
     {
         proposal->undoProposal();
+        
+        // call restore for each node
+        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        {
+            (*i)->restore();
+        }
     }
     else 
     {
@@ -165,12 +202,25 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
         if (u < r) 
         {
             numAccepted++;
+            
+            // call accept for each node
+            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            {
+                (*i)->keep();
+            }
+            
             proposal->cleanProposal();
 //            lnProbability += lnProbabilityRatio;
         }
         else 
         {
             proposal->undoProposal();
+            
+            // call restore for each node
+            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            {
+                (*i)->restore();
+            }
         }
     }
 

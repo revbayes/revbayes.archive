@@ -22,7 +22,7 @@
 #ifndef VectorRbPointer_H
 #define VectorRbPointer_H
 
-#include "TypedControlVariableContainer.h"
+#include "TypedWorkspaceObjectContainer.h"
 
 #include <iostream>
 #include <vector>
@@ -30,7 +30,7 @@
 namespace RevLanguage {
     
     template <typename rlType>
-    class VectorRbPointer : public TypedControlVariableContainer<std::vector<typename rlType::valueType *> > {
+    class VectorRbPointer : public TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> > {
         
     public:
         
@@ -53,19 +53,19 @@ namespace RevLanguage {
         
         // Basic utility functions 
         VectorRbPointer*                                  clone(void) const;                                              //!< Clone object
-        RbLanguageObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        RevObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
         static const std::string&                       getClassName(void);                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
         virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
         
         // Member object function
-        //        RbLanguageObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        //        RevObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RbLanguageObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(const rlType &x);                                     //!< Append element to end
         void                                            push_back(elementType *x);                                      //!< Append element to end
         void                                            push_front(const rlType &x);                                    //!< Append element to end
@@ -99,14 +99,14 @@ namespace RevLanguage {
 
 /** Vector type of elements */
 template <typename rlType>
-RevLanguage::VectorRbPointer<rlType>::VectorRbPointer( void ) : TypedControlVariableContainer<std::vector<typename rlType::valueType *> >( rlType::getClassTypeSpec() ) {
+RevLanguage::VectorRbPointer<rlType>::VectorRbPointer( void ) : TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> >( rlType::getClassTypeSpec() ) {
     
 }
 
 
 /** Constructor with dimension (n) and copys of x for every object */
 template <typename rlType>
-RevLanguage::VectorRbPointer<rlType>::VectorRbPointer(const valueType &v) : TypedControlVariableContainer<std::vector<typename rlType::valueType *> >( rlType::getClassTypeSpec(), v )  {
+RevLanguage::VectorRbPointer<rlType>::VectorRbPointer(const valueType &v) : TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> >( rlType::getClassTypeSpec(), v )  {
     
 }
 
@@ -194,7 +194,7 @@ const typename rlType::valueType& RevLanguage::VectorRbPointer<rlType>::operator
 
 /** Convertible to: default implementation */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorRbPointer<rlType>::convertTo(const TypeSpec &type) const {
+RevLanguage::RevObject* RevLanguage::VectorRbPointer<rlType>::convertTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
     if ( type.getBaseType() == getClassName() ) {
@@ -235,7 +235,7 @@ const RevLanguage::TypeSpec& RevLanguage::VectorRbPointer<rlType>::getClassTypeS
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorRbPointer<rlType>::getElement(size_t index) {
+RevLanguage::RevObject* RevLanguage::VectorRbPointer<rlType>::getElement(size_t index) {
     
     //    return this->value->getValue()[index];
     throw RbException("Cannot access element in pointer vector.");
@@ -283,7 +283,7 @@ const RevLanguage::MethodTable& RevLanguage::VectorRbPointer<rlType>::getMethods
         methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &TypedControlVariableContainer<std::vector<typename rlType::valueType *> >::getMethods() );
+        methods.setParentTable( &TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> >::getMethods() );
         
         methodsSet = true;
     }
@@ -393,7 +393,7 @@ void RevLanguage::VectorRbPointer<rlType>::push_front( typename rlType::valueTyp
 //
 ///* Set element */
 //template <typename rlType>
-//void RevLanguage::Vector<rlType>::setElement(const size_t index, RbLanguageObject *elem) {
+//void RevLanguage::Vector<rlType>::setElement(const size_t index, RevObject *elem) {
 //    if (index >= elements.size()) {
 //        throw RbException("Cannot set element in Vector outside the current range.");
 //    }

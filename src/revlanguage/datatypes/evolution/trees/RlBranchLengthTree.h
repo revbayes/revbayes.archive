@@ -17,7 +17,7 @@
 #define RlBranchLengthTree_H
 
 #include "BranchLengthTree.h"
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 
 #include <set>
 #include <string>
@@ -27,7 +27,7 @@
 namespace RevLanguage {
     
     
-    class BranchLengthTree : public RlModelVariableWrapper<RevBayesCore::BranchLengthTree> {
+    class BranchLengthTree : public ModelObject<RevBayesCore::BranchLengthTree> {
         
     public:
         BranchLengthTree(void);                                                                                                                         //!< Constructor requires character type
@@ -46,7 +46,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     };
     

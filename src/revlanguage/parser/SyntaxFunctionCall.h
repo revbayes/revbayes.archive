@@ -51,11 +51,11 @@ class SyntaxFunctionCall : public SyntaxElement {
         void                                printValue(std::ostream& o) const;                                                          //!< Print info about object
 
         // Regular functions
-        const std::string&                  getFunctionName(void) const { return functionName; }                                       //!< Get function name
-        RbPtr<Variable>                     evaluateContent(Environment& env);                                                          //!< Get semantic value
+        const std::string&                  getFunctionName(void) const { return functionName; }                                        //!< Get function name
+        RevPtr<Variable>                    evaluateContent(Environment& env);                                                          //!< Get semantic value
         void                                setBaseVariable(SyntaxVariable* var) { variable = var; }                                    //!< Set base variable
         bool                                isConstExpression(void) const;
-        void                                replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c);            //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);                   //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  
     protected:
         std::list<SyntaxLabeledExpr*>*      arguments;                                                                                  //!< The arguments passed to the function

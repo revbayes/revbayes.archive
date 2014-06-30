@@ -94,17 +94,17 @@ SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
     printf( "Evaluating assign expression\n" );
 #endif
     
     // Get variable info from lhs
-    const RbPtr<Variable>& theSlot = variable->createVariable( env );
+    const RevPtr<Variable>& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    RbPtr<Variable> theVariable = NULL;
+    RevPtr<Variable> theVariable = NULL;
     
         
 #ifdef DEBUG_PARSER
@@ -115,7 +115,7 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
     theVariable = expression->evaluateContent(env);
         
     // Get distribution, which should be the return value of the rhs function
-    const RbLanguageObject& exprValue = theVariable->getValue();
+    const RevObject& exprValue = theVariable->getRevObject();
     if ( !exprValue.isTypeSpec( Distribution::getClassTypeSpec() ) ) 
     {
         throw RbException( "Expression on the right-hand-side of '~' did not return a distribution object." );
@@ -123,13 +123,13 @@ RbPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) 
     const Distribution &dist = dynamic_cast<const Distribution &>( exprValue );
         
     // Create new stochastic node
-    RbLanguageObject* rv = dist.createRandomVariable();
+    RevObject* rv = dist.createRandomVariable();
         
     // fill the slot with the new variable
-    theSlot->setValue( rv );
+    theSlot->setRevObject( rv );
         
     // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-    theVariable->getValue().setName( theSlot->getName() );
+    theVariable->getRevObject().setName( theSlot->getName() );
         
     
 #ifdef DEBUG_PARSER
@@ -165,7 +165,7 @@ void SyntaxStochasticAssignment::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxStochasticAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxStochasticAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);

@@ -804,11 +804,13 @@ void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp) {
     if ( it != children.end() ) 
     {
         children.erase(it);
-        //        delete p;
     }
-    else 
+    else
+    {
         throw(RbException("Cannot find node in list of children nodes"));
+    }
     
+    // update the flags
     tipNode = children.size() == 0;
     interiorNode = children.size() > 0;
     
@@ -821,7 +823,27 @@ void TopologyNode::removeChild(TopologyNode* c, bool forceNewickRecomp) {
     
     // mark for newick recomputation
     if (forceNewickRecomp)
+    {
         flagNewickRecomputation();
+    }
+    
+}
+
+
+void TopologyNode::removeTree(Tree *t)
+{
+    
+    // only remove the tree if we had a pointer stored to it
+    if ( tree == t )
+    {
+        tree = NULL;
+    }
+    
+    for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i)
+    {
+        (*i)->removeTree( t );
+    }
+    
 }
 
 void TopologyNode::setIndex( size_t idx) {

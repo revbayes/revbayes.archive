@@ -92,17 +92,17 @@ SyntaxDeterministicAssignment* SyntaxDeterministicAssignment::clone () const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RbPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
     printf( "Evaluating assign expression\n" );
 #endif
     
     // Get variable info from lhs
-    const RbPtr<Variable>& theSlot = variable->createVariable( env );
+    const RevPtr<Variable>& theSlot = variable->createVariable( env );
     
     // Declare variable storing the return value of the assignment expression
-    RbPtr<Variable> theVariable = NULL;
+    RevPtr<Variable> theVariable = NULL;
 
 #ifdef DEBUG_PARSER
     printf( "Equation assignment\n" );
@@ -115,7 +115,7 @@ RbPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env
     // the variable itself will be passed on as the semantic value of the statement
     // and can be used in further assignments
     // when the slot is set, the clone is named
-    theSlot->setValue( theVariable->getValue().clone() );
+    theSlot->setRevObject( theVariable->getRevObject().clone() );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
@@ -148,7 +148,7 @@ void SyntaxDeterministicAssignment::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
  */
-void SyntaxDeterministicAssignment::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxDeterministicAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     expression->replaceVariableWithConstant(name, c);
     variable->replaceVariableWithConstant(name, c);
 }

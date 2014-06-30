@@ -78,13 +78,6 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbab
     double pi_C = stationaryFreqs[1];
     double pi_G = stationaryFreqs[2];
     double pi_T = stationaryFreqs[3];
-	
-	
-//	std::cout << "kappa = " << kappa << std::endl;
-//	std::cout << "a = " << pi_A << std::endl;
-//	std::cout << "c = " << pi_C << std::endl;
-//	std::cout << "g = " << pi_G << std::endl;
-//	std::cout << "t = " << pi_T << std::endl;
     
     // compute auxilliary variables
     double pi_AG = pi_A + pi_G;
@@ -121,28 +114,6 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbab
     P[3][2] = P[1][2];
     P[3][3] = (pi_T * ( pi_CT+pi_AG*aa ) + pi_C*bbY) / pi_CT;
 	
-	// test for positive likelihood
-//	bool err = false;
-//	for (size_t i = 0; i < P.size(); i++)
-//	{
-//		double sum = 0;
-//		for (size_t j = 0; j < P.size(); j++)
-//		{
-//			sum += P[i][j];
-//			if (P[i][j] > 1)
-//			{
-//				std :: cout << i << j << std::endl;
-//
-//				err = true;
-//				;
-//			}
-//		}
-//		if (0.99999 > sum || sum > 1.000001) {
-//			
-//			err = true;
-//		}
-//
-//	}
 }
 
 
@@ -167,6 +138,9 @@ void RateMatrix_HKY::updateMatrix( void ) {
     if ( needsUpdate ) 
     {
         MatrixReal &m = *theRateMatrix;
+        
+        // @todo: This is only needed for printing the values of the rate matrix properly to the screen. We should do this more efficiently (Sebastian).
+        // We could instead only update the matrix if a print call happened and the matrix was flagged as dirty.
         
         // compute the off-diagonal values
         m[0][1] = stationaryFreqs[1];

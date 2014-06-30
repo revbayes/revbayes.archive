@@ -340,7 +340,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
         //double unitTreeLength = tau.getUnitTreeLength();
         //double lnP = 0.0;//log(unitTreeLength);
-        admixtureCount->setValue(numEvents);
+        admixtureCount->setValue((const int)numEvents);
         
         // stats
         // std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
@@ -380,7 +380,7 @@ void AdmixtureEdgeAddCladeResiduals::rejectSimpleMove( void ) {
         tau.eraseAdmixtureNode(storedAdmixtureChild);
         tau.getRoot().flagNewickRecomputation();
         
-        admixtureCount->setValue(numEvents-1);
+        admixtureCount->setValue((const int)(numEvents-1));
         // std::cout << "reject add clade residuals\n";
     }
     // true;

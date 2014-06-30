@@ -5,7 +5,7 @@
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
@@ -30,10 +30,10 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_readTrees::execute( void ) {
+RevObject* Func_readTrees::execute( void ) {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
@@ -89,7 +89,7 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTrees::getClassName(void) { 
     
-    static std::string rbClassName = "Read trees function";
+    static std::string rbClassName = "Func_readTrees";
     
 	return rbClassName; 
 }

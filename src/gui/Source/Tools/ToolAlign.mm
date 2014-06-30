@@ -13,12 +13,11 @@
 #include <string>
 
 #include "CharacterState.h"
-#include "CharacterData.h"
+#include "AbstractCharacterData.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
-#include "RbNullObject.h"
-#include "RlCharacterData.h"
+#include "RevNullObject.h"
 #include "VariableSlot.h"
 #include "Workspace.h"
 
@@ -183,7 +182,7 @@
         RbData* d = [unalignedData objectAtIndex:i];
         NSString* fName = [NSString stringWithString:[d name]];
                   fName = [fName stringByAppendingString:@".fas"];
-        NSString* tempDir = [NSString stringWithFormat:@"temp_%d", i+1];
+        NSString* tempDir = [NSString stringWithFormat:@"temp_%lu", i+1];
         NSNumber* nt = [NSNumber numberWithInt:[d numTaxa]];
         
         NSMutableArray* theTaskInfo = [[NSMutableArray alloc] initWithCapacity:2];
@@ -233,8 +232,8 @@
     // read in by the core
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RbLanguageObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
-    if ( dv == RevLanguage::RbNullObject::getInstance() )
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         [self stopProgressIndicator];
@@ -250,7 +249,7 @@
 //        [self removeAllDataMatrices];
 //        for (int i=0; i<dnc->size(); i++)
 //            {
-//            const RbPtr<RbObject>& theDagNode = dnc->getElement( i );
+//            const RevPtr<RbObject>& theDagNode = dnc->getElement( i );
 //            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
 //            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
 //            [newMatrix setAlignmentMethod:@"Unknown"];

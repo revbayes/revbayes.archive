@@ -47,19 +47,19 @@ namespace RevLanguage {
         
         // Basic utility functions 
         Vector*                                         clone(void) const;                                              //!< Clone object
-        RbLanguageObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        RevObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
         static const std::string&                       getClassName(void);                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
         virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
         
         // Member object function
-//        RbLanguageObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+//        RevObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
             
         // Container functions
-        RbLanguageObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(const rlType &x);                                     //!< Append element to end
         void                                            push_back(const elementType &x);                                //!< Append element to end
         void                                            push_front(const rlType &x);                                    //!< Append element to end
@@ -206,20 +206,20 @@ const typename rlType::valueType& RevLanguage::Vector<rlType>::operator[]( size_
 
 /** Convertible to: default implementation */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const TypeSpec &type) const {
+RevLanguage::RevObject* RevLanguage::Vector<rlType>::convertTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
     if ( type.getBaseType() == getClassName() ) {
         
         // work through all the possible base element types
         
-        // RbLanguageObject
+        // RevObject
         if ( type.getElementType() == Integer::getClassTypeSpec() ) {
             std::vector<int> elements;
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     Integer *itg = static_cast<Integer *>( orgElement );
@@ -241,7 +241,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const Type
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     Natural *nat = static_cast<Natural *>( orgElement );
@@ -263,7 +263,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const Type
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     Probability *p = static_cast<Probability *>( orgElement );
@@ -285,7 +285,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const Type
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     RlBoolean *b = static_cast<RlBoolean *>( orgElement );
@@ -307,7 +307,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const Type
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     RlString *s = static_cast<RlString *>( orgElement );
@@ -329,7 +329,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const Type
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     Real *r = static_cast<Real *>( orgElement );
@@ -351,7 +351,7 @@ RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::convertTo(const Type
             // insert copies of all objects. clone if they are of the right type, otherwise convert them
             typename std::vector<elementType>::const_iterator i;
             for ( i = this->begin(); i != this->end(); i++) {
-                RbLanguageObject *orgElement = new rlType( *i );
+                RevObject *orgElement = new rlType( *i );
                 // test whether this element is already of the right type
                 if ( orgElement->isTypeSpec(type.getElementType()) ) {
                     RealPos *rp = static_cast<RealPos *>( orgElement );
@@ -401,14 +401,14 @@ RevLanguage::Vector<rlType>* RevLanguage::Vector<rlType>::clone() const {
 //
 ///* Map calls to member methods */
 //template <typename rlType>
-//RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+//RevLanguage::RevObject* RevLanguage::Vector<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
 //    
 //    if ( name == "[]") {
 //        // get the member with give index
-//        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+//        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 //        
 //        
-//        RevBayesCore::VectorIndexOperator<elementType>* f = new RevBayesCore::VectorIndexOperator<elementType>( this->value, index.getValueNode() );
+//        RevBayesCore::VectorIndexOperator<elementType>* f = new RevBayesCore::VectorIndexOperator<elementType>( this->value, index.getDagNode() );
 //        RevBayesCore::DeterministicNode<elementType> *detNode = new RevBayesCore::DeterministicNode<elementType>("", f);
 //        
 //        rlType* value = new rlType( detNode );
@@ -439,7 +439,7 @@ const RevLanguage::TypeSpec& RevLanguage::Vector<rlType>::getClassTypeSpec(void)
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::Vector<rlType>::getElement(size_t index) {
+RevLanguage::RevObject* RevLanguage::Vector<rlType>::getElement(size_t index) {
     
     return new rlType( this->value->getValue()[index] );
 }
@@ -603,7 +603,7 @@ void RevLanguage::Vector<rlType>::push_front( const typename rlType::valueType &
 //
 ///* Set element */
 //template <typename rlType>
-//void RevLanguage::Vector<rlType>::setElement(const size_t index, RbLanguageObject *elem) {
+//void RevLanguage::Vector<rlType>::setElement(const size_t index, RevObject *elem) {
 //    if (index >= elements.size()) {
 //        throw RbException("Cannot set element in Vector outside the current range.");
 //    }

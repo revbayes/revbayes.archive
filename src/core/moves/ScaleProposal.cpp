@@ -74,7 +74,7 @@ const std::set<DagNode*>& ScaleProposal::getNodes( void ) const
 
 
 /** 
- * Perform the Proposal.
+ * Perform the proposal.
  *
  * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
  * and scales the current vale by a scaling factor

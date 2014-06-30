@@ -18,8 +18,8 @@
 #ifndef RlRateMatrix_H
 #define RlRateMatrix_H
 
+#include "ModelObject.h"
 #include "RateMatrix.h"
-#include "RlModelVariableWrapper.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -27,7 +27,7 @@
 
 namespace RevLanguage {
     
-    class RateMatrix : public RlModelVariableWrapper<RevBayesCore::RateMatrix> {
+    class RateMatrix : public ModelObject<RevBayesCore::RateMatrix> {
         
     public:
         
@@ -43,7 +43,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RbLanguageObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
         
     };
