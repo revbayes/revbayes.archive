@@ -65,8 +65,8 @@ bool TestBirthDeath::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(lambda, 1.0), true, 1.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(mu, 1.0), true, 1.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(lambda, 1.0), 1, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(mu, 1.0), 1, true ) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;

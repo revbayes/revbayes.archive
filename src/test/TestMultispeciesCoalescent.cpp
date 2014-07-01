@@ -131,14 +131,14 @@ bool TestMultispeciesCoalescent::run( void ) {
     // construct the parameters for the gamma prior of the population sizes
     // shape of the gamma (we fix it to 2.0)
     ConstantNode<double> *shape = new ConstantNode<double>("shape", new double(2.0));
-    // rate of the gamma distribution. we use rate = 1.0/scale and a hyperprior on the P(scale) = 1.0 / scale, which is the infamous OneOverX prior distribution 
+    // rate of the gamma distribution. we use rate = 1.0/scale and a hyperprior on the P(scale) = 1.0 / scale, which is the infamous OneOverX prior distribution
     ConstantNode<double> *min = new ConstantNode<double>("min", new double(1E6));
     ConstantNode<double> *max = new ConstantNode<double>("max", new double(1E-10));
     StochasticNode<double> *scale = new StochasticNode<double>("scale", new OneOverXDistribution(min,max));
     ConstantNode<double> *one = new ConstantNode<double>("one", new double(1.0) );
     DeterministicNode<double> *rate = new DeterministicNode<double>("rate", new BinaryDivision<double, double, double>(one,scale));
     
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(scale, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(scale, 1.0), 2, true ) );
 
     std::vector<const TypedDagNode<double> *> ne_nodes;
     for (size_t i = 0; i < nNodes; ++i) 
@@ -147,7 +147,7 @@ bool TestMultispeciesCoalescent::run( void ) {
         o << "Ne_" << i;
         StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new GammaDistribution(shape,rate) );
         ne_nodes.push_back( NePerNode );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(NePerNode, 1.0), true, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(NePerNode, 1.0), 2, true ) );
     }
     DeterministicNode< std::vector<double> > *Ne_inf = new DeterministicNode< std::vector<double > >("Ne", new VectorFunction<double>( ne_nodes ) );
 //    ConstantNode< std::vector<double> > *Ne_inf = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );

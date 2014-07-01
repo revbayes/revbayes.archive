@@ -101,7 +101,7 @@ bool TestMixtureModel::run( void ) {
     moves.push_back( new SlidingMove( mu9, 1.0, false, 1.0 ) );
     moves.push_back( new SlidingMove( mu10, 1.0, false, 1.0 ) );
     moves.push_back( new MixtureAllocationMove<double>( rates, 1.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(sigma, 1.0), true, 1.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(sigma, 1.0), 1, true ) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;
