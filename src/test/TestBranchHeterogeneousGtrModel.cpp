@@ -191,7 +191,7 @@ bool TestBranchHeterogeneousGtrModel::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -204,7 +204,7 @@ bool TestBranchHeterogeneousGtrModel::run( void ) {
 
     for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
         moves.push_back( new SimplexSingleElementScale( pis[i], 10.0, true, 2.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), true, 1.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), 1, true ) );
     }
     
     // add some tree stats to monitor
