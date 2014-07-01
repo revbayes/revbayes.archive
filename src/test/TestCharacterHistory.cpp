@@ -154,7 +154,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool forbidExtinction = true;
     bool useCladogenesis = true;
     bool useEpochs = true;
-    bool useDistances = !true;
+    bool useDistances = true;
     bool useAdjacency = true;
     bool useAvailable = true;
     filepath="/Users/mlandis/data/bayarea/output/";
