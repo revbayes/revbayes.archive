@@ -34,7 +34,7 @@ bool TestScalingMove::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(x, 1.0), true, 1.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(x, 1.0), 1, true ) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;
