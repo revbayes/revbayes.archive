@@ -315,7 +315,7 @@ bool TestCharacterHistory::run_exp(void) {
     {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 2.0, false ) );
 //        Proposal *p, double w, bool autoTune = false)
-//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), false, 2.0 ) );
+//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2, false ) );
     }
 
     // path proposals
@@ -567,8 +567,8 @@ bool TestCharacterHistory::run_dollo(void) {
     std::vector<Move*> moves;
     if (useClock)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.5), true, 5.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), true, 5.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.5), 5, true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), 5, true ) );
     }
     
     
@@ -576,8 +576,8 @@ bool TestCharacterHistory::run_dollo(void) {
     moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.5), false, 2.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.1), false, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.5), 2, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.1), 2, false ) );
     }
     
     
@@ -921,9 +921,9 @@ bool TestCharacterHistory::run_old( void ) {
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(distancePower, 1.0), true, 5.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateGain, 5.0), true, 5.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateLoss, 1.0), true, 5.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(distancePower, 1.0), 5, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateGain, 5.0), 5, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateLoss, 1.0), 5, true ) );
 //    moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
 //    moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
 //    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
