@@ -134,6 +134,7 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     
     mcmcGenerations *= 5 ;
+//    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
     ////////////
@@ -144,7 +145,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> seed;
     seed.push_back(15); seed.push_back(1);
 //    old_seed = seed;
-//    GLOBAL_RNG->setSeed(seed);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -154,7 +155,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool forbidExtinction = true;
     bool useCladogenesis = true;
     bool useEpochs = true;
-    bool useDistances = true;
+    bool useDistances = !true;
     bool useAdjacency = true;
     bool useAvailable = true;
     filepath="/Users/mlandis/data/bayarea/output/";
@@ -372,8 +373,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_nonConst[0] );
     monitoredNodes.insert( glr_nonConst[1] );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb4" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb4" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
@@ -391,6 +392,7 @@ bool TestCharacterHistory::run_exp(void) {
     //////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
+//    myMcmc.setScheduleType("single");
     myMcmc.run(mcmcGenerations);
     myMcmc.printOperatorSummary();
     
@@ -696,7 +698,7 @@ bool TestCharacterHistory::run_old( void ) {
     timeatlasFilename = "timeatlas.txt";
     TimeAtlasDataReader tsdr(filepath+timeatlasFilename,'\t');
     TimeAtlas ta(&tsdr);
-    int numEpochs = (int)ta.getEpochs().size();
+//    int numEpochs = (int)ta.getEpochs().size();
     
     //////////
     // test
