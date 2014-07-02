@@ -380,7 +380,6 @@ template<class charType, class treeType>
 double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
-    double proposedLnProbRatio = 0.0;
     proposedLnProb = 0.0;
 
     // assign prepared bud/clado states
@@ -393,13 +392,17 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
     proposedLnProb += sampleNodeCharacters(siteIndexSet);
     
     // update 3x incident paths
-    proposedLnProbRatio += nodeProposal->doProposal();
-    proposedLnProbRatio += leftProposal->doProposal();
-    proposedLnProbRatio += rightProposal->doProposal();
-
-    proposedLnProbRatio += storedLnProb - proposedLnProb;
+    double nodeLnProb = nodeProposal->doProposal();
+    double leftLnProb = leftProposal->doProposal();
+    double rightLnProb = rightProposal->doProposal();
+//    std::cout << "nodeLnProb " << nodeLnProb << "\n";
+//    std::cout << "leftLnProb " << leftLnProb << "\n";
+//    std::cout << "rightLnProb " << rightLnProb << "\n";
     
-    return proposedLnProbRatio;
+    proposedLnProb += nodeLnProb + leftLnProb + rightLnProb;
+    
+//    std::cout << storedLnProb << " " << proposedLnProb << "\n";
+    return storedLnProb - proposedLnProb;
 }
 
 
@@ -455,11 +458,11 @@ void RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>::
     // propose new cladogenic state
     storedCladogenicState = p->getCladogenicState(*proposedTrunkNode);
     double u = GLOBAL_RNG->uniform01();
-    if (u < 1.0)
+    if (u < 0.5)
         proposedCladogenicState = 0;
     else if (u < 1.0)
         proposedCladogenicState = 1;
-    else
+    else if (u < 1.0)
         proposedCladogenicState = 2;
     
     
@@ -588,10 +591,14 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
         
         // sample area to bud
         
+        // 0: sympatry, 1: peripatry, 2: allopatry
         int budIdx = -1;
         if (proposedCladogenicState != 0)
         {
-            budIdx = nodeChildState.size() * GLOBAL_RNG->uniform01();
+            while (budIdx == -1 || !rm.isAreaAvailable(budIdx, node->getAge()))
+            {
+                budIdx = nodeChildState.size() * GLOBAL_RNG->uniform01();
+            }
             budParentState[budIdx]->setState(1);
             if (proposedCladogenicState == 1)
                 trunkParentState[budIdx]->setState(1);
