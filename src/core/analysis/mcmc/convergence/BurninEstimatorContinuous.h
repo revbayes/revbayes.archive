@@ -1,10 +1,3 @@
-//
-//  BurninEstimator.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/12/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
 #ifndef BurninEstimatorContinuous_H
 #define BurninEstimatorContinuous_H
 
@@ -14,6 +7,19 @@
 
 namespace RevBayesCore {
     
+    /**
+     * @brief Interface for burnin estimation of continuous traits.
+     *
+     * This interface specifies the function used to estimate the optimal burn-in for continuous variables.
+     * That is, a class that implementents this interface can be used to estimate the optimal burn-in automatically
+     * so that no user input is needed.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2011-04-12
+     *
+     */
     class BurninEstimatorContinuous {
     
     public:

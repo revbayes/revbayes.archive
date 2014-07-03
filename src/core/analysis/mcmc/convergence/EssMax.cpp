@@ -12,6 +12,8 @@
 
 #include <cmath>
 
+using namespace RevBayesCore;
+
 EssMax::EssMax() {
     blockSize = 10;
 }

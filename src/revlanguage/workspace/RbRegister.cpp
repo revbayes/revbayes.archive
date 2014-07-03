@@ -65,6 +65,7 @@
 #include "RlClade.h"
 
 /* Inference types (in folder "datatypes/inference") */
+#include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
@@ -231,11 +232,6 @@
 
 /* Inference functions (in folder "functions/inference") */
 
-/* Convergence functions (in folder "functions/inference/convergence") */
-#include "Func_beca.h"
-#include "Func_estimateBurnin.h"
-
-
 /* Internal functions (in folder ("functions/internal") */
 
 /* These are functions that are typically not called explicitly but implicitly
@@ -303,9 +299,11 @@
 
 
 /** Initialize global workspace */
-void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
+void RevLanguage::Workspace::initializeGlobalWorkspace(void)
+{
     
-    try {
+    try
+    {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
@@ -341,12 +339,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "mcmc",                   new Mcmc()  );
-        addTypeWithConstructor( "model",                  new Model() );
-        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc() );
-        addTypeWithConstructor( "pathSampler",            new PathSampler() );
-        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()  );
-        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler() );
+        addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
+        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
+        addTypeWithConstructor( "model",                  new Model()                                   );
+        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
+        addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
+        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
+        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -698,10 +697,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Inference functions (in folder "functions/inference") */
-
-        /* Convergence functions (in folder "functions/inference/convergence") */
-        addFunction( "beca",           new Func_beca() );
-        addFunction( "estimateBurnin", new Func_estimateBurnin() );
 
         
         /* Internal functions (in folder "functions/internal") */

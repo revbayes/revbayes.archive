@@ -1,11 +1,3 @@
-//
-//  GewekeTest.cpp
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/11/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
-
 #include "GewekeTest.h"
 #include "DistributionNormal.h"
 
@@ -13,26 +5,16 @@
 
 using namespace RevBayesCore;
 
-GewekeTest::GewekeTest() : ConvergenceDiagnosticContinuous() {
+GewekeTest::GewekeTest(double f, double f1, double f2) : ConvergenceDiagnosticContinuous(),
+    p( f ),
+    frac1( f1 ),
+    frac2( f2 )
+{
     
-    p       = 0.01;
-    frac1   = 0.1;
-    frac2   = 0.5;
 }
 
-GewekeTest::GewekeTest(double f) : ConvergenceDiagnosticContinuous() {
-    this->p         = f;
-    this->frac1     = 0.1;
-    this->frac2     = 0.5;
-}
-
-GewekeTest::GewekeTest(double f, double f1, double f2) : ConvergenceDiagnosticContinuous() {
-    this->p         = f;
-    this->frac1     = f1;
-    this->frac2     = f2;
-}
-
-bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin) {
+bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
+{
     // get the sample size
     size_t sampleSize = values.size() - burnin;
     
@@ -59,12 +41,7 @@ bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values,
     // get z
     double z            = (meanWindow1 - meanWindow2)/sqrt(varWindow1 + varWindow2);
     // check if z is standard normally distributed
-//    double quantile     = RbStatistics::Normal::quantile(p/2.0);
     double cdf          = RbStatistics::Normal::cdf(z);
-//    bool passed1        = (z > quantile); 
-//    bool passed2        = z < (-quantile);
-//    bool passed         = (passed1 && passed2);
-//    bool test           = ( z > quantile && z < -quantile );
     
     return cdf > p/2.0 && cdf < (1.0 - p/2.0);
 }
