@@ -340,7 +340,7 @@
 			}
 		else 
 			{
-			if( [aCell stringValue] == @"|" && ([dataMatrix numberOfColumns]-j) >= [aStr length] )
+			if( [aCell isEqualTo:@"|"] == YES && ([dataMatrix numberOfColumns]-j) >= [aStr length] )
 				{
 				for (int i=0; i<[aStr length]; i++)
 					{
@@ -425,7 +425,8 @@
 	[NucleotideStateColors addObject:[NSColor greenColor]];
 	[NucleotideStateColors addObject:[NSColor blueColor]];
 	[NucleotideStateColors addObject:[NSColor yellowColor]];
-	for (int i=0; i<16; i++)
+	[NucleotideStateColors addObject:[NSColor yellowColor]];
+	for (int i=0; i<15; i++)
 		[NucleotideStateColors addObject:[NSColor colorWithCalibratedRed:0.90 green:0.90 blue: 0.90 alpha:1.0]];
 
 	[NucleotideStateLabels addObject:@"A"];
