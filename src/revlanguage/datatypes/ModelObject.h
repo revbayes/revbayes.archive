@@ -37,7 +37,7 @@ namespace RevLanguage {
        
         // Basic utility functions you have to override
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
-        ModelObject<rbType>*                    dagReference(void);                                                         //!< Make reference to object
+        ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
     
         // function you might want to overwrite
         virtual RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
@@ -59,7 +59,7 @@ namespace RevLanguage {
         // getters and setters
         virtual const rbType&                   getValue(void) const;                                                       //!< Get the value
         void                                    setValue(rbType *x);                                                        //!< Set new constant value
-        void                                    setValueNode(RevBayesCore::DagNode *newVal);                                //!< Set or replace the internal dag node (and keep me)
+        void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
         
     protected:
         ModelObject(void);
@@ -69,7 +69,7 @@ namespace RevLanguage {
         
         RevBayesCore::TypedDagNode<rbType>*     value;
         mutable MethodTable                     methods;
-    
+
     private:
         
         void                                    initMethods(void);
@@ -200,7 +200,7 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::dagReference(void) {
+RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
     
     RevBayesCore::TypedReferenceFunction< rbType >* f = new RevBayesCore::TypedReferenceFunction< rbType >(value);
     RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
@@ -524,15 +524,15 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
 
 
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setValueNode(RevBayesCore::DagNode* newVal) {
+void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
     
-    assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newVal) != NULL );
+    assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newNode) != NULL );
     
     // Take care of the old value node
     if ( value != NULL )
     {
-        newVal->setName( value->getName() );
-        value->replace(newVal);
+        newNode->setName( value->getName() );
+        value->replace(newNode);
         
         if ( value->decrementReferenceCount() == 0 )
         {
@@ -542,7 +542,7 @@ void RevLanguage::ModelObject<rbType>::setValueNode(RevBayesCore::DagNode* newVa
     }
     
     // Set the new value node
-    value = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newVal );
+    value = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
     
     // Increment the reference count to the new value node
     value->incrementReferenceCount();

@@ -214,7 +214,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
  
     std::vector<Move*> moves;
     //Move on population size prior distribution scale
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(scale, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(scale, 1.0), 2, true ) );
 
     std::cout << "\t\tParameters for the gamma prior on population sizes set."<<std::endl;
 
@@ -227,7 +227,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         o << "Ne_" << i;
         StochasticNode<double> *NePerNode = new StochasticNode<double>(o.str(), new GammaDistribution(shape,rate) );
         ne_nodes.push_back( NePerNode );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(NePerNode, 1.0), true, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(NePerNode, 1.0), 2, true ) );
     }
     DeterministicNode< std::vector<double> > *Ne_inf = new DeterministicNode< std::vector<double > >("Nes", new VectorFunction<double>( ne_nodes ) );
 //    ConstantNode< std::vector<double> > *Ne_inf = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );

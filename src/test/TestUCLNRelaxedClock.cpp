@@ -135,7 +135,7 @@ bool TestUCLNRelaxedClock::run( void ) {
  
 	/* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 //    moves.push_back( new NarrowExchange( tau, 10.0 ) );
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -148,7 +148,7 @@ bool TestUCLNRelaxedClock::run( void ) {
     moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
 	for( size_t i=0; i<numBranches; i++){
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), true, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), 2, true ) );
 	}
 	
 	

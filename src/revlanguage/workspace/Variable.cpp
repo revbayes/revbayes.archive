@@ -199,7 +199,7 @@ void Variable::replaceRevObject( RevObject *newObj ) {
     {
         
         // I need to tell my children that I'm being exchanged
-        revObject->replaceMe( newObj );
+        revObject->replaceVariable( newObj );
         
         delete revObject;
 

@@ -84,8 +84,8 @@ namespace RevLanguage {
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const TypeSpec& name) const;                                     //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
+        const std::string&      getInternalValueType(const std::string& type) const;                        //!< Get the templated internal value type of the object
         RevObject*              getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
-        const std::string&      getValueType(const std::string& type) const;                                //!< Get the templated internal value type of the object
         TypeTable               getTypeTable(void){ return typeTable; }
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
 

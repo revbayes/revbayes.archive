@@ -15,6 +15,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     geographicDistanceRateModifier()
 {
     useGeographicDistanceRateModifier = false;
+//    useUnnormalizedRates = false;
     branchHeterogeneousClockRates = false;
     branchHeterogeneousGainLossRates = false;
     forbidExtinction = fe;
@@ -25,8 +26,14 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     epochs = std::vector<double>(1,0.0);
     numEpochs = epochs.size();
     epochOffset = numEpochs * numCharacters;
-    extinctionValues = std::vector<double>(numEpochs * this->numCharacters, 1.0);
-    dispersalValues = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
+//    extinctionValues = std::vector<double>(numEpochs * this->numCharacters, 1.0);
+//    dispersalValues = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
+    adjacentAreaVector = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
+    availableAreaVector = std::vector<double>(numEpochs * this->numCharacters, 1.0);
+    
+    useAreaAvailable = false;
+    useAreaAdjacency = false;
+    useDistanceDependence = false;
     
     branchOffset=1;
     epochOffset=1;
@@ -44,8 +51,17 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     epochs = m.epochs;
     numEpochs = m.numEpochs;
     epochOffset = m.epochOffset;
-    extinctionValues = m.extinctionValues;
-    dispersalValues = m.dispersalValues;
+//    extinctionValues = m.extinctionValues;
+//    dispersalValues = m.dispersalValues;
+    adjacentAreaVector = m.adjacentAreaVector;
+    availableAreaVector = m.availableAreaVector;
+    
+    useAreaAvailable = m.useAreaAvailable;
+    useAreaAdjacency = m.useAreaAdjacency;
+    useDistanceDependence = m.useDistanceDependence;
+    
+//    inboundDispersalValues = m.inboundDispersalValues;
+//    useUnnormalizedRates = m.useUnnormalizedRates;
     
     geographicDistanceRateModifier = m.geographicDistanceRateModifier;
     useGeographicDistanceRateModifier = m.useGeographicDistanceRateModifier;
@@ -78,11 +94,19 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         epochs = r.epochs;
         numEpochs = r.numEpochs;
         epochOffset = r.epochOffset;
-        extinctionValues = r.extinctionValues;
-        dispersalValues = r.dispersalValues;
+//        extinctionValues = r.extinctionValues;
+//        dispersalValues = r.dispersalValues;
+        adjacentAreaVector = r.adjacentAreaVector;
+        availableAreaVector = r.availableAreaVector;
+//        inboundDispersalValues = r.inboundDispersalValues;
+//        useUnnormalizedRates = r.useUnnormalizedRates;
         
         geographicDistanceRateModifier = r.geographicDistanceRateModifier;
         useGeographicDistanceRateModifier = r.useGeographicDistanceRateModifier;
+        
+        useAreaAdjacency = r.useAreaAdjacency;
+        useAreaAvailable = r.useAreaAvailable;
+        useDistanceDependence = r.useDistanceDependence;
         
         branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
         branchHeterogeneousGainLossRates = r.branchHeterogeneousClockRates;
@@ -94,7 +118,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
     return *this;
 }
 
-void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, double age) const
+void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P) const
 {
    
     double branchLength = node.getBranchLength();
@@ -103,7 +127,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     const std::vector<double>& glr = ( branchHeterogeneousGainLossRates ? heterogeneousGainLossRates[node.getIndex()] : homogeneousGainLossRates );
 
     if (node.isRoot())
-        branchLength = 10e10;
+        branchLength = 1e10;
 
     double expPart = exp( -(glr[0] + glr[1]) * r * branchLength);
     double p = glr[0] / (glr[0] + glr[1]);
@@ -113,19 +137,12 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     P[0][1] = q - q * expPart;
     P[1][0] = p - p * expPart;
     P[1][1] = q + p * expPart;
-    
-    
-    
-//    std::cout << P << "\n";
-//
-//    
-//    std::cout <<"\n";
 }
 
-void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx, double age) const
+void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
 {
 
-    double startAge = ( node.isRoot() ? 10e10 : node.getParent().getAge() );
+    double startAge = ( node.isRoot() ? 1e10 : node.getParent().getAge() );
     double endAge = node.getAge();
     double currAge = startAge;
     
@@ -134,6 +151,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     
     // start at earliest epoch
     int epochIdx = getEpochIndex(startAge);
+    
 
     // initialize P = I
     P[0][0] = 1.0;
@@ -141,12 +159,16 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     P[1][0] = 0.0;
     P[1][1] = 1.0;
     
+
+    
     bool stop = false;
     while (!stop)
     {
         // get dispersal and extinction rates for site
-        double dispersalRate = dispersalValues[ epochOffset * epochIdx + numCharacters * charIdx + charIdx ];
-        double extinctionRate = extinctionValues[ numEpochs * epochIdx + charIdx ];
+        size_t idx = this->numCharacters * epochIdx + charIdx;
+        
+        double dispersalRate  = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
+        double extinctionRate = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
         
         // get age of start of next oldest epoch
         double epochAge = epochs[ epochIdx ];
@@ -165,8 +187,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         double diffAge = currAge - incrAge;
         
         // transition probabilities w/ sum-product
-        double glr0 = glr[0] * dispersalRate;
-        double glr1 = glr[1] * extinctionRate;
+        double glr0 = glr[0] * extinctionRate;
+        double glr1 = glr[1] * dispersalRate;
         double expPart = exp( -(glr0 + glr1) * r * diffAge);
         double p = glr0 / (glr0 + glr1);
         double q = 1.0 - p;
@@ -175,7 +197,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         double p01 = (q - q * expPart);
         double p10 = (p - p * expPart);
         double p11 = (q + p * expPart);
-//
+
         double q00 = P[0][0];
         double q01 = P[0][1];
         double q10 = P[1][0];
@@ -186,21 +208,12 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         P[1][0] = p10 * q00 + p11 * q10;
         P[1][1] = p10 * q01 + p11 * q11;
         
-//        std::cout << epochIdx << " " << epochAge << " " << diffAge << "\n";
-//        std::cout << P << "\n";
-        
         if (!stop)
         {
             epochIdx += 1;
             currAge = epochAge;
         }
     }
-    
-    
-//    std::cout << P << "\n";
-//    
-//    
-//    std::cout <<"--------\n";
 }
 
 RateMap_Biogeography* RateMap_Biogeography::clone(void) const
@@ -255,8 +268,8 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
 {
     double rate = 0.0;
     int s = to->getState();
-    int charIdx = (int)to->getIndex();
-    int epochIdx = getEpochIndex(age);
+//    int charIdx = to->getIndex();
+//    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousGainLossRates)
@@ -270,10 +283,9 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
         rate *= homogeneousClockRate;
     
     // area effects
-    if (s == 0)
-        rate *= extinctionValues[ numEpochs * epochIdx + charIdx ];
-    else  if (s == 1)
-        rate *= dispersalValues[ epochOffset * epochIdx + numCharacters * charIdx + charIdx ];
+    if (useGeographicDistanceRateModifier)
+        rate *= geographicDistanceRateModifier->computeSiteRateModifier(node,from,to,age);
+
     
     return rate;
 }
@@ -282,7 +294,7 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
 {
     double rate = 0.0;
     int s = to;
-    int epochIdx = getEpochIndex(age);
+//    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousGainLossRates)
@@ -295,11 +307,9 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
     else
         rate *= homogeneousClockRate;
     
-    // marginal area effects
-    if (s == 0)
-        rate *= extinctionValues[ numEpochs * epochIdx + charIdx ];
-    else  if (s == 1)
-        rate *= dispersalValues[ epochOffset * epochIdx + numCharacters * charIdx + charIdx ];
+    // area effects
+    if (useGeographicDistanceRateModifier)
+        rate *= geographicDistanceRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
 
     
     return rate;
@@ -307,6 +317,10 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
 
 double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age) const
 {
+    
+    if (useUnnormalizedRates)
+        return getUnnormalizedSumOfRates(node, from, counts, age);
+    
     size_t nodeIndex = node.getIndex();
     
     // get rate away away from currState
@@ -347,18 +361,47 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     return sum;
 }
 
+double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age) const
+{
+    size_t nodeIndex = node.getIndex();
+    size_t epochIdx = getEpochIndex(age);
+    
+    // apply ctmc for branch
+    const std::vector<double>& glr = ( branchHeterogeneousGainLossRates ? heterogeneousGainLossRates[nodeIndex] : homogeneousGainLossRates );
+    
+    // get sum of rates
+    double sum = 0.0;
+    for (size_t i = 0; i < from.size(); i++)
+    {
+        unsigned s = from[i]->getState();
+        double v = availableAreaVector[ epochIdx * this->numCharacters + i ];
+        
+        if (forbidExtinction && s == 1 && counts[1] == 1)
+            sum += 0.0;
+        else if (s == 1 && v > 0)
+            sum += glr[0];
+        else if (s == 1 && v == 0)
+            sum += 10e10;
+        else  if (s == 0)
+            sum += glr[1] * v;
+    }
+    
+    // apply rate for branch
+    if (branchHeterogeneousClockRates)
+        sum *= heterogeneousClockRates[nodeIndex];
+    else
+        sum *= homogeneousClockRate;
+    
+    return sum;
+}
+
 double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
 {
     unsigned n1 = (unsigned)numOn(from);
     unsigned n0 = (unsigned)(numCharacters - n1);
     unsigned counts[2] = {n0,n1};
+    
     return getSumOfRates(node, from, counts, age);
-}
-
-double RateMap_Biogeography::getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t, double age) const
-{
-    double lnP = log(getRate(node, from, to, age)) - getSumOfRates(node, from, age) * t;
-    return lnP;
 }
 
 void RateMap_Biogeography::updateMap(void)
@@ -433,8 +476,16 @@ void RateMap_Biogeography::setGeographicDistanceRateModifier(const GeographicDis
     geographicDistanceRateModifier = &const_cast<GeographicDistanceRateModifier&>(gdrm);
 
     epochs = geographicDistanceRateModifier->getEpochs();
-    extinctionValues = geographicDistanceRateModifier->getExtinctionValues();
-    dispersalValues = geographicDistanceRateModifier->getDispersalValues();
+    numEpochs = epochs.size();
+    adjacentAreaVector = geographicDistanceRateModifier->getAdjacentAreaVector();
+    availableAreaVector = geographicDistanceRateModifier->getAvailableAreaVector();
+    
+    useUnnormalizedRates = true;
+    
+//    extinctionValues = geographicDistanceRateModifier->getAdjacentVector();
+//    dispersalValues = geographicDistanceRateModifier->getAvailableVector();
+//    setInboundDispersal( geographicDistanceRateModifier->getDispersalValues() );
+
 }
 
 void RateMap_Biogeography::setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm)
@@ -449,9 +500,22 @@ const GeographicDistanceRateModifier& RateMap_Biogeography::getGeographicDistanc
     return *geographicDistanceRateModifier;
 }
 
+const bool RateMap_Biogeography::isAreaAvailable(size_t charIdx, double age) const
+{
+    size_t epochIdx = getEpochIndex(age);
+    return availableAreaVector[epochIdx*this->numCharacters + charIdx] > 0.0;
+}
+
+const bool RateMap_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age) const
+{
+    size_t epochIdx = getEpochIndex(age);
+    return adjacentAreaVector[epochIdx*epochOffset + this->numCharacters*fromCharIdx + toCharIdx] > 0.0;
+
+}
+
 const std::vector<double>& RateMap_Biogeography::getEpochs(void) const
 {
-    return epochs; // geographicDistanceRateModifier->getEpochs();
+    return epochs;
 }
 
 size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
@@ -467,7 +531,7 @@ unsigned RateMap_Biogeography::getEpochIndex(double age) const
 {
     // epochs are ordered from oldest to youngest, typically over (-neginf, 0.0)
     unsigned index = 0;
-    while (age <= epochs[index] && index < epochs.size())
+    while (age <= epochs[index] && index < epochs.size() - 1)
     {
         index++;
     };

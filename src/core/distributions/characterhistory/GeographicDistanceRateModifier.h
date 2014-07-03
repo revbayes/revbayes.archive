@@ -20,14 +20,15 @@ namespace RevBayesCore
     class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier( TimeAtlas* ta, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
-        //GeographicDistanceRateModifier(std::vector<std::vector<double> > gc, double dp=1.0, double threshhold = 1e-6, std::string dt="haversine"); // pass map... pass it parameter pointer?
+        GeographicDistanceRateModifier( TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
         GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g);
         
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
         double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
+        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateModifier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateModifier(const TopologyNode& node, unsigned curState, unsigned newState, unsigned charIdx=0, double age=0.0);
         void                                setDistancePower(double dp, bool upd=true);
         const std::vector<double>&          getGeographicDistancePowers(void) const;
         void                                setGeographicDistancePowers(const std::vector<double>& dp);
@@ -35,21 +36,29 @@ namespace RevBayesCore
         const std::vector<double>&          getEpochs(void) const;
         const std::vector<double>&          getDispersalValues(void) const;
         const std::vector<double>&          getExtinctionValues(void) const;
+        const std::vector<double>&          getAvailableAreaVector(void) const;
+        const std::vector<double>&          getAdjacentAreaVector(void) const;
+        
         void                                update(void);
         GeographicDistanceRateModifier*     clone(void) const;
         void                                print(std::vector<std::vector<double> > m);
         void                                printAll(void);
         
     protected:
+        void                                setInboundDispersal(const std::vector<double> &v);
         double                              computePairwiseDistances(int i, int j, int k);
-        void                                computeAllPairwiseDistances(void);
-        void                                computeAllPairwiseDistanceOrder(void);
+//        void                                computeAllPairwiseDistances(void);
+//        void                                computeAllPairwiseDistanceOrder(void);
+       
+        void                                initializeAdjacentAreas(void);
+        void                                initializeDistances(void);
+        void                                initializeDispersalExtinctionValues(void);
         
     private:
         
         // map objects
         TimeAtlas* atlas;
-        std::vector<std::vector<GeographicArea*> > areas;
+        std::vector<GeographicArea*> areas;
         std::vector<double> epochs;
         int index;
         
@@ -63,12 +72,22 @@ namespace RevBayesCore
         // adjacencies
         std::vector<double> dispersalValues;
         std::vector<double> extinctionValues;
+        std::vector<double> inboundDispersalValues;
+        std::vector<std::set<size_t> > adjacentAreaSet;
+        std::vector<std::set<size_t> > availableAreaSet;
+        std::vector<double> adjacentAreaVector;
+        std::vector<double> availableAreaVector;
+        
         
         // helper variables
         unsigned numAreas;
         unsigned numEpochs;
         unsigned epochOffset;
         unsigned areaOffset;
+        
+        bool useAreaAdjacency;
+        bool useAreaAvailable;
+        bool useDistanceDependence;
         
         double threshhold;
         double distancePower;
