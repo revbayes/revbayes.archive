@@ -42,7 +42,6 @@ namespace RevLanguage {
         static const std::string&           getClassName(void);                                                     //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get the type spec of the instance
-        virtual void                        printStructure(std::ostream& o) const {}                                //!< Print structure of language object for user
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
 
                 
