@@ -80,6 +80,7 @@ namespace RevBayesCore {
         
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
+        const bool                                          useCladogenicEvents(void) const;
         
     protected:
         
@@ -1324,6 +1325,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecia
         AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter );
     }
     
+}
+
+template<class charType, class treeType>
+const bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::useCladogenicEvents(void) const
+{
+    return cladogenicEvents;
 }
 
 #endif /* defined(__rb_mlandis__BiogeographicTreeHistoryCtmc__) */
