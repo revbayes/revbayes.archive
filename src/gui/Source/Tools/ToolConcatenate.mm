@@ -76,10 +76,10 @@
 	[controlWindow close];
 }
 
-- (NSMutableArray*)concatenateMatrices:alignedData forTaxa:(NSMutableArray*)names usingMergeMethod:(int)mergeMethod {
+- (NSMutableArray*)concatenateMatrices:alignedData forTaxa:(NSMutableArray*)names usingMergeMethod:(int)mm {
 
     NSMutableArray* arrayWithMatrices = [[NSMutableArray alloc] init];
-    if (mergeMethod == MERGE_BY_DATA_TYPE)
+    if (mm == MERGE_BY_DATA_TYPE)
         {
         // merge by data type
         BOOL dataTypePresent[6] = { NO, NO, NO, NO, NO, NO };
