@@ -133,7 +133,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 5 ;
+    mcmcGenerations *= 50 ;
 //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
@@ -182,10 +182,8 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "vireya.atlas.txt";
-//    afn = "hawaii_test.atlas.txt";
-    afn = "hawaii_hard.atlas.txt";
-//    afn = "hawaii_complex.atlas.txt";
-//    afn = "100areas.atlas.txt";
+    afn = "hawaii_single.atlas.txt";
+//    afn = "hawaii_hard.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -310,20 +308,19 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new SlidingMove(dp, 0.3, false, 2 ));
     }
     
-//    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2));
-//    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 2.0, false ) );
-//        Proposal *p, double w, bool autoTune = false)
-//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 1, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2, false ) );
     }
 
     // path proposals
     if (useEpochs)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes * 2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
     }
     else if (!useEpochs)
     {
@@ -373,8 +370,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_nonConst[0] );
     monitoredNodes.insert( glr_nonConst[1] );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb4" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb3" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));

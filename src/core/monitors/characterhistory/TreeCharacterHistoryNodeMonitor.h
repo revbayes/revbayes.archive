@@ -254,8 +254,12 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         characterStream << "[";
         
         // character history
-        characterStream << "&ch={" << buildCharacterHistoryString(n,"child") << "}";
-        characterStream << ",&pa={" << buildCharacterHistoryString(n,"parent") << "}";
+        characterStream << "&pa={" << buildCharacterHistoryString(n,"child") << "}";
+        if (!n->isTip())
+        {
+            characterStream << ",&ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
+            characterStream << ",&ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
+        }
         
         // # events
         characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";
