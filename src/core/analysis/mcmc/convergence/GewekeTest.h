@@ -1,11 +1,3 @@
-//
-//  GewekeTest.h
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/11/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
-
 #ifndef GewekeTest_H
 #define GewekeTest_H
 
@@ -14,13 +6,24 @@
 #include "ConvergenceDiagnosticContinuous.h"
 
 namespace RevBayesCore {
-
+    
+    /**
+     * @brief Geweke test statistic for assessing convergence.
+     *
+     * The Geweke test statistic computes the probability that the samples in fraction1
+     * and fraction2 are from the same probability distribution. This is done by comparing
+     * the mean values of the two samples.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2011-04-11
+     *
+     */
     class GewekeTest : public ConvergenceDiagnosticContinuous {
     
     public:
-        GewekeTest();
-        GewekeTest(double p);
-        GewekeTest(double p, double f1, double f2);
+        GewekeTest(double p=0.01, double f1=0.1, double f2=0.5);
     
         // implementen functions from convergence diagnostic
         bool        assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin);
