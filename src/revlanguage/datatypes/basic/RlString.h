@@ -20,13 +20,14 @@ namespace RevLanguage {
             RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
         
             // Basic operator functions
-            RevObject*               add(const RevObject &rhs) const;                 //!< Addition operator used for example in '+=' statements
+            RevObject*                      add(const RevObject &rhs) const;                        //!< Addition operator used for example in '+=' statements
             RlString*                       add(const RlString &rhs) const;                         //!< Addition operator used for example in '+=' statements
 
             // Basic utility functions
             RlString*                       clone(void) const;                                      //!< Copy
             static const std::string&       getClassName(void);                                     //!< Get class name
             static const TypeSpec&          getClassTypeSpec(void);                                 //!< Get class type spec
+            const std::string&              getInternalValueType( void ) const;                     //!< Get internal value type
             const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
             void                            printValue(std::ostream& o) const;                      //!< Print value (for user)
     

@@ -44,7 +44,7 @@ namespace RevBayesCore {
 
     protected:
         virtual void                                        keepMe(DagNode* affecter);                                                      //!< Keep value of this and affected nodes
-        virtual void                                        restoreMe(DagNode *restorer);                                                   //!< Restore value of this nodes
+        virtual void                                        restoreMe(DagNode *restorer);                                                   //!< Restore value of this node
         virtual void                                        touchMe(DagNode *toucher);                                                      //!< Tell affected nodes value is reset
 
     

@@ -87,6 +87,14 @@ const TypeSpec& RlBoolean::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+/** Get the internal value type (rbType) */
+const std::string& RlBoolean::getInternalValueType( void ) const {
+    
+    static std::string valType = "bool";
+    
+    return valType;
+}
+
 /** Get type spec */
 const TypeSpec& RlBoolean::getTypeSpec( void ) const {
     

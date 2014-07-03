@@ -48,7 +48,7 @@ void Function::removeParameter(const RevBayesCore::DagNode *p)
 }
 
 
-/* Method stumb that can be overwritten for specialized treatment. */
+/* Method stub that can be overwritten for specialized treatment. */
 void Function::restore( DagNode *restorer ) {
     // do nothing
 }
@@ -70,10 +70,11 @@ void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
 }
 
 
-/* Method stumb that can be overwritten for specialized treatment. */
+/* Method stub that can be overwritten for specialized treatment. */
 void Function::touch( DagNode *toucher ) {
     // do nothing
 }
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Function& f) {
     

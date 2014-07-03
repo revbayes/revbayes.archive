@@ -47,7 +47,7 @@ std::string RbVersion::getHeader( void ) const {
     header += "for information on how to cite RevBayes.\n";
     header += "\n";
     header += "For help on using RevBayes, type 'help()'. To quit RevBayes\n";
-    header += "type 'q()'.\n";
+    header += "type 'quit()' or 'q()'.\n";
     
     return header;
     

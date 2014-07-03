@@ -10,8 +10,8 @@
  */
 
 #include "DeterministicNode.h"
-#include "PowermixFunction.h"
 #include "Func_powermix.h"
+#include "PowermixFunction.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlSimplex.h"
@@ -42,7 +42,7 @@ RevObject* Func_powermix::execute() {
     
     RevBayesCore::PowermixFunction *func = new RevBayesCore::PowermixFunction( params );
 
-    RevBayesCore::TypedDagNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
+    RevBayesCore::DeterministicNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
     Simplex *theSimplex = new Simplex( detNode );
     
     return theSimplex;

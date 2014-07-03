@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of UserFunction, which is used
- * to hold user defined functions.
- *
- * @brief Declaration of UserFunction
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-15 18:59:11 +0200 (Tue, 15 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: MemberFunction.h 1544 2012-05-15 16:59:11Z hoehna $
- */
-
 #ifndef UserFunction_H
 #define UserFunction_H
 
@@ -27,14 +11,16 @@
 #include <vector>
 
 namespace RevLanguage {
-    
+
+    class UserFunctionArgs;
+    class UserFunctionCall;
+
     class UserFunction :  public Function {
         
     public:
                                                     UserFunction(const ArgumentRules*        argRules,
                                                                  const TypeSpec&             retType,
-                                                                 std::list<SyntaxElement*>*  stmts,
-                                                                 Environment*                defineEnv);
+                                                                 std::list<SyntaxElement*>*  stmts);
                                                     UserFunction(const UserFunction& x);
         virtual                                    ~UserFunction();
         
@@ -49,17 +35,19 @@ namespace RevLanguage {
         
         // Regular functions   
         virtual RevObject*                          execute(void);                                                              //!< Execute function
-        virtual RevObject*                          executeCode(void);                                                          //!< Execute Rev code of function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
+        const std::list<SyntaxElement*>&            getCode(void) const;                                                        //!< Get a pointer to the code
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
-        void                                        setArgumentVariable(const std::string& name, const RevPtr<const Variable> &var);             
         
     protected:
+
+        template<typename valueType>
+        void                                        makeDeterministicVariable( UserFunctionCall* call, UserFunctionArgs* args, RevObject* retValue );
+
+        
         const ArgumentRules*                        argumentRules;                      //!< The argument rules
         const TypeSpec                              returnType;                         //!< The return type (complete specification)
         std::list<SyntaxElement*>*                  code;                               //!< The code
-        Environment*                                defineEnvironment;                  //!< The definition environment
-        std::string                                 templateValueType;                  //!< The templated internal value type of the return value
     };
     
 }

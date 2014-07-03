@@ -46,7 +46,8 @@ namespace RevLanguage {
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
-        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;
+        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;                                                     //!< Get the internal DAG node
+        bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
@@ -361,6 +362,13 @@ RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode
     return value;
 }
 
+
+/** Make sure users understand that we have an internal DAG node */
+template <typename rbType>
+bool RevLanguage::ModelObject<rbType>::hasDagNode( void ) const {
+    
+    return true;
+}
 
 
 /**
