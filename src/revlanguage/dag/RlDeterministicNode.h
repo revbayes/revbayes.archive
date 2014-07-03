@@ -122,7 +122,7 @@ void DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
     o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = " << this->getValue() << std::endl;
+    o << "_value        = " << RevBayesCore::DeterministicNode<valueType>::getValue() << std::endl;
     
     o << "_parents      = ";
     this->printParents(o);

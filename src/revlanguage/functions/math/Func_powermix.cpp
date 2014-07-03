@@ -43,6 +43,7 @@ RevObject* Func_powermix::execute() {
     RevBayesCore::PowermixFunction *func = new RevBayesCore::PowermixFunction( params );
 
     RevBayesCore::DeterministicNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
+
     Simplex *theSimplex = new Simplex( detNode );
     
     return theSimplex;
