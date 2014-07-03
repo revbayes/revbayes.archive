@@ -45,10 +45,10 @@ namespace RevLanguage {
     
 }
 
-#include "DeterministicNode.h"
 #include "DppNumTablesStatistic.h"
 #include "RealPos.h"
 #include "Integer.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
 
@@ -73,7 +73,8 @@ RevLanguage::RevObject* RevLanguage::Func_dppNumTablesStatistic<valType>::execut
     
     RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* dppVec = static_cast<const std::vector<typename valType::valueType> >( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::DppNumTablesStatistic<typename valType::valueType>* f = new RevBayesCore::DppNumTablesStatistic<typename valType::valueType>( dppVec );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    
+    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
     
     RealPos* value = new RealPos( detNode );
     

@@ -216,7 +216,7 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     o << "_function     = The stupid function <" << function << "> doesn't know who it is" << std::endl;
 
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = " << function->getValue() << std::endl;
+    o << "_value        = " << getValue() << std::endl;
     
     o << "_parents      = ";
     this->printParents(o);
