@@ -8,6 +8,7 @@
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "MixtureAllocationMove.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -21,7 +22,7 @@
 #include "RbMixtureDistribution.h"
 #include "RbVector.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
@@ -134,7 +135,7 @@ bool TestMixtureBranchHeterogeneousGtrModel::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );

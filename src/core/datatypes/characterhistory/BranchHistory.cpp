@@ -63,6 +63,16 @@ BranchHistory::BranchHistory(const BranchHistory& m)
     
 }
 
+BranchHistory::~BranchHistory(void)
+{
+//    for (size_t i = 0; i < parentCharacters.size(); i++)
+//        delete parentCharacters[i];
+//    for (size_t i = 0; i < childCharacters.size(); i++)
+//        delete childCharacters[i];
+//    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
+
+}
+
 BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     
     if (this != &bh) {
@@ -83,6 +93,8 @@ BranchHistory& BranchHistory::operator=(const BranchHistory &bh) {
     return *this;
 }
 
+
+
 bool BranchHistory::operator<(const BranchHistory& m) const {
     return (this < &m);
 }
@@ -92,12 +104,12 @@ BranchHistory* BranchHistory::clone(void) const
     return new BranchHistory(*this);
 }
 
-const std::vector<CharacterEvent*>& BranchHistory::getParentCharacters(void)
+std::vector<CharacterEvent*>& BranchHistory::getParentCharacters(void)
 {
     return parentCharacters;
 }
 
-const std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void)
+std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void)
 {
     return childCharacters;
 }
@@ -113,7 +125,12 @@ const std::vector<CharacterEvent*>& BranchHistory::getChildCharacters(void) cons
     return childCharacters;
 }
 
-const std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void)
+std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void)
+{
+    return history;
+}
+
+const std::multiset<CharacterEvent*,CharacterEventCompare>& BranchHistory::getHistory(void) const
 {
     return history;
 }
@@ -128,18 +145,17 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
     std::set<size_t>::iterator it_idx;
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h, it_tmp;
 
-    // store history elements that match indexSet into clearSet
-    std::set<CharacterEvent*,CharacterEventCompare> clearSet;
-    
     // for each event in history, delete if index matches indexSet
     for (it_h = history.begin(); it_h != history.end(); )
     {
         if ( indexSet.find( (*it_h)->getIndex() ) != indexSet.end() )
         {
-//            std::cout << "found one!\n";
+//            std::cout << "found one! " << *it_h << " " << (*it_h)->getIndex() << " " << (*it_h)->getState() << " " << (*it_h)->getTime() << "\n";            
+            
             it_tmp = it_h;
             ++it_tmp;
             history.erase(it_h);
+            //delete *it_h;
             it_h = it_tmp;
             //std::cout << "found!\n";
         }
@@ -197,33 +213,35 @@ void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterE
 
 }
 
-void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
+
+void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
 {
-    std::set<CharacterEvent*>::iterator it;
+    std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        childCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
 
 void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
 {
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        childCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
-}
-
-void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
-{
-    std::vector<CharacterEvent*>::const_iterator it;
-    for (it = s.begin(); it != s.end(); it++)
-        childCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        childCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
 
 void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
 {
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
-        parentCharacters[ (*it)->getIndex() ] = new CharacterEvent(**it);
+        parentCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
 }
+
+void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
+{
+    std::set<CharacterEvent*>::iterator it;
+    for (it = s.begin(); it != s.end(); it++)
+        parentCharacters[ (*it)->getIndex() ] = *it;//new CharacterEvent(**it);
+}
+
 
 void BranchHistory::setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s)
 {
@@ -238,38 +256,53 @@ void BranchHistory::setHistory(const std::multiset<CharacterEvent*,CharacterEven
 }
 
 
-void BranchHistory::print(void)
+void BranchHistory::print(void) const
 {
     std::set<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     std::vector<CharacterEvent*>::iterator it_v;
     std::vector<CharacterEvent*> tmp = parentCharacters;
     
-    std::cout << "BranchHistory " << index << "\n";
-    std::cout << "         0.0 : ";
+    std::cout << "BranchHistory " << index << " size=" << history.size() << "  " << this << "\n";
+    std::cout << "                             ";
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (i % 10 == 0) std::cout << ".";
+        else std::cout << " ";
+    }
+    std::cout << "\n";
+    std::cout << "                       0.0 : ";
     for (it_v = parentCharacters.begin(); it_v != parentCharacters.end(); it_v++)
     {
-        std::cout << std::setw(3) << (*it_v)->getState() << " ";
+        std::cout << (*it_v)->getState();
     }
     std::cout << "\n";
     
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
+        std::cout << *it_h << "   ";
         std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getTime() << " : ";
         tmp[ (*it_h)->getIndex() ] = *it_h;
         for (size_t i = 0; i < numCharacters; i++)
         {
             if (i != (*it_h)->getIndex())
-                std::cout << std::setw(3) << " ";
+                std::cout << " ";
             else
-                std::cout << std::setw(3) << (*it_h)->getState();
-            std::cout << " ";
+                std::cout << (*it_h)->getState();
+            //std::cout << " ";
         }
         std::cout << "\n";
     }
-    std::cout << "         1.0 : ";
+    std::cout << "                       1.0 : ";
     for (it_v = childCharacters.begin(); it_v != childCharacters.end(); it_v++)
     {
-        std::cout << std::setw(3) << (*it_v)->getState() << " ";
+        std::cout << (*it_v)->getState();
+    }
+    std::cout << "\n";
+    std::cout << "                             ";
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        if (i % 10 == 0) std::cout << ".";
+        else std::cout << " ";
     }
     std::cout << "\n";
     ;

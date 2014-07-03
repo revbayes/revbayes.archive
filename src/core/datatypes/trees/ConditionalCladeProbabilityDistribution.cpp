@@ -35,10 +35,10 @@ void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
   last_leafset_id = 0;
   numberOfObservedTrees = 0;
   // ? name_separator="+";
-  std::vector < std::string > leaves = tree.getTipNames();//del-loc
+  std::vector < std::string > taxons = tree.getTipNames();//del-loc
 
   int id=0;
-  for (std::vector <std::string >::iterator it=leaves.begin();it!=leaves.end();it++ )
+  for (std::vector <std::string >::iterator it=taxons.begin();it!=taxons.end();it++ )
     {      
       id++;
       std::string leaf_name=(*it);
@@ -69,31 +69,29 @@ void ConditionalCladeProbabilityDistribution::construct(Tree& tree)
   if (numTaxons==2)
     numberOfPossibleTreeTopologies=1;
   else
-    numberOfPossibleTreeTopologies=boost::math::double_factorial<double>(2*numTaxons-5);
+    numberOfPossibleTreeTopologies=boost::math::double_factorial<long double>((unsigned)(2*numTaxons-5));
 
-  //del-locs
-  leaves.clear();
+//  taxons.clear();
 }
 
-const std::string& ConditionalCladeProbabilityDistribution::getAleRepresentation( ) const                                            //Writes the object to a stream.
-
-{
+const std::string& ConditionalCladeProbabilityDistribution::getAleRepresentation() const //Writes the object to a stream.
+ {
     // create the newick string
     std::stringstream ou;
 
-  
-  //must be first!
-  ou<< "#constructor_string" << std::endl;
-  std::string constructor_string = constructorTree->getNewickRepresentation();
-  boost::trim(constructor_string);
-  ou<< constructor_string << std::endl;
 
-  ou<< "#observations" <<std::endl;
-  ou<< numberOfObservedTrees << std::endl;
+    //must be first!
+    ou << "#constructor_string" << std::endl;
+    std::string constructor_string = constructorTree->getNewickRepresentation();
+    boost::trim(constructor_string);
+    ou << constructor_string << std::endl;
 
-  ou<< "#Bip_counts" << std::endl;
-  for (std::map <size_t, size_t>::const_iterator it=BipartitionCounts.begin();it!=BipartitionCounts.end();it++)
-    ou<<(*it).first<<"\t"<<(*it).second<< std::endl;
+    ou << "#observations" << std::endl;
+    ou << numberOfObservedTrees << std::endl;
+
+    ou << "#Bip_Counts" << std::endl;
+    for (std::map <size_t, size_t>::const_iterator it = BipartitionCounts.begin(); it != BipartitionCounts.end(); it++)
+        ou << (*it).first << "\t" << (*it).second << std::endl;
 
     ou << "#Bip_bls" << std::endl;
     for (std::map <size_t, std::vector<double> >::const_iterator it = BipartitionBranchLengths.begin(); it != BipartitionBranchLengths.end(); ++it) {
@@ -103,49 +101,45 @@ const std::string& ConditionalCladeProbabilityDistribution::getAleRepresentation
         }
         ou << std::endl;
     }
-    
-  ou<< "#Dip_counts" << std::endl;
 
-  size_t index=0;
-  for ( std::vector < boost::unordered_map< std::pair<size_t, size_t>, double> >::const_iterator it=tripletFrequencies.begin();it!=tripletFrequencies.end();it++ )
-    {
-      for (boost::unordered_map< std::pair<size_t, size_t>, double>::const_iterator jt=(*it).begin();jt!=(*it).end();jt++)
-	{
-	  ou<< index <<"\t";
-	  ou<<(*jt).first.first<<"\t";
-	  ou<<(*jt).first.second<<"\t";
-	  ou<<(*jt).second<<std::endl;
-	}
-      ++index;
-    }
-  
-  ou<< "#last_leafset_id" <<std::endl;
-  ou<< last_leafset_id << std::endl;
-
-  ou<< "#leaf-id" <<std::endl;
-  for ( std::map< std::string,int >::const_iterator it=leaf_ids.begin();it!=leaf_ids.end();it++)
-    ou<<(*it).first<<"\t"<<(*it).second<< std::endl;
-
-  ou<< "#set-id" <<std::endl;
-  for ( std::map < boost::dynamic_bitset<>, size_t>::const_iterator it=set_ids.begin();it!=set_ids.end();it++)
-    {
-      ou << (*it).second;
-      ou << "\t:";
-        for (size_t i = 0; i<  numTaxons + 1; ++i) {
-            //if (BipartitionTools::testBit((*it).first, i))
-               if ( (*it).first[i] ) //if the leaf is present, we print it
-                   ou << "\t" << i;
+    ou << "#Dip_counts" << std::endl;
+    size_t index = 0;
+    for (std::vector < boost::unordered_map< std::pair<size_t, size_t>, double> >::const_iterator it = tripletFrequencies.begin(); it != tripletFrequencies.end(); it++) {
+        for (boost::unordered_map< std::pair<size_t, size_t>, double>::const_iterator jt = (*it).begin(); jt != (*it).end(); jt++) {
+            ou << index << "\t";
+            ou << (*jt).first.first << "\t";
+            ou << (*jt).first.second << "\t";
+            ou << (*jt).second << std::endl;
         }
-        
-   /*   for (set< int>::iterator  jt=(*it).first.begin();jt!=(*it).first.end();jt++)
-	ou << "\t" << (*jt);*/
-      ou << std::endl;
+        ++index;
     }
 
-  ou<< "#END" << std::endl;
+    ou << "#last_leafset_id" << std::endl;
+    ou << last_leafset_id << std::endl;
 
-  return ou.str();
-  
+    ou << "#leaf-id" << std::endl;
+    for (std::map< std::string, int >::const_iterator it = leaf_ids.begin(); it != leaf_ids.end(); it++)
+        ou << (*it).first << "\t" << (*it).second << std::endl;
+
+    ou << "#set-id" << std::endl;
+    for (std::map < boost::dynamic_bitset<>, size_t>::const_iterator it = set_ids.begin(); it != set_ids.end(); it++) {
+        ou << (*it).second;
+        ou << "\t:";
+        for (size_t i = 0; i < numTaxons + 1; ++i) {
+            //if (BipartitionTools::testBit((*it).first, i))
+            if ((*it).first[i]) //if the leaf is present, we print it
+                ou << "\t" << i;
+        }
+
+        /*   for (set< int>::iterator  jt=(*it).first.begin();jt!=(*it).first.end();jt++)
+             ou << "\t" << (*jt);*/
+        ou << std::endl;
+    }
+
+    ou << "#END" << std::endl;
+
+    return ou.str();
+
 }
 
 
@@ -352,6 +346,129 @@ size_t ConditionalCladeProbabilityDistribution::set2id(boost::dynamic_bitset<> l
 
 
 
+double ConditionalCladeProbabilityDistribution::Bi(int n2) const
+{
+  int n1=(int)(numTaxons-n2);
+  if (n2==1 or n1==1)
+    return boost::math::double_factorial<double>((unsigned int)(2*numTaxons-5));
+  n1=std::max(2,n1);
+  n2=std::max(2,n2);
+  return boost::math::double_factorial<double>(2*n1-3)*boost::math::double_factorial<double>(2*n2-3);
+}
+
+
+double ConditionalCladeProbabilityDistribution::Tri(int n2,int n3) const
+{
+  int n1= (int)(numTaxons-n2-n3);
+  n1=std::max(2,n1);
+  n2=std::max(2,n2);
+  n3=std::max(2,n3);
+  return boost::math::double_factorial<double>(2*n1-3)*boost::math::double_factorial<double>(2*n2-3)*boost::math::double_factorial<double>(2*n3-3);
+}
+
+
+double ConditionalCladeProbabilityDistribution::binomial(int n,int m) const
+{
+  //maybe worth caching 
+  return boost::math::binomial_coefficient<double>(n,m);
+}
+
+
+double ConditionalCladeProbabilityDistribution::trinomial(int n1,int n2, int n3) const
+{
+  //(n,m)!=binomial(n+m,m)
+  //(n1,n2,n3)!= (n1+n2,n3)! (n1,n2)! = binomial(n1+n2+n3,n3) binomial(n1+n2,n1)
+  // binomial(|Gamma|,i+j) binomial(i+j,j)
+  //cf. http://mathworld.wolfram.com/MultinomialCoefficient.html
+  return binomial(n1+n2+n3,n3)*binomial(n1+n2,n2);
+}
+
+
+
+double ConditionalCladeProbabilityDistribution::p_bip(boost::dynamic_bitset<> gamma) const
+{
+    if (numTaxons<4)
+        return 1;
+    long int g_id=set_ids.at(gamma);
+//    std::cout << "g_id: "<< g_id << " TO "<< p_bip(g_id) <<std::endl;
+    return p_bip(g_id);
+}
+
+
+double ConditionalCladeProbabilityDistribution::p_dip(boost::dynamic_bitset<>  gamma, boost::dynamic_bitset<> gammap, boost::dynamic_bitset<> gammapp) const
+{
+    if (numTaxons<4)
+        return 1;
+    long int g_id=set_ids.at(gamma);
+    long int gp_id=set_ids.at(gammap);
+    long int gpp_id=set_ids.at(gammapp);
+ //   std::cout << "g_id: "<< g_id << " AND "<< gp_id << " AND "<<gpp_id << " TO: "<< p_dip(g_id, gp_id, gpp_id) <<std::endl;
+    return p_dip( g_id, gp_id, gpp_id);
+}
+
+
+double ConditionalCladeProbabilityDistribution::p_bip(long int g_id) const
+{
+  if (numTaxons<4)
+    return 1;
+
+  double Bip_count=0;
+
+  if (!g_id)
+    {
+      //never saw gamma in sample
+      Bip_count=0;
+    }
+  else
+    {
+      Bip_count=BipartitionCounts.at(g_id);
+    }
+  //if ( gamma.size()==1 or (int)gamma.size()==numTaxons-1) Bip_count=numberOfObservedTrees;
+  if ( set_sizes.at(g_id)==1 or set_sizes.at(g_id)==numTaxons-1) Bip_count=numberOfObservedTrees;
+
+    if ( alpha>0 )
+        return Bip_count / ( numberOfObservedTrees+alpha ) + ( alpha/numberOfPossibleTreeTopologies*Bi ( set_sizes.at ( g_id ) ) ) / ( numberOfObservedTrees+alpha );
+    else
+        return Bip_count / numberOfObservedTrees;
+    }
+
+
+double ConditionalCladeProbabilityDistribution::p_dip(long int g_id,long int gp_id,long int gpp_id) const
+{
+  if (numTaxons<4)
+    return 1;
+  double beta_switch=1;
+  double Dip_count=0,Bip_count=0;
+  if (!g_id)
+    {
+      //never saw gamma in sample
+      beta_switch=0.;
+      Bip_count=0;
+      Dip_count=0;
+    }
+  else
+    {
+      //set <long int> parts;
+      //parts.insert(gp_id);
+      //parts.insert(gpp_id);
+      std::pair <long int, long int> parts;
+      parts.first = gp_id;
+      parts.second = gpp_id;
+      Bip_count=BipartitionCounts.at(g_id);
+      Dip_count=tripletFrequencies.at(g_id).at(parts);
+      if (!gp_id or !gpp_id or Dip_count==0)
+	{
+	  //never saw gammap-gammapp partition in sample
+	  Dip_count=0;
+	}
+    }
+  if (set_sizes.at(g_id)==1 or set_sizes.at(g_id)==numTaxons-1) Bip_count=numberOfObservedTrees;
+
+    if ( alpha>0 or beta>0 )
+        return ( Dip_count + ( alpha/numberOfObservedTrees*Tri ( set_sizes.at ( gp_id ),set_sizes.at ( gpp_id ) ) ) + beta_switch*beta/ ( pow ( 2.,set_sizes.at ( g_id )-1 )-1 ) ) / ( Bip_count + ( alpha/numberOfObservedTrees*Bi ( set_sizes.at ( g_id ) ) ) + beta_switch*beta );
+    else
+        return Dip_count/Bip_count;
+}
 
 
 

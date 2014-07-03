@@ -1,7 +1,7 @@
 #include "ArgumentRule.h"
 #include "Func_writeNexus.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
@@ -33,12 +33,12 @@ Func_writeNexus* Func_writeNexus::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RbLanguageObject* Func_writeNexus::execute( void ) 
+RevObject* Func_writeNexus::execute( void ) 
 {
     
     // get the information from the arguments for reading the file
-    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getValue() );
-    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getValue() ).getValue();
+    const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
+    const RevBayesCore::AbstractDiscreteCharacterData &data = static_cast< const AbstractDiscreteCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::NexusWriter fw( fn.getValue() );
     fw.openStream();
@@ -83,7 +83,7 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
 const std::string& Func_writeNexus::getClassName(void) 
 { 
     
-    static std::string rbClassName = "Write Nexus function";
+    static std::string rbClassName = "Func_writeNexus";
     
 	return rbClassName; 
 }
@@ -126,7 +126,7 @@ const TypeSpec& Func_writeNexus::getTypeSpec( void ) const
 const TypeSpec& Func_writeNexus::getReturnType( void ) const 
 {
     
-    static TypeSpec returnTypeSpec = RbNullObject::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevNullObject::getClassTypeSpec();
     return returnTypeSpec;
 }
 

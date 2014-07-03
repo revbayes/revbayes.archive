@@ -22,7 +22,7 @@
 #ifndef VectorRlPointer_H
 #define VectorRlPointer_H
 
-#include "TypedControlVariableContainer.h"
+#include "TypedWorkspaceObjectContainer.h"
 
 #include <iostream>
 #include <vector>
@@ -30,7 +30,7 @@
 namespace RevLanguage {
     
     template <typename rlType>
-    class VectorRlPointer : public TypedControlVariableContainer<std::vector<rlType *> > {
+    class VectorRlPointer : public TypedWorkspaceObjectContainer<std::vector<rlType *> > {
         
     public:
         
@@ -46,19 +46,19 @@ namespace RevLanguage {
         
         // Basic utility functions 
         VectorRlPointer*                                clone(void) const;                                              //!< Clone object
-        RbLanguageObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        RevObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
         static const std::string&                       getClassName(void);                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
         virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
         
         // Member object function
-        RbLanguageObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
 //        const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RbLanguageObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(rlType *x);                                           //!< Append element to end
         void                                            push_front(rlType *x);                                          //!< Append element to end
         
@@ -90,14 +90,14 @@ namespace RevLanguage {
 
 /** Vector type of elements */
 template <typename rlType>
-RevLanguage::VectorRlPointer<rlType>::VectorRlPointer( void ) : TypedControlVariableContainer<std::vector<rlType *> >( rlType::getClassTypeSpec() ) {
+RevLanguage::VectorRlPointer<rlType>::VectorRlPointer( void ) : TypedWorkspaceObjectContainer<std::vector<rlType *> >( rlType::getClassTypeSpec() ) {
     
 }
 
 
 /** Constructor with dimension (n) and copys of x for every object */
 template <typename rlType>
-RevLanguage::VectorRlPointer<rlType>::VectorRlPointer(const rlType &v) : TypedControlVariableContainer<std::vector<rlType *> >( rlType::getClassTypeSpec(), v )  {
+RevLanguage::VectorRlPointer<rlType>::VectorRlPointer(const rlType &v) : TypedWorkspaceObjectContainer<std::vector<rlType *> >( rlType::getClassTypeSpec(), v )  {
     
 }
 
@@ -139,7 +139,7 @@ const rlType& RevLanguage::VectorRlPointer<rlType>::operator[]( size_t index ) c
 
 /** Convertible to: default implementation */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorRlPointer<rlType>::convertTo(const TypeSpec &type) const {
+RevLanguage::RevObject* RevLanguage::VectorRlPointer<rlType>::convertTo(const TypeSpec &type) const {
     
     // test whether we want to convert to another Vector
     if ( type.getBaseType() == getClassName() ) {
@@ -161,17 +161,17 @@ RevLanguage::VectorRlPointer<rlType>* RevLanguage::VectorRlPointer<rlType>::clon
 
 /* Map calls to member methods */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorRlPointer<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevObject* RevLanguage::VectorRlPointer<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if ( name == "[]") {
         // get the member with give index
-        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getValue() );
+        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
         
         if (this->size() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in []");
         }
         
-        RbLanguageObject* element = getElement(index.getValue() - 1);
+        RevObject* element = getElement( size_t(index.getValue()) - 1);
         return element;
     } 
     
@@ -200,7 +200,7 @@ const RevLanguage::TypeSpec& RevLanguage::VectorRlPointer<rlType>::getClassTypeS
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RbLanguageObject* RevLanguage::VectorRlPointer<rlType>::getElement(size_t index) {
+RevLanguage::RevObject* RevLanguage::VectorRlPointer<rlType>::getElement(size_t index) {
     
     return this->value[index]->clone();
 }
@@ -222,7 +222,7 @@ const RevLanguage::MethodTable& RevLanguage::VectorRlPointer<rlType>::getMethods
         methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &TypedControlVariableContainer<std::vector<rlType *> >::getMethods() );
+        methods.setParentTable( &TypedWorkspaceObjectContainer<std::vector<rlType *> >::getMethods() );
         
         methodsSet = true;
     }

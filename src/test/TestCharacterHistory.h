@@ -26,9 +26,11 @@ namespace RevBayesCore {
         TestCharacterHistory(const std::string &afn,  const std::string &tfn, const std::string &gfn, int gen, const std::string &fp="");
         TestCharacterHistory(int ac, const char* av[], const std::string &afn, const std::string &tfn, const std::string &gfn, int gen, const std::string &fp="");
         virtual                                ~TestCharacterHistory(void);                                                            //!< Virtual destructor
-        
+
         bool                                    run(void);
+        bool                                    run_old(void);
         bool                                    run_exp(void);
+        bool                                    run_dollo(void);
         
     private:
         void tokenizeArgv(void);

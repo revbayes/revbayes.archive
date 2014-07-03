@@ -10,6 +10,7 @@
 #define __rb_mlandis__RateMap_Biogeography__
 
 #include "RateMap.h"
+#include "GeographicDistanceRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -17,7 +18,7 @@ namespace RevBayesCore {
     class RateMap_Biogeography : public RateMap {
         
     public:
-        RateMap_Biogeography(size_t nc);                                                                    //!< Construct rate matrix with n states
+        RateMap_Biogeography(size_t nc, bool fe=true);                                                                               //!< Construct rate matrix with n states
         RateMap_Biogeography(const RateMap_Biogeography& m);                                                           //!< Copy constructor
         virtual                                     ~RateMap_Biogeography(void);                                       //!< Destructor
         
@@ -25,27 +26,74 @@ namespace RevBayesCore {
         RateMap_Biogeography&                       operator=(const RateMap_Biogeography& r);
         
         // virtual RateMap functions
+//        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition
         RateMap_Biogeography*                       clone(void) const;
-        double                                      getRate(CharacterState* from, CharacterState* to) const;
-        double                                      getSumOfRates(CharacterState* from) const;
-        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to) const;
-        double                                      getSumOfRates(std::vector<CharacterEvent*> from) const;
-
-        double                                      getTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
-        double                                      getLnTransitionProbability(CharacterState* from, CharacterState* to, double t) const;
-        double                                      getLnTransitionProbability(std::vector<CharacterEvent*> from, CharacterEvent* to, double t) const;
+        double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const;
+        double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
+        double                                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
+        double                                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const;
+        double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
+        double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
+        double                                      getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
+        const bool                                  isAreaAvailable(size_t charIdx, double age=0.0) const;
+        const bool                                  areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age=0.0) const;
         void                                        updateMap(void);
         
         // public methods
         double                                      getDistancePower(void) const;
         void                                        setDistancePower(double d);
-        const std::vector<double>&                  getGainLossRates(void) const;
-        void                                        setGainLossRates(const std::vector<double>& r);
+        double                                      getHomogeneousClockRate(void) const;
+        void                                        setHomogeneousClockRate(double d);
+        const std::vector<double>&                  getHeterogeneousClockRates(void) const;
+        void                                        setHeterogeneousClockRates(const std::vector<double>& r);
+        const std::vector<double>&                  getHomogeneousGainLossRates(void) const;
+        void                                        setHomogeneousGainLossRates(const std::vector<double>& r);
+        const std::vector<std::vector<double> >&    getHeterogeneousGainLossRates(void) const;
+        void                                        setHeterogeneousGainLossRates(const std::vector<std::vector<double> >& r);
+        
+        // other crazy stuff for BiogeographyRateMapFunction to handle
+        void                                        setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm);
+        void                                        setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm);
+        const GeographicDistanceRateModifier &      getGeographicDistanceRateModifier(void);
+        const std::vector<double>&                  getEpochs(void) const;
         
     private:
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
-        std::vector<double>                         gainLossRates;
+        size_t                                      numOn(const std::vector<CharacterEvent*>& s, double age) const;
+        unsigned                                    getEpochIndex(double age) const;
+//        void                                        setInboundDispersal(const std::vector<double>& v);
+//        void                                        setExtinctionValues(const std::vector<double>& v);
+
+        size_t                                      branchOffset;
+
+        double                                      homogeneousClockRate;
+        std::vector<double>                         heterogeneousClockRates;
+        std::vector<double>                         homogeneousGainLossRates;
+        std::vector<std::vector<double> >           heterogeneousGainLossRates;
         double                                      distancePower;
+        
+        // geography models
+        bool                                        useGeographicDistanceRateModifier;
+        GeographicDistanceRateModifier*             geographicDistanceRateModifier;
+        std::vector<double>                         epochs;
+        size_t                                      numEpochs;
+        size_t                                      epochOffset;
+//        std::vector<double>                         dispersalValues;
+//        std::vector<double>                         extinctionValues;
+        std::vector<double>                         adjacentAreaVector;
+        std::vector<double>                         availableAreaVector;
+
+        // model flags
+        bool                                        branchHeterogeneousClockRates;
+        bool                                        branchHeterogeneousGainLossRates;
+        bool                                        forbidExtinction;
+        
+        bool                                        useUnnormalizedRates;
+        bool                                        useAreaAdjacency;
+        bool                                        useAreaAvailable;
+        bool                                        useDistanceDependence;
         
     };
     

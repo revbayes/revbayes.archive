@@ -22,7 +22,7 @@
 
 
 /** Constructor allowing all types; ref MemberObject whether arguments should be values or references */
-RevLanguage::Ellipsis::Ellipsis( void ) : ArgumentRule("", true, RbLanguageObject::getClassTypeSpec() ) {
+RevLanguage::Ellipsis::Ellipsis( void ) : ArgumentRule("", true, RevObject::getClassTypeSpec() ) {
 }
 
 

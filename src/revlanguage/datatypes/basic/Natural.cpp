@@ -55,7 +55,7 @@ Natural::Natural( unsigned long x) : Integer( int(x) ) {
  *
  * \return              A new object holding the sum.
  */
-RbLanguageObject* Natural::add( const RbLanguageObject& rhs ) const 
+RevObject* Natural::add( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )
@@ -110,7 +110,7 @@ Natural* Natural::clone( void ) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* Natural::convertTo( const TypeSpec& type ) const {
+RevObject* Natural::convertTo( const TypeSpec& type ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
         return new RlBoolean( value->getValue() == 0 );
@@ -140,7 +140,7 @@ RbLanguageObject* Natural::convertTo( const TypeSpec& type ) const {
  *
  * \return              A new object holding the ratio.
  */
-RbLanguageObject* Natural::divide( const RbLanguageObject& rhs ) const 
+RevObject* Natural::divide( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )
@@ -239,7 +239,7 @@ bool Natural::isConvertibleTo( const TypeSpec& type ) const {
  *
  * \return              A new object holding the product.
  */
-RbLanguageObject* Natural::multiply( const RbLanguageObject& rhs ) const 
+RevObject* Natural::multiply( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )

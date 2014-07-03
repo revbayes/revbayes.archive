@@ -113,6 +113,11 @@
 #define strdup _strdup
 #define snprintf _snprintf
 #endif
+
+//    #define	STDIN_FILENO	0	/* Standard input.  */
+//    #define	STDOUT_FILENO	1	/* Standard output.  */
+//    #define	STDERR_FILENO	2	/* Standard error output.  */
+
 #else
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -120,10 +125,10 @@
 #define USE_TERMIOS
 #define HAVE_UNISTD_H
 #endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -138,6 +143,7 @@
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 #define LINENOISE_MAX_LINE 4096
 #define _USE_UTF8
+
 
 static linenoiseCharacterCallback *characterCallback[256] = {NULL};
 
@@ -185,8 +191,17 @@ struct current {
 #endif
 };
 
+static struct current *_current;
+
 static int fd_read(struct current *current);
 static int getWindowSize(struct current *current);
+
+/* Clear the screen. Used to handle ctrl+l */
+void linenoiseClearScreen(void) {
+    if (write(STDOUT_FILENO, "\x1b[H\x1b[2J", 7) <= 0) {
+        /* nothing to do, just to avoid warning. */
+    }
+}
 
 void linenoiseHistoryFree(void) {
     if (history) {
@@ -307,7 +322,7 @@ static void cursorToLeft(struct current *current) {
 }
 
 static int outputChars(struct current *current, const char *buf, int len) {
-    return write(current->fd, buf, len);
+    return (int)write(current->fd, buf, len);
 }
 
 static void outputControlChar(struct current *current, char ch) {
@@ -780,7 +795,7 @@ static void refreshLine(const char *prompt, struct current *current) {
     /* Should intercept SIGWINCH. For now, just get the size every time */
     getWindowSize(current);
 
-    plen = strlen(prompt);
+    plen = (int)strlen(prompt);
     pchars = utf8_strlen(prompt, plen);
 
     /* Scan the prompt for embedded ansi color control sequences and
@@ -863,12 +878,12 @@ static void refreshLine(const char *prompt, struct current *current) {
     setCursorPos(current, pos + pchars + backup);
 }
 
-
 static void set_current(struct current *current, const char *str) {
     strncpy(current->buf, str, current->bufmax);
     current->buf[current->bufmax - 1] = 0;
-    current->len = strlen(current->buf);
+    current->len = (int)strlen(current->buf);
     current->pos = current->chars = utf8_strlen(current->buf, current->len);
+    _current = current;
 }
 
 static int has_room(struct current *current, int bytes) {
@@ -1040,7 +1055,7 @@ static int completeLine(struct current *current) {
             if (i < lc.len) {
                 struct current tmp = *current;
                 tmp.buf = lc.cvec[i];
-                tmp.pos = tmp.len = strlen(tmp.buf);
+                tmp.pos = tmp.len = (int)strlen(tmp.buf);
                 tmp.chars = utf8_strlen(tmp.buf, tmp.len);
                 refreshLine(current->prompt, &tmp);
             } else {
@@ -1138,6 +1153,9 @@ process_char:
                 if (remove_char(current, current->pos - 1) == 1) {
                     refreshLine(current->prompt, current);
                 }
+                if (characterCallback[(int) c]) {
+                    characterCallback[(int) c](current->buf, current->len, c);
+                }
                 break;
             case ctrl('D'): /* ctrl-d */
                 if (current->len == 0) {
@@ -1198,7 +1216,7 @@ process_char:
                         if (rchars) {
                             int p = utf8_index(rbuf, --rchars);
                             rbuf[p] = 0;
-                            rlen = strlen(rbuf);
+                            rlen = (int)strlen(rbuf);
                         }
                         continue;
                     }
@@ -1248,7 +1266,7 @@ process_char:
                             }
                             /* Copy the matching line and set the cursor position */
                             set_current(current, history[searchpos]);
-                            current->pos = utf8_strlen(history[searchpos], p - history[searchpos]);
+                            current->pos = (int)utf8_strlen(history[searchpos], p - history[searchpos]);
                             break;
                         }
                     }
@@ -1420,7 +1438,7 @@ char *linenoise(const char *prompt) {
         if (fgets(buf, sizeof (buf), stdin) == NULL) {
             return NULL;
         }
-        count = strlen(buf);
+        count = (int)strlen(buf);
         if (count && buf[count - 1] == '\n') {
             count--;
             buf[count] = '\0';
@@ -1594,4 +1612,25 @@ char **linenoiseHistory(int *len) {
         *len = history_len;
     }
     return history;
+}
+
+struct current *linenoiceGetcurrent() {
+    return _current;
+}
+
+void linenoiceCursorToLeft() {
+    cursorToLeft(_current);
+}
+
+void linenoiceSetCursorPos(int x) {
+    setCursorPos(_current, x);
+}
+
+void linenoiceAppendCommand(const char *cmd) {
+    insert_chars(_current, _current->pos, cmd);
+    refreshLine(_current->buf, _current);
+}
+
+char *linenoiseGetCurrentBuffer(){
+    return _current->buf;
 }

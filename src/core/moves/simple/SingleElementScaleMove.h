@@ -1,7 +1,7 @@
 #ifndef SingleElementScaleMove_H
 #define SingleElementScaleMove_H
 
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 
 #include <ostream>
@@ -27,7 +27,7 @@ namespace RevBayesCore {
      * @copyright GPL version 3
      *
      */
-    class SingleElementScaleMove : public Move {
+    class SingleElementScaleMove : public MoveOld {
         
     public:
         SingleElementScaleMove( const std::vector< StochasticNode< double > *> &n, double l, bool t, double w);                         //!< Constructor

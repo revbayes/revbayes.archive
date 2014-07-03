@@ -30,6 +30,7 @@ namespace RevBayesCore {
     public:
         // constructor(s)
         AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr);
+        AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv);
         AutocorrelatedLognormalRateDistribution(const AutocorrelatedLognormalRateDistribution &n);
         
         // public member functions
@@ -55,6 +56,7 @@ namespace RevBayesCore {
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< double >*                           sigma;
         const TypedDagNode< double >*                           rootRate;
+        const TypedDagNode< double >*                           scaleValue;
         
     };
     

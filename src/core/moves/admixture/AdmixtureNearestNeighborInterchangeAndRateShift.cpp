@@ -17,7 +17,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureNearestNeighborInterchangeAndRateShift::AdmixtureNearestNeighborInterchangeAndRateShift(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, double d, bool t, double w) : Move( v, w, t), variable( v ), branchRates(br), failed(false), changed(false), delta(d) {
+AdmixtureNearestNeighborInterchangeAndRateShift::AdmixtureNearestNeighborInterchangeAndRateShift(StochasticNode<AdmixtureTree> *v, std::vector<ContinuousStochasticNode*> br, double d, bool t, double w) : MoveOld( v, w, t), variable( v ), branchRates(br), failed(false), changed(false), delta(d) {
     
     for (size_t i = 0; i < branchRates.size(); i++)
         nodes.insert(branchRates[i]);
@@ -277,7 +277,7 @@ void AdmixtureNearestNeighborInterchangeAndRateShift::rejectMove( void ) {
 
 void AdmixtureNearestNeighborInterchangeAndRateShift::swapNode(DagNode *oldN, DagNode *newN) {
     
-    Move::swapNode(oldN,newN);
+    MoveOld::swapNode(oldN,newN);
     
     if (oldN == variable)
         variable = static_cast<StochasticNode<AdmixtureTree>* >(newN) ;

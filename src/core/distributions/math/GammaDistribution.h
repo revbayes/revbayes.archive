@@ -42,6 +42,7 @@ namespace RevBayesCore {
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Implementation of swaping parameters
+		
         
     private:
         

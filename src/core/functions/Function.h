@@ -47,7 +47,7 @@ namespace RevBayesCore {
                
         // public methods
         virtual void                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
-        const std::set<const DagNode*>&     getParameters(void) const;                                              //!< get the parameters of the distribution
+        const std::set<const DagNode*>&     getParameters(void) const;                                              //!< get the parameters of the function
         virtual void                        keep(DagNode* affecter);
         virtual void                        restore(DagNode *restorer);   
         void                                swapParameter(const DagNode *oldP, const DagNode *newP);                //!< Exchange the parameter
@@ -60,7 +60,8 @@ namespace RevBayesCore {
     protected:
         Function(void);
           
-        void                                addParameter(const DagNode* p);                                         //!< add a parameter to the distribution
+        void                                addParameter(const DagNode* p);                                         //!< add a parameter to the function
+        void                                removeParameter(const DagNode* p);                                      //!< remove a parameter from the function
         virtual void                        swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;    //!< Exchange the parameter
         
     private:

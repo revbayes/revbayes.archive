@@ -25,18 +25,18 @@ GelmanRubinTest::GelmanRubinTest(double r) : ConvergenceDiagnosticContinuous() {
     nBatches    = 10;
 }
 
-GelmanRubinTest::GelmanRubinTest(double r, int n) : ConvergenceDiagnosticContinuous() {
+GelmanRubinTest::GelmanRubinTest(double r, size_t n) : ConvergenceDiagnosticContinuous() {
     
     this->R     = r;
     nBatches    = n;
 }
 
-bool GelmanRubinTest::assessConvergenceSingleChain(const std::vector<double>& values, int burnin) {
+bool GelmanRubinTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin) {
     double  withinBatchVariance             = 0;
     double  betweenBatchVariance            = 0;
     
-    int     totalSampleSize                 = (int)values.size() - burnin;
-    double  batchSize                       = totalSampleSize / (double)nBatches;
+    size_t  totalSampleSize                 = values.size() - burnin;
+    size_t  batchSize                       = size_t(totalSampleSize / (double)nBatches);
     
     // get the mean between all traces
     analysis.analyseMean(values,burnin);
@@ -44,12 +44,12 @@ bool GelmanRubinTest::assessConvergenceSingleChain(const std::vector<double>& va
     
     // get a mean and standard error for each block
     double* batchMeans  = new double[nBatches];
-    for (int i=0; i<nBatches; i++) {
-        analysis.analyseMean(values,int(i*batchSize+burnin),int((i+1)*batchSize+burnin));
+    for (size_t i=0; i<nBatches; i++) {
+        analysis.analyseMean(values,i*batchSize+burnin,(i+1)*batchSize+burnin);
         batchMeans[i]                       = analysis.getMean();
         
         // iterate over all samples from the chains
-        for (int j=int(i*batchSize+burnin); j<int((i+1)*batchSize+burnin); j++) {
+        for (size_t j=i*batchSize+burnin; j<(i+1)*batchSize+burnin; j++) {
             withinBatchVariance             += ( (values.at(j) - batchMeans[i])*(values.at(j) - batchMeans[i]) );
             betweenBatchVariance            += ( (values.at(j) - totalMean)*(values.at(i) - totalMean) );
         }
@@ -63,13 +63,13 @@ bool GelmanRubinTest::assessConvergenceSingleChain(const std::vector<double>& va
     return psrf < R;
 }
 
-bool GelmanRubinTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<int>& burnins) {
+bool GelmanRubinTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins) {
     double  withinChainVariance             = 0;
     double  betweenChainVariance            = 0;
-    int     totalSampleSize                 = 0;
+    size_t  totalSampleSize                 = 0;
     
     // get number of chains
-    int nChains = (int) values.size();
+    size_t nChains = values.size();
     
     // get the mean between all traces
     analysis.analyseMean(values,burnins);
@@ -77,22 +77,22 @@ bool GelmanRubinTest::assessConvergenceMultipleChains(const std::vector<std::vec
     
     // get a mean and standard error for each block
     double* chainMeans  = new double[nChains];
-    for (int i=0; i<nChains; i++) {
+    for (size_t i=0; i<nChains; i++) {
         const std::vector<double>& chain    = values.at(i);
-        int burnin                          = burnins.at(i);
+        size_t burnin                       = burnins.at(i);
         analysis.analyseMean(chain,burnin);
         chainMeans[i]                       = analysis.getMean();
     }
     // iterate over all chains
-    for (int i=0; i<nChains; i++) {
+    for (size_t i=0; i<nChains; i++) {
         const std::vector<double>& chain    = values.at(i);
-        int burnin                          = burnins.at(i);
+        size_t burnin                       = burnins.at(i);
         
-        int chainSize                       = (int)chain.size() - burnin;
+        size_t chainSize                    = chain.size() - burnin;
         // add this chain size to the total sample size
         totalSampleSize                     += chainSize;
         // iterate over all samples from the chains
-        for (int j=burnin; j<chainSize; j++) {
+        for (size_t j=burnin; j<chainSize; j++) {
             withinChainVariance             += ( (chain.at(j) - chainMeans[i])*(chain.at(j) - chainMeans[i]) );
             betweenChainVariance            += ( (chain.at(j) - totalMean)*(chain.at(j) - totalMean) );
         }

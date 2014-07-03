@@ -32,16 +32,16 @@ namespace RevBayesCore {
 
     public:
         // Constructors and Destructors
-        FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                                                //!< Constructor with single DAG node
-        FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                              //!< Constructor with set of DAG node
-        FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                              //!< Constructor with vector of DAG node
+        FileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                                                //!< Constructor with single DAG node
+        FileMonitor(const std::set<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                              //!< Constructor with set of DAG node
+        FileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool ci=false, bool ch=false);                                              //!< Constructor with vector of DAG node
         FileMonitor(const FileMonitor& f);
 
         // basic methods
         FileMonitor*                        clone(void) const;                                                  //!< Clone the object
     
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing

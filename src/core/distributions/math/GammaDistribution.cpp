@@ -62,3 +62,4 @@ void GammaDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
         rate = static_cast<const TypedDagNode<double>* >( newP );
     }
 }
+

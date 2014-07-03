@@ -20,12 +20,12 @@
 
 #include <ostream>
 
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
 
-    class DPPScaleCatValsMove : public Move {
+    class DPPScaleCatValsMove : public MoveOld {
     
     public:
         DPPScaleCatValsMove(StochasticNode<std::vector<double> >* v, double l, double w);                                                                      //!< Internal constructor
@@ -43,8 +43,9 @@ namespace RevBayesCore {
         void													rejectMove(void);                                                                   //!< Reject the InferenceMoveSimple
     
     private:
-        double													lambda;                                                                             //!< The scaling parameter of the move  
+        double													getCurrentLnProbabilityForMove(void);
 		
+		double													lambda;                                                                             //!< The scaling parameter of the move  
         StochasticNode<std::vector<double> >*                   variable;
 		double													safeExponentiation(double x);
  

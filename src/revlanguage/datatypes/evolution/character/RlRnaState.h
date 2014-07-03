@@ -19,8 +19,8 @@
 #ifndef RlRnaState_H
 #define RlRnaState_H
 
+#include "ModelObject.h"
 #include "RnaState.h"
-#include "RlModelVariableWrapper.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -28,7 +28,7 @@
 
 namespace RevLanguage {
     
-    class RnaState : public RlModelVariableWrapper<RevBayesCore::RnaState> {
+    class RnaState : public ModelObject<RevBayesCore::RnaState> {
         
     public:
         RnaState(void);                                                                                         //!< Default constructor
@@ -38,7 +38,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         RnaState*                       clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object

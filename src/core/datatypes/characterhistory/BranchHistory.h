@@ -11,6 +11,7 @@
 
 #include "CharacterEvent.h"
 #include "CharacterEventCompare.h"
+#include "Cloneable.h"
 
 #include <ostream>
 #include <set>
@@ -20,13 +21,14 @@ namespace RevBayesCore {
     
     class CharacterEvent;
 
-    class BranchHistory {
+    class BranchHistory : public Cloneable {
         
     public:
         //BranchHistory(void);
         BranchHistory(size_t nc, size_t ns, size_t idx);
         BranchHistory(size_t nc, size_t ns, size_t idx, std::set<int> sc);
         BranchHistory(const BranchHistory& m);
+        ~BranchHistory(void);
         BranchHistory& operator=(const BranchHistory& bh);
         BranchHistory* clone(void) const;
         //bool operator()(const BranchHistory&) const;
@@ -37,11 +39,12 @@ namespace RevBayesCore {
         const size_t getNumEvents(void) const;
         const size_t getIndex(void) const;
         
-        const std::vector<CharacterEvent*>& getParentCharacters(void);
-        const std::vector<CharacterEvent*>& getChildCharacters(void);
+        std::vector<CharacterEvent*>& getParentCharacters(void);
         const std::vector<CharacterEvent*>& getParentCharacters(void) const;
+        std::vector<CharacterEvent*>& getChildCharacters(void);
         const std::vector<CharacterEvent*>& getChildCharacters(void) const;
-        const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void);
+        std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void);
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& getHistory(void) const;
 
         
         void addEvent(CharacterEvent* evt);
@@ -63,7 +66,7 @@ namespace RevBayesCore {
         void setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s);
 
         
-        void print(void);
+        void print(void) const;
         const std::set<size_t>& getDirtyCharacters(void);
         void setDirtyCharacters(const std::set<size_t>& s);
         

@@ -62,14 +62,14 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, int g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
+        AdmixtureBipartitionSummaryMonitor(TypedDagNode<AdmixtureTree> *t, TypedDagNode< std::vector< double > >* br, TypedDagNode<int>* dt, int ntr, int nar, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap = false);
         AdmixtureBipartitionSummaryMonitor(const AdmixtureBipartitionSummaryMonitor& f);
         
         // basic methods
         AdmixtureBipartitionSummaryMonitor*        clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(long gen);                                                  //!< Monitor at generation gen
+        void                                monitor(unsigned long gen);                                                  //!< Monitor at generation gen
         void                                swapNode(DagNode *oldN, DagNode *newN);
         
         // FileMonitor functions

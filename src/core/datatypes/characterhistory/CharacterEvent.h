@@ -11,11 +11,12 @@
 
 #include <stdlib.h>
 #include <vector>
+#include "Cloneable.h"
 //#include "DiscreteCharacterState.h"
 
 namespace RevBayesCore {
 
-    class CharacterEvent
+    class CharacterEvent : public Cloneable
     {
 
     public:
@@ -25,13 +26,14 @@ namespace RevBayesCore {
         CharacterEvent(const CharacterEvent& c);
         ~CharacterEvent(void);
         
-        double getTime(void);
-        size_t getIndex(void);
-        unsigned int getState(void);
-        void setState(unsigned int s);
-        void print(void);
+        CharacterEvent*                     clone(void) const;
+        double                              getTime(void);
+        size_t                              getIndex(void);
+        unsigned int                        getState(void);
+        void                                setState(unsigned int s);
+        void                                print(void);
         
-        bool operator<(const CharacterEvent& lhs) const;
+        bool                                operator<(const CharacterEvent& lhs) const;
         
     protected:
         
@@ -39,7 +41,7 @@ namespace RevBayesCore {
     private:
         size_t index;   // from 0 to N "sites"
         unsigned int state;  // from statespace -- possibly make a set of state/positions...
-        double time;    // from 0 to 1
+        double time; // from 0 to 1
       
 
     };

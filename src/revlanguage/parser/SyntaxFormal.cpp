@@ -27,20 +27,20 @@
 using namespace RevLanguage;
 
 /** Constructor with implicit type */
-SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement() , argType( TypeSpec(RbLanguageObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement() , argType( TypeSpec(RevObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
     
     // Make argument rule from element
     if (defaultExpr == NULL)
         argRule = new ArgumentRule(label, true, argType);
     else {
         Environment env = Environment();
-        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent( env )->getValue().clone() );
+        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent( env )->getRevObject().clone() );
     }
 }
 
 
 /** Constructor with explicit type */
-SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement(), argType( TypeSpec(RbLanguageObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
+SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement(), argType( TypeSpec(RevObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
 
     // Count dimensions and check if reference
     int         nDim        = 0;
@@ -60,7 +60,7 @@ SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, Synt
         argRule = new ArgumentRule(label, true, argType);
     else {
         Environment env = Environment();
-        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent(env)->getValue().clone() );
+        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent(env)->getRevObject().clone() );
     }
 }
 
@@ -129,7 +129,7 @@ const std::string& SyntaxFormal::getLabel(void) const {
 
 
 /** Get semantic value (not applicable so return NULL) */
-RbPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
+RevPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
 
     return NULL;
 }
@@ -152,7 +152,7 @@ void SyntaxFormal::printValue(std::ostream& o) const {
  * We only change the default expression.
  * Some crazy kids might declare functions inside loops!?!
  */
-void SyntaxFormal::replaceVariableWithConstant(const std::string& name, const RbLanguageObject& c) {
+void SyntaxFormal::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
     
     defaultExpr->replaceVariableWithConstant(name, c);
     

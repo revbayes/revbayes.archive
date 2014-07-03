@@ -95,6 +95,9 @@ void RateMatrix_F81::updateMatrix( void ) {
     
     if ( needsUpdate ) 
     {
+        // @todo: This is only needed for printing the values of the rate matrix properly to the screen. We should do this more efficiently (Sebastian).
+        // We could instead only update the matrix if a print call happened and the matrix was flagged as dirty.
+        
         // compute the off-diagonal values
         computeOffDiagonal();
         

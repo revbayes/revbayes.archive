@@ -33,7 +33,7 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(
     
     addParameter( originTime );
     
-    numTaxa = (int)( taxonNames.size() );
+    numTaxa = taxonNames.size();
     
     simulateTree();
     
@@ -82,7 +82,7 @@ void UniformTimeTreeDistribution::attachTimes(
         psi->setAge( parent->getIndex(), originTime - interiorNodeTimes[index] );
         
         // Remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+node_index);
+        nodes.erase(nodes.begin()+long(node_index));
         
         // Add the left child if an interior node
         TopologyNode* leftChild = &parent->getChild(0);
@@ -119,7 +119,7 @@ void UniformTimeTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyN
         TopologyNode* parent = tips.at(index);
         
         // Remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
+        tips.erase(tips.begin()+long(index));
         
         // Add a left child
         TopologyNode* leftChild = new TopologyNode(0);
@@ -164,7 +164,7 @@ double UniformTimeTreeDistribution::computeLnProbability( void ) {
     lnProb = (numTaxa - 2) * log( 1.0 / originT );
 
     // Take the ordering effect into account
-    lnProb += RbMath::lnFactorial( numTaxa - 2 );
+    lnProb += RbMath::lnFactorial( int(numTaxa - 2) );
 
     // We return now; apparently we are not responsible for the topology probability
     return lnProb;
@@ -207,7 +207,7 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
         TopologyNode* node = nodes.at(index);
         
         // Remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
+        nodes.erase(nodes.begin()+long(index) );
         
         // Set name
         std::string& name = taxonNames[i];

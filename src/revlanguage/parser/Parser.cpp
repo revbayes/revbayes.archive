@@ -14,11 +14,11 @@
  */
 
 
-#include "Help.h"
+#include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
 #include "RlString.h"
 #include "SyntaxElement.h"
 #include "SyntaxFormal.h"
@@ -68,7 +68,7 @@ void RevLanguage::Parser::breakIntoLines( const std::string& cmd, std::list<std:
 
         while ( buf.good() ) {
     
-            char c = buf.get();
+            char c = char( buf.get() );
 
             if ( c == EOF && inQuote == true ) {
                 throw RbException( "End of line while in quote" );
@@ -103,9 +103,9 @@ void RevLanguage::Parser::breakIntoLines( const std::string& cmd, std::list<std:
             }
             else if ( c == '\r' && inQuote == false ) {
                 /* break line here but first swallow any extra newline in DOS line ending */
-                char d = buf.peek();
+                char d = char( buf.peek() );
                 if ( d == '\n' )
-                     c = buf.get();
+                     c = char( buf.get() );
                 break;
             }
 
@@ -132,7 +132,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 #	endif
 
     // Declare a variable for the result
-    RbPtr<Variable> result = NULL;
+    RevPtr<Variable> result = NULL;
     
     //! Execute syntax tree
     try {
@@ -179,9 +179,9 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     }
 
     // Print result if the root is not an assign expression
-    if ( !root->isAssignment() && result != NULL && result->getValue() != RbNullObject::getInstance()) {
+    if ( !root->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
         std::ostringstream msg;
-        result->getValue().printValue(msg);
+        result->getRevObject().printValue(msg);
         RBOUT( msg.str() );
     }
 
@@ -201,7 +201,7 @@ void RevLanguage::Parser::getline(char* buf, size_t maxsize) {
     }
     else {
         foundNewline = false;
-        rrcommand.getline(buf, maxsize-3);
+        rrcommand.getline(buf, long(maxsize)-3);
         // Deal with line endings in case getline uses non-Unix endings
         size_t i = strlen(buf);
         if ( i >= 1 && buf[i-1] == '\r' )
@@ -238,17 +238,15 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 #	endif
 
     // Get some help
-    Help& userHelp = Help::getHelp();
-    if ( userHelp.isUserHelpAvailable() == true && userHelp.isHelpAvailableForQuery( symbol ) == true )
+    std::string qs(symbol);
+    if ( this->helpEntity->isHelpAvailableForQuery(qs))
         {
-        std::string hStr = userHelp.formatHelpString( symbol, 100);
+        std::string hStr = this->helpEntity->getHelp( qs, 100);
         UserInterface::userInterface().output(hStr, false);
         }
     else {
-        if (userHelp.isUserHelpAvailable() == false)
-            RBOUT("User help is unavailable");
-        else if ( userHelp.isHelpAvailableForQuery( symbol ) == false )
-            RBOUT("Help unavailable for \"" + symbol + "\"");
+        
+        RBOUT("Help is not available for \"" + symbol + "\"");
 
         std::vector<Function *> functions = Workspace::userWorkspace().getFunctionTable().findFunctions( symbol );
         if ( functions.size() != 0 ) {
@@ -402,11 +400,11 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment *env) 
             
             std::ostringstream msg;
             if ( yylloc.first_column == yylloc.last_column )
-                msg << "Syntax error while reading character '" << command[yylloc.first_column-1] << "' at position " << yylloc.first_column << " in command:" << std::endl;
+                msg << "Syntax error while reading character '" << command[size_t(yylloc.first_column-1)] << "' at position " << yylloc.first_column << " in command:" << std::endl;
             else {
                 msg << "Syntax error while reading characters \"";
                 for (int j = yylloc.first_column; j <= yylloc.last_column; ++j) {
-                    msg << command[j-1];
+                    msg << command[size_t(j-1)];
                 }
                 msg << "\" at position " << yylloc.first_column << " to " << yylloc.last_column << " in command:" << std::endl; 
             }

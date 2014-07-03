@@ -43,10 +43,10 @@ void AdmixtureResidualsMonitor::closeStream() {
     outStream.close();
 }
 
-void AdmixtureResidualsMonitor::monitor(long gen) {
+void AdmixtureResidualsMonitor::monitor(unsigned long gen) {
     
     // get the printing frequency
-    int samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first

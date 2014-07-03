@@ -97,7 +97,7 @@ void RandomNumberFactory::setSeed(void) {
     I2 = x >> 16;
 }
 
-void RandomNumberFactory::setSeed(int s) {
+void RandomNumberFactory::setSeed(unsigned int s) {
     I1 = s & 0xFFFF;
     I2 = s >> 16;
 }

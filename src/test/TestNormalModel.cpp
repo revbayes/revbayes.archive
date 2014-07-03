@@ -4,11 +4,12 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "NormalDistribution.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "SlidingMove.h"
 #include "StochasticNode.h"
 #include "TestNormalModel.h"
@@ -49,7 +50,7 @@ bool TestNormalModel::run( void ) {
     /* add the moves */
     std::vector<Move*> moves;
     moves.push_back( new SlidingMove( mu, 1.0, 1.0, false ) );
-    moves.push_back( new ScaleMove( sigma, 1.0, 1.0, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(sigma, 1.0), 1, true ) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;

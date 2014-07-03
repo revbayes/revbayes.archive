@@ -12,12 +12,12 @@
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Test.h"
+#include "TestACLNDPPBranchRates.h"
 #include "TestACLNRelaxedClock.h"
+#include "TestACLNRatesGen.h"
 #include "TestAutocorrelatedBranchHeterogeneousGtrModel.h"
 #include "TestBayesFactor.h"
 #include "TestBirthDeath.h"
-#include "TestBirthDeathModelImplementations.h"
-#include "TestBrownianMotion.h"
 #include "TestCharEvoModelImplementationPerformance.h"
 #include "TestCoala.h"
 #include "TestConstantPopCoalescent.h"
@@ -32,6 +32,7 @@
 #include "TestBranchHeterogeneousGtrModel.h"
 #include "TestBranchHeterogeneousHkyModel.h"
 #include "TestBranchHeterogeneousTamura92Model.h"
+#include "TestIndependentClockRates.h"
 #include "TestMixtureBranchHeterogeneousGtrModel.h"
 #include "TestMixtureModel.h"
 #include "TestMultispeciesCoalescent.h"
@@ -44,12 +45,11 @@
 #include "TestScalingMove.h"
 #include "TestSimplexMove.h"
 #include "TestSequenceSimulation.h"
-#include "TestSkyline.h"
 #include "TestSlidingMove.h"
+#include "TestStrictClockModel.h"
 #include "TestTransitionProbabilities.h"
 #include "TestTreeTraceSummary.h"
 #include "TestUCLNRelaxedClock.h"
-#include "TestVariableBirthDeath.h"
 #include "Tree.h"
 #include "TreeTrace.h"
 
@@ -79,14 +79,88 @@ Test::~Test() {
 
 
 
-bool Test::performTests(void) {
+bool Test::performTests(int argc, const char * argv[]) {
     time_t start,end;
     time (&start);
     
-    /* The transition probability test */
+    ////////////////
+    // Newer tests
+    ////////////////
+    
+    
+	// #######
+    // TAH: working on relaxed-clock models, setting up consistent test files
+	
+    /* A DPP relaxed model test */
     try {
-        TestTransitionProbabilities test = TestTransitionProbabilities();
-//        test.run();
+		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+//		testDPPRC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+	
+	/* A strict clock model test */
+    try {
+        TestStrictClockModel testGMC = TestStrictClockModel("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+//		testGMC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+	/* An independent clock rate model test */
+    try {
+        TestIndependentClockRates testIRMC = TestIndependentClockRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+//		testIRMC.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+	/* An autocorrelated rate model test */
+    try {
+        TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+		testACLNG.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+
+
+	/* An autocorrelated rate model test with dpp on node-wise nu */
+    try {
+        TestACLNDPPBranchRates testACLNDPP = TestACLNDPPBranchRates("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+		
+//		testACLNDPP.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+	// #######
+	
+		    
+    // discrete dependence model
+    try
+    {
+        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
+        testDdm.run();
+    }
+    catch (RbException &e)
+    {
+        std::cout << e.getMessage() << std::endl;
+    }
+    
+    
+    ////////////////
+    // Older tests
+    ////////////////
+   
+    
+    /* The transition probability test = "tpt" */
+    try {
+        TestTransitionProbabilities testTP = TestTransitionProbabilities();
+//        testTP.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -130,23 +204,6 @@ bool Test::performTests(void) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-    
-    /* The skyline model test */
-    try {
-        TestSkyline test = TestSkyline(100000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    /* The Brownian motion test */
-    try {
-        TestBrownianMotion test = TestBrownianMotion(100000);
-//        test.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
     
     /* The normal model test */
     try {
@@ -256,7 +313,7 @@ bool Test::performTests(void) {
     /* A GTR+Gamma model test */
     try {
         TestGtrGammaLikelihood testGtrGamma = TestGtrGammaLikelihood("data/primates.nex", "trees/primates.tree");
-     //   testGtrGamma.run();
+//        testGtrGamma.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -372,42 +429,6 @@ bool Test::performTests(void) {
         std::cout << e.getMessage() << std::endl;
     }
     
-    
-    
-    /* A DPP relaxed model test */
-    try {
-        //        TestDPPRelClock testACLNRC = TestDPPRelClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
-        TestDPPRelClock testACLNRC = TestDPPRelClock("data/primates.nex", "trees/primates.tree", 1000);
-		
-		//testACLNRC.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A time varying birth-death model test */
-    try {
-        TestBirthDeathModelImplementations testBD = TestBirthDeathModelImplementations("trees/Sim_2_1.75.tre", 10000);
-//        TestBirthDeathModelImplementations testBD = TestBirthDeathModelImplementations("trees/simple.tree", 10000);
-//        testBD.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
-    /* A time varying birth-death model test */
-    try {
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/AAtimetreeAUTOhard.tre", 100000);
-        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/MammalianPhylogeny.tre", 100000);
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/MammalianPhylogeny2.tre", 100000);
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/Sim_2_1.75.tre", 2000);
-//        TestVariableBirthDeath testBD = TestVariableBirthDeath("trees/Sim_2_1.75_large.tre", 10000);
-//        testBD.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
-    
     /* The whole RevLanguage test suite */
     try {
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
@@ -420,7 +441,7 @@ bool Test::performTests(void) {
     /* The Bayes factors */
     try {
         TestBayesFactor testBF = TestBayesFactor(10000);
-//        testBF.run();
+        testBF.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -444,25 +465,15 @@ bool Test::performTests(void) {
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.saqqaq.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.malta.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph("modern.939.130723.txt", 10000, "/Users/mlandis/data/admix/input/", "");
-                TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "small.Modern_Saqqaq_Clovis.genotypes.polymorphic.txt.noMayanAleutsTsimshianAltai.TreeMixInput.txt", 2000, "/Users/mlandis/data/admix/input/", "");
+        //TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "small.Modern_Saqqaq_Clovis.genotypes.polymorphic.txt.noMayanAleutsTsimshianAltai.TreeMixInput.txt", 2000, "/Users/mlandis/data/admix/input/", "");
         //TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "Modern_Saqqaq_Clovis_Malta.fix_haploid.txt", 2000, "/Users/mlandis/data/admix/input/", "");
-        //TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "hgdp_humans.txt", 2000, "/Users/mlandis/data/admix/input/", "");
+        TestAdmixtureGraph testAG = TestAdmixtureGraph(argc, argv, "hgdp_humans.txt", 2000, "/Users/mlandis/data/admix/input/", "");
         //testAG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
     
-    // discrete dependence model
-    try
-    {
-        TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run_exp();
-    }
-    catch (RbException &e)
-    {
-        std::cout << e.getMessage() << std::endl;
-    }
     
     /* The whole RevLanguage test suite */
     try {

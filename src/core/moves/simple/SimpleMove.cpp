@@ -1,4 +1,4 @@
-
+ 
 
 #include "SimpleMove.h"
 #include "RbException.h"
@@ -9,7 +9,7 @@
 
 using namespace RevBayesCore;
 
-SimpleMove::SimpleMove(DagNode *n, double w, bool t) : Move( n, w, t ), theNode( n ) {
+SimpleMove::SimpleMove(DagNode *n, double w, bool t) : MoveOld( n, w, t ), theNode( n ) {
     
     changed = false;
 
@@ -63,14 +63,11 @@ double SimpleMove::performMove( double &probRatio ) {
         for (std::set<DagNode* >::iterator i=affectedNodes.begin(); i!=affectedNodes.end(); ++i) 
         {
             DagNode* theAffectedNode = *i;
-            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << "\n";
+            //std::cout << theAffectedNode->getName() << "  " << theAffectedNode->getLnProbabilityRatio() << " " << theAffectedNode->getLnProbability() << "\n";
             probRatio += theAffectedNode->getLnProbabilityRatio();
         }
     }
-    
-    //std::cout << probRatio << "\n";
-    
-        
+
     return hr;
 }
 
@@ -89,7 +86,7 @@ void SimpleMove::rejectMove( void ) {
 
 void SimpleMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     theNode = newN;
     

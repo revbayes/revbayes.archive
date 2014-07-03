@@ -42,7 +42,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_quit::execute( void ) {
+RevObject* Func_quit::execute( void ) {
     
     throw RbException( RbException::QUIT );
     
@@ -62,7 +62,7 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_quit::getClassName(void) { 
     
-    static std::string rbClassName = "quit function";
+    static std::string rbClassName = "Func_quit";
     
 	return rbClassName; 
 }

@@ -20,7 +20,7 @@
 
 using namespace RevBayesCore;
 
-AdmixtureEdgeAddCladeResiduals::AdmixtureEdgeAddCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : Move( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), allowSisterAdmixture(asa), maxEvents(me),  numNodes(0) {
+AdmixtureEdgeAddCladeResiduals::AdmixtureEdgeAddCladeResiduals(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, int me, bool asa, double w) : MoveOld( v, w), variable( v ), rate(r), admixtureCount(ac), residuals(res), activeGen(ag), changed(false), failed(false), allowSisterAdmixture(asa), maxEvents(me),  numNodes(0) {
     
     nodes.insert(rate);
     nodes.insert(residuals);
@@ -340,7 +340,7 @@ double AdmixtureEdgeAddCladeResiduals::performSimpleMove( void ) {
         numEvents = (int)tau.getNumberOfAdmixtureChildren();
         //double unitTreeLength = tau.getUnitTreeLength();
         //double lnP = 0.0;//log(unitTreeLength);
-        admixtureCount->setValue(numEvents);
+        admixtureCount->setValue((const int)numEvents);
         
         // stats
         // std::cout << "add_CR\t" << lnP << "\t" << lnW << ";\n";
@@ -380,7 +380,7 @@ void AdmixtureEdgeAddCladeResiduals::rejectSimpleMove( void ) {
         tau.eraseAdmixtureNode(storedAdmixtureChild);
         tau.getRoot().flagNewickRecomputation();
         
-        admixtureCount->setValue(numEvents-1);
+        admixtureCount->setValue((const int)(numEvents-1));
         // std::cout << "reject add clade residuals\n";
     }
     // true;
@@ -399,7 +399,7 @@ void AdmixtureEdgeAddCladeResiduals::acceptSimpleMove(void)
 
 void AdmixtureEdgeAddCladeResiduals::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

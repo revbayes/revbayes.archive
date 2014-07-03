@@ -60,21 +60,19 @@
 #include "InverseGammaDistribution.h"
 #include "LognormalDistribution.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "NclReader.h"
 #include "NewickConverter.h"
 #include "ParallelMcmcmc.h"
-#include "PathSampleMonitor.h"
-#include "PathResampleMove.h"
-#include "PathValueScalingMove.h"
 #include "PoissonDistribution.h"
 #include "PopulationDataReader.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbFileManager.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SnpData.h"
 #include "StochasticNode.h"
@@ -183,7 +181,7 @@ bool TestAdmixtureGraph::run(void) {
     int numChains = 4;
     int numProcesses = numChains;
 //    numProcesses=80;
-    int swapInterval = 2;
+    int swapInterval = 1;
     double deltaTemp = .1;
     double sigmaTemp = 1.0;
     double hottestTemp = 0.001;
@@ -296,9 +294,9 @@ bool TestAdmixtureGraph::run(void) {
     // model parameters
     if (updateParameters)
     {
-        moves.push_back( new ScaleMove(diffusionRate, 0.1, false, 5.0) );
-        moves.push_back( new ScaleMove(diversificationRate, 0.5, false, 5.0) );
-        moves.push_back( new ScaleMove(turnover, 0.5, false, 5.0) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(diffusionRate, 0.1), 5, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(diversificationRate, 0.5), 5, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turnover, 0.5), 5, false ) );
     }
     
     
@@ -329,8 +327,8 @@ bool TestAdmixtureGraph::run(void) {
         // branch rate multipliers
         for( size_t i=0; i < numBranches; i++)
         {
-            moves.push_back( new ScaleMove(branchRates_nonConst[i], 0.1, false, 1.0) );
-            moves.push_back( new ScaleMove(branchRates_nonConst[i], 1.0, false, 0.5) );
+            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 0.1), 1, false ) );
+            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), .5, false ) );
         }
         
         // tree rate shift
@@ -385,7 +383,7 @@ bool TestAdmixtureGraph::run(void) {
         moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 2.0, 10.0) );
         moves.push_back( new AdmixtureEdgeSlide( tau, branchRates_nonConst, delay, allowSisterAdmixture, 10.0, 10.0) );
         moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 10.0, 10.0) );
-        moves.push_back( new ScaleMove(admixtureRate, 0.1, false, 5.0));
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(admixtureRate, 0.1), 5, false ) );
 
     }
     
@@ -410,7 +408,7 @@ bool TestAdmixtureGraph::run(void) {
         }
     }
     
-    monitors.push_back( new FileMonitor( monitoredNodes, 1, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, true, true, true ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 1, "/Users/mlandis/data/admix/output/" + outName + ".parameters.txt", "\t", true, true, true, useParallelMcmcmc, useParallelMcmcmc, useParallelMcmcmc ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "\t" ) );
  
     monitors.push_back( new AdmixtureBipartitionMonitor(tau, diffusionRate, br_vector, numTreeResults, numAdmixtureResults, 1, "/Users/mlandis/data/admix/output/" + outName + ".bipartitions.txt", "\t", true, true, true, true, true, true ) );
@@ -434,8 +432,7 @@ bool TestAdmixtureGraph::run(void) {
     std::cout << "Calling mcmc\n";
     if (!useParallelMcmcmc)
     {
-        double chainHeat = 1.0;
-        Mcmc myMcmc = Mcmc(myModel, moves, monitors, "random", true, chainHeat, 0);
+        Mcmc myMcmc = Mcmc(myModel, moves, monitors);
         myMcmc.run(mcmcGenerations);
         myMcmc.printOperatorSummary();
     }

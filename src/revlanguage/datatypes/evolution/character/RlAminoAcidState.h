@@ -20,7 +20,7 @@
 #define RlAminoAcidState_H
 
 #include "AminoAcidState.h"
-#include "RlModelVariableWrapper.h"
+#include "ModelObject.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -28,7 +28,7 @@
 
 namespace RevLanguage {
     
-    class AminoAcidState : public RlModelVariableWrapper<RevBayesCore::AminoAcidState> {
+    class AminoAcidState : public ModelObject<RevBayesCore::AminoAcidState> {
         
     public:
         AminoAcidState(void);                                                          //!< Default constructor
@@ -38,7 +38,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         AminoAcidState*                       clone(void) const;                                                      //!< Clone object
-        RbLanguageObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object

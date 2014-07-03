@@ -47,10 +47,10 @@ MemberFunction* MemberFunction::clone(void) const
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RbLanguageObject* MemberFunction::execute( void ) 
+RevObject* MemberFunction::execute( void ) 
 {
     
-    return object->getValue().executeMethod( funcName, args );
+    return object->getRevObject().executeMethod( funcName, args );
     
 }
 
@@ -58,7 +58,7 @@ RbLanguageObject* MemberFunction::execute( void )
 /** Get class name of object */
 const std::string& MemberFunction::getClassName(void) { 
     
-    static std::string rbClassName = "Member function";
+    static std::string rbClassName = "MemberFunction";
     
 	return rbClassName; 
 }
@@ -94,7 +94,7 @@ const TypeSpec& MemberFunction::getReturnType(void) const {
 }
 
 
-void MemberFunction::setMemberObject( const RbPtr<Variable> &obj) {
+void MemberFunction::setMemberObject( const RevPtr<Variable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;

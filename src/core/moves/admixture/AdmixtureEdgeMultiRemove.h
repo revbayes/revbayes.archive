@@ -17,7 +17,7 @@
 
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "Move.h"
+#include "MoveOld.h"
 #include "StochasticNode.h"
 #include "AdmixtureNode.h"
 #include "AdmixtureTree.h"
@@ -40,7 +40,7 @@ namespace RevBayesCore {
     };
      */
     
-    class AdmixtureEdgeMultiRemove : public Move {
+    class AdmixtureEdgeMultiRemove : public MoveOld {
         
     public:
         //AdmixtureEdgeMultiRemove( StochasticNode<AdmixtureTree> *n, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, double weight);                                            //!<  constructor

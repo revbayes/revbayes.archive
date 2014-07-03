@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class SimplexMove : public SimpleMove {
 
     public:
-        SimplexMove(StochasticNode<std::vector<double> >* node, double a, int nc, double o, bool tuning, double weight);                           //!< Internal constructor
+        SimplexMove(StochasticNode<std::vector<double> >* node, double a, size_t nc, double o, bool tuning, double weight, double k=0.0);                           //!< Internal constructor
 
         // Basic utility functions
         SimplexMove*                            clone(void) const;                                                                  //!< Clone object
@@ -47,8 +47,9 @@ namespace RevBayesCore {
 
         StochasticNode<std::vector<double> >*   variable;
         double                                  alpha;
-        int                                     nCategories;
+        size_t                                  nCategories;
         double                                  offset;
+		double									kappa;
         std::vector<double>                     storedValue;
 
     };

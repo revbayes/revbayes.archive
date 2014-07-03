@@ -10,6 +10,7 @@
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -22,7 +23,7 @@
 #include "QuantileFunction.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
@@ -154,7 +155,7 @@ bool TestGtrGammaModel::run( void ) {
 //    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
 //    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
     
-    moves.push_back( new ScaleMove(alpha, 1.0, true, 1.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(alpha, 1.0), 1, true) );
 //    moves.push_back( new ScaleMove(q1_value, 1.0, true, 2.0) );
 //    moves.push_back( new ScaleMove(q2_value, 1.0, true, 2.0) );
 //    moves.push_back( new ScaleMove(q3_value, 1.0, true, 2.0) );

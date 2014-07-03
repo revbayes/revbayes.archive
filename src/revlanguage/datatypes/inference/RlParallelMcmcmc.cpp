@@ -13,7 +13,7 @@
 #include "Model.h"
 #include "OptionRule.h"
 #include "ParallelMcmcmc.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbException.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
@@ -27,12 +27,12 @@
 
 using namespace RevLanguage;
 
-ParallelMcmcmc::ParallelMcmcmc() : RlControlVariableWrapper<RevBayesCore::ParallelMcmcmc>() {
+ParallelMcmcmc::ParallelMcmcmc() : WorkspaceObject<RevBayesCore::ParallelMcmcmc>() {
     
 }
 
 
-ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : RlControlVariableWrapper<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
+ParallelMcmcmc::ParallelMcmcmc(const ParallelMcmcmc &m) : WorkspaceObject<RevBayesCore::ParallelMcmcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
     
 }
 
@@ -54,16 +54,16 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 #endif
     
     // now allocate a new MCMC object
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
-    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getValue() ).getValue();
-    const int                                   nc      = static_cast<const Natural&>( numChains->getValue() ).getValue();
-    const int                                   np      = static_cast<const Natural&>( numProcessors->getValue() ).getValue();
-    const int                                   si      = static_cast<const Natural&>( swapInterval->getValue() ).getValue();
-    const double                                sh      = static_cast<const Real&>( startHeat->getValue() ).getValue();
-    const double                                delth   = static_cast<const Real&>( deltaHeat->getValue() ).getValue();
-    const double                                sigh    = static_cast<const Real&>( sigmaHeat->getValue() ).getValue();
+    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
+    const int                                   nc      = static_cast<const Natural&>( numChains->getRevObject() ).getValue();
+    const int                                   np      = static_cast<const Natural&>( numProcessors->getRevObject() ).getValue();
+    const int                                   si      = static_cast<const Natural&>( swapInterval->getRevObject() ).getValue();
+    const double                                sh      = static_cast<const Real&>( startHeat->getRevObject() ).getValue();
+    const double                                delth   = static_cast<const Real&>( deltaHeat->getRevObject() ).getValue();
+    const double                                sigh    = static_cast<const Real&>( sigmaHeat->getRevObject() ).getValue();
     
     value = new RevBayesCore::ParallelMcmcmc(mdl, mvs, mntr, sched, nc, np, si, delth, sigh, sh);
     
@@ -71,13 +71,13 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RbLanguageObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
 
     
     if (name == "run")
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( gen );
         
         return NULL;
@@ -85,8 +85,8 @@ RbLanguageObject* ParallelMcmcmc::executeMethod(std::string const &name, const s
     else if (name == "burnin")
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( gen, tuningInterval );
         
         return NULL;
@@ -98,7 +98,7 @@ RbLanguageObject* ParallelMcmcmc::executeMethod(std::string const &name, const s
         return NULL;
     }
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -113,7 +113,7 @@ const std::string& ParallelMcmcmc::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -171,7 +171,7 @@ const MethodTable& ParallelMcmcmc::getMethods(void) const {
         methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -195,7 +195,7 @@ void ParallelMcmcmc::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void ParallelMcmcmc::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void ParallelMcmcmc::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "model") {
         model = var;
@@ -232,6 +232,6 @@ void ParallelMcmcmc::setConstMemberVariable(const std::string& name, const RbPtr
         swapInterval = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }

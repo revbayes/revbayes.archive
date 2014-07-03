@@ -18,9 +18,9 @@
 #include "ConstantNode.h"
 #include "FunctionTable.h"
 #include "RbException.h"
-#include "RbNullObject.h"
-#include "RlFunction.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
+#include "RlFunction.h"
 #include "StochasticNode.h"
 
 #include <iomanip>
@@ -126,10 +126,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RbLanguageObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+RevObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     Function&         theFunction = findFunction(name, args);
-    RbLanguageObject*   theValue    = theFunction.execute();
+    RevObject*   theValue    = theFunction.execute();
 
     theFunction.clear();
 
@@ -223,7 +223,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 {
                     msg << ",";
                 }
-                msg << " " << it->getVariable()->getValue().getTypeSpec() << " \"" << it->getLabel() << "\"";
+                msg << " " << it->getVariable()->getRevObject().getTypeSpec() << " \"" << it->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
@@ -298,8 +298,8 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                     msg << ",";
                 }
 //                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
-                const RbPtr<const Variable>& theVar = j->getVariable();
-                msg << " " << theVar->getValue().getTypeSpec();
+                const RevPtr<const Variable>& theVar = j->getVariable();
+                msg << " " << theVar->getRevObject().getTypeSpec();
                 
             }
             msg << " )" << std::endl;
@@ -318,13 +318,11 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         }
     }
     
-    // We should never reach this, but to make the compiler happy ...
-//    return RbNullObject::getInstance();
 }
 
 
 
-/* Get function */
+///* Get function */
 const Function& FunctionTable::getFunction( const std::string& name ) {
     
     // find the template function

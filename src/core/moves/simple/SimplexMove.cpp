@@ -25,10 +25,11 @@
 #include "RbUtil.h"
 
 #include <cmath>
+#include <ostream>
 
 using namespace RevBayesCore;
 
-SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, int nc, double o, bool t, double w) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ) {
+SimplexMove::SimplexMove(StochasticNode<std::vector<double> > *v, double a, size_t nc, double o, bool t, double w, double k /*=0.0*/) : SimpleMove( v, w, t ), variable( v ), alpha( a ), nCategories( nc ), offset( o ), kappa( k ) {
     
 }
 
@@ -60,7 +61,7 @@ double SimplexMove::performSimpleMove( void ) {
     
 	const std::vector<double>& curVal = variable->getValue();
 	std::vector<double> newVal = curVal;
-    int                 n      = int( curVal.size() );
+    size_t              n      = curVal.size();
     
 	/* We update the simplex values by proposing new values from a Dirichlet centered
      on the current values. The i-th parameter of the Dirichlet is the i-th value
@@ -88,41 +89,46 @@ double SimplexMove::performSimpleMove( void ) {
 		// we update a subset of the elements in the full simplex
 		// pick k values at random, producing a map from the index in the full vector (curVal) to
 		// the index in the reduced vector (x, alpha, and z)
-		std::vector<int> indicesToUpdate;
-		std::vector<int> tmpV;
-		for (int i=0; i<n; i++)
+		std::vector<size_t> indicesToUpdate;
+		std::vector<size_t> tmpV;
+		for (size_t i=0; i<n; i++)
 			tmpV.push_back(i);
-		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<int>(tmpV, indicesToUpdate, nCategories, *rng);
-		std::map<int,int> mapper;
+		RbStatistics::Helper::randomlySelectFromVectorWithoutReplacement<size_t>(tmpV, indicesToUpdate, nCategories, *rng);
+		std::map<size_t,size_t> mapper;
 		for (size_t i=0; i<indicesToUpdate.size(); i++)
 			mapper.insert( std::make_pair(indicesToUpdate[i], i) );
         
 		// set up the vectors
 		std::vector<double> x(indicesToUpdate.size()+1, 0.0);
+		std::vector<double> kappaV(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> alphaForward(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> alphaReverse(indicesToUpdate.size()+1, 0.0);
 		std::vector<double> z(indicesToUpdate.size()+1, 0.0);
-		for (int i=0; i<n; i++) {
-			std::map<int,int>::iterator it = mapper.find(i);
-			if (it != mapper.end())
+		for (size_t i=0; i<n; i++) {
+			std::map<size_t,size_t>::iterator it = mapper.find(i);
+			if (it != mapper.end()){
 				x[it->second] += curVal[it->first];
-			else 
+				kappaV[it->second] += kappa;
+			}
+			else {
 				x[x.size()-1] += curVal[i];
-        }
+				kappaV[kappaV.size()-1] += kappa;
+			}
+       }
 		for (size_t i=0; i<x.size(); i++)
-            alphaForward[i] = (x[i]+offset) * alpha;
+            alphaForward[i] = (x[i]+offset) * alpha + kappaV[i];
         
 		// draw a new value for the reduced vector
 		z = RbStatistics::Dirichlet::rv( alphaForward, *rng );
 		
 		// fill in the Dirichlet parameters for the reverse probability calculations
 		for (size_t i=0; i<z.size(); i++)
-			alphaReverse[i] = (z[i]+offset) * alpha;
+			alphaReverse[i] = (z[i]+offset) * alpha + kappaV[i];
 		
 		// fill in the full vector
 		double factor = z[z.size()-1] / x[x.size()-1];
-		for (int i=0; i<n; i++) {
-			std::map<int,int>::iterator it = mapper.find(i);
+		for (size_t i=0; i<n; i++) {
+			std::map<size_t,size_t>::iterator it = mapper.find(i);
 			if (it != mapper.end())
 				newVal[i] = z[it->second];
 			else 
@@ -145,7 +151,7 @@ double SimplexMove::performSimpleMove( void ) {
 		std::vector<double> alphaForward(curVal.size());
 		for (size_t i=0; i<curVal.size(); i++)
         {
-			alphaForward[i] = (curVal[i]+offset) * alpha;
+			alphaForward[i] = (curVal[i]+offset) * alpha + kappa;
             // we need to check for 0 values
             if (alphaForward[i] < 1E-100) {
                 // very low proposal probability which will hopefully result into a rejected proposal
@@ -159,7 +165,7 @@ double SimplexMove::performSimpleMove( void ) {
 		// and calculate the Dirichlet parameters for the (imagined) reverse move
 		std::vector<double> alphaReverse(newVal.size());
         for (size_t i=0; i<curVal.size(); i++) {
-			alphaReverse[i] = (newVal[i]+offset) * alpha;
+			alphaReverse[i] = (newVal[i]+offset) * alpha + kappa;
             // we need to check for 0 values
             if (alphaReverse[i] < 1E-100) {
                 // very low proposal probability which will hopefully result into a rejected proposal

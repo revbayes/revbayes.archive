@@ -66,7 +66,7 @@ double SimplexSingleElementScale::performSimpleMove( void ) {
     size_t cats = value.size();
     
     // randomly draw a new index
-    double chosenIndex = floor(rng->uniform01()*double(cats));
+    size_t chosenIndex = size_t( floor(rng->uniform01()*double(cats)) );
     double currentValue = value[chosenIndex];
     
     // draw new rates and compute the hastings ratio at the same time
@@ -91,7 +91,7 @@ double SimplexSingleElementScale::performSimpleMove( void ) {
     double new_b = alpha * (1.0-value[chosenIndex]) + 1.0;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, currentValue);
     
-    return backward / forward;
+    return backward - forward;
 }
 
 

@@ -13,8 +13,8 @@
 #include "Natural.h"
 #include "RandomNumberGenerator.h"
 #include "RandomNumberFactory.h"
-#include "RbNullObject.h"
 #include "RbUtil.h"
+#include "RevNullObject.h"
 #include "RealPos.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -33,13 +33,13 @@ Func_seed* Func_seed::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RbLanguageObject* Func_seed::execute( void ) {
+RevObject* Func_seed::execute( void ) {
     
     std::vector<unsigned int> s;
-    const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getValue() );
-    s.push_back( val1.getValue() );
-    const Natural &val2 = static_cast<const Natural &>( args[1].getVariable()->getValue() );
-    s.push_back( val2.getValue() );
+    const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
+    s.push_back( (unsigned int) val1.getValue() );
+    const Natural &val2 = static_cast<const Natural &>( args[1].getVariable()->getRevObject() );
+    s.push_back( (unsigned int) val2.getValue() );
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;
     rng->setSeed( s );
@@ -77,7 +77,7 @@ const std::string& Func_seed::getClassName(void) {
 /** Get class type spec describing type of object */
 const RevLanguage::TypeSpec& Func_seed::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_seed", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -95,5 +95,5 @@ const TypeSpec& Func_seed::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_seed::getReturnType( void ) const {
     
-    return RbNullObject::getClassTypeSpec();
+    return RevNullObject::getClassTypeSpec();
 }

@@ -25,17 +25,17 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-FileMonitor::FileMonitor(DagNode *n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
 
 /* Constructor */
-FileMonitor::FileMonitor(const std::set<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(const std::set<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
-FileMonitor::FileMonitor(const std::vector<DagNode *> &n, int g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
     
 }
 
@@ -69,10 +69,10 @@ void FileMonitor::closeStream() {
 
 
 /** Monitor value at generation gen */
-void FileMonitor::monitor(long gen) {
+void FileMonitor::monitor(unsigned long gen) {
 
     // get the printing frequency
-    long samplingFrequency = printgen;
+    unsigned long samplingFrequency = printgen;
     
     if (gen % samplingFrequency == 0) {
         // print the iteration number first
@@ -132,7 +132,8 @@ void FileMonitor::monitor(long gen) {
             outStream << mcmc->getChainHeat();
         }
         
-        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+        for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        {
             // add a separator before every new element
             outStream << separator;
             

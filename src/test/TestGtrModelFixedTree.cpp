@@ -7,6 +7,7 @@
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
 #include "GtrRateMatrixFunction.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -15,7 +16,7 @@
 #include "NodeTimeSlideUniform.h"
 #include "RbFileManager.h"
 #include "RootTimeSlide.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "SimplexMove.h"
 #include "SlidingMove.h"
 #include "SubtreeScale.h"
@@ -128,7 +129,7 @@ bool TestGtrModelFixedTree::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove(div, 1.0, true, 1.0) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 5.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 5.0 ) );
     moves.push_back( new SimplexMove( er, 10.0, 6, 0, true, 5.0 ) );

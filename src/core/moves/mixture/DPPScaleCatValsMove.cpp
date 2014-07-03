@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-RevBayesCore::DPPScaleCatValsMove::DPPScaleCatValsMove(StochasticNode<std::vector<double> > *v, double l, double w) : Move( v, w, false ), variable( v ) {
+RevBayesCore::DPPScaleCatValsMove::DPPScaleCatValsMove(StochasticNode<std::vector<double> > *v, double l, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	// set isGibbs to true
 	lambda = l;
@@ -39,7 +39,7 @@ RevBayesCore::DPPScaleCatValsMove* RevBayesCore::DPPScaleCatValsMove::clone( voi
 
 
 const std::string& RevBayesCore::DPPScaleCatValsMove::getMoveName( void ) const {
-    static std::string name = "DPP Move";
+    static std::string name = "DPP Scale Cat Values Move (double)";
     
     return name;
 }
@@ -67,14 +67,17 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 	TypedDistribution<double>* g0 = dist.getBaseDistribution();
 	
 	double storedValue;
+	variable->touch();
 	for(int i=0; i<numTables; i++){
 		
 		// get old lnL
+		double oldLnl = getCurrentLnProbabilityForMove();
 		
 		storedValue = tableVals[i];
 		double u = rng->uniform01();
 		double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-		tableVals[i] *= scalingFactor;
+		double newValue = storedValue * scalingFactor;
+		tableVals[i] = newValue;
 		
 		// Assign new value to elements
 		for(int j=0; j<numElements; j++){
@@ -82,24 +85,16 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 				elementVals[j] = tableVals[i];
 		}
 		
-		// get new lnL
-		variable->touch();
 		g0->getValue() = tableVals[i]; // new
-		double priorRatio = g0->computeLnProbability(); //variable->getLnProbabilityRatio();
-		
-		variable->touch();
+		double priorRatio = g0->computeLnProbability(); 
 		g0->getValue() = storedValue; // old
 		priorRatio -= g0->computeLnProbability();
 		
 		variable->touch();
-		std::set<DagNode*> affected;
-		variable->getAffectedNodes( affected );
-		double lnProbRatio = 0.0;
-		for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
-			lnProbRatio += (*it)->getLnProbabilityRatio();
-		}
-		
-		double r = safeExponentiation(priorRatio + lnProbRatio + scalingFactor);
+		double newLnl = getCurrentLnProbabilityForMove();
+		double lnProbRatio = newLnl - oldLnl;
+				
+		double r = safeExponentiation(priorRatio + lnProbRatio + log(scalingFactor));
 		u = rng->uniform01();
 		if ( u < r ) //accept
 			variable->keep();
@@ -108,7 +103,9 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 				if(allocVec[j] == i)
 					elementVals[j] = storedValue;
 			}
-			variable->restore();
+			tableVals[i] = storedValue;
+			variable->touch();
+			variable->keep();
 		}
 	}
     dist.createRestaurantVectors();
@@ -118,11 +115,22 @@ void RevBayesCore::DPPScaleCatValsMove::performGibbsMove( void ) {
 
 void RevBayesCore::DPPScaleCatValsMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
 }
 
+double RevBayesCore::DPPScaleCatValsMove::getCurrentLnProbabilityForMove(void) {
+	
+	std::set<DagNode*> affected;
+	variable->getAffectedNodes( affected );
+	double lnProb = 0.0;
+	for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it) {
+		double lp = (*it)->getLnProbability();
+		lnProb += lp;
+	}
+	return lnProb;
+}
 
 
 double RevBayesCore::DPPScaleCatValsMove::safeExponentiation(double x) {

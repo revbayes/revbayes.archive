@@ -21,7 +21,7 @@ using namespace RevBayesCore;
 
 //AdmixtureEdgeDivergenceMerge::AdmixtureEdgeDivergenceMerge(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, DeterministicNode<std::vector<double> >* res, ConstantNode<int>* dt, bool asa, double w) : Move( v, w), variable( v ), admixtureRate(r), residuals(res), delayTimer(dt), changed(false), failed(false), allowSisterAdmixture(asa) {
 
-AdmixtureEdgeDivergenceMerge::AdmixtureEdgeDivergenceMerge(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector<ContinuousStochasticNode*> br, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : Move( v, w), variable( v ), admixtureRate(r), admixtureCount(ac), branchRates(br), residuals(res), changed(false), failed(false), allowSisterAdmixture(asa), activeGen(ag) {
+AdmixtureEdgeDivergenceMerge::AdmixtureEdgeDivergenceMerge(StochasticNode<AdmixtureTree> *v, StochasticNode<double>* r, std::vector<ContinuousStochasticNode*> br, StochasticNode<int>* ac, DeterministicNode<std::vector<double> >* res, int ag, bool asa, double w) : MoveOld( v, w), variable( v ), admixtureRate(r), admixtureCount(ac), branchRates(br), residuals(res), changed(false), failed(false), allowSisterAdmixture(asa), activeGen(ag) {
 
     
     nodes.insert(admixtureRate);
@@ -337,7 +337,7 @@ void AdmixtureEdgeDivergenceMerge::acceptSimpleMove(void)
 
 void AdmixtureEdgeDivergenceMerge::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
-    Move::swapNode(oldN, newN);
+    MoveOld::swapNode(oldN, newN);
     
     if (oldN == variable)
     {

@@ -20,7 +20,7 @@ namespace RevBayesCore {
         BurninEstimatorContinuous();
         virtual                    ~BurninEstimatorContinuous() {}
     
-        virtual int                 estimateBurnin(const std::vector<double>& values) = 0;
+        virtual size_t              estimateBurnin(const std::vector<double>& values) = 0;
     
     protected:
     

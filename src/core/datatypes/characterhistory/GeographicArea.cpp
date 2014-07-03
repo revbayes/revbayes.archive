@@ -12,9 +12,19 @@
 
 using namespace RevBayesCore;
 
-GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, double alt, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra) : index(idx), name(n), latitude(lat), longitude(lon), altitude(alt), adjacentAreas(aa), reachableAreas(ra)
+GeographicArea::GeographicArea(size_t idx, double lat, double lon, std::string n, int st, double alt, double sz, std::vector<double> dv, std::vector<double> ev, std::set<GeographicArea*> aa, std::set<GeographicArea*> ra)
 {
-    ;
+    index = idx;
+    name = n;
+    state = st;
+    latitude = lat;
+    longitude = lon;
+    altitude = alt;
+    adjacentAreas = aa;
+    reachableAreas = ra;
+    size = sz;
+    dispersalValues = dv;
+    extinctionValues = ev;
 }
 
 GeographicArea::GeographicArea(const GeographicArea& g)
@@ -25,6 +35,10 @@ GeographicArea::GeographicArea(const GeographicArea& g)
         latitude = g.latitude;
         longitude = g.longitude;
         altitude = g.altitude;
+        size = g.size;
+        dispersalValues = g.dispersalValues;
+        extinctionValues = g.extinctionValues;
+        state = g.state;
         
         std::set<GeographicArea*>::iterator it;
         for (it = adjacentAreas.begin(); it != adjacentAreas.end(); it++)
@@ -45,6 +59,10 @@ GeographicArea& GeographicArea::operator=(const GeographicArea &g)
         latitude = g.latitude;
         longitude = g.longitude;
         altitude = g.altitude;
+        size = g.size;
+        dispersalValues = g.dispersalValues;
+        extinctionValues = g.extinctionValues;
+        state = g.state;
         
         std::set<GeographicArea*>::iterator it;
         for (it = adjacentAreas.begin(); it != adjacentAreas.end(); it++)
@@ -86,6 +104,26 @@ double GeographicArea::getLongitude(void)
 double GeographicArea::getAltitude(void)
 {
     return altitude;
+}
+
+const std::vector<double>& GeographicArea::getDispersalValues(void)
+{
+    return dispersalValues;
+}
+
+const std::vector<double>& GeographicArea::getExtinctionValues(void)
+{
+    return extinctionValues;
+}
+
+double GeographicArea::getSize(void)
+{
+    return size;
+}
+
+int GeographicArea::getState(void)
+{
+    return state;
 }
 
 void GeographicArea::addAdjacentArea(GeographicArea* a)

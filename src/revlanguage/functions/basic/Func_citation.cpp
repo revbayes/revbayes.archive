@@ -37,7 +37,7 @@ Func_citation* Func_citation::clone( void ) const {
 
 
 /** Execute function */
-RbLanguageObject* Func_citation::execute( void ) {
+RevObject* Func_citation::execute( void ) {
     
     
     RBOUT( "\n" );

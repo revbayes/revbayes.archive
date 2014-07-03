@@ -34,27 +34,27 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-Real::Real(void) : RlModelVariableWrapper<double>( new double(0.0) ) {
+Real::Real(void) : ModelObject<double>( new double(0.0) ) {
 }
 
 
 /* Construct from double */
-Real::Real(double v) : RlModelVariableWrapper<double>( new double(v) ) {
+Real::Real(double v) : ModelObject<double>( new double(v) ) {
 }
 
 
 /* Construct from double */
-Real::Real( RevBayesCore::TypedDagNode<double> *v ) : RlModelVariableWrapper<double>( v ) {
+Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v ) {
 }
 
 
 /* Construct from int */
-Real::Real(int v) : RlModelVariableWrapper<double>( new double(v) ) {
+Real::Real(int v) : ModelObject<double>( new double(v) ) {
 }
 
 
 /* Copy Construct */
-Real::Real(const Real& x) : RlModelVariableWrapper<double>( x ) {
+Real::Real(const Real& x) : ModelObject<double>( x ) {
     
 }
 
@@ -67,7 +67,7 @@ Real::Real(const Real& x) : RlModelVariableWrapper<double>( x ) {
  *
  * \return              A new object holding the sum.
  */
-RbLanguageObject* Real::add( const RbLanguageObject& rhs ) const 
+RevObject* Real::add( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
@@ -76,7 +76,7 @@ RbLanguageObject* Real::add( const RbLanguageObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return add( static_cast<const Integer&>( rhs ) );
     
-    return RlModelVariableWrapper<double>::add( rhs );
+    return ModelObject<double>::add( rhs );
 }
 
 
@@ -122,7 +122,7 @@ Real* Real::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RbLanguageObject* Real::convertTo( const TypeSpec& type ) const {
+RevObject* Real::convertTo( const TypeSpec& type ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
         return new RlBoolean(value->getValue() == 0.0);
@@ -142,7 +142,7 @@ RbLanguageObject* Real::convertTo( const TypeSpec& type ) const {
         return new RlString( o.str() );
     }
 
-    return RbLanguageObject::convertTo( type );
+    return RevObject::convertTo( type );
 }
 
 
@@ -165,7 +165,7 @@ void Real::decrement( void )
  *
  * \return              A new object holding the ratio.
  */
-RbLanguageObject* Real::divide( const RbLanguageObject& rhs ) const 
+RevObject* Real::divide( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
@@ -174,7 +174,7 @@ RbLanguageObject* Real::divide( const RbLanguageObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return divide( static_cast<const Integer&>( rhs ) );
     
-    return RlModelVariableWrapper<double>::divide( rhs );
+    return ModelObject<double>::divide( rhs );
 }
 
 
@@ -223,7 +223,7 @@ const std::string& Real::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Real::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RbLanguageObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -264,7 +264,7 @@ bool Real::isConvertibleTo(const TypeSpec& type) const {
     if ( type == RlString::getClassTypeSpec() )
         return true;
 
-    return RbLanguageObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type);
 }
 
 
@@ -276,7 +276,7 @@ bool Real::isConvertibleTo(const TypeSpec& type) const {
  *
  * \return              A new object holding the product.
  */
-RbLanguageObject* Real::multiply( const RbLanguageObject& rhs ) const 
+RevObject* Real::multiply( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
@@ -285,7 +285,7 @@ RbLanguageObject* Real::multiply( const RbLanguageObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return multiply( static_cast<const Integer&>( rhs ) );
     
-    return RlModelVariableWrapper<double>::multiply( rhs );
+    return ModelObject<double>::multiply( rhs );
 }
 
 
@@ -327,7 +327,7 @@ Real* Real::multiply(const Integer &rhs) const
 /** Print value for user */
 void Real::printValue(std::ostream &o) const {
 
-    size_t previousPrecision = o.precision();
+    long previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
 
     std::fixed( o );
@@ -347,7 +347,7 @@ void Real::printValue(std::ostream &o) const {
  *
  * \return              A new object holding the difference.
  */
-RbLanguageObject* Real::subtract( const RbLanguageObject& rhs ) const 
+RevObject* Real::subtract( const RevObject& rhs ) const 
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
@@ -356,7 +356,7 @@ RbLanguageObject* Real::subtract( const RbLanguageObject& rhs ) const
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
         return subtract( static_cast<const Integer&>( rhs ) );
     
-    return RlModelVariableWrapper<double>::subtract( rhs );
+    return ModelObject<double>::subtract( rhs );
 }
 
 

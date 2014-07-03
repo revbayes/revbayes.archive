@@ -14,7 +14,7 @@
 #include "Func_powermix.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "Simplex.h"
+#include "RlSimplex.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -32,11 +32,11 @@ Func_powermix* Func_powermix::clone( void ) const {
 }
 
 
-RbLanguageObject* Func_powermix::execute() {
+RevObject* Func_powermix::execute() {
     
     std::vector<const RevBayesCore::TypedDagNode< std::vector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const RevBayesCore::TypedDagNode< std::vector<double> >* val = static_cast<const Simplex &> ( args[i].getVariable()->getValue() ).getValueNode();
+        const RevBayesCore::TypedDagNode< std::vector<double> >* val = static_cast<const Simplex &> ( args[i].getVariable()->getRevObject() ).getDagNode();
         params.push_back( val );
     }
     
@@ -70,7 +70,7 @@ const ArgumentRules& Func_powermix::getArgumentRules( void ) const {
 
 const std::string& Func_powermix::getClassName(void) {
     
-    static std::string rbClassName = "powermix";
+    static std::string rbClassName = "Func_powermix";
     
 	return rbClassName;
 }

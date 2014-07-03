@@ -20,10 +20,20 @@ ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(),
     lambda( l ),
     nodes()
 {
-    nodes.push_back( variable );
+    nodes.insert( variable );
     
 }
 
+
+/**
+ * The cleanProposal function may be called to clean up memory allocations after AbstractMove
+ * decides whether to accept, reject, etc. the proposed value.
+ *
+ */
+void ScaleProposal::cleanProposal( void )
+{
+    ; // do nothing
+}
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
@@ -56,7 +66,7 @@ const std::string& ScaleProposal::getProposalName( void ) const
  *
  * \return  Const reference to a vector of nodes pointer on which the proposal operates.
  */
-const std::vector<DagNode*>& ScaleProposal::getNodes( void ) const
+const std::set<DagNode*>& ScaleProposal::getNodes( void ) const
 {
     
     return nodes;
@@ -64,7 +74,7 @@ const std::vector<DagNode*>& ScaleProposal::getNodes( void ) const
 
 
 /** 
- * Perform the Proposal.
+ * Perform the proposal.
  *
  * A scaling Proposal draws a random uniform number u ~ unif(-0.5,0.5)
  * and scales the current vale by a scaling factor

@@ -17,6 +17,7 @@
 #ifndef BinaryAddition_H
 #define BinaryAddition_H
 
+#include "StringUtilities.h"    // For string concatenation through addition
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -37,37 +38,53 @@ namespace RevBayesCore {
     private:
         const TypedDagNode<firstValueType>*     a;
         const TypedDagNode<secondValueType>*    b;
+    
     };
 }
 
 
 
 template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::BinaryAddition(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ), a( l ), b( r ) {
+RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::BinaryAddition(const TypedDagNode<firstValueType> *l, const TypedDagNode<secondValueType> *r) : TypedFunction<returnType>( new returnType() ), 
+    a( l ), 
+    b( r ) 
+{
     this->addParameter( l );
     this->addParameter( r );
+
 }
 
 
 template<class firstValueType, class secondValueType, class returnType>
-RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>* RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::clone( void ) const {
+RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>* RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::clone( void ) const 
+{
+
     return new BinaryAddition(*this);
 }
 
+
 template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == a) {
+void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) 
+{
+
+    if (oldP == a) 
+    {
         a = static_cast<const TypedDagNode<firstValueType>* >( newP );
     }
-    if (oldP == b) {
+    
+    if (oldP == b) 
+    {
         b = static_cast<const TypedDagNode<secondValueType>* >( newP );
     }
 }
 
 
 template<class firstValueType, class secondValueType, class returnType>
-void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::update( void ) {
+void RevBayesCore::BinaryAddition<firstValueType, secondValueType, returnType>::update( void ) 
+{
+
     *this->value = a->getValue() + b->getValue();
+
 }
 
 

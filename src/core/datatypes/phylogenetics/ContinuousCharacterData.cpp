@@ -212,6 +212,30 @@ const std::string& ContinuousCharacterData::getFileName(void) const
     return fileName;
 }
 
+/**
+ * Get the file path from whcih the character data object was read in.
+ *
+ * \return    The original file path.
+ */
+const std::string& ContinuousCharacterData::getFilePath(void) const
+{
+    
+    return filePath;
+}
+
+/** 
+ * Get whether the homology of the characters has been established, or not.
+ * For continuous characters, this should always be "true." However, we still 
+ * return the state of the member variable (homologyEstablished) rather than
+ * simply returning true.
+ *
+ * \return    The homology state of the character
+ */
+const bool ContinuousCharacterData::getHomologyEstablished(void) const
+{
+
+    return homologyEstablished;
+}
 
 /** 
  * Get the number of characters in taxon data object. 
@@ -580,6 +604,17 @@ void ContinuousCharacterData::setFileName(const std::string& fn)
     
 }
 
+/**
+ * Set the original file path for this character data object.
+ *
+ * \param[in]    fn    The new file path.
+ */
+void ContinuousCharacterData::setFilePath(const std::string& fn)
+{
+    
+    filePath = fn;
+    
+}
 
 /**
  * Set whether the homology has been established.

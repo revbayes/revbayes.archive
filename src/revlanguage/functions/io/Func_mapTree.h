@@ -36,7 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RbLanguageObject*               execute(void);                                                          //!< Execute function
+        RevObject*                      execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         
@@ -53,7 +53,7 @@ namespace RevLanguage {
 #include "ConstantNode.h"
 #include "NexusWriter.h"
 #include "RbException.h"
-#include "RbNullObject.h"
+#include "RevNullObject.h"
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
@@ -80,11 +80,11 @@ RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone(
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
     
     
-    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getValue() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getValue() ).getValue();
+    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
+    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
     typename treeType::valueType* tree = summary.map();
     
@@ -93,7 +93,9 @@ RevLanguage::RbLanguageObject* RevLanguage::Func_mapTree<treeType>::execute( voi
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
         
-        RevBayesCore::Clade c( tree->getRoot().getTaxaStringVector(), 0.0 );
+        std::vector<std::string> taxa;
+        tree->getRoot().getTaxaStringVector(taxa);
+        RevBayesCore::Clade c( taxa, 0.0 );
         writer.writeNexusBlock(c);
         
         writer.writeNexusBlock(*tree);
@@ -128,7 +130,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
 template <typename treeType>
 const std::string& RevLanguage::Func_mapTree<treeType>::getClassName(void) { 
     
-    static std::string rbClassName = "MAP-Tree<" + treeType::getClassName() + ">";
+    static std::string rbClassName = "Func_mapTree<" + treeType::getClassName() + ">";
     
 	return rbClassName; 
 }

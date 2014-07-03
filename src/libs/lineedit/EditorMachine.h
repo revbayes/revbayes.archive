@@ -8,113 +8,198 @@
 
 #include "EditorState.h"
 #include "lineeditUtils.h"
+#include "EditorMachineObserver.h"
+
 
 
 typedef std::vector<EditorState*> StatePointer;
 typedef std::vector<std::string> StringVector;
 
 class EditorMachine {
-    unsigned int linePos; // position on command line that was last processed
-    const char* cmd; // the part of the command line that are currently being processed
+public:
 
-    StatePointer queuedStates; // states can overlap, and are stored in this queue
+    EditorMachine() {
+        transition = NOOP;
+        defaultState = new StateIdle();
+        queuedStates = new StatePointer();
+        nl = "\n\r";
+        this->reset();
+    }
+
+    /**
+     * Run this method for each new context
+     */
+    void reset(void) { 
+        transition = NOOP;
+        linePos.clear();
+        linePos.push_back(0);
+        cmd = "";
+        queuedStates->clear();
+        queuedStates->push_back(defaultState);
+        message = "";
+        writeMessage("Reset", defaultState);
+    }
+
+    /**
+     * LinePos<int> hold the positions where a state was triggered. When deleting
+     * past that point, the state triggered is canceled.
+     * 
+     * @param buf
+     */
+    void deleteChar(std::string buf) {
+        
+        transition = NOOP;
+        
+        if (cmd.size() <= 0 || buf.size() <= 0 || linePos.back() <= 0 || linePos.size() <= 1) {
+            reset();
+            return;
+        }
+
+        if (linePos.back() > buf.size()) {
+            cancelState(queuedStates->back());
+            linePos.pop_back();
+            cmd = cmd.substr(0, linePos.back());
+        }
+    }
+
+    /**
+     * Processes the whole command buffer and changes the state of machine accordingly
+     * @param   buf user input
+     * @return  boolean weather the input has added a new state
+     */
+    bool processInput(std::string buf) {
+        transition = NOOP;
+
+        if (buf.size() <= 0) {
+            return false;
+        }
+
+        // extract the unprocessed string
+        cmd = buf.substr(linePos.back(), buf.size());
+        std::string subject = LineEditUtils().extractSubject(cmd);
+
+
+        StateType type = (queuedStates->back())->getType();
+        bool stateReleased = false;
+
+        // release state
+        if (queuedStates->back()->tryRelease(cmd, type)) {
+            releaseState(queuedStates->back());
+            stateReleased = true;
+        }
+
+        bool stateTriggered = true;
+        // set new state
+        if (stateInAssignment.tryHook(cmd, type)) {
+            addState(new StateAssigning(), subject);
+
+        } else if (stateInBrackets.tryHook(cmd, type)) {
+            addState(new StateDefiningList(), subject);
+
+        } else if (stateInString.tryHook(cmd, type)) {
+            addState(new StateDefiningString(), subject);
+
+        } else if (stateListingMembers.tryHook(cmd, type)) {
+            addState(new StateAccessingMember(), subject);
+
+        } else if (stateDefiningArgument.tryHook(cmd, type)) {
+            addState(new StateDefiningArgument(), subject);
+
+        } else {
+            stateTriggered = false;
+        }
+
+        // update linePos if any change in state happened
+        if (stateReleased || stateTriggered) {
+            linePos.push_back(buf.size());
+        }
+
+        // return true only if new state was added
+        return stateTriggered;
+    }
+
+    std::string getCmd() const {
+        return cmd;
+    }
+
+    unsigned int getLinePos() const {
+        return linePos.back();
+    }
+
+    StatePointer* getStateQueue() const {
+        return queuedStates;
+    }
+
+    EditorState* getCurrentState() {
+        return queuedStates->back();
+    }
+
+    std::string getMessage() {
+        return message;
+    }
+
+    void setObserver(EditorMachineObserver *observer) {
+        this->observer = observer;
+    }
+    
+    EditorStateChangeType getStateTransition(){
+        return transition;
+    }
+
+private:
+    EditorStateChangeType transition;
+    EditorMachineObserver *observer;
+    std::string nl;
+    std::string message;
+    std::vector<int> linePos; // position on command line that was last processed
+    std::string cmd; // the part of the command line that are currently being processed
+
+    StatePointer *queuedStates; // states can overlap, and are stored in this queue
 
     EditorState* defaultState;
 
     // the states this machine can be in
     StateIdle stateIdle;
-    StateInAssignment stateInAssignment;
-    StateInBrackets stateInBrackets;
-    StateInString stateInString;
-    StateListingMembers stateListingMembers;
+    StateAssigning stateInAssignment;
+    StateDefiningList stateInBrackets;
+    StateDefiningString stateInString;
+    StateAccessingMember stateListingMembers;
+    StateDefiningArgument stateDefiningArgument;
 
-public:
-
-    EditorMachine() {
-
-        defaultState = new StateIdle();
-
-        this->reset();
-    }
-
-    /**
-     * Run this method for each new context ( new line )
-     */
-    void reset(void) { // resets to default state (new line)
-        linePos = 0;
-        cmd = 0;
-        queuedStates.clear();
-        queuedStates.push_back(defaultState);
-    }
-
-    /**
-     * Processes the whole command buffer and changes the state of machine accordingly
-     * @param buf user input, must be null terminated
-     * @return boolean weather the input has added a new state
-     */
-    bool processInput(const char* buf) {
-        // todo: consider that user has deleted all or part of command line
-        if (Utils().charLen(buf) <= 0) {
-            return false;
+    void writeMessage(std::string m, EditorState *state) {
+        std::string tab = "";
+        for (int i = 0; i < queuedStates->size(); i++) {
+            tab.append("..");
         }
-        
-        std::string _cmd = Utils().getTail(buf, linePos); // previously unprocessed string
-        this->cmd = _cmd.c_str();
-        std::string subject = Utils().extractSubject(_cmd.c_str()); // might be handy
-        linePos = Utils().charLen(buf); // update line position
-
-        StateType type = (queuedStates.back())->getType();
-
-        // release state
-        if ((queuedStates.back())->tryRelease(_cmd.c_str(), type)) {
-            queuedStates.pop_back();
-            //return false;  
-        }
-
-        // set new state
-        if (stateInAssignment.tryHook(_cmd.c_str(), type)) {
-            addState(new StateInAssignment(), subject);
-
-        } else if (stateInBrackets.tryHook(_cmd.c_str(), type)) {
-            addState(new StateInBrackets(), subject);
-
-        } else if (stateInString.tryHook(_cmd.c_str(), type)) {
-            addState(new StateInString(), subject);
-
-        } else if (stateListingMembers.tryHook(_cmd.c_str(), type)) {
-            addState(new StateListingMembers(), subject);
-
-        } else {
-            return false;
-        }
-
-        return true;
+        //message.append(tab).append(state->getMessage()).append(nl);
+        message.append(tab).append(m).append("-").append(state->getDescription()).append(nl);
+        message.append("Current state:").append(queuedStates->back()->getDescription()).append(nl);
     }
-
-    const char* getCmd() const {
-        return cmd;
-    }
-
-    unsigned int getLinePos() const {
-        return linePos;
-    }
-
-    StatePointer getStateQueue() const {
-        return queuedStates;
-    }
-    
-    EditorState* getCurrentState(){
-        return queuedStates.back();
-    }
-
-private:
 
     void addState(EditorState* e, std::string subject) {
         e->setSubject(subject);
-        queuedStates.push_back(e);
+        queuedStates->push_back(e);
+        writeMessage("add", e);
+        
+        transition = STATE_ADDED;
+        observer->eventStateChanged(e, transition);
     }
 
+    void releaseState(EditorState* e) {
+        queuedStates->pop_back();
+        writeMessage("release", e);
+        
+        transition = STATE_RELEASED;
+        observer->eventStateChanged(e, transition);
+    }
 
+    void cancelState(EditorState* e) {
+        queuedStates->pop_back();
+        writeMessage("cancel", e);
+        
+        transition = STATE_CANCELLED;
+        observer->eventStateChanged(e, transition);
+    }
 };
 
 #endif	/* EDITORMACHINE_H */

@@ -70,10 +70,11 @@ pre  {
     background: #dddddd;
     border-style: dashed;
     border-width: 1px;
+    padding: 20px;
 }
 
-a:link    { text-decoration: none; color: blue; }
-a:visited { text-decoration: none; color: blue; }
+a:link    { text-decoration: underline; color: blue; }
+a:visited { text-decoration: underline; color: blue; }
 a:hover   { text-decoration: underline; color: red; }
 a:active  { text-decoration: underline; background-color: #FFD0D0; }
 
@@ -82,4 +83,50 @@ a:active  { text-decoration: underline; background-color: #FFD0D0; }
 }
 .header {
     text-align: center;
+}
+
+.hidden{
+    visibility: hidden;
+}
+
+.visible{
+    visibility: visible;
+}
+
+.more-label{
+    font-style: italic;
+}
+.filter-bar{
+    background-color: white;
+    text-align: right;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    border-bottom: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: gray;
+}
+
+.filter-controls{
+    padding-right: 30px;
+}
+
+.more-content{
+    border-width: 1px;
+    border-style: dotted;
+    border-color: gray;
+    padding: 25px;
+}
+
+.argument{
+    float: left;
+    width: 130px;
+}
+
+.section-label{
+    font: bold, italic;
+    text-align: center;
+    width: 100%;
+    background-color: lightgray;
 }

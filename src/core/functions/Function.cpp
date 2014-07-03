@@ -1,18 +1,13 @@
-//
-//  Function.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 9/4/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DagNode.h"
 #include "Function.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-Function::Function(void)  : parameters( std::set<const DagNode*>() ) {
+
+
+Function::Function(void)  : parameters() 
+{
     
 }
 
@@ -43,11 +38,20 @@ void Function::keep( DagNode* affecter ) {
 }
 
 
+void Function::removeParameter(const RevBayesCore::DagNode *p)
+{
+    std::set<const DagNode *>::iterator it = parameters.find( p );
+    if ( it != parameters.end() )
+    {
+        parameters.erase( it );
+    }
+}
+
+
 /* Method stumb that can be overwritten for specialized treatment. */
 void Function::restore( DagNode *restorer ) {
     // do nothing
 }
-
 
 void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
     

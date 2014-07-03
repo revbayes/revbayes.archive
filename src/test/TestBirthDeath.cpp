@@ -6,12 +6,13 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
 #include "NclReader.h"
 #include "RbFileManager.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "SlidingMove.h"
 #include "TestBirthDeath.h"
 #include "TimeTree.h"
@@ -64,8 +65,8 @@ bool TestBirthDeath::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove( lambda, 1.0, 1.0, true ) );
-    moves.push_back( new ScaleMove( mu, 1.0, 1.0, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(lambda, 1.0), 1, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(mu, 1.0), 1, true ) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;

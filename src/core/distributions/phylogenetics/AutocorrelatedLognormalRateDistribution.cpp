@@ -17,18 +17,34 @@ using namespace RevBayesCore;
 
 // constructor(s)
 AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ), 
-        tau( t ), 
-        sigma( s ), 
-        rootRate( rr ) {
+tau( t ), 
+sigma( s ), 
+rootRate( rr ),
+scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
     this->addParameter( tau );
     this->addParameter( sigma );
     this->addParameter( rootRate );
+    this->addParameter( scaleValue );
+    
+    simulate();
+}
+
+// constructor for when rescaling the tree to relative rates or other value
+AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ), 
+tau( t ), 
+sigma( s ), 
+rootRate( rr ),
+scaleValue( sv ) {
+    this->addParameter( tau );
+    this->addParameter( sigma );
+    this->addParameter( rootRate );
+    this->addParameter( scaleValue );
     
     simulate();
 }
 
 
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const AutocorrelatedLognormalRateDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ) {
+AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const AutocorrelatedLognormalRateDistribution &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootRate( n.rootRate ), scaleValue( n.scaleValue ) {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -47,6 +63,8 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     size_t rootIndex= root.getIndex();
     
     double lnProb = 0.0;
+	double scale = scaleValue->getValue();
+	
     
     double parentRate = rootRate->getValue();
     // check if the root rate matches the parameter value for the root rate
@@ -54,7 +72,6 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     if ( (*value)[rootIndex] != parentRate ) {
         lnProb = RbConstants::Double::neginf;
     } else {
-        // we need to take the log of the root rate because we expect the parent rate to be the mean of the normal distribution
         parentRate = log( parentRate );
         size_t numChildren = root.getNumberOfChildren();
         for (size_t i = 0; i < numChildren; ++i) {
@@ -62,12 +79,16 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
             lnProb += recursiveLnProb(child);
             
             // compute the variance
-            double standDev = sigma->getValue() * child.getBranchLength();
+            double variance = sigma->getValue() * child.getBranchLength() * scale;
             
             size_t childIndex = child.getIndex();
             double childRate = (*value)[childIndex];
-            lnProb += log( RbStatistics::Lognormal::lnPdf(parentRate, standDev, childRate) );
-            
+			
+			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
+			// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
+			double mu = parentRate - (variance * 0.5);
+			double stDev = sqrt(variance);
+            lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
         } 
     }
     
@@ -97,6 +118,7 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
     
     double lnProb = 0.0;
     size_t numChildren = n.getNumberOfChildren();
+	double scale = scaleValue->getValue();
     
     if ( numChildren > 0 ) {
         double parentRate = log( (*value)[nodeIndex] );
@@ -106,15 +128,18 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
             lnProb += recursiveLnProb(child);
             
             // compute the variance
-            double standDev = sigma->getValue() * child.getBranchLength();
+            double variance = sigma->getValue() * child.getBranchLength() * scale;
             
             size_t childIndex = child.getIndex();
             double childRate = (*value)[childIndex];
-            lnProb += log( RbStatistics::Lognormal::lnPdf(parentRate, standDev, childRate) );
-                
+
+			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
+			// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
+			double mu = parentRate - (variance * 0.5);
+			double stDev = sqrt(variance);
+            lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
         } 
     }
-    
     return lnProb;
     
 }
@@ -152,6 +177,10 @@ void AutocorrelatedLognormalRateDistribution::swapParameter(const DagNode *oldP,
     if ( oldP == rootRate ) {
         rootRate = static_cast< const TypedDagNode< double > * >( newP );
     }
+
+    if ( oldP == scaleValue ) {
+        scaleValue = static_cast< const TypedDagNode< double > * >( newP );
+    }
 }
 
 
@@ -187,15 +216,17 @@ void AutocorrelatedLognormalRateDistribution::recursiveSimulate(const TopologyNo
     size_t nodeIndex = node.getIndex();
     
     // compute the variance along the branch
-    double standDev = sigma->getValue() * node.getBranchLength();
+	double scale = scaleValue->getValue();
+    double variance = sigma->getValue() * node.getBranchLength() * scale;
+	double mu = log(parentRate) - (variance * 0.5);
+	double stDev = sqrt(variance);
     
     // simulate a new rate
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    double nodeRate = RbStatistics::Lognormal::rv( log(parentRate), standDev, *rng);
+    double nodeRate = RbStatistics::Lognormal::rv( mu, stDev, *rng );
     
     // we store this rate here
     (*value)[nodeIndex] = nodeRate;
-    
     
     // simulate the rate for each child (if any)
     size_t numChildren = node.getNumberOfChildren();

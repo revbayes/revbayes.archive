@@ -3,10 +3,11 @@
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
 #include "Mcmc.h"
+#include "MetropolisHastingsMove.h"
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
-#include "ScaleMove.h"
+#include "ScaleProposal.h"
 #include "SlidingMove.h"
 #include "StochasticNode.h"
 #include "TestScalingMove.h"
@@ -33,7 +34,7 @@ bool TestScalingMove::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new ScaleMove( x, 1.0, true, 1.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(x, 1.0), 1, true ) );
     
     /* add the monitors */
     std::vector<Monitor*> monitors;

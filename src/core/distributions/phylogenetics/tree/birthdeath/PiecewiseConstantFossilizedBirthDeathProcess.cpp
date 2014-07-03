@@ -83,8 +83,9 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips  = getAgesOfTipsFromMostRecentSample();
     
+    // numTaxa == tips.size() + ancs.size()
     // for the tip ages
-    for (size_t i = 0; i < numTaxa; ++i) 
+    for (size_t i = 0; i < (*agesTips).size(); ++i)
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
@@ -95,37 +96,62 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
         
         double t = (*agesTips)[i];
         size_t index = l(t);
-        if ( (t == 0.0 || find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end()) && sampling[index] != 0.0 ) 
+        if (t == 0.0 || find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end())
         {
             lnProbTimes += log( sampling[index] );
+            if (t > 0.0)
+                lnProbTimes += log( p(index, rateChangeTimes[index]));
         }
         else
         {
-            lnProbTimes += log( fossil[index] / q(index, t) );
+            lnProbTimes += log( fossil[index] ) + log( p(index, t) / q(index, t) );
         }
     }
     
     // for the internal node ages
-    for (size_t i = 0; i < numTaxa-1; ++i)
+    for (size_t i = 0; i < (*agesTips).size() -1; ++i)
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+            lnProbTimes == RbConstants::Double::neginf) 
         {
             return RbConstants::Double::nan;
         }
         
         double t = (*agesInts)[i];
         size_t index = l(t);
-        lnProbTimes += log( q(index,t) * birth[index] );
+        lnProbTimes += log( q(index, t) * birth[index] );
     }
- 
+
+    // for the fossil ancestor ages
+    // TODO: currently use agesTips to compile, will change to agesAncs!!
+    for (size_t i = 0; i < (*agesTips).size(); ++i)
+    {
+        if (lnProbTimes == RbConstants::Double::nan ||
+            lnProbTimes == RbConstants::Double::inf ||
+            lnProbTimes == RbConstants::Double::neginf)
+        {
+            return RbConstants::Double::nan;
+        }
+        
+        double t = (*agesTips)[i];
+        size_t index = l(t);
+        if (find(rateChangeTimes.begin(), rateChangeTimes.end(), t) != rateChangeTimes.end())
+        {
+            lnProbTimes += log( sampling[index] ) - log( 1 - sampling[index] );
+        }
+        else
+        {
+            lnProbTimes += log( fossil[index] );
+        }
+    }
+
     // for the degree-two vertices
     for (size_t i = 0; i < rateChangeTimes.size(); ++i)
     {
         if (lnProbTimes == RbConstants::Double::nan ||
             lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+            lnProbTimes == RbConstants::Double::neginf)
         {
             return RbConstants::Double::nan;
         }
@@ -289,7 +315,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         rateChangeTimes.push_back( t );
         
         // add the speciation rate at the rate-change event t
-        pos = find(birthTimes.begin(), birthTimes.end(), t) - birthTimes.begin();
+        pos = size_t( find(birthTimes.begin(), birthTimes.end(), t) - birthTimes.begin() );
         if ( pos != birthTimes.size() ) 
         {
             indexBirth = pos;
@@ -297,7 +323,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         birth.push_back( b[indexBirth+1] );
         
         // add the extinction rate at the rate-change event t
-        pos = find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin();
+        pos = size_t( find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin() );
         if ( pos != deathTimes.size() ) 
         {
             indexDeath = pos;
@@ -305,7 +331,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         death.push_back( d[indexDeath+1] );
         
         // add the fossilization rate at the rate-change event t
-        pos = find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin();
+        pos = size_t( find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin() );
         if ( pos != fossilTimes.size() ) 
         {
             indexFossil = pos;
@@ -313,7 +339,7 @@ void PiecewiseConstantFossilizedBirthDeathProcess::prepareProbComputation( void 
         fossil.push_back( f[indexFossil+1] );
         
         // add the sampling probability at the rate-change event t
-        pos = find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin();
+        pos = size_t( find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin() );
         if ( pos != samplingTimes.size() ) 
         {
             sampling.push_back( s[pos+1] );

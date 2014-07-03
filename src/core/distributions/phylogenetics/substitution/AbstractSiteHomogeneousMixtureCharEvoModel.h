@@ -65,8 +65,9 @@ namespace RevBayesCore {
     protected:
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
+        void                                                                rescale(size_t nodeIndex);
         void                                                                resizeLikelihoodVectors(void);
-        
+
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
@@ -74,6 +75,7 @@ namespace RevBayesCore {
         
         // pure virtual methods
         virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r) = 0;
+        virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
@@ -81,6 +83,7 @@ namespace RevBayesCore {
         
         // members
         double                                                              lnProb;
+        size_t                                                              numNodes;
         size_t                                                              numSites;
         const size_t                                                        numChars;
         size_t                                                              numSiteRates;
@@ -90,6 +93,7 @@ namespace RevBayesCore {
         // the likelihoods
         double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
+        std::vector<double>                                                 scalingFactors;
         
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
@@ -134,22 +138,26 @@ namespace RevBayesCore {
 
 #include <cmath>
 
+#define USE_SCALING
+
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ), 
-    numSites( nSites ), 
+    numNodes( t->getValue().getNumberOfNodes() ),
+    numSites( nSites ),
     numChars( nChars ),
     numSiteRates( nMix ),
     tau( t ), 
     transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
-    partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
-    activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) )      ,
+    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
+    activeLikelihood( std::vector<size_t>(numNodes, 0) ),
+    scalingFactors( std::vector<double>(numNodes*2, 1.0) ),
     charMatrix(), 
     gapMatrix(),
     patternCounts(),
     numPatterns( numSites ),
     compressed( c ),
-    changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
-    dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
+    changedNodes( std::vector<bool>(numNodes,false) ),
+    dirtyNodes( std::vector<bool>(numNodes, true) ),
     usingAmbiguousCharacters( true ),
     treatUnknownAsGap( true ),
     treatAmbiguousAsGaps( true )
@@ -160,7 +168,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
     
-    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
+    activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
     mixtureOffset               =  numPatterns*numChars;
     siteOffset                  =  numChars;
@@ -170,13 +178,15 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n) : TypedDistribution< AbstractCharacterData >( n ), 
-    numSites( n.numSites ), 
+    numNodes( n.numNodes ),
+    numSites( n.numSites ),
     numChars( n.numChars ),
     numSiteRates( n.numSiteRates ),
     tau( n.tau ), 
     transitionProbMatrices( n.transitionProbMatrices ),
-    partialLikelihoods( new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numSites*numChars] ),
+    partialLikelihoods( new double[2*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( n.activeLikelihood ),
+    scalingFactors( n.scalingFactors ),
     charMatrix( n.charMatrix ), 
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
@@ -193,9 +203,9 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
     // copy the partial likelihoods
-    memcpy(partialLikelihoods, n.partialLikelihoods, 2*tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars*sizeof(double));
+    memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
     
-    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
+    activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
     mixtureOffset               =  numPatterns*numChars;
     siteOffset                  =  numChars;
@@ -210,7 +220,6 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~A
     // remove myself from the tree listeners
     if ( tau != NULL ) 
     {
-        // TODO: this needs to be implemented (Sebastian)
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
     }
     
@@ -243,19 +252,47 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     charMatrix.resize(tips);
     gapMatrix.resize(tips);
     
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
+    size_t siteIndex = 0;
+    for (size_t i = 0; i < numSites; ++i)
+    {
+        while ( this->value->isCharacterExcluded(siteIndex) )
+        {
+            siteIndex++;
+            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            {
+                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
+            }
+        }
+        siteIndices[i] = siteIndex;
+        siteIndex++;
+    }
+    // test if there were additional sites that we did not use
+    while ( siteIndex < this->value->getNumberOfCharacters() )
+    {
+        if ( !this->value->isCharacterExcluded(siteIndex)  )
+        {
+            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
+        }
+        siteIndex++;
+    }
+    
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
     // find the unique site patterns and compute their respective frequencies
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
     for (size_t site = 0; site < numSites; ++site) 
     {
+        
         for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
         {
             if ( (*it)->isTip() ) 
             {
                 // \todo modify this so that the distribution is actually defined on discrete character data
                 AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(site) );
+                DiscreteCharacterState &c = static_cast<DiscreteCharacterState &>( taxon.getCharacter(siteIndices[site]) );
                 
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
@@ -301,7 +338,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 if ( (*it)->isTip() ) 
                 {
                     AbstractTaxonData& taxon = value->getTaxonData( (*it)->getName() );
-                    CharacterState &c = taxon.getCharacter(site);
+                    CharacterState &c = taxon.getCharacter(siteIndices[site]);
                     pattern += c.getStringValue();
                 }
             }
@@ -357,7 +394,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 // only add this site if it is unique
                 if ( unique[site] ) 
                 {
-                    charType &c = static_cast<charType &>( taxon.getCharacter(site) );
+                    charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[site]) );
                     gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
                     if ( ambiguousCharacters ) 
@@ -401,7 +438,10 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 template<class charType, class treeType>
 double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::computeLnProbability( void ) 
 {
-        
+	
+	// TAH Run under prior
+//	return 1.0;
+	
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = tau->getValue().getRoot();
     
@@ -416,16 +456,44 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
         dirtyNodes[rootIndex] = false;
         
         
-        // start by filling the likelihood vector for the two children of the root
-        const TopologyNode &left = root.getChild(0);
-        size_t leftIndex = left.getIndex();
-        fillLikelihoodVector( left, leftIndex );
-        const TopologyNode &right = root.getChild(1);
-        size_t rightIndex = right.getIndex();
-        fillLikelihoodVector( right, rightIndex );
+        // start by filling the likelihood vector for the children of the root
+        if ( root.getNumberOfChildren() == 2 )
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            
+            // compute the likelihood of the root
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex );
+        }
+        else if ( root.getNumberOfChildren() == 3 )
+        {
+            const TopologyNode &left = root.getChild(0);
+            size_t leftIndex = left.getIndex();
+            fillLikelihoodVector( left, leftIndex );
+            const TopologyNode &right = root.getChild(1);
+            size_t rightIndex = right.getIndex();
+            fillLikelihoodVector( right, rightIndex );
+            const TopologyNode &middle = root.getChild(2);
+            size_t middleIndex = middle.getIndex();
+            fillLikelihoodVector( middle, middleIndex );
+            
+            // compute the likelihood of the root
+            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
+        }
         
-        // compute the likelihood of the root
-        computeRootLikelihood( rootIndex, leftIndex, rightIndex );
+        
+#ifdef USE_SCALING
+        for (size_t i = 0; i<numNodes; ++i)
+        {
+            double sf = this->scalingFactors[this->activeLikelihood[i]*numNodes+i];
+            this->lnProb += numSites * log( sf );
+        }
+#endif
+        
     }
     
     return this->lnProb;
@@ -462,6 +530,11 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
             
             // now compute the likelihoods of this internal node
             computeInternalNodeLikelihood(node,nodeIndex,leftIndex,rightIndex);
+            
+#ifdef USE_SCALING
+            // rescale the partial likelihoods
+            rescale( nodeIndex );
+#endif
         }
     }
 }
@@ -536,7 +609,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     this->value = new DiscreteCharacterData<charType>();
     
     // create a vector of taxon data 
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>() );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( numNodes, DiscreteTaxonData<charType>() );
     
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -545,7 +618,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     {
         // draw the state
         double u = rng->uniform01();
-        size_t rateIndex = (int)(u*numSiteRates);
+        size_t rateIndex = size_t(u*numSiteRates);
         perSiteRates.push_back( rateIndex );
     }
     
@@ -603,18 +676,76 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 }
 
 
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::rescale( size_t nodeIndex )
+{
+    //
+    
+    double* p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+
+    // iterate over all mixture categories
+    double max = 0.0;
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        size_t offset = mixture*this->mixtureOffset;
+        double*          p_site_mixture          = p_node + offset;
+
+        // iterate over the number of sites
+        for (size_t site = 0; site < this->numPatterns ; ++site)
+        {
+            // iterate over the possible starting states
+            for (size_t c1 = 0; c1 < this->numChars; ++c1)
+            {
+                double m = p_site_mixture[c1];
+                if ( m > max )
+                {
+                    max = m;
+                }
+            }
+            
+            p_site_mixture+=this->siteOffset;
+        }
+        
+    }
+    
+    this->scalingFactors[this->activeLikelihood[nodeIndex]*numNodes+nodeIndex] = max;
+    
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        size_t offset = mixture*this->mixtureOffset;
+        double*          p_site_mixture          = p_node + offset;
+        
+        // iterate over the number of sites
+        for (size_t site = 0; site < this->numPatterns ; ++site)
+        {
+            // iterate over the possible starting states
+            for (size_t c1 = 0; c1 < this->numChars; ++c1)
+            {
+                p_site_mixture[c1] /= max;
+            }
+            
+            p_site_mixture+=this->siteOffset;
+        }
+        
+    }
+    
+                
+
+}
+
+
 
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::resizeLikelihoodVectors( void ) {
     
     // we resize the partial likelihood vectors to the new dimensions
     delete [] partialLikelihoods;
-    partialLikelihoods = new double[2*tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars];
+    partialLikelihoods = new double[2*numNodes*numSiteRates*numPatterns*numChars];
     
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
     
     // set the offsets for easier iteration through the likelihood vector 
-    activeLikelihoodOffset      =  tau->getValue().getNumberOfNodes()*numSiteRates*numPatterns*numChars;
+    activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
     mixtureOffset               =  numPatterns*numChars;
     siteOffset                  =  numChars;
@@ -740,6 +871,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
+        numNodes = tau->getValue().getNumberOfNodes();
     }
     
 }

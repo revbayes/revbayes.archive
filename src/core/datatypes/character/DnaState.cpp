@@ -22,7 +22,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState(void) : DiscreteCharacterState(), state(0xFF), stateIndex(0xFF) {
+DnaState::DnaState(void) : DiscreteCharacterState(), state( char(0xFF) ), stateIndex(0xFF) {
     
 }
 
@@ -67,8 +67,8 @@ bool DnaState::operator<(const CharacterState &x) const {
     const DnaState* derivedX = static_cast<const DnaState*>(&x);
     if ( derivedX != NULL ) 
     {
-        unsigned int myState = state;
-        unsigned int yourState = derivedX->state;
+        char myState = state;
+        char yourState = derivedX->state;
         
         while ( myState != yourState && (myState & 1) == ( yourState & 1 )  ) 
         {
@@ -132,7 +132,7 @@ unsigned int DnaState::computeState(char symbol) const {
         throw RbException( "Unknown char" );
     }
     
-    symbol = toupper( symbol );
+    symbol = char( toupper( symbol ) );
     switch ( symbol )
     {
         case '-':
@@ -182,15 +182,15 @@ std::string DnaState::getDatatype( void ) const {
 
 unsigned int DnaState::getNumberObservedStates(void) const  {
     
-    unsigned int v = state;     // count the number of bits set in v
-    unsigned int c;             // c accumulates the total bits set in v
+    char v = state;     // count the number of bits set in v
+    char c;             // c accumulates the total bits set in v
     
     for (c = 0; v; v >>= 1)
     {
         c += v & 1;
     }
     
-    return c;
+    return (unsigned int)c;
 }
 
 
@@ -202,10 +202,10 @@ size_t DnaState::getNumberOfStates( void ) const {
 
 unsigned long DnaState::getState( void ) const {
     
-    return state;
+    return (unsigned long)state;
 }
 
-unsigned int DnaState::getStateIndex( void ) const {
+size_t DnaState::getStateIndex( void ) const {
     
     return stateIndex;
 }
@@ -295,14 +295,14 @@ void DnaState::setState(size_t pos, bool val) {
 
 void DnaState::setState(char symbol) 
 {
-    state = computeState( symbol );
+    state = char( computeState( symbol ) );
     switch ( state )
     {
         case 0x1: stateIndex = 0;
         case 0x2: stateIndex = 1;
         case 0x4: stateIndex = 2;
         case 0x8: stateIndex = 3;
-        default: stateIndex = -1;
+        default: stateIndex = 4;
     }
     
 }

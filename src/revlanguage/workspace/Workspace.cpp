@@ -23,7 +23,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "RbLanguageObject.h"
+#include "RevObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"         // For PRINTF
 #include "RlDistribution.h"
@@ -87,7 +87,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
     printf("Adding type %s to workspace\n", dist->getTypeSpec().getType().c_str());
 #endif
 
-//    typeTable.insert(std::pair<std::string, RbLanguageObject* >(dist->getTypeSpec(),dist->clone()));
+//    typeTable.insert(std::pair<std::string, RevObject* >(dist->getTypeSpec(),dist->clone()));
 
     functionTable.addFunction(name, new ConstructorFunction( dist ) );
 
@@ -96,7 +96,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
 
 
 /** Add type to the workspace */
-bool Workspace::addType(RbLanguageObject *exampleObj) {
+bool Workspace::addType(RevObject *exampleObj) {
 
     std::string name = exampleObj->getTypeSpec();
     
@@ -107,14 +107,14 @@ bool Workspace::addType(RbLanguageObject *exampleObj) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbLanguageObject*>(name, exampleObj));
+    typeTable.insert(std::pair<std::string, RevObject*>(name, exampleObj));
 
     return true;
 }
 
 
 /** Add abstract type to the workspace */
-bool Workspace::addType(const std::string& name, RbLanguageObject *exampleObj) {
+bool Workspace::addType(const std::string& name, RevObject *exampleObj) {
     
 #ifdef DEBUG_WORKSPACE
     printf("Adding special abstract type %s to workspace\n", name.c_str());
@@ -123,14 +123,14 @@ bool Workspace::addType(const std::string& name, RbLanguageObject *exampleObj) {
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbLanguageObject*>( name, exampleObj));
+    typeTable.insert(std::pair<std::string, RevObject*>( name, exampleObj));
 
     return true;
 }
 
 
 /** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, RbLanguageObject *templ) {
+bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ) {
     
 #ifdef DEBUG_WORKSPACE
     printf("Adding type %s with constructor to workspace\n", name.c_str());
@@ -139,7 +139,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RbLanguageObject
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RbLanguageObject*>(templ->getTypeSpec(), templ->clone()));
+    typeTable.insert(std::pair<std::string, RevObject*>(templ->getTypeSpec(), templ->clone()));
     
     functionTable.addFunction(name, new ConstructorFunction(templ));
 
@@ -155,7 +155,7 @@ Workspace* Workspace::clone() const {
 
 const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const {
     
-    std::map<std::string, RbLanguageObject*>::const_iterator it = typeTable.find( type );
+    std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
     if ( it == typeTable.end() ) 
     {
         if ( parentEnvironment != NULL )
@@ -168,10 +168,32 @@ const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
 }
 
 
-/** Get a clone of the template object of a specified type */
-RbLanguageObject* Workspace::getNewTypeObject(const std::string& type) const {
+/**
+ * Get the internal value type of the object as a string corresponding to the type name.
+ * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
+ * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
+ * return "Mcmc", etc.
+ */
+const std::string& Workspace::getInternalValueType(const std::string& type) const {
     
-    std::map<std::string, RbLanguageObject*>::const_iterator it = typeTable.find( type );
+    std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
+    
+    if ( it == typeTable.end() )
+    {
+        if ( parentEnvironment != NULL )
+            return static_cast<Workspace*>( parentEnvironment )->getInternalValueType( type );
+        else
+            throw RbException( "Type '" + type + "' does not exist in environment" );;
+    }
+    else
+        return it->second->getInternalValueType();
+}
+
+
+/** Get a clone of the template object of a specified type */
+RevObject* Workspace::getNewTypeObject(const std::string& type) const {
+    
+    std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
 
     if ( it == typeTable.end() )
     {
@@ -185,32 +207,10 @@ RbLanguageObject* Workspace::getNewTypeObject(const std::string& type) const {
 }
 
 
-/**
- * Get the templated internal value type of the object as a string corresponding to the type name.
- * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
- * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
- * return "Mcmc", etc.
- */
-const std::string& Workspace::getTemplateValueType(const std::string& type) const {
-
-    std::map<std::string, RbLanguageObject*>::const_iterator it = typeTable.find( type );
-    
-    if ( it == typeTable.end() )
-    {
-        if ( parentEnvironment != NULL )
-            return static_cast<Workspace*>( parentEnvironment )->getTemplateValueType( type );
-        else
-            throw RbException( "Type '" + type + "' does not exist in environment" );;
-    }
-    else
-        return it->second->getTemplateValueType();
-}
-
-
 /* Is the type added to the workspace? */
 bool Workspace::existsType( const TypeSpec& name ) const {
 
-    std::map<std::string, RbLanguageObject *>::const_iterator it = typeTable.find( name );
+    std::map<std::string, RevObject *>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) 
     {
         if ( parentEnvironment != NULL )
@@ -250,7 +250,7 @@ void Workspace::printValue(std::ostream& o) const {
     if ( typeTable.size() > 0 )
     {
         o << "Type table:" << std::endl;
-        std::map<std::string, RbLanguageObject *>::const_iterator i;
+        std::map<std::string, RevObject *>::const_iterator i;
         for (i=typeTable.begin(); i!=typeTable.end(); i++)
         {
             if ( (*i).second != NULL )

@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RbLanguageObject*           execute(void);                                              //!< Execute function
+        RevObject*                  execute(void);                                              //!< Execute function
         
     };
     
@@ -72,11 +72,11 @@ RevLanguage::Func_rlvector<valType>* RevLanguage::Func_rlvector<valType>::clone(
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RbLanguageObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
+RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
     
     std::vector<typename valType::valueType*> params;
     for ( size_t i = 0; i < args.size(); i++ ) {
-        const valType &val = static_cast<const valType &>( args[i].getVariable()->getValue() );
+        const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
         params.push_back( val.getValue().clone() );
     }
     
@@ -108,7 +108,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_rlvector<valType>::getArgume
 template <typename valType>
 const std::string& RevLanguage::Func_rlvector<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_rlvector<" + valType::getClassTypeSpec() + ">";
+    static std::string rbClassName = "Func_vector<" + valType::getClassTypeSpec() + ">";
     
 	return rbClassName; 
 }
@@ -118,7 +118,7 @@ const std::string& RevLanguage::Func_rlvector<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rlvector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( "Func_rlvector", new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

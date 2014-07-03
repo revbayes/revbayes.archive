@@ -52,14 +52,14 @@ namespace RevBayesCore {
         template <typename T>
         class sub_vector {
             public:
-            static const T&    getElement(const T &obj, size_t i) { return obj; }
+            static const T&  getElement(const T &obj, size_t i) { return obj; }
             static size_t    size(const T &obj) { return 1; }
         };
         
         template <typename T,typename Alloc>
         class sub_vector<std::vector<T,Alloc> > {
             public:
-            static const T&    getElement(const std::vector<T,Alloc> &obj, size_t i) { return obj[i]; }
+            static const T&  getElement(const std::vector<T,Alloc> &obj, size_t i) { return obj[i]; }
             static size_t    size(const std::vector<T,Alloc> &obj) { return obj.size(); }
         };
         
@@ -92,6 +92,15 @@ namespace RevBayesCore {
 //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_GTR>& x);                      //!< Overloaded output operator
 //    std::ostream&                       operator<<(std::ostream& o, const std::vector<RateMatrix_JC>& x);                      //!< Overloaded output operator
 
+    std::vector<int>                    operator+(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded addition operator
+    std::vector<double>                 operator+(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded addition operator
+    std::vector<int>                    operator-(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded subtraction operator
+    std::vector<double>                 operator-(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded subtraction operator
+    std::vector<int>                    operator*(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded multiplication operator
+    std::vector<double>                 operator*(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded multiplication operator
+    std::vector<double>                 operator/(const std::vector<int>&    x, const std::vector<int>&    y);              //!< Overloaded division operator
+    std::vector<double>                 operator/(const std::vector<double>& x, const std::vector<double>& y);              //!< Overloaded division operator
+    
 }
 
 #endif

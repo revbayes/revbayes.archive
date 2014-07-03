@@ -44,7 +44,7 @@ void SimplexScaleFunction::update( void ) {
     // replace the current values by the simplex
     *value = simplex->getValue();
     // rescale the one element
-    (*value)[index->getValue()] *= factor->getValue();
+    (*value)[size_t(index->getValue())] *= factor->getValue();
     
     double sum = 0.0;
     std::vector< double >::iterator it;

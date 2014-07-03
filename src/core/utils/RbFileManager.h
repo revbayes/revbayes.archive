@@ -44,6 +44,8 @@ namespace RevBayesCore {
         const std::string&      getFileName(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFilePath(void) const;                                                                            //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;
+        std::string             getLastPathComponent(std::string& s);
+        std::string             getStringByDeletingLastPathComponent(std::string& s);
         void                    setCurrentDirectory(const std::string &s);                                                          //!< Setter function for the variable curDirectory
         void                    setFileName(const std::string &s);                                                                  //!< Setter function for the fileName
         void                    setFilePath(const std::string &s);                                                                  //!< Setter function for the filePath
@@ -76,5 +78,7 @@ namespace RevBayesCore {
     };
     
 }
+
+
 
 #endif

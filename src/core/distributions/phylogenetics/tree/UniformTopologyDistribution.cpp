@@ -31,7 +31,9 @@ UniformTopologyDistribution::UniformTopologyDistribution(const UniformTopologyDi
 }
 
 
-UniformTopologyDistribution::~UniformTopologyDistribution() {
+UniformTopologyDistribution::~UniformTopologyDistribution()
+{
+    // the tree will be deleted automatically by the base class
     
 }
 
@@ -49,7 +51,7 @@ void UniformTopologyDistribution::buildRandomBinaryTree(std::vector<TopologyNode
         TopologyNode* parent = tips.at(index);
         
         // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+index);
+        tips.erase(tips.begin()+long(index));
         
         // add a left child
         TopologyNode* leftChild = new TopologyNode(0);
@@ -125,7 +127,7 @@ void UniformTopologyDistribution::simulateTree( void ) {
         TopologyNode* node = nodes.at(index);
         
         // remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+index);
+        nodes.erase(nodes.begin()+long(index));
         
         // set name
         std::string& name = taxonNames[i];

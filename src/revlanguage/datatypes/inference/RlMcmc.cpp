@@ -5,7 +5,6 @@
 #include "Mcmc.h"
 #include "Model.h"
 #include "OptionRule.h"
-#include "RbLanguageObject.h"
 #include "RbException.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
@@ -18,12 +17,7 @@
 
 using namespace RevLanguage;
 
-Mcmc::Mcmc() : RlControlVariableWrapper<RevBayesCore::Mcmc>() {
-    
-}
-
-
-Mcmc::Mcmc(const Mcmc &m) : RlControlVariableWrapper<RevBayesCore::Mcmc>( m ), model( m.model ), moves( m.moves ), monitors( m.monitors ) {
+Mcmc::Mcmc() : WorkspaceObject<RevBayesCore::Mcmc>() {
     
 }
 
@@ -40,21 +34,22 @@ void Mcmc::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new MCMC object
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getValue() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getValue() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getValue() ).getValue();
-    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getValue() ).getValue();
-    value = new RevBayesCore::Mcmc(mdl, mvs, mntr, sched);
+    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
+    value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
+    value->setScheduleType( sched );
 }
 
 
 /* Map calls to member methods */
-RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") 
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         value->run( gen );
         
         return NULL;
@@ -62,8 +57,8 @@ RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector
     else if (name == "burnin") 
     {
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getValue() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getValue() ).getValue();
+        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( gen, tuningInterval );
         
         return NULL;
@@ -75,7 +70,7 @@ RbLanguageObject* Mcmc::executeMethod(std::string const &name, const std::vector
         return NULL;
     }
     
-    return RbLanguageObject::executeMethod( name, args );
+    return RevObject::executeMethod( name, args );
 }
 
 
@@ -90,7 +85,7 @@ const std::string& Mcmc::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mcmc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RlControlVariableWrapper<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -142,7 +137,7 @@ const MethodTable& Mcmc::getMethods(void) const {
         methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RbLanguageObject::getMethods() );
+        methods.setParentTable( &RevObject::getMethods() );
         methodsSet = true;
     }
     
@@ -166,7 +161,7 @@ void Mcmc::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Mcmc::setConstMemberVariable(const std::string& name, const RbPtr<const Variable> &var) {
+void Mcmc::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "model") {
         model = var;
@@ -181,6 +176,6 @@ void Mcmc::setConstMemberVariable(const std::string& name, const RbPtr<const Var
         moveSchedule = var;
     }
     else {
-        RbLanguageObject::setConstMemberVariable(name, var);
+        RevObject::setConstMemberVariable(name, var);
     }
 }
