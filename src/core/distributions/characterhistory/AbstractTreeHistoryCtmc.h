@@ -211,10 +211,13 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 //        dirtyNodes[nodeIndex] = true;       // uncomment to disable dirty flagging
 //        activeLikelihood[nodeIndex] = 0;    // uncomment to disable dirty flagging
         fillLikelihoodVector(nd);
-        this->lnProb += historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
+        double nodeLnProb = historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
+        
+//        std::cout << "br" << i << " " << nodeLnProb << "\n";
+        this->lnProb += nodeLnProb;
     }
     
-//    std::cout << this->lnProb << "\n";
+//    std::cout << "sum " << this->lnProb << "\n";
     
 //    int numEvents =0 ;
 //    for (size_t i = 0; i < histories.size(); i++)
@@ -237,6 +240,10 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::fillLikelihoodVe
 
     // compute
     double lnL = computeInternalNodeLikelihood(node);
+    
+    if (node.isTip())
+        lnL += computeTipLikelihood(node);
+    
 //    std::cout << node.getIndex() << " " << lnL << "\n";
     historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
     

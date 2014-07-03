@@ -329,7 +329,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
 
                 // First get the variable we want to reference
                 RevObject* theObj = &(theSlot.getVariable(slotIndices)->getRevObject());
-                RevObject* theReference = theObj->dagReference();
+                RevObject* theReference = theObj->makeDagReference();
 
                 // Now make a new variable, which is a reference to that variable
                 theVar = RevPtr<Variable>( new Variable( theReference, "" ) );

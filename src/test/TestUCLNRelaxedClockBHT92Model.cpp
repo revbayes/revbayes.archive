@@ -164,7 +164,7 @@ bool TestUCLNRelaxedClockBHT92Model::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -173,7 +173,7 @@ bool TestUCLNRelaxedClockBHT92Model::run( void ) {
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
     moves.push_back( new BetaSimplexMove( omega, 10.0, true, 2.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(tstv, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(tstv, 1.0), 2, true ) );
 	
     for (unsigned int i = 0 ; i < numBranches ; i ++ ) {
         moves.push_back( new BetaSimplexMove( dynamic_cast<StochasticNode<double>* >(thetas[i]), 10.0, true, 2.0 ) );

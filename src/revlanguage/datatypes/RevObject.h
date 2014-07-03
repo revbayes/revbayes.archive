@@ -58,9 +58,18 @@ public:
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RevObject*                  clone(void) const = 0;                                                                          //!< Clone object
+<<<<<<< HEAD
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
+=======
+    virtual RevObject*                  makeDagReference(void);                                                                         //!< Make an object referencing the dag node of this object
+    static const std::string&           getClassName(void);                                                                             //!< Get class name
+    static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
+    virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
+    virtual const std::string&          getInternalValueType(void) const;                                                               //!< Get the internal value type (RevBayesCore object or primitive C++ object)
+    virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
+>>>>>>> 0d9623bb928d7c28596ac8614b717d9fe62f4449
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
     
     // Basic utility functions you may want to override
@@ -76,7 +85,7 @@ public:
     // Functions that wrapper objects containing RB core objects might want to override
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual void                        replaceMe(RevObject *newObj);                                                                   //!< Replace the internal DAG node and prepare to replace me
+    virtual void                        replaceVariable(RevObject *newObj);                                                                   //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
     virtual void                        setDagNode(RevBayesCore::DagNode *newNode);                                                     //!< Set or replace the internal dag node (and keep me)
 

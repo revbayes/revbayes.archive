@@ -64,7 +64,7 @@ const std::string& Func_expBranchTree::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_expBranchTree::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedFunction<Vector<RealPos> >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }

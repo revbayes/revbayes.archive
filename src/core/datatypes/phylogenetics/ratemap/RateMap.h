@@ -28,7 +28,8 @@ namespace RevBayesCore {
         size_t                              getNumberOfCharacters(void) const;                  //!< Return the number of characters
 
         // pure virtual methods to overwrite
-        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const = 0;   //!< Calculate the transition probabilities for the rate matrix
+        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition probabilities for the rate matrix
+        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const = 0;   //!< Calculate the transition probabilities for the rate matrix
         virtual RateMap*                    clone(void) const = 0;
         virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const = 0;
         virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const = 0;
@@ -36,7 +37,6 @@ namespace RevBayesCore {
         virtual double                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const = 0;
         virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const = 0;
         virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const = 0;
-        virtual double                      getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t, double age=0.0) const = 0;
         virtual void                        updateMap(void) = 0;
         
     protected:

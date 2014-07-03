@@ -119,6 +119,7 @@ bool TestCharacterHistory::run( void ) {
         case 0: return run_exp();
         case 1: return run_dollo();
         case 2: return run_old();
+            
         default: break;
     };
     return false;
@@ -132,7 +133,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 10;
+    mcmcGenerations *= 5 ;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
     ////////////
@@ -141,26 +142,29 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::vector<unsigned> seed;
-    seed.push_back(7); seed.push_back(1);
+    seed.push_back(15); seed.push_back(1);
 //    old_seed = seed;
 //    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
-    
     bool usingAmbiguousCharacters = !true;
     bool simulate = false;
-    bool useDistances = true;
     bool useClock = !true;
     bool forbidExtinction = true;
-    bool useCladogenesis = !true;
-    bool useEpochs = !true;
+    bool useCladogenesis = true;
+    bool useEpochs = true;
+    bool useDistances = true;
+    bool useAdjacency = true;
+    bool useAvailable = true;
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
     fn = "psychotria.nex";
+//    fn = "16tip_4areas.nex";
+//    fn = "2tip_4areas.nex";
 //    fn = "vireya_gain0_01_loss0_03_dp0.nex";
 //    fn = "16tip_100areas_dp0.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
@@ -177,7 +181,8 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "vireya.atlas.txt";
-    afn = "hawaii.atlas.txt";
+//    afn = "hawaii_test.atlas.txt";
+    afn = "hawaii_hard.atlas.txt";
 //    afn = "hawaii_complex.atlas.txt";
 //    afn = "100areas.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
@@ -207,14 +212,16 @@ bool TestCharacterHistory::run_exp(void) {
     // geo distances
     DeterministicNode<GeographicDistanceRateModifier>* ddd = NULL;
     ContinuousStochasticNode* dp = NULL;
-    if (useDistances)
+    ConstantNode<double> *dp_pr = NULL;
+//    if (useDistances)
     {
-        ConstantNode<double> *dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
-        dp = new ContinuousStochasticNode("distancePower", new NormalDistribution(new ConstantNode<double>("dp_mu",new double(0.0)), dp_pr));
-        dp->setValue(new double(0.1));
-//        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+//        dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
+//        dp = new ContinuousStochasticNode("distancePower", new NormalDistribution(new ConstantNode<double>("dp_mu",new double(0.0)), dp_pr));
+        dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
+        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+        dp->setValue(new double(0.00001));
 //        dp->setValue(new double(1.0));
-        ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp,ta));
+        ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
     }
     
     // ctmc rates
@@ -232,7 +239,7 @@ bool TestCharacterHistory::run_exp(void) {
         glr_stoch.push_back(tmp_glr);
 	}
     glr_nonConst[0]->setValue(0.1);
-    glr_nonConst[1]->setValue(0.01);
+    glr_nonConst[1]->setValue(0.1);
     
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
 
@@ -240,15 +247,16 @@ bool TestCharacterHistory::run_exp(void) {
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
     brmf_likelihood->setGainLossRates(glr_vector);
     brmf_likelihood->setClockRate(clockRate);
-    if (useDistances)
+    if (useDistances || useAvailable || useAdjacency)
         brmf_likelihood->setGeographicDistanceRateModifier(ddd);
+    
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
     // Q-map used to sample path histories
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
     brmf_sample->setGainLossRates(glr_vector);
     brmf_sample->setClockRate(clockRate);
-    if (useDistances)
+    if (useDistances || useAvailable || useAdjacency)
         brmf_sample->setGeographicDistanceRateModifier(ddd);
 
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
@@ -291,22 +299,23 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useClock)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.25), false, 1.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), false, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.25), 1.0, false) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), 2.0, false) );
     }
     
-    if (useDistances && true)
+    if (useDistances)
     {
         moves.push_back(new SlidingMove(dp, 0.1, false, 5 ));
         moves.push_back(new SlidingMove(dp, 0.3, false, 2 ));
     }
     
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2));
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
+//    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2));
+//    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), false, 2.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), false, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 2.0, false ) );
+//        Proposal *p, double w, bool autoTune = false)
+//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2, false ) );
     }
 
     // path proposals
@@ -338,13 +347,14 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
     }
-
-    // tip proposals
-    if (usingAmbiguousCharacters)
-    {
-//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.5, nd), 0.5, false, numNodes/2));
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.05, false, numNodes/1));
-    }
+    
+//
+//    // tip proposals
+//    if (usingAmbiguousCharacters)
+//    {
+////        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.5, nd), 0.5, false, numNodes/2));
+//        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.05, false, numNodes/1));
+//    }
 
     
 
@@ -358,12 +368,11 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert(clockRate);
-    if (useDistances)
-        monitoredNodes.insert( dp );
-    monitoredNodes.insert( glr_vector );
+    monitoredNodes.insert( dp );
+    monitoredNodes.insert( glr_nonConst[0] );
+    monitoredNodes.insert( glr_nonConst[1] );
     
-
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb1" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb4" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
@@ -558,8 +567,8 @@ bool TestCharacterHistory::run_dollo(void) {
     std::vector<Move*> moves;
     if (useClock)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.5), true, 5.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), true, 5.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.5), 5, true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), 5, true ) );
     }
     
     
@@ -567,8 +576,8 @@ bool TestCharacterHistory::run_dollo(void) {
     moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.5), false, 2.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.1), false, 2.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.5), 2, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(gainLossRates_nonConst[i], 0.1), 2, false ) );
     }
     
     
@@ -912,9 +921,9 @@ bool TestCharacterHistory::run_old( void ) {
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(distancePower, 1.0), true, 5.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateGain, 5.0), true, 5.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateLoss, 1.0), true, 5.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(distancePower, 1.0), 5, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateGain, 5.0), 5, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rateLoss, 1.0), 5, true ) );
 //    moves.push_back( new ScaleMove(dispersalPower, 1.0, true, 5.0));
 //    moves.push_back( new ScaleMove(extinctionPower, 1.0, true, 5.0));
 //    moves.push_back( new BetaSimplexMove(areaStationaryFrequency, 5.0, true, 5.0));
