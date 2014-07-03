@@ -6,12 +6,12 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
 #include "Func_treeAssembly.h"
 #include "RateMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBranchLengthTree.h"
+#include "RlDeterministicNode.h"
 #include "RlTopology.h"
 #include "Topology.h"
 #include "TreeAssemblyFunction.h"
@@ -38,7 +38,8 @@ RevObject* Func_treeAssembly::execute() {
     RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens );
-    RevBayesCore::DeterministicNode<RevBayesCore::BranchLengthTree> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::BranchLengthTree>("", f);
+
+    DeterministicNode<RevBayesCore::BranchLengthTree> *detNode = new DeterministicNode<RevBayesCore::BranchLengthTree>("", f, this->clone());
     
     BranchLengthTree* value = new BranchLengthTree( detNode );
     

@@ -6,11 +6,11 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
-#include "PowerFunction.h"
 #include "Func_power.h"
+#include "PowerFunction.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -33,7 +33,8 @@ RevObject* Func_power::execute() {
     RevBayesCore::TypedDagNode<double>* b = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* e = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::PowerFunction* f = new RevBayesCore::PowerFunction( b, e );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    
+    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
     
     RealPos* value = new RealPos( detNode );
     

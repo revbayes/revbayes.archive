@@ -425,7 +425,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
 
 
 /**
- * @brief Get semantic value (r-value)
+ * @brief Get semantic value (r-value) (general case)
  *
  * The variable can either be a member or a base variable. In the latter
  * case, its "baseVariable" member is NULL. If the element is a base variable,

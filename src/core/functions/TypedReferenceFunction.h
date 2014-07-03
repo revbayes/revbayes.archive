@@ -49,7 +49,7 @@ namespace RevBayesCore {
 
 template <class valueType>
 RevBayesCore::TypedReferenceFunction<valueType>::TypedReferenceFunction(const TypedDagNode<valueType>* var) :
-TypedFunction<valueType>( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( var->getValue() ), "<Reference Function>" ),
+TypedFunction<valueType>( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( var->getValue() ) ),
     variable( var )
 {
     /* Add referenced variable as parent */

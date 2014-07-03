@@ -47,26 +47,27 @@ namespace RevLanguage {
         Real(const Real& x);                                                                                    //!< Copy constructor
         
         // Basic operator functions
-        virtual RevObject*       add(const RevObject &rhs) const;                                 //!< Addition operator used for example in '+=' statements
+        virtual RevObject*              add(const RevObject &rhs) const;                                        //!< Addition operator used for example in '+=' statements
         Real*                           add(const Real &rhs) const;                                             //!< Addition operator used for example in '+=' statements
         Real*                           add(const Integer &rhs) const;                                          //!< Addition operator used for example in '+=' statements
         void                            decrement(void);                                                        //!< Decrement operator used for example in 'a--' statements
-        virtual RevObject*       divide(const RevObject &rhs) const;                              //!< Division operator used for example in '/=' statements
+        virtual RevObject*              divide(const RevObject &rhs) const;                                     //!< Division operator used for example in '/=' statements
         Real*                           divide(const Real &rhs) const;                                          //!< Division operator used for example in '/=' statements
         Real*                           divide(const Integer &rhs) const;                                       //!< Division operator used for example in '/=' statements
         void                            increment(void);                                                        //!< Decrement operator used for example in 'a++' statements
-        virtual RevObject*       multiply(const RevObject &rhs) const;                            //!< Multiplication operator used for example in '*=' statements
+        virtual RevObject*              multiply(const RevObject &rhs) const;                                   //!< Multiplication operator used for example in '*=' statements
         Real*                           multiply(const Real &rhs) const;                                        //!< Multiplication operator used for example in '*=' statements
         Real*                           multiply(const Integer &rhs) const;                                     //!< Multiplication operator used for example in '*=' statements
-        virtual RevObject*       subtract(const RevObject &rhs) const;                            //!< Subtraction operator used for example in '-=' statements
+        virtual RevObject*              subtract(const RevObject &rhs) const;                                   //!< Subtraction operator used for example in '-=' statements
         Real*                           subtract(const Real &rhs) const;                                        //!< Subtraction operator used for example in '-=' statements
         Real*                           subtract(const Integer &rhs) const;                                     //!< Subtraction operator used for example in '-=' statements
 
         // Basic utility functions
         virtual Real*                   clone(void) const;                                                      //!< Clone object
-        virtual RevObject*       convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        virtual RevObject*              convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
+        const std::string&              getInternalValueType( void ) const;                                     //!< Get internal value type
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)

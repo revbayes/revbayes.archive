@@ -82,6 +82,14 @@ const TypeSpec& Complex::getClassTypeSpec(void) {
 	return rbClass; 
 }
 
+/** Get the internal value type (rbType) */
+const std::string& Complex::getInternalValueType( void ) const {
+    
+    static std::string valType = "std::complex<double>";
+    
+    return valType;
+}
+
 /** Get type spec */
 const TypeSpec& Complex::getTypeSpec( void ) const {
     
