@@ -107,16 +107,32 @@ void VariableSlot::createVariable(const std::vector<int> &indices) {
 }
 
 
-bool VariableSlot::doesVariableExist(const std::vector<int> &indices) const {
+bool VariableSlot::doesVariableExist(const std::vector<int> &indices) const
+{
+
     // test whether we need to update the dimensions
-    if ( indices.size() > lengths.size() ) {
-        return false;
-    } else {
-        for (size_t i = 0; i < indices.size(); ++i) {
-            if ( indices[i] >= lengths[i] ) {
+    
+    size_t offset = 1;
+    for (size_t i = 0; i < indices.size(); ++i)
+    {
+        if ( i > lengths.size() )
+        {
+            if ( indices[i] >= lengths[i] )
+            {
                 return false;
             }
+            offset *= lengths[i];
         }
+        else
+        {
+            
+            return false;
+//            if ( variable[offset-1]->getRevObject().hasSubElement() )
+//            {
+//            
+//            }
+        }
+        
     }
     
     return true;

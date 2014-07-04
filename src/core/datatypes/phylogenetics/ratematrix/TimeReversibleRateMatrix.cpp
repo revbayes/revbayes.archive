@@ -10,43 +10,25 @@
 
 using namespace RevBayesCore;
 
-TimeReversibleRateMatrix::TimeReversibleRateMatrix(size_t n) : RateMatrix(n), exchangeabilityRates( std::vector<double>(numStates*(numStates-1)/2,1.0) ), stationaryFreqs( std::vector<double>(numStates,1.0/n) ) {
+TimeReversibleRateMatrix::TimeReversibleRateMatrix(size_t n) : AbstractRateMatrix(n),
+    exchangeabilityRates( std::vector<double>(numStates*(numStates-1)/2,1.0) ),
+    stationaryFreqs( std::vector<double>(numStates,1.0/n) )
+{
     
 }
 
 
-TimeReversibleRateMatrix::TimeReversibleRateMatrix(const TimeReversibleRateMatrix &rm) : RateMatrix(rm) {
-    
-    stationaryFreqs   = rm.stationaryFreqs;
-    exchangeabilityRates = rm.exchangeabilityRates;
-}
 
-
-TimeReversibleRateMatrix::~TimeReversibleRateMatrix(void) {
+TimeReversibleRateMatrix::~TimeReversibleRateMatrix(void)
+{
     // nothing to do
 }
 
 
 
-TimeReversibleRateMatrix& TimeReversibleRateMatrix::operator=(const TimeReversibleRateMatrix &rm) {
-    
-    if (this != &rm) 
-    {
-        RateMatrix::operator=( rm );
-        
-        stationaryFreqs   = rm.stationaryFreqs;
-        exchangeabilityRates = rm.exchangeabilityRates;
-        
-    }
-    
-    return *this;
-}
-
-
-
-
 /** Calculate the average rate for the rate matrix */
-double TimeReversibleRateMatrix::averageRate(void) const {
+double TimeReversibleRateMatrix::averageRate(void) const
+{
     
     double ave = 0.0;
     for (size_t i=0; i<numStates; i++)
@@ -55,7 +37,8 @@ double TimeReversibleRateMatrix::averageRate(void) const {
 }
 
 
-void TimeReversibleRateMatrix::computeOffDiagonal( void ) {
+void TimeReversibleRateMatrix::computeOffDiagonal( void )
+{
     
     MatrixReal& m = *theRateMatrix;
     
@@ -77,7 +60,8 @@ void TimeReversibleRateMatrix::computeOffDiagonal( void ) {
 
 /** Set the exchangeability rates directly. We assume that we know
  what the exchangeability rates are when this function is called. */
-void TimeReversibleRateMatrix::setExchangeabilityRates(const std::vector<double>& er) {
+void TimeReversibleRateMatrix::setExchangeabilityRates(const std::vector<double>& er)
+{
     
     exchangeabilityRates = er;
     

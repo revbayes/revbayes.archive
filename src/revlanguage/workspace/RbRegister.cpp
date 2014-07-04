@@ -65,6 +65,7 @@
 #include "RlClade.h"
 
 /* Inference types (in folder "datatypes/inference") */
+#include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
@@ -231,11 +232,6 @@
 
 /* Inference functions (in folder "functions/inference") */
 
-/* Convergence functions (in folder "functions/inference/convergence") */
-#include "Func_beca.h"
-#include "Func_estimateBurnin.h"
-
-
 /* Internal functions (in folder ("functions/internal") */
 
 /* These are functions that are typically not called explicitly but implicitly
@@ -262,6 +258,7 @@
 #include "Func__add.h"
 #include "Func__div.h"
 #include "Func__mult.h"
+#include "Func__mod.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
 
@@ -303,9 +300,11 @@
 
 
 /** Initialize global workspace */
-void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
+void RevLanguage::Workspace::initializeGlobalWorkspace(void)
+{
     
-    try {
+    try
+    {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
@@ -341,12 +340,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "mcmc",                   new Mcmc()  );
-        addTypeWithConstructor( "model",                  new Model() );
-        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc() );
-        addTypeWithConstructor( "pathSampler",            new PathSampler() );
-        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()  );
-        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler() );
+        addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
+        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
+        addTypeWithConstructor( "model",                  new Model()                                   );
+        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
+        addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
+        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
+        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -417,6 +417,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
+        addTypeWithConstructor("mvNNI",                     new Move_NNIClock() );
+        addTypeWithConstructor("mvNNI",                     new Move_NNINonclock() );
         addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
@@ -699,10 +701,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
         /* Inference functions (in folder "functions/inference") */
 
-        /* Convergence functions (in folder "functions/inference/convergence") */
-        addFunction( "beca",           new Func_beca() );
-        addFunction( "estimateBurnin", new Func_estimateBurnin() );
-
         
         /* Internal functions (in folder "functions/internal") */
         
@@ -791,6 +789,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_sub",      new Func__sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
         addFunction( "_sub",      new Func__sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
         
+        // modulo
+        addFunction( "_mod",      new Func__mod() );
+        
         // exponentiation
         addFunction( "_exp",      new Func_power() );
         
@@ -864,8 +865,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
 
         // nonstandard forms form backward compatibility
-        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
-        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
+//        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
+//        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
 
         
         ///////////////////////////////////////////////////////////////////////////

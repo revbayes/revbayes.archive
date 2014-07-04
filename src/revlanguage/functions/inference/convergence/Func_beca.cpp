@@ -67,7 +67,7 @@ RevObject* Func_beca::execute( void ) {
     std::vector<size_t> burnin;
     if ( method == "ESS" ) 
     {
-        EssMax estimator;
+        RevBayesCore::EssMax estimator;
         for ( std::vector<Trace*>::const_iterator it = traces.begin(); it != traces.end(); ++it ) 
         {
             const std::vector<double> &values = (*it)->getValue().getValues();
@@ -77,7 +77,7 @@ RevObject* Func_beca::execute( void ) {
     } 
     else if ( method == "SEM" ) 
     {
-        SemMin estimator;
+        RevBayesCore::SemMin estimator;
         for ( std::vector<Trace*>::const_iterator it = traces.begin(); it != traces.end(); ++it ) 
         {
             const std::vector<double> &values = (*it)->getValue().getValues();
