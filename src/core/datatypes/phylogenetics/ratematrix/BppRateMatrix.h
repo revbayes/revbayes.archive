@@ -20,13 +20,18 @@
 //#include <complex>
 #include <vector>
 
-//#include <Bpp/Phyl/Model/SubstitutionModel.h>
+#include <Bpp/Phyl/Model/SubstitutionModel.h>
 
 namespace RevBayesCore {
     
     class BppRateMatrix : public RateMatrix {
     private:
-//      bpp::SubstitutionModel* pModel_;
+      bpp::SubstitutionModel* pModel_;
+
+      size_t nbStates_;
+      
+      // List of parameters for later update
+      bpp::ParameterList parList_;
       
     public:
       /**
@@ -34,7 +39,7 @@ namespace RevBayesCore {
        *
        */
       
-//      BppRateMatrix(bpp::SubstitutionModel* model);
+      BppRateMatrix(bpp::SubstitutionModel* model);
 
       BppRateMatrix(const BppRateMatrix& m);
       //!< Copy constructor
@@ -44,25 +49,30 @@ namespace RevBayesCore {
         
       // overloaded operators
       BppRateMatrix& operator=(const BppRateMatrix& r);
-        
-        
+
+      
       // public methods
-        
-      virtual double                      averageRate(void) const;                                                            //!< Calculate the average rate
+
+      size_t getNumberOfStates()  const
+      {
+        return nbStates_;
+      }
+      
+      virtual double                      averageRate(void) const;                                   //!< Calculate the average rate
       void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
       virtual BppRateMatrix*          clone(void) const;
-      const std::vector<double>&          getTransitionRates(void) const;
+
+      void setParameterValue(const std::string& name, double value);
+      
       const std::vector<double>&          getStationaryFrequencies(void) const;                                                   //!< Return the stationary frequencies
-      bool                                isTimeReversible(void);                                                             //!< Return whether the rate matrix is time reversible
-      void                                setTransitionRates(const std::vector<double> &tr);
+
+//      void                                setTransitionRates(const std::vector<double> &tr);
       void                                setStationaryFrequencies(const std::vector<double>& f);                             //!< Directly set the stationary frequencies
       void                                updateMatrix(void);                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
     protected:
       
-      void                                calculateStationaryFrequencies(void);                                                   //!< Calculate the stationary frequencies for the rate matrix
-      std::vector<double>                 stationaryFreqs;
-      std::vector<double>                 transitionRates;
+      void                                calculateStationaryFrequencies(void);      
         
     };
     

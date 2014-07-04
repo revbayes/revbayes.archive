@@ -242,8 +242,6 @@ IMPROVED_FIND_LIBRARY(LIBS bpp-phyl Bpp/Phyl/Tree.h)
 # ENDIF(DEFINED ${BPPDIR}) 
 # 
 
-=======
-
 ' >> $HERE/CMakeLists.txt
 
 echo
