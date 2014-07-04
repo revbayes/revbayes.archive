@@ -27,6 +27,7 @@ namespace RevBayesCore {
     class MatrixReal {
         
     public:
+        MatrixReal(void);                       //!< Default constructor required by revlanguage use of this class
         MatrixReal(size_t n, size_t k);
         MatrixReal(size_t n, size_t k, double v);
         MatrixReal(const MatrixReal& m);

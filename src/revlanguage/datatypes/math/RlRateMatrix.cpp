@@ -110,10 +110,10 @@ const MethodTable& RateMatrix::getMethods(void) const {
 }
 
 
-
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
 }
+

@@ -28,7 +28,6 @@ RevObject* Func_structure::execute( void ) {
     std::ostringstream o;
 
     o << std::endl;
-    o << "_address      = <" << &(args[0].getVariable()->getRevObject()) << ">" << std::endl;
     o << "_valueType    = " << args[0].getVariable()->getRevObject().getType() << std::endl;
     args[0].getVariable()->getRevObject().printStructure( o );
     o << std::endl;

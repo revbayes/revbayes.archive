@@ -68,7 +68,7 @@ TypedUserFunction<valueType>::TypedUserFunction(const TypedUserFunction<valueTyp
     userFunctionCall( x.userFunctionCall->clone() )
 {
     /* Just set dirty flag. No need to add parameters, it happens automatically. */
-    this->setDirty(true);
+    this->setDirty( true );
 }
 
 

@@ -1,6 +1,6 @@
 #include "AbstractCharacterData.h"
 
-
+using namespace RevBayesCore;
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterData& x) {
     

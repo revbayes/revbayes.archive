@@ -83,16 +83,6 @@ RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /**
- * Make a new object that is an indirect deterministic reference to the object.
- * The default implementation throws an error.
- */
-RevObject* RevObject::makeDagReference(void) {
-    
-    throw RbException( "Dynamic reference to this object type not supported");
-}
-
-
-/**
  * Decrement operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
  */
@@ -234,7 +224,9 @@ const MethodTable& RevObject::getMethods(void) const {
  */
 const std::string& RevObject::getInternalValueType( void ) const {
     
-    throw RbException("No value template type implemented for this object (lazy RevBayes programmers...)");
+    static std::string valType = "";
+    
+    return valType;
 }
 
 
@@ -310,6 +302,30 @@ bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const {
   */
 void RevObject::makeConstantValue( void ) {
     // do nothing
+}
+
+
+/**
+ * Make a new object that is an indirect deterministic reference to the object.
+ * The default implementation throws an error.
+ */
+RevObject* RevObject::makeDagReference(void)
+{
+    
+    std::ostringstream msg;
+    msg << "The type '" << getClassName() << "' not supported in indirect reference assignments (yet)";
+    throw RbException( msg );
+}
+
+
+/**
+ * Convert the object to a deterministic object with a userdefined Rev function inside it.
+ */
+void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+{
+    std::ostringstream msg;
+    msg << "The type '" << getClassName() << "' not supported in deterministic nodes (yet)";
+    throw RbException( msg );
 }
 
 

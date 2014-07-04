@@ -13,6 +13,12 @@
 
 using namespace RevBayesCore;
 
+
+MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >(1, std::vector<double>(1,0.0) ) ), nRows( 1 ), nCols( 1 ) {
+
+}
+
+
 MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,0.0) ) ), nRows( n ), nCols( k ) {
     
 }
