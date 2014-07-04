@@ -107,11 +107,23 @@ RevObject* UserFunction::execute( void ) {
     // If we can match the internal type, we return an appropriate model/container/factor object with a
     // deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
+#if 0
+    /* New method */
+    UserFunctionCall* call = new UserFunctionCall( this );
+    UserFunctionArgs* args = new UserFunctionArgs( this );
+    
+    RevObject* retVal = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
+
+    retVal->makeDeterministicValue( call, args );
+    
+    return retVal;
+#endif
+
     /* Get the internal value type of the return type */
     std::string internalValueType = Workspace::userWorkspace().getInternalValueType( returnType.getType() );
 
     /* Return value directly of objects that do not have a templated internal value node by simply executing the code */
-        if ( internalValueType == "" )
+    if ( internalValueType == "" )
     {
         UserFunctionCall fxnCall( this );
         return fxnCall.execute();
@@ -149,7 +161,6 @@ RevObject* UserFunction::execute( void ) {
         makeDeterministicVariable<typename RevBayesCore::RateMatrix>( userFunctionCall, userFunctionArgs, retValue );
     }
 #endif
-#if 0   // Missing default constructor
     else if ( internalValueType == "MatrixReal" )
     {
         makeDeterministicVariable<typename RevBayesCore::MatrixReal>( userFunctionCall, userFunctionArgs, retValue );
@@ -170,7 +181,6 @@ RevObject* UserFunction::execute( void ) {
     {
         makeDeterministicVariable<typename RevBayesCore::Topology>( userFunctionCall, userFunctionArgs, retValue );
     }
-#endif
     else if ( internalValueType == "BranchLengthTree" )
     {
         makeDeterministicVariable<typename RevBayesCore::BranchLengthTree>( userFunctionCall, userFunctionArgs, retValue );

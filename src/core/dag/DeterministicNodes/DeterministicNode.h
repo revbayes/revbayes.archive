@@ -211,7 +211,6 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
 {
     
     o << "_dagType      = Deterministic DAG node" << std::endl;
-    o << "_dagAddress   = <" << this << ">" << std::endl;
 
     o << "_function     = The stupid function <" << function << "> doesn't know who it is" << std::endl;
 

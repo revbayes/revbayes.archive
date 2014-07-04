@@ -27,8 +27,8 @@ namespace RevBayesCore {
     class Topology {
         
     public:       
-        Topology(void);                                                                                                         //!< Default constructor
-        Topology(const Topology &t);
+                                                            Topology(void);                                    //!< Default constructor required by revlanguage use
+                                                            Topology(const Topology &t);
         virtual                                            ~Topology(void);                                                                                                        //!< Destructor
           
         Topology&                                           operator=(const Topology &t);

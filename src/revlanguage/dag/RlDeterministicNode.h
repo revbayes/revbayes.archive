@@ -51,10 +51,9 @@ namespace RevLanguage {
     
 }
 
-using namespace RevLanguage;
 
 template<class valueType>
-DeterministicNode<valueType>::DeterministicNode( const std::string& n, RevBayesCore::TypedFunction<valueType>* fxn, Function* rlFxn ) :
+RevLanguage::DeterministicNode<valueType>::DeterministicNode( const std::string& n, RevBayesCore::TypedFunction<valueType>* fxn, RevLanguage::Function* rlFxn ) :
     RevBayesCore::DeterministicNode<valueType>( n, fxn ), rlFunction( rlFxn ) {
 
     touchMe( this );
@@ -62,7 +61,7 @@ DeterministicNode<valueType>::DeterministicNode( const std::string& n, RevBayesC
 
 
 template<class valueType>
-DeterministicNode<valueType>::DeterministicNode( const DeterministicNode<valueType> &n )
+RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n )
     : RevBayesCore::DeterministicNode<valueType>( n ), rlFunction( n.rlFunction->clone() ) {
 
     touchMe( this );    // NB: This for safety; not needed if we trust all involved copy constructors
@@ -70,28 +69,28 @@ DeterministicNode<valueType>::DeterministicNode( const DeterministicNode<valueTy
 
 
 template<class valueType>
-DeterministicNode<valueType>::~DeterministicNode( void ) {
+RevLanguage::DeterministicNode<valueType>::~DeterministicNode( void ) {
 
     delete rlFunction;
 }
 
 
 template<class valueType>
-DeterministicNode<valueType>* DeterministicNode<valueType>::clone( void ) const {
+RevLanguage::DeterministicNode<valueType>* RevLanguage::DeterministicNode<valueType>::clone( void ) const {
     
     return new DeterministicNode<valueType>( *this );
 }
 
 
 template<class valueType>
-Function& DeterministicNode<valueType>::getRlFunction( void ) {
+RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFunction( void ) {
     
     return *rlFunction;
 }
 
 
 template<class valueType>
-const Function& DeterministicNode<valueType>::getRlFunction( void ) const {
+const RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFunction( void ) const {
     
     return *rlFunction;
 }
@@ -99,7 +98,7 @@ const Function& DeterministicNode<valueType>::getRlFunction( void ) const {
 
 /** Touch this node for recalculation. Here we use lazy evaluation. */
 template<class valueType>
-void DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
+void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
     
     if ( !this->isFunctionDirty() )
     {
@@ -114,15 +113,14 @@ void DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
 
 /** Print struct for user */
 template<class valueType>
-void DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
+void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
 {
     o << "_dagType      = Deterministic DAG node" << std::endl;
-    o << "_dagAddress   = <" << this << ">" << std::endl;
 
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
     o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = " << RevBayesCore::DeterministicNode<valueType>::getValue() << std::endl;
+    o << "_value        = " << this->getValue() << std::endl;
     
     o << "_parents      = ";
     this->printParents(o);
@@ -130,6 +128,7 @@ void DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
     
     o << "_children     = ";
     this->printChildren(o);
+
     o << std::endl;
 }
 

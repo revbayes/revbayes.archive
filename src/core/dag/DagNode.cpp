@@ -336,7 +336,7 @@ void DagNode::printChildren( std::ostream& o ) const {
         if ( (*i)->getName() == "" )
             o << "<" << (*i) << ">";
         else
-            o << (*i)->getName() << " <" << (*i) << ">";
+            o << (*i)->getName();
     }
     o << " ]";
 }
@@ -353,11 +353,10 @@ void DagNode::printParents( std::ostream& o ) const {
         if ( (*i)->getName() == "" )
             o << "<" << (*i) << ">";
         else
-            o << (*i)->getName() << " <" << (*i) << ">";
+            o << (*i)->getName();
     }
     o << " ]";
 }
-
 
 
 /**
