@@ -28,8 +28,7 @@ namespace RevBayesCore {
     class UniformTopologyDistribution : public TypedDistribution<Topology> {
         
     public:
-        UniformTopologyDistribution(unsigned int nTaxa, const std::vector<std::string> &tn);        
-        UniformTopologyDistribution(const UniformTopologyDistribution &n);                                                                                          //!< Copy constructor
+        UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn);
         virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
         
         // public member functions
@@ -45,7 +44,7 @@ namespace RevBayesCore {
         void                                                simulateTree(void);
         
         // members
-        unsigned int                                        numTaxa;
+        size_t                                              numTaxa;
         std::vector<std::string>                            taxonNames;
         double                                              logTreeTopologyProb;
         

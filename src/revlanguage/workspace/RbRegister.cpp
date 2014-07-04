@@ -258,6 +258,7 @@
 #include "Func__add.h"
 #include "Func__div.h"
 #include "Func__mult.h"
+#include "Func__mod.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
 
@@ -416,6 +417,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
+        addTypeWithConstructor("mvNNI",                     new Move_NNIClock() );
+        addTypeWithConstructor("mvNNI",                     new Move_NNINonclock() );
         addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
@@ -785,6 +788,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_sub",      new Func__sub< Real            , Real              , Real              >(  )  );
         addFunction( "_sub",      new Func__sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
         addFunction( "_sub",      new Func__sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
+        
+        // modulo
+        addFunction( "_mod",      new Func__mod() );
         
         // exponentiation
         addFunction( "_exp",      new Func_power() );
