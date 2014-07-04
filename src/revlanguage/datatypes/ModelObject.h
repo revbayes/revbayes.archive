@@ -51,7 +51,7 @@ namespace RevLanguage {
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
-//        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -464,7 +464,6 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagRefer
 }
 
 
-#if 0
 /** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
@@ -478,27 +477,6 @@ void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall*
     value = detNode;
     value->incrementReferenceCount();
 }
-
-
-/** Specialization for RevBayesCore::RateMatrix, which is an abstract class */
-template <>
-void RevLanguage::ModelObject<typename RevBayesCore::RateMatrix>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
-{
-    std::ostringstream msg;
-    msg << "Invalid attempt to make a deterministic value of an abstract type";
-    throw RbException( msg );
-}
-
-
-/** Specialization for RevBayesCore::AbstractCharacterData, which is an abstract class */
-template <>
-void RevLanguage::ModelObject<typename RevBayesCore::AbstractCharacterData>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
-{
-    std::ostringstream msg;
-    msg << "Invalid attempt to make a deterministic value of an abstract type";
-    throw RbException( msg );
-}
-#endif
 
 
 /** Print structure info for user */

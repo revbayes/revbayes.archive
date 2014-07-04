@@ -30,6 +30,8 @@ namespace RevLanguage {
         
         // Public methods
         TypedUserFunction<valueType>*       clone(void) const;                                                          //!< Clone the function
+        valueType&                          getValue(void);                                                             //!< Get value from Rev object
+        const valueType&                    getValue(void) const;                                                       //!< Get const value from Rev object
         void                                touch(RevBayesCore::DagNode *toucher );                                     //!< Set dirty flag
         void                                update(void);                                                               //!< Update the value of the function
    
@@ -37,20 +39,25 @@ namespace RevLanguage {
         void                                swapParameterInternal(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP);    //!< Exchange a parameter
         
     private:
-        UserFunctionCall*                   userFunctionCall;                                                            //!< The user function call
-    
+        UserFunctionCall*                   userFunctionCall;                                                           //!< The user function call
+        RevObject*                          revObject;                                                                  //!< The object returned by the function
     };
     
 }
 
+#include "AbstractCharacterData.h"
+#include "ContinuousCharacterData.h"
+#include "RateMatrix.h"
+#include "RateMatrix_JC.h"
 #include "RlDeterministicNode.h"
 
 using namespace RevLanguage;
 
 template <class valueType>
 TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
-    RevBayesCore::TypedFunction<valueType>( new valueType() ),
-    userFunctionCall( uFC )
+    RevBayesCore::TypedFunction<valueType>( NULL ),
+    userFunctionCall( uFC ),
+    revObject( NULL )
 {
     // Add parameters to conform to RevBayesCore::Function
     std::vector<const RevBayesCore::DagNode*> params = userFunctionCall->getParameters();
@@ -65,7 +72,8 @@ TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
 template <class valueType>
 TypedUserFunction<valueType>::TypedUserFunction(const TypedUserFunction<valueType> &x) :
     RevBayesCore::TypedFunction<valueType>( x ),
-    userFunctionCall( x.userFunctionCall->clone() )
+    userFunctionCall( x.userFunctionCall->clone() ),
+    revObject( NULL )
 {
     /* Just set dirty flag. No need to add parameters, it happens automatically. */
     this->setDirty( true );
@@ -75,9 +83,8 @@ TypedUserFunction<valueType>::TypedUserFunction(const TypedUserFunction<valueTyp
 template <class valueType>
 TypedUserFunction<valueType>::~TypedUserFunction( void ) {
     
-    // No need to delete parameters. The model is responsible for this.
-
     delete userFunctionCall;
+    delete revObject;
 }
 
 
@@ -85,6 +92,33 @@ template <class valueType>
 TypedUserFunction<valueType>* TypedUserFunction<valueType>::clone( void ) const {
     
     return new TypedUserFunction<valueType>( *this );
+}
+
+
+template <class valueType>
+const valueType& TypedUserFunction<valueType>::getValue(void) const
+{
+    
+    if (this->isDirty() )
+    {
+        const_cast< TypedUserFunction<valueType>* >( this )->update();
+        const_cast< TypedUserFunction<valueType>* >( this )->setDirty( false );
+    }
+
+    return static_cast< RevBayesCore::TypedDagNode<valueType>* >(revObject->getDagNode())->getValue();
+}
+
+template <class valueType>
+valueType& TypedUserFunction<valueType>::getValue(void)
+{
+    
+    if ( this->isDirty() )
+    {
+        update();
+        this->setDirty( false );
+    }
+    
+    return static_cast< RevBayesCore::TypedDagNode<valueType>* >(revObject->getDagNode())->getValue();
 }
 
 
@@ -107,11 +141,10 @@ void TypedUserFunction<valueType>::touch( RevBayesCore::DagNode* toucher ) {
 template <class valueType>
 void TypedUserFunction<valueType>::update( void ) {
 
-    RevObject* retValue = userFunctionCall->execute();
+    if ( revObject != NULL )
+        delete revObject;
     
-    *(RevBayesCore::TypedFunction<valueType>::value) = static_cast< RevBayesCore::TypedDagNode<valueType>* >(retValue->getDagNode())->getValue();
-
-    delete retValue;
+    revObject = userFunctionCall->execute();
     
     this->setDirty( false );
 }
