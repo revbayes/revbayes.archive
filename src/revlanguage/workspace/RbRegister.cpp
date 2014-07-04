@@ -861,13 +861,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 
  		/* Statistics functions (in folder "functions/statistics") */
+		
+		// some helper statistics for the DPP distribution
         addFunction("dppConcFromMean",  new Func_dppConcFromMean( )     );
         addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
+		
+		// count the number of unique elements in vector
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
-
-        // nonstandard forms form backward compatibility
-//        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
-//        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<RealPos>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
 
         
         ///////////////////////////////////////////////////////////////////////////
