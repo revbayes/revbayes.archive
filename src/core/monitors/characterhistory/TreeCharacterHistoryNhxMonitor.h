@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, TimeAtlas* ta, unsigned long g, int mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType> *t, TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor& f);
         
@@ -81,7 +81,7 @@ namespace RevBayesCore {
         bool                                showMetadata;
         bool                                showRates;
         long                                numSamples;
-        long                                maxGen;
+        unsigned long                       maxGen;
         long                                burn;
         
     };
@@ -96,7 +96,7 @@ namespace RevBayesCore {
 
 /* Constructor */
 template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, TimeAtlas* ta, unsigned long g, int mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractCharacterData>* s, TypedDagNode<treeType>* t, TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
 Monitor(g,t),
 outStream(),
 variable( s ),

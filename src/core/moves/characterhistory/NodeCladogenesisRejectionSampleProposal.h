@@ -597,7 +597,7 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
         {
             while (budIdx == -1 || !rm.isAreaAvailable(budIdx, node->getAge()))
             {
-                budIdx = nodeChildState.size() * GLOBAL_RNG->uniform01();
+                budIdx = (int)(nodeChildState.size() * GLOBAL_RNG->uniform01());
             }
             budParentState[budIdx]->setState(1);
             if (proposedCladogenicState == 1)
@@ -611,11 +611,10 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
         // sample states
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned int ancS = nodeParentState[*it]->getState();
-            unsigned int desS1 = trunkChildState[*it]->getState();
-            unsigned int desS2 = budChildState[*it]->getState();
+//            unsigned int ancS = nodeParentState[*it]->getState();
+//            unsigned int desS1 = trunkChildState[*it]->getState();
+//            unsigned int desS2 = budChildState[*it]->getState();
 
-            
             rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
             rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix);
             rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix);
@@ -630,7 +629,7 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
             if (u < 0.5 && rm.isAreaAvailable(*it, node->getAge()))
                 s = 1;
             
-            if (*it != budIdx)
+            if (*it != (size_t)budIdx)
             {
                 nodeChildState[*it]->setState(s);
                 trunkParentState[*it]->setState(s);
@@ -729,10 +728,9 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
             rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix, *it);
             rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix, *it);
             
-            
-            unsigned int ancS = nodeParentState[*it]->getState();
-            unsigned int desS1 = trunkChildState[*it]->getState();
-            unsigned int desS2 = budChildState[*it]->getState();
+//            unsigned int ancS = nodeParentState[*it]->getState();
+//            unsigned int desS1 = trunkChildState[*it]->getState();
+//            unsigned int desS2 = budChildState[*it]->getState();
             
             // Would prefer to sample from f(H_N, H_L, H_R, X_N, X_T, X_B | X_L, X_R, X_A).
             // Unfortunately, this does not seem to scale well with N, since it requires summing
@@ -744,7 +742,7 @@ double RevBayesCore::NodeCladogenesisRejectionSampleProposal<charType, treeType>
             if (u < 0.5)
                 s = 1;
             
-            if (*it != budIdx)
+            if (*it != (size_t)budIdx)
             {
                 nodeChildState[*it]->setState(s);
                 trunkParentState[*it]->setState(s);
