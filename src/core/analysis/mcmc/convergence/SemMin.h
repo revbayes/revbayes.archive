@@ -18,14 +18,14 @@ namespace RevBayesCore {
     
     public:
         SemMin();
-        SemMin(size_t blockSize);
+        SemMin(std::size_t blockSize);
     
         // implementen functions from convergence diagnostic
-        size_t     estimateBurnin(const std::vector<double>& values);
+        std::size_t     estimateBurnin(const std::vector<double>& values);
     
     private:
     
-        size_t      blockSize;                                                                                          //!< first window
+        std::size_t      blockSize;                                                                                          //!< first window
     
     };
     
