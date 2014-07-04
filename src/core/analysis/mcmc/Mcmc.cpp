@@ -137,7 +137,7 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
 }
 
 
-void Mcmc::run(int kIterations) {
+void Mcmc::run(size_t kIterations) {
     
     /* Let user know what we are doing */
     if ( generation == 0 )
