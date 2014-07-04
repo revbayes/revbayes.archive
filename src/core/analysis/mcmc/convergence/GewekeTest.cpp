@@ -6,9 +6,9 @@
 using namespace RevBayesCore;
 
 GewekeTest::GewekeTest(double f, double f1, double f2) : ConvergenceDiagnosticContinuous(),
-    p( f ),
     frac1( f1 ),
-    frac2( f2 )
+    frac2( f2 ),
+    p( f )
 {
     
 }

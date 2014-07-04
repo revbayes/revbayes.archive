@@ -46,6 +46,11 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
     if (name == "run")
     {
         
+        
+        RBOUT("\n\t*********************************************");
+        RBOUT("\tBurn-in Estimation and Convergence Assessment");
+        RBOUT("\t*********************************************\n\n");
+        
         RevBayesCore::BurninEstimatorContinuous *burninEst = NULL;
         
         if ( burninMethod == "ESS" )
@@ -89,6 +94,8 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
             std::vector<RevBayesCore::Trace> data;
             const std::string &fn = *p;
             readTrace(fn, data);
+            
+            RBOUT("Processing file '" + fn + "'");
             
             size_t maxBurnin = 0;
             
@@ -153,6 +160,37 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
             if ( failed )
             {
                 RBOUT("Convergence assessment detected possible issues in file " + fn + ":");
+                
+                // printing failures of convergence of the Geweke test
+                for (std::vector<std::string>::iterator it = failedGeweke.begin(); it != failedGeweke.end(); ++it)
+                {
+                    RBOUT("The parameter with name '" + *it + " failed the Geweke test.");
+                }
+                
+                // printing failures of convergence of the Gelman-Rubin test
+                for (std::vector<std::string>::iterator it = failedGelman.begin(); it != failedGelman.end(); ++it)
+                {
+                    RBOUT("The parameter with name '" + *it + " failed the Gelman-Rubin test.");
+                }
+                
+                // printing failures of convergence of the stationarity test
+                for (std::vector<std::string>::iterator it = failedStationary.begin(); it != failedStationary.end(); ++it)
+                {
+                    RBOUT("The parameter with name '" + *it + " failed the stationarity test.");
+                }
+                
+                // printing failures of convergence of the ESS test
+                for (std::vector<std::string>::iterator it = failedESS.begin(); it != failedESS.end(); ++it)
+                {
+                    RBOUT("The parameter with name '" + *it + " failed the ESS test.");
+                }
+                
+                // printing failures of convergence of the Heidelberger-Welch test
+                for (std::vector<std::string>::iterator it = failedHeidelberger.begin(); it != failedHeidelberger.end(); ++it)
+                {
+                    RBOUT("The parameter with name '" + *it + " failed the Heidelberger-Welch test.");
+                }
+                
             }
             else
             {
@@ -160,6 +198,7 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
             }
         }
 
+        RBOUT("\n");
         
     }
     else if (name == "setBurninMethod")
