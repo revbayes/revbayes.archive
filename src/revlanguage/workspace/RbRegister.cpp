@@ -859,8 +859,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
 
         // nonstandard forms form backward compatibility
-        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
-        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
+//        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
+//        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
 
         
         ///////////////////////////////////////////////////////////////////////////
