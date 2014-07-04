@@ -47,15 +47,15 @@ namespace RevBayesCore {
         virtual                            ~TypedFunction(void);
         
         // public methods
-        valueType&                          getValue(void);
-        const valueType&                    getValue(void) const;
+        virtual valueType&                  getValue(void);                                                             //!< Get a value reference
+        virtual const valueType&            getValue(void) const;                                                       //!< Get value reference (const)
         void                                setDeterministicNode(DeterministicNode<valueType> *n);                      //!< Set the stochastic node holding this distribution
 
         // pure virtual public methors
         virtual TypedFunction*              clone(void) const = 0;                                                      //!< Clone the function
-        bool                                isDirty(void);                                                              //!< Return dirty flag
+        bool                                isDirty(void) const;                                                        //!< Return dirty flag
         void                                setDirty(bool flag = true);                                                 //!< Set dirty flag
-        virtual void                        touch(RevBayesCore::DagNode *toucher );                                     //!< Set dirty flag
+        virtual void                        touch(RevBayesCore::DagNode *toucher );                                     //!< Touch the function (set dirty flag)
         virtual void                        update(void) = 0;                                                           //!< Update the value of the function
     
     protected:
@@ -88,7 +88,7 @@ template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(),
     dagNode( NULL ), 
     value( v ), 
-    dirty(true)
+    dirty( true )
 {
     
 }
@@ -96,10 +96,11 @@ RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function()
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), 
     dagNode( NULL ), 
-    value( Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value ) ), 
-    dirty(true)
+    value( NULL ),
+    dirty( true )
 {
-
+    if ( f.value != NULL )
+        value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value );
 }
 
 template <class valueType>
@@ -157,7 +158,7 @@ valueType& RevBayesCore::TypedFunction<valueType>::getValue(void)
 
 
 template <class valueType>
-bool RevBayesCore::TypedFunction<valueType>::isDirty(void)
+bool RevBayesCore::TypedFunction<valueType>::isDirty(void) const
 {
     return dirty;
 }

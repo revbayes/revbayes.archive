@@ -102,23 +102,33 @@ UserFunction* UserFunction::clone(void) const {
 
 
 /** Execute function. Here we create a deterministic node if applicable, otherwise we just execute the code */
-RevObject* UserFunction::execute( void ) {
+RevObject* UserFunction::execute( void )
+{
     
     // If we can match the internal type, we return an appropriate model/container/factor object with a
     // deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
-#if 0
-    /* New method */
-    UserFunctionCall* call = new UserFunctionCall( this );
-    UserFunctionArgs* args = new UserFunctionArgs( this );
-    
+#if 1
     RevObject* retVal = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
 
-    retVal->makeDeterministicValue( call, args );
+    if ( retVal->hasDagNode() )
+    {
+        UserFunctionCall* call = new UserFunctionCall( this );
+        UserFunctionArgs* args = new UserFunctionArgs( this );
+        
+        retVal->makeDeterministicValue( call, args );
+    }
+    else
+    {
+        delete retVal;
+        UserFunctionCall fxnCall( this );
+        retVal = fxnCall.execute();
+    }
     
     return retVal;
 #endif
 
+#if 0
     /* Get the internal value type of the return type */
     std::string internalValueType = Workspace::userWorkspace().getInternalValueType( returnType.getType() );
 
@@ -241,7 +251,7 @@ RevObject* UserFunction::execute( void ) {
     }
 
     return retValue;
-    
+#endif
 }
 
     
