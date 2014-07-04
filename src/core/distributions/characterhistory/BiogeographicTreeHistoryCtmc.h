@@ -229,8 +229,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 
     BranchHistory* bh = this->histories[nodeIndex];
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
-    unsigned int n1 = numOn(currState);
-	unsigned int n0 = this->numSites - n1;
+    unsigned int n1 = (unsigned)numOn(currState);
+	unsigned int n0 = (unsigned)(this->numSites - n1);
     unsigned counts[2] = { n0, n1 };
     
     if (node.isRoot())
@@ -246,7 +246,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
         
-        const treeType& tree = this->tau->getValue();
+//        const treeType& tree = this->tau->getValue();
         double branchLength = node.getBranchLength();
         double currAge = (node.isRoot() ? 1e10 : node.getParent().getAge());
         double startAge = currAge;
@@ -903,7 +903,7 @@ template<class charType, class treeType>
 bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history)
 {
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
-    int n = numOn(currState);
+    int n = (int)numOn(currState);
     if (n == 0)
         return true;
     
@@ -1181,7 +1181,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         {
             for (size_t i = 0; i < this->numSites; ++i)
             {
-                unsigned s = parent.getCharacter(i).getState();
+                unsigned s = (unsigned)parent.getCharacter(i).getState();
                 currState.push_back(new CharacterEvent(i, s, 0.0));
             }
         }
@@ -1207,7 +1207,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
         std::set<CharacterEvent*,CharacterEventCompare> history;
         
         double t = 0.0;
-        unsigned int n = numOn(currState);
+        unsigned int n = (unsigned)numOn(currState);
         do
         {
             // sample next event time

@@ -124,6 +124,7 @@
 /* Math types (in folder "datatypes/math") */
 #include "RealMatrix.h"
 #include "RealSymmetricMatrix.h"
+#include "RlRateMap.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -227,6 +228,10 @@
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_wag.h"
+
+/* Rate map functions (in folder "functions/evolution/ratemap") */
+#include "Func_dec_biogeo.h"
+
 
 
 /* Inference functions (in folder "functions/inference") */
@@ -438,6 +443,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         /* Add math types (in folder "datatypes/math") */
+        addType( new RateMap()              );
         addType( new RateMatrix()           );
         addType( new RealMatrix()           );
         addType( new Simplex()              );
@@ -474,6 +480,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addDistribution( "phyloCTMC",   new Dist_phyloCTMC<BranchLengthTree>() );
         addDistribution( "substModel",  new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "substModel",  new Dist_phyloCTMC<BranchLengthTree>() );
+        
+        
+        // data augmented CTMC
+//        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
 
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
@@ -695,7 +705,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "RtRev",    new Func_rtRev()   );
         addFunction( "VT",       new Func_vt()      );
         addFunction( "WAG",      new Func_wag()     );
-
+        
+        /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
+        addFunction( "DEC_biogeo", new Func_dec_biogeo() );
 
         /* Inference functions (in folder "functions/inference") */
 

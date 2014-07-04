@@ -108,10 +108,10 @@ double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::compu
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     
         
-    const treeType& tree = this->tau->getValue();
+//    const treeType& tree = this->tau->getValue();
     double branchLength = nd.getBranchLength();
     double currAge = (nd.isRoot() ? 1e10 : nd.getParent().getAge());
-    double startAge = currAge;
+//    double startAge = currAge;
     double endAge = nd.getAge();
     const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(this->qmap->getValue());
     
@@ -229,7 +229,7 @@ double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::doPro
     
     // get epoch variables
     double startAge = this->node->getParent().getAge();
-    double endAge = this->node->getAge();
+//    double endAge = this->node->getAge();
     
     // clear characters
     BranchHistory* bh = &p.getHistory(*(this->node));
