@@ -14,7 +14,7 @@
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
+#include "NumUniqueInVector.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -138,7 +138,7 @@ bool TestDPPRelClock::run( void ) {
 	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
 
 	// a deterministic node for calculating the number of rate categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
+	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(branchRates) );
 	
 //	ConstantNode<double> *crA  = new ConstantNode<double>("CR.gammA", new double(0.1) );
 //	ConstantNode<double> *crL  = new ConstantNode<double>("CR.gammL", new double(100.0) );
