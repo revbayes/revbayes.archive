@@ -212,7 +212,7 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     
     o << "_dagType      = Deterministic DAG node" << std::endl;
 
-    o << "_function     = The stupid function <" << function << "> doesn't know who it is" << std::endl;
+    o << "_function     = <" << function << ">" << std::endl;
 
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     o << "_value        = " << getValue() << std::endl;
@@ -289,11 +289,20 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
-    if (!this->touched) {
-        this->touched = true;
-        
-    }
+    this->touched = true;
     
+    if ( !this->isFunctionDirty() )
+    {
+        // Essential for lazy evaluation
+        this->touchFunction( toucher );
+        
+        // Dispatch the touch message to downstream nodes
+        this->touchAffected();
+    }
+
+#if 0
+    // Uncomment this code if you do not want to use lazy evaluation
+
     // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
     function->touch( toucher );
     
@@ -302,7 +311,8 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
     // we call the affected nodes every time
     this->touchAffected();
-    
+#endif
+
 }
 
 
