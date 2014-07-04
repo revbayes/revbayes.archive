@@ -100,6 +100,8 @@ const RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFun
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
     
+    this->touched = true;     //!< To be on the safe side; the flag is not used by this class
+    
     if ( !this->isFunctionDirty() )
     {
         // Essential for lazy evaluation
