@@ -17,14 +17,14 @@
 #define TimeReversibleRateMatrix_H
 
 #include "MatrixReal.h"
-#include "RateMatrix.h"
+#include "AbstractRateMatrix.h"
 #include <complex>
 #include <vector>
 
 
 namespace RevBayesCore {
     
-    class TimeReversibleRateMatrix : public RateMatrix {
+    class TimeReversibleRateMatrix : public AbstractRateMatrix {
         
     public:
         ~TimeReversibleRateMatrix(void);                                                                            //!< Destructor
@@ -47,10 +47,6 @@ namespace RevBayesCore {
         
     protected:        
         TimeReversibleRateMatrix(size_t n);                                                                         //!< Construct rate matrix with n states
-        TimeReversibleRateMatrix(const TimeReversibleRateMatrix& m);                                                //!< Copy constructor
-
-        // overloaded operators
-        TimeReversibleRateMatrix&           operator=(const TimeReversibleRateMatrix& r);
     
         std::vector<double>                 exchangeabilityRates;
         std::vector<double>                 stationaryFreqs;                                                                 //!< Holds the stationary frequencies

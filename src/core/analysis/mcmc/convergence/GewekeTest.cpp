@@ -15,8 +15,11 @@ GewekeTest::GewekeTest(double f, double f1, double f2) : ConvergenceDiagnosticCo
 
 bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
 {
+    // get the number of values
+    size_t valueCount = values.size();
+    
     // get the sample size
-    size_t sampleSize = values.size() - burnin;
+    size_t sampleSize = valueCount - burnin;
     
     // set the indices for start and end of the first window
     size_t startwindow1    = burnin;
@@ -29,8 +32,8 @@ bool GewekeTest::assessConvergenceSingleChain(const std::vector<double>& values,
     double varWindow1   = analysis.getStdErrorOfMean()*analysis.getStdErrorOfMean();
     
     // set the indices for start and end of the second window
-    size_t startwindow2    = values.size() - size_t(sampleSize * frac2);
-    size_t endWindow2      = values.size();
+    size_t startwindow2    = valueCount - size_t(sampleSize * frac2);
+    size_t endWindow2      = valueCount;
     
     // get mean and variance of the second window
     analysis.analyseMean(values, startwindow2, endWindow2);

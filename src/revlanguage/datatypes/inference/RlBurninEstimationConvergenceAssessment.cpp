@@ -128,36 +128,36 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
                 const std::string &traceName = t.getParameterName();
                 
                 bool gewekeStat = gewekeTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( gewekeStat )
+                if ( !gewekeStat )
                 {
                     failedGeweke.push_back( traceName );
                 }
                 
                 bool essStat = essTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( essStat )
+                if ( !essStat )
                 {
                     failedESS.push_back( traceName );
                 }
                 
                 bool gelmanStat = gelmanRubinTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( gelmanStat )
+                if ( !gelmanStat )
                 {
                     failedGelman.push_back( traceName );
                 }
                 
                 bool stationarityStat = stationarityTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( stationarityStat )
+                if ( !stationarityStat )
                 {
                     failedStationary.push_back( traceName );
                 }
                 
                 bool heidelbergerStat = heidelbergerTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( heidelbergerStat )
+                if ( !heidelbergerStat )
                 {
                     failedHeidelberger.push_back( traceName );
                 }
                 
-                failed = gewekeStat || gelmanStat || stationarityStat || heidelbergerStat || essStat;
+                failed = !gewekeStat || !gelmanStat || !stationarityStat || !heidelbergerStat || !essStat;
             }
             
             if ( failed )
@@ -316,9 +316,10 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
     
     /* Initialize */
     std::string commandLine;
-    //    RBOUT("Processing file \"" + fn + "\"");
-        
-        /* Command-processing loop */
+
+    size_t startIndex = 0;
+    
+    /* Command-processing loop */
     while ( inFile.good() )
     {
             
@@ -347,8 +348,14 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
         // we assume a header at the first line of the file
         if (!hasHeaderBeenRead)
         {
-                
-            for (size_t j=0; j<columns.size(); j++)
+            
+            // do not add the iteration number as a trace
+            if ( columns[0] == "Iteration" )
+            {
+                startIndex = 1;
+            }
+            
+            for (size_t j=startIndex; j<columns.size(); j++)
             {
                 RevBayesCore::Trace t;
                     
@@ -365,9 +372,9 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
         }
             
         // adding values to the Tracess
-        for (size_t j=0; j<columns.size(); j++)
+        for (size_t j=startIndex; j<columns.size(); j++)
         {
-            RevBayesCore::Trace& t = data[j];
+            RevBayesCore::Trace& t = data[j-startIndex];
             std::string tmp = columns[j];
             double d = atof( tmp.c_str() );
             t.addObject(d);
