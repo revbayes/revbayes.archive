@@ -296,7 +296,7 @@
 /* These are functions related to statistical distributions */
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
-#include "Func_dppNumTablesStatistic.h"
+#include "Func_numUniqueInVector.h"
 
 
 /** Initialize global workspace */
@@ -863,6 +863,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
  		/* Statistics functions (in folder "functions/statistics") */
         addFunction("dppConcFromMean",  new Func_dppConcFromMean( )     );
         addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
 
         // nonstandard forms form backward compatibility
 //        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );

@@ -15,8 +15,8 @@
  */
 
 
-#ifndef Func_dppNumTablesStatistic_H
-#define Func_dppNumTablesStatistic_H
+#ifndef Func_numUniqueInVector_H
+#define Func_numUniqueInVector_H
 
 #include "RlFunction.h"
 
@@ -25,13 +25,13 @@
 namespace RevLanguage {
     
     template <typename valType>
-    class Func_dppNumTablesStatistic :  public Function {
+    class Func_numUniqueInVector :  public Function {
         
     public:
-        Func_dppNumTablesStatistic( void );
+        Func_numUniqueInVector( void );
         
         // Basic utility functions
-        Func_dppNumTablesStatistic*                     clone(void) const;                                                              //!< Clone the object
+        Func_numUniqueInVector*                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -46,36 +46,36 @@ namespace RevLanguage {
 }
 
 #include "DeterministicNode.h"
-#include "DppNumTablesStatistic.h"
+#include "NumUniqueInVector.h"
 #include "RealPos.h"
 #include "Integer.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
+#include "StochasticNode.h"
 
 //using namespace RevLanguage;
 
 /** default constructor */
 template <typename valType>
-RevLanguage::Func_dppNumTablesStatistic<valType>::Func_dppNumTablesStatistic( void ) : Function( ) {
+RevLanguage::Func_numUniqueInVector<valType>::Func_numUniqueInVector( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
 template <typename valType>
-RevLanguage::Func_dppNumTablesStatistic<valType>* RevLanguage::Func_dppNumTablesStatistic<valType>::clone( void ) const {
+RevLanguage::Func_numUniqueInVector<valType>* RevLanguage::Func_numUniqueInVector<valType>::clone( void ) const {
     
-    return new RevLanguage::Func_dppNumTablesStatistic<valType>( *this );
+    return new RevLanguage::Func_numUniqueInVector<valType>( *this );
 }
 
 template <typename valType>
-RevLanguage::RevObject* RevLanguage::Func_dppNumTablesStatistic<valType>::execute() {
+RevLanguage::RevObject* RevLanguage::Func_numUniqueInVector<valType>::execute() {
+    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* vect = static_cast<const Vector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::NumUniqueInVector<typename valType::valueType>* f = new RevBayesCore::NumUniqueInVector<typename valType::valueType>( vect );
+    RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
     
-    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* dppVec = static_cast<const std::vector<typename valType::valueType> >( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::DppNumTablesStatistic<typename valType::valueType>* f = new RevBayesCore::DppNumTablesStatistic<typename valType::valueType>( dppVec );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
-    
-    RealPos* value = new RealPos( detNode );
+    Integer* value = new Integer( detNode );
     
     return value;
 }
@@ -83,14 +83,14 @@ RevLanguage::RevObject* RevLanguage::Func_dppNumTablesStatistic<valType>::execut
 
 /* Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_dppNumTablesStatistic<valType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "dppVector", true, Vector<valType>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "vector", true, Vector<valType>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -100,16 +100,16 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_dppNumTablesStatistic<valTyp
 
 
 template <typename valType>
-const std::string& RevLanguage::Func_dppNumTablesStatistic<valType>::getClassName(void) { 
+const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassName(void) { 
     
-    static std::string rbClassName = "Func_dppNumTablesStatistic";
+    static std::string rbClassName = "Func_numUniqueInVector";
     
 	return rbClassName; 
 }
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -119,7 +119,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::g
 
 /* Get return type */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::getReturnType( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -128,7 +128,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::g
 
 
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_dppNumTablesStatistic<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
