@@ -4,6 +4,7 @@
 #include <cmath>
 
 using namespace RevBayesCore;
+using namespace std;
 
 
 StationarityTest::StationarityTest(size_t b, double f) : ConvergenceDiagnosticContinuous(),

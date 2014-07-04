@@ -14,6 +14,7 @@
 #include <math.h>
 
 using namespace RevBayesCore;
+using namespace std;
 
 
 /**

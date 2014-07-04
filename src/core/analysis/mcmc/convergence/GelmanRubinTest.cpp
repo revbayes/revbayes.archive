@@ -4,6 +4,8 @@
 #include <cmath>
 
 using namespace RevBayesCore;
+using namespace std;
+
 GelmanRubinTest::GelmanRubinTest(double r, size_t n) : ConvergenceDiagnosticContinuous(),
     R( r ),
     nBatches( n )

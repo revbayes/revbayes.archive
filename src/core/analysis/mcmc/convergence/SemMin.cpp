@@ -13,6 +13,7 @@
 #include <cmath>
 
 using namespace RevBayesCore;
+using namespace std;
 
 SemMin::SemMin() {
     blockSize = 10;
