@@ -121,7 +121,7 @@ const std::string& RevLanguage::Dist_dpp<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector<RealPos> >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector< valType > >::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -135,7 +135,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getMemberRules(v
     
     static MemberRules distDPPMemberRules;
     static bool rulesSet = false;
-    
+
     if ( !rulesSet ) {
         distDPPMemberRules.push_back( new ArgumentRule( "concentration",     true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution",  true, TypedDistribution<valType>::getClassTypeSpec() ) );
