@@ -471,7 +471,7 @@ void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall*
     TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
     DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, args );
     
-    if ( value->decrementReferenceCount() == 0 )
+    if ( value != NULL && value->decrementReferenceCount() == 0 )
         delete value;
 
     value = detNode;
