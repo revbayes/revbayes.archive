@@ -67,6 +67,7 @@ public:
     virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
     virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
     virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
+//    virtual size_t                      getDim(void) const;                                                                             //!< Get the number of dimensions of the internal object, e.g., 1 if this is a vector.
     virtual const std::string&          getInternalValueType(void) const;                                                               //!< Get the internal value type (RevBayesCore object or primitive C++ object)
     virtual bool                        hasDagNode(void) const;                                                                         //!< Do I have an internal value node?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
