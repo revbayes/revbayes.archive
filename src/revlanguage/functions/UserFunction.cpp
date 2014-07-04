@@ -105,10 +105,9 @@ UserFunction* UserFunction::clone(void) const {
 RevObject* UserFunction::execute( void )
 {
     
-    // If we can match the internal type, we return an appropriate model/container/factor object with a
-    // deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
+    // If the return type object has a DAG node inside it, we return an appropriate model/container/factor object
+    // with a deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
-#if 1
     RevObject* retVal = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
 
     if ( retVal->hasDagNode() )
@@ -126,132 +125,6 @@ RevObject* UserFunction::execute( void )
     }
     
     return retVal;
-#endif
-
-#if 0
-    /* Get the internal value type of the return type */
-    std::string internalValueType = Workspace::userWorkspace().getInternalValueType( returnType.getType() );
-
-    /* Return value directly of objects that do not have a templated internal value node by simply executing the code */
-    if ( internalValueType == "" )
-    {
-        UserFunctionCall fxnCall( this );
-        return fxnCall.execute();
-    }
-
-    /* We have an internal value type so we want to return an object with a deterministic dag node inside it */
-    RevObject* retValue = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
-    
-    /* Generate the required internal function object */
-    UserFunctionCall*           userFunctionCall    = new UserFunctionCall( this );
-    UserFunctionArgs*           userFunctionArgs    = new UserFunctionArgs( this );
-    if ( internalValueType == "double" )
-    {
-        makeDeterministicVariable<double>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "int" )
-    {
-        makeDeterministicVariable<int>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "std::string" )
-    {
-        makeDeterministicVariable<typename std::string>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "bool" )
-    {
-        makeDeterministicVariable<bool>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "std::complex<double>" )
-    {
-        makeDeterministicVariable<typename std::complex<double> >( userFunctionCall, userFunctionArgs, retValue );
-    }
-#if 0   // Abstract (!)
-    else if ( internalValueType == "RateMatrix" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::RateMatrix>( userFunctionCall, userFunctionArgs, retValue );
-    }
-#endif
-    else if ( internalValueType == "MatrixReal" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::MatrixReal>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "PrecisionMatrix" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::PrecisionMatrix>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "Taxon" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::Taxon>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "Clade" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::Clade>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "Topology" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::Topology>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "BranchLengthTree" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::BranchLengthTree>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "TimeTree" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::TimeTree>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "AminoAcoidState" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::AminoAcidState>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "DnaState" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::DnaState>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "RnaState" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::RnaState>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "StandardState" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::StandardState>( userFunctionCall, userFunctionArgs, retValue );
-    }
-#if 0   // Missing printValue
-    else if ( internalValueType == "ContinuousCharacterData" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::ContinuousCharacterData>( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "DiscreteCharacterData<AminoAcidState>" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> >( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "DiscreteCharacterData<DnaState>" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> >( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "DiscreteCharacterData<RnaState>" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> >( userFunctionCall, userFunctionArgs, retValue );
-    }
-    else if ( internalValueType == "DiscreteCharacterData<StandardState>" )
-    {
-        makeDeterministicVariable<typename RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> >( userFunctionCall, userFunctionArgs, retValue );
-    }
-#endif
-    else
-    {
-        /* Unknown internal type  */
-        delete retValue;
-        delete userFunctionCall;
-        delete userFunctionArgs;
-
-        std::ostringstream o;
-        o << "The internal value type '" << internalValueType << "' is not supported yet in user-defined functions." << std::endl;
-        o << "This is a bug; please report it to the RevBayes issue tracker." << std::endl;
-        throw RbException( o.str() );
-    }
-
-    return retValue;
-#endif
 }
 
     
