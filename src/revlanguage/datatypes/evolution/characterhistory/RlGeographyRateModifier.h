@@ -10,7 +10,7 @@
 #define RlGeographyRateModifier_H
 
 #include "ModelObject.h"
-#include "GeographicDistanceRateModifier.h"
+#include "GeographyRateModifier.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -18,13 +18,13 @@
 
 namespace RevLanguage {
     
-    class RlGeographyRateModifier : public ModelObject<RevBayesCore::GeographicDistanceRateModifier> {
+    class RlGeographyRateModifier : public ModelObject<RevBayesCore::GeographyRateModifier> {
         
     public:
         
         RlGeographyRateModifier(void);                                                                                  //!< Default constructor
-        RlGeographyRateModifier(RevBayesCore::GeographicDistanceRateModifier *m);                                       //!< Default constructor
-        RlGeographyRateModifier(RevBayesCore::TypedDagNode<RevBayesCore::GeographicDistanceRateModifier> *d);           //!< Default constructor
+        RlGeographyRateModifier(RevBayesCore::GeographyRateModifier *m);                                       //!< Default constructor
+        RlGeographyRateModifier(RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *d);           //!< Default constructor
         
         // Basic utility functions
         RlGeographyRateModifier*            clone(void) const;                                                          //!< Clone object
