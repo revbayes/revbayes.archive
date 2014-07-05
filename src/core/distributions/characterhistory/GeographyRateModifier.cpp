@@ -1,5 +1,5 @@
 //
-//  GeographicDistanceRateModifier.cpp
+//  GeographyRateModifier.cpp
 //  rb_mlandis
 //
 //  Created by Michael Landis on 8/8/13.
@@ -10,14 +10,14 @@
 #include <cmath>
 #include "CharacterEvent.h"
 #include "GeographicArea.h"
-#include "GeographicDistanceRateModifier.h"
+#include "GeographyRateModifier.h"
 #include "RbConstants.h"
 #include "TimeAtlas.h"
 #define EARTHRADIUSKM 6371
 
 using namespace RevBayesCore;
 
-GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, bool uadj, bool uav, bool udd, int idx, double dp, double th, std::string dt )
+GeographyRateModifier::GeographyRateModifier(TimeAtlas* ta, bool uadj, bool uav, bool udd, int idx, double dp, double th, std::string dt )
 
 {
     // initialize
@@ -87,7 +87,7 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(TimeAtlas* ta, bo
     update();
 }
 
-GeographicDistanceRateModifier::GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g)
+GeographyRateModifier::GeographyRateModifier(const GeographyRateModifier& g)
 {
     
     if (&g != this)
@@ -142,7 +142,7 @@ GeographicDistanceRateModifier::GeographicDistanceRateModifier(const GeographicD
     }
 }
 
-double GeographicDistanceRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
     
@@ -232,7 +232,7 @@ double GeographicDistanceRateModifier::computeRateModifier(std::vector<Character
     return r;
 }
 
-double GeographicDistanceRateModifier::computeRateModifier_test(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeRateModifier_test(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
     if (!useDistanceDependence || distancePower == 0.0 || newState->getState() == 0)
     {
@@ -286,7 +286,7 @@ double GeographicDistanceRateModifier::computeRateModifier_test(std::vector<Char
     return r;
 }
 
-double GeographicDistanceRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
     unsigned s = newState->getState();
     unsigned charIdx = newState->getIndex();
@@ -310,7 +310,7 @@ double GeographicDistanceRateModifier::computeSiteRateModifier(const TopologyNod
     return r;
 }
 
-double GeographicDistanceRateModifier::computeSiteRateModifier(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age)
+double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
     
@@ -332,25 +332,25 @@ double GeographicDistanceRateModifier::computeSiteRateModifier(const TopologyNod
     return r;
 }
 
-double GeographicDistanceRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
 {
     return computeRateModifier(currState, newState, age);
 }
 
-double GeographicDistanceRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
+double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> currState, CharacterEvent* newState)
 {
     return computeRateModifier(currState, newState, 0.0);
 }
 
 
-GeographicDistanceRateModifier* GeographicDistanceRateModifier::clone(void) const
+GeographyRateModifier* GeographyRateModifier::clone(void) const
 {
-    return new GeographicDistanceRateModifier(*this);
+    return new GeographyRateModifier(*this);
 }
 
 
 
-void GeographicDistanceRateModifier::update(void)
+void GeographyRateModifier::update(void)
 {
     for (size_t i = 0; i < numEpochs; i++)
     {
@@ -373,7 +373,7 @@ void GeographicDistanceRateModifier::update(void)
     }
 }
 
-void GeographicDistanceRateModifier::initializeDistances(void)
+void GeographyRateModifier::initializeDistances(void)
 {
     for (unsigned i = 0; i < numEpochs; i++)
     {
@@ -389,7 +389,7 @@ void GeographicDistanceRateModifier::initializeDistances(void)
     }
 }
 
-//void GeographicDistanceRateModifier::initializeDispersalExtinctionValues(void)
+//void GeographyRateModifier::initializeDispersalExtinctionValues(void)
 //{
 //    for (unsigned i = 0; i < numEpochs; i++)
 //    {
@@ -407,7 +407,7 @@ void GeographicDistanceRateModifier::initializeDistances(void)
 //    }
 //}
 
-void GeographicDistanceRateModifier::initializeAdjacentAreas(void)
+void GeographyRateModifier::initializeAdjacentAreas(void)
 {
     adjacentAreaSet.resize(numEpochs*numAreas);
     availableAreaSet.resize(numEpochs);
@@ -466,7 +466,7 @@ void GeographicDistanceRateModifier::initializeAdjacentAreas(void)
 }
 
 
-void GeographicDistanceRateModifier::setDistancePower(double dp, bool upd)
+void GeographyRateModifier::setDistancePower(double dp, bool upd)
 {
     bool changed = (distancePower != dp);
     if (upd && changed)
@@ -476,17 +476,17 @@ void GeographicDistanceRateModifier::setDistancePower(double dp, bool upd)
     }
 }
 
-void GeographicDistanceRateModifier::setGeographicDistancePowers(const std::vector<double>& dp)
+void GeographyRateModifier::setGeographicDistancePowers(const std::vector<double>& dp)
 {
     geographicDistancePowers = dp;
 }
 
-const std::vector<double>& GeographicDistanceRateModifier::getGeographicDistancePowers(void) const
+const std::vector<double>& GeographyRateModifier::getGeographicDistancePowers(void) const
 {
     return geographicDistancePowers;
 }
 
-unsigned GeographicDistanceRateModifier::getEpochIndex(double age)
+unsigned GeographyRateModifier::getEpochIndex(double age)
 {
     unsigned index = 0;
     while (age <= epochs[index] && index < numEpochs-1)
@@ -496,33 +496,33 @@ unsigned GeographicDistanceRateModifier::getEpochIndex(double age)
     return index;
 }
 
-const std::vector<double>& GeographicDistanceRateModifier::getEpochs(void) const
+const std::vector<double>& GeographyRateModifier::getEpochs(void) const
 {
     return epochs;
 }
 
-const std::vector<double>& GeographicDistanceRateModifier::getDispersalValues(void) const
+const std::vector<double>& GeographyRateModifier::getDispersalValues(void) const
 {
     return dispersalValues;
 }
 
-const std::vector<double>& GeographicDistanceRateModifier::getExtinctionValues(void) const
+const std::vector<double>& GeographyRateModifier::getExtinctionValues(void) const
 {
     return extinctionValues;
 }
 
-const std::vector<double>& GeographicDistanceRateModifier::getAdjacentAreaVector(void) const
+const std::vector<double>& GeographyRateModifier::getAdjacentAreaVector(void) const
 {
     return adjacentAreaVector;
 }
 
-const std::vector<double>& GeographicDistanceRateModifier::getAvailableAreaVector(void) const
+const std::vector<double>& GeographyRateModifier::getAvailableAreaVector(void) const
 {
     return availableAreaVector;
 }
 
 
-double GeographicDistanceRateModifier::computePairwiseDistances(int i, int j, int k)
+double GeographyRateModifier::computePairwiseDistances(int i, int j, int k)
 {
     double d = 0.0;
     double rad = RbConstants::PI/180;
@@ -557,7 +557,7 @@ double GeographicDistanceRateModifier::computePairwiseDistances(int i, int j, in
     return d;
 }
 
-void GeographicDistanceRateModifier::setInboundDispersal(const std::vector<double> &v)
+void GeographyRateModifier::setInboundDispersal(const std::vector<double> &v)
 {
     std::vector<double> r = v;
     for (size_t i = 0; i < numEpochs; i++)
@@ -576,7 +576,7 @@ void GeographicDistanceRateModifier::setInboundDispersal(const std::vector<doubl
     }
 }
 
-void GeographicDistanceRateModifier::print(std::vector<std::vector<double> > m)
+void GeographyRateModifier::print(std::vector<std::vector<double> > m)
 {
 //    std::vector<std::vector<double> >::iterator it0;
 //    std::vector<double>::iterator it1;
@@ -591,7 +591,7 @@ void GeographicDistanceRateModifier::print(std::vector<std::vector<double> > m)
 //    }
 }
 
-void GeographicDistanceRateModifier::printAll(void)
+void GeographyRateModifier::printAll(void)
 {
 //    std::cout << "\ngc\n";
 //    print(geographicCoordinates);
