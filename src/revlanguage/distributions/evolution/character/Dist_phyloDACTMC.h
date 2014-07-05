@@ -3,6 +3,7 @@
 
 #include "AbstractDiscreteCharacterData.h"
 #include "RlAbstractDiscreteCharacterData.h"
+#include "RlRateMap.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
 
@@ -36,10 +37,8 @@ namespace RevLanguage {
         
         RevPtr<const Variable>                          tree;
         RevPtr<const Variable>                          q;
-        RevPtr<const Variable>                          rate;
-        RevPtr<const Variable>                          siteRates;
-        RevPtr<const Variable>                          rootFrequencies;
-        RevPtr<const Variable>                          nSites;
+        RevPtr<const Variable>                          forbidExtinction;
+        RevPtr<const Variable>                          useCladogenesis;
         RevPtr<const Variable>                          type;
         
     };
@@ -48,12 +47,10 @@ namespace RevLanguage {
 
 
 #include "OptionRule.h"
-#include "GeneralBranchHeterogeneousCharEvoModel.h"
-#include "NucleotideBranchHeterogeneousCharEvoModel.h"
+#include "BiogeographicTreeHistoryCtmc.h"
 #include "RevNullObject.h"
-#include "RlRateMatrix.h"
 #include "RlString.h"
-#include "RateMatrix.h"
+#include "RateMap.h"
 #include "StandardState.h"
 #include "VectorAbstractElement.h"
 
@@ -69,8 +66,6 @@ RevLanguage::Dist_phyloDACTMC<treeType>::~Dist_phyloDACTMC() {
     
 }
 
-
-
 template <class treeType>
 RevLanguage::Dist_phyloDACTMC<treeType>* RevLanguage::Dist_phyloDACTMC<treeType>::clone( void ) const {
     
@@ -83,82 +78,25 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
-    size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = static_cast<const Vector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+    size_t nStates = rm->getValue().getNumberOfStates();
+    size_t nChars = rm->getValue().getNumberOfCharacters();
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
-    const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
-    if ( rootFrequencies->getRevObject() != RevNullObject::getInstance() )
-    {
-        rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
-    }
     
-    if ( dt == "Standard" )
+    if ( dt == "biogeo" )
     {
-        // we get the number of states from the rates matrix
-        // set the rate matrix
-        size_t nChars = 1;
-        if ( q->getRevObjectTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
-            nChars = rm->getValue()[0].getNumberOfStates();
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-            nChars = rm->getValue().getNumberOfStates();
-        }
+        bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
+        bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
         
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n);
+        RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType>(tau, nStates, nChars, false, fe, uc);
         
-        // set the root frequencies (by default these are NULL so this is OK)
-        dist->setRootFrequencies( rf );
-        
-        if ( rate->getRevObjectTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const Vector<RealPos> &>( rate->getRevObject() ).getDagNode();
-            
-            // sanity check
-            if ( (nNodes-1) != clockRates->getValue().size() )
-            {
-                throw RbException( "The number of clock rates does not match the number of branches" );
-            }
-            
-            dist->setClockRate( clockRates );
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
-            dist->setClockRate( clockRate );
-        }
-        
-        // set the rate matrix
-        if ( q->getRevObjectTypeSpec().isDerivedOf( VectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const VectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
-            
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
-            {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            
-            dist->setRateMatrix( rm );
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
-        }
-        
-        if ( siteRatesNode->getValue().size() > 0 )
-        {
-            dist->setSiteRates( siteRatesNode );
-        }
+        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+        dist->setRateMap( rm );
+
         
         d = dist;
     }
@@ -197,34 +135,18 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
     
     if ( !rulesSet )
     {
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"           , true, treeType::getClassTypeSpec() ) );
         
-        std::vector<TypeSpec> rateMatrixTypes;
-        rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
-        rateMatrixTypes.push_back( VectorAbstractElement<RateMatrix>::getClassTypeSpec() );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
-        
-        // optional argument for the root frequencies
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "rootFrequencies", true, Simplex::getClassTypeSpec(), NULL ) );
-        
-        std::vector<TypeSpec> branchRateTypes;
-        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
-        branchRateTypes.push_back( Vector<RealPos>::getClassTypeSpec() );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
-        
-        Vector<RealPos> *defaultSiteRates = new Vector<RealPos>();
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "siteRates"      , true, Vector<RealPos>::getClassTypeSpec(), defaultSiteRates ) );
-        
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec() ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"               , true, treeType::getClassTypeSpec() ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"                  , true, RateMap::getClassTypeSpec() ) );
+//        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nStates"            , true, Natural::getClassTypeSpec() ) );
+//        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nChars"             , true, Natural::getClassTypeSpec() ) );
+//        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "ambiguous"   , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
         Vector<RlString> options;
-        options.push_back( RlString("DNA") );
-        options.push_back( RlString("RNA") );
-        options.push_back( RlString("AA") );
-        options.push_back( RlString("Protein") );
-        options.push_back( RlString("Standard") );
-        distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
-        
+        options.push_back( RlString("biogeo") );
+        distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );
         rulesSet = true;
     }
     
@@ -257,24 +179,6 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::printValue(std::ostream& o) const 
     } else {
         o << "?";
     }
-//    o << ", branchRates=";
-//    if ( rate != NULL ) {
-//        o << rate->getName();
-//    } else {
-//        o << "?";
-//    }
-//    o << ", siteRates=";
-//    if ( rate != NULL ) {
-//        o << siteRates->getName();
-//    } else {
-//        o << "?";
-//    }
-//    o << ", nSites=";
-//    if ( nSites != NULL ) {
-//        o << nSites->getName();
-//    } else {
-//        o << "?";
-//    }
     o << ")";
 }
 
@@ -291,25 +195,17 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::
     {
         q = var;
     }
-//    else if ( name == "rootFrequencies" )
-//    {
-//        rootFrequencies = var;
-//    }
-    else if ( name == "branchRates" )
-    {
-        rate = var;
-    }
-//    else if ( name == "siteRates" )
-//    {
-//        siteRates = var;
-//    }
-//    else if ( name == "nSites" )
-//    {
-//        nSites = var;
-//    }
     else if ( name == "type" )
     {
         type = var;
+    }
+    else if ( name == "forbidExtinction" )
+    {
+        forbidExtinction = var;
+    }
+    else if (name == "useCladogenesis")
+    {
+        useCladogenesis = var;
     }
     else {
         Distribution::setConstMemberVariable(name, var);

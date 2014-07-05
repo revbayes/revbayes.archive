@@ -135,6 +135,7 @@
 
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
+#include "Dist_phyloDACTMC.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_branchRateJumpProcess.h"
@@ -479,8 +480,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // simple phylogenetic CTMC on fixed number of discrete states
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
+        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "phyloCTMC",   new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "phyloCTMC",   new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "phyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
+        addDistribution( "phyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "substModel",  new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "substModel",  new Dist_phyloCTMC<BranchLengthTree>() );
         
@@ -813,7 +818,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
-        addFunction( "readAtlasData",               new Func_readAtlas()                   );
+        addFunction( "readAtlas",                   new Func_readAtlas()                   );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );
