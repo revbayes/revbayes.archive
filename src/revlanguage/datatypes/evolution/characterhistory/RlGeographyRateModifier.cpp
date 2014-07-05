@@ -16,17 +16,17 @@
 
 using namespace RevLanguage;
 
-RlGeographyRateModifier::RlGeographyRateModifier(void) : ModelObject<RevBayesCore::GeographicDistanceRateModifier>() {
+RlGeographyRateModifier::RlGeographyRateModifier(void) : ModelObject<RevBayesCore::GeographyRateModifier>() {
     
 }
 
 
-RlGeographyRateModifier::RlGeographyRateModifier( RevBayesCore::GeographicDistanceRateModifier *v) : ModelObject<RevBayesCore::GeographicDistanceRateModifier>( v ) {
+RlGeographyRateModifier::RlGeographyRateModifier( RevBayesCore::GeographyRateModifier *v) : ModelObject<RevBayesCore::GeographyRateModifier>( v ) {
     
 }
 
 
-RlGeographyRateModifier::RlGeographyRateModifier( RevBayesCore::TypedDagNode<RevBayesCore::GeographicDistanceRateModifier> *m) : ModelObject<RevBayesCore::GeographicDistanceRateModifier>( m ) {
+RlGeographyRateModifier::RlGeographyRateModifier( RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *m) : ModelObject<RevBayesCore::GeographyRateModifier>( m ) {
     
 }
 
@@ -51,7 +51,7 @@ RevObject* RlGeographyRateModifier::executeMethod(std::string const &name, const
 //        return new Natural(n);
 //    }
     
-    return ModelObject<RevBayesCore::GeographicDistanceRateModifier>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::GeographyRateModifier>::executeMethod( name, args );
 }
 
 
@@ -92,7 +92,7 @@ const MethodTable& RlGeographyRateModifier::getMethods(void) const {
         methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::GeographicDistanceRateModifier>::getMethods() );
+        methods.setParentTable( &ModelObject<RevBayesCore::GeographyRateModifier>::getMethods() );
         methodsSet = true;
     }
     

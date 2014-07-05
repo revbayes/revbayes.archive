@@ -9,7 +9,7 @@
 #include "DeterministicNode.h"
 #include "DistanceDependentDispersalFunction.h"
 #include "Func_dec_ddd.h"
-#include "GeographicDistanceRateModifier.h"
+#include "GeographyRateModifier.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlGeographyRateModifier.h"
@@ -36,7 +36,7 @@ Func_dec_ddd* Func_dec_ddd::clone( void ) const {
 
 RevObject* Func_dec_ddd::execute() {
     
-    //        GeographicDistanceRateModifier( TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
+    //        GeographyRateModifier( TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
 
     RevBayesCore::TypedDagNode<double>* dp = static_cast<const RealPos&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 //    unsigned nc = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getValue();
@@ -51,7 +51,7 @@ RevObject* Func_dec_ddd::execute() {
 //    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
 //    dp->setValue(new double(0.00001));
 //    //        dp->setValue(new double(1.0));
-//    ddd = new DeterministicNode<GeographicDistanceRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
+//    ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
     
     RevBayesCore::TimeAtlas* atlas = NULL;
     bool uadj = true;
@@ -60,7 +60,7 @@ RevObject* Func_dec_ddd::execute() {
     
     RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, uav, udd);
     
-    RevBayesCore::DeterministicNode<RevBayesCore::GeographicDistanceRateModifier> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::GeographicDistanceRateModifier>("", f);
+    RevBayesCore::DeterministicNode<RevBayesCore::GeographyRateModifier> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::GeographyRateModifier>("", f);
     
     RlGeographyRateModifier* value = new RlGeographyRateModifier( detNode );
     
