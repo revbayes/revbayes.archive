@@ -2,6 +2,7 @@
 #define RlAtlas_H
 
 #include "ModelObject.h"
+#include "RlAtlas.h"
 #include "TimeAtlas.h"
 #include "TypedDagNode.h"
 
@@ -15,8 +16,9 @@ namespace RevLanguage {
     public:
         
         RlAtlas(void);                                                                                  //!< Default constructor
-        RlAtlas(RevBayesCore::TimeAtlas *m);                                       //!< Default constructor
-        RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);           //!< Default constructor
+        RlAtlas(RevBayesCore::TimeAtlas *m);                                                            //!< Default constructor
+        RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);                                //!< Default constructor
+        RlAtlas(RlAtlas* m);
         
         // Basic utility functions
         RlAtlas*            clone(void) const;                                                          //!< Clone object
