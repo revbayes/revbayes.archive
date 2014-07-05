@@ -230,8 +230,8 @@
 #include "Func_wag.h"
 
 /* Rate map functions (in folder "functions/evolution/ratemap") */
-#include "Func_dec_biogeo.h"
-
+#include "Func_biogeo_de.h"
+#include "Func_biogeo_grm.h"
 
 
 /* Inference functions (in folder "functions/inference") */
@@ -273,6 +273,7 @@
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_mapTree.h"
+#include "Func_readAtlas.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -707,7 +708,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "WAG",      new Func_wag()     );
         
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
-        addFunction( "DEC_biogeo", new Func_dec_biogeo() );
+        addFunction( "biogeoDE",   new Func_biogeo_de() );
+        addFunction( "biogeoGRM",  new Func_biogeo_grm() );
 
         /* Inference functions (in folder "functions/inference") */
 
@@ -810,6 +812,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
+        addFunction( "readAtlasData",               new Func_readAtlas()                   );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );

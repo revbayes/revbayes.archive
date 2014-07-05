@@ -17,18 +17,18 @@
 
 using namespace RevLanguage;
 
-RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>() {
-    
+RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( ) {
+
 }
 
 
 RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAtlas>( v ) {
-    
+
 }
 
 
 RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : ModelObject<RevBayesCore::TimeAtlas>( m ) {
-    
+
 }
 
 

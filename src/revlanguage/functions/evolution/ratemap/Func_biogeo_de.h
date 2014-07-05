@@ -4,7 +4,7 @@
  * which is used to created deterministic variable associated with the dec_biogeo
  * function.
  *
- * @brief Declaration and implementation of Func_dec_biogeo
+ * @brief Declaration and implementation of Func_biogeo_de
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -16,8 +16,8 @@
  */
 
 
-#ifndef Func_dec_biogeo_H
-#define Func_dec_biogeo_H
+#ifndef Func_biogeo_de_H
+#define Func_biogeo_de_H
 
 #include "RlFunction.h"
 
@@ -26,13 +26,13 @@
 
 namespace RevLanguage {
     
-    class Func_dec_biogeo :  public Function {
+    class Func_biogeo_de :  public Function {
         
     public:
-        Func_dec_biogeo( void );
+        Func_biogeo_de( void );
         
         // Basic utility functions
-        Func_dec_biogeo*                                clone(void) const;                                                              //!< Clone the object
+        Func_biogeo_de*                                clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

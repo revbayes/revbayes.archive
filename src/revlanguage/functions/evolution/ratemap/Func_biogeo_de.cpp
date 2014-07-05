@@ -9,7 +9,7 @@
 #include "BiogeographyRateMapFunction.h"
 #include "DeterministicNode.h"
 #include "GtrRateMatrixFunction.h"
-#include "Func_dec_biogeo.h"
+#include "Func_biogeo_de.h"
 #include "RateMap_Biogeography.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -21,19 +21,19 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_dec_biogeo::Func_dec_biogeo( void ) : Function( ) {
+Func_biogeo_de::Func_biogeo_de( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-Func_dec_biogeo* Func_dec_biogeo::clone( void ) const {
+Func_biogeo_de* Func_biogeo_de::clone( void ) const {
     
-    return new Func_dec_biogeo( *this );
+    return new Func_biogeo_de( *this );
 }
 
 
-RevObject* Func_dec_biogeo::execute() {
+RevObject* Func_biogeo_de::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const Vector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural&>( this->args[1].getVariable()->getRevObject() ).getValue();
@@ -51,7 +51,7 @@ RevObject* Func_dec_biogeo::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_dec_biogeo::getArgumentRules( void ) const {
+const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -69,15 +69,15 @@ const ArgumentRules& Func_dec_biogeo::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_dec_biogeo::getClassName(void) {
+const std::string& Func_biogeo_de::getClassName(void) {
     
-    static std::string rbClassName = "Func_dec_biogeo";
+    static std::string rbClassName = "Func_biogeo_de";
     
 	return rbClassName;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_dec_biogeo::getClassTypeSpec(void) {
+const TypeSpec& Func_biogeo_de::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -86,7 +86,7 @@ const TypeSpec& Func_dec_biogeo::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& Func_dec_biogeo::getReturnType( void ) const {
+const TypeSpec& Func_biogeo_de::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RateMap::getClassTypeSpec();
     
@@ -94,7 +94,7 @@ const TypeSpec& Func_dec_biogeo::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_dec_biogeo::getTypeSpec( void ) const {
+const TypeSpec& Func_biogeo_de::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
