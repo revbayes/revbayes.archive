@@ -58,21 +58,22 @@ public:
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RevObject*                  clone(void) const = 0;                                                                          //!< Clone object
-    virtual RevObject*                  makeDagReference(void);                                                                         //!< Make an object referencing the dag node of this object
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
-    virtual const std::string&          getInternalValueType(void) const;                                                               //!< Get the internal value type (RevBayesCore object or primitive C++ object)
-    virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
     
     // Basic utility functions you may want to override
     virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
     virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
     virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
+//    virtual size_t                      getDim(void) const;                                                                             //!< Get the number of dimensions of the internal object, e.g., 1 if this is a vector.
+    virtual const std::string&          getInternalValueType(void) const;                                                               //!< Get the internal value type (RevBayesCore object or primitive C++ object)
     virtual bool                        hasDagNode(void) const;                                                                         //!< Do I have an internal value node?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
-
+    virtual RevObject*                  makeDagReference(void);                                                                         //!< Make an object referencing the dag node of this object
+    virtual void                        printStructure(std::ostream& o) const;                                                          //!< Print structure of language object for user
+    
     // Functions that wrapper objects containing RB core objects might want to override
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
