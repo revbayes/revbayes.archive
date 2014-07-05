@@ -41,7 +41,6 @@ namespace RevLanguage {
         virtual void                        constructInternalObject(void) = 0;                                      //!< We construct the a new internal object.
         static const std::string&           getClassName(void);                                                     //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
-        virtual const std::string&          getInternalValueType(void) const;                                       //!< Get the internal value type
         virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get the type spec of the instance
         virtual void                        printStructure(std::ostream& o) const {}                                //!< Print structure of language object for user
         virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
@@ -131,15 +130,6 @@ const RevLanguage::TypeSpec& RevLanguage::WorkspaceObject<rlType>::getClassTypeS
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
-}
-
-
-template <typename rbType>
-const std::string& RevLanguage::WorkspaceObject<rbType>::getInternalValueType(void) const {
-
-    static std::string dagNodeValueType = "";
-
-    return dagNodeValueType;
 }
 
 

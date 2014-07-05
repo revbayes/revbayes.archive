@@ -41,7 +41,6 @@ class RlBoolean : public ModelObject<bool> {
         RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const std::string&              getInternalValueType( void ) const;                                     //!< Get internal value type
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
