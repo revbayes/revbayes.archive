@@ -1,8 +1,8 @@
-#ifndef RlGeographyRateModifier_H
-#define RlGeographyRateModifier_H
+#ifndef RlAtlas_H
+#define RlAtlas_H
 
 #include "ModelObject.h"
-#include "GeographyRateModifier.h"
+#include "TimeAtlas.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -10,16 +10,16 @@
 
 namespace RevLanguage {
     
-    class RlGeographyRateModifier : public ModelObject<RevBayesCore::GeographyRateModifier> {
+    class RlAtlas : public ModelObject<RevBayesCore::TimeAtlas> {
         
     public:
         
-        RlGeographyRateModifier(void);                                                                                  //!< Default constructor
-        RlGeographyRateModifier(RevBayesCore::GeographyRateModifier *m);                                       //!< Default constructor
-        RlGeographyRateModifier(RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier> *d);           //!< Default constructor
+        RlAtlas(void);                                                                                  //!< Default constructor
+        RlAtlas(RevBayesCore::TimeAtlas *m);                                       //!< Default constructor
+        RlAtlas(RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *d);           //!< Default constructor
         
         // Basic utility functions
-        RlGeographyRateModifier*            clone(void) const;                                                          //!< Clone object
+        RlAtlas*            clone(void) const;                                                          //!< Clone object
         static const std::string&           getClassName(void);                                                         //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
@@ -30,4 +30,4 @@ namespace RevLanguage {
     };
     
 }
-#endif /* defined(RlGeographyRateModifier_H) */
+#endif /* defined(RlAtlas_H) */

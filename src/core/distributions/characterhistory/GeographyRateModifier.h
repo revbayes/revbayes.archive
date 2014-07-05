@@ -20,7 +20,7 @@ namespace RevBayesCore
     class GeographyRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographyRateModifier( TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
+        GeographyRateModifier( const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
         GeographyRateModifier(const GeographyRateModifier& g);
         
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
@@ -57,7 +57,7 @@ namespace RevBayesCore
     private:
         
         // map objects
-        TimeAtlas* atlas;
+        const TimeAtlas* atlas;
         std::vector<GeographicArea*> areas;
         std::vector<double> epochs;
         int index;

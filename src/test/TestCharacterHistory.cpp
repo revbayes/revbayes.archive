@@ -14,8 +14,6 @@
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
 #include "CharacterHistoryNodeMonitor.h"
-#include "CharacterHistoryCtmcNodeUpdate.h"
-#include "CharacterHistoryCtmcPathUpdate.h"
 #include "Clade.h"
 #include "ConstantRateBirthDeathProcess.h"
 #include "ConstantNode.h"
@@ -48,10 +46,6 @@
 #include "UniformDistribution.h"
 #include "VectorFunction.h"
 #include "VectorScaleMove.h"
-
-// unsorted test headers
-#include "RateMatrix_GTR.h"
-#include "GtrRateMatrixFunction.h"
 
 // experimental RateMap setup
 #include "RateMap_Biogeography.h"
@@ -177,7 +171,7 @@ bool TestCharacterHistory::run_exp(void) {
     afn = "hawaii_single.atlas.txt";
 //    afn = "hawaii_hard.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
-    TimeAtlas* ta = new TimeAtlas(&tsdr);
+    const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
     ////////////
     // model
