@@ -48,6 +48,13 @@ void PowerPosterior::constructInternalObject( void ) {
     {
         beta = static_cast<const Vector<RealPos> &>( powers->getRevObject() ).getValue();
     }
+    else if( cats->getRevObject() != RevNullObject::getInstance() ){
+        int k = static_cast<const Natural &>( cats->getRevObject() ).getValue();
+        for (int i = k; i >= 0; --i) {
+            double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
+            beta.push_back( b );
+        }
+    }
     else
     {
         int k     = 100;
@@ -115,6 +122,7 @@ const MemberRules& PowerPosterior::getMemberRules(void) const {
         modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
         modelMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
         modelMemberRules.push_back( new ArgumentRule("powers", true, Vector<RealPos>::getClassTypeSpec(), NULL ) );
+        modelMemberRules.push_back( new ArgumentRule("cats", true, Natural::getClassTypeSpec(), NULL ) );
         
         rulesSet = true;
     }
@@ -178,6 +186,10 @@ void PowerPosterior::setConstMemberVariable(const std::string& name, const RevPt
     else if ( name == "filename")
     {
         filename = var;
+    }
+    else if ( name == "cats")
+    {
+        cats = var;
     }
     else if ( name == "powers")
     {

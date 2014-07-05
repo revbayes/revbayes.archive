@@ -54,6 +54,7 @@ namespace RevLanguage {
         RevPtr<const Variable>                      moves;
         RevPtr<const Variable>                      powers;
         RevPtr<const Variable>                      filename;
+        RevPtr<const Variable>                      cats;
         
     };
     

@@ -78,11 +78,18 @@ sum
 fib[1] <- 1
 fib[2] <- 1
 j <- 3
-while (j <= 3) {
+while (j <= 10) {
 fib[j] <- fib[j - 1] + fib[j - 2]
 j++
 }
 fib
+
+fib[1] <- 1
+fib[2] <- 1
+for (j in 3:10) {
+fib[j] <- fib[j - 1] + fib[j - 2]
+}
+
 
 #########################
 # User defined function #

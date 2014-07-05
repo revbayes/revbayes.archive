@@ -1,6 +1,7 @@
 #include "ParallelMcmcmc.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbOptions.h" // included for omp.h ... don't quite understand why it doesn't propagate through from main.cpp...
 #include <iostream>
 #include <vector>
 #include <cmath>
