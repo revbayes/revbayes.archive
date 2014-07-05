@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Function, which is
- * the interface and abstract base class for RevBayes functions.
- *
- * @brief Declaration of Function
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface Function
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id$
- */
-
 #ifndef RlFunction_H
 #define RlFunction_H
 
@@ -48,6 +29,9 @@ namespace RevLanguage {
      * The processing of labeled argument values is done in the function
      * processArguments, which will throw an error if the provided
      * arguments do not match.
+     *
+     * \author RevBayes Core Development Team
+     * \copyright GPL version 3
      *
      */
     class Function : public RevObject {

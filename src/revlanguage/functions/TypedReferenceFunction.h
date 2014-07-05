@@ -13,7 +13,7 @@ namespace RevBayesLanguage {
     /**
      * @brief TypedReferenceFunction: Indirect reference function
      *
-     * TypedReferenceFunction is the templated function used for indirect
+     * TypedReferenceFunction is the templated function used for Rev indirect
      * (deterministic) references to other variables. The reference function
      * is only used in deterministic nodes created by Rev statements like
      *
@@ -25,7 +25,7 @@ namespace RevBayesLanguage {
      * it.
      *
      * @author RevBayes Core Development Team
-     * @license GPL version 3
+     * @copyright GPL version 3
      */
     template<class valueType>
     class TypedReferenceFunction : public RevBayesCore::TypedFunction<valueType> {
