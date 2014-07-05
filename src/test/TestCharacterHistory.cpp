@@ -58,8 +58,6 @@
 #include "BiogeographyRateMapFunction.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "FreeBinaryRateMatrixFunction.h"
-#include "SamplePathHistoryCtmcMove.h"
-#include "SampleNodeHistoryCtmcMove.h"
 #include "TreeCharacterHistoryNodeMonitor.h"
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "MetropolisHastingsMove.h"
