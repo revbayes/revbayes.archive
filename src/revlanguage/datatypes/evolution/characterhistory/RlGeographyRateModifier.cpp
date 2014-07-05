@@ -81,15 +81,14 @@ const MethodTable& RlGeographyRateModifier::getMethods(void) const {
     
     if ( methodsSet == false ) {
         
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
-        
-        
-        // add method for call "x[]" as a function
-        ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+//        // add method for call "x[]" as a function
+//        ArgumentRules* squareBracketArgRules = new ArgumentRules();
+//        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
+//        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+//        
+//        // add method for call "x[]" as a function
+//        ArgumentRules* sizeArgRules = new ArgumentRules();
+//        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::GeographyRateModifier>::getMethods() );

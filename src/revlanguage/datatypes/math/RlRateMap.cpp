@@ -41,12 +41,12 @@ RateMap* RateMap::clone() const {
 RevObject* RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
    
-    if (name == "getNumberOfCharacters")
+    if (name == "nChars")
     {
         int n = (int)this->value->getValue().getNumberOfCharacters();
         return new Natural(n);
     }
-    else if (name == "getNumberOfStates")
+    else if (name == "nStates")
     {
         int n = (int)this->value->getValue().getNumberOfStates();
         return new Natural(n);
@@ -82,15 +82,13 @@ const MethodTable& RateMap::getMethods(void) const {
     
     if ( methodsSet == false ) {
         
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+        // add method for call "x.nChars()" as a function
+        ArgumentRules* nCharsArgRules = new ArgumentRules();
+        methods.addFunction("nChars",  new MemberFunction( Natural::getClassTypeSpec(), nCharsArgRules) );
         
-        
-        // add method for call "x[]" as a function
-        ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        // add method for call "x.nStates()" as a function
+        ArgumentRules* nStatesArgRules = new ArgumentRules();
+        methods.addFunction("nStates",  new MemberFunction( Natural::getClassTypeSpec(), nStatesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::RateMap>::getMethods() );
