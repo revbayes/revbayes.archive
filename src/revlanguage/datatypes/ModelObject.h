@@ -450,7 +450,8 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 template <typename rbType>
 RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
     
-    RevBayesCore::TypedReferenceFunction< rbType >* f = new RevBayesCore::TypedReferenceFunction< rbType >(value);
+    RevBayesLanguage::TypedReferenceFunction< rbType >* f = new RevBayesLanguage::TypedReferenceFunction< rbType >(value);
+
     RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
     
     RevLanguage::ModelObject<rbType>* newObj = this->clone();

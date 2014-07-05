@@ -217,20 +217,6 @@ const MethodTable& RevObject::getMethods(void) const {
 
 
 /**
- * Get the internal value type of the object as a string corresponding to the type name.
- * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
- * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
- * return "Mcmc", etc.
- */
-const std::string& RevObject::getInternalValueType( void ) const {
-    
-    static std::string valType = "";
-    
-    return valType;
-}
-
-
-/**
  * Get the value as a DAG node. This default implementation throws an error.
  */
 const std::string& RevObject::getType( void ) const {

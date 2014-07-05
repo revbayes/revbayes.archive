@@ -58,7 +58,6 @@ namespace RevLanguage {
         virtual RevObject*              convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const std::string&              getInternalValueType( void ) const;                                     //!< Get internal value type
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
         virtual bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
     

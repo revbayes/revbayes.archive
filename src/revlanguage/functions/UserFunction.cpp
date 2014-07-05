@@ -175,14 +175,3 @@ const TypeSpec& UserFunction::getReturnType(void) const {
     return returnType;
 }
 
-
-/** Templated function to make a deterministic variable of the right type */
-template<typename valueType>
-void UserFunction::makeDeterministicVariable( UserFunctionCall* call, UserFunctionArgs* args, RevObject* retValue )
-{
-    TypedUserFunction<valueType>*  fxn      = new TypedUserFunction<valueType>( call );
-    DeterministicNode<valueType>*  detNode  = new DeterministicNode<valueType>("", fxn, args );
-    
-    static_cast< ModelObject<valueType>* >( retValue )->setDagNode( detNode );
-}
-

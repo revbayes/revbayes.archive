@@ -41,10 +41,6 @@ namespace RevLanguage {
         
     protected:
 
-        template<typename valueType>
-        void                                        makeDeterministicVariable( UserFunctionCall* call, UserFunctionArgs* args, RevObject* retValue );
-
-        
         const ArgumentRules*                        argumentRules;                      //!< The argument rules
         const TypeSpec                              returnType;                         //!< The return type (complete specification)
         std::list<SyntaxElement*>*                  code;                               //!< The code

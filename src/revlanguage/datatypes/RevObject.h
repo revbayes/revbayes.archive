@@ -62,7 +62,6 @@ public:
     virtual RevObject*                  clone(void) const = 0;                                                                          //!< Clone object
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
-    virtual const std::string&          getInternalValueType(void) const;                                                               //!< Get the internal value type (RevBayesCore object or primitive C++ object)
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
     virtual void                        printStructure(std::ostream& o) const = 0;                                                      //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
