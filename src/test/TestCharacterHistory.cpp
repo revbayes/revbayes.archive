@@ -64,9 +64,9 @@
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "MetropolisHastingsMove.h"
 #include "PathRejectionSampleProposal.h"
-#include "EpochPathRejectionSampleProposal.h"
+#include "BiogeographyPathRejectionSampleProposal.h"
 #include "NodeRejectionSampleProposal.h"
-#include "NodeCladogenesisRejectionSampleProposal.h"
+#include "BiogeographyNodeRejectionSampleProposal.h"
 #include "TipRejectionSampleProposal.h"
 #include "PathRejectionSampleMove.h"
 #include "UniformTimeTreeDistribution.h"
@@ -313,8 +313,8 @@ bool TestCharacterHistory::run_exp(void) {
     // path proposals
     if (useEpochs)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes * 2));
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes * 2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
     }
     else if (!useEpochs)
     {
@@ -326,13 +326,13 @@ bool TestCharacterHistory::run_exp(void) {
     if (useEpochs)
     {
         
-        EpochPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new EpochPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.2, nd), 0.2, false, numNodes*2));
+        BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.2, nd), 0.2, false, numNodes*2));
         
     }
     else if (useCladogenesis && !useEpochs)
     {
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeCladogenesisRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, numNodes*2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, numNodes*2));
     }
     else if (!useCladogenesis && !useEpochs)
     {

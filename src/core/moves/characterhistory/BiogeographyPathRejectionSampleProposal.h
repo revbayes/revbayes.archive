@@ -1,13 +1,13 @@
 //
-//  EpochPathRejectionSampleProposal.h
+//  BiogeographyPathRejectionSampleProposal.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 6/12/14.
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__EpochPathRejectionSampleProposal__
-#define __rb_mlandis__EpochPathRejectionSampleProposal__
+#ifndef __rb_mlandis__BiogeographyPathRejectionSampleProposal__
+#define __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -45,11 +45,11 @@ namespace RevBayesCore {
      */
     
     template<class charType, class treeType>
-    class EpochPathRejectionSampleProposal : public PathRejectionSampleProposal<charType,treeType> {
+    class BiogeographyPathRejectionSampleProposal : public PathRejectionSampleProposal<charType,treeType> {
         
     public:
-        EpochPathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
-        EpochPathRejectionSampleProposal( const EpochPathRejectionSampleProposal& p );
+        BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
+        BiogeographyPathRejectionSampleProposal( const BiogeographyPathRejectionSampleProposal& p );
         
         virtual void                                prepareProposal(void);
         virtual double                              computeLnProposal(const TopologyNode& nd, const BranchHistory& bh);
@@ -69,7 +69,7 @@ namespace RevBayesCore {
 
 
 template<class charType, class treeType>
-RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::EpochPathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : PathRejectionSampleProposal<charType,treeType> (n, t, q, l, nd)
+RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : PathRejectionSampleProposal<charType,treeType> (n, t, q, l, nd)
 {
 
     const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
@@ -77,7 +77,7 @@ RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::EpochPathRej
 }
 
 template<class charType, class treeType>
-RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::EpochPathRejectionSampleProposal(const EpochPathRejectionSampleProposal& m) : PathRejectionSampleProposal<charType,treeType> (m.n, m.t, m.q, m.l, m.nd)
+RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal(const BiogeographyPathRejectionSampleProposal& m) : PathRejectionSampleProposal<charType,treeType> (m.n, m.t, m.q, m.l, m.nd)
 {
     if (this != &m)
     {
@@ -88,7 +88,7 @@ RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::EpochPathRej
 
 
 template<class charType, class treeType>
-double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::computeLnProposal(const TopologyNode& nd, const BranchHistory& bh)
+double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::computeLnProposal(const TopologyNode& nd, const BranchHistory& bh)
 {
     
     double lnP = 0.0;
@@ -213,7 +213,7 @@ double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::compu
  * \return The hastings ratio.
  */
 template<class charType, class treeType>
-double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::doProposal( void )
+double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::doProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType,treeType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
     this->proposedHistory.clear();
@@ -343,7 +343,7 @@ double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::doPro
 
 
 template<class charType, class treeType>
-unsigned RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::getEpochIndex(double age) const
+unsigned RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::getEpochIndex(double age) const
 {
     // epochs are ordered from oldest to youngest, typically over (-neginf, 0.0)
     unsigned index = 0;
@@ -355,7 +355,7 @@ unsigned RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::get
 }
 
 template<class charType, class treeType>
-void RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::prepareProposal( void )
+void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::prepareProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType,treeType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
     
@@ -420,7 +420,7 @@ void RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::prepare
 }
 
 //template<class charType, class treeType>
-//double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::computeLnProposal_test(const TopologyNode& nd, const BranchHistory& bh)
+//double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::computeLnProposal_test(const TopologyNode& nd, const BranchHistory& bh)
 //{
 //    double lnP = 0.0;
 //    
@@ -494,7 +494,7 @@ void RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::prepare
 // * \return The hastings ratio.
 // */
 //template<class charType, class treeType>
-//double RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::doProposal_test( void )
+//double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::doProposal_test( void )
 //{
 //    AbstractTreeHistoryCtmc<charType,treeType>& p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
 //    this->proposedHistory.clear();
@@ -579,4 +579,4 @@ void RevBayesCore::EpochPathRejectionSampleProposal<charType, treeType>::prepare
 //}
 
 
-#endif /* defined(__rb_mlandis__EpochPathRejectionSampleProposal__) */
+#endif /* defined(__rb_mlandis__BiogeographyPathRejectionSampleProposal__) */
