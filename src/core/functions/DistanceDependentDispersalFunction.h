@@ -9,7 +9,7 @@
 #ifndef __rb_mlandis__DistanceDependentDispersalFunction__
 #define __rb_mlandis__DistanceDependentDispersalFunction__
 
-#include "GeographicDistanceRateModifier.h"
+#include "GeographyRateModifier.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -18,10 +18,10 @@
 
 namespace RevBayesCore {
     
-    class DistanceDependentDispersalFunction : public TypedFunction<GeographicDistanceRateModifier> {
+    class DistanceDependentDispersalFunction : public TypedFunction<GeographyRateModifier> {
         
     public:
-        DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, TimeAtlas* ta);
+        DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false);
         DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n);                                                                    //!< Copy constructor
         virtual ~DistanceDependentDispersalFunction(void);                                                                                                  //!< Virtual destructor
         

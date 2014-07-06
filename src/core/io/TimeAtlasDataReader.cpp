@@ -40,6 +40,8 @@ TimeAtlasDataReader::TimeAtlasDataReader(const TimeAtlasDataReader& tadr) : Deli
 
 void TimeAtlasDataReader::readJson(void)
 {
+    std::cout << "Attempting to read the of file \"" << this->filename << "\"\n";
+    
     std::ifstream readStream;
     RbFileManager* f = new RbFileManager(this->filename);
     if (!f->openFile(readStream))
@@ -101,6 +103,8 @@ void TimeAtlasDataReader::readJson(void)
                         dispersalValues.push_back( v );
                     }
                 }
+         
+                ;
                 
                 std::vector<double> extinctionValues;
                 if (node_areas.second.find("extinctionValues") != node_areas.second.not_found())
@@ -117,6 +121,8 @@ void TimeAtlasDataReader::readJson(void)
                 unsigned areaState = 0;
                 if (node_areas.second.find("state") != node_areas.second.not_found())
                     areaState = node_areas.second.get<int>("state");
+              
+                
                 
                 GeographicArea* g  = new GeographicArea(areaIndex, areaLatitude, areaLongitude, areaName, areaState, areaAltitude, areaSize, dispersalValues, extinctionValues);
                 
@@ -134,7 +140,7 @@ void TimeAtlasDataReader::readJson(void)
         
         sortEpochs();
 
-        
+        std::cout << "Successfully read file\n";
         //fillData(pt);
     }
     catch (std::exception const& e)

@@ -269,7 +269,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
     proposedLnProb = 0.0;
     
     const treeType& tree = tau->getValue();
-    size_t numTips = tree.getNumberOfTips();
+//    size_t numTips = tree.getNumberOfTips();
     if (sampleNodeIndex && !fixNodeIndex)
     {
         node = NULL;

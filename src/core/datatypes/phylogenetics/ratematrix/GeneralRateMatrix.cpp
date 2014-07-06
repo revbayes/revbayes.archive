@@ -13,38 +13,25 @@
 using namespace RevBayesCore;
 
 
-GeneralRateMatrix::GeneralRateMatrix(size_t n) : RateMatrix(n), stationaryFreqs( std::vector<double>(numStates,1.0/n) ), transitionRates( std::vector<double>(numStates*numStates-numStates, 1.0/n) ) {
+GeneralRateMatrix::GeneralRateMatrix(size_t n) : AbstractRateMatrix(n),
+    stationaryFreqs( std::vector<double>(numStates,1.0/n) ),
+    transitionRates( std::vector<double>(numStates*numStates-numStates, 1.0/n) )
+{
     
 }
 
 
-GeneralRateMatrix::GeneralRateMatrix(const GeneralRateMatrix &rm) : RateMatrix(rm) {
-    
-    stationaryFreqs   = rm.stationaryFreqs;
-    transitionRates   = rm.transitionRates;
-}
-
-GeneralRateMatrix::~GeneralRateMatrix(void) {
+GeneralRateMatrix::~GeneralRateMatrix(void)
+{
     // nothing to do
 }
 
 
-GeneralRateMatrix& GeneralRateMatrix::operator=(const GeneralRateMatrix &rm) {
-    
-    if (this != &rm)
-    {
-        RateMatrix::operator=( rm );
-        
-        stationaryFreqs   = rm.stationaryFreqs;
-        transitionRates   = rm.transitionRates;
-    }
-    
-    return *this;
-}
 
 /** Set the exchangeability rates directly. We assume that we know
  what the exchangeability rates are when this function is called. */
-void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr) {
+void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr)
+{
     
     transitionRates = tr;
     
@@ -55,7 +42,8 @@ void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr) {
 
 /** Set the stationary frequencies directly. We assume that we know
  what the stationary frequencies are when this function is called. */
-void GeneralRateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
+void GeneralRateMatrix::setStationaryFrequencies(const std::vector<double>& f)
+{
     
     stationaryFreqs = f;
     
@@ -65,7 +53,8 @@ void GeneralRateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
 
 
 
-const std::vector<double>& GeneralRateMatrix::getStationaryFrequencies( void ) const {
+const std::vector<double>& GeneralRateMatrix::getStationaryFrequencies( void ) const
+{
     return stationaryFreqs;
 }
 
@@ -106,7 +95,8 @@ const std::vector<double>& GeneralRateMatrix::getStationaryFrequencies( void ) c
  Stewart, W. J. 1999. Numerical methods for computing stationary distributions of 
  finite irreducible Markov chains. In "Advances in Computational
  Probability", W. Grassmann, ed. Kluwer Academic Publishers. */
-void GeneralRateMatrix::calculateStationaryFrequencies(void) {
+void GeneralRateMatrix::calculateStationaryFrequencies(void)
+{
     
 	// transpose the rate matrix and put into QT
     MatrixReal QT(numStates, numStates);

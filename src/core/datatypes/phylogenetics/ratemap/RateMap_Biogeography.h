@@ -10,7 +10,7 @@
 #define __rb_mlandis__RateMap_Biogeography__
 
 #include "RateMap.h"
-#include "GeographicDistanceRateModifier.h"
+#include "GeographyRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -27,8 +27,8 @@ namespace RevBayesCore {
         
         // virtual RateMap functions
 //        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
-        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx=0, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
-        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition
+        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition
         RateMap_Biogeography*                       clone(void) const;
         double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const;
         double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
@@ -36,7 +36,9 @@ namespace RevBayesCore {
         double                                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const;
         double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
         double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
-        double                                      getLnTransitionProbability(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double t, double age=0.0) const;
+        double                                      getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
+        const bool                                  isAreaAvailable(size_t charIdx, double age=0.0) const;
+        const bool                                  areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age=0.0) const;
         void                                        updateMap(void);
         
         // public methods
@@ -52,14 +54,17 @@ namespace RevBayesCore {
         void                                        setHeterogeneousGainLossRates(const std::vector<std::vector<double> >& r);
         
         // other crazy stuff for BiogeographyRateMapFunction to handle
-        void                                        setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm);
-        void                                        setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm);
-        const GeographicDistanceRateModifier &      getGeographicDistanceRateModifier(void);
+        void                                        setGeographyRateModifier(const GeographyRateModifier& gdrm);
+        void                                        setGeographicDistancePowers(const GeographyRateModifier& gdrm);
+        const GeographyRateModifier &               getGeographyRateModifier(void);
         const std::vector<double>&                  getEpochs(void) const;
         
     private:
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
+        size_t                                      numOn(const std::vector<CharacterEvent*>& s, double age) const;
         unsigned                                    getEpochIndex(double age) const;
+//        void                                        setInboundDispersal(const std::vector<double>& v);
+//        void                                        setExtinctionValues(const std::vector<double>& v);
 
         size_t                                      branchOffset;
 
@@ -69,20 +74,26 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >           heterogeneousGainLossRates;
         double                                      distancePower;
         
+        // geography models
+        bool                                        useGeographyRateModifier;
+        GeographyRateModifier*                      geographyRateModifier;
         std::vector<double>                         epochs;
         size_t                                      numEpochs;
         size_t                                      epochOffset;
-        std::vector<double>                         dispersalValues;
-        std::vector<double>                         extinctionValues;
+//        std::vector<double>                         dispersalValues;
+//        std::vector<double>                         extinctionValues;
+        std::vector<double>                         adjacentAreaVector;
+        std::vector<double>                         availableAreaVector;
 
-        
-        // come up with some way to handle epoch age vectors...
-        bool                                        useGeographicDistanceRateModifier;
-        GeographicDistanceRateModifier*             geographicDistanceRateModifier;
-        
+        // model flags
         bool                                        branchHeterogeneousClockRates;
         bool                                        branchHeterogeneousGainLossRates;
         bool                                        forbidExtinction;
+        
+        bool                                        useUnnormalizedRates;
+        bool                                        useAreaAdjacency;
+        bool                                        useAreaAvailable;
+        bool                                        useDistanceDependence;
         
     };
     

@@ -129,7 +129,7 @@ bool TestGtrModelFixedTree::run( void ) {
     
     /* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 1.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 5.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 5.0 ) );
     moves.push_back( new SimplexMove( er, 10.0, 6, 0, true, 5.0 ) );

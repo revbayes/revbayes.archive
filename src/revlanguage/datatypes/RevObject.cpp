@@ -150,7 +150,8 @@ RevObject* RevObject::executeMethod(std::string const &name, const std::vector<A
 
 
 /** Get class vector describing type of object */
-const std::string& RevObject::getClassName(void) { 
+const std::string& RevObject::getClassName(void)
+{
     
     static std::string rbClassName = "RevObject";
 	return rbClassName; 
@@ -158,7 +159,8 @@ const std::string& RevObject::getClassName(void) {
 
 
 /** Get class vector describing type of object */
-const TypeSpec& RevObject::getClassTypeSpec(void) { 
+const TypeSpec& RevObject::getClassTypeSpec(void)
+{
     
     static TypeSpec rbClass = TypeSpec(getClassName() );
 	
@@ -168,7 +170,8 @@ const TypeSpec& RevObject::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& RevObject::getMemberRules(void) const {
+const MemberRules& RevObject::getMemberRules(void) const
+{
     
     static const MemberRules rules = MemberRules();
     
@@ -177,8 +180,11 @@ const MemberRules& RevObject::getMemberRules(void) const {
 
 
 /** Get a member variable */
-RevObject* RevObject::getMember(const std::string& name) const {
+RevObject* RevObject::getMember(const std::string& name) const
+{
+
     throw RbException("No Member named '" + name + "' available.");
+
 }
 
 
@@ -188,7 +194,8 @@ RevObject* RevObject::getMember(const std::string& name) const {
  * 1) memberNames()
  * 2) get("name")
  */
-const MethodTable& RevObject::getMethods(void) const {
+const MethodTable& RevObject::getMethods(void) const
+{
     
     static MethodTable methods = MethodTable();
     static bool        methodsSet = false;
@@ -219,7 +226,8 @@ const MethodTable& RevObject::getMethods(void) const {
 /**
  * Get the value as a DAG node. This default implementation throws an error.
  */
-const std::string& RevObject::getType( void ) const {
+const std::string& RevObject::getType( void ) const
+{
     
     return getTypeSpec().getType();
 }
@@ -228,7 +236,8 @@ const std::string& RevObject::getType( void ) const {
 /**
  * Get the value as a DAG node. This default implementation throws an error.
  */
-RevBayesCore::DagNode* RevObject::getDagNode( void ) const {
+RevBayesCore::DagNode* RevObject::getDagNode( void ) const
+{
     
     throw RbException("RevLanguage only objects cannot be used inside DAG's!");
     
@@ -237,13 +246,17 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const {
 
 
 /** Does this object have a member called "name" */
-bool RevObject::hasMember(std::string const &name) const {
+bool RevObject::hasMember(std::string const &name) const
+{
+    
     return false;
 }
 
 
 /** Does this object have an internal value node? Default implementation returns false. */
-bool RevObject::hasDagNode(void) const {
+bool RevObject::hasDagNode(void) const
+{
+
     return false;
 }
 
@@ -254,6 +267,7 @@ bool RevObject::hasDagNode(void) const {
  */
 void RevObject::increment( void ) 
 {
+    
     throw RbException("Cannot increment a value of type '" + this->getType() + "'.");
     
 }
@@ -263,20 +277,24 @@ void RevObject::increment( void )
  * The default implementation is that the variable is constant. Only variables which actually store
  * internally DAG nodes have to ask the DAG nodes if they are constant.
  */
-bool RevObject::isConstant( void ) const {
+bool RevObject::isConstant( void ) const
+{
+
     return true;
 }
 
 
 /** Is convertible to type? */
-bool RevObject::isConvertibleTo(const TypeSpec& type) const {
+bool RevObject::isConvertibleTo(const TypeSpec& type) const
+{
     
     return false;
 }
 
 
 /* Are we of specified language type? */
-bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const {
+bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const
+{
     
     return getTypeSpec().isDerivedOf( typeSpec );
 }
@@ -286,8 +304,10 @@ bool RevObject::isTypeSpec(const TypeSpec& typeSpec) const {
   * Converting the value of the internal variable to a constant. The default implementation does nothing because we don't have a DAG node as our internal variable.
   * Note, RevLanguage types which can be used as types in the DAG should overwrite this method.
   */
-void RevObject::makeConstantValue( void ) {
+void RevObject::makeConstantValue( void )
+{
     // do nothing
+
 }
 
 
@@ -331,17 +351,31 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 }
 
 
+/**
+ * Printing of the structural information for this element.
+ * Since this is the default implementation we simply print nothing.
+ */
+void RevObject::printStructure( std::ostream &o ) const
+{
+    
+    o << "No structural information available for an object of type '" << getType() << "'" << std::endl;
+    
+}
+
+
 
 /**
  * Replace the variable. This default implementation does nothing.
  */
-void RevObject::replaceVariable(RevObject *newVar) {
+void RevObject::replaceVariable(RevObject *newVar)
+{
     
 }
 
 
 /** Set a member variable */
-void RevObject::setConstMember(const std::string& name, const RevPtr<const Variable> &var) {
+void RevObject::setConstMember(const std::string& name, const RevPtr<const Variable> &var)
+{
     
     // here, we might want to do some general stuff like catching all members so that we can provide general functions as
     // 1) getNames()
@@ -353,7 +387,8 @@ void RevObject::setConstMember(const std::string& name, const RevPtr<const Varia
 
 
 /** Set a member variable */
-void RevObject::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevObject::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+{
     
     throw RbException("No constant member with name \"" + name + "\" found to set.");
 }
@@ -364,7 +399,8 @@ void RevObject::setConstMemberVariable(const std::string& name, const RevPtr<con
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
  */
-void RevObject::setMember(const std::string& name, const RevPtr<Variable> &var) {
+void RevObject::setMember(const std::string& name, const RevPtr<Variable> &var)
+{
     
     // here, we might want to do some general stuff like catching all members so that we can provide general functions as
     // 1) getNames()
@@ -380,7 +416,8 @@ void RevObject::setMember(const std::string& name, const RevPtr<Variable> &var) 
  * Derived classes of MemberObject who need non-const variable should overwrite this function.
  * If you don't care if the variable is const, then you should only overwrite the setConstMemberVariable.
  */
-void RevObject::setMemberVariable(const std::string& name, const RevPtr<Variable> &var) {
+void RevObject::setMemberVariable(const std::string& name, const RevPtr<Variable> &var)
+{
     
     setConstMemberVariable(name, RevPtr<const Variable>( var ) );
     
@@ -392,7 +429,8 @@ void RevObject::setMemberVariable(const std::string& name, const RevPtr<Variable
  * Setting the name of the internal variable. The default implementation does nothing because we don't have a DAG node as our internal variable.
  * Note, RevLanguage types which can be used as types in the DAG should override this method.
  */
-void RevObject::setName(std::string const &n) {
+void RevObject::setName(std::string const &n)
+{
     // do nothing
 }
 
@@ -401,7 +439,8 @@ void RevObject::setName(std::string const &n) {
  * Setting the value node, potentially replacing the existing value node. The default implementation
  * throws an error because we do not have a value node.
  */
-void RevObject::setDagNode(RevBayesCore::DagNode* newVal) {
+void RevObject::setDagNode(RevBayesCore::DagNode* newVal)
+{
     
     if ( this->hasDagNode() )
         throw RbException( "Replacing or setting of the internal value node of this type of object not supported yet (lazy developers...)");

@@ -14,7 +14,7 @@
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
+#include "NumUniqueInVector.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -138,7 +138,7 @@ bool TestDPPRelClock::run( void ) {
 	StochasticNode<std::vector<double> > *branchRates = new StochasticNode<std::vector<double> >("branchRates", new DirichletProcessPriorDistribution<double>(g, cp, (int)numBranches) );
 
 	// a deterministic node for calculating the number of rate categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(branchRates) );
+	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(branchRates) );
 	
 //	ConstantNode<double> *crA  = new ConstantNode<double>("CR.gammA", new double(0.1) );
 //	ConstantNode<double> *crL  = new ConstantNode<double>("CR.gammL", new double(100.0) );
@@ -205,8 +205,8 @@ bool TestDPPRelClock::run( void ) {
 
 	/* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 //    moves.push_back( new NarrowExchange( tau, 10.0 ) );
 //    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -214,7 +214,7 @@ bool TestDPPRelClock::run( void ) {
 //    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 //	moves.push_back( new OriginTimeSlide( origin, tau, 20.0, true, 5.0 ) );
 //	moves.push_back( new RootTimeSlide( tau, 10.0, true, 10.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(srAlpha, log(2.0)), true, 1.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(srAlpha, log(2.0)), 1, true ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 3.0 * ((double)numBranches) ) );
     moves.push_back( new SimplexMove( er, 200.0, 6, 0, true, 2.0, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 150.0, 4, 0, true, 2.0, 2.0 ) ); 

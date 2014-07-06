@@ -30,7 +30,7 @@ namespace RevBayesCore {
         Mcmc*                                               clone(void) const;
         void                                                monitor(unsigned long g);
         virtual unsigned long                               nextCycle(bool advanceCycle);
-        virtual void                                        run(int g);
+        virtual void                                        run(size_t g);
 
     protected:
 

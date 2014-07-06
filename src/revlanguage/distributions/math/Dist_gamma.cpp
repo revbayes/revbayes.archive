@@ -55,7 +55,7 @@ const std::string& Dist_gamma::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_gamma::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -127,6 +127,6 @@ void Dist_gamma::setConstMemberVariable(const std::string& name, const RevPtr<co
     }
     else  
     {
-        Distribution::setConstMemberVariable(name, var);
+        PositiveContinuousDistribution::setConstMemberVariable(name, var);
     }
 }

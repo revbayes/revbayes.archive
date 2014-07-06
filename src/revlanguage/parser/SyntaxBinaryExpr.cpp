@@ -28,18 +28,23 @@
 using namespace RevLanguage;
 
 /** Static vector of RlStrings giving names of operator types */
-std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "exp", "lt", "le",
+std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "mod", "exp", "lt", "le",
                                            "eq", "ne", "ge", "gt", "and", "or", "and", "or"};
 
 
 /** Construct from operator type and operands */
-SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, SyntaxElement* lhs, SyntaxElement* rhs) : SyntaxElement(), leftOperand(lhs), rightOperand(rhs), operation(op) {
+SyntaxBinaryExpr::SyntaxBinaryExpr(operatorT op, SyntaxElement* lhs, SyntaxElement* rhs) : SyntaxElement(),
+    leftOperand(lhs),
+    rightOperand(rhs),
+    operation(op)
+{
 
 }
 
 
 /** Deep copy constructor */
-SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x) {
+SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x)
+{
 
     leftOperand  = x.leftOperand->clone();
     rightOperand = x.rightOperand->clone();
@@ -48,16 +53,21 @@ SyntaxBinaryExpr::SyntaxBinaryExpr(const SyntaxBinaryExpr& x) : SyntaxElement(x)
 
 
 /** Destructor deletes operands */
-SyntaxBinaryExpr::~SyntaxBinaryExpr() {
+SyntaxBinaryExpr::~SyntaxBinaryExpr()
+{
     delete leftOperand;
     delete rightOperand;
 }
 
 
 /** Assignment operator */
-SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
+SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x)
+{
 
-    if (&x != this) {
+    if (&x != this)
+    {
+        delete leftOperand;
+        delete rightOperand;
 
         SyntaxElement::operator=(x);
 
@@ -71,7 +81,8 @@ SyntaxBinaryExpr& SyntaxBinaryExpr::operator=(const SyntaxBinaryExpr& x) {
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxBinaryExpr::clone () const {
+SyntaxElement* SyntaxBinaryExpr::clone () const
+{
 
     return (new SyntaxBinaryExpr(*this));
 }
@@ -83,7 +94,8 @@ SyntaxElement* SyntaxBinaryExpr::clone () const {
  * We simply look up the function and calculate the value.
  *
  */
-RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
+RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env)
+{
 
     // Package the arguments
     std::vector<Argument> args;
@@ -110,13 +122,15 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env) {
 /** Is the expression constant?
  *  Only if the arguments are constant.
  */
-bool SyntaxBinaryExpr::isConstExpression(void) const {
+bool SyntaxBinaryExpr::isConstExpression(void) const
+{
     return leftOperand->isConstExpression() && rightOperand->isConstExpression();
 }
 
 
 /** Print info about the syntax element */
-void SyntaxBinaryExpr::printValue(std::ostream& o) const {
+void SyntaxBinaryExpr::printValue(std::ostream& o) const
+{
 
     o << "[" << this << "] SyntaxBinaryExpr:" << std::endl;
     o << "left operand  = [" << leftOperand  << "]";
@@ -137,7 +151,8 @@ void SyntaxBinaryExpr::printValue(std::ostream& o) const {
  * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
  * We just delegate that to both elements.
  */
-void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
+void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c)
+{
     leftOperand->replaceVariableWithConstant(name, c);
     rightOperand->replaceVariableWithConstant(name, c);
 }

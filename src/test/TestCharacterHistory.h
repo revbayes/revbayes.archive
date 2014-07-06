@@ -28,7 +28,6 @@ namespace RevBayesCore {
         virtual                                ~TestCharacterHistory(void);                                                            //!< Virtual destructor
 
         bool                                    run(void);
-        bool                                    run_old(void);
         bool                                    run_exp(void);
         bool                                    run_dollo(void);
         

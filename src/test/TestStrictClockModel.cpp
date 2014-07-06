@@ -11,10 +11,7 @@
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "DirichletProcessPriorDistribution.h"
-#include "DPPAllocateAuxGibbsMove.h"
-#include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -147,9 +144,9 @@ bool TestStrictClockModel::run( void ) {
 	
 	/* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), true, 2.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), true, 3.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 3, true ) );
 	//    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 	//    moves.push_back( new NarrowExchange( tau, 10.0 ) );
 	//    moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );

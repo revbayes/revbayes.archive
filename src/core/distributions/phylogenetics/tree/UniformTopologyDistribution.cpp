@@ -11,10 +11,15 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(unsigned int nTaxa, const std::vector<std::string> &tn) : TypedDistribution<Topology>( new Topology() ), numTaxa( nTaxa ), taxonNames( tn ) {
+UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn) : TypedDistribution<Topology>( new Topology() ),
+    numTaxa( nTaxa ),
+    taxonNames( tn ),
+    logTreeTopologyProb( RbConstants::Double::nan )
+{
     
     double lnFact = 0.0;
-    for (size_t i = 2; i < numTaxa; i++) {
+    for (size_t i = 2; i < numTaxa; i++)
+    {
         lnFact += std::log(i);
     }
     
@@ -22,12 +27,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(unsigned int nTaxa, con
     
     simulateTree();
     
-}
-
-
-
-UniformTopologyDistribution::UniformTopologyDistribution(const UniformTopologyDistribution &v) : TypedDistribution<Topology>( v ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ) {
-    // parameters are automatically copied
 }
 
 

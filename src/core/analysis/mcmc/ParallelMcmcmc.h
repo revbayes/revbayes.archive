@@ -6,7 +6,6 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
-#include "RbOptions.h" // included for omp.h ... don't quite understand why it doesn't propagate through from main.cpp...
 
 #include <vector>
 

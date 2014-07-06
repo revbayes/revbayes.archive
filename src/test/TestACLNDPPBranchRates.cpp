@@ -16,7 +16,7 @@
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
+#include "NumUniqueInVector.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -130,7 +130,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	// nodeNus ~ DPP(g, cp, numnodes)
 	StochasticNode<std::vector<double> > *nodeNus = new StochasticNode<std::vector<double> >("Node.nu", new DirichletProcessPriorDistribution<double>(g, cp, (int)numNodes) );
 	// a deterministic node for calculating the number of parameter categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(nodeNus) );
+	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(nodeNus) );
 	
     // root rate
 	ConstantNode<double> *a          = new ConstantNode<double>("rootRate.alpha", new double(4.0) );
@@ -192,8 +192,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	
 	/* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), true, 2.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), true, 2.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2.0, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2.0, true ) );
 	//	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 	//	moves.push_back( new NarrowExchange( tau, 10.0 ) );
 	//	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -206,8 +206,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	moves.push_back( new SimplexMove( pi, 250.0, 4, 0, true, 2.0, 0.5 ) ); 
 	moves.push_back( new SimplexMove( er, 200.0, 1, 0, false, 0.5 ) );
 	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 0.5 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 0.5), false, 3.0 ) );
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 1.0), false, 3.0 ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 0.5), 3.0, false ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 1.0), 3.0, false ) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 
