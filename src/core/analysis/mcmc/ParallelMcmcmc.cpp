@@ -1,6 +1,7 @@
 #include "ParallelMcmcmc.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbOptions.h" // included for omp.h ... don't quite understand why it doesn't propagate through from main.cpp...
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -141,7 +142,7 @@ void ParallelMcmcmc::run(size_t generations)
     for (size_t i = 1; i <= generations; i += swapInterval)
     {
         // start parallel job per block of swapInterval cycles
-        //size_t np = numProcesses; // in fact, used by the macro below
+        size_t np = numProcesses;
         size_t pid = 0;
         
         #pragma omp parallel default(shared) private(np, pid)

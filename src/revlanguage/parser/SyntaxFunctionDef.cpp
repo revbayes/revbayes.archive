@@ -10,44 +10,65 @@
 using namespace RevLanguage;
 
 /** Construct global function call from function name and arguments */
-SyntaxFunctionDef::SyntaxFunctionDef( const std::string &type, const std::string &name, std::list<SyntaxFormal*>* formals, std::list<SyntaxElement*>* stmts) : SyntaxElement(), functionName(name), formalArgs(formals), code(stmts), returnType( type ) {
+SyntaxFunctionDef::SyntaxFunctionDef( const std::string &type, const std::string &name, std::list<SyntaxFormal*>* formals, std::list<SyntaxElement*>* stmts) : SyntaxElement(),
+    code(stmts),
+    functionName(name),
+    formalArgs(formals),
+    returnType( "" )
+{
 
-    if ( type == "" ) {
+    if ( type == "" )
+    {
         returnType = RevObject::getClassTypeSpec();
     }
-    else {
+    else
+    {
         returnType  = TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType(type) );
     }
     int         nDim    = 0;
     bool        isRef  = false;
     std::string tpName  = std::string();
-    for (std::string::const_iterator i=type.begin(); i!=type.end(); i++) {
+    for (std::string::const_iterator i=type.begin(); i!=type.end(); i++)
+    {
         if ((*i) == '[')
+        {
             nDim++;
+        }
         else if ((*i) == '&')
+        {
             isRef = true;
+        }
         else if ((*i) != ']')
+        {
             tpName += (*i);
+        }
     }
 
 }
 
 
 /** Deep copy constructor */
-SyntaxFunctionDef::SyntaxFunctionDef(const SyntaxFunctionDef& x) : SyntaxElement(x), returnType( x.returnType ) {
+SyntaxFunctionDef::SyntaxFunctionDef(const SyntaxFunctionDef& x) : SyntaxElement(x), returnType( x.returnType )
+{
 
     functionName = functionName;
  
     for (std::list<SyntaxFormal*>::const_iterator i=x.formalArgs->begin(); i!=x.formalArgs->end(); i++)
+    {
         formalArgs->push_back((*i)->clone());
-
+    }
+    
     for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+    {
         code->push_back( (*i)->clone() );
+    }
+    
 }
 
 
 /** Destructor deletes members */
-SyntaxFunctionDef::~SyntaxFunctionDef() {
+SyntaxFunctionDef::~SyntaxFunctionDef()
+{
     
     for (std::list<SyntaxFormal*>::iterator i=formalArgs->begin(); i!=formalArgs->end(); i++) {
         delete *i;
@@ -64,7 +85,8 @@ SyntaxFunctionDef::~SyntaxFunctionDef() {
 /** Assignment operator */
 SyntaxFunctionDef& SyntaxFunctionDef::operator=(const SyntaxFunctionDef& x) {
 
-    if (&x != this) {
+    if (&x != this)
+    {
 
         SyntaxElement::operator=(x);
 

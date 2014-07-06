@@ -1,33 +1,17 @@
-//
-//  StationarityTest.cpp
-//  RevBayesGui
-//
-//  Created by Sebastian Hoehna on 4/11/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
-
 #include "StationarityTest.h"
 #include "DistributionNormal.h"
 
 #include <cmath>
 
 using namespace RevBayesCore;
+using namespace std;
 
-StationarityTest::StationarityTest() : ConvergenceDiagnosticContinuous() {
-    
-    nBlocks = 10;
-    p       = 0.01;
-}
 
-StationarityTest::StationarityTest(double f) : ConvergenceDiagnosticContinuous() {
-    
-    nBlocks = 10;
-    p       = f;
-}
+StationarityTest::StationarityTest(size_t b, double f) : ConvergenceDiagnosticContinuous(),
+    nBlocks( b ),
+    p( f )
+{
 
-StationarityTest::StationarityTest(size_t b, double f) : ConvergenceDiagnosticContinuous() {
-    nBlocks   = b;
-    p         = f;
 }
 
 bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin)
@@ -43,9 +27,10 @@ bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& v
     double traceMean = analysis.getMean();
     
     // get a mean and standard error for each block
-    double* blockMeans = new double[nBlocks];
-    double* blockSem = new double[nBlocks];
-    for (size_t i=0; i<nBlocks; i++) {
+    std::vector<double> blockMeans =  std::vector<double>(nBlocks,0.0);
+    std::vector<double> blockSem =  std::vector<double>(nBlocks,0.0);
+    for (size_t i=0; i<nBlocks; i++)
+    {
         analysis.analyseMean(values,i*blockSize+burnin,(i+1)*blockSize+burnin);
         blockMeans[i]   = analysis.getMean();
         
@@ -55,22 +40,19 @@ bool StationarityTest::assessConvergenceSingleChain(const std::vector<double>& v
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2
         double quantile = RbStatistics::Normal::quantile(0.0, blockSem[i], p_corrected);
         // check if the trace mean is outside this confidence interval
-        if (blockMeans[i]-quantile > traceMean || blockMeans[i]+quantile < traceMean) {
+        if (blockMeans[i]-quantile > traceMean || blockMeans[i]+quantile < traceMean)
+        {
             // the mean of the whole trace falls out of the confidence interval for this block and hence we cannot reject with p-confidence that the trace has not converged
-            delete[] blockMeans;
-            delete[] blockSem;
-            
             return false;
         }
     }
     
-    delete[] blockMeans;
-    delete[] blockSem;
-    
     return true;
 }
 
-bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins) {
+bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins)
+{
+    
     // get number of chains
     size_t nChains = values.size();
     // use correction for multiple sampling
@@ -81,9 +63,10 @@ bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::ve
     double totalMean = analysis.getMean();
     
     // get a mean and standard error for each block
-    double* chainMeans  = new double[nChains];
-    double* chainSem    = new double[nChains];
-    for (size_t i=0; i<nChains; i++) {
+    std::vector<double> chainMeans =  std::vector<double>(nChains,0.0);
+    std::vector<double> chainSem =  std::vector<double>(nChains,0.0);
+    for (size_t i=0; i<nChains; i++)
+    {
         const std::vector<double>& chain    = values.at(i);
         size_t burnin                       = burnins.at(i);
         analysis.analyseMean(chain,burnin);
@@ -95,17 +78,12 @@ bool StationarityTest::assessConvergenceMultipleChains(const std::vector<std::ve
         // get the quantile of a normal with mu=0, var=sem and p=(1-p_corrected)/2
         double quantile = RbStatistics::Normal::quantile(0.0, chainSem[i], p_corrected);
         // check if the trace mean is outside this confidence interval
-        if (chainMeans[i]-quantile > totalMean || chainMeans[i]+quantile < totalMean) {
+        if (chainMeans[i]-quantile > totalMean || chainMeans[i]+quantile < totalMean)
+        {
             // the mean of the whole trace falls out of the confidence interval for this block and hence we cannot reject with p-confidence that the trace has not converged
-            delete[] chainMeans;
-            delete[] chainSem;
-            
             return false;
         }
     }
-    
-    delete[] chainMeans;
-    delete[] chainSem;
     
     return true;
 }

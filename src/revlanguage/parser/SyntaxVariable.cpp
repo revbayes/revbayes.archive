@@ -230,9 +230,11 @@ RevPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
             // get the slot and variable
             theSlot                 = &env[ identifier ]; // \TODO: We should not allow dereferencing!!!
             
-            if (!indices.empty() && theSlot != NULL) {
+            if (!indices.empty() && theSlot != NULL)
+            {
                 
-                if ( !theSlot->doesVariableExist( indices ) ) {
+                if ( !theSlot->doesVariableExist( indices ) )
+                {
                     theSlot->createVariable( indices );
                 }
             }

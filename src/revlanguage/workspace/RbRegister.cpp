@@ -65,6 +65,7 @@
 #include "RlClade.h"
 
 /* Inference types (in folder "datatypes/inference") */
+#include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
 #include "RlModel.h"
 #include "RlParallelMcmcmc.h"
@@ -109,6 +110,10 @@
 /* Moves on precision matrices */
 #include "Move_VectorSingleElementSlide.h"
 
+/* Moves on character histories/data augmentation */
+#include "Move_NodeCharacterHistoryRejectionSample.h"
+#include "Move_PathCharacterHistoryRejectionSample.h"
+
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
 #include "Move_NarrowExchange.h"
@@ -124,6 +129,7 @@
 /* Math types (in folder "datatypes/math") */
 #include "RealMatrix.h"
 #include "RealSymmetricMatrix.h"
+#include "RlRateMap.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -133,6 +139,7 @@
 
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
+#include "Dist_phyloDACTMC.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_branchRateJumpProcess.h"
@@ -152,8 +159,8 @@
 /* Distributions on simple variables (in folder "distributions/math") */
 #include "Dist_bernoulli.h"
 #include "Dist_beta.h"
-#include "Dist_bimodallnorm.h"
-#include "Dist_bimodalnorm.h"
+#include "Dist_bimodalLnorm.h"
+#include "Dist_bimodalNorm.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_gamma.h"
@@ -228,13 +235,12 @@
 #include "Func_vt.h"
 #include "Func_wag.h"
 
+/* Rate map functions (in folder "functions/evolution/ratemap") */
+#include "Func_biogeo_de.h"
+#include "Func_biogeo_grm.h"
+
 
 /* Inference functions (in folder "functions/inference") */
-
-/* Convergence functions (in folder "functions/inference/convergence") */
-#include "Func_beca.h"
-#include "Func_estimateBurnin.h"
-
 
 /* Internal functions (in folder ("functions/internal") */
 
@@ -262,12 +268,14 @@
 #include "Func__add.h"
 #include "Func__div.h"
 #include "Func__mult.h"
+#include "Func__mod.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
 
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_mapTree.h"
+#include "Func_readAtlas.h"
 #include "Func_readCharacterData.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -299,13 +307,15 @@
 /* These are functions related to statistical distributions */
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
-#include "Func_dppNumTablesStatistic.h"
+#include "Func_numUniqueInVector.h"
 
 
 /** Initialize global workspace */
-void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
+void RevLanguage::Workspace::initializeGlobalWorkspace(void)
+{
     
-    try {
+    try
+    {
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
@@ -341,12 +351,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "mcmc",                   new Mcmc()  );
-        addTypeWithConstructor( "model",                  new Model() );
-        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc() );
-        addTypeWithConstructor( "pathSampler",            new PathSampler() );
-        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()  );
-        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler() );
+        addTypeWithConstructor( "beca",                   new BurninEstimationConvergenceAssessment()   );
+        addTypeWithConstructor( "mcmc",                   new Mcmc()                                    );
+        addTypeWithConstructor( "model",                  new Model()                                   );
+        addTypeWithConstructor( "pmcmcmc",                new ParallelMcmcmc()                          );
+        addTypeWithConstructor( "pathSampler",            new PathSampler()                             );
+        addTypeWithConstructor( "powerPosterior",         new PowerPosterior()                          );
+        addTypeWithConstructor( "steppingStoneSampler",   new SteppingStoneSampler()                    );
 
 
         ////////////////////////////////////////////////////////////////////////////////
@@ -417,6 +428,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor("mvFNPR",                    new Move_FNPR() );
         addTypeWithConstructor("mvNarrow",                  new Move_NarrowExchange() );
+        addTypeWithConstructor("mvNNI",                     new Move_NNIClock() );
+        addTypeWithConstructor("mvNNI",                     new Move_NNINonclock() );
         addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
@@ -424,6 +437,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
         addTypeWithConstructor("mvSubtreeScale",            new Move_SubtreeScale() );
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
+        
+        /* Moves on character histories / data augmentation */
+        addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
+
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -438,6 +458,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         
         
         /* Add math types (in folder "datatypes/math") */
+        addType( new RateMap()              );
         addType( new RateMatrix()           );
         addType( new RealMatrix()           );
         addType( new Simplex()              );
@@ -470,10 +491,18 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         // simple phylogenetic CTMC on fixed number of discrete states
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "dnPhyloCTMC", new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
+        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "phyloCTMC",   new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "phyloCTMC",   new Dist_phyloCTMC<BranchLengthTree>() );
+        addDistribution( "phyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
+        addDistribution( "phyloDACTMC", new Dist_phyloDACTMC<BranchLengthTree>() );
         addDistribution( "substModel",  new Dist_phyloCTMC<TimeTree>() );
         addDistribution( "substModel",  new Dist_phyloCTMC<BranchLengthTree>() );
+        
+        
+        // data augmented CTMC
+//        addDistribution( "dnPhyloDACTMC", new Dist_phyloDACTMC<TimeTree>() );
 
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
@@ -695,13 +724,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "RtRev",    new Func_rtRev()   );
         addFunction( "VT",       new Func_vt()      );
         addFunction( "WAG",      new Func_wag()     );
-
+        
+        /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
+        addFunction( "biogeoDE",   new Func_biogeo_de() );
+        addFunction( "biogeoGRM",  new Func_biogeo_grm() );
+        addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
+        addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
 
         /* Inference functions (in folder "functions/inference") */
-
-        /* Convergence functions (in folder "functions/inference/convergence") */
-        addFunction( "beca",           new Func_beca() );
-        addFunction( "estimateBurnin", new Func_estimateBurnin() );
 
         
         /* Internal functions (in folder "functions/internal") */
@@ -791,6 +821,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         addFunction( "_sub",      new Func__sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
         addFunction( "_sub",      new Func__sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
         
+        // modulo
+        addFunction( "_mod",      new Func__mod() );
+        
         // exponentiation
         addFunction( "_exp",      new Func_power() );
         
@@ -798,6 +831,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
+        addFunction( "readAtlas",                   new Func_readAtlas()                   );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );
@@ -860,12 +894,17 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void) {
 
 
  		/* Statistics functions (in folder "functions/statistics") */
+		
+		// some helper statistics for the DPP distribution
         addFunction("dppConcFromMean",  new Func_dppConcFromMean( )     );
         addFunction("dppMeanFromConc",  new Func_dppMeanFromConc( )  );
-
-        // nonstandard forms form backward compatibility
-        addFunction("dppCPFromNum",     new Func_dppConcFromMean( )     );
-        addFunction("dppNumFromCP",     new Func_dppMeanFromConc( )  );
+		
+		// count the number of unique elements in vector
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Real>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<RealPos>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
 
         
         ///////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ namespace RevLanguage {
         Mntr_Model(void);                                                                                                 //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Mntr_Model*                       clone(void) const;                                                      //!< Clone object
+        virtual Mntr_Model*                         clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Mntr_Model.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

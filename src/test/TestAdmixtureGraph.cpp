@@ -294,9 +294,9 @@ bool TestAdmixtureGraph::run(void) {
     // model parameters
     if (updateParameters)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(diffusionRate, 0.1), false, 5.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(diversificationRate, 0.5), false, 5.0 ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turnover, 0.5), false, 5.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(diffusionRate, 0.1), 5, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(diversificationRate, 0.5), 5, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turnover, 0.5), 5, false ) );
     }
     
     
@@ -327,8 +327,8 @@ bool TestAdmixtureGraph::run(void) {
         // branch rate multipliers
         for( size_t i=0; i < numBranches; i++)
         {
-            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 0.1), false, 1.0 ) );
-            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), false, 0.5 ) );
+            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 0.1), 1, false ) );
+            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(branchRates_nonConst[i], 1.0), .5, false ) );
         }
         
         // tree rate shift
@@ -383,7 +383,7 @@ bool TestAdmixtureGraph::run(void) {
         moves.push_back( new AdmixtureEdgeReversePolarity( tau, delay, 2.0, 10.0) );
         moves.push_back( new AdmixtureEdgeSlide( tau, branchRates_nonConst, delay, allowSisterAdmixture, 10.0, 10.0) );
         moves.push_back( new AdmixtureEdgeFNPR( tau, branchRates_nonConst, delay, allowSisterAdmixture, 10.0, 10.0) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(admixtureRate, 0.1), false, 5.0 ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(admixtureRate, 0.1), 5, false ) );
 
     }
     

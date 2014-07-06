@@ -18,7 +18,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : T
     heterogeneousGainLossRates          = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
-    geographicDistanceRateModifier      = NULL;
+    geographyRateModifier      = NULL;
     
     branchHeterogeneousClockRates       = false;
     branchHeterogeneousGainLossRates    = false;
@@ -37,7 +37,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(const BiogeographyRateM
     heterogeneousGainLossRates = n.heterogeneousGainLossRates;
     homogeneousClockRate = n.homogeneousClockRate;
     heterogeneousClockRates = n.heterogeneousClockRates;
-    geographicDistanceRateModifier = n.geographicDistanceRateModifier;
+    geographyRateModifier = n.geographyRateModifier;
     
     branchHeterogeneousClockRates = n.branchHeterogeneousClockRates;
     branchHeterogeneousGainLossRates = n.branchHeterogeneousGainLossRates;
@@ -88,8 +88,8 @@ void BiogeographyRateMapFunction::update( void ) {
     // set the distancePower
     if (useGeographicDistance)
     {
-        const GeographicDistanceRateModifier& drm = geographicDistanceRateModifier->getValue();
-        static_cast< RateMap_Biogeography* >(value)->setGeographicDistanceRateModifier(drm);
+        const GeographyRateModifier& drm = geographyRateModifier->getValue();
+        static_cast< RateMap_Biogeography* >(value)->setGeographyRateModifier(drm);
     }
     
     value->updateMap();
@@ -162,21 +162,21 @@ void BiogeographyRateMapFunction::setClockRate(const TypedDagNode< std::vector< 
     
 }
 
-void BiogeographyRateMapFunction::setGeographicDistanceRateModifier(const TypedDagNode<GeographicDistanceRateModifier> *drm) {
+void BiogeographyRateMapFunction::setGeographyRateModifier(const TypedDagNode<GeographyRateModifier> *drm) {
     
     // remove the old parameter first
-    if ( geographicDistanceRateModifier != NULL )
+    if ( geographyRateModifier != NULL )
     {
-        this->removeParameter( geographicDistanceRateModifier );
-        geographicDistanceRateModifier = NULL;
+        this->removeParameter( geographyRateModifier );
+        geographyRateModifier = NULL;
     }
     
     // set the value
     useGeographicDistance = true;
-    geographicDistanceRateModifier = drm;
+    geographyRateModifier = drm;
     
     // add the parameter
-    this->addParameter( geographicDistanceRateModifier );
+    this->addParameter( geographyRateModifier );
 
 }
 
@@ -198,9 +198,9 @@ void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, con
     {
         heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
-    else if (oldP == geographicDistanceRateModifier)
+    else if (oldP == geographyRateModifier)
     {
-        geographicDistanceRateModifier = static_cast<const TypedDagNode<GeographicDistanceRateModifier>* >( newP );
+        geographyRateModifier = static_cast<const TypedDagNode<GeographyRateModifier>* >( newP );
     }
 }
 

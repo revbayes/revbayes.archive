@@ -37,7 +37,7 @@ class SyntaxBinaryExpr : public SyntaxElement {
 
     public:
         // Binary operator types
-        enum                        operatorT { Range, Add, Sub, Mul, Div, Exp, Lt, Le, Eq, Ne, Ge, Gt, And, Or, And2, Or2 };
+        enum                        operatorT { Range, Add, Sub, Mul, Div, Mod, Exp, Lt, Le, Eq, Ne, Ge, Gt, And, Or, And2, Or2 };
         static std::string          opCode[];                                               //!< Operator codes for printing
 
         // Constructors and destructor

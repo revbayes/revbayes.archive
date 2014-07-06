@@ -15,7 +15,7 @@
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "Move_simplex.h"
+#include "Move_Simplex.h"
 #include "RlSimplex.h"
 #include "SimplexMove.h"
 #include "TypedDagNode.h"
