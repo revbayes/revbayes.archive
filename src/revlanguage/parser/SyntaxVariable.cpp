@@ -331,9 +331,9 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
 
                 // First get the variable we want to reference
                 RevObject* theObj = &(theSlot.getVariable(slotIndices)->getRevObject());
-                RevObject* theReference = theObj->makeDagReference();
 
                 // Now make a new variable, which is a reference to that variable
+                RevObject* theReference = theObj->makeDagReference();
                 theVar = RevPtr<Variable>( new Variable( theReference, "" ) );
             }
             else if ( env.existsFunction( identifier ) ) {
@@ -427,7 +427,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
 
 
 /**
- * @brief Get semantic value (r-value)
+ * @brief Get semantic value (r-value) (general case)
  *
  * The variable can either be a member or a base variable. In the latter
  * case, its "baseVariable" member is NULL. If the element is a base variable,

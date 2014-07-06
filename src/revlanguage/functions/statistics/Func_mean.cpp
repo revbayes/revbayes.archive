@@ -6,11 +6,11 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
 #include "MeanFunction.h"
 #include "Func_mean.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
 
@@ -33,7 +33,8 @@ RevObject* Func_mean::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const Vector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::MeanFunction* f = new RevBayesCore::MeanFunction( arg );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    
+    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
     
     Real* value = new Real( detNode );
     

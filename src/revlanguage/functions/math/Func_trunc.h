@@ -48,10 +48,10 @@ namespace RevLanguage {
 }
 
 
-#include "DeterministicNode.h"
 #include "TruncateFunction.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 /** default constructor */
@@ -74,7 +74,8 @@ RevLanguage::RevObject* RevLanguage::Func_trunc<valType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TruncateFunction* f = new RevBayesCore::TruncateFunction( arg );
-    RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
+    
+    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
     
     retType* value = new retType( detNode );
     

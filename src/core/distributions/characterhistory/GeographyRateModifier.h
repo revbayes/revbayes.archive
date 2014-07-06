@@ -1,13 +1,13 @@
 //
-//  GeographicDistanceRateModifier.h
+//  GeographyRateModifier.h
 //  rb_mlandis
 //
 //  Created by Michael Landis on 8/8/13.
 //  Copyright (c) 2013 Michael Landis. All rights reserved.
 //
 
-#ifndef __rb_mlandis__GeographicDistanceRateModifier__
-#define __rb_mlandis__GeographicDistanceRateModifier__
+#ifndef __rb_mlandis__GeographyRateModifier__
+#define __rb_mlandis__GeographyRateModifier__
 
 #include "AbstractCharacterHistoryRateModifier.h"
 #include "TimeAtlas.h"
@@ -17,11 +17,11 @@
 
 namespace RevBayesCore
 {
-    class GeographicDistanceRateModifier : public AbstractCharacterHistoryRateModifier
+    class GeographyRateModifier : public AbstractCharacterHistoryRateModifier
     {
     public:
-        GeographicDistanceRateModifier( TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
-        GeographicDistanceRateModifier(const GeographicDistanceRateModifier& g);
+        GeographyRateModifier( const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false, int index=0, double dp=10e-6, double threshhold=1e-6, std::string dt="haversine" );
+        GeographyRateModifier(const GeographyRateModifier& g);
         
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState);
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
@@ -40,7 +40,7 @@ namespace RevBayesCore
         const std::vector<double>&          getAdjacentAreaVector(void) const;
         
         void                                update(void);
-        GeographicDistanceRateModifier*     clone(void) const;
+        GeographyRateModifier*     clone(void) const;
         void                                print(std::vector<std::vector<double> > m);
         void                                printAll(void);
         
@@ -57,7 +57,7 @@ namespace RevBayesCore
     private:
         
         // map objects
-        TimeAtlas* atlas;
+        const TimeAtlas* atlas;
         std::vector<GeographicArea*> areas;
         std::vector<double> epochs;
         int index;
@@ -98,4 +98,4 @@ namespace RevBayesCore
     };
 }
 
-#endif /* defined(__rb_mlandis__GeographicDistanceRateModifier__) */
+#endif /* defined(__rb_mlandis__GeographyRateModifier__) */

@@ -52,12 +52,12 @@ TimeAtlas* TimeAtlas::clone(void) const
     return new TimeAtlas(*this);
 }
 
-std::vector<double> TimeAtlas::getEpochs(void)
+std::vector<double> TimeAtlas::getEpochs(void) const
 {
     return epochs;
 }
 
-std::vector<std::vector<GeographicArea*> > TimeAtlas::getAreas(void)
+std::vector<std::vector<GeographicArea*> > TimeAtlas::getAreas(void) const
 {
     return areas;
 }

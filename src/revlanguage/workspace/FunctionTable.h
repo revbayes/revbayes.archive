@@ -57,7 +57,7 @@ class FunctionTable {
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<Function*>                  findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         const Function&                         getFunction(const std::string& name);                                                   //!< Get function (a copy)
-        const Function&                         getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
+        Function&                               getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
         std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
         void                                    setParentTable(const FunctionTable* ft) { parentTable = ft; }                           //!< Set parent table

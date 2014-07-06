@@ -214,7 +214,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         counts[i] = 0;
     fillStateCounts(currState, counts);
 
-    const treeType& tree = tau->getValue();
+//    const treeType& tree = tau->getValue();
     double branchLength = nd.getBranchLength();
     if (nd.isRoot())
     {
@@ -313,7 +313,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     proposedHistory.clear();
     
     // get model parameters
-    const treeType& tree = this->tau->getValue();
+//    const treeType& tree = this->tau->getValue();
     double branchLength = node->getBranchLength();
     if (node->isRoot())
     {

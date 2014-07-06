@@ -340,7 +340,7 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
 
 
 /* Get function */
-const Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
+Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
     // find the template function
     Function& theFunction = findFunction(name, args);

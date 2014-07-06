@@ -21,10 +21,11 @@ namespace RevBayesCore {
     class PrecisionMatrix : public MatrixReal {
         
     public:
-        PrecisionMatrix(size_t n);                                                             //!< Construct rate matrix with n states
-        PrecisionMatrix(const PrecisionMatrix& m);                                                  //!< Copy constructor
+                                            PrecisionMatrix(void);                                              //!< Default constructor required by revlanguae use
+                                            PrecisionMatrix(size_t n);                                          //!< Construct rate matrix with n states
+                                            PrecisionMatrix(const PrecisionMatrix& m);                          //!< Copy constructor
         
-        virtual                            ~PrecisionMatrix(void) {}                                                                 //!< Destructor
+        virtual                            ~PrecisionMatrix(void) {}                                            //!< Destructor
                 
         // public methods
         // could not make them constant

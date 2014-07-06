@@ -21,6 +21,8 @@
 #include "MethodTable.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
+#include "UserFunctionArgs.h"
+#include "UserFunctionCall.h"
 
 namespace RevLanguage {
     
@@ -37,7 +39,6 @@ namespace RevLanguage {
        
         // Basic utility functions you have to override
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
-        ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
     
         // function you might want to overwrite
         virtual RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
@@ -46,9 +47,12 @@ namespace RevLanguage {
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
-        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;
+        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;                                                     //!< Get the internal DAG node
+        bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
+        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
@@ -78,15 +82,18 @@ namespace RevLanguage {
 }
 
 
+#include "AbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "MemberFunction.h"
+#include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
 #include "TypedReferenceFunction.h"
+#include "TypedUserFunction.h"
 
 #include <cassert>
 
@@ -196,23 +203,6 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     }
     
     return *this;
-}
-
-
-template <typename rbType>
-RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
-    
-    RevBayesCore::TypedReferenceFunction< rbType >* f = new RevBayesCore::TypedReferenceFunction< rbType >(value);
-    RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
-    
-    RevLanguage::ModelObject<rbType>* newObj = this->clone();
-
-    // replace value with deterministic reference and attempt memory management
-    newObj->value->decrementReferenceCount();
-    newObj->value = newVal;
-    newObj->value->incrementReferenceCount();
-
-    return newObj;
 }
 
 
@@ -362,6 +352,13 @@ RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode
 }
 
 
+/** Make sure users understand that we have an internal DAG node */
+template <typename rbType>
+bool RevLanguage::ModelObject<rbType>::hasDagNode( void ) const {
+    
+    return true;
+}
+
 
 /**
  * Has this object a member with the given name?
@@ -447,6 +444,39 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
         value->incrementReferenceCount();
     }
     
+}
+
+
+template <typename rbType>
+RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
+    
+    RevBayesLanguage::TypedReferenceFunction< rbType >* f = new RevBayesLanguage::TypedReferenceFunction< rbType >(value);
+
+    RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
+    
+    RevLanguage::ModelObject<rbType>* newObj = this->clone();
+    
+    // replace value with deterministic reference and attempt memory management
+    newObj->value->decrementReferenceCount();
+    newObj->value = newVal;
+    newObj->value->incrementReferenceCount();
+    
+    return newObj;
+}
+
+
+/** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+{
+    TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
+    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, args );
+    
+    if ( value != NULL && value->decrementReferenceCount() == 0 )
+        delete value;
+
+    value = detNode;
+    value->incrementReferenceCount();
 }
 
 

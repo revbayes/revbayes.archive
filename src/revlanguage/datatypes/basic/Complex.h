@@ -39,11 +39,11 @@ namespace RevLanguage {
 
             
             // Basic utility functions
-            Complex*                                clone(void) const;                                                      //!< Clone object
-            static const std::string&               getClassName(void);                                                     //!< Get class name
-            static const TypeSpec&                  getClassTypeSpec(void);                                                 //!< Get class type spec
-            const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
-            void                                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
+            Complex*                                clone(void) const;                                          //!< Clone object
+            static const std::string&               getClassName(void);                                         //!< Get class name
+            static const TypeSpec&                  getClassTypeSpec(void);                                     //!< Get class type spec
+            const TypeSpec&                         getTypeSpec(void) const;                                    //!< Get language type of the object
+            void                                    printValue(std::ostream& o) const;                          //!< Print value (for user)
 
     
     };

@@ -1,35 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Variable, which is
- * used to hold pointers to DAG nodes.
- *
- * A Variable corresponds to a variable instance in the RevLanguage.
- * For instance "a <- 1" will create a variable holding a pointer to 
- * a constant DAG node with value 1. The variables themselves live in 
- * variable slots which have a name to the variable. We could not 
- * have used DAG node pointers directly in the variable slots because
- * of reassignment. If we declared the following sequences of commands:
- * b <- 2
- * c := ln(b)
- * a <- 5
- * b := exp(a)
- * First 'b' is a constant DAG node and later replaced by a deterministic
- * node with the exponential function. Only if 'c' holds a pointer to a 
- * pointer to a DAG node (i.e. a Variable which holds a pointer to a
- * DAG node) can 'c' get the current value of 'b' even after reassignment.
- *
- * @brief Declaration of Variable
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2010-09-06, version 1.0
- *
- * $Id$
- */
-
 #ifndef Variable_H 
 #define Variable_H
 
@@ -41,10 +9,38 @@
 
 namespace RevLanguage {
 
+    /**
+     * @brief Variable: named (in frames) or unnamed (temporary) Rev variables
+     *
+     * A Variable instance corresponds to a variable in the Rev language.
+     * For instance "a <- 1" will create a variable holding a pointer to
+     * a Rev object containing a constant DAG node with value 1. A variable
+     * is either unnamed (it is a temporary variable), or it is inserted into
+     * a frame ("Environment"), in which case it will be named.
+     *
+     * Rev variables can either be standard variables, control variables or
+     * reference variables. A standard variable contains a RevObject instance,
+     * which in turn may have a stochastic, deterministic or stochastic DAG
+     * node inside it. There are also other types of Rev objects that are
+     * not associated with model DAG nodes: workspace objects and factor objects.
+     *
+     * A control variable is a standard variable flagged as being a control variable,
+     * which causes it to behave differently in equation and tilde assignments. The
+     * typical case is a loop variable. Finally, a reference variable is an alias to
+     * another variable, and keeps a smart pointer to the variable it references.
+     *
+     * The type of variable is controlled by different assignment operators. The
+     * standard operators ('<-', ':=' and '~') all create standard variables. A
+     * control variable is created by the control assignment operator ('<<-') and
+     * a reference variable by the reference assignment operator ('<-&').
+     *
+     * @author RevBayes core development team
+     */
     class Variable {
     public:
                             Variable(const TypeSpec& ts);               //!< Constructor of filled variable
                             Variable(RevObject *revObj, const std::string &n = "");     //!< Constructor of filled, unnamed variable
+                            Variable(const RevPtr<const Variable>& refVar, const std::string &n = "");     //!< Constructor of reference variable
                             Variable(const Variable &v);                //!< Copy constructor
         virtual            ~Variable(void);
 
@@ -53,12 +49,15 @@ namespace RevLanguage {
         // Regular functions
         Variable*           clone(void) const;                          //!< Clone variable
         const std::string&  getName(void) const;                        //!< Get the name of the variable
-        const RevObject&    getRevObject(void) const;                   //!< Get the value of the variable
-        RevObject&          getRevObject(void);                         //!< Get the value of the variable (non-const to return non-const value)
+        RevObject&          getRevObject(void) const;                   //!< Get the value of the variable (non-const to return non-const value)
         const TypeSpec&     getRevObjectTypeSpec(void) const;           //!< Get the required Rev object type spec
+        bool                isControlVar(void) const;                   //!< Is this a control variable?
+        bool                isReferenceVar(void) const;                 //!< Is this a reference variable?
+        void                makeReference(const RevPtr<const Variable>& refVar);    //!< Make this a reference variable
         void                printValue(std::ostream& o) const;          //!< Print value of variable
-        void                setRevObject(RevObject *newObj);            //!< Set a variable with a Rev object
+        void                setControlVar(bool flag = true);            //!< Set (or unset) control variable status
         void                setName(const std::string &n);              //!< Set the name of this variable
+        void                setRevObject(RevObject *newObj);            //!< Set a variable with a Rev object
         void                setRevObjectTypeSpec(const TypeSpec& ts);   //!< set the required Rev object type spec
 
         // Smart pointer functions
@@ -71,10 +70,13 @@ namespace RevLanguage {
         void                replaceRevObject(RevObject *newObj);        //!< Replace the old Rev object with the new one and set the children and parent
 
         // Member variables
-        std::string         name;
-        mutable size_t      refCount;
-        RevObject*          revObject;                                  //!< Pointer to the variable (reference or not)
-        TypeSpec            revObjectTypeSpec;
+        std::string             name;                                   //!< Name of variable
+        mutable size_t          refCount;                               //!< Reference count used by RevPtr
+        RevObject*              revObject;                              //!< Pointer to the Rev object inside the variable
+        TypeSpec                revObjectTypeSpec;                      //!< Required type of the object
+        bool                    isReferenceVariable;                    //!< Is this a reference variable?
+        bool                    isControlVariable;                      //!< Is this a control variable?
+        RevPtr<const Variable>  referencedVariable;                     //!< Smart pointer to referenced variable
     };
 
 }

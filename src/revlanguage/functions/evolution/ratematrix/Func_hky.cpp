@@ -6,12 +6,12 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
 #include "Func_hky.h"
 #include "HkyRateMatrixFunction.h"
 #include "RateMatrix_HKY.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
@@ -36,7 +36,8 @@ RevObject* Func_hky::execute() {
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::HkyRateMatrixFunction* f = new RevBayesCore::HkyRateMatrixFunction( ka, bf );
-    RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateMatrix>("", f);
+
+    DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     
     RateMatrix* value = new RateMatrix( detNode );
     

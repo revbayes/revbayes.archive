@@ -222,7 +222,7 @@ double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::doProposal(
 
     double proposedLnProbRatio = 0.0;
     
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+//    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
 //    p->getHistory(*node).print();
     
     // update 1x pathEnd and 1x pathHistory values
@@ -324,7 +324,7 @@ double RevBayesCore::TipRejectionSampleProposal<charType, treeType>::sampleTipCh
         
         // for sampling probs
         const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
-        const std::vector<double>& tipProbs = p->getTipProbs(node->getIndex());
+//        const std::vector<double>& tipProbs = p->getTipProbs(node->getIndex());
 
         // to update
         std::vector<CharacterEvent*> nodeChildState = histories[node->getIndex()]->getChildCharacters();
@@ -366,7 +366,7 @@ void RevBayesCore::TipRejectionSampleProposal<charType, treeType>::undoProposal(
 //    std::cout << "REJECT " << node->getIndex() << "\n";
     nodeProposal->undoProposal();
     
-    BranchHistory* bh = &p->getHistory(*node);
+//    BranchHistory* bh = &p->getHistory(*node);
 //    bh->print();
 
     // restore node state

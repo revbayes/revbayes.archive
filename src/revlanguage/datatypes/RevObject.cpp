@@ -83,16 +83,6 @@ RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
 
 
 /**
- * Make a new object that is an indirect deterministic reference to the object.
- * The default implementation throws an error.
- */
-RevObject* RevObject::makeDagReference(void) {
-    
-    throw RbException( "Dynamic reference to this object type not supported");
-}
-
-
-/**
  * Decrement operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
  */
@@ -234,19 +224,6 @@ const MethodTable& RevObject::getMethods(void) const
 
 
 /**
- * Get the internal value type of the object as a string corresponding to the type name.
- * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
- * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
- * return "Mcmc", etc.
- */
-const std::string& RevObject::getInternalValueType( void ) const
-{
-    
-    throw RbException("No value template type implemented for this object (lazy RevBayes programmers...)");
-}
-
-
-/**
  * Get the value as a DAG node. This default implementation throws an error.
  */
 const std::string& RevObject::getType( void ) const
@@ -331,6 +308,30 @@ void RevObject::makeConstantValue( void )
 {
     // do nothing
 
+}
+
+
+/**
+ * Make a new object that is an indirect deterministic reference to the object.
+ * The default implementation throws an error.
+ */
+RevObject* RevObject::makeDagReference(void)
+{
+    
+    std::ostringstream msg;
+    msg << "The type '" << getClassName() << "' not supported in indirect reference assignments (yet)";
+    throw RbException( msg );
+}
+
+
+/**
+ * Convert the object to a deterministic object with a userdefined Rev function inside it.
+ */
+void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+{
+    std::ostringstream msg;
+    msg << "The type '" << getClassName() << "' not supported in deterministic nodes (yet)";
+    throw RbException( msg );
 }
 
 

@@ -359,7 +359,6 @@ void DagNode::printParents( std::ostream& o ) const {
 }
 
 
-
 /**
  * By default we do not need to do anything when re-initializiating.
  */
