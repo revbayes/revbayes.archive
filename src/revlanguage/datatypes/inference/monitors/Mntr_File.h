@@ -34,7 +34,7 @@ namespace RevLanguage {
         Mntr_File(void);                                                                                      //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Mntr_File*                        clone(void) const;                                                      //!< Clone object
+        virtual Mntr_File*                          clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Filemonitor.
         static const std::string&                   getClassName(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

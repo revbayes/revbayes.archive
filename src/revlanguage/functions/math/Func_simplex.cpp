@@ -41,7 +41,9 @@ RevObject* Func_simplex::execute( void ) {
     }
     
     RevBayesCore::SimplexFunction *func = new RevBayesCore::SimplexFunction( params );
+    
     RevBayesCore::TypedDagNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
+    
     Simplex *theSimplex = new Simplex( detNode );
         
     return theSimplex;

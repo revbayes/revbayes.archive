@@ -208,9 +208,6 @@ const TypeSpec& Integer::getClassTypeSpec(void) {
 }
 
 
-
-
-
 /** Get type spec */
 const TypeSpec& Integer::getTypeSpec( void ) const {
     

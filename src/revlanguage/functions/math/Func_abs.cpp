@@ -6,11 +6,11 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
 #include "AbsoluteValueFunction.h"
 #include "Func_abs.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -32,7 +32,8 @@ RevObject* Func_abs::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::AbsoluteValueFunction* f = new RevBayesCore::AbsoluteValueFunction( arg );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    
+    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
     
     RealPos* value = new RealPos( detNode );
     

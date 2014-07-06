@@ -45,10 +45,10 @@ namespace RevLanguage {
     
 }
 
-#include "DeterministicNode.h"
 #include "NumUniqueInVector.h"
 #include "RealPos.h"
 #include "Integer.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "Vector.h"
 #include "StochasticNode.h"
@@ -73,7 +73,8 @@ template <typename valType>
 RevLanguage::RevObject* RevLanguage::Func_numUniqueInVector<valType>::execute() {
     RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* vect = static_cast<const Vector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::NumUniqueInVector<typename valType::valueType>* f = new RevBayesCore::NumUniqueInVector<typename valType::valueType>( vect );
-    RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
+    
+    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
     
     Integer* value = new Integer( detNode );
     

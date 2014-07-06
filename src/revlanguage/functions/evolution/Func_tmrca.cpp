@@ -7,12 +7,12 @@
 //
 
 #include "Clade.h"
-#include "DeterministicNode.h"
 #include "Func_tmrca.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TmrcaStatistic.h"
 #include "Topology.h"
 #include "TypedDagNode.h"
@@ -38,7 +38,8 @@ RevObject* Func_tmrca::execute() {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    
+    DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
     
     RealPos* value = new RealPos( detNode );
     

@@ -47,7 +47,7 @@ namespace RevLanguage {
 }
 
 
-#include "DeterministicNode.h"
+#include "RlDeterministicNode.h"
 #include "RoundFunction.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -73,7 +73,8 @@ RevLanguage::RevObject* RevLanguage::Func_round<valType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RoundFunction* f = new RevBayesCore::RoundFunction( arg );
-    RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
+    
+    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
     
     retType* value = new retType( detNode );
     

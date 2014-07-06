@@ -6,11 +6,11 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
 #include "ExponentialFunction.h"
 #include "Func_exp.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -31,8 +31,9 @@ Func_exp* Func_exp::clone( void ) const {
 RevObject* Func_exp::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::ExponentialFunction* f = new RevBayesCore::ExponentialFunction( arg, getRevDeclaration() );
-    RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
+    RevBayesCore::ExponentialFunction* f = new RevBayesCore::ExponentialFunction( arg );
+    
+    DeterministicNode<double>* detNode = new DeterministicNode<double>("", f, this->clone());
     
     RealPos* value = new RealPos( detNode );
     

@@ -118,34 +118,38 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     Function* func = NULL;
     if (variable == NULL) 
     {
+        // We are trying to find a function in the current environment
+        
+        // First we see if the function name corresponds to a user-defined variable
+        // We can do this first because user-defined variables are not allowed to mask function names
         bool found = false;
-        // first, we test if the function corresponds to a user-defined variable
-        if ( env.existsVariable( functionName ) ) 
+        if ( env.existsVariable( functionName ) )
         {
-            const RevObject &theValue = env.getValue( functionName );
-            if ( theValue.isTypeSpec( Function::getClassTypeSpec() ) ) 
+            RevObject &theValue = env.getValue( functionName );
+            
+            if ( theValue.isTypeSpec( Function::getClassTypeSpec() ) )
             {
-                const Function &theFunc = static_cast<const Function&>( theValue );
-                func = theFunc.clone();
+                func = &( static_cast<Function&>( theValue ) );
                 found = func->checkArguments(args, NULL);
             }
         }
 
-        if ( !found ) 
+        // If we cannot find the function name as a variable, it must be in the function table
+        // This call will throw with a relevant message if the function is not found
+        if ( !found )
         {
-            // @todo: This doesn't work if the function is declared inside a function (or something equivalent)
-            func = env.getFunction(functionName, args).clone();
+            func = &( env.getFunction(functionName, args) );
         }
-        if (func == NULL)
-            throw(RbException("Could not find function called '" + functionName +
-                              "' taking specified arguments"));
-        
+
+        // Allow the function to process the arguments
         func->processArguments( args );
-        // call setConstMemberVariable(...)
+
+        // Set the execution environment of the function
         func->setExecutionEnviroment( &env );
     }
     else 
     {
+        // We are trying to find a member function
 
         RevPtr<Variable> theVar = variable->evaluateContent( env );
             
@@ -161,9 +165,12 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         func = theMemberFunction;
 
     }
-    
+
+    // Evaluate a "flat" function or create a deterministic node
     RevObject* funcReturnValue = func->execute();
-    delete func;
+
+    // Clear arguments from function
+    func->clear();
 
     return RevPtr<Variable>( new Variable( funcReturnValue ) );
 }

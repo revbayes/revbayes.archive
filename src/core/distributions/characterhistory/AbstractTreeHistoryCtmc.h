@@ -542,12 +542,6 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecializat
             }
         }
     }
-    else
-    {
-        
-        true;
-        ;
-    }
 }
 
 #endif /* defined(__rb_mlandis__TreeHistory__) */

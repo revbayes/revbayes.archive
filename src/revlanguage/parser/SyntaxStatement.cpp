@@ -50,7 +50,7 @@ SyntaxStatement::SyntaxStatement(statementT type, SyntaxElement* cond, std::list
 }
 
 
-/** Construct from statement type, condition and itwo statement lists */
+/** Construct from statement type, condition and two statement lists */
 SyntaxStatement::SyntaxStatement(statementT                   type,
                                  SyntaxElement*               cond,
                                  std::list<SyntaxElement*>*   stmts1,

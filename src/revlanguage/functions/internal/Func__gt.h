@@ -48,10 +48,10 @@ namespace RevLanguage {
 
 
 #include "ArgumentRule.h"
-#include "DeterministicNode.h"
 #include "GreaterThanFunction.h"
 #include "RbUtil.h"
 #include "RlBoolean.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -78,7 +78,9 @@ RevLanguage::RevObject* RevLanguage::Func__gt<leftValType,rightValType>::execute
     const RevBayesCore::TypedDagNode<typename rightValType::valueType>* rightVal = static_cast<const rightValType &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::GreaterThanFunction<typename leftValType::valueType, typename rightValType::valueType> *func = new RevBayesCore::GreaterThanFunction<typename leftValType::valueType, typename rightValType::valueType>( leftVal, rightVal );
-    RevBayesCore::TypedDagNode<bool> *detNode = new RevBayesCore::DeterministicNode<bool>("", func);
+    
+    DeterministicNode<bool> *detNode = new DeterministicNode<bool>("", func, this->clone());
+    
     RlBoolean *theBool = new RlBoolean( detNode );
     
     return theBool;

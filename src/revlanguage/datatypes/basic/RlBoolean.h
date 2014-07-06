@@ -37,8 +37,8 @@ class RlBoolean : public ModelObject<bool> {
         // Operators
 
         // Basic utility functions
-        RlBoolean*                        clone(void) const;                                                      //!< Clone object
-        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RlBoolean*                      clone(void) const;                                                      //!< Clone object
+        RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
