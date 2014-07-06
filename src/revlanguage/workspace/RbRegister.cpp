@@ -110,6 +110,10 @@
 /* Moves on precision matrices */
 #include "Move_VectorSingleElementSlide.h"
 
+/* Moves on character histories/data augmentation */
+#include "Move_NodeCharacterHistoryRejectionSample.h"
+#include "Move_PathCharacterHistoryRejectionSample.h"
+
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
 #include "Move_NarrowExchange.h"
@@ -433,6 +437,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
         addTypeWithConstructor("mvSubtreeScale",            new Move_SubtreeScale() );
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
+        
+        /* Moves on character histories / data augmentation */
+        addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
+        addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
+
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -717,6 +728,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* rate maps used for data augmentation (in folder "functions/evolution/ratemap") */
         addFunction( "biogeoDE",   new Func_biogeo_de() );
         addFunction( "biogeoGRM",  new Func_biogeo_grm() );
+        addFunction( "fnBiogeoDE",   new Func_biogeo_de() );
+        addFunction( "fnBiogeoGRM",  new Func_biogeo_grm() );
 
         /* Inference functions (in folder "functions/inference") */
 
