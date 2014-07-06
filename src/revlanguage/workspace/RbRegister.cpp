@@ -110,12 +110,18 @@
 /* Moves on precision matrices */
 #include "Move_VectorSingleElementSlide.h"
 
+/* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
+// #include "Move_DPPScaleCatValsMove.h"
+// #include "Move_DPPAllocateAuxGibbsMove.h"
+// #include "Move_DPPGibbsConcentrationMove.h"
+
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
 #include "Move_NodeTimeSlideUniform.h"
+// #include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeSlide.h"
 #include "Move_SubtreeScale.h"
