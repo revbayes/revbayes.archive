@@ -108,11 +108,11 @@
 #include "Move_VectorScale.h"
 
 ///* Moves on precision matrices */
-//#include "Move_VectorSingleElementSlide.h"
+
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-// #include "Move_DPPScaleCatValsMove.h"
-// #include "Move_DPPAllocateAuxGibbsMove.h"
+#include "Move_DPPScaleCatValsMove.h"
+#include "Move_DPPAllocateAuxGibbsMove.h"
 // #include "Move_DPPGibbsConcentrationMove.h"
 
 /* Moves on character histories/data augmentation */
@@ -421,6 +421,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvVectorScale",                 new Move_VectorScale() );
         addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
+        
+        /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
+        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mRlcRateScale",                 new Move_RLCRateScale() );
