@@ -78,13 +78,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
-    const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    size_t nNodes = tau->getValue().getNumberOfNodes();
-    
     RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
     size_t nStates = rm->getValue().getNumberOfStates();
     size_t nChars = rm->getValue().getNumberOfCharacters();
     
+    const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
     
     if ( dt == "biogeo" )
@@ -92,16 +90,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
         
+        // (const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true)
         RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType>(tau, nStates, nChars, false, fe, uc);
         
         RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
         dist->setRateMap( rm );
-
         
         d = dist;
     }
-    
-    
     return d;
 }
 

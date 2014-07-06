@@ -9,12 +9,14 @@
 #ifndef __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 #define __rb_mlandis__BiogeographyPathRejectionSampleProposal__
 
+#include "BiogeographicTreeHistoryCtmc.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
 #include "DiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
+#include "RateMap_Biogeography.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateMap.h"

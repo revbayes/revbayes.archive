@@ -155,7 +155,12 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     imperfectTipData                            = false;
     forbidExtinction                            = forbidExt;
     
-    cladogenicState                             = std::vector<int>(this->histories.size(), (cladogenicEvents ? 1 : 0));
+    cladogenicState                             = std::vector<int>(this->histories.size(), 0);
+    if (cladogenicEvents) {
+        for (size_t i = 0; i < cladogenicState.size(); i++) {
+            cladogenicState[i] = int(GLOBAL_RNG->uniform01() * 2);
+        }
+    }
     buddingState                                = std::vector<int>(this->histories.size(), 0);
     epochs                                      = std::vector<double>(1,0.0);
 //    epochs                                      = std::vector<double>(1,0.0);
