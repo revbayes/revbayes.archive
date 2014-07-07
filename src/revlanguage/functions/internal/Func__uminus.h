@@ -47,7 +47,7 @@ private:
     
 }
 
-#include "DeterministicNode.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "UnaryMinus.h"
 
@@ -71,7 +71,9 @@ RevLanguage::RevObject* RevLanguage::Func__uminus<firstValType, retType>::execut
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::UnaryMinus<typename firstValType::valueType> *func = new RevBayesCore::UnaryMinus<typename firstValType::valueType>(firstArg);
-    RevBayesCore::DeterministicNode<typename retType::valueType> *detNode = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
+
+    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
+    
     retType* value = new retType( detNode );
     
     return value;
