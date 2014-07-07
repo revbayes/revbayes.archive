@@ -112,6 +112,7 @@ RevObject* UserFunction::execute( void )
 
     if ( retVal->hasDagNode() )
     {
+        // Make a deterministic variable
         UserFunctionCall* call = new UserFunctionCall( this );
         UserFunctionArgs* args = new UserFunctionArgs( this );
         
@@ -119,9 +120,11 @@ RevObject* UserFunction::execute( void )
     }
     else
     {
+        // "Flat" call: Execute and return a constant value
         delete retVal;
         UserFunctionCall fxnCall( this );
         retVal = fxnCall.execute();
+        retVal->makeConstantValue();        // A flat call always returns a constant value
     }
     
     return retVal;

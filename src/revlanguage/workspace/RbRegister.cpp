@@ -40,6 +40,9 @@
 
 /// Miscellaneous types ///
 
+/* Base types (in folder "datatypes") */
+#include "RevObject.h"
+
 /* Primitive types (in folder "datatypes/basic") */
 #include "Complex.h"
 #include "Integer.h"
