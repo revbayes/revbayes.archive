@@ -228,7 +228,7 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 2.0 ) );
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
-    moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
+    moves.push_back( new DPPGibbsConcentrationMove( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
     
 //    moves.push_back( new DPPAllocateAuxGibbsMove<int>(poiVals, 4, 2.0) );
 	

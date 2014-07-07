@@ -117,7 +117,7 @@
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
 #include "Move_DPPScaleCatValsMove.h"
 #include "Move_DPPAllocateAuxGibbsMove.h"
-// #include "Move_DPPGibbsConcentrationMove.h"
+#include "Move_DPPGibbsConcentration.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -129,7 +129,7 @@
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
 #include "Move_NodeTimeSlideUniform.h"
-// #include "Move_OriginTimeSlide.h"
+#include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeSlide.h"
 #include "Move_SubtreeScale.h"
@@ -433,6 +433,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
+        addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mRlcRateScale",                 new Move_RLCRateScale() );
@@ -451,6 +452,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvNNIClock",                new Move_NNIClock() );
         addTypeWithConstructor("mvNNINonclock",             new Move_NNINonclock() );
         addTypeWithConstructor("mvNodeTimeSlideUniform",    new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor("mvOriginTimeSlide",         new Move_OriginTimeSlide() );
         addTypeWithConstructor("mvRateAgeBetaShift",        new Move_RateAgeBetaShift() );
         addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
         addTypeWithConstructor("mvSubtreeScale",            new Move_SubtreeScale() );
