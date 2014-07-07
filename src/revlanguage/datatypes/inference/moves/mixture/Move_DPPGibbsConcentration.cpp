@@ -68,24 +68,24 @@ const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Move_DPPGibbsConcentration::getMemberRules(void) const {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules dppMove;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "concentration", false, RealPos::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "numDPPCats", true, Integer::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "gammaShape", true, RealPos::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "gammaRate", true, RealPos::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "numElements", true, RealPos::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "concentration", false, RealPos::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "numDPPCats", true, Integer::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "gammaShape", true, RealPos::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "gammaRate", true, RealPos::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "numElements", true, RealPos::getClassTypeSpec() ) );
        
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return dppMove;
 }
 
 /** Get type spec */
