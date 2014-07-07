@@ -34,6 +34,7 @@
 
 /* Files including helper classes */
 #include "RbException.h"
+#include "RevAbstractType.h"
 #include "RlUserInterface.h"
 #include "Workspace.h"
 
@@ -319,7 +320,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
-
+        addType( new RevAbstractType( RevObject::getClassTypeSpec() ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
         addType( new Complex()                  );
