@@ -6,13 +6,13 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "DeterministicNode.h"
 #include "DistanceDependentDispersalFunction.h"
 #include "Func_biogeo_grm.h"
 #include "GeographyRateModifier.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlAtlas.h"
+#include "RlDeterministicNode.h"
 #include "RlGeographyRateModifier.h"
 #include "RlRateMap.h"
 #include "RlSimplex.h"
@@ -45,7 +45,8 @@ RevObject* Func_biogeo_grm::execute() {
     bool udd    = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
 
     RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, true, udd);
-    RevBayesCore::DeterministicNode<RevBayesCore::GeographyRateModifier> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::GeographyRateModifier>("", f);
+    
+    DeterministicNode<RevBayesCore::GeographyRateModifier> *detNode = new DeterministicNode<RevBayesCore::GeographyRateModifier>("", f, this->clone());
     
     RlGeographyRateModifier* value = new RlGeographyRateModifier( detNode );
     

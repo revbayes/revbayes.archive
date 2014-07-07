@@ -97,7 +97,7 @@ RevObject* Func_expBranchTree::execute() {
 
     RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, val );
 
-    RevBayesCore::TypedDagNode<std::vector<double> >* dag = new RevBayesCore::DeterministicNode<std::vector<double> >("",result);
+    DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
     Vector<RealPos>* wrappedresult = new Vector<RealPos>(dag);
     

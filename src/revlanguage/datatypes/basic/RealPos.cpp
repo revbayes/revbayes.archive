@@ -69,7 +69,7 @@ RevObject* RealPos::add( const RevObject& rhs ) const
 RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -86,7 +86,7 @@ RealPos* RealPos::add(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -131,7 +131,7 @@ RevObject* RealPos::divide( const RevObject& rhs ) const
 RealPos* RealPos::divide(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -148,7 +148,7 @@ RealPos* RealPos::divide(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -211,7 +211,7 @@ RevObject* RealPos::multiply( const RevObject& rhs ) const
 RealPos* RealPos::multiply(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -228,7 +228,7 @@ RealPos* RealPos::multiply(const RevLanguage::Natural &rhs) const
 RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
     
     return n;
 }

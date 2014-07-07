@@ -79,7 +79,7 @@ RevObject* Natural::add( const RevObject& rhs ) const
 Natural* Natural::add(const RevLanguage::Natural &rhs) const
 {
     
-    Natural *n = new Natural( value->getValue() + rhs.getValue() );
+    Natural *n = new Natural( dagNode->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -96,7 +96,7 @@ Natural* Natural::add(const RevLanguage::Natural &rhs) const
 RealPos* Natural::add(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() + rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -113,13 +113,13 @@ Natural* Natural::clone( void ) const {
 RevObject* Natural::convertTo( const TypeSpec& type ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
-        return new RlBoolean( value->getValue() == 0 );
+        return new RlBoolean( dagNode->getValue() == 0 );
 
     if ( type == Real::getClassTypeSpec() )
-        return new Real( value->getValue() );
+        return new Real( dagNode->getValue() );
 
     if ( type == RealPos::getClassTypeSpec() )
-        return new RealPos( value->getValue() );
+        return new RealPos( dagNode->getValue() );
 
     if ( type == RlString::getClassTypeSpec() ) {
 
@@ -164,7 +164,7 @@ RevObject* Natural::divide( const RevObject& rhs ) const
 RealPos* Natural::divide(const RevLanguage::Natural &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() / double( rhs.getValue() ) );
+    RealPos *n = new RealPos( dagNode->getValue() / double( rhs.getValue() ) );
     
     return n;
 }
@@ -181,7 +181,7 @@ RealPos* Natural::divide(const RevLanguage::Natural &rhs) const
 RealPos* Natural::divide(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() / rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() / rhs.getValue() );
     
     return n;
 }
@@ -263,7 +263,7 @@ RevObject* Natural::multiply( const RevObject& rhs ) const
 Natural* Natural::multiply(const RevLanguage::Natural &rhs) const
 {
     
-    Natural *n = new Natural( value->getValue() * rhs.getValue() );
+    Natural *n = new Natural( dagNode->getValue() * rhs.getValue() );
     
     return n;
 }
@@ -280,7 +280,7 @@ Natural* Natural::multiply(const RevLanguage::Natural &rhs) const
 RealPos* Natural::multiply(const RevLanguage::RealPos &rhs) const
 {
     
-    RealPos *n = new RealPos( value->getValue() * rhs.getValue() );
+    RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
     
     return n;
 }

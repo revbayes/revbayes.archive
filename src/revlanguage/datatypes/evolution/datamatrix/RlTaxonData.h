@@ -71,12 +71,12 @@ RevLanguage::RevObject* RevLanguage::DiscreteTaxonData<charType>::executeMethod(
         // get the member with give index
         const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
             
-        if (this->value->getValue().size() < (size_t)(index.getValue()) ) 
+        if (this->dagNode->getValue().size() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
         }
             
-        RevObject* element = new charType( this->value->getValue().getElement( size_t(index.getValue()) - 1) );
+        RevObject* element = new charType( this->dagNode->getValue().getElement( size_t(index.getValue()) - 1) );
         return element;
     } 
     

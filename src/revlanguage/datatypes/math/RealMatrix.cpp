@@ -92,7 +92,7 @@ void RealMatrix::printValue(std::ostream &o) const {
     
     std::fixed( o );
     o.precision( 3 );
-    o << value->getValue();
+    o << dagNode->getValue();
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

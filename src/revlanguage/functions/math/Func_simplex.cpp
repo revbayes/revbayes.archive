@@ -6,12 +6,12 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "Func_simplex.h"
 #include "ArgumentRule.h"
-#include "DeterministicNode.h"
 #include "Ellipsis.h"
+#include "Func_simplex.h"
 #include "RbUtil.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "RlSimplex.h"
@@ -42,7 +42,7 @@ RevObject* Func_simplex::execute( void ) {
     
     RevBayesCore::SimplexFunction *func = new RevBayesCore::SimplexFunction( params );
     
-    RevBayesCore::TypedDagNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
+    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
     
     Simplex *theSimplex = new Simplex( detNode );
         

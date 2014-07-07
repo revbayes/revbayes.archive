@@ -62,7 +62,7 @@ const TypeSpec& AbstractDiscreteCharacterData::getTypeSpec(void) const {
 const RevBayesCore::AbstractDiscreteCharacterData& RevLanguage::AbstractDiscreteCharacterData::getValue( void ) const 
 {
     
-    return static_cast<const RevBayesCore::AbstractDiscreteCharacterData&>( this->value->getValue() );
+    return static_cast<const RevBayesCore::AbstractDiscreteCharacterData&>( this->dagNode->getValue() );
 }
 
 
