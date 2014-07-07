@@ -92,10 +92,10 @@ er ~ dirichlet(e)
 Q := gtr(er,pi)
 
 # the sequence evolution model
-seq ~ substModel(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
+phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
 
 # attach the data
-seq.clamp(D)
+phySeq.clamp(D)
 
 
 moves[1] <- mvScale(diversification,lambda=1.0,tune=true,weight=1.0)
