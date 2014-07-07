@@ -6,9 +6,10 @@
 #include <ostream>
 #include <string>
 
-class TypeSpec;
 
 namespace RevLanguage {
+    
+    class TypeSpec;
     
     /**
      * @brief RevAbstractType: Object representing abstract Rev types

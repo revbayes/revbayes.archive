@@ -72,7 +72,7 @@ const std::string& Func_normalize::getClassName(void) {
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_normalize::getClassTypeSpec(void) { 
+const TypeSpec& Func_normalize::getClassTypeSpec(void) { 
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     

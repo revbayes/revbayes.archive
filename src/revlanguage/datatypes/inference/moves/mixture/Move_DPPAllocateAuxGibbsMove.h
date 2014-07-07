@@ -104,7 +104,7 @@ const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassName(void) {
 
 /** Get class type spec describing type of object */
 template <class valType>
-const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) { 
+const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) {
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
     
