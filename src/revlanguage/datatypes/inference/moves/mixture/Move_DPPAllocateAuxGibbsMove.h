@@ -117,21 +117,21 @@ const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassType
 template <class valType>
 const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getMemberRules(void) const {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules dppMove;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<valType>::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
+        dppMove.push_back( new ArgumentRule( "x", false, Vector<valType>::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return dppMove;
 }
 
 /** Get type spec */
