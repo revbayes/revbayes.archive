@@ -48,8 +48,8 @@ namespace RevLanguage {
     
 }
 
-#include "DeterministicNode.h"
 #include "BinaryDivision.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 /** default constructor */
@@ -74,7 +74,7 @@ RevLanguage::RevObject* RevLanguage::Func__div<firstValType, secondValType, retT
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BinaryDivision<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinaryDivision<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
     
-    RevBayesCore::DeterministicNode<typename retType::valueType> *detNode = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
+    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
     
     retType* value = new retType( detNode );
     

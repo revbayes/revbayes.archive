@@ -43,12 +43,12 @@ RevObject* RateMap::executeMethod(std::string const &name, const std::vector<Arg
    
     if (name == "nChars")
     {
-        int n = (int)this->value->getValue().getNumberOfCharacters();
+        int n = (int)this->dagNode->getValue().getNumberOfCharacters();
         return new Natural(n);
     }
     else if (name == "nStates")
     {
-        int n = (int)this->value->getValue().getNumberOfStates();
+        int n = (int)this->dagNode->getValue().getNumberOfStates();
         return new Natural(n);
     }
 
