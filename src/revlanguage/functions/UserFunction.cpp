@@ -53,6 +53,7 @@ UserFunction::UserFunction(const UserFunction &x) :
 }
 
 
+/** Assignment operator. Deal with argument rules and code. */
 UserFunction& UserFunction::operator=(const UserFunction &f) {
     
     if ( this != &f ) {

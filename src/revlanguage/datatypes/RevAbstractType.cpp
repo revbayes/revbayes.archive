@@ -22,7 +22,7 @@ RevAbstractType* RevAbstractType::clone(void) const
 
 
 /** Get type spec */
-const RevLanguage::TypeSpec& RevAbstractType::getTypeSpec( void ) const {
+const TypeSpec& RevAbstractType::getTypeSpec( void ) const {
     
     return myTypeSpec;
 }

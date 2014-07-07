@@ -25,13 +25,13 @@ namespace RevLanguage {
         
     public:
         ContinuousCharacterData(void);                                                          //!< Default constructor
-        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d);                                                            //!< Construct from AminoAcid
+        ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData *d);                //!< Copy constructor
         
         // Operators
         
         // Basic utility functions
-        ContinuousCharacterData*                       clone(void) const;                                                      //!< Clone object
-        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        ContinuousCharacterData*        clone(void) const;                                                      //!< Clone object
+        RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassName(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
