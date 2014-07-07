@@ -7,12 +7,12 @@
 //
 
 #include "BiogeographyRateMapFunction.h"
-#include "DeterministicNode.h"
 #include "Func_biogeo_de.h"
 #include "GeographyRateModifier.h"
 #include "RateMap_Biogeography.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "RlGeographyRateModifier.h"
 #include "RlRateMap.h"
 #include "RlSimplex.h"
@@ -45,7 +45,8 @@ RevObject* Func_biogeo_de::execute() {
     RevBayesCore::BiogeographyRateMapFunction* f = new RevBayesCore::BiogeographyRateMapFunction(nc,fe); //(nc, true);
     f->setGainLossRates(glr);
     f->setGeographyRateModifier(grm);
-    RevBayesCore::DeterministicNode<RevBayesCore::RateMap> *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RateMap>("", f);
+    
+    DeterministicNode<RevBayesCore::RateMap> *detNode = new DeterministicNode<RevBayesCore::RateMap>("", f, this->clone());
     
     RateMap* value = new RateMap( detNode );
     

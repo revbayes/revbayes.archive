@@ -49,11 +49,11 @@ namespace RevLanguage {
 
 
 #include "ArgumentRule.h"
-#include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "RlDeterministicNode.h"
 #include "RlVector.h"
 #include "RbVector.h"
 #include "RbVectorFunction.h"
@@ -84,7 +84,9 @@ RevLanguage::RevObject* RevLanguage::Func_rbVector<valType>::execute( void ) {
     }
     
     RevBayesCore::RbVectorFunction<typename valType::valueType> *func = new RevBayesCore::RbVectorFunction<typename valType::valueType>( params );
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<typename valType::valueType> > *detNode = new RevBayesCore::DeterministicNode<RevBayesCore::RbVector<typename valType::valueType> >("", func);
+
+    DeterministicNode<RevBayesCore::RbVector<typename valType::valueType> > *detNode = new DeterministicNode<RevBayesCore::RbVector<typename valType::valueType> >("", func, this->clone());
+
     RbVector<valType> *theVector = new RbVector<valType>( detNode );
     
     return theVector;

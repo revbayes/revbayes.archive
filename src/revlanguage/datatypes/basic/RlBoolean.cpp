@@ -55,13 +55,13 @@ RlBoolean* RlBoolean::clone(void) const {
 RevObject* RlBoolean::convertTo(const TypeSpec& type) const {
 
     if (type == Integer::getClassTypeSpec()) {
-        if (value->getValue())
+        if (dagNode->getValue())
             return new Integer(1);
         else 
             return new Integer(0);
     }
     else if (type == Real::getClassTypeSpec()) {
-        if (value->getValue())
+        if (dagNode->getValue())
             return new Real(1.0);
         else 
             return new Real(0.0);
@@ -112,6 +112,6 @@ bool RlBoolean::isConvertibleTo(const TypeSpec& type) const {
 /** Print value for user */
 void RlBoolean::printValue(std::ostream &o) const {
 
-    o << (value->getValue() ? "true" : "false");
+    o << (dagNode->getValue() ? "true" : "false");
 }
 

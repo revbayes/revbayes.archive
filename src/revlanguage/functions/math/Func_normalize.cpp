@@ -7,12 +7,12 @@
 //
 
 #include "ArgumentRule.h"
-#include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Func_normalize.h"
 #include "NormalizeVectorFunction.h"
 #include "RbUtil.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "Vector.h"
@@ -37,7 +37,9 @@ RevObject* Func_normalize::execute( void ) {
     const RevBayesCore::TypedDagNode< std::vector<double> > *params = static_cast< Vector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( params );
-    RevBayesCore::TypedDagNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
+    
+    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
+
     Vector<RealPos> *theNormalizedVector = new Vector<RealPos>( detNode );
     
     return theNormalizedVector;

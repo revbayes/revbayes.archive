@@ -36,7 +36,7 @@ RlString::RlString(int i) : ModelObject<std::string>() {
 
     std::ostringstream o;
     o << i;
-    value = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
+    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
 }
 
 
@@ -46,7 +46,7 @@ RlString::RlString(double x) : ModelObject<std::string>() {
 
     std::ostringstream o;
     o << x;
-    value = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
+    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
 }
 
 
@@ -84,7 +84,7 @@ RevObject* RlString::add( const RevObject& rhs ) const
 RlString* RlString::add(const RevLanguage::RlString &rhs) const
 {
     
-    RlString *n = new RlString( value->getValue() + rhs.getValue() );
+    RlString *n = new RlString( dagNode->getValue() + rhs.getValue() );
     
     return n;
 }
@@ -126,6 +126,6 @@ const TypeSpec& RlString::getTypeSpec( void ) const {
 /** Print value */
 void RlString::printValue(std::ostream& o) const {
 
-	o << value->getValue();
+	o << dagNode->getValue();
 }
 

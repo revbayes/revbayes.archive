@@ -162,7 +162,7 @@ const std::string& RevObject::getClassName(void)
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec(getClassName() );
+    static TypeSpec rbClass = TypeSpec( getClassName() );
 	
     return rbClass; 
 }
@@ -224,7 +224,7 @@ const MethodTable& RevObject::getMethods(void) const
 
 
 /**
- * Get the value as a DAG node. This default implementation throws an error.
+ * Get the Rev type of the object
  */
 const std::string& RevObject::getType( void ) const
 {
@@ -253,7 +253,7 @@ bool RevObject::hasMember(std::string const &name) const
 }
 
 
-/** Does this object have an internal value node? Default implementation returns false. */
+/** Does this object have an internal DAG node? Default implementation returns false. */
 bool RevObject::hasDagNode(void) const
 {
 
