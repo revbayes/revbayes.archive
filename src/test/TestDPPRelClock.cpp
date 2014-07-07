@@ -36,6 +36,7 @@
 #include "NodeTimeSlideUniform.h"
 #include "NormalDistribution.h"
 #include "OriginTimeSlide.h"
+#include "PoissonDistribution.h"
 #include "QuantileFunction.h"
 #include "RbFileManager.h"
 #include "RbStatisticsHelper.h"
@@ -148,6 +149,11 @@ bool TestDPPRelClock::run( void ) {
 	DeterministicNode<double> *scaleRate = new DeterministicNode<double>("scaleRate", new BinaryDivision<double, double, double>(crInv, treeHeight));
 
 	DeterministicNode<std::vector<double> > *branchSubRates = new DeterministicNode< std::vector<double> >("branchSRs", new VectorDoubleProductStatistic(branchRates, scaleRate));
+    
+//    ConstantNode<double> *tPoisL = new ConstantNode<double>("tp", new double(1.0));
+//    TypedDistribution<int> *pois = new PoissonDistribution(tPoisL);
+//    StochasticNode<std::vector<int> > *poiVals = new StochasticNode<std::vector<int> >("pois", new DirichletProcessPriorDistribution<int>(pois, cp, (int)numBranches) );
+
 
 	// ####################################
 
@@ -223,6 +229,8 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
     moves.push_back( new DPPGibbsConcentrationMove<double>( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
+    
+//    moves.push_back( new DPPAllocateAuxGibbsMove<int>(poiVals, 4, 2.0) );
 	
     // add some tree stats to monitor
 	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
