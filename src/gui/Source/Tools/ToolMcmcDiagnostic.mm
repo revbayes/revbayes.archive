@@ -174,7 +174,7 @@
 //		controlWindow = [[WindowControllerMcmcDiagnostic alloc] initWithTool:self];
         
         // initialize the data
-        data                        = new std::vector<Trace* >;
+        data                        = new std::vector<RevBayesCore::Trace* >;
         included                    = [[NSMutableArray alloc] init];
         // within chain convergence gui objects
         pStationarity               = 0.01;
@@ -270,7 +270,7 @@
     NSTextFieldCell* aCell = [tableColumn dataCell];
     
     // get the trace for this row
-    Trace* t = data->at(row);
+    RevBayesCore::Trace* t = data->at(row);
     
     // get the name of the column
     NSString* header = [[tableColumn headerCell] objectValue];
@@ -414,7 +414,7 @@
         
         // check if that trace is include
         if ([[included objectAtIndex:i] boolValue]) {
-            Trace* t = data->at(i);
+            RevBayesCore::Trace* t = data->at(i);
             
             // calculate the burnin
             if (useFixPercentage) {
@@ -424,7 +424,7 @@
 //                [t setBurnin:(((int)[t count]) * fixPercentage * [t stepSize])];
                 t->setBurnin(burnin);
                 
-                TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
+                RevBayesCore::TraceAnalysisContinuous* analysis = new RevBayesCore::TraceAnalysisContinuous();
                 analysis->analyseCorrelation(t->getValues(), burnin);
                 t->setEss(analysis->getEss());
                 t->setMean(analysis->getMean());
@@ -435,11 +435,11 @@
             else {
                 if ([[[optimalBurninPuButton selectedItem] title] isEqualToString:@"ESS"] ) {
                     // estimate the burnin
-                    EssMax* estimator = new EssMax();
+                    RevBayesCore::EssMax* estimator = new RevBayesCore::EssMax();
                     int burnin = (int)estimator->estimateBurnin(t->getValues());
                     delete estimator;
                     // calculate the trace statistics
-                    TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
+                    RevBayesCore::TraceAnalysisContinuous* analysis = new RevBayesCore::TraceAnalysisContinuous();
                     analysis->analyseCorrelation(t->getValues(), burnin);
                     t->setBurnin(burnin);
                     t->setEss(analysis->getEss());
@@ -449,11 +449,11 @@
                 }
                 else {
                     // estimate the burnin
-                    SemMin* estimator = new SemMin();
+                    RevBayesCore::SemMin* estimator = new RevBayesCore::SemMin();
                     int burnin = (int)estimator->estimateBurnin(t->getValues());
                     delete estimator;
                     // calculate the trace statistics
-                    TraceAnalysisContinuous* analysis = new TraceAnalysisContinuous();
+                    RevBayesCore::TraceAnalysisContinuous* analysis = new RevBayesCore::TraceAnalysisContinuous();
                     analysis->analyseCorrelation(t->getValues(), burnin);
                     t->setBurnin(burnin);
                     t->setEss(analysis->getEss());
@@ -478,7 +478,7 @@
             // test stationarity within chain
             if (useStationarity) {
                 int nBlocks = 10;
-                StationarityTest* test = new StationarityTest(nBlocks, pStationarity);
+                RevBayesCore::StationarityTest* test = new RevBayesCore::StationarityTest(nBlocks, pStationarity);
                 bool passed = test->assessConvergenceSingleChain(t->getValues(), t->getBurnin());
                 t->setPassedStationarityTest(passed);
                 
@@ -487,7 +487,7 @@
             
             // Geweke's test for convergence within a chain
             if (useGeweke) {
-                GewekeTest* test = new GewekeTest(pGeweke);
+                RevBayesCore::GewekeTest* test = new RevBayesCore::GewekeTest(pGeweke);
                 bool passed = test->assessConvergenceSingleChain(t->getValues(), t->getBurnin());
                 t->setPassedGewekeTest(passed);
                 
