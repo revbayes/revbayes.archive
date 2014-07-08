@@ -97,7 +97,7 @@ DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevObject* DistributionFunctionCdf::execute( void ) {
+RevPtr<Variable> DistributionFunctionCdf::execute( void ) {
     
     RevBayesCore::ContinuousDistribution *d = NULL;
     
@@ -143,7 +143,7 @@ RevObject* DistributionFunctionCdf::execute( void ) {
     
     Probability* value = new Probability( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

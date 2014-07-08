@@ -84,8 +84,8 @@ public:
     virtual void                        setDagNode(RevBayesCore::DagNode *newNode);                                                     //!< Set or replace the internal dag node (and keep me)
 
     // Member variable functions you may want to override
-    virtual RevObject*                  executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
-    virtual RevObject*                  getMember(const std::string& name) const;                                                       //!< Get member variable
+    virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
+    virtual RevPtr<Variable>            getMember(const std::string& name) const;                                                       //!< Get member variable
     virtual const MemberRules&          getMemberRules(void) const;                                                                     //!< Get member rules
     virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods (const)
     virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
@@ -93,6 +93,11 @@ public:
     virtual void                        setMember(const std::string& name, const RevPtr<Variable> &var);                                //!< Set member variable
     virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
+    // Container functions you may want to override
+    virtual RevPtr<Variable>            findOrCreateElement( const std::vector<int> indices );                                          //!< Find or create element variable
+    virtual RevPtr<Variable>            getDynamicElement( const std::vector< RevPtr<Variable> > indices );                             //!< Get dynamic element variable lookup
+    virtual RevPtr<Variable>            getElement( const std::vector<int> indices );                                                   //!< Get element variable
+
     // Basic utility functions you should not have to override
     const std::string&                  getType(void) const;                                                                            //!< Get the type specification as a string
     bool                                isTypeSpec(const TypeSpec& typeSpec) const;                                                     //!< Does the language type of the object fit type specification typeSpec?

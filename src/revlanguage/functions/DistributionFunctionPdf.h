@@ -42,7 +42,7 @@ namespace RevLanguage {
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -114,7 +114,7 @@ RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFuncti
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
@@ -135,7 +135,7 @@ RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute
     
     Real* value = new Real( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

@@ -37,7 +37,7 @@ RlGeographyRateModifier* RlGeographyRateModifier::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RlGeographyRateModifier::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RlGeographyRateModifier::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     
 //    if (name == "getNumberOfCharacters")

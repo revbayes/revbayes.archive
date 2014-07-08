@@ -39,13 +39,13 @@ AbstractCharacterData* AbstractCharacterData::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     
     if (name == "chartype") 
     {
         
-        return new RlString( this->dagNode->getValue().getDatatype() );
+        return new Variable( new RlString( this->dagNode->getValue().getDatatype() ) );
     }
     else if (name == "excludeCharacter")
     {
@@ -78,7 +78,7 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
             n->push_back( this->dagNode->getValue().getTaxonNameWithIndex( i ) );
         }
         
-        return n;
+        return new Variable( n );
     }
     else if (name == "nchar") 
     {
@@ -98,19 +98,19 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
             }
             
         }
-        return numChar;
+        return new Variable( numChar );
     }
     else if (name == "ntaxa") 
     {
         int n = (int)this->dagNode->getValue().getNumberOfTaxa();
         
-        return new Natural(n);
+        return new Variable( new Natural(n) );
     }
     else if (name == "size") 
     {
         int n = (int)this->dagNode->getValue().getNumberOfTaxa();
         
-        return new Natural(n);
+        return new Variable( new Natural(n) );
     }
     //    else if (name == "nexcludedtaxa")
     //    {
@@ -212,7 +212,7 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     {
         bool ih = this->dagNode->getValue().isHomologyEstablished();
     
-        return new RlBoolean(ih);
+        return new Variable( new RlBoolean(ih) );
     } 
     
     return ModelObject<RevBayesCore::AbstractCharacterData>::executeMethod( name, args );

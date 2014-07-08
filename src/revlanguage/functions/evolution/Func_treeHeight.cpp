@@ -31,7 +31,7 @@ Func_treeHeight* Func_treeHeight::clone( void ) const {
 }
 
 
-RevObject* Func_treeHeight::execute() {
+RevPtr<Variable> Func_treeHeight::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeHeightStatistic* f = new RevBayesCore::TreeHeightStatistic( tau );
@@ -40,7 +40,7 @@ RevObject* Func_treeHeight::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

@@ -40,7 +40,7 @@ public:
     const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
     bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions
     
-    RevObject*                              execute(void);                                                              //!< Execute function
+    RevPtr<Variable>                        execute(void);                                                              //!< Execute function
     
 };
     

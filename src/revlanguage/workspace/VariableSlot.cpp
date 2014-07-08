@@ -30,6 +30,8 @@
 
 using namespace RevLanguage;
 
+#if 0
+
 // Declarations
 std::ostream& operator<<(std::ostream& o, const VariableSlot& x);
 
@@ -391,3 +393,4 @@ std::ostream& operator<<(std::ostream& o, const VariableSlot& x) {
     return o;
 }
 
+#endif

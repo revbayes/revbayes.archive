@@ -49,11 +49,11 @@ namespace RevLanguage {
         void                                        makeConstantValue();                                                //!< Convert the stored variable to a constant variable (if applicable)
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                        setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
-        void                                        replaceVariable(RevObject *newVar);                          //!< Replace the internal DAG node
+        void                                        replaceVariable(RevObject *newVar);                             //!< Replace the internal DAG node
 
         // function you might want to overwrite
-        virtual RevObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-        virtual RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevObject*                          convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
 
         // Container functions you should not have to override
@@ -68,7 +68,7 @@ namespace RevLanguage {
         size_t                                      size(void) const;                                               //!< get the number of elements in the AbstractVector
   
         // Container functions you have to overwrite
-        virtual RevObject*                   getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
+        virtual RevPtr<Variable>                    getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
         virtual void                                sort(void) = 0;                                                 //!< sort the AbstractVector
         virtual void                                unique(void)= 0 ;                                               //!< removes consecutive duplicates
 
@@ -225,7 +225,7 @@ typename rlType::const_iterator RevLanguage::TypedContainer<rlType>::end( void )
 
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RevObject* RevLanguage::TypedContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TypedContainer<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "clamp") 
     {

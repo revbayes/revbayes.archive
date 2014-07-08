@@ -24,7 +24,7 @@ Dist_geom::Dist_geom() : TypedDistribution<Natural>()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Dist_geom* Dist_geom::clone( void ) const 
 {

@@ -1,169 +1,79 @@
-/**
- * @file
- * This file contains the implementation of Environment, which
- * is the abstract base class of Environments and workspaces.
- *
- * @brief Implementation of Environment
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-17, version 1.0
- *
- * $Id$
- */
-
 #include "Environment.h"
 #include "RbException.h"
 #include "RlFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "Variable.h"
-#include "VariableSlot.h"
 
 #include <cstdio>
 
 using namespace RevLanguage;
 
+
+/** Construct environment with NULL parent */
+Environment::Environment(void) :
+    functionTable(new FunctionTable()),
+    numUnnamedVariables(0),
+    parentEnvironment(NULL),
+    variableTable()
+{
+}
+
+
+/** Construct environment with parent */
+Environment::Environment(Environment* parentEnv) :
+    functionTable(new FunctionTable(&parentEnv->getFunctionTable())),
+    numUnnamedVariables(0),
+    parentEnvironment(parentEnv),
+    variableTable()
+{
+}
+
+
+/** Copy constructor. We need to make sure we have a deep copy of the variable table, because a shallow copy is the default. */
+Environment::Environment(const Environment &x) :
+    functionTable( x.functionTable ),
+    numUnnamedVariables( x.numUnnamedVariables ),
+    parentEnvironment( x.parentEnvironment ),
+    variableTable( x.variableTable )
+{
+    // Make a deep copy of the variable table by making sure we have clones of the variables
+    for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
+        i->second = i->second->clone();
+}
+
+
 /** Destructor */
-Environment::~Environment() {
-
-    // clear the variable table
+Environment::~Environment()
+{
+    // Clear the variable table and function table
     clear();
-
+    
 }
 
-/** Construct Environment with NULL parent */
-Environment::Environment(void) : functionTable(new FunctionTable()), parentEnvironment(NULL) {
-}
 
-/** Construct Environment with parent */
-Environment::Environment(Environment* parentEnv) : functionTable(new FunctionTable(&parentEnv->getFunctionTable())), parentEnvironment(parentEnv) {
-
-}
-
-/** Copy Constructor */
-Environment::Environment(const Environment &x) : functionTable(x.functionTable) {
-
-    // make a deep copy of the parent environment
-    if (x.parentEnvironment != NULL) {
-        parentEnvironment = x.parentEnvironment;
-    } else {
-        parentEnvironment = NULL;
-    }
-
-    // make a shallow copy of the variable names
-    varNames = x.varNames;
-
-    // make a deep copy of the variable table
-    for (size_t i = 0; i < x.size(); i++) {
-        // get the name of the i-th variable
-        const std::string &name = x.getName(i);
-
-
-        const VariableSlot& slotOrg = x[name];
-        VariableSlot* slotCopy = new VariableSlot(slotOrg);
-
-        // add the copy
-        variableTable.insert(std::pair<std::string, VariableSlot* >(name, slotCopy));
-
-    }
-
-}
-
-Environment& Environment::operator=(const Environment &x) {
-
-    if (this != &x) {
-        // clean up first
+/** Assignment operator. Ensure we have a deep copy of the variable table. */
+Environment& Environment::operator=(const Environment &x)
+{
+    if (this != &x)
+    {
+        // Clean up variable and function table
         clear();
 
-        // make a shallow copy of the parent environment
-        if (x.parentEnvironment != NULL) {
-            parentEnvironment = x.parentEnvironment;
-        } else {
-            parentEnvironment = NULL;
-        }
+        // Copy parent environment pointer
+        parentEnvironment = x.parentEnvironment;
 
-        // make a deep copy of the variable names
-        varNames = x.varNames;
-
+        // Make a deep copy of function table by using assignment operator in FunctionTable
         functionTable = x.functionTable;
-
-        // make a deep copy of the variable table
-        for (size_t i = 0; i < x.size(); i++) {
-            // get the name of the i-th variable
-            const std::string &name = x.getName(i);
-
-
-            const VariableSlot& slotOrg = x[name];
-            VariableSlot* slotCopy = new VariableSlot(slotOrg);
-
-            // add the copy
-            variableTable.insert(std::pair<std::string, VariableSlot* >(name, slotCopy));
-
-        }
     }
 
     return *this;
 }
 
-/** Index operator to variable slot from string */
-VariableSlot& Environment::operator[](const std::string& name) {
 
-    std::map<std::string, VariableSlot* >::iterator it = variableTable.find(name);
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentEnvironment != NULL)
-            return parentEnvironment->operator [](name);
-        else
-            throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
-    }
-
-#ifdef DEBUG_WORKSPACE
-    printf("Retrieving \"%s\" from frame\n", name.c_str());
-#endif
-
-    return *it->second;
-}
-
-
-/** Index operator (const) to variable slot from string */
-const VariableSlot& Environment::operator[](const std::string& name) const {
-
-    std::map<std::string, VariableSlot* >::const_iterator it = variableTable.find(name);
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentEnvironment != NULL)
-            return parentEnvironment->operator [](name);
-        else
-            throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
-    }
-
-    return *it->second;
-}
-
-
-/** Index operator to variable slot from int */
-VariableSlot& Environment::operator[](const size_t index) {
-
-    // get the name at the index
-    const std::string &name = getName(index);
-
-    return operator[](name);
-}
-
-
-/** Index operator (const) to variable slot from int */
-const VariableSlot& Environment::operator[](const size_t index) const {
-
-    // get the name at the index
-    const std::string &name = getName(index);
-
-    return operator[](name);
-}
-
-/* Add function to the workspace */
-bool Environment::addFunction(const std::string& name, Function* func) {
+/* Add function to frame. */
+bool Environment::addFunction(const std::string& name, Function* func)
+{
 
 #ifdef DEBUG_WORKSPACE
     printf("Adding function %s = %s to workspace\n", name.c_str(), func->callSignature().c_str());
@@ -173,51 +83,39 @@ bool Environment::addFunction(const std::string& name, Function* func) {
         throw RbException("There is already a variable named '" + name + "' in the workspace");
 
     functionTable.addFunction(name, func);
-    //    addVariable(name, new ConstantNode(func) );
 
     return true;
 }
 
-/** Add reference variable */
-void Environment::addReferenceVariable(const std::string& name, const RevPtr<const Variable>& refVar) {
+
+/** Add reference variable to frame. */
+void Environment::addReferenceVariable( const std::string& name, const RevPtr<const Variable>& refVar )
+{
     
     // create new reference variable
     RevPtr<Variable> theVar = new Variable( refVar, name );
 
-    // create a new slot
-    VariableSlot* theSlot = new VariableSlot(name, RevObject::getClassTypeSpec(), theVar);
-    
-    // call function to add the slot
-    addVariable(name, theSlot);
+    variableTable.insert( std::pair< std::string, RevPtr<Variable> >( name, theVar ) );
 }
 
-/* Add variable */
-void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 
+/** Add variable to frame. */
+void Environment::addVariable( const std::string& n, const RevPtr<Variable>& theVar )
+{
     std::string name = n;
-    // we check if the name equals the empty string
-    // if so we replace it with the memory address of the slot we want to insert
-    // because we cannot add variable slot with an empty string as the identifier
-    // caller will not be able to retrieve this slot via it's name
-    // but it is their own fault if they tried to add it without a name to identify with
-    if (name == RevBayesCore::RbUtils::EMPTY_STRING) {
-        // we do not have a name for the variable so we use the memory address
-        long tmp = long((VariableSlot*) theSlot);
-        std::stringstream out;
-        out << tmp;
-        name = out.str();
-    }
+    
+    /* Throw an error if the name string is empty. */
+    if ( n == "" )
+        throw RbException("Invalid attempt to add unnamed variable to frame.");
+
     /* Throw an error if the variable exists. Note that we cannot use the function
-     existsVariable because that function looks recursively in parent frames, which
-     would make it impossible to hide global variables. */
+        existsVariable because that function looks recursively in parent frames, which
+        would make it impossible to hide global variables. */
     if (variableTable.find(name) != variableTable.end())
         throw RbException("Variable " + name + " already exists in frame");
 
-    /* insert new slot in variable table */
-    variableTable.insert(std::pair<std::string, VariableSlot* >(name, theSlot));
-
-    // add the name to the variable name list
-    varNames.push_back(name);
+    /* Insert new variable in variable table */
+    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
 
 #ifdef DEBUG_WORKSPACE
     printf("Inserted \"%s\" in frame\n", name.c_str());
@@ -225,93 +123,117 @@ void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 
 }
 
-/** Add variable */
-void Environment::addVariable(const std::string& name, const RevPtr<Variable>& theVar) {
 
-    // create a new slot
-    VariableSlot* theSlot = new VariableSlot(name, RevObject::getClassTypeSpec(), theVar);
+/** Add variable to frame from a "naked" Rev object. */
+void Environment::addVariable(const std::string& name, RevObject* obj)
+{
+    // Create a new variable object
+    RevPtr<Variable> var = RevPtr<Variable>( new Variable( obj ) );
 
-    // call function to add the slot
-    addVariable(name, theSlot);
+    // Add the variable to the table
+    addVariable( name, var );
 }
 
-/** Add variable to frame */
-void Environment::addVariable(const std::string& name, RevObject* val) {
-    // create a new variable object
-    RevPtr<Variable> var = RevPtr<Variable>(new Variable(val));
 
-    // add the object to the list
-    addVariable(name, var);
+/** Add an empty (NULL) variable to frame. */
+void Environment::addNullVariable( const std::string& name )
+{
+    // Create a new variable object
+    RevPtr<Variable> var = RevPtr<Variable>( new Variable( NULL ) );
+
+    // Add the variable to the table
+    addVariable( name, var );
 }
 
-/** Add variable to frame */
-void Environment::addVariable(const std::string& name) {
-    // create a new variable object
-    RevPtr<Variable> var = RevPtr<Variable>(new Variable(NULL));
 
-    // add the object to the list
-    addVariable(name, var);
-}
-
-/** clone */
-Environment* Environment::clone() const {
+/** Clone the environment (frame) */
+Environment* Environment::clone() const
+{
     return new Environment(*this);
 }
 
-/** Clear the variable table */
-void Environment::clear(void) {
-    // empty the variable table
-    for (std::map<std::string, VariableSlot*>::iterator it = variableTable.begin(); it != variableTable.end(); it++) {
-        VariableSlot* theSlot = it->second;
 
-        // free the memory of the slot
-        delete theSlot;
-    }
-
-    // empty the two vectors
+/**
+ * Clear the variable table. The function table has its own deep destructor called by assignment or destruction.
+ * However, we empty it here in case the clear function is called from some place other than the assignment
+ * operator or the destructor.
+ */
+void Environment::clear(void)
+{
+    // Empty the variable table. It is as easy as this because we use smart pointers...
     variableTable.clear();
-    varNames.clear();
+    
+    // Empty the function table.
+    functionTable.clear();
 }
 
-/** Erase variable */
-void Environment::eraseVariable(const std::string& name) {
 
-    std::map<std::string, VariableSlot* >::iterator it = variableTable.find(name);
-    if (it == variableTable.end())
+/** Erase a variable by name given to it in the frame. */
+void Environment::eraseVariable(const std::string& name)
+{
+    std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find(name);
+
+    if ( it == variableTable.end() )
         throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist in environment");
-    else {
-        // free the memory for the variable and remove it from the map of variables
-        delete it->second;
+    else
+    {
+        // Free the memory for the variable (smart pointer, so happens automatically) and
+        // remove the variable from the map of variables
         variableTable.erase(it);
-
-        // remove the name from the var name list
-        for (std::vector<std::string>::iterator n = varNames.begin(); n != varNames.end(); n++) {
-            if (*n == name) {
-                varNames.erase(n);
-                break;
-            }
-        }
     }
 }
 
-/* Execute function to get its value (workspaces only evaluate functions once) */
-RevObject* Environment::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
-    /* Using this calling convention indicates that we are only interested in
-     evaluating the function once */
+/**
+ * Erase a variable by its address, which is the value and not the key in the variable
+ * map. Assuming that the variable maps are not huge and that we are not doing this kind
+ * of operation in performance-critical code, we simply use a linear search of the map
+ * to find the variable address here.
+ */
+void Environment::eraseVariable(const RevPtr<Variable>& var) {
+    
+    VariableTable::iterator it;
+    for ( it=variableTable.begin(); it != variableTable.end(); ++it )
+    {
+        if ( it->second == var )
+            break;
+    }
+    
+    if ( it == variableTable.end() )
+    {
+        std::ostringstream msg;
+        msg << "Variable with address '" << var << "' does not exist in frame";
+        throw RbException( msg );
+    }
+    
+    // Delegate call
+    eraseVariable( it->first );
+}
+
+
+/**
+ * Execute function to get its value. This will either return a constant value or a deterministic value
+ * depending on the return type of the function.
+ */
+RevPtr<Variable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
+{
     return functionTable.executeFunction(name, args);
 }
 
-bool Environment::existsFunction(std::string const &name) const {
 
-    // we delegate the query to the function table
+/** Find whether a function name exists (current and enclosing frames) */
+bool Environment::existsFunction(std::string const &name) const
+{
+    // We delegate the query to the function table
     return functionTable.existsFunction(name);
 }
 
-/** Does variable exist in the Environment (current frame and enclosing frames)? */
-bool Environment::existsVariable(const std::string& name) const {
 
-    if (variableTable.find(name) == variableTable.end()) {
+/** Does variable exist in the environment (current frame and enclosing frames)? */
+bool Environment::existsVariable(const std::string& name) const
+{
+    if (variableTable.find(name) == variableTable.end())
+    {
         if (parentEnvironment != NULL)
             return parentEnvironment->existsVariable(name);
         else
@@ -321,155 +243,169 @@ bool Environment::existsVariable(const std::string& name) const {
     return true;
 }
 
-std::string Environment::generateUniqueVariableName(void) {
 
-    std::string prefix = "var";
-    std::string theName = "";
-    bool uniqueName = false;
-    int i = 1;
-    do {
-        char tempCharStr[20];
-        sprintf(tempCharStr, "%d", i++);
-        std::string tempStlStr = tempCharStr;
-        theName = prefix + tempStlStr;
-        if (existsVariable(theName) == false)
-            uniqueName = true;
-    } while (uniqueName == false);
+/** Return the variable if it exists, otherwise create it */
+RevPtr<Variable>& Environment::findOrCreateVariable(const std::string& name)
+{
+    if ( !existsVariable( name) )
+    {
+        // Check that we have a name
+        if ( name == "" )
+            throw RbException( "Invalid attempt to add a variable without name to frame");
 
-    return theName;
+        // Create new null variable
+        RevPtr<Variable> theVar = new Variable( NULL );
+        
+        // Insert null variable in variable table
+        variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    }
+
+    return getVariable( name );
 }
 
-const VariableTable& Environment::getVariableTable(void) const {
+
+/** Generate a unique variable name */
+std::string Environment::generateUniqueVariableName(void)
+{
+    std::ostringstream theName;
+
+    theName << "var" << ++numUnnamedVariables;
+
+    return theName.str();
+}
+
+
+/** Return variable table (const) */
+const VariableTable& Environment::getVariableTable(void) const
+{
     return variableTable;
 }
 
+
+/** Return variable table */
 VariableTable& Environment::getVariableTable(void) {
                     return variableTable;
 }
 
-/* Get function */
-const Function& Environment::getFunction(const std::string& name) {
 
+/** Get function. This call will throw an error if the name is missing or present multiple times. */
+const Function& Environment::getFunction(const std::string& name)
+{
     return functionTable.getFunction(name);
 }
 
-/* Get function */
-Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args) {
-
+/* Get function. This call will throw an error if the function is missing. */
+Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args)
+{
     return functionTable.getFunction(name, args);
 }
 
+
+/** Return the function table (const) */
 const FunctionTable& Environment::getFunctionTable(void) const {
     return functionTable;
 }
 
+
+/** Return the function table */
 FunctionTable& Environment::getFunctionTable(void) {
     return functionTable;
 }
 
-const std::string& Environment::getName(size_t i) const {
-    return varNames[i];
+
+/** Return the object inside a specific variable */
+RevObject& Environment::getRevObject(const std::string& name)
+{
+#ifdef DEBUG_WORKSPACE
+    printf("Retrieving \"%s\" object from frame\n", name.c_str());
+#endif
+    
+    return getVariable( name )->getRevObject();
 }
 
-/** Get value, alternative method */
-const RevObject& Environment::getValue(const std::string& name) const {
 
-    // find the variable slot first
-    const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find(name);
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentEnvironment != NULL) {
-            return parentEnvironment->getValue(name);
-        } else
-            throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
-    }
-
-    // set the slot
-    const VariableSlot* theSlot = it->second;
-    return theSlot->getRevObject();
+/** Return a specific variable (const version) */
+const RevObject& Environment::getRevObject(const std::string& name) const
+{
+#ifdef DEBUG_WORKSPACE
+    printf("Retrieving \"%s\" object from frame\n", name.c_str());
+#endif
+    
+    return getVariable( name )->getRevObject();
 }
 
-/** Get value, alternative method */
-RevObject& Environment::getValue(const std::string& name) {
 
-    // find the variable slot first
-    const std::map<std::string, VariableSlot* >::const_iterator& it = variableTable.find(name);
-    if (variableTable.find(name) == variableTable.end()) {
-        if (parentEnvironment != NULL)
-            return parentEnvironment->getValue(name);
+/** Return a specific variable */
+RevPtr<Variable>& Environment::getVariable(const std::string& name)
+{
+    std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find( name );
+    
+    if ( variableTable.find(name) == variableTable.end() )
+    {
+        if ( parentEnvironment != NULL )
+            return parentEnvironment->getVariable( name );
         else
             throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
     }
-
-    // set the slot
-    VariableSlot* theSlot = it->second;
-    return theSlot->getRevObject();
+    
+#ifdef DEBUG_WORKSPACE
+    printf("Retrieving \"%s\" from frame\n", name.c_str());
+#endif
+    
+    return it->second;
 }
 
-/** 
+
+/** Return a specific variable (const version) */
+const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
+{
+    std::map<std::string, RevPtr<Variable> >::const_iterator it = variableTable.find(name);
+    
+    if ( variableTable.find(name) == variableTable.end() )
+    {
+        if ( parentEnvironment != NULL )
+            return const_cast<const Environment*>( parentEnvironment )->getVariable( name );
+        else
+            throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
+    }
+    
+    return it->second;
+}
+
+
+/**
  * Is Environment same or parent of otherEnvironment? We use this function
  * to decide when a reference from otherEnvironment to a variable in this
  * Environment is safe, and when it is not. The only time we know for sure
  * that it is safe is when this Environment is identical to, or a parent of,
  * otherEnvironment.
  */
-bool Environment::isSameOrParentOf(const Environment& otherEnvironment) const {
+bool Environment::isSameOrParentOf(const Environment& otherEnvironment) const
+{
 
-    if (this == &otherEnvironment)
+    if ( this == &otherEnvironment )
         return true;
 
-    if (otherEnvironment.parentEnvironment == NULL)
+    if ( otherEnvironment.parentEnvironment == NULL )
         return false;
 
-    return isSameOrParentOf(otherEnvironment.parentEnvironment);
+    return isSameOrParentOf( otherEnvironment.parentEnvironment );
 }
+
 
 /** Print workspace */
-void Environment::printValue(std::ostream& o) const {
-
+void Environment::printValue(std::ostream& o) const
+{
     o << "Variable table:" << std::endl;
+
     VariableTable::const_iterator it;
-    for (it = variableTable.begin(); it != variableTable.end(); it++) {
+    for ( it = variableTable.begin(); it != variableTable.end(); it++ )
+    {
         o << (*it).first << " = ";
-        (*it).second->printValue(o);
+        (*it).second->printValue( o );
         o << std::endl;
     }
+
     o << std::endl;
-
 }
 
-/** Replace the name of a variable */
-void Environment::setName(size_t i, const std::string &name) {
-
-    // get the old name
-    const std::string &oldName = varNames[i];
-
-    // get the variable slot associated with the old name
-    VariableSlot& theSlot = operator[](oldName);
-
-    // remove the entry with the old name
-    eraseVariable(oldName);
-
-    // insert the slot with its new name
-    variableTable.insert(std::pair<std::string, VariableSlot* >(name, &theSlot));
-
-    // insert the name at it's old position
-    varNames.insert(varNames.begin() + long(i), name);
-}
-
-size_t Environment::size(void) const {
-    return varNames.size();
-}
-
-void Environment::remove(const RevPtr<Variable> &var) {
-
-    // delegate call
-    eraseVariable(var->getName());
-
-}
-
-void Environment::remove(const std::string &var) {
-
-    // delegate call
-    eraseVariable(var);
-
-}

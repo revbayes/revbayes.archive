@@ -37,7 +37,7 @@ Func_help* Func_help::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_help::execute( void ) {
+RevPtr<Variable> Func_help::execute( void ) {
     
     
     RBOUT( "\n" );

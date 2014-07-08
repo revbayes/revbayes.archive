@@ -32,7 +32,7 @@ Func_jc* Func_jc::clone( void ) const {
 }
 
 
-RevObject* Func_jc::execute() {
+RevPtr<Variable> Func_jc::execute() {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );
@@ -41,7 +41,7 @@ RevObject* Func_jc::execute() {
     
     RateMatrix* value = new RateMatrix( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

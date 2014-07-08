@@ -21,7 +21,7 @@ Func_phyloRateMultiplier* Func_phyloRateMultiplier::clone( void ) const
 }
 
 
-RevObject* Func_phyloRateMultiplier::execute() 
+RevPtr<Variable> Func_phyloRateMultiplier::execute()
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -33,7 +33,7 @@ RevObject* Func_phyloRateMultiplier::execute()
     
     Vector<RealPos>* value = new Vector<RealPos>( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

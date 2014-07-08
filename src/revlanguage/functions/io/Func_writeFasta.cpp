@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Func_writeFasta* Func_writeFasta::clone( void ) const 
 {
@@ -33,7 +33,7 @@ Func_writeFasta* Func_writeFasta::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RevObject* Func_writeFasta::execute( void ) 
+RevPtr<Variable> Func_writeFasta::execute( void ) 
 {
     
     // get the information from the arguments for reading the file

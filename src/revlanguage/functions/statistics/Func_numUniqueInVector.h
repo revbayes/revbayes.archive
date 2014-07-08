@@ -37,7 +37,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                                      execute(void);                                                                  //!< Execute function
+        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -70,7 +70,7 @@ RevLanguage::Func_numUniqueInVector<valType>* RevLanguage::Func_numUniqueInVecto
 }
 
 template <typename valType>
-RevLanguage::RevObject* RevLanguage::Func_numUniqueInVector<valType>::execute() {
+RevLanguage::RevPtr<Variable> RevLanguage::Func_numUniqueInVector<valType>::execute() {
     RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* vect = static_cast<const Vector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::NumUniqueInVector<typename valType::valueType>* f = new RevBayesCore::NumUniqueInVector<typename valType::valueType>( vect );
     
@@ -78,7 +78,7 @@ RevLanguage::RevObject* RevLanguage::Func_numUniqueInVector<valType>::execute() 
     
     Integer* value = new Integer( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

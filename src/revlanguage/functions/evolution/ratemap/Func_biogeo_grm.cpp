@@ -35,7 +35,7 @@ Func_biogeo_grm* Func_biogeo_grm::clone( void ) const {
 }
 
 
-RevObject* Func_biogeo_grm::execute() {
+RevPtr<Variable> Func_biogeo_grm::execute() {
     
     const RevBayesCore::TimeAtlas* atlas = &( static_cast<const RlAtlas&>( this->args[0].getVariable()->getRevObject() ).getValue() );
     
@@ -50,7 +50,7 @@ RevObject* Func_biogeo_grm::execute() {
     
     RlGeographyRateModifier* value = new RlGeographyRateModifier( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

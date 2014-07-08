@@ -65,19 +65,19 @@ BranchLengthTree* BranchLengthTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* BranchLengthTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") {
         size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new Natural( n );
+        return new Variable( new Natural( n ) );
     }
     else if (name == "height") {
         const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new RealPos( r.getBranchLength() );
+        return new Variable( new RealPos( r.getBranchLength() ) );
     } 
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Vector<RlString>( n );
+        return new Variable( new Vector<RlString>( n ) );
     } 
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args );

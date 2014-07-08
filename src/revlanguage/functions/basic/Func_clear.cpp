@@ -44,18 +44,18 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_clear::execute( void ) {
+RevPtr<Variable> Func_clear::execute( void ) {
     
     // we clear the entire workspace if there were no arguments
     if ( args.size() == 0 )
     {
         Workspace::userWorkspace().clear();
     }
-    else 
+    else
     {
         for (size_t i = 0; i < args.size(); ++i) 
         {
-            Workspace::userWorkspace().remove( args[i].getVariable() );
+            Workspace::userWorkspace().eraseVariable( args[i].getVariable() );
         }
     }
     

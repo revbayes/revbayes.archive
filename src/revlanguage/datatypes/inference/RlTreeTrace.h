@@ -47,7 +47,7 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                          getMethods(void) const;                                                     //!< Get methods
-        RevObject*                                  executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevPtr<Variable>                            executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
     protected:
         
@@ -98,7 +98,7 @@ void RevLanguage::TreeTrace<treeType>::constructInternalObject( void ) {
 
 /* Map calls to member methods */
 template <typename treeType>
-RevLanguage::RevObject* RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "summarize") {
         

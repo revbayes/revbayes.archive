@@ -52,7 +52,6 @@ namespace RevLanguage {
 #include "RlString.h"
 #include "RateMap.h"
 #include "StandardState.h"
-#include "VectorAbstractElement.h"
 
 
 template <class treeType>

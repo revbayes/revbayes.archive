@@ -44,7 +44,7 @@ void Mcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") 
     {

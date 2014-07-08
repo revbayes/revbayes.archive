@@ -34,7 +34,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readCharacterData::execute( void ) {
+RevPtr<Variable> Func_readCharacterData::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -195,7 +195,7 @@ RevObject* Func_readCharacterData::execute( void ) {
         }
     }
     
-    return m;
+    return new Variable( m );
 }
 
 

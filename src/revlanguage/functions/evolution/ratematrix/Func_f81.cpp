@@ -31,7 +31,7 @@ Func_f81* Func_f81::clone( void ) const {
 }
 
 
-RevObject* Func_f81::execute() {
+RevPtr<Variable> Func_f81::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::F81RateMatrixFunction* f = new RevBayesCore::F81RateMatrixFunction( bf );
@@ -40,7 +40,7 @@ RevObject* Func_f81::execute() {
     
     RateMatrix* value = new RateMatrix( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

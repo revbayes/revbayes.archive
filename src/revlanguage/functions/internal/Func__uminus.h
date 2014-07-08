@@ -37,7 +37,7 @@ public:
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
     
     // Function functions you have to override
-    RevObject*                                      execute(void);                                                                  //!< Execute function
+    RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
     const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
     
@@ -67,7 +67,7 @@ RevLanguage::Func__uminus<firstValType, retType>* RevLanguage::Func__uminus<firs
 
 
 template <typename firstValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func__uminus<firstValType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__uminus<firstValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::UnaryMinus<typename firstValType::valueType> *func = new RevBayesCore::UnaryMinus<typename firstValType::valueType>(firstArg);
@@ -76,7 +76,7 @@ RevLanguage::RevObject* RevLanguage::Func__uminus<firstValType, retType>::execut
     
     retType* value = new retType( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

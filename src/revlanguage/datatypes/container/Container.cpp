@@ -101,12 +101,12 @@ const MethodTable& Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RevObject* Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "size") 
     {
         
-        return new Natural( size() );
+        return new Variable( new Natural( size() ) );
     } 
     else if ( name == "[]") 
     {
@@ -118,15 +118,13 @@ RevObject* Container::executeMethod(std::string const &name, const std::vector<A
             throw RbException("Index out of bounds in []");
         }
         
-        RevObject* element = getElement( size_t(index.getValue()) - 1);
+        RevPtr<Variable> element = getElement( size_t(index.getValue()) - 1);
         return element;
         
     } 
     
     return RevObject::executeMethod( name, args );
 }
-
-
 
 
 /** Is convertible to type? */

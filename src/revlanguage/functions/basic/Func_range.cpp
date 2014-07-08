@@ -41,7 +41,7 @@ Func_range* Func_range::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_range::execute( void ) {
+RevPtr<Variable> Func_range::execute( void ) {
     
     int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
     int l = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
@@ -56,7 +56,7 @@ RevObject* Func_range::execute( void ) {
             range->push_back( Integer(i) );
     }
     
-    return range;
+    return new Variable( range );
 }
 
 

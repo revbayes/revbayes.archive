@@ -8,6 +8,7 @@
 #include "TypedUserFunction.h"
 #include "TypeSpec.h"
 #include "UserFunctionCall.h"
+#include "Variable.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -73,7 +74,7 @@ UserFunctionCall* UserFunctionCall::clone(void) const {
 
 
 /** In this function we execute the Rev code for the function (uncompiled syntax tree for now) */
-RevObject* UserFunctionCall::execute( void ) {
+RevPtr<Variable> UserFunctionCall::execute( void ) {
     
     // Clear signals
     Signals::getSignals().clearFlags();
@@ -93,8 +94,7 @@ RevObject* UserFunctionCall::execute( void ) {
     }
 
     // Return the return value
-    return retVar->getRevObject().clone();
-    
+    return retVar;
 }
 
 
@@ -135,10 +135,10 @@ const ArgumentRules& UserFunctionCall::getArgumentRules(void) const {
 /** Get the parameters from the function frame */
 std::vector<const RevBayesCore::DagNode*> UserFunctionCall::getParameters(void) const {
     
-    const std::map<std::string, VariableSlot* >& varTable = functionFrame->getVariableTable();
+    const std::map<std::string, RevPtr<Variable> >& varTable = functionFrame->getVariableTable();
     
     std::vector<const RevBayesCore::DagNode*> params;
-    std::map<std::string, VariableSlot*>::const_iterator it;
+    std::map<std::string, RevPtr<Variable> >::const_iterator it;
     for ( it = varTable.begin(); it != varTable.end(); it++ )
     {
         if ( it->second->getRevObject().hasDagNode() )

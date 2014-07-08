@@ -2,7 +2,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "VariableSlot.h"
 #include "SyntaxDecrement.h"
 #include "Workspace.h"
 
@@ -12,15 +11,16 @@
 
 using namespace RevLanguage;
 
+
 /** 
- * Construct from expression. 
+ * Construct from variable expression.
  *
- * \param[in]   e           The expression on the right hand side.
+ * \param[in]   v   The variable expression on the left-hand side.
  */
-SyntaxDecrement::SyntaxDecrement(SyntaxVariable* v) : SyntaxElement(), 
-variable( v ) 
+SyntaxDecrement::SyntaxDecrement(SyntaxVariable* v) :
+    SyntaxElement(),
+    variable( v )
 {
-    
 }
 
 
@@ -47,9 +47,7 @@ SyntaxDecrement::SyntaxDecrement(const SyntaxDecrement& x) : SyntaxElement(x)
  */
 SyntaxDecrement::~SyntaxDecrement() 
 {
-    
     delete variable;
-    
 }
 
 
@@ -58,8 +56,7 @@ SyntaxDecrement::~SyntaxDecrement()
  */
 SyntaxDecrement& SyntaxDecrement::operator=(const SyntaxDecrement& x) 
 {
-    
-    if ( this != &x ) 
+    if ( this != &x )
     {
         
         delete variable;
@@ -73,40 +70,45 @@ SyntaxDecrement& SyntaxDecrement::operator=(const SyntaxDecrement& x)
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 SyntaxDecrement* SyntaxDecrement::clone () const 
 {
-    
     return new SyntaxDecrement(*this);
 }
 
 
 /** 
  * Evaluate the content of this syntax element.
- * This will perform an addition assignment operation.
+ * This will perform a decrement assignment operation.
  */
 RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env ) 
 {
-    
 #ifdef DEBUG_PARSER
-    printf( "Evaluating Decrement expression\n" );
+    printf( "Evaluating decrement assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    RevPtr<Variable> theVariable = variable->createVariable( env );
-    
+    // Get variable from lhs. We use standard evaluation because the variable is
+    // implicitly on both sides (lhs and rhs) of this type of statement
+    RevPtr<Variable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
+        throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
     
+    // Make sure that the variable is constant
+    if ( !theVariable->getRevObject().isConstant() )
+        throw RbException( "Invalid subtraction assignment to dynamic variable" );
+    
+    // Get a nonconst reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
+    
+    // Decrement the lhs value
     lhs_value.decrement();
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
     return theVariable;
 }
@@ -118,7 +120,6 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env )
  */
 void SyntaxDecrement::printValue(std::ostream& o) const 
 {
-    
     o << "SyntaxDecrement:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);

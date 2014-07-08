@@ -86,11 +86,11 @@ RevPtr<Variable> SyntaxUnaryExpr::evaluateContent(Environment& env) {
     Function* func = Workspace::globalWorkspace().getFunction(funcName, arg).clone();
     func->processArguments( arg );
     
-    RevObject *funcReturnValue = func->execute();
+    RevPtr<Variable> funcReturnValue = func->execute();
     delete func;
 
     // Return new function node
-    return RevPtr<Variable>( new Variable( funcReturnValue ) );
+    return funcReturnValue;
 }
 
 

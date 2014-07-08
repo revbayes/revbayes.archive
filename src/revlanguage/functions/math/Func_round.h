@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                                      execute(void);                                                                  //!< Execute function
+        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -69,7 +69,7 @@ RevLanguage::Func_round<valType, retType>* RevLanguage::Func_round<valType, retT
 
 
 template <typename valType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func_round<valType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_round<valType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RoundFunction* f = new RevBayesCore::RoundFunction( arg );
@@ -78,7 +78,7 @@ RevLanguage::RevObject* RevLanguage::Func_round<valType, retType>::execute() {
     
     retType* value = new retType( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

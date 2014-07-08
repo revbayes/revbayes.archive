@@ -47,7 +47,7 @@ Func_estimateBurnin* Func_estimateBurnin::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_estimateBurnin::execute( void ) {
+RevPtr<Variable> Func_estimateBurnin::execute( void ) {
     
     
     const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -73,7 +73,7 @@ RevObject* Func_estimateBurnin::execute( void ) {
         throw RbException("Method with name \"" + method + "\" not applicable.");
     }
     
-    return new Vector<Natural>( burnin );
+    return new Variable( new Vector<Natural>( burnin ) );
 }
 
 

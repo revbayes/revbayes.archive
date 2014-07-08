@@ -31,13 +31,13 @@ Func_jones* Func_jones::clone( void ) const {
 }
 
 
-RevObject* Func_jones::execute() {
+RevPtr<Variable> Func_jones::execute() {
     
 
     RevBayesCore::RateMatrix_Jones *rmj = new RevBayesCore::RateMatrix_Jones();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 

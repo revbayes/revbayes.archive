@@ -38,7 +38,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                                      execute(void);                                                                  //!< Execute function
+        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -68,7 +68,7 @@ RevLanguage::Func__mult<firstValType, secondValType, retType>* RevLanguage::Func
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func__mult<firstValType, secondValType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__mult<firstValType, secondValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -78,7 +78,7 @@ RevLanguage::RevObject* RevLanguage::Func__mult<firstValType, secondValType, ret
     
     retType* value = new retType( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

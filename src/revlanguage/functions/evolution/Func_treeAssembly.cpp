@@ -33,7 +33,7 @@ Func_treeAssembly* Func_treeAssembly::clone( void ) const {
 }
 
 
-RevObject* Func_treeAssembly::execute() {
+RevPtr<Variable> Func_treeAssembly::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -43,7 +43,7 @@ RevObject* Func_treeAssembly::execute() {
     
     BranchLengthTree* value = new BranchLengthTree( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

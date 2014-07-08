@@ -140,7 +140,11 @@ SyntaxVariable* SyntaxVariable::clone () const {
 }
 
 
-/** Get index */
+/**
+ * Get constant (static) value of index.
+ *
+ * @todo Add conversion to Natural when needed
+ */
 std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
     
     std::vector<int> theIndex;
@@ -201,233 +205,43 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
 
 
 /**
- * @brief Get semantic value (l-value)
+ * Evaluate the dynamic content of the index variables.
  *
- * This function is similar to getValue(), but we only get the
- * slot and index of the variable. Another difference is that we
- * do not throw an error if the variable does not exist in the
- * frame; instead, we return a NULL pointer and set theSlot pointer
- * to NULL as well.
+ * @todo Replace static conversion with dynamic conversion
  */
-RevPtr<Variable> SyntaxVariable::createVariable( Environment& env) {
-    
-    /* Get index */
-    std::vector<int> indices = computeIndex(env);
-    
-    VariableSlot* theSlot = NULL;
-    
-    if ( baseVariable == NULL ) {
-        
-        if ( functionCall == NULL ) {
+std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment& env )
+{
+    std::vector< RevPtr<Variable> > indexVars;
 
-            if ( !env.existsVariable( identifier ) ) {
-                // create a new slot
-                RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( NULL ) );
-                env.addVariable(identifier,theVar);
-                theVar->setName( identifier );
-            }
-            
-            // get the slot and variable
-            theSlot                 = &env[ identifier ]; // \TODO: We should not allow dereferencing!!!
-            
-            if (!indices.empty() && theSlot != NULL)
-            {
-                
-                if ( !theSlot->doesVariableExist( indices ) )
-                {
-                    theSlot->createVariable( indices );
-                }
-            }
-            
-            RevPtr<Variable> theVar  = theSlot->getVariable( indices );
-                
-        }
-        else {
-
-            throw RbException("Unexpected syntax for creating a variable. Left-hand-side should be a variable and cannot be a function call!");
-//            theDagNode  = functionCall->getContentAsDagNode( env );
-//            theVar      = theDagNode->getVariable();
-        }
-    }
-    else {
-
-        // The call to getValue of baseVariable either returns
-        // a value or results in the throwing of an exception
-//        DAGNode* baseVar = baseVariable->getContentAsVariable( env )->getDagNodePtr();
-//        if ( !baseVar->isType( MemberNode_name ) )
-            throw RbException( "Variable " + baseVariable->getFullName( env ) + " does not have members. Missing implementation in SyntaxVariable::getLValue()" );       
+    std::list<SyntaxElement*>::const_iterator it;
+    for ( it = index->begin(); it != index->end(); ++it )
+    {
+        RevPtr<Variable> theIndex = ( *it )->evaluateDynamicContent( env );
     
-//        if ( identifier == NULL )
-//            throw RbException( "Member variable identifier missing" );
-//
-//        MemberObject* theMemberObject = static_cast<MemberNode*>( baseVar )->getMemberObject();
-//        if ( !theMemberObject->getMembers().existsVariable( *identifier ) )
-//            throw RbException( "Variable " + baseVariable->getFullName( frame ) + " does not have a member called '" + *identifier + "'" );       
-//
-//        MemberFrame& members = const_cast<MemberFrame&>( theMemberObject->getMembers() );
-//        theSlot = &members[ (*identifier) ];
-//        theVar  = theSlot->getParserVariable();
-    }
-
-    return theSlot->getVariable( indices );
-}
-
-
-/**
- * @brief Get semantic value (r-value) of deterministic expression
- *
- * This function returns the semantic value of the variable expression
- * when it is part of a deterministic expression. In this case, we
- * should not return the variable or a variable element itself but an
- * indirect reference to it. Among other things, this takes care of
- * reassignment and proper updating of the variable that is returned.
- */
-RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environment& env) {
-    
-    // @todo Fredrik: Deal with control variables and loop variables. Do we want to throw
-    // an error or generate references to immutable constants?
-    if ( replacementValue != NULL )
-        throw RbException( "Loop variables in deterministic expressions not supported (yet)" );
-    
-    /* Get variable */
-    RevPtr<Variable> theVar = NULL;
-    
-    size_t usedIndices = 0;
-    
-    // if the base variable is not set we have a simple object, otherwise a member object
-    if ( baseVariable == NULL ) {
-        
-        if ( functionCall == NULL ) {
-            // we test whether this variable exists
-            if ( env.existsVariable( identifier ) ) {
-                VariableSlot& theSlot = env[ identifier ];
-                
-                std::vector<int> slotIndices;
-                // @todo Fredrik: This does not work for dynamic lookups. Wait to see if we can get rid of variable fields
-                // before trying to correct this.
-                std::list<SyntaxElement*>::const_iterator it=index->begin();
-                for (size_t i = 0; i < theSlot.getDim() && i < index->size(); ++i, ++it, ++usedIndices) {
-                    SyntaxElement*         indexSyntaxElement     = *it;
-                    RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
-                    
-                    // we assume that the indices have to be natural values
-                    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                        Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
-                        slotIndices.push_back( n.getValue()-1 );
-                    } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
-                        Natural *n = static_cast<Natural *>( convObj );
-                        int tmp = n->getValue()-1;
-                        slotIndices.push_back( tmp );
-                        
-                        delete n;
-                    } else {
-                        throw RbException("Only natural numbers are allowed as indices for variable slots.");
-                    }
-                }
-                
-                if ( slotIndices.size() != 0 )
-                    throw RbException( "Dynamic reference to field variables not supported yet" );
-
-                // First get the variable we want to reference
-                RevObject* theObj = &(theSlot.getVariable(slotIndices)->getRevObject());
-
-                // Now make a new variable, which is a reference to that variable
-                RevObject* theReference = theObj->makeDagReference();
-                theVar = RevPtr<Variable>( new Variable( theReference, "" ) );
-            }
-            else if ( env.existsFunction( identifier ) ) {
-                const Function& theFunction = env.getFunction( identifier );
-                theVar = RevPtr<Variable>( new Variable( theFunction.clone() ) );
-            }
-            else {
-                // there is no variable with that name and also no function
-                throw RbException("No variable or function with name \"" + identifier + "\" found!");
-            }
-        } else {
-            theVar = functionCall->evaluateContent( env );
-        }
-    }
-    else {
-        
-        if ( functionCall == NULL ) {
-            
-            // The call to getValue of baseVariable either returns
-            // a value or results in the throwing of an exception
-            const RevPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
-            
-            if ( identifier == "" )
-                throw RbException( "Member variable identifier missing" );
-            
-            const RevObject &theMemberObject = baseVar->getRevObject();
-            const RevObject* member = theMemberObject.getMember( identifier );
-            
-            // test whether we actually got a variable back
-            if ( member != NULL ) {
-                theVar = new Variable( member->clone(), "" );
-            }
-            else {
-                throw RbException("Cannot find member '" + identifier + "' of variable '" + baseVar->getName() + "'.");
-            }
-        }
-        else {
-            
-            functionCall->setBaseVariable( baseVariable->clone() );
-            theVar = functionCall->evaluateContent( env );
-        }
-    }
-    
-    if (!index->empty()) {
-        
-        /* We want to create a dynamic lookup to an element of a container variable */
-        std::list<SyntaxElement*>::const_iterator it= index->begin();
-        for (size_t i = 0; i < usedIndices; ++i) {
-            ++it;
-        }
-        for (; it!=index->end(); it++)
+        // We ensure that the variables are of type Natural or can be converted to Natural numbers
+        // No sense in checking indices against permissible range here; errors are thrown later if
+        // we are out of range by the container or member object
+        // TODO: This is static conversion, should be replaced by dynamic conversion
+        if ( !theIndex->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
         {
-            /* The index variables are going to be inserted as arguments in the index operator function, so we can use standard evaluateContent fxn */
-            SyntaxElement*         indexSyntaxElement     = *it;
-            RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
-            
-            //theVar = new Variable( new ConstantNode( static_cast<RevObject*>( subElement.clone() ) ) );
-            
-            // create the new variable name
-            std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
-            
-            // convert the value into a member object
-            RevObject &mObject = theVar->getRevObject();
-            
-            // get the method table for this member object
-            // \TODO: We should not allow const casts
-            MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
-            
-            // create the arguments which consist only of the single paramater inside the square brackets
-            std::vector<Argument> args;
-            args.push_back( Argument( indexVar ) );
-            
-            // get the member function with name "[]"
-            MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
-            theMemberFunction->processArguments( args );
-            // We need to clone because otherwise we overwrite all methods for this object
-            
-            // set the member object for the member function
-            theMemberFunction->setMemberObject( theVar );
-            //            RevPtr<Function> func( theMemberFunction );
-            
-            RevObject* subElement = theMemberFunction->execute();
-            delete theMemberFunction;
-            
-            theVar = RevPtr<Variable>( new Variable( subElement, varName ) );
+            if (theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) )
+            {
+                RevObject* convObj = theIndex->getRevObject().convertTo( Natural::getClassTypeSpec() );
+                
+                theIndex = new Variable( new Natural() );
+                theIndex->setRevObject( convObj );
+            }
+            else
+                throw RbException( "No known conversion of type '" + theIndex->getRevObject().getType() + "' to Natural, required for index");
         }
     }
-
-    return theVar;
+    
+    return indexVars;
 }
 
-
+        
 /**
- * @brief Get semantic value (r-value) (general case)
+ * @brief Evaluate semantic content (r-value) (general case)
  *
  * The variable can either be a member or a base variable. In the latter
  * case, its "baseVariable" member is NULL. If the element is a base variable,
@@ -435,148 +249,189 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
  * If it is a member variable, we try to find it in the member variable
  * frame of a composite variable found by another SyntaxVariable element.
  *
- * The function call is NULL unless we have a base variable, in which case
- * the function call can replace the identifier.
+ * A function call may replace the identifier. If so, then there will always
+ * be a list of indices, whereas the list of indices is optional for an
+ * identifier.
  */
 RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     
-    // test whether this variable was replace inside a loop
-    if ( replacementValue != NULL ) 
+    // test whether this variable was replace inside a loop. TODO: REMOVE!!!
+    if ( replacementValue != NULL )
     {
         RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( replacementValue->clone() ) );
         return theVar;
     }
-
-    /* Get variable */
-    RevPtr<Variable> theVar = NULL;
     
-    size_t usedIndices = 0;
+    RevPtr<Variable> theVar;
     
-    // if the base variable is not set we have a simple object, otherwise a member object 
-    if ( baseVariable == NULL ) {
-        
-        if ( functionCall == NULL ) {
-            // we test whether this variable exists
-            if ( env.existsVariable( identifier ) ) {
-                VariableSlot& theSlot = env[ identifier ];
-                
-                // 
-                std::vector<int> slotIndices;
-                std::list<SyntaxElement*>::const_iterator it=index->begin();
-                for (size_t i = 0; i < theSlot.getDim() && i < index->size(); ++i, ++it, ++usedIndices) {
-                    SyntaxElement*         indexSyntaxElement     = *it;
-                    RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
-                    
-                    // we assume that the indices have to be natural values
-                    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) ) {
-                        Natural &n = static_cast<Natural &>( indexVar->getRevObject() );
-                        if ( n.getValue() <= 0 )
-                            throw RbException("Only natural numbers are allowed as indices for variable slots. Also, we start counting indices from 1.");
-                        
-                        slotIndices.push_back( n.getValue()-1 );
-                    } else if (indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) ) {
-                        RevObject* convObj = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
-                        Natural *n = static_cast<Natural *>( convObj );
-                        int tmp = n->getValue()-1;
-                        slotIndices.push_back( tmp );
-                        
-                        delete n;
-                    } else {
-                        throw RbException("Only natural numbers without 0 are allowed as indices for variable slots.");
-                    }
-                }
-                
-                theVar = theSlot.getVariable(slotIndices);
-            } 
-            else if ( env.existsFunction( identifier ) ) {
-                const Function& theFunction = env.getFunction( identifier );
-                theVar = RevPtr<Variable>( new Variable( theFunction.clone() ) );
-            } 
-            else {
-                // there is no variable with that name and also no function
-                throw RbException("No variable or function with name \"" + identifier + "\" found!");
-            }
-        } else {
+    if ( baseVariable == NULL )
+    {
+        if ( functionCall == NULL )
+        {
+            // Get variable from the environment
+            theVar = env.getVariable( identifier );
+        }
+        else
+        {
+            // Get the return variable of the function call
             theVar = functionCall->evaluateContent( env );
         }
     }
     else {
         
-        if ( functionCall == NULL ) {
-
-            // The call to getValue of baseVariable either returns
-            // a value or results in the throwing of an exception
-            const RevPtr<Variable>& baseVar = baseVariable->evaluateContent( env );
+        // Get the base variable
+        theVar = baseVariable->evaluateContent( env );
         
-            if ( identifier == "" )
-                throw RbException( "Member variable identifier missing" );
-
-            const RevObject &theMemberObject = baseVar->getRevObject();
-            const RevObject* member = theMemberObject.getMember( identifier );
-
-            // test whether we actually got a variable back
-            if ( member != NULL ) {
-                theVar = new Variable( member->clone(), "" );
-            }
-            else {
-                throw RbException("Cannot find member '" + identifier + "' of variable '" + baseVar->getName() + "'.");
-            }
+        if ( functionCall == NULL )
+        {
+            // Find member variable
+            theVar = theVar->getRevObject().getMember( identifier );
         }
-        else {
-            
-            functionCall->setBaseVariable( baseVariable->clone() );
+        else
+        {
+            // Get the return variable of the function call
+            functionCall->setBaseVariable( baseVariable );
             theVar = functionCall->evaluateContent( env );
         }
     }
     
-    // test whether we want to directly assess the variable or if we want to assess subelement of this container
-    if (!index->empty()) {
-        
-        // iterate over the each index
-        std::list<SyntaxElement*>::const_iterator it= index->begin();
-        for (size_t i = 0; i < usedIndices; ++i) {
-            ++it;
-        }
-        for (; it!=index->end(); it++) 
+    // Get dynamic index
+    std::vector< RevPtr<Variable> > indices = computeDynamicIndex( env );
+    
+    // Get dynamic element of a container if indices are provided.
+    if ( !indices.empty() )
+        theVar = theVar->getRevObject().getDynamicElement( indices );
+    
+    // Return the variable for assignment
+    return theVar;
+}
+
+
+/**
+ * @brief Evaluate left-hand-side content
+ *
+ * This function is similar to evaluateContent(). However, we
+ * do not throw an error if the variable does not exist in the
+ * frame; instead, we create and return a new null variable.
+ */
+RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env)
+{
+    // Get index
+    std::vector<int> indices = computeIndex( env );
+    
+    RevPtr<Variable> theVar;
+    
+    if ( baseVariable == NULL )
+    {
+        if ( functionCall == NULL )
         {
-            SyntaxElement*         indexSyntaxElement     = *it;
-            RevPtr<Variable>        indexVar               = indexSyntaxElement->evaluateContent(env);
-            
-            
-            //theVar = new Variable( new ConstantNode( static_cast<RevObject*>( subElement.clone() ) ) );
-            
-            // create the new variable name
-            std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
-            
-            // convert the value into a member object
-            RevObject &mObject = theVar->getRevObject();
-            
-            // get the method table for this member object
-            // \TODO: We should not allow const casts
-            MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
-            
-            // create the arguments which consist only of the single paramater inside the square brackets
-            std::vector<Argument> args;
-            args.push_back( Argument( indexVar ) );
-            
-            // get the member function with name "[]"
-            MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
-            theMemberFunction->processArguments( args );
-            // We need to clone because otherwise we overwrite all methods for this object
-            
-            // set the member object for the member function
-            theMemberFunction->setMemberObject( theVar );
-//            RevPtr<Function> func( theMemberFunction );
-            
-            RevObject* subElement = theMemberFunction->execute();
-            delete theMemberFunction;
-            
-            theVar = RevPtr<Variable>( new Variable( subElement, varName ) );
+            // Find or create the variable.
+            theVar = env.findOrCreateVariable( identifier );
+        }
+        else
+        {
+            // Get the return variable of the function call
+            theVar = functionCall->evaluateContent( env );
         }
     }
-        
-    return theVar;
+    else {
+
+        // Get the base variable. Note that we do not create the variable in this case.
+        theVar = baseVariable->evaluateContent( env );
+
+        if ( functionCall == NULL )
+        {
+            // Find member variable
+            theVar = theVar->getRevObject().getMember( identifier );
+        }
+        else
+        {
+            // Get the return variable of the function call
+            functionCall->setBaseVariable( baseVariable );
+            theVar = functionCall->evaluateContent( env );
+        }
+    }
     
+    // Get element of a container if indices are provided
+    if ( !indices.empty() )
+        theVar = theVar->getRevObject().findOrCreateElement( indices );
+
+    // Return the variable for assignment
+    return theVar;
+}
+
+
+/**
+ * @brief Evaluate indirect reference content
+ *
+ * This function returns the semantic value of the variable expression
+ * when it is part of a an indirect reference deterministic assignment.
+ * These are assignments of the type:
+ *
+ *    a := b
+ *
+ * where we deal here with the 'b' part.
+ *
+ * In this case, we should not return the variable or a variable element
+ * itself but an indirect reference to it. Among other things, this takes
+ * care of reassignment and proper updating of the variable that is returned
+ * and will be assigned to the lhs variable.
+ */
+RevPtr<Variable> SyntaxVariable::evaluateIndirectReferenceContent( Environment& env) {
+    
+    // @todo Fredrik: Deal with control variables and loop variables. Do we want to throw
+    // an error or generate references to immutable constants?
+    if ( replacementValue != NULL )
+        throw RbException( "Loop variables in deterministic expressions not supported (yet)" );
+    
+    RevPtr<Variable> theVar;
+    
+    if ( baseVariable == NULL )
+    {
+        if ( functionCall == NULL )
+        {
+            // Get variable from the environment
+            theVar = env.getVariable( identifier );
+        }
+        else
+        {
+            // Get the return variable of the function call
+            theVar = functionCall->evaluateContent( env );
+        }
+    }
+    else {
+        
+        // Get the base variable
+        theVar = baseVariable->evaluateContent( env );
+        
+        if ( functionCall == NULL )
+        {
+            // Find member variable
+            theVar = theVar->getRevObject().getMember( identifier );
+        }
+        else
+        {
+            // Get the return variable of the function call
+            functionCall->setBaseVariable( baseVariable );
+            theVar = functionCall->evaluateContent( env );
+        }
+    }
+    
+    // Get index
+    std::vector< RevPtr<Variable> > indices = computeDynamicIndex( env );
+    
+    // Get dynamic element of a container if indices are provided. Otherwise we
+    // need an indirect reference. Note that if we have a function call, then we
+    // always have indices; this is a syntactic requirement because otherwise the
+    // syntax element will be a function call and not a variable. This means that
+    // we do not have to test for functionCall being NULL in the second branch.
+    if ( !indices.empty() )
+        theVar = theVar->getRevObject().getDynamicElement( indices );
+    else
+        theVar = new Variable( theVar->getRevObject().makeDagReference() );
+    
+    // Return the variable for assignment
+    return theVar;
 }
 
 

@@ -113,7 +113,7 @@ Simplex::const_iterator Simplex::end( void ) const {
 
 
 /* Map calls to member methods */
-RevObject* Simplex::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Simplex::executeMethod(std::string const &name, const std::vector<Argument> &args) {
         
     if ( name == "[]") 
     {
@@ -131,7 +131,7 @@ RevObject* Simplex::executeMethod(std::string const &name, const std::vector<Arg
             
         RealPos* v = new RealPos( detNode );
         
-        return v;
+        return new Variable( v );
     } 
     
     return TypedContainer<std::vector<double> >::executeMethod( name, args );
@@ -184,9 +184,9 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
 }
 
 
-RevObject* Simplex::getElement(size_t index) {
+RevPtr<Variable> Simplex::getElement(size_t index) {
     
-    return new RealPos( value->getValue()[index] );
+    return new Variable( new RealPos( value->getValue()[index] ) );
 }
 
 

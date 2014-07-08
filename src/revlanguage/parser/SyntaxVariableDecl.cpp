@@ -146,7 +146,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
     else {
 
         // Create new slot in frame with null variable
-        env.addVariable( variableName );
+        env.addNullVariable( variableName );
     }
     
     return NULL;

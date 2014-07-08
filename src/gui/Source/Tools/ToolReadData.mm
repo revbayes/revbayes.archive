@@ -12,7 +12,6 @@
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
-#include "VariableSlot.h"
 #include "VectorRlPointer.h"
 #include "Workspace.h"
 

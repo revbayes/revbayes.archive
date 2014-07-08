@@ -41,7 +41,7 @@ Func_beca* Func_beca::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_beca::execute( void ) {
+RevPtr<Variable> Func_beca::execute( void ) {
     
     bool converged = false;
     
@@ -104,7 +104,7 @@ RevObject* Func_beca::execute( void ) {
         delete outStream;
     }
     
-    return new RlBoolean( converged );
+    return new Variable( new RlBoolean( converged ) );
 }
 
 

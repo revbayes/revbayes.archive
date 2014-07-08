@@ -28,7 +28,7 @@ Func_abs* Func_abs::clone( void ) const {
 }
 
 
-RevObject* Func_abs::execute() {
+RevPtr<Variable> Func_abs::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::AbsoluteValueFunction* f = new RevBayesCore::AbsoluteValueFunction( arg );
@@ -37,7 +37,7 @@ RevObject* Func_abs::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

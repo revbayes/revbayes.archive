@@ -33,16 +33,16 @@ namespace RevLanguage {
         DistributionFunctionRv(const DistributionFunctionRv& obj);                                                                    //!< Copy constructor
         
         // overloaded operators
-        DistributionFunctionRv&                operator=(const DistributionFunctionRv& c);
+        DistributionFunctionRv&                 operator=(const DistributionFunctionRv& c);
         
         // Basic utility functions
-        DistributionFunctionRv*                clone(void) const;                                                              //!< Clone the object
+        DistributionFunctionRv*                 clone(void) const;                                                              //!< Clone the object
         static const std::string&               getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -111,7 +111,7 @@ RevLanguage::DistributionFunctionRv<valueType>* RevLanguage::DistributionFunctio
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RevObject* RevLanguage::DistributionFunctionRv<valueType>::execute( void ) {
+RevLanguage::RevPtr<Variable> RevLanguage::DistributionFunctionRv<valueType>::execute( void ) {
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
@@ -134,7 +134,7 @@ RevLanguage::RevObject* RevLanguage::DistributionFunctionRv<valueType>::execute(
         values->push_back( *value );
         delete value;
     }
-    return values;
+    return new Variable( values );
 }
 
 

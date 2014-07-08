@@ -44,7 +44,7 @@ namespace RevLanguage {
 
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                          executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
             
     };
     
@@ -88,7 +88,7 @@ RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData
 
 /* Map calls to member methods */
 template <typename charType>
-RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") 
     {
@@ -102,7 +102,7 @@ RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMet
             
         const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
     
-        return new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) );
+        return new Variable( new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) ) );
     }
     
     return AbstractCharacterData::executeMethod( name, args );

@@ -70,7 +70,7 @@ void PowerPosterior::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") {
         // get the member with give index

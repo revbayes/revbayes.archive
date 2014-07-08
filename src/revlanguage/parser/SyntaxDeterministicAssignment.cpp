@@ -19,7 +19,6 @@
 #include "RbOptions.h"
 #include "RlDistribution.h"
 #include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxDeterministicAssignment.h"
 #include "Workspace.h"
 
@@ -30,19 +29,22 @@
 using namespace RevLanguage;
 
 /** Construct from operator type, variable and expression */
-SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(SyntaxVariable* var, SyntaxElement* expr) : SyntaxElement(), variable(var), functionCall(NULL), expression(expr) {
-
+SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(SyntaxVariable* var, SyntaxElement* expr) :
+    SyntaxElement(), variable(var), functionCall(NULL), expression(expr)
+{
 }
 
 
 /** Construct from operator type, function call and expression */
-SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr) {
+SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) :
+    SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr)
+{
 }
 
 
 /** Deep copy constructor */
-SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(const SyntaxDeterministicAssignment& x) : SyntaxElement(x) {
-    
+SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(const SyntaxDeterministicAssignment& x) : SyntaxElement(x)
+{
     if ( x.variable != NULL )
         variable   = x.variable->clone();
     
@@ -54,18 +56,17 @@ SyntaxDeterministicAssignment::SyntaxDeterministicAssignment(const SyntaxDetermi
 
 
 /** Destructor deletes operands */
-SyntaxDeterministicAssignment::~SyntaxDeterministicAssignment() {
-    
+SyntaxDeterministicAssignment::~SyntaxDeterministicAssignment()
+{
     delete variable;
     delete functionCall;
     delete expression;
-    
 }
 
 
 /** Assignment operator */
-SyntaxDeterministicAssignment& SyntaxDeterministicAssignment::operator=(const SyntaxDeterministicAssignment& x) {
-    
+SyntaxDeterministicAssignment& SyntaxDeterministicAssignment::operator=(const SyntaxDeterministicAssignment& x)
+{
     if ( this != &x ) {
         
         functionCall = NULL;
@@ -85,36 +86,38 @@ SyntaxDeterministicAssignment& SyntaxDeterministicAssignment::operator=(const Sy
 
 
 /** Clone syntax element */
-SyntaxDeterministicAssignment* SyntaxDeterministicAssignment::clone () const {
-    
+SyntaxDeterministicAssignment* SyntaxDeterministicAssignment::clone () const
+{
     return new SyntaxDeterministicAssignment(*this);
 }
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RevPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env ) {
-    
+RevPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& env )
+{
 #ifdef DEBUG_PARSER
-    printf( "Evaluating assign expression\n" );
+    printf( "Evaluating equation assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    const RevPtr<Variable>& theSlot = variable->createVariable( env );
-    
-    // Declare variable storing the return value of the assignment expression
-    RevPtr<Variable> theVariable = NULL;
+    // Get variable from lhs
+    RevPtr<Variable> theSlot;
+    if ( variable != NULL )
+        theSlot = variable->evaluateLHSContent( env );
+    else
+        theSlot = functionCall->evaluateContent( env );
 
-#ifdef DEBUG_PARSER
-    printf( "Equation assignment\n" );
-#endif
+    // Declare variable storing the return value of the assignment expression
+    RevPtr<Variable> theVariable;
+
+    // Get the rhs expression wrapped and executed into a variable.
+    // We need to call evaluateIndirectReferenceContent in case the rhs
+    // is a variable. If not, evaluateIndirectReferenceContent will
+    // fall back to evaluateDynamicContent
+    theVariable = expression->evaluateIndirectReferenceContent(env);
     
-    // get the rhs expression wrapped and executed into a variable
-    theVariable = expression->evaluateDeterministicExpressionContent(env);
-    
-    // fill the slot with a clone of the variable
-    // the variable itself will be passed on as the semantic value of the statement
-    // and can be used in further assignments
-    // when the slot is set, the clone is named
+    // Fill the slot with a clone of the variable. The variable itself
+    // will be passed on as the semantic value of the statement and can
+    // be used in further assignments.
     theSlot->setRevObject( theVariable->getRevObject().clone() );
     
 #ifdef DEBUG_PARSER
@@ -125,15 +128,17 @@ RevPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& en
 }
 
 
-bool SyntaxDeterministicAssignment::isAssignment( void ) const {
+/** This is an assignment statement, so return true. */
+bool SyntaxDeterministicAssignment::isAssignment( void ) const
+{
     return true;
 }
 
 
 
 /** Print info about the syntax element */
-void SyntaxDeterministicAssignment::printValue(std::ostream& o) const {
-    
+void SyntaxDeterministicAssignment::printValue(std::ostream& o) const
+{
     o << "SyntaxDeterministicAssignment:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);

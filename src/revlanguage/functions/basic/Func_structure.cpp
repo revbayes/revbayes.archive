@@ -23,7 +23,7 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_structure::execute( void ) {
+RevPtr<Variable> Func_structure::execute( void ) {
     
     std::ostringstream o;
 

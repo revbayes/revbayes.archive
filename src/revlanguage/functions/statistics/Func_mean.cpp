@@ -29,7 +29,7 @@ Func_mean* Func_mean::clone( void ) const {
 }
 
 
-RevObject* Func_mean::execute() {
+RevPtr<Variable> Func_mean::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const Vector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::MeanFunction* f = new RevBayesCore::MeanFunction( arg );
@@ -38,7 +38,7 @@ RevObject* Func_mean::execute() {
     
     Real* value = new Real( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the implementation of FunctionTable, which is
- * used to hold global functions in the base environment (the global
- * workspace) and the user workspace.
- *
- * @brief Implementation of FunctionTable
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "FunctionTable.h"
@@ -46,7 +30,7 @@ FunctionTable::FunctionTable(const FunctionTable& x) {
 }
 
 
-/** Destructor */
+/** Destructor. We own the functions so we need to delete them. */
 FunctionTable::~FunctionTable(void) {
 
     clear();
@@ -102,6 +86,9 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
 /** Clear table */
 void FunctionTable::clear(void) {
     
+    for ( std::multimap<std::string, Function *>::const_iterator i = table.begin(); i != table.end(); i++ )
+        delete( i->second );
+
     table.clear();
     
 }
@@ -113,7 +100,7 @@ FunctionTable* FunctionTable::clone( void ) const {
 }
 
 
-/** Erase function */
+/** Erase function. @todo This does not work if there are several functions with the same name. Also memory leak. */
 void FunctionTable::eraseFunction(const std::string& name) {
 
     std::pair<std::multimap<std::string, Function *>::iterator,
@@ -126,10 +113,10 @@ void FunctionTable::eraseFunction(const std::string& name) {
 
 
 /** Execute function and get its variable value (evaluate once) */
-RevObject* FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
+RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
     Function&         theFunction = findFunction(name, args);
-    RevObject*   theValue    = theFunction.execute();
+    RevPtr<Variable>  theValue    = theFunction.execute();
 
     theFunction.clear();
 
@@ -322,7 +309,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
 
 
 
-///* Get function */
+/** Get function. This function will throw an error if the name is missing or if there are several matches (overloaded functions) */
 const Function& FunctionTable::getFunction( const std::string& name ) {
     
     // find the template function
@@ -331,7 +318,7 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
     if ( theFunctions.size() > 1 ) 
     {
         std::ostringstream o;
-        o << "Found " << theFunctions.size() << " functions with name \"" << name + "\". Identification not possible if not types of the arguments are specified.";
+        o << "Found " << theFunctions.size() << " functions with name \"" << name + "\". Identification not possible if arguments are not specified.";
         throw RbException( o.str() );
     }
     
@@ -339,7 +326,7 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
 }
 
 
-/* Get function */
+/** Get function. This function will throw an error if the name and args do not match any named function. */
 Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
     
     // find the template function

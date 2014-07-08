@@ -39,9 +39,9 @@ BurninEstimationConvergenceAssessment* BurninEstimationConvergenceAssessment::cl
 
 
 /* Map calls to member methods */
-RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    RevObject *retObject = NULL;
+    RevPtr<Variable> retVar;
 
     if (name == "run")
     {
@@ -205,7 +205,7 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
 
         RBOUT("\n");
         
-        retObject = new RlBoolean( passed );
+        retVar = new Variable( new RlBoolean( passed ) );
         
     }
     else if (name == "setBurninMethod")
@@ -216,10 +216,10 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
     }
     else
     {
-        retObject = RevObject::executeMethod( name, args );
+        retVar = RevObject::executeMethod( name, args );
     }
     
-    return retObject;
+    return retVar;
 }
 
 

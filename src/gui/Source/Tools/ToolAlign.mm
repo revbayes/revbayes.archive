@@ -18,7 +18,6 @@
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
-#include "VariableSlot.h"
 #include "Workspace.h"
 
 

@@ -66,7 +66,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevObject* ConstructorFunction::execute( void ) {
+RevPtr<Variable> ConstructorFunction::execute( void ) {
     
     RevObject* copyObject = templateObject->clone();
     
@@ -82,7 +82,7 @@ RevObject* ConstructorFunction::execute( void ) {
     // now call the constructor for the internal object
     copyObject->constructInternalObject();
     
-    return copyObject;
+    return new Variable( copyObject );
 }
 
 
