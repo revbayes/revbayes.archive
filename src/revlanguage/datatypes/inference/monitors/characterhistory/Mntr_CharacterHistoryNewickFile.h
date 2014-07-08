@@ -56,8 +56,9 @@ namespace RevLanguage {
         RevPtr<const Variable>                      posterior;
         RevPtr<const Variable>                      likelihood;
         RevPtr<const Variable>                      type;
-        RevPtr<const Variable>                      counts;
-        RevPtr<const Variable>                      events;
+//        RevPtr<const Variable>                      counts;
+//        RevPtr<const Variable>                      events;
+        RevPtr<const Variable>                      style;
         RevPtr<const Variable>                      append;
         
     };
