@@ -360,11 +360,19 @@ const TypeSpec& Function::getClassTypeSpec(void) {
 }
 
 
+/** Get execution environment of function */
+Environment* Function::getEnvironment(void) const {
+    
+    return env;
+}
+
+
 /** Get name of function */
 const std::string& Function::getName(void) const {
     
     return name;
 }
+
 
 /** Get Rev declaration of the function, formatted for output to the user */
 std::string Function::getRevDeclaration(void) const {
@@ -395,9 +403,10 @@ std::string Function::getRevDeclaration(void) const {
 /** Print structure of object for user */
 void Function::printStructure(std::ostream& o) const {
     
-    o << "_variableType = " << getType() << std::endl;
+    o << "_objectType   = Function" << std::endl;
+    o << "_type         = " << getType() << std::endl;
+    o << "_name         = " << getName() << std::endl;
     o << "_declaration  = " << getRevDeclaration() << std::endl;
-    o << "_value        = " << getDagNode();
 }
 
 

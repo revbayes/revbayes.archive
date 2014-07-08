@@ -13,6 +13,7 @@
 #include <cmath>
 
 using namespace RevBayesCore;
+using namespace std;
 
 EssMax::EssMax(size_t b, double f) :
     blockSize( b ),

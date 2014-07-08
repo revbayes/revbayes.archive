@@ -25,16 +25,16 @@ namespace RevBayesCore {
     class GelmanRubinTest : public ConvergenceDiagnosticContinuous {
     
     public:
-        GelmanRubinTest(double R=1.001, size_t n=10);
+      GelmanRubinTest(double R=1.001, std::size_t n=10);
     
         // implementen functions from convergence diagnostic
-        bool        assessConvergenceSingleChain(const std::vector<double>& values, size_t burnin);
-        bool        assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnin);
+      bool        assessConvergenceSingleChain(const std::vector<double>& values, std::size_t burnin);
+        bool        assessConvergenceMultipleChains(const std::vector<std::vector<double> >& values, const std::vector<std::size_t>& burnin);
     
     private:
     
         double      R;                                                                                                  //!< threshold value for potential scale reduction factor
-        size_t      nBatches;
+        std::size_t      nBatches;
     
     };
 

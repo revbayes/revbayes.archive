@@ -9,11 +9,11 @@
  * (c) Copyright under GPL version 3
  */
 
-#include "DeterministicNode.h"
-#include "PowermixFunction.h"
 #include "Func_powermix.h"
+#include "PowermixFunction.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
 
@@ -42,7 +42,8 @@ RevObject* Func_powermix::execute() {
     
     RevBayesCore::PowermixFunction *func = new RevBayesCore::PowermixFunction( params );
 
-    RevBayesCore::TypedDagNode<std::vector<double> > *detNode = new RevBayesCore::DeterministicNode<std::vector<double> >("", func);
+    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
+
     Simplex *theSimplex = new Simplex( detNode );
     
     return theSimplex;

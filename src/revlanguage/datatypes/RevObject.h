@@ -3,7 +3,7 @@
  * This file contains the declaration of RevObject, which is
  * the RevBayes abstract base class for all language objects.
  *
- * @brief Declaration of RbObject
+ * @brief Declaration of RevObject
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date$
@@ -32,6 +32,8 @@ class ArgumentRule;
 class ArgumentRules;
 class MethodTable;
 class TypeSpec;
+class UserFunctionArgs;
+class UserFunctionCall;
 class Variable;
 
 typedef ArgumentRules MemberRules;                                                                                                      //!< Member rules type def, for convenience
@@ -61,6 +63,7 @@ public:
     static const std::string&           getClassName(void);                                                                             //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
+    virtual void                        printStructure(std::ostream& o) const;                                                          //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
     
     // Basic utility functions you may want to override
@@ -68,16 +71,15 @@ public:
     virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type
     virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
 //    virtual size_t                      getDim(void) const;                                                                             //!< Get the number of dimensions of the internal object, e.g., 1 if this is a vector.
-    virtual const std::string&          getInternalValueType(void) const;                                                               //!< Get the internal value type (RevBayesCore object or primitive C++ object)
     virtual bool                        hasDagNode(void) const;                                                                         //!< Do I have an internal value node?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
-    virtual RevObject*                  makeDagReference(void);                                                                         //!< Make an object referencing the dag node of this object
-    virtual void                        printStructure(std::ostream& o) const;                                                          //!< Print structure of language object for user
-    
-    // Functions that wrapper objects containing RB core objects might want to override
+
+    // Functions that derived objects (ModelObject etc) might want to override
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual void                        replaceVariable(RevObject *newObj);                                                                   //!< Replace the internal DAG node and prepare to replace me
+    virtual RevObject*                  makeDagReference(void);                                                                         //!< Make an object referencing the dag node of this object
+    virtual void                        makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);                         //!< Convert to deterministic object with a userdefined Rev function
+    virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
     virtual void                        setDagNode(RevBayesCore::DagNode *newNode);                                                     //!< Set or replace the internal dag node (and keep me)
 

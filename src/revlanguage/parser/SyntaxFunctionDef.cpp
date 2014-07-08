@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of SyntaxFunctionDef, which is
- * used to hold definitions functions (user-defined functions).
- *
- * @brief Implementation of SyntaxFunctionDef
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #include "Environment.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -141,34 +126,15 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
 
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
+
     for(std::list<SyntaxElement*>::const_iterator i=code->begin(); i!=code->end(); i++)
         stmts->push_back((*i)->clone());
 
-    // Create an environment with the parent environment being the one in which the function was defined
-    Environment* defineEnvironment = new Environment(&env);
-    
-//    bool univariate = false;
-//    if ( argRules->size() == 1 && (*argRules)[0].getArgumentTypeSpec() == Real::getClassTypeSpec() ) {
-//        if (returnType.isDerivedOf( Real::getClassTypeSpec() ) ) {
-//            univariate = true;
-//        }
-//    }
-//    
-//    if ( univariate ) {    
-//        // Create the function
-////        Function* theFunction = new GeneralUnivariateUserFunction(argRules, returnType, stmts, defineEnvironment);
-////        
-////        // insert in the (user) workspace
-////        env.addFunction(functionName, theFunction);
-//
-//    } else {   
-        // Create the function
-        Function* theFunction = new UserFunction(argRules, returnType, stmts, defineEnvironment);
+    // Create the function
+    Function* theFunction = new UserFunction(argRules, returnType, stmts);
         
-        // insert in the (user) workspace
-        env.addFunction(functionName, theFunction);
-
-//    }
+    // Insert the function in the (user) workspace
+    env.addFunction(functionName, theFunction);
 
     // No return value 
     return NULL;

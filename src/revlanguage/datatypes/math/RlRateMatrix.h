@@ -31,8 +31,8 @@ namespace RevLanguage {
         
     public:
         
-        RateMatrix(void);                                                                                                        //!< Default constructor
-        RateMatrix(RevBayesCore::RateMatrix *m);                                                                                                        //!< Default constructor
+        RateMatrix(void);                                                                                                                       //!< Default constructor
+        RateMatrix(RevBayesCore::RateMatrix *m);                                                                                                //!< Default constructor
         RateMatrix(RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix> *d);                                                                                                        //!< Default constructor
         
         // Basic utility functions
@@ -42,8 +42,8 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
         
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        const MethodTable&                  getMethods(void) const;                                                             //!< Get methods
+        RevObject*                          executeMethod(const std::string& name, const std::vector<Argument>& args);          //!< Override to map member methods to internal functions
         
         
     };

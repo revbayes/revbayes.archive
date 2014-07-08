@@ -66,11 +66,11 @@ Clade* Clade::clone(void) const {
 void Clade::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( value != NULL )
+    if ( dagNode != NULL )
     {
-        if ( value->decrementReferenceCount() == 0 ) 
+        if ( dagNode->decrementReferenceCount() == 0 )
         {
-            delete value;
+            delete dagNode;
         }
     }
     
@@ -80,8 +80,8 @@ void Clade::constructInternalObject( void )
     {
         n.push_back( static_cast<const RlString &>( (*it)->getRevObject() ).getValue() );
     }
-    value = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n,0.0));
-    value->incrementReferenceCount();
+    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n,0.0));
+    dagNode->incrementReferenceCount();
     
 }
 

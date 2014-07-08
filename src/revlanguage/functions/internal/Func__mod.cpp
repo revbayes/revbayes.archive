@@ -1,9 +1,9 @@
 #include "Func__mod.h"
 
 #include "ArgumentRule.h"
-#include "DeterministicNode.h"
 #include "ModuloFunction.h"
 #include "Natural.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -29,7 +29,9 @@ RevObject* Func__mod::execute( void ) {
     const RevBayesCore::TypedDagNode<int>* rightVal = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::ModuloFunction *func = new RevBayesCore::ModuloFunction( leftVal, rightVal );
-    RevBayesCore::TypedDagNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", func);
+    
+    DeterministicNode<int> *detNode = new DeterministicNode<int>("", func, this->clone());
+
     Natural *theBool = new Natural( detNode );
     
     return theBool;
