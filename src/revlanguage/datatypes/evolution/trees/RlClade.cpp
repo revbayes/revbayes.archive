@@ -87,7 +87,7 @@ void Clade::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* Clade::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<Variable> Clade::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
 //    if (name == "nnodes") {
 //        size_t n = this->value->getValue().getNumberOfNodes();

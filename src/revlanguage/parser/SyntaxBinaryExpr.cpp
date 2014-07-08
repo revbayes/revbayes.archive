@@ -110,12 +110,12 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env)
     Function* theFunction = Workspace::globalWorkspace().getFunction(funcName, args).clone();
     theFunction->processArguments( args );
     
-    RevObject* theReturnValue = theFunction->execute();
+    RevPtr<Variable> theReturnValue = theFunction->execute();
     
     // free the memory of the function
     delete theFunction;
     
-    return RevPtr<Variable>( new Variable( theReturnValue ) );
+    return theReturnValue;
 }
 
 

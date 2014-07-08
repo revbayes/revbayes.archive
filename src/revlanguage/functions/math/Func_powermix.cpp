@@ -32,7 +32,7 @@ Func_powermix* Func_powermix::clone( void ) const {
 }
 
 
-RevObject* Func_powermix::execute() {
+RevPtr<Variable> Func_powermix::execute() {
     
     std::vector<const RevBayesCore::TypedDagNode< std::vector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -46,7 +46,7 @@ RevObject* Func_powermix::execute() {
 
     Simplex *theSimplex = new Simplex( detNode );
     
-    return theSimplex;
+    return new Variable( theSimplex );
 }
 
 

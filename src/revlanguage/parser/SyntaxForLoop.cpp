@@ -103,7 +103,7 @@ const std::string& SyntaxForLoop::getIndexVarName( void ) const {
 RevObject* SyntaxForLoop::getNextLoopState( void )
 {
     
-    RevObject *elm = stateSpace->getElement( size_t(nextElement) );
+    RevObject* elm = stateSpace->getElement( size_t(nextElement) )->getRevObject().clone();
     
     nextElement++;
 
@@ -111,10 +111,13 @@ RevObject* SyntaxForLoop::getNextLoopState( void )
 }
 
 
-
-/** Have we already reached the end of the loop? */
-bool SyntaxForLoop::isFinished( void ) const {
-    return nextElement < static_cast<int>(stateSpace->size());
+/**
+ * Have we already reached the end of the loop? We return true
+ * if we have reached the end.
+ */
+bool SyntaxForLoop::isFinished( void ) const
+{
+    return nextElement >= static_cast<int>(stateSpace->size());
 }
 
 

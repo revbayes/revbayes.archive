@@ -125,11 +125,11 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
         bool found = false;
         if ( env.existsVariable( functionName ) )
         {
-            RevObject &theValue = env.getValue( functionName );
+            RevObject &theObject = env.getRevObject( functionName );
             
-            if ( theValue.isTypeSpec( Function::getClassTypeSpec() ) )
+            if ( theObject.isTypeSpec( Function::getClassTypeSpec() ) )
             {
-                func = &( static_cast<Function&>( theValue ) );
+                func = &( static_cast<Function&>( theObject ) );
                 found = func->checkArguments(args, NULL);
             }
         }
@@ -167,12 +167,12 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
     }
 
     // Evaluate a "flat" function or create a deterministic node
-    RevObject* funcReturnValue = func->execute();
+    RevPtr<Variable> funcReturnValue = func->execute();
 
     // Clear arguments from function
     func->clear();
 
-    return RevPtr<Variable>( new Variable( funcReturnValue ) );
+    return funcReturnValue;
 }
 
 

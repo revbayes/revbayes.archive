@@ -1,3 +1,4 @@
+#include "RbException.h"
 #include "UserFunctionArgs.h"
 
 #include <sstream>
@@ -50,9 +51,9 @@ UserFunctionArgs* UserFunctionArgs::clone(void) const {
 
 
 /** Execute function: this function should not be called */
-RevObject* UserFunctionArgs::execute( void ) {
+RevPtr<Variable> UserFunctionArgs::execute( void ) {
     
-    throw ("Unexpected call to UserFunctionArgs");
+    throw RbException( "Unexpected call to UserFunctionArgs" );
 }
 
 

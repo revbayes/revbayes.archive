@@ -57,10 +57,11 @@ class SyntaxVariable : public SyntaxElement {
         void                                printValue(std::ostream& o) const;                                                      //!< Print info about object
 
         // Regular functions
-        std::vector<int>                    computeIndex(Environment& env);                                                         //!< Evaluate index
-        RevPtr<Variable>                    createVariable(Environment& env);                                                       //!< Get semantic value
-        RevPtr<Variable>                    evaluateDeterministicExpressionContent(Environment& env);                               //!< Get semantic value (deterministic variable lookup/reference) if part of a deterministic expression
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                                      //!< Get semantic value
+        std::vector<RevPtr<Variable> >      computeDynamicIndex(Environment& env);                                                  //!< Evaluate index variables (dynamic content)
+        std::vector<int>                    computeIndex(Environment& env);                                                         //!< Evaluate index (constant content)
+        RevPtr<Variable>                    evaluateIndirectReferenceContent(Environment& env);                                     //!< Get semantic value if indirect variable reference
+        RevPtr<Variable>                    evaluateContent(Environment& env);                                                      //!< Get semantic value (static or dynamic)
+        RevPtr<Variable>                    evaluateLHSContent(Environment& env);                                                   //!< Get semantic value of lhs variable expression
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                hasFunctionCall(void) const;                                                            //!< Does this variable have a function call (e.g. a.xxx() )

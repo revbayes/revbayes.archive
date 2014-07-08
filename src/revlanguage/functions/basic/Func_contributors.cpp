@@ -37,7 +37,7 @@ Func_contributors* Func_contributors::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_contributors::execute( void ) {
+RevPtr<Variable> Func_contributors::execute( void ) {
     
     
     RBOUT( "\n" );

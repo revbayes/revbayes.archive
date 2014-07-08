@@ -22,7 +22,6 @@
 #include "Environment.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
-#include "VariableSlot.h"
 
 #include <string>
 

@@ -38,7 +38,7 @@ RateMatrix* RateMatrix::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") {
         // get the member with give index
@@ -53,11 +53,11 @@ RevObject* RateMatrix::executeMethod(std::string const &name, const std::vector<
         for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }
-        return new Vector<Real>( elementVector );
+        return new Variable( new Vector<Real>( elementVector ) );
     }
     else if (name == "size") {
         int n = (int)this->dagNode->getValue().getNumberOfStates();
-        return new Natural(n);
+        return new Variable( new Natural(n) );
     }
     
     return ModelObject<RevBayesCore::RateMatrix>::executeMethod( name, args );

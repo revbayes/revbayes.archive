@@ -28,7 +28,7 @@ Func_log* Func_log::clone( void ) const {
 }
 
 
-RevObject* Func_log::execute() {
+RevPtr<Variable> Func_log::execute() {
     
     RevBayesCore::TypedDagNode<double>* a = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* b = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -38,7 +38,7 @@ RevObject* Func_log::execute() {
     
     Real* value = new Real( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

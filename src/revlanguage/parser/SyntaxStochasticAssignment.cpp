@@ -19,7 +19,6 @@
 #include "RbOptions.h"
 #include "RlDistribution.h"
 #include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxStochasticAssignment.h"
 #include "Workspace.h"
 
@@ -30,20 +29,22 @@
 using namespace RevLanguage;
 
 /** Construct from operator type, variable and expression */
-SyntaxStochasticAssignment::SyntaxStochasticAssignment(SyntaxVariable* var, SyntaxElement* expr) : SyntaxElement(), variable(var), functionCall(NULL), expression(expr) {
-
+SyntaxStochasticAssignment::SyntaxStochasticAssignment(SyntaxVariable* var, SyntaxElement* expr) :
+    SyntaxElement(), variable(var), functionCall(NULL), expression(expr)
+{
 }
 
 
 /** Construct from operator type, function call and expression */
-SyntaxStochasticAssignment::SyntaxStochasticAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr) {
-
+SyntaxStochasticAssignment::SyntaxStochasticAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) :
+    SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr)
+{
 }
 
 
 /** Deep copy constructor */
-SyntaxStochasticAssignment::SyntaxStochasticAssignment(const SyntaxStochasticAssignment& x) : SyntaxElement(x), variable( NULL ), functionCall( NULL ) {
-    
+SyntaxStochasticAssignment::SyntaxStochasticAssignment(const SyntaxStochasticAssignment& x) : SyntaxElement(x), variable( NULL ), functionCall( NULL )
+{
     if ( x.variable != NULL )
         variable   = x.variable->clone();
     
@@ -55,8 +56,8 @@ SyntaxStochasticAssignment::SyntaxStochasticAssignment(const SyntaxStochasticAss
 
 
 /** Destructor deletes operands */
-SyntaxStochasticAssignment::~SyntaxStochasticAssignment() {
-    
+SyntaxStochasticAssignment::~SyntaxStochasticAssignment()
+{
     delete variable;
     delete functionCall;
     delete expression;
@@ -65,11 +66,10 @@ SyntaxStochasticAssignment::~SyntaxStochasticAssignment() {
 
 
 /** Assignment operator */
-SyntaxStochasticAssignment& SyntaxStochasticAssignment::operator=(const SyntaxStochasticAssignment& x) {
-    
-    if ( this != &x ) 
+SyntaxStochasticAssignment& SyntaxStochasticAssignment::operator=(const SyntaxStochasticAssignment& x)
+{
+    if ( this != &x )
     {
-        
         functionCall = NULL;
         variable = NULL;
         
@@ -87,32 +87,28 @@ SyntaxStochasticAssignment& SyntaxStochasticAssignment::operator=(const SyntaxSt
 
 
 /** Clone syntax element */
-SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const {
-    
+SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const
+{
     return new SyntaxStochasticAssignment(*this);
 }
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env ) {
-    
+RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
+{
 #ifdef DEBUG_PARSER
-    printf( "Evaluating assign expression\n" );
+    printf( "Evaluating tilde assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    const RevPtr<Variable>& theSlot = variable->createVariable( env );
+    // Get variable from lhs
+    RevPtr<Variable> theSlot;
+    if ( variable != NULL )
+        theSlot = variable->evaluateLHSContent( env );
+    else
+        theSlot = functionCall->evaluateContent( env );
     
-    // Declare variable storing the return value of the assignment expression
-    RevPtr<Variable> theVariable = NULL;
-    
-        
-#ifdef DEBUG_PARSER
-    printf( "Tilde assignment\n" );
-#endif
-        
-    // get the rhs expression wrapped and executed into a variable
-    theVariable = expression->evaluateContent(env);
+    // Evaluate the rhs expression and wrap it into a dynamic variable
+    RevPtr<Variable> theVariable = expression->evaluateDynamicContent(env);
         
     // Get distribution, which should be the return value of the rhs function
     const RevObject& exprValue = theVariable->getRevObject();
@@ -122,16 +118,12 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     }
     const Distribution &dist = dynamic_cast<const Distribution &>( exprValue );
         
-    // Create new stochastic node
+    // Create new stochastic variable
     RevObject* rv = dist.createRandomVariable();
         
-    // fill the slot with the new variable
+    // Fill the slot with the new stochastic variable
     theSlot->setRevObject( rv );
         
-    // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-    theVariable->getRevObject().setName( theSlot->getName() );
-        
-    
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif    
@@ -140,16 +132,16 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
 }
 
 
-bool SyntaxStochasticAssignment::isAssignment( void ) const {
-    
+/** This is an assignment, so return true */
+bool SyntaxStochasticAssignment::isAssignment( void ) const
+{
     return true;
 }
 
 
-
 /** Print info about the syntax element */
-void SyntaxStochasticAssignment::printValue(std::ostream& o) const {
-    
+void SyntaxStochasticAssignment::printValue(std::ostream& o) const
+{
     o << "SyntaxAssignExpr:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);

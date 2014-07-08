@@ -40,14 +40,14 @@ void PathSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "marginal")
     {
         
         double ml = value->marginalLikelihood();
         
-        return new Real( ml );
+        return new Variable( new Real( ml ) );
     }
     
     return RevObject::executeMethod( name, args );

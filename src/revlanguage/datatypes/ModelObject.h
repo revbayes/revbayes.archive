@@ -41,8 +41,8 @@ namespace RevLanguage {
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
     
         // Utility functions you might want to override
-        virtual RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual RevObject*                      getMember(const std::string& name) const;                                   //!< Get member variable
+        virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                getMember(const std::string& name) const;                                   //!< Get member variable
         virtual const MethodTable&              getMethods(void) const;                                                     //!< Get member methods (const)
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
@@ -208,7 +208,7 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
 
 /* Map calls to member methods */
 template <typename rbType>
-RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "clamp") 
     {
@@ -271,7 +271,7 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::str
 
 /* Find member variables */
 template <typename rbType>
-RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::getMember(std::string const &name) const
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::getMember(std::string const &name) const
 {
     
     // check whether the variable is actually a stochastic node
@@ -284,7 +284,7 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::getMember(std::string 
             double lnProb = stochNode->getLnProbability();
             RevObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
             
-            return p;
+            return new Variable( p );
         } 
         else if ( name == "lnProb" || name == "lnProbability" ) 
         {
@@ -293,12 +293,11 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::getMember(std::string 
             double lnProb = stochNode->getLnProbability();
             RevObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
             
-            return p;
+            return new Variable( p );
             
         }
     }
 
-    
     return RevObject::getMember( name );
 }
 

@@ -2,7 +2,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "VariableSlot.h"
 #include "SyntaxIncrement.h"
 #include "Workspace.h"
 
@@ -17,19 +16,19 @@ using namespace RevLanguage;
  *
  * \param[in]   e           The expression on the right hand side.
  */
-SyntaxIncrement::SyntaxIncrement(SyntaxVariable* v) : SyntaxElement(), 
+SyntaxIncrement::SyntaxIncrement(SyntaxVariable* v) :
+    SyntaxElement(),
     variable( v ) 
 {
-    
 }
 
 
 /** 
  * Deep copy constructor.
  */
-SyntaxIncrement::SyntaxIncrement(const SyntaxIncrement& x) : SyntaxElement(x) 
+SyntaxIncrement::SyntaxIncrement(const SyntaxIncrement& x) :
+    SyntaxElement(x)
 {
-    
     if ( x.variable != NULL )
     {
         variable   = x.variable->clone();
@@ -38,7 +37,6 @@ SyntaxIncrement::SyntaxIncrement(const SyntaxIncrement& x) : SyntaxElement(x)
     {
         variable = NULL;
     }
-    
 }
 
 
@@ -47,9 +45,7 @@ SyntaxIncrement::SyntaxIncrement(const SyntaxIncrement& x) : SyntaxElement(x)
  */
 SyntaxIncrement::~SyntaxIncrement() 
 {
-    
     delete variable;
-    
 }
 
 
@@ -58,8 +54,7 @@ SyntaxIncrement::~SyntaxIncrement()
  */
 SyntaxIncrement& SyntaxIncrement::operator=(const SyntaxIncrement& x) 
 {
-    
-    if ( this != &x ) 
+    if ( this != &x )
     {
         
         delete variable;
@@ -73,44 +68,48 @@ SyntaxIncrement& SyntaxIncrement::operator=(const SyntaxIncrement& x)
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 SyntaxIncrement* SyntaxIncrement::clone () const 
 {
-    
     return new SyntaxIncrement(*this);
 }
 
 
 /** 
  * Evaluate the content of this syntax element.
- * This will perform an addition assignment operation.
+ * This will perform an increment assignment operation.
  */
 RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
 {
-    
 #ifdef DEBUG_PARSER
-    printf( "Evaluating increment expression\n" );
+    printf( "Evaluating increment assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    RevPtr<Variable> theVariable = variable->createVariable( env );
-    
+    // Get variable from lhs. We use standard evaluation because the variable is
+    // implicitly on both sides (lhs and rhs) of this type of statement
+    RevPtr<Variable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
+        throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
     
+    // Make sure that the variable is constant
+    if ( !theVariable->getRevObject().isConstant() )
+        throw RbException( "Invalid subtraction assignment to dynamic variable" );
+    
+    // Get a nonconst reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
+    
+    // Increment the lhs value
     lhs_value.increment();
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
     return theVariable;
 }
-
 
 
 /** 
@@ -118,7 +117,6 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
  */
 void SyntaxIncrement::printValue(std::ostream& o) const 
 {
-    
     o << "SyntaxIncrement:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);

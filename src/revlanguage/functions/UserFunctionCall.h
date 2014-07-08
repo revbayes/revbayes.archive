@@ -30,7 +30,7 @@ namespace RevLanguage {
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions
-        virtual RevObject*                          execute(void);                                                              //!< Execute function
+        virtual RevPtr<Variable>                    execute(void);                                                              //!< Execute function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         std::vector<const RevBayesCore::DagNode*>   getParameters(void) const;                                                  //!< Get parameters
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value

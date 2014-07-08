@@ -159,7 +159,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         forLoop->initializeLoop(loopEnv);
 
         // Now loop over statements inside the for loop
-        while ( forLoop->isFinished() ) {
+        while ( !forLoop->isFinished() ) {
             
             RevObject* indexValue = forLoop->getNextLoopState();
             for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {

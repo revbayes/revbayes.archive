@@ -23,7 +23,7 @@ Func__mod* Func__mod::clone( void ) const
 
 
 /** Execute function: We rely on getValue or overloaded push_back to provide functionality */
-RevObject* Func__mod::execute( void ) {
+RevPtr<Variable> Func__mod::execute( void ) {
     
     const RevBayesCore::TypedDagNode<int>* leftVal = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::TypedDagNode<int>* rightVal = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getDagNode();
@@ -34,7 +34,7 @@ RevObject* Func__mod::execute( void ) {
 
     Natural *theBool = new Natural( detNode );
     
-    return theBool;
+    return new Variable( theBool );
     
 }
 

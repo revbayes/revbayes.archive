@@ -18,6 +18,7 @@
 #ifndef VariableSlot_H 
 #define VariableSlot_H
 
+#if 0
 #include "RevPtr.h"
 #include "TypeSpec.h"
 
@@ -67,5 +68,7 @@ private:
 std::ostream&                               operator<<(std::ostream& o, const VariableSlot& x);                     //!< Overloaded output operator
 
 }
+
+#endif
 
 #endif

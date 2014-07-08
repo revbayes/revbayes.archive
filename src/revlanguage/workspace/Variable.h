@@ -38,9 +38,9 @@ namespace RevLanguage {
      */
     class Variable {
     public:
-                            Variable(const TypeSpec& ts);               //!< Constructor of filled variable
-                            Variable(RevObject *revObj, const std::string &n = "");     //!< Constructor of filled, unnamed variable
-                            Variable(const RevPtr<const Variable>& refVar, const std::string &n = "");     //!< Constructor of reference variable
+                            Variable(const TypeSpec& ts);               //!< Constructor of empty unnamed variable with a type specification
+                            Variable(RevObject *revObj, const std::string &n = "");     //!< Constructor of filled, potentially named variable
+                            Variable(const RevPtr<const Variable>& refVar, const std::string &n = "");      //!< Constructor of reference variable
                             Variable(const Variable &v);                //!< Copy constructor
         virtual            ~Variable(void);
 

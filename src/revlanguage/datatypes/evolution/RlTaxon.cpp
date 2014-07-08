@@ -69,7 +69,7 @@ void Taxon::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
 //    if (name == "nnodes") {
 //        size_t n = this->value->getValue().getNumberOfNodes();

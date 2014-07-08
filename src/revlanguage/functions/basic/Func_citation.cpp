@@ -37,7 +37,7 @@ Func_citation* Func_citation::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_citation::execute( void ) {
+RevPtr<Variable> Func_citation::execute( void ) {
     
     
     RBOUT( "\n" );

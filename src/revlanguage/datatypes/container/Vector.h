@@ -59,7 +59,7 @@ namespace RevLanguage {
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
             
         // Container functions
-        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevPtr<Variable>                                getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(const rlType &x);                                     //!< Append element to end
         void                                            push_back(const elementType &x);                                //!< Append element to end
         void                                            push_front(const rlType &x);                                    //!< Append element to end
@@ -98,6 +98,7 @@ namespace RevLanguage {
 #include "RbUtil.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
+#include "Variable.h"
 #include "VectorIndexOperator.h"
 
 #include <algorithm>
@@ -439,9 +440,9 @@ const RevLanguage::TypeSpec& RevLanguage::Vector<rlType>::getClassTypeSpec(void)
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RevObject* RevLanguage::Vector<rlType>::getElement(size_t index) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Vector<rlType>::getElement(size_t index) {
     
-    return new rlType( this->value->getValue()[index] );
+    return new RevLanguage::Variable( new rlType( this->value->getValue()[index] ) );
 }
 
 

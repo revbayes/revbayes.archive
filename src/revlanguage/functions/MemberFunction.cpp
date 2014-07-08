@@ -47,9 +47,8 @@ MemberFunction* MemberFunction::clone(void) const
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RevObject* MemberFunction::execute( void ) 
+RevPtr<Variable> MemberFunction::execute( void )
 {
-    
     return object->getRevObject().executeMethod( funcName, args );
     
 }

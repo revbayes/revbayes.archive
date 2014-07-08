@@ -88,7 +88,7 @@ const TypeSpec& Func_expBranchTree::getTypeSpec( void ) const {
 }
 
 
-RevObject* Func_expBranchTree::execute() {
+RevPtr<Variable> Func_expBranchTree::execute() {
     
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
@@ -101,7 +101,7 @@ RevObject* Func_expBranchTree::execute() {
     
     Vector<RealPos>* wrappedresult = new Vector<RealPos>(dag);
     
-    return wrappedresult;
+    return new Variable( wrappedresult );
 }
 
 

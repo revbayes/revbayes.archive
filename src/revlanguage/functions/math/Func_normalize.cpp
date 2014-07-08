@@ -32,7 +32,7 @@ Func_normalize* Func_normalize::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevObject* Func_normalize::execute( void ) {
+RevPtr<Variable> Func_normalize::execute( void ) {
     
     const RevBayesCore::TypedDagNode< std::vector<double> > *params = static_cast< Vector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
     
@@ -42,7 +42,7 @@ RevObject* Func_normalize::execute( void ) {
 
     Vector<RealPos> *theNormalizedVector = new Vector<RealPos>( detNode );
     
-    return theNormalizedVector;
+    return new Variable( theNormalizedVector );
 }
 
 

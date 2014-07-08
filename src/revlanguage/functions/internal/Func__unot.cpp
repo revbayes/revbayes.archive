@@ -30,7 +30,7 @@ Func__unot* Func__unot::clone( void ) const {
 
 
 /** Execute function: We rely on getValue unot overloaded push_back to provide functionality */
-RevObject* Func__unot::execute( void ) {
+RevPtr<Variable> Func__unot::execute( void ) {
     
     const RevBayesCore::TypedDagNode<bool>* val = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
@@ -40,8 +40,7 @@ RevObject* Func__unot::execute( void ) {
     
     RlBoolean *theBool = new RlBoolean( detNode );
     
-    return theBool;
-    
+    return new Variable( theBool );
 }
 
 

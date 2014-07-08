@@ -40,7 +40,7 @@ namespace RevLanguage {
         
     private:
         UserFunctionCall*                   userFunctionCall;                                                           //!< The user function call
-        RevObject*                          revObject;                                                                  //!< The object returned by the function
+        RevPtr<Variable>                    returnVariable;                                                             //!< The object returned by the function
     };
     
 }
@@ -53,11 +53,13 @@ namespace RevLanguage {
 
 using namespace RevLanguage;
 
+
+/** Constructor from pointer to the call of a user-defined function, which we own */
 template <class valueType>
 TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
     RevBayesCore::TypedFunction<valueType>( NULL ),
     userFunctionCall( uFC ),
-    revObject( NULL )
+    returnVariable( NULL )
 {
     // Add parameters to conform to RevBayesCore::Function
     std::vector<const RevBayesCore::DagNode*> params = userFunctionCall->getParameters();
@@ -69,45 +71,49 @@ TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
 }
 
 
+/** Copy constructor */
 template <class valueType>
 TypedUserFunction<valueType>::TypedUserFunction(const TypedUserFunction<valueType> &x) :
     RevBayesCore::TypedFunction<valueType>( x ),
     userFunctionCall( x.userFunctionCall->clone() ),
-    revObject( NULL )
+    returnVariable( NULL )
 {
     /* Just set dirty flag. No need to add parameters, it happens automatically. */
     this->setDirty( true );
 }
 
 
+/** Destructor: Delete userFunctionCall, which we own. The returnVariable is a smart pointer and will be deleted automatically. */
 template <class valueType>
-TypedUserFunction<valueType>::~TypedUserFunction( void ) {
-    
+TypedUserFunction<valueType>::~TypedUserFunction( void )
+{
     delete userFunctionCall;
-    delete revObject;
 }
 
 
+/** Clone function: return type-safe clone of myself */
 template <class valueType>
-TypedUserFunction<valueType>* TypedUserFunction<valueType>::clone( void ) const {
-    
+TypedUserFunction<valueType>* TypedUserFunction<valueType>::clone( void ) const
+{
     return new TypedUserFunction<valueType>( *this );
 }
 
 
+/** Get value (const version), possibly after updating if the state is dirty */
 template <class valueType>
 const valueType& TypedUserFunction<valueType>::getValue(void) const
 {
-    
     if (this->isDirty() )
     {
         const_cast< TypedUserFunction<valueType>* >( this )->update();
-        const_cast< TypedUserFunction<valueType>* >( this )->setDirty( false );
+        const_cast< TypedUserFunction<valueType>* >( this )->setDirty( false );     // just in case
     }
 
-    return static_cast< RevBayesCore::TypedDagNode<valueType>* >(revObject->getDagNode())->getValue();
+    return static_cast< RevBayesCore::TypedDagNode<valueType>* >( returnVariable->getRevObject().getDagNode() )->getValue();
 }
 
+
+/** Get value, possibly after updating if the state is dirty */
 template <class valueType>
 valueType& TypedUserFunction<valueType>::getValue(void)
 {
@@ -115,36 +121,38 @@ valueType& TypedUserFunction<valueType>::getValue(void)
     if ( this->isDirty() )
     {
         update();
-        this->setDirty( false );
+        this->setDirty( false );    // just in case
     }
     
-    return static_cast< RevBayesCore::TypedDagNode<valueType>* >(revObject->getDagNode())->getValue();
+    return static_cast< RevBayesCore::TypedDagNode<valueType>* >( returnVariable->getRevObject().getDagNode() )->getValue();
 }
 
 
+/**
+ * Swap internal parameters. Nothing to do in this class because it keeps reference variables to the arguments,
+ * so they change automatically when the referenced variables change.
+ */
 template <class valueType>
-void TypedUserFunction<valueType>::swapParameterInternal(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP) {
-    
+void TypedUserFunction<valueType>::swapParameterInternal(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP)
+{
     // Nothing to do: the user function call only has reference variables to the arguments, so they change
     // automatically when the referenced variable changes
-    
 }
 
 
+/** Set our state to dirty for later update if somebody wants to see our value */
 template <class valueType>
-void TypedUserFunction<valueType>::touch( RevBayesCore::DagNode* toucher ) {
-    
+void TypedUserFunction<valueType>::touch( RevBayesCore::DagNode* toucher )
+{
     this->setDirty( true );
 }
 
 
+/** Update our internal return variable and set state to clean */
 template <class valueType>
-void TypedUserFunction<valueType>::update( void ) {
-
-    if ( revObject != NULL )
-        delete revObject;
-    
-    revObject = userFunctionCall->execute();
+void TypedUserFunction<valueType>::update( void )
+{
+    returnVariable = userFunctionCall->execute();
     
     this->setDirty( false );
 }

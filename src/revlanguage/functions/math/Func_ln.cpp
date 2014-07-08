@@ -28,7 +28,7 @@ Func_ln* Func_ln::clone( void ) const {
 }
 
 
-RevObject* Func_ln::execute() {
+RevPtr<Variable> Func_ln::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::LnFunction* f = new RevBayesCore::LnFunction( arg );
@@ -37,7 +37,7 @@ RevObject* Func_ln::execute() {
     
     Real* value = new Real( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

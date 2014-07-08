@@ -31,13 +31,13 @@ Func_dayhoff* Func_dayhoff::clone( void ) const {
 }
 
 
-RevObject* Func_dayhoff::execute() {
+RevPtr<Variable> Func_dayhoff::execute() {
     
     
     RevBayesCore::RateMatrix_Dayhoff *rmj = new RevBayesCore::RateMatrix_Dayhoff();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 

@@ -30,7 +30,7 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readTrees::execute( void ) {
+RevPtr<Variable> Func_readTrees::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -46,7 +46,7 @@ RevObject* Func_readTrees::execute( void ) {
         trees->push_back( TimeTree(*t) );
     }
     
-    return trees;
+    return new Variable( trees );
 }
 
 

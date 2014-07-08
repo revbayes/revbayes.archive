@@ -112,7 +112,7 @@ RevObject* RevObject::divide(const RevObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RevObject* RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "get") 
     {
@@ -149,6 +149,16 @@ RevObject* RevObject::executeMethod(std::string const &name, const std::vector<A
 }
 
 
+/**
+ * Find or create an element variable of a container. Default implementation throws
+ * an error. Override in container objects.
+ */
+RevPtr<Variable> RevObject::findOrCreateElement( const std::vector<int> indices )
+{
+    throw RbException( "Object of type '" + getType() + "' does not have any elements" );
+}
+
+
 /** Get class vector describing type of object */
 const std::string& RevObject::getClassName(void)
 {
@@ -180,11 +190,9 @@ const MemberRules& RevObject::getMemberRules(void) const
 
 
 /** Get a member variable */
-RevObject* RevObject::getMember(const std::string& name) const
+RevPtr<Variable> RevObject::getMember(const std::string& name) const
 {
-
     throw RbException("No Member named '" + name + "' available.");
-
 }
 
 
@@ -242,6 +250,20 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const
     throw RbException("RevLanguage only objects cannot be used inside DAG's!");
     
     return NULL;
+}
+
+
+/** Get a dynamic element (deterministic element lookup). Default implementation throws an error */
+RevPtr<Variable> RevObject::getDynamicElement( const std::vector< RevPtr<Variable> > indices )
+{
+    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
+}
+
+
+/** Get a constant element value. Default implementation throws an error */
+RevPtr<Variable> RevObject::getElement( const std::vector<int> indices )
+{
+    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
 }
 
 

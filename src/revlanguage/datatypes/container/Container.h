@@ -43,11 +43,11 @@ namespace RevLanguage {
         virtual size_t                              size(void) const = 0;                                               //!< get the number of elements in the Container
     
         virtual void                                clear(void) = 0;                                                    //!< Clear
-        virtual RevObject*                          getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
+        virtual RevPtr<Variable>                    getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
     
         // Member method inits
         virtual const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        virtual RevObject*                          executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
 
         // Container functions you do not have to override
         const TypeSpec&                             getElementType(void) const { return elementType; }                  //!< Get element type

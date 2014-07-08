@@ -34,7 +34,7 @@ Func_biogeo_de* Func_biogeo_de::clone( void ) const {
 }
 
 
-RevObject* Func_biogeo_de::execute() {
+RevPtr<Variable> Func_biogeo_de::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const Vector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier>* grm = static_cast<const RlGeographyRateModifier&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -50,7 +50,7 @@ RevObject* Func_biogeo_de::execute() {
     
     RateMap* value = new RateMap( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

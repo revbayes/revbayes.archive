@@ -56,9 +56,10 @@ class Environment;
         virtual void                    printValue(std::ostream& o) const = 0;                                              //!< Print info about object
 
         // Regular functions
-        virtual RevPtr<Variable>        evaluateContent(Environment& env) = 0;                                              //!< Get semantic value
-        virtual RevPtr<Variable>        evaluateDeterministicExpressionContent(Environment& env);                           //!< Get semantic value if part of a deterministic expression
-        virtual bool                    isAssignment(void) const;
+        virtual RevPtr<Variable>        evaluateContent(Environment& env) = 0;                                              //!< Get semantic value (static)
+        virtual RevPtr<Variable>        evaluateDynamicContent(Environment& env);                                           //!< Get semantic value (dynamic, if different)
+        virtual RevPtr<Variable>        evaluateIndirectReferenceContent(Environment& env);                                 //!< Get semantic value (indirect reference, if different)
+        virtual bool                    isAssignment(void) const;                                                           //!< Is this an assignment statement element?
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
         virtual void                    replaceVariableWithConstant(const std::string& name, const RevObject& c) = 0;       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 

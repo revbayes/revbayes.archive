@@ -33,7 +33,7 @@ Func_tmrca* Func_tmrca::clone( void ) const {
 }
 
 
-RevObject* Func_tmrca::execute() {
+RevPtr<Variable> Func_tmrca::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
@@ -43,7 +43,7 @@ RevObject* Func_tmrca::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 

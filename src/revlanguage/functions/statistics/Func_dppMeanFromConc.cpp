@@ -34,7 +34,7 @@ Func_dppMeanFromConc* Func_dppMeanFromConc::clone( void ) const {
 }
 
 
-RevObject* Func_dppMeanFromConc::execute() {
+RevPtr<Variable> Func_dppMeanFromConc::execute() {
 	
     double cp = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
@@ -43,8 +43,7 @@ RevObject* Func_dppMeanFromConc::execute() {
     RevBayesCore::ConstantNode<double> *constNode = new RevBayesCore::ConstantNode<double>("", new double(meanCP));
 	
 	RealPos* value = new RealPos( constNode );
-	return value;
-	
+	return new Variable( value );
 }
 
 

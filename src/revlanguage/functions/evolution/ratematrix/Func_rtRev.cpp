@@ -31,13 +31,13 @@ Func_rtRev* Func_rtRev::clone( void ) const {
 }
 
 
-RevObject* Func_rtRev::execute() {
+RevPtr<Variable> Func_rtRev::execute() {
     
     
     RevBayesCore::RateMatrix_RtRev *rmj = new RevBayesCore::RateMatrix_RtRev();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 

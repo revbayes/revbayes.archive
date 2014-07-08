@@ -66,7 +66,7 @@ namespace RevLanguage {
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevPtr<Variable>                                getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(const rlType &x);                                     //!< Append element to end
         void                                            push_back(elementType *x);                                      //!< Append element to end
         void                                            push_front(const rlType &x);                                    //!< Append element to end
@@ -235,7 +235,7 @@ const RevLanguage::TypeSpec& RevLanguage::VectorAbstractElement<rlType>::getClas
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RevObject* RevLanguage::VectorAbstractElement<rlType>::getElement(size_t index) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::VectorAbstractElement<rlType>::getElement(size_t index) {
     
 //    return this->value->getValue()[index];
     throw RbException("Cannot access element in pointer vector.");

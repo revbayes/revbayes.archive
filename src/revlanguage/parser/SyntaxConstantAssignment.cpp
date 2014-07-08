@@ -19,7 +19,6 @@
 #include "RbOptions.h"
 #include "RlDistribution.h"
 #include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxConstantAssignment.h"
 #include "Workspace.h"
 
@@ -29,21 +28,24 @@
 
 using namespace RevLanguage;
 
-/** Construct from operator type, variable and expression */
-SyntaxConstantAssignment::SyntaxConstantAssignment(SyntaxVariable* var, SyntaxElement* expr) : SyntaxElement(), variable(var), functionCall(NULL), expression(expr) {
-
+/** Construct from variable and expression */
+SyntaxConstantAssignment::SyntaxConstantAssignment(SyntaxVariable* var, SyntaxElement* expr) :
+    SyntaxElement(), variable(var), functionCall(NULL), expression(expr)
+{
 }
 
 
-/** Construct from operator type, function call and expression */
-SyntaxConstantAssignment::SyntaxConstantAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr) {
-
+/** Construct from function call and expression */
+SyntaxConstantAssignment::SyntaxConstantAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) :
+    SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr)
+{
 }
 
 
 /** Deep copy constructor */
-SyntaxConstantAssignment::SyntaxConstantAssignment(const SyntaxConstantAssignment& x) : SyntaxElement(x) {
-    
+SyntaxConstantAssignment::SyntaxConstantAssignment(const SyntaxConstantAssignment& x) :
+    SyntaxElement(x)
+{
     if ( x.variable != NULL )
         variable   = x.variable->clone();
     
@@ -55,8 +57,8 @@ SyntaxConstantAssignment::SyntaxConstantAssignment(const SyntaxConstantAssignmen
 
 
 /** Destructor deletes operands */
-SyntaxConstantAssignment::~SyntaxConstantAssignment() {
-    
+SyntaxConstantAssignment::~SyntaxConstantAssignment()
+{
     delete variable;
     delete functionCall;
     delete expression;
@@ -93,78 +95,79 @@ SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const {
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
-    
+RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
+{
 #ifdef DEBUG_PARSER
-    printf( "Evaluating assign expression\n" );
+    printf( "Evaluating constant assignment\n" );
 #endif
-    
-    // Get variable info from lhs
-    const RevPtr<Variable>& theSlot = variable->createVariable( env );
+
+    // Get variable from lhs
+    RevPtr<Variable> theSlot;
+    if ( variable != NULL )
+        theSlot = variable->evaluateLHSContent( env );
+    else
+        theSlot = functionCall->evaluateContent( env );
     
     // Declare variable storing the return value of the assignment expression
-    RevPtr<Variable> theVariable = NULL;
-        
-#ifdef DEBUG_PARSER
-    printf("Constant assignment\n");
-#endif
-        
-    RevObject *newValue;
-        
-    // Calculate the value of the rhs expression
-    theVariable = expression->evaluateContent( env );
-    if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
-        
-    // fill the slot with the new variable
+    RevPtr<Variable> theVariable;
+    
+    // Get the rhs expression wrapped and executed into a variable.
+    // We need to call evaluateIndirectReferenceContent in case the rhs
+    // is a variable. If not, evaluateIndirectReferenceContent will
+    // fall back to evaluateDynamicContent
+    theVariable = expression->evaluateContent(env);
+
+    // Get a reference to the Rev object value
     const RevObject& value = theVariable->getRevObject();
-        
-    // check if the type is valid. This is necessary for reassignments
-    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) ) {
-        // We are not of a derived type (or the same type)
-        // since this will create a constant node we are allowed to type cast
-        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) ) {
+    
+    // Perform type conversion if needed, otherwise just clone the value object
+    RevObject* newValue;
+    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) )
+    {
+        // We are not of a derived type (or the same type) so we need to cast
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) )
+        {
             newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
-                
         }
-        else {
+        else
+        {
             std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theSlot->getName() << "' with type " << value.getTypeSpec() << " with value ";
-            value.printValue(msg);
-            msg << " because the variable requires type " << theSlot->getRevObjectTypeSpec() << "." << std::endl;
+            msg << "Cannot reassign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec() << "'" << std::endl;
+            msg << " because the variable requires type '" << theSlot->getRevObjectTypeSpec() << "'" << std::endl;
             throw RbException( msg );
         }
     }
-    else 
+    else
     {
         newValue = value.clone();
-        newValue->makeConstantValue();
-            
+        newValue->makeConstantValue();  // We cannot trust evaluateContent to return a constant variable
     }
-        
-    // set the value of the variable
+
+    // Fill the slot with newValue. The variable itself will be
+    // passed on as the semantic value of the statement and can
+    // be used in further assignments.
     theSlot->setRevObject( newValue );
-        
-    // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-    newValue->setName( theSlot->getName() );
-        
+    
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
+    // Return variable
     return theVariable;
 }
 
 
-bool SyntaxConstantAssignment::isAssignment( void ) const {
+/** This is an assignment, return true. */
+bool SyntaxConstantAssignment::isAssignment( void ) const
+{
     return true;
 }
 
 
 
 /** Print info about the syntax element */
-void SyntaxConstantAssignment::printValue(std::ostream& o) const {
-    
+void SyntaxConstantAssignment::printValue(std::ostream& o) const
+{
     o << "SyntaxConstantAssignment:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);

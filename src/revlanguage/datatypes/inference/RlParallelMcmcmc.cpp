@@ -71,7 +71,7 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
 
     
     if (name == "run")

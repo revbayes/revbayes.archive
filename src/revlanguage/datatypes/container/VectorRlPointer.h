@@ -53,12 +53,12 @@ namespace RevLanguage {
         virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                    //!< Is this object convertible to the asked one?
         
         // Member object function
-        RevObject*                               executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevPtr<Variable>                                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
 //        const MemberRules&                              getMemberRules(void) const;                                     //!< Get member rules
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevPtr<Variable>                                getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(rlType *x);                                           //!< Append element to end
         void                                            push_front(rlType *x);                                          //!< Append element to end
         
@@ -161,7 +161,7 @@ RevLanguage::VectorRlPointer<rlType>* RevLanguage::VectorRlPointer<rlType>::clon
 
 /* Map calls to member methods */
 template <typename rlType>
-RevLanguage::RevObject* RevLanguage::VectorRlPointer<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::VectorRlPointer<rlType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if ( name == "[]") {
         // get the member with give index
@@ -171,7 +171,7 @@ RevLanguage::RevObject* RevLanguage::VectorRlPointer<rlType>::executeMethod(std:
             throw RbException("Index out of bounds in []");
         }
         
-        RevObject* element = getElement( size_t(index.getValue()) - 1);
+        RevPtr<Variable> element = getElement( size_t(index.getValue()) - 1);
         return element;
     } 
     
@@ -200,9 +200,9 @@ const RevLanguage::TypeSpec& RevLanguage::VectorRlPointer<rlType>::getClassTypeS
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RevObject* RevLanguage::VectorRlPointer<rlType>::getElement(size_t index) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::VectorRlPointer<rlType>::getElement(size_t index) {
     
-    return this->value[index]->clone();
+    return new RevLanguage::Variable( this->value[index]->clone() );
 }
 
 

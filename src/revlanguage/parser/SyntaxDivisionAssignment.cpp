@@ -3,7 +3,6 @@
 #include "RbUtil.h"
 #include "RbOptions.h"
 #include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxDivisionAssignment.h"
 #include "Workspace.h"
 
@@ -15,7 +14,7 @@ using namespace RevLanguage;
 
 /** 
  * Construct from variable and expression. 
- * Here only the object is instanciated and the variables set.
+ * Here only the object is instantiated and the variables set.
  *
  * \param[in]   var         The left hand side variable.
  * \param[in]   expr        The expression on the right hand side.
@@ -37,21 +36,21 @@ expression(expr)
  * \param[in]   fxnCall     The function call returning the left hand side variable.
  * \param[in]   expr        The expression on the right hand side.
  */
-SyntaxDivisionAssignment::SyntaxDivisionAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(),
-variable(NULL), 
-functionCall(fxnCall), 
-expression(expr) 
+SyntaxDivisionAssignment::SyntaxDivisionAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) :
+    SyntaxElement(),
+    variable(NULL),
+    functionCall(fxnCall),
+    expression(expr)
 {
-    
 }
 
 
 /** 
  * Deep copy constructor.
  */
-SyntaxDivisionAssignment::SyntaxDivisionAssignment(const SyntaxDivisionAssignment& x) : SyntaxElement(x) 
+SyntaxDivisionAssignment::SyntaxDivisionAssignment(const SyntaxDivisionAssignment& x) :
+    SyntaxElement(x)
 {
-    
     if ( x.variable != NULL )
         variable   = x.variable->clone();
     
@@ -67,11 +66,9 @@ SyntaxDivisionAssignment::SyntaxDivisionAssignment(const SyntaxDivisionAssignmen
  */
 SyntaxDivisionAssignment::~SyntaxDivisionAssignment() 
 {
-    
     delete variable;
     delete functionCall;
     delete expression;
-    
 }
 
 
@@ -80,8 +77,7 @@ SyntaxDivisionAssignment::~SyntaxDivisionAssignment()
  */
 SyntaxDivisionAssignment& SyntaxDivisionAssignment::operator=(const SyntaxDivisionAssignment& x) 
 {
-    
-    if ( this != &x ) 
+    if ( this != &x )
     {
         
         delete functionCall;
@@ -106,61 +102,63 @@ SyntaxDivisionAssignment& SyntaxDivisionAssignment::operator=(const SyntaxDivisi
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself
  */
 SyntaxDivisionAssignment* SyntaxDivisionAssignment::clone () const 
 {
-    
     return new SyntaxDivisionAssignment(*this);
 }
 
 
 /** 
  * Evaluate the content of this syntax element.
- * This will perform an Division assignment operation.
+ * This will perform a division assignment operation.
  */
 RevPtr<Variable> SyntaxDivisionAssignment::evaluateContent( Environment& env ) 
 {
-    
 #ifdef DEBUG_PARSER
-    printf( "Evaluating division assign expression\n" );
+    printf( "Evaluating division assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    RevPtr<Variable> theVariable = variable->createVariable( env );
-    
+    // Get variable from lhs. We use standard evaluation because the variable is
+    // implicitly on both sides (lhs and rhs) of this type of statement
+    RevPtr<Variable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in division assignment" );
+        throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
     
+    // Make sure that the variable is constant
+    if ( !theVariable->getRevObject().isConstant() )
+        throw RbException( "Invalid subtraction assignment to dynamic variable" );
+    
+    // Get a reference to the lhs value object
     const RevObject& lhs_value = theVariable->getRevObject();
     
-    
-    // Calculate the value of the rhs expression
+    // Evaluate the rhs expression
     const RevPtr<Variable>& rhs = expression->evaluateContent( env );
     if ( rhs == NULL )
-        throw RbException( "Invalid NULL variable returned by rhs expression in division assignment" );
+        throw RbException( "Invalid NULL variable returned by rhs expression in subtraction assignment" );
     
-    // fill the slot with the new variable
+    // Get a reference to the rhs value object
     const RevObject& rhs_value = rhs->getRevObject();
     
+    // Generate result of the multiplication
     RevObject *newValue = lhs_value.divide( rhs_value );
     
-    // set the value of the variable
+    // Fill the slot with the new variable
     theVariable->setRevObject( newValue );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
     return theVariable;
 }
 
 
 /**
- * Is this an assignment operation?
- * Sure it is.
+ * This is an assignment operation, so return true.
  *
  * \return     TRUE.
  */
@@ -170,13 +168,11 @@ bool SyntaxDivisionAssignment::isAssignment( void ) const
 }
 
 
-
 /** 
  * Print info about the syntax element 
  */
 void SyntaxDivisionAssignment::printValue(std::ostream& o) const 
 {
-    
     o << "SyntaxDivisionAssignment:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);

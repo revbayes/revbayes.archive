@@ -49,7 +49,7 @@ void Trace::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "summarize") {
         

@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevObject*                  execute(void);                                              //!< Execute function
+        RevPtr<Variable>            execute(void);                                              //!< Execute function
         
     };
     
@@ -72,7 +72,7 @@ RevLanguage::Func_rlvector<valType>* RevLanguage::Func_rlvector<valType>::clone(
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rlvector<valType>::execute( void ) {
     
     std::vector<typename valType::valueType*> params;
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -82,7 +82,7 @@ RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
     
     VectorRbPointer<valType> *theVector = new VectorRbPointer<valType>( params );
         
-    return theVector;
+    return new Variable( theVector );
 }
 
 

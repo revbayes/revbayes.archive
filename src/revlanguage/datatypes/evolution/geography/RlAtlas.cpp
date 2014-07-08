@@ -38,7 +38,7 @@ RlAtlas* RlAtlas::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     
 //    if (name == "nAreas")

@@ -30,7 +30,7 @@ Func_readAtlas* Func_readAtlas::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readAtlas::execute( void ) {
+RevPtr<Variable> Func_readAtlas::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -38,7 +38,7 @@ RevObject* Func_readAtlas::execute( void ) {
     RevBayesCore::TimeAtlasDataReader* tadr = new RevBayesCore::TimeAtlasDataReader(fn.getValue());
     RevBayesCore::TimeAtlas* atlas = new RevBayesCore::TimeAtlas(tadr);
 
-    return new RlAtlas(atlas);
+    return new Variable( new RlAtlas(atlas) );
 }
 
 
