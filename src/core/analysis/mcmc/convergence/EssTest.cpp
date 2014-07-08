@@ -1,6 +1,7 @@
 #include "EssTest.h"
 
 using namespace RevBayesCore;
+using namespace std;
 
 
 EssTest::EssTest(double t) : ConvergenceDiagnosticContinuous(),

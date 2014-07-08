@@ -126,6 +126,7 @@ RevObject* Simplex::executeMethod(std::string const &name, const std::vector<Arg
         }
 
         RevBayesCore::VectorIndexOperator<double>* f = new RevBayesCore::VectorIndexOperator<double>( this->value, index.getDagNode() );
+        
         RevBayesCore::DeterministicNode<double> *detNode = new RevBayesCore::DeterministicNode<double>("", f);
             
         RealPos* v = new RealPos( detNode );

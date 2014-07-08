@@ -4,6 +4,7 @@
 #include <cmath>
 
 using namespace RevBayesCore;
+using namespace std;
 
 HeidelbergerWelchTest::HeidelbergerWelchTest(double f, double f1, double f2) : ConvergenceDiagnosticContinuous(),
     frac1( f1 ),

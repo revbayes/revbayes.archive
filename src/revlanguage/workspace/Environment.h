@@ -64,9 +64,10 @@ namespace RevLanguage {
 
         // Regular functions
         bool                                addFunction(const std::string& name, Function* func);                               //!< Add function
+        void                                addReferenceVariable(const std::string& name, const RevPtr<const Variable>& refVar);//!< Add reference variable
         void                                addVariable(const std::string& name, VariableSlot* slot);                           //!< Add variable
-        void                                addVariable(const std::string& name, const RevPtr<Variable>& var);                   //!< Add variable
-        void                                addVariable(const std::string& name, RevObject* variable);                   //!< Add variable
+        void                                addVariable(const std::string& name, const RevPtr<Variable>& var);                  //!< Add variable
+        void                                addVariable(const std::string& name, RevObject* variable);                          //!< Add variable
         void                                addVariable(const std::string& name);                                               //!< Add variable
         void                                clear(void);                                                                        //!< clears the variable table
         void                                eraseVariable(const std::string& name);                                             //!< Erase a variable
@@ -76,7 +77,7 @@ namespace RevLanguage {
         std::string                         generateUniqueVariableName(void);                                                   //!< Automatically generate a unique variable name
 
         const Function&                     getFunction(const std::string& name);                                               //!< Get function copy
-        const Function&                     getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
+        Function&                           getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy
         const FunctionTable&                getFunctionTable(void) const;                                                       //!< Get function table (const)
         FunctionTable&                      getFunctionTable(void);                                                             //!< Get function table (non-const)
         const std::string&                  getName(size_t i) const;                                                            //!< Get name at position i.

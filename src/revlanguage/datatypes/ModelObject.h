@@ -21,6 +21,8 @@
 #include "MethodTable.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
+#include "UserFunctionArgs.h"
+#include "UserFunctionCall.h"
 
 namespace RevLanguage {
     
@@ -37,7 +39,6 @@ namespace RevLanguage {
        
         // Basic utility functions you have to override
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
-        ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
     
         // function you might want to overwrite
         virtual RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
@@ -46,9 +47,12 @@ namespace RevLanguage {
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
-        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;
+        RevBayesCore::TypedDagNode<rbType>*     getDagNode(void) const;                                                     //!< Get the internal DAG node
+        bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
+        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
@@ -67,7 +71,7 @@ namespace RevLanguage {
         ModelObject(RevBayesCore::TypedDagNode<rbType> *v);
         ModelObject(const ModelObject &v);
         
-        RevBayesCore::TypedDagNode<rbType>*     value;
+        RevBayesCore::TypedDagNode<rbType>*     dagNode;
         mutable MethodTable                     methods;
 
     private:
@@ -78,21 +82,24 @@ namespace RevLanguage {
 }
 
 
+#include "AbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "MemberFunction.h"
+#include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
 #include "TypedReferenceFunction.h"
+#include "TypedUserFunction.h"
 
 #include <cassert>
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject() : RevObject(), 
-    value( NULL ), 
+    dagNode( NULL ),
     methods() 
 {
     
@@ -104,11 +111,11 @@ RevLanguage::ModelObject<rbType>::ModelObject() : RevObject(),
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : RevObject(), 
-    value( new RevBayesCore::ConstantNode<rbType>("",v) ), 
+    dagNode( new RevBayesCore::ConstantNode<rbType>("",v) ),
     methods() 
 {
     // increment the reference count to the value
-    value->incrementReferenceCount();
+    dagNode->incrementReferenceCount();
     
 //    initMethods();
     
@@ -118,12 +125,12 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : RevObject(),
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) : RevObject(), 
-    value( v ), 
+    dagNode( v ),
     methods() 
 {
     
     // increment the reference count to the value
-    value->incrementReferenceCount();
+    dagNode->incrementReferenceCount();
     
     
 //    initMethods();
@@ -134,17 +141,17 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) : RevObject(), 
-    value( NULL ), 
+    dagNode( NULL ),
     methods() 
 {
     
-    if ( v.value != NULL ) 
+    if ( v.dagNode != NULL )
     {
         
-        value = v.value->clone();
+        dagNode = v.dagNode->clone();
         
         // increment the reference count to the value
-        value->incrementReferenceCount();
+        dagNode->incrementReferenceCount();
     }
     
 //    initMethods();
@@ -158,11 +165,11 @@ RevLanguage::ModelObject<rbType>::~ModelObject()
 {
     
     // free the old value
-    if ( value != NULL ) 
+    if ( dagNode != NULL )
     {
-        if ( value->decrementReferenceCount() == 0 ) 
+        if ( dagNode->decrementReferenceCount() == 0 )
         {
-            delete value;
+            delete dagNode;
         }
     }
 }
@@ -175,44 +182,27 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     {
         // free the memory
         // free the old value
-        if ( value != NULL ) 
+        if ( dagNode != NULL )
         {
-            if ( value->decrementReferenceCount() == 0 ) 
+            if ( dagNode->decrementReferenceCount() == 0 )
             {
-                delete value;
+                delete dagNode;
             }
             
-            value = NULL;
+            dagNode = NULL;
         }
         
         // create own copy
-        if ( v.value != NULL ) 
+        if ( v.dagNode != NULL )
         {
-            value = v.value->clone();
+            dagNode = v.dagNode->clone();
             
             // increment the reference count to the value
-            value->incrementReferenceCount();
+            dagNode->incrementReferenceCount();
         }
     }
     
     return *this;
-}
-
-
-template <typename rbType>
-RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
-    
-    RevBayesCore::TypedReferenceFunction< rbType >* f = new RevBayesCore::TypedReferenceFunction< rbType >(value);
-    RevBayesCore::DeterministicNode< rbType >* newVal = new RevBayesCore::DeterministicNode< rbType >( "", f );
-    
-    RevLanguage::ModelObject<rbType>* newObj = this->clone();
-
-    // replace value with deterministic reference and attempt memory management
-    newObj->value->decrementReferenceCount();
-    newObj->value = newVal;
-    newObj->value->incrementReferenceCount();
-
-    return newObj;
 }
 
 
@@ -224,12 +214,12 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::str
     {
         
         // check whether the variable is actually a stochastic node
-        if ( !value->isStochastic() ) 
+        if ( !dagNode->isStochastic() )
         {
             throw RbException("Only stochastic variables can be clamped.");
         }
-        // convert the node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+        // convert the pointer to the DAG node
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
         
         // get the observation
         const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -243,12 +233,12 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::str
     {
         
         // check whether the variable is actually a stochastic node
-        if ( !value->isStochastic() ) 
+        if ( !dagNode->isStochastic() )
         {
             throw RbException("You can only set the value for stochastic variables.");
         }
         // convert the node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
         
         // get the observation
         const rbType &observation = static_cast<const ModelObject<rbType> &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -262,12 +252,12 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::executeMethod(std::str
     {
         
         // check whether the variable is actually a stochastic node
-        if ( !value->isStochastic() ) 
+        if ( !dagNode->isStochastic() )
         {
             throw RbException("You can only set the value for stochastic variables.");
         }
-        // convert the node
-        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+        // convert the pointer to the DAG node
+        RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
                 
         // redraw the value
         stochNode->redraw();
@@ -285,12 +275,12 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::getMember(std::string 
 {
     
     // check whether the variable is actually a stochastic node
-    if ( value->isStochastic() ) 
+    if ( dagNode->isStochastic() )
     {
         if ( name == "prob" || name == "probability" ) 
         {
             // convert the node
-            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
             double lnProb = stochNode->getLnProbability();
             RevObject *p = RlUtils::RlTypeConverter::toReal( exp(lnProb) );
             
@@ -299,7 +289,7 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::getMember(std::string 
         else if ( name == "lnProb" || name == "lnProbability" ) 
         {
             // convert the node
-            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( value );
+            RevBayesCore::StochasticNode<rbType>* stochNode = static_cast<RevBayesCore::StochasticNode<rbType> *>( dagNode );
             double lnProb = stochNode->getLnProbability();
             RevObject *p = RlUtils::RlTypeConverter::toReal( lnProb );
             
@@ -350,7 +340,7 @@ const RevLanguage::MethodTable&  RevLanguage::ModelObject<rbType>::getMethods(vo
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
-    return value->getValue();
+    return dagNode->getValue();
 }
 
 
@@ -358,9 +348,16 @@ const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
 template <typename rbType>
 RevBayesCore::TypedDagNode<rbType>* RevLanguage::ModelObject<rbType>::getDagNode( void ) const {
     
-    return value;
+    return dagNode;
 }
 
+
+/** Make sure users understand that we have an internal DAG node */
+template <typename rbType>
+bool RevLanguage::ModelObject<rbType>::hasDagNode( void ) const {
+    
+    return true;
+}
 
 
 /**
@@ -374,7 +371,7 @@ bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const
     // if ( name == )
     
     // members that all stochastic variables have
-    if ( value->isStochastic() )  
+    if ( dagNode->isStochastic() )
     {
         if ( name == "prob" || name == "probability" ) 
         {
@@ -418,35 +415,68 @@ void RevLanguage::ModelObject<rbType>::initMethods( void )
 template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
     
-    return value->isConstant();
+    return dagNode->isConstant();
 }
 
 
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     
-    if ( value == NULL )
+    if ( dagNode == NULL )
     {
         throw RbException("Cannot convert a variable without value to a constant value.");
     }
     else
     {
         // @todo: we might check if this variable is already constant. Now we construct a new value anyways.
-        RevBayesCore::ConstantNode<rbType>* newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( value->getValue() ) );
-        value->replace(newVal);
+        RevBayesCore::ConstantNode<rbType>* newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(), RevBayesCore::Cloner<rbType, IsDerivedFrom<rbType, RevBayesCore::Cloneable>::Is >::createClone( dagNode->getValue() ) );
+        dagNode->replace(newNode);
         
         // delete the value if there are no other references to it.
-        if ( value->decrementReferenceCount() == 0 )
+        if ( dagNode->decrementReferenceCount() == 0 )
         {
-            delete value;
+            delete dagNode;
         }
         
-        value = newVal;
+        dagNode = newNode;
         
         // increment the reference counter
-        value->incrementReferenceCount();
+        dagNode->incrementReferenceCount();
     }
     
+}
+
+
+template <typename rbType>
+RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
+    
+    RevBayesLanguage::TypedReferenceFunction< rbType >* f = new RevBayesLanguage::TypedReferenceFunction< rbType >(dagNode);
+
+    RevBayesCore::DeterministicNode< rbType >* newNode = new RevBayesCore::DeterministicNode< rbType >( "", f );
+    
+    RevLanguage::ModelObject<rbType>* newObj = this->clone();
+    
+    // Replace DAG node with deterministic reference and attempt memory management
+    newObj->dagNode->decrementReferenceCount();
+    newObj->dagNode = newNode;
+    newObj->dagNode->incrementReferenceCount();
+    
+    return newObj;
+}
+
+
+/** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+{
+    TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
+    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, args );
+    
+    if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
+        delete dagNode;
+
+    dagNode = detNode;
+    dagNode->incrementReferenceCount();
 }
 
 
@@ -454,7 +484,7 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printStructure(std::ostream &o) const {
     
-    value->printStructureInfo(o);
+    dagNode->printStructureInfo(o);
 }
 
 
@@ -462,7 +492,7 @@ void RevLanguage::ModelObject<rbType>::printStructure(std::ostream &o) const {
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
     
-    value->printValue(o,"");
+    dagNode->printValue(o,"");
 }
 
 
@@ -471,9 +501,9 @@ void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
-    while ( value->getNumberOfChildren() > 0 ) 
+    while ( dagNode->getNumberOfChildren() > 0 )
     {
-        value->getFirstChild()->swapParent(value, newParent);
+        dagNode->getFirstChild()->swapParent(dagNode, newParent);
     }
     
 }
@@ -482,13 +512,13 @@ void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setName(std::string const &n) {
     
-    if ( value == NULL ) 
+    if ( dagNode == NULL )
     {
         throw RbException("Null-pointer-exception: Cannot set name of value.");
     } 
     else 
     {
-        value->setName( n );
+        dagNode->setName( n );
     }
     
 }
@@ -497,28 +527,28 @@ void RevLanguage::ModelObject<rbType>::setName(std::string const &n) {
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     
-    RevBayesCore::ConstantNode<rbType>* newVal;
+    RevBayesCore::ConstantNode<rbType>* newNode;
     
-    if ( value == NULL ) 
+    if ( dagNode == NULL )
     {
-        newVal = new RevBayesCore::ConstantNode<rbType>("",x);
+        newNode = new RevBayesCore::ConstantNode<rbType>("",x);
     } 
     else 
     {
-        newVal = new RevBayesCore::ConstantNode<rbType>(value->getName(),x);
-        value->replace(newVal);
+        newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(),x);
+        dagNode->replace(newNode);
 
-        if ( value->decrementReferenceCount() == 0 ) 
+        if ( dagNode->decrementReferenceCount() == 0 )
         {
-            delete value;
+            delete dagNode;
         }
         
     }
     
-    value = newVal;
+    dagNode = newNode;
     
     // increment the reference count to the value
-    value->incrementReferenceCount();
+    dagNode->incrementReferenceCount();
     
 }
 
@@ -529,23 +559,23 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
     assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newNode) != NULL );
     
     // Take care of the old value node
-    if ( value != NULL )
+    if ( dagNode != NULL )
     {
-        newNode->setName( value->getName() );
-        value->replace(newNode);
+        newNode->setName( dagNode->getName() );
+        dagNode->replace(newNode);
         
-        if ( value->decrementReferenceCount() == 0 )
+        if ( dagNode->decrementReferenceCount() == 0 )
         {
-            delete value;
+            delete dagNode;
         }
         
     }
     
     // Set the new value node
-    value = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
+    dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
     
     // Increment the reference count to the new value node
-    value->incrementReferenceCount();
+    dagNode->incrementReferenceCount();
     
 }
 

@@ -21,7 +21,8 @@ namespace RevBayesCore {
     class Taxon {
         
     public:
-        Taxon(const std::string &n, const std::string &sn="");                                                    //!< Constructor
+                                            Taxon(void);                                            //!< Default constructor required by revlanguage use
+                                            Taxon(const std::string &n, const std::string &sn="");  //!< Regular constructor
         
         // public methods
         const TimeAndDate&                  getDate(void) const;                        //!< Get the date info for this taxon.

@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, TimeAtlas* ta, bool uadj, bool uav, bool udd) : TypedFunction<GeographicDistanceRateModifier>( new GeographicDistanceRateModifier(ta, uadj, uav, udd) ), distancePower(dp)
+DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, const TimeAtlas* ta, bool uadj, bool uav, bool udd) : TypedFunction<GeographyRateModifier>( new GeographyRateModifier(ta, uadj, uav, udd) ), distancePower(dp)
 {
     // add the parameters as parents
     addParameter(distancePower);
@@ -22,7 +22,7 @@ DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const Typ
 }
 
 
-DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n) : TypedFunction<GeographicDistanceRateModifier>( n ), distancePower(n.distancePower)
+DistanceDependentDispersalFunction::DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n) : TypedFunction<GeographyRateModifier>( n ), distancePower(n.distancePower)
 {
     // no need to add parameters, happens automatically
     ;

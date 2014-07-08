@@ -16,7 +16,7 @@
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
+#include "NumUniqueInVector.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -130,7 +130,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	// nodeNus ~ DPP(g, cp, numnodes)
 	StochasticNode<std::vector<double> > *nodeNus = new StochasticNode<std::vector<double> >("Node.nu", new DirichletProcessPriorDistribution<double>(g, cp, (int)numNodes) );
 	// a deterministic node for calculating the number of parameter categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(nodeNus) );
+	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(nodeNus) );
 	
     // root rate
 	ConstantNode<double> *a          = new ConstantNode<double>("rootRate.alpha", new double(4.0) );

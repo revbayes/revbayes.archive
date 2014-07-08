@@ -96,9 +96,9 @@ void Model::printValue(std::ostream &o) const {
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
         if ( (*it)->getName() != "" )
-            o << (*it)->getName() << ":" << std::endl;
+            o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
         else
-            o << "<" << (*it) << ">:" << std::endl;
+            o << "<" << (*it) << "> :" << std::endl;
         (*it)->printStructureInfo(o);
         o << std::endl;
     }

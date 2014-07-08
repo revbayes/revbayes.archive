@@ -44,19 +44,19 @@ RevObject* RateMatrix::executeMethod(std::string const &name, const std::vector<
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
         
-        if (this->value->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
+        if (this->dagNode->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
             throw RbException("Index out of bounds in []");
         }
         
-        const std::vector<double>& element = this->value->getValue()[ size_t(index.getValue()) - 1];
+        const std::vector<double>& element = this->dagNode->getValue()[ size_t(index.getValue()) - 1];
         std::vector<double> elementVector;
-        for (size_t i=0; i < this->value->getValue().size(); ++i) {
+        for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }
         return new Vector<Real>( elementVector );
     }
     else if (name == "size") {
-        int n = (int)this->value->getValue().getNumberOfStates();
+        int n = (int)this->dagNode->getValue().getNumberOfStates();
         return new Natural(n);
     }
     
@@ -110,10 +110,10 @@ const MethodTable& RateMatrix::getMethods(void) const {
 }
 
 
-
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
 }
+

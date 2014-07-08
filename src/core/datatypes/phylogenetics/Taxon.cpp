@@ -5,6 +5,18 @@ using namespace RevBayesCore;
 
 
 /**
+ * Default constructor
+ */
+Taxon::Taxon(void) :
+    date(  ),
+    name( "" ),
+    speciesName( "" )
+{
+    
+}
+
+
+/**
  * Constructor simply initiating the object and its members.
  *
  * \param[in]    n     The name of the taxon.

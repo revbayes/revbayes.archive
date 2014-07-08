@@ -32,7 +32,7 @@ public:
     Func__add( void );
     
     // Basic utility functions
-    Func__add*                                       clone(void) const;                                                              //!< Clone the object
+    Func__add*                                      clone(void) const;                                                              //!< Clone the object
     static const std::string&                       getClassName(void);                                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -49,7 +49,7 @@ private:
 }
 
 #include "BinaryAddition.h"
-#include "DeterministicNode.h"
+#include "RlDeterministicNode.h"
 #include "StringUtilities.h"
 #include "TypedDagNode.h"
 
@@ -70,11 +70,12 @@ RevLanguage::Func__add<firstValType, secondValType, retType>* RevLanguage::Func_
 
 template <typename firstValType, typename secondValType, typename retType>
 RevLanguage::RevObject* RevLanguage::Func__add<firstValType, secondValType, retType>::execute() {
-    
+
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BinaryAddition<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinaryAddition<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
-    RevBayesCore::DeterministicNode<typename retType::valueType> *detNode = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
+    
+    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
     
     retType* value = new retType( detNode );
     

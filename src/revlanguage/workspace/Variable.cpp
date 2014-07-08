@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Variable, which is
- * used to manage variables in frames and processed argument lists.
- *
- * @brief Implementation of Variable
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-17, version 1.0
- *
- * $Id$
- */
-
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -28,73 +11,99 @@
 
 using namespace RevLanguage;
 
-/** Constructor of filled variable. */
+/** Constructor of empty variable with specified type. */
 Variable::Variable(const TypeSpec& ts) : 
     name(""),
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( ts )
+    revObjectTypeSpec( ts ),
+    isReferenceVariable( false ),
+    isControlVariable( false )
 {
     
 }
 
-/** Constructor of filled variable. */
+/** Constructor of filled variable (no type restrictions). */
 Variable::Variable(RevObject *v, const std::string &n) : 
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( RevObject::getClassTypeSpec() )
+    revObjectTypeSpec( RevObject::getClassTypeSpec() ),
+    isReferenceVariable( false ),
+    isControlVariable( false )
+{
+    setRevObject( v );
+}
+
+
+/** Constructor of reference variable (no type restrictions). */
+Variable::Variable(const RevPtr<const Variable>& refVar, const std::string &n) :
+    name( n ),
+    refCount( 0 ),
+    revObject( NULL ),
+    revObjectTypeSpec( RevObject::getClassTypeSpec() ),
+    isReferenceVariable( true ),
+    isControlVariable( false )
 {
     
-    setRevObject( v );
+    referencedVariable = refVar;
     
 }
 
 
-/** Constructor of filled variable. */
+/** Copy constructor */
 Variable::Variable(const Variable &v) : 
     name( v.name ), 
     refCount( 0 ),
     revObject( NULL ),
-    revObjectTypeSpec( v.revObjectTypeSpec )
+    revObjectTypeSpec( v.revObjectTypeSpec ),
+    isReferenceVariable( v.isReferenceVariable ),
+    isControlVariable( v.isControlVariable ),
+    referencedVariable( v.referencedVariable )
 {
-    
     if ( v.revObject != NULL )
-    {
         setRevObject( v.revObject->clone() );
-    }
-        
-    
+    else
+        revObject = NULL;
 }
 
 
 Variable::~Variable( void )
 {
-    delete revObject;
+    if ( !isReferenceVariable && revObject != NULL )
+        delete revObject;
 }
 
 
 Variable& Variable::operator=(const Variable &v)
 {
-    
     if ( this != &v )
     {
         
-        name = v.name;
-        revObjectTypeSpec = v.revObjectTypeSpec;
+        name                = v.name;
+        revObjectTypeSpec   = v.revObjectTypeSpec;
+        isReferenceVariable = v.isReferenceVariable;
+        isControlVariable   = v.isControlVariable;
+        referencedVariable  = v.referencedVariable;
         
-        delete revObject;
-        revObject = NULL;
-        
-        if ( v.revObject != NULL )
+        if ( isReferenceVariable )
+            revObject = NULL;
+        else
         {
-            setRevObject( v.revObject->clone() );
-        }
+            if ( revObject != NULL )
+            {
+                delete revObject;
+                revObject = NULL;
+            }
         
+            if ( v.revObject != NULL )
+                setRevObject( v.revObject->clone() );
+        }
     }
     
     return *this;
 }
+
 
 /* Clone variable and variable */
 Variable* Variable::clone( void ) const {
@@ -120,25 +129,17 @@ const std::string& Variable::getName( void ) const {
 
 
 /* Get the reference count for this instance. */
-size_t Variable::getReferenceCount(void) const {
-    
+size_t Variable::getReferenceCount(void) const
+{
     return refCount;
 }
 
 
 /* Get the value of the variable */
-const RevObject& Variable::getRevObject(void) const {
-
-    if (revObject == NULL)
-    {
-        return RevNullObject::getInstance();
-    }
-    
-    return *revObject;
-}
-
-/** Get the value of the variable */
-RevObject& Variable::getRevObject(void) {
+RevObject& Variable::getRevObject(void) const
+{
+    if ( isReferenceVariable )
+        return referencedVariable->getRevObject();
     
     if (revObject == NULL)
     {
@@ -150,59 +151,71 @@ RevObject& Variable::getRevObject(void) {
 
 
 /** Get the required type specs for values stored inside this variable */
-const TypeSpec& Variable::getRevObjectTypeSpec(void) const {
-    
+const TypeSpec& Variable::getRevObjectTypeSpec(void) const
+{
     return revObjectTypeSpec;
 }
 
 
 /* Increment the reference count for this instance. */
-void Variable::incrementReferenceCount( void ) const {
-    
+void Variable::incrementReferenceCount( void ) const
+{
     refCount++;
-    
 }
 
 
+/** Return the internal flag signalling whether the variable is currently a control variable */
+bool Variable::isControlVar(void) const
+{
+    return isControlVariable;
+}
+
+
+/** Return the internal flag signalling whether the variable is currently a reference variable */
+bool Variable::isReferenceVar(void) const
+{
+    return isReferenceVariable;
+}
+
+
+/** Make this variable a reference to another variable. Make sure we delete any object we held before. */
+void Variable::makeReference(const RevPtr<const Variable>& refVar)
+{
+    if ( !isReferenceVariable )
+    {
+        if ( revObject != NULL )
+            delete revObject;
+        
+        revObject = NULL;
+        isReferenceVariable = true;
+        isControlVariable = false;
+    }
+    
+    referencedVariable = refVar;
+}
+
 
 /* Print value of the variable variable */
-void Variable::printValue(std::ostream& o) const {
-    
+void Variable::printValue(std::ostream& o) const
+{
     if (revObject == NULL)
         o << "NULL";
     else
         revObject->printValue( o );
-    
 }
 
 
-/** Set variable */
-void Variable::setRevObject( RevObject *newValue ) {
-    
-    // change the old variable with the new variable in the parent and children
-    replaceRevObject( newValue );
-    
-}
-
-
-void Variable::setName(std::string const &n) {
-    
-    name = n;
-
-}
-
-
-/** Replace DAG node, only keep the children */
+/** Replace Rev object and update the DAG in the process. */
 void Variable::replaceRevObject( RevObject *newObj ) {
+    
+    assert ( isReferenceVariable == false );
     
     if (revObject != NULL)
     {
-        
         // I need to tell my children that I'm being exchanged
         revObject->replaceVariable( newObj );
         
         delete revObject;
-
     }
     
     revObject = newObj;
@@ -213,11 +226,56 @@ void Variable::replaceRevObject( RevObject *newObj ) {
 }
 
 
-/** We set here the required value type spec. */
-void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
+/** Check whether this variable is a control variable. Throw an error if the variable
+ *  is a reference variable. If so, you need to set the Rev object first, and then set
+ *  the control variable flag.
+ */
+void Variable::setControlVar(bool flag)
+{
+    if ( isReferenceVariable )
+        throw "A reference variable cannot be made a control variable";
     
-    revObjectTypeSpec = ts;
+    isControlVariable = flag;
+}
+
+
+/** Set the name of the variable */
+void Variable::setName(std::string const &n) {
+    
+    name = n;
+}
+
+
+/** Set the variable and update the DAG structure. */
+void Variable::setRevObject( RevObject *newValue )
+{
+    if ( isReferenceVariable )
+    {
+        isReferenceVariable = false;
+        referencedVariable = NULL;
+    }
+    
+    // Make sure default assignment is not a control variable assignment
+    isControlVariable = false;
+
+    // Replace the Rev object and make sure we update the DAG as necessary
+    replaceRevObject( newValue );
     
 }
 
+
+/** We set here the required value type spec. An error is thrown if the
+ *  current Rev object of the variable, if any, is not of the specified type.
+ */
+void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
+    
+    const RevObject& theObject = this->getRevObject();
+    if ( theObject != RevNullObject::getInstance() )
+    {
+        if ( !theObject.isTypeSpec( ts ) )
+            throw RbException( "Existing variable object is not of the required type" );
+    }
+    
+    revObjectTypeSpec = ts;
+}
 

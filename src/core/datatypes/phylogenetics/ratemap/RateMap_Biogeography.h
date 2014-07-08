@@ -10,7 +10,7 @@
 #define __rb_mlandis__RateMap_Biogeography__
 
 #include "RateMap.h"
-#include "GeographicDistanceRateModifier.h"
+#include "GeographyRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -54,9 +54,9 @@ namespace RevBayesCore {
         void                                        setHeterogeneousGainLossRates(const std::vector<std::vector<double> >& r);
         
         // other crazy stuff for BiogeographyRateMapFunction to handle
-        void                                        setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm);
-        void                                        setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm);
-        const GeographicDistanceRateModifier &      getGeographicDistanceRateModifier(void);
+        void                                        setGeographyRateModifier(const GeographyRateModifier& gdrm);
+        void                                        setGeographicDistancePowers(const GeographyRateModifier& gdrm);
+        const GeographyRateModifier &               getGeographyRateModifier(void);
         const std::vector<double>&                  getEpochs(void) const;
         
     private:
@@ -75,8 +75,8 @@ namespace RevBayesCore {
         double                                      distancePower;
         
         // geography models
-        bool                                        useGeographicDistanceRateModifier;
-        GeographicDistanceRateModifier*             geographicDistanceRateModifier;
+        bool                                        useGeographyRateModifier;
+        GeographyRateModifier*                      geographyRateModifier;
         std::vector<double>                         epochs;
         size_t                                      numEpochs;
         size_t                                      epochOffset;
