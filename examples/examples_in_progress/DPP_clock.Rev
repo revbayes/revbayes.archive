@@ -10,22 +10,27 @@ T <- readTrees("clock_test/true_calib_clk.tre")[1]
 ###### birth-death process priors #####
 #######################################
 
+## diversification = birth_rate - death_rate
 div_lambda <- 1.0 / 5.0	
-diversification ~ exponential(div_lambda) # d
+diversification ~ exponential(div_lambda) 
 
+## turnover = death_rate / birth_rate
 turn_alpha <- 2.0
 turn_beta <- 2.0
-turnover ~ beta(turn_alpha, turn_beta) # r
+turnover ~ beta(turn_alpha, turn_beta) 
 
+## Creating deterministic nodes for birth & death rates to match previous implmentation
+denom := abs(1.0 - turnover) # even though this will always be pos, this is needed for det nodes to be RealPos for cBDP
+birth_rate := diversification / (denom)
+death_rate := (turnover * diversification) / (denom)
+
+## putting a Normal prior on the age of the origin
 mean_origin <- treeHeight(T) * 1.5	
 stdv_origin <- 20.0
 origin_time ~ dnNorm(mean_origin, stdv_origin)
 rp_ot := abs(origin_time) # there's no truncated normal, and origin must be RealPos for cBDP
 
 rho <- 1.0
-denom := abs(1.0 - turnover) # even though this will always be pos, this is needed for det nodes to be RealPos for cBDP
-birth_rate := diversification / (denom)
-death_rate := (turnover * diversification) / (denom)
 
 # get some useful variables from the data
 n_taxa <- D.ntaxa()
@@ -33,7 +38,6 @@ n_sites <- D.nchar()[1]
 names <- D.names()
 
 # tree from birth-death process 
-### is/can this function be overloaded draw node ages from BDP on a given topology 
 tau ~ cBDP(lambda=birth_rate, mu=death_rate, origin=rp_ot, rho=rho, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
 
 
@@ -46,7 +50,6 @@ tau.setValue(T)
 ####################################
 
 n_branches <- 2 * n_taxa - 2
-##n_branches <- 2 * 18 - 2
 
 ## concentration parameter ##
 pr_mean_cats <- 3.0
@@ -60,16 +63,21 @@ g0_a <- 4.0
 g0_b <- 8.0
 g0 <- dnGamma(g0_a, g0_b)
 
-branch_rates ~ dpp(concentration=concentration, baseDistribution=g0, numElements=n_branches) ## works, I think! yay!
+branch_rates ~ dpp(concentration=concentration, baseDistribution=g0, numElements=n_branches) 
+
+## a deterministic node for the number of DPP categories
+## this is needed for the Gibbs move on the concentration
 n_cats := numUniqueInVector(branch_rates) 
 
-scale_rate := 1.0 / tree_height
-
-RealPos branch_subrates
+## create a deterministic node of scaled branch_rates
+## this rescales the time units of the time tree so that the 
+### branch rates aren't so tiny 
+scale_rate <- 0.01
 for (i in 1:branch_rates.size()) {
 	branch_subrates[i] := branch_rates[i] * scale_rate
 }
 
+## a statistic to monitor
 mean_brate := mean(branch_rates) ## Mean func
 
 
@@ -85,30 +93,26 @@ er ~ dirichlet(e)
 Q := gtr(er,pi)
 
 # the sequence evolution model
-seq ~ substModel(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
+phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
 
 # attach the data
-seq.clamp(D)
+phySeq.clamp(D)
 
 
-moves[1] <- mScale(diversification,lambda=1.0,tune=true,weight=1.0)
-moves[2] <- mScale(turnover,lambda=1.0,tune=true,weight=2.0)
-moves[3] <- mNodeTimeSlideUniform(tau, weight=30.0)
-moves[4] <- mRootTimeSlide(tau, delta=50.0, tune=true, weight=10.0)
+moves[1] <- mvScale(diversification,lambda=1.0,tune=true,weight=1.0)
+moves[2] <- mvScale(turnover,lambda=1.0,tune=true,weight=2.0)
+moves[3] <- mvNodeTimeSlideUniform(tau, weight=30.0)
+moves[4] <- mvRootTimeSlide(tau, delta=50.0, tune=true, weight=10.0)
 
-### Need to add to Rev
-moves[5] <- mOriginTimeSlide(origin_time, tau, delta=50.0, tune=true, weight=10.0)
-###
+moves[5] <- mvOriginTimeSlide(origin_time, tau, delta=50.0, tune=true, weight=10.0)
 
-moves[6] <- mSimplexElementScale(pi, alpha=100.0, tune=true, weight=4.0)
-moves[7] <- mSimplexElementScale(er, alpha=100.0, tune=true, weight=6.0)
+moves[6] <- mvSimplexElementScale(pi, alpha=100.0, tune=true, weight=4.0)
+moves[7] <- mvSimplexElementScale(er, alpha=100.0, tune=true, weight=6.0)
 
 
-### Need to add to Rev
-moves[8] <- mDPPScaleCatValsMove(branch_rates, log(2.0), 2.0)
-moves[9] <- mDPPAllocateAuxGibbsMove(branch_rates, 4, 2.0)
-moves[10] <- mDPPGibbsConcentrationMove(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
-###
+moves[8] <- mvDPPScaleCatVals(branch_rates, ln(2.0), 2.0)
+moves[9] <- mvDPPAllocateAuxGibbs(branch_rates, 4, 2.0)
+moves[10] <- mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
 
 mymodel <- model(pi)
 
@@ -116,7 +120,10 @@ monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10, separato
 monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, separator = "\t", tau)
 monitors[3] <- screenmonitor(printgen=10, separator = "  ", pi)
 
+### This works up until this point
 mymcmc <- mcmc(mymodel, monitors, moves)
+#### when this line above is executed, it returns this error:
+### Error:	Cannot find node with name 'branch_rates' in the model but received a move working on it.
 
 mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(generations=10000)
