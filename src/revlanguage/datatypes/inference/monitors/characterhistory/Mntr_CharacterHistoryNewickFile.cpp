@@ -181,7 +181,7 @@ void Mntr_CharacterHistoryNewickFile::setConstMemberVariable(const std::string& 
         type = var;
     }
     else if ( name == "style" ) {
-        counts = var;
+        style = var;
     }
     else if ( name == "append" ) {
         append = var;
