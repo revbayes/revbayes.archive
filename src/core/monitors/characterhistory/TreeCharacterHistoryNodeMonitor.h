@@ -415,13 +415,13 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::monitor(
         
         if (showNumEvents)
         {
-            for (size_t s = 0; s < numStates; s++)
+            for (unsigned s = 0; s < numStates; s++)
             {
                 outStream << separator << buildNumEventsForTreeStr(s);
             }
             for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
             {
-                for (size_t s = 0; s < numStates; s++)
+                for (unsigned s = 0; s < numStates; s++)
                 {
                     TopologyNode* nd = &tree->getValue().getNode(i);
                     if (nd->isRoot())

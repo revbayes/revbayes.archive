@@ -85,6 +85,8 @@
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
 #include "Mntr_Screen.h"
+#include "Mntr_CharacterHistoryNewickFile.h"
+#include "Mntr_CharacterHistoryNhxFile.h"
 
 /// Moves ///
 
@@ -374,10 +376,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
-        addTypeWithConstructor("mnExtNewick", new Mntr_ExtendedNewickFile());
-        addTypeWithConstructor("mnFile",      new Mntr_File());
-        addTypeWithConstructor("mnModel",     new Mntr_Model());
-        addTypeWithConstructor("mnScreen",    new Mntr_Screen());
+        addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
+        addTypeWithConstructor("mnFile",                new Mntr_File());
+        addTypeWithConstructor("mnModel",               new Mntr_Model());
+        addTypeWithConstructor("mnScreen",              new Mntr_Screen());
+        addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
+        addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
 
         // Nonstandard constructor names (for backward compatibility)
         addTypeWithConstructor("extNewickmonitor", new Mntr_ExtendedNewickFile());
