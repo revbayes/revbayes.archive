@@ -21,3 +21,4 @@ boost_1_55_0/tools/build/v2/engine/bin.macosxx86_64/bjam
 projects/xcode/revbayes.xcodeproj
 downloads
 .DS_Store
+TSWLatexianTemp_*
