@@ -1,32 +1,11 @@
-/**
- * @file
- * This file contains the implementation of RateMatrix_Blosum62, which is
- * class that holds a rate matrix in RevBayes.
- *
- * @brief Implementation of RateMatrix_Blosum62
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-12-11 14:46:24 +0100 (Tue, 11 Dec 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-08-27, version 1.0
- * @interface Mcmc
- * @package distributions
- *
- * $Id: RateMatrix_Blosum62.cpp 1921 2012-12-11 13:46:24Z hoehna $
- */
-
 #include "RateMatrix_Blosum62.h"
-#include "RbException.h"
-#include "RbMathMatrix.h"
-#include "TransitionProbabilityMatrix.h"
 
 
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 ){
+RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
+{
     
     MatrixReal &m = *theRateMatrix;
     
@@ -146,21 +125,18 @@ RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_Blosum62::RateMatrix_Blosum62(const RateMatrix_Blosum62& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
-RateMatrix_Blosum62::~RateMatrix_Blosum62(void) {
+RateMatrix_Blosum62::~RateMatrix_Blosum62(void)
+{
     
 }
 
 
 
 
-RateMatrix_Blosum62* RateMatrix_Blosum62::clone( void ) const {
+RateMatrix_Blosum62* RateMatrix_Blosum62::clone( void ) const
+{
+
     return new RateMatrix_Blosum62( *this );
 }
 

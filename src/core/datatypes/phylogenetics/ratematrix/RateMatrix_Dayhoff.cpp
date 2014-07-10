@@ -145,12 +145,6 @@ RateMatrix_Dayhoff::RateMatrix_Dayhoff( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_Dayhoff::RateMatrix_Dayhoff(const RateMatrix_Dayhoff& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_Dayhoff::~RateMatrix_Dayhoff(void) {
     
