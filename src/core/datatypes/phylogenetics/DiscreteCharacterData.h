@@ -45,6 +45,7 @@ namespace RevBayesCore {
         void                                                addTaxonData(const AbstractDiscreteTaxonData &obs);                         //!< Add discrete taxon data
         void                                                addTaxonData(const DiscreteTaxonData<charType> &obs);                       //!< Add taxon data
         MatrixReal                                          computeStateFrequencies(void) const;
+        void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                                excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                                excludeTaxon(std::string& s);                                               //!< Exclude taxon
@@ -65,6 +66,7 @@ namespace RevBayesCore {
         const DiscreteTaxonData<charType>&                  getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
         const std::vector<std::string>&                     getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                                  getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        void                                                includeCharacter(size_t i);                                                 //!< Include character
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
         bool                                                isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded
@@ -295,6 +297,22 @@ RevBayesCore::MatrixReal RevBayesCore::DiscreteCharacterData<charType>::computeS
     }
     
     return m;
+}
+
+
+/**
+ * Exclude all characters.
+ * We don't actually delete the characters but mark them for exclusion.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::excludeAllCharacters(void)
+{
+    
+    for (size_t i = 0; i < getTaxonData( 0 ).size(); ++i)
+    {
+        deletedCharacters.insert( i );
+    }
+    
 }
 
 
@@ -702,6 +720,32 @@ const std::string& RevBayesCore::DiscreteCharacterData<charType>::getTaxonNameWi
     
     return sequenceNames[idx];
 }
+
+
+/**
+ * Include a character.
+ * Since we didn't actually deleted the character but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The position of the character that will be included.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::includeCharacter(size_t i)
+{
+    
+    if (i >= getTaxonData( 0 ).size() )
+    {
+        std::stringstream o;
+        o << "Only " << getNumberOfCharacters() << " characters in matrix";
+        throw RbException( o.str() );
+    }
+    
+    
+    deletedCharacters.erase( i );
+    
+}
+
+
 
 
 
