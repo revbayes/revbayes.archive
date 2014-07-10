@@ -65,7 +65,7 @@ moves[mv_it++] <- mvNNI(topology, weight=1.0)
 # create a random variable for each branch length using a for loop
 for (i in 1:n_branches) {
   # We use here the exponential distribution with rate 1.0 as the branch length prior
-  br_lens[i] ~ exponential(1.0)
+  br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[mv_it++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 

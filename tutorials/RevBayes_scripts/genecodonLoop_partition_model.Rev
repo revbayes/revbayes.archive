@@ -69,17 +69,17 @@ n_branches <- 2 * n_species - 2
 mv_idx <- 0
 for (i in 1:n_parts){
 
-	er_prior[i] <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+	er_prior[i] <- v(1,1,1,1,1,1)
 	er[i] ~ dnDirichlet(er_prior[i])
-	moves[mv_idx++] <- mvSimplexElementScale(er[i], alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+	moves[mv_idx++] <- mvSimplexElementScale(er[i], alpha=10.0, tune=true, weight=3.0)
 
-	sf_prior[i] <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+	sf_prior[i] <- v(1,1,1,1)
 	sf[i] ~ dnDirichlet(sf_prior[i])
-	moves[mv_idx++] <- mvSimplexElementScale(sf[i], alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+	moves[mv_idx++] <- mvSimplexElementScale(sf[i], alpha=10.0, tune=true, weight=2.0) 
 
-	Q[i] := gtr(er[i],sf[i])                                                                                # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+	Q[i] := gtr(er[i],sf[i])
 
-	shape_prior[i] <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+	shape_prior[i] <- 0.05
 	shape[i] ~ dnExponential( shape_prior[i] )
 
 	# construct the gamma distributed rate variables
