@@ -460,13 +460,13 @@ Now we have specified a simple, single-partition analysis---each parameter of th
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > pow_p.run(generations=1000)  \end{lstlisting}\end{snugshade*}}
 
-{\tt \small \begin{snugshade*}\begin{lstlisting}RevBayes > ss <- steppingStoneSampler(file="pow_posterior_uniform.out", powerColumnName="power", likelihoodColumnName="likelihood", delimiter="	")\end{lstlisting}\end{snugshade*}}
+{\tt \small \begin{snugshade*}\begin{lstlisting}RevBayes > ss <- steppingStoneSampler(file="pow_posterior_uniform.out", powerColumnName="power", likelihoodColumnName="likelihood")\end{lstlisting}\end{snugshade*}}
 
 Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ss} variable and record the value in table \ref{ssTable}.
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > ss.marginal() \end{lstlisting}\end{snugshade*}}
 
 
-{\tt \small \begin{snugshade*}\begin{lstlisting}RevBayes > ps <- pathSampler(file="pow_posterior_uniform.out", powerColumnName="power", likelihoodColumnName="likelihood", delimiter="	")\end{lstlisting}\end{snugshade*}}
+{\tt \small \begin{snugshade*}\begin{lstlisting}RevBayes > ps <- pathSampler(file="pow_posterior_uniform.out", powerColumnName="power", likelihoodColumnName="likelihood")\end{lstlisting}\end{snugshade*}}
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > ps.marginal() \end{lstlisting}\end{snugshade*}}
 
@@ -487,35 +487,38 @@ This requires that we first specify the data partitions corresponding to these t
 
 \textbf{\textit{Clear Workspace and Reload Data}}
 
+\taha{this time reading from 2 different files}
+
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > clear()
-RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]\end{lstlisting}\end{snugshade*}}
+\end{lstlisting}\end{snugshade*}}
 
-\textbf{\textit{Specify the Parameters for atpB Gene}}
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > filenames <- v("data/conifer_atpb.nex", "data/conifer_rbcL.nex")\end{lstlisting}\end{snugshade*}}
 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data_atpB <- data
-RevBayes > data_atpB.excludeCharacter(1395:2659)\end{lstlisting}\end{snugshade*}}
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_parts <- filenames.size()\end{lstlisting}\end{snugshade*}}
+
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > for (i in 1:n_parts){RevBayes +    data[i] <- readCharacterData(filenames[i])[1]RevBayes + }\end{lstlisting}\end{snugshade*}}
+
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data[1].ntaxa()
+RevBayes > names <- data[1].names()
+RevBayes > n_branches <- 2 * n_species - 2\end{lstlisting}\end{snugshade*}}
+
+\textbf{\textit{Specify the Parameters by Looping Over Partitions}}
+
 
 {\tt \small \begin{snugshade*}\begin{lstlisting}
-# Exchangeability rates #er_prior_atpB <- v(1,1,1,1,1,1)                                                                      er_atpB ~ dnDirichlet(er_prior_atpB)moves[1] <- mvSimplexElementScale(er_atpB, alpha=10, tune=true, weight=3)
+mv_it <- 0for (i in 1:n_parts){
+  ## index i=1 : atpB gene
+  ## index i=2 : rbcL gene
+  # Exchangeability rates #  er_prior[i] <- v(1,1,1,1,1,1)  er[i] ~ dnDirichlet(er_prior[i])  moves[mv_it++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3)   # Stationary frequencies #  sf_prior[i] <- v(1,1,1,1)  sf[i] ~ dnDirichlet(sf_prior[i])  moves[mv_it++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2)   # GTR Rate Matrix (deterministic node) #  Q[i] := gtr(er[i],sf[i])   # Gamma-dist site rates #  shape_prior[i] <- 0.05   shape[i] ~ dnExponential( shape_prior[i] )  for ( j in 1:4 ) {    gamma_rates[i][j] := qgamma( i*0.25 - 0.125, shape[i], shape[i] )  }  norm_gamma_rates[i] := normalize( gamma_rates[i] )  moves[mv_it++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=1.0)}\end{lstlisting}\end{snugshade*}}
 
-# Stationary frequencies #sf_prior_atpB <- v(1,1,1,1)   sf_atpB ~ dnDirichlet(sf_prior_atpB)moves[2] <- mvSimplexElementScale(sf_atpB, alpha=10, tune=true, weight=2)# GTR Rate Matrix (deterministic node) # Q_atpB := gtr(er_atpB,sf_atpB)                                                                                # Gamma-dist site rates #shape_prior_atpB <- 0.05                                                                             shape_atpB ~ dnExponential( shape_prior_atpB )for ( i in 1:4 ) {  gamma_rates_atpB[i] := qgamma( i*0.25 - 0.125, shape_atpB, shape_atpB )}norm_gamma_rates_atpB := normalize( gamma_rates_atpB )moves[3] <- mvScale(shape_atpB, lambda=1.0, tune=true, weight=1.0)\end{lstlisting}\end{snugshade*}}
-
-\textbf{\textit{Specify the Parameters for rbcL Gene}}
-
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data_rbcL <- dataRevBayes > data_rbcL.excludeCharacter(1:1394)\end{lstlisting}\end{snugshade*}}
-
-{\tt \small \begin{snugshade*}\begin{lstlisting}# Exchangeability rates #er_prior_rbcL <- v(1,1,1,1,1,1)                                                                      er_rbcL ~ dnDirichlet(er_prior_rbcL)moves[1] <- mvSimplexElementScale(er_rbcL, alpha=10, tune=true, weight=3)# Stationary frequencies #sf_prior_rbcL <- v(1,1,1,1)   sf_rbcL ~ dnDirichlet(sf_prior_rbcL)moves[2] <- mvSimplexElementScale(sf_rbcL, alpha=10, tune=true, weight=2)# GTR Rate Matrix (deterministic node) # Q_rbcL := gtr(er_rbcL,sf_rbcL)                                                                                # Gamma-dist site rates #shape_prior_rbcL <- 0.05                                                                             shape_rbcL ~ dnExponential( shape_prior_rbcL )for ( i in 1:4 ) {  gamma_rates_rbcL[i] := qgamma( i*0.25 - 0.125, shape_rbcL, shape_rbcL )}norm_gamma_rates_rbcL := normalize( gamma_rates_rbcL )moves[3] <- mvScale(shape_rbcL, lambda=1.0, tune=true, weight=1.0)\end{lstlisting}\end{snugshade*}}
 
 \textbf{\textit{Uniform Topology and Branch Lengths}}
 
-{\tt \begin{snugshade*}\begin{lstlisting}# Uniform Topology #topology ~ uniformTopology(n_species, names)moves[7] <- mvNNI(topology, weight=1.0)# Branch lengths #for (i in 1:n_branches) {  br_lens[i] ~ exponential(1.0)  moves[i+7] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) }# Create the phylogeny by combining topology & branch lengthsphylogeny := treeAssembly(topology, br_lens)\end{lstlisting}\end{snugshade*}}
+{\tt \begin{snugshade*}\begin{lstlisting}# Uniform Topology #topology ~ uniformTopology(n_species, names)moves[mv_it++] <- mvNNI(topology, weight=1.0)# Branch lengths #for (i in 1:n_branches) {  br_lens[i] ~ exponential(1.0)  moves[mv_it++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) }# Create the phylogeny by combining topology & branch lengthsphylogeny := treeAssembly(topology, br_lens)\end{lstlisting}\end{snugshade*}}
 
 \textbf{\textit{Putting it All Together}}
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > phyloSeq_atpB ~ phyloCTMC(tree=phylogeny, Q=Q_atpB, siteRates=norm_gamma_rates_atpB, nSites=1394, type="DNA")\end{lstlisting}\end{snugshade*}}
+{\tt \begin{snugshade*}\begin{lstlisting}for (i in 1:n_parts){  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], siteRates=norm_gamma_rates[i], nSites=data[i].nchar()[1], type="DNA")  phyloSeq[i].clamp(data[i])}\end{lstlisting}\end{snugshade*}}
 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > phyloSeq_rbcL ~ phyloCTMC(tree=phylogeny, Q=Q_rbcL, siteRates=norm_gamma_rates_rbcL, nSites=1265, type="DNA")\end{lstlisting}\end{snugshade*}}
-
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > phyloSeq_atpB.clamp(data_atpB)RevBayes > phyloSeq_rbcL.clamp(data_rbcL)\end{lstlisting}\end{snugshade*}}
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > mymodel <- model(topology)\end{lstlisting}\end{snugshade*}}
 
@@ -612,7 +615,7 @@ Use Table \ref{ssTable} to summarize the marginal log-likelihoods estimated usin
 \hline
 \multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{Marginal lnL estimates}} \\ 
 \cline{3-5}
-\multicolumn{1}{l}{\textbf{Partition}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Harmonic mean}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} \\ 
+\multicolumn{1}{l}{\textbf{Partition}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
 \hline
 \ref{secUnif} uniform ($M_1$) & \hspace{15mm} & \TextField[name=m1,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml2,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
 \hline
