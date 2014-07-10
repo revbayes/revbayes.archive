@@ -12,8 +12,8 @@
 ### Load data file and uniform partition model
 source("data/uniform_partition_model.Rev")
 
-monitors[1] <- modelmonitor(filename="conifer_uniform.log",printgen=100, separator = "	")
-monitors[2] <- filemonitor(filename="conifer_uniform.trees",printgen=100, separator = "	", phylogeny)
+monitors[1] <- modelmonitor(filename="output/conifer_uniform.log",printgen=100, separator = "	")
+monitors[2] <- filemonitor(filename="output/conifer_uniform.trees",printgen=100, separator = "	", phylogeny)
 monitors[3] <- screenmonitor(printgen=10, separator = "	", sf, shape)
  
 mymcmc <- mcmc(mymodel, monitors, moves)
@@ -23,12 +23,10 @@ mymcmc.run(generations=100000)
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
-treetrace <- readTreeTrace("conifer_uniform.trees")
+treetrace <- readTreeTrace("output/conifer_uniform.trees")
 # and get the summary of the tree trace
 treetrace.summarize()
 
-mapTree(treetrace,"conifer_uniform.tree")
+mapTree(treetrace,"output/conifer_uniform.tree")
 
 
-# quit RevBayes. DANGER!!! ;)
-q()
