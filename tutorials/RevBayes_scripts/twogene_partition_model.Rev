@@ -1,0 +1,132 @@
+################################################################################
+#
+# RevBayes Exercise: Calculating Marginal Liklihoods and Bayes Factors to test
+#  data partitioning strategies
+# 
+# This file: Specifies the full model parameters and moves for a 2-gene
+#				partition model
+#
+# authors: Tracy A. Heath, Michael Landis, and Sebastian Hoehna
+#
+################################################################################
+
+
+# read in the character data
+data <- readCharacterData("data/conifer_dna.nex")[1]
+
+# Get some useful variables from the data. We need these later on.
+n_species <- data.ntaxa()
+names <- data.names()
+n_branches <- 2 * n_species - 2
+
+
+#####################
+# Subsitution Model #
+#   atpB = 1 - 1394   #
+#####################
+
+data_atpB <- data
+data_atpB.excludeCharacter(1395:2659)
+
+
+er_prior_atpB <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+er_atpB ~ dnDirichlet(er_prior_atpB)
+moves[1] <- mvSimplexElementScale(er_atpB, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+
+
+sf_prior_atpB <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+sf_atpB ~ dnDirichlet(sf_prior_atpB)
+moves[2] <- mvSimplexElementScale(sf_atpB, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+
+#### create a deterministic variable for the rate matrix ####
+Q_atpB := gtr(er_atpB,sf_atpB)                                                                                # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+
+
+shape_prior_atpB <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+shape_atpB ~ dnExponential( shape_prior_atpB )
+
+# construct the gamma distributed rate variables
+for ( i in 1:4 ) {
+  gamma_rates_atpB[i] := qgamma( i*0.25 - 0.125, shape_atpB, shape_atpB )
+}
+# Normalize the rates to keep the parameters identifiable
+norm_gamma_rates_atpB := normalize( gamma_rates_atpB )
+
+# add moves for the stationary frequencies, exchangeability rates and the shape parameter
+moves[3] <- mvScale(shape_atpB, lambda=1.0, tune=true, weight=1.0)
+
+
+
+
+#####################
+# Subsitution Model #
+#   rbcL 1395-2659   #
+#####################
+
+data_rbcL <- data
+data_rbcL.excludeCharacter(1:1394)
+
+
+er_prior_rbcL <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+er_rbcL ~ dnDirichlet(er_prior_rbcL)
+moves[4] <- mvSimplexElementScale(er_rbcL, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+
+
+sf_prior_rbcL <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+sf_rbcL ~ dnDirichlet(sf_prior_rbcL)
+moves[5] <- mvSimplexElementScale(sf_rbcL, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+
+
+#### create a deterministic variable for the rate matrix ####
+Q_rbcL := gtr(er_rbcL,sf_rbcL)                                                                                # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+
+
+shape_prior_rbcL <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+shape_rbcL ~ dnExponential( shape_prior_rbcL )
+
+
+# construct the gamma distributed rate variables
+for ( i in 1:4 ) {
+  gamma_rates_rbcL[i] := qgamma( i*0.25 - 0.125, shape_rbcL, shape_rbcL )
+}
+# Normalize the rates to keep the parameters identifiable
+norm_gamma_rates_rbcL := normalize( gamma_rates_rbcL )
+
+# add moves for the stationary frequencies, exchangeability rates and the shape parameter
+moves[6] <- mvScale(shape_rbcL, lambda=1.0, tune=true, weight=1.0)
+
+
+
+# Specify a uniform topology prior
+topology ~ uniformTopology(n_species, names)
+
+# moves on the tree
+moves[7] <- mvNNI(topology, weight=1.0)
+
+
+#### Specify a prior and moves on the branch lengths #### 
+# create a random variable for each branch length using a for loop
+for (i in 1:n_branches) {
+  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  br_lens[i] ~ exponential(1.0)
+  
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[i+7] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
+}
+
+
+# Build the tree by combining the topology with the branch length.
+phylogeny := treeAssembly(topology, br_lens)
+
+
+
+# the sequence evolution model
+phyloSeq_atpB ~ phyloCTMC(tree=phylogeny, Q=Q_atpB, siteRates=norm_gamma_rates_atpB, nSites=1394, type="DNA")
+phyloSeq_rbcL ~ phyloCTMC(tree=phylogeny, Q=Q_rbcL, siteRates=norm_gamma_rates_rbcL, nSites=1265, type="DNA")
+
+# clamp the data
+phyloSeq_atpB.clamp(data_atpB)
+phyloSeq_rbcL.clamp(data_rbcL)
+
+mymodel <- model(topology)
+

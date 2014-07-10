@@ -1,0 +1,30 @@
+################################################################################
+#
+# RevBayes Exercise: Calculating Marginal Liklihoods and Bayes Factors to test
+#  data partitioning strategies
+# 
+# This file: computes the power posterior and calculates marginal likelihoods
+#            for the two gene partition model specified in twogene_partition_model.Rev
+#
+# authors: Tracy A. Heath, Michael Landis, and Sebastian Hoehna
+#
+################################################################################
+
+### Load data file and uniform partition model
+source("data/twogene_partition_model.Rev")
+
+### Compute power posterior distributions
+pow_p <- powerPosterior(mymodel, moves, "pow_posterior_twogene.out", cats=50) 
+pow_p.burnin(generations=1000,tuningInterval=100)
+pow_p.run(generations=1000)  
+
+### Use stepping-stone sampling to calculate marginal likelihoods
+ss <- steppingStoneSampler(file="pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood", delimiter="	")
+ss.marginal() 
+
+### Use path-sampling to calculate marginal likelihoods
+ps <- pathSampler(file="pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood", delimiter="	")
+ps.marginal() 
+
+# quit RevBayes. DANGER!!! ;)
+q()
