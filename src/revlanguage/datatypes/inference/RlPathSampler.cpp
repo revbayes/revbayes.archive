@@ -85,7 +85,7 @@ const MemberRules& PathSampler::getMemberRules(void) const {
         samplerMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
         samplerMemberRules.push_back( new ArgumentRule("powerColumnName", true, RlString::getClassTypeSpec() ) );
         samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", true, RlString::getClassTypeSpec() ) );
-        samplerMemberRules.push_back( new ArgumentRule("delimmiter", true, RlString::getClassTypeSpec(), new RlString( "\t" ) ) );
+        samplerMemberRules.push_back( new ArgumentRule("delimiter", true, RlString::getClassTypeSpec(), new RlString( "\t" ) ) );
         
         rulesSet = true;
     }
@@ -144,7 +144,7 @@ void PathSampler::setConstMemberVariable(const std::string& name, const RevPtr<c
     {
         filename = var;
     }
-    else if ( name == "delimmiter")
+    else if ( name == "delimiter")
     {
         delimmiter = var;
     }
