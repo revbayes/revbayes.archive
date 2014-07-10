@@ -283,6 +283,7 @@
 #include "Func__mod.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
+#include "Func__vectorIndexOperator.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -850,6 +851,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         // exponentiation
         addFunction( "_exp",      new Func_power() );
+        
+        // index operator '[]'
+        addFunction( "[]",         new Func__vectorIndexOperator<Natural>()                    );
+        addFunction( "[]",         new Func__vectorIndexOperator<Integer>()                    );
+        addFunction( "[]",         new Func__vectorIndexOperator<Real>()                       );
+        addFunction( "[]",         new Func__vectorIndexOperator<RealPos>()                    );
+        addFunction( "[]",         new Func__vectorIndexOperator<RlBoolean>()                  );
+        addFunction( "[]",         new Func__vectorIndexOperator<Clade>()                      );
+        addFunction( "[]",         new Func__vectorIndexOperator<RlString>()                   );
+        addFunction( "[]",         new Func__vectorIndexOperator<TimeTree>()                   );
         
 
         /* Input/output functions (in folder "functions/io") */
