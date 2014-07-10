@@ -91,9 +91,9 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
             {
                 
                 if (this->dagNode->getValue().isHomologyEstablished() == true)
-                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
                 else
-                    numChar->push_back( Natural( this->dagNode->getValue().getTaxonData(i).getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
                 
             }
             
