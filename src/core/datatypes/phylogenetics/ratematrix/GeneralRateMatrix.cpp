@@ -1,11 +1,3 @@
-//
-//  GeneralRateMatrix.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/25/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "GeneralRateMatrix.h"
 
 #include "RbMathMatrix.h"
