@@ -73,7 +73,7 @@ This tutorial assumes that you have already downloaded, compiled, and installed 
 We also recommend that---if you are working on a Unix machine---you put the {\tt rb} binary in your path.
 
 For the exercises outlined in this tutorial, we will use RevBayes interactively by typing commands in the command-line console.
-The format of this exercise uses \colorbox{shadecolor}{\tt lavender blush colored shaded boxes} to delineate important steps. 
+The format of this exercise uses \colorbox{shadecolor}{\tt lavender blush shaded boxes} to delineate important steps. 
 The various RevBayes commands and syntax are specified using \cl{typewriter text}. And the specific commands that you should type (or copy/paste) into RevBayes are indicated by shaded box and prompt. For example, after opening the RevBayes program, you can load your data file:
 
 {\tt \begin{snugshade*}
@@ -526,9 +526,9 @@ mv_it <- 0for (i in 1:n_parts){
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > pow_p <- powerPosterior(mymodel, moves, file="pow_posterior_twogene.out", cats=50) RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)RevBayes > pow_p.run(generations=1000)  \end{lstlisting}\end{snugshade*}}
 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > ss <- steppingStoneSampler(file="pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood", delimiter="	")RevBayes > ss.marginal() \end{lstlisting}\end{snugshade*}}
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > ss <- steppingStoneSampler(file="pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood")RevBayes > ss.marginal() \end{lstlisting}\end{snugshade*}}
 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > ps <- pathSampler(file="pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood", delimiter="\t")RevBayes > ps.marginal() \end{lstlisting}\end{snugshade*}}
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > ps <- pathSampler(file="pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood")RevBayes > ps.marginal() \end{lstlisting}\end{snugshade*}}
 
 
 
