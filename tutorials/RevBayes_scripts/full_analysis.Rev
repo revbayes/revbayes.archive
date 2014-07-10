@@ -1,12 +1,12 @@
 
-source("data/marLnL_calc_uniform.Rev")
+source("RevBayes_scripts/marLnL_calc_uniform.Rev")
 clear()
 
-source("data/marLnL_calc_twogene.Rev")
+source("RevBayes_scripts/marLnL_calc_twogene.Rev")
 clear()
 
-#source("data/marLnL_calc_genecodon.Rev") ## not done yet
-#clear()
+source("RevBayes_scripts/marLnL_calc_genecodon.Rev") 
+clear()
 
 #source(<insert path of preferred model MCMC file here>)
 #clear()
