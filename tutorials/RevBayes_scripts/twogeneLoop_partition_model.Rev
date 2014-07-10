@@ -46,8 +46,8 @@ for (i in 1:n_parts){
 	shape[i] ~ dnExponential( shape_prior[i] )
 
 	# construct the gamma distributed rate variables
-	for ( i in 1:4 ) {
-	  gamma_rates[i][i] := qgamma( i*0.25 - 0.125, shape[i], shape[i] )
+	for ( j in 1:4 ) {
+	  gamma_rates[i][j] := qgamma( i*0.25 - 0.125, shape[i], shape[i] )
 	}
 	# Normalize the rates to keep the parameters identifiable
 	norm_gamma_rates[i] := normalize( gamma_rates[i] )
