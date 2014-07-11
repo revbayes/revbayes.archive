@@ -50,7 +50,7 @@ double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
     
     double lnProb = 0;
     if (omega->getValue().isPositive()) {
-        lnProb = 0.5 * log(omega->getValue().getLogDet()) + recursiveLnProb(tau->getValue().getRoot());
+        lnProb = 0.5 * omega->getValue().getLogDet() + recursiveLnProb(tau->getValue().getRoot());
     }
     else{
         lnProb = RbConstants::Double::neginf;
@@ -105,6 +105,7 @@ void MultivariateBrownianPhyloProcess::redrawValue(void) {
 
 void MultivariateBrownianPhyloProcess::simulate() {
     
+    std::cerr << "SIMULATE\n";
     recursiveSimulate(tau->getValue().getRoot());
 }
 
