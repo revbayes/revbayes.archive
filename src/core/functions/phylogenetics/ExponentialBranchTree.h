@@ -16,7 +16,7 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 #include "TimeTree.h"
-
+#include "MatrixReal.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class ExponentialBranchTree : public TypedFunction< std::vector<double> > {
         
     public:
-        ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > *n);
+        ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode<std::vector<double> > *n, const TypedDagNode< MatrixReal > *m, const TypedDagNode< int > *i);
         ExponentialBranchTree(const ExponentialBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~ExponentialBranchTree(void) {}                                                         //!< Virtual destructor
         
@@ -44,6 +44,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< TimeTree >*                     tau;
         const TypedDagNode< std::vector<double> >*          nodeval;
+        const TypedDagNode< MatrixReal >*                   mvtnodeval;
+        const TypedDagNode< int >*                          traitindex;
     };
     
 }
