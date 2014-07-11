@@ -1,25 +1,26 @@
 /**
  * @file
- * This file contains the declaration of RateMatrix, which is
- * class that holds a rate matrix for a continuous-time Markov model.
+ * This file contains the declaration of Bpp RateMatrix, which is
+ * class that holds a rate matrix from Bio++ definition.
  *
- * @brief Declaration of RateMatrix
+ * @brief Declaration of BppRateMatrix
  *
  * (c) Copyright 2009-
- * @date Last modified: $Date: 2013-04-25 14:28:23 +0200 (Thu, 25 Apr 2013) $
+ * @date Last modified: $Date: mardi 8 juillet 2014, à 15h 44 $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: RateMatrix.h 1997 2013-04-25 12:28:23Z hoehna $
+ * $Id: BppRateMatrix.h 2014 Gueguen $
  */
 
-#ifndef GeneralRateMatrix_H
-#define GeneralRateMatrix_H
+#ifndef BppRateMatrix_H
+#define BppRateMatrix_H
 
 #include "RateMatrix.h"
 //#include <complex>
 #include <vector>
 
+#include <Bpp/Numeric/Matrix/Matrix.h>
 #include <Bpp/Phyl/Model/SubstitutionModel.h>
 
 namespace RevBayesCore {
@@ -32,8 +33,11 @@ namespace RevBayesCore {
       
       // List of parameters for later update
       bpp::ParameterList parList_;
+
+      bool needsUpdate_;
       
     public:
+      
       /**
        * @brief Takes ownership of a bpp SubstitutionModel*.
        *
@@ -50,6 +54,13 @@ namespace RevBayesCore {
       // overloaded operators
       BppRateMatrix& operator=(const BppRateMatrix& r);
 
+      const std::vector<double>&                operator[](size_t i) const { return static_cast<const bpp::RowMatrix<double>* >(&pModel_->getGenerator())->getRow(i);}                                                             //!< Subscript operator
+
+      BppRateMatrix* clone(void) const
+      {
+        return new BppRateMatrix(*this);
+      }
+
       
       // public methods
 
@@ -58,9 +69,19 @@ namespace RevBayesCore {
         return nbStates_;
       }
       
-      virtual double                      averageRate(void) const;                                   //!< Calculate the average rate
-      void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
-      virtual BppRateMatrix*          clone(void) const;
+      virtual double averageRate(void) const
+      {
+        return pModel_->getRate();
+      }    //!< Calculate the average rate
+
+      
+      void rescaleToAverageRate(double r)
+      {
+        pModel_->setRate(r);
+      }
+              
+      void calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+
 
       void setParameterValue(const std::string& name, double value);
       
@@ -70,9 +91,9 @@ namespace RevBayesCore {
       void                                setStationaryFrequencies(const std::vector<double>& f);                             //!< Directly set the stationary frequencies
       void                                updateMatrix(void);                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
-    protected:
+    // protected:
       
-      void                                calculateStationaryFrequencies(void);      
+    //   void calculateStationaryFrequencies(void);      
         
     };
     

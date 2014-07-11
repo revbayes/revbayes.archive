@@ -17,15 +17,16 @@ using namespace bpp;
 #include <Bpp/Exceptions.h>
 
 BppRateMatrix::BppRateMatrix(SubstitutionModel* model) : RateMatrix(model?model->getNumberOfStates():0),
-                                                         pModel_(model), parList_(model->getParameters())
+                                                         pModel_(model), parList_(model->getParameters()),
+                                                         needsUpdate_(true)
 {    
 
 }
 
 
-BppRateMatrix::BppRateMatrix(const BppRateMatrix &rm) : RateMatrix(rm)
+BppRateMatrix::BppRateMatrix(const BppRateMatrix &rm) : RateMatrix(rm), pModel_(rm.pModel_?rm.pModel_->clone():0),
+                                                        parList_(rm.parList_), needsUpdate_(rm.needsUpdate_)
 {
-  pModel_=(rm.pModel_?rm.pModel_->clone():0);
 }
 
 
@@ -43,28 +44,17 @@ BppRateMatrix& BppRateMatrix::operator=(const BppRateMatrix &rm)
    if (this != &rm)
    {
      RateMatrix::operator=( rm );
-        
+     
      pModel_=(rm.pModel_?rm.pModel_->clone():0);
+     parList_=rm.parList_;
+     needsUpdate_=rm.needsUpdate_;
+     
    }
     
   return *this;
 }
 
 
-BppRateMatrix* BppRateMatrix::clone() const
-{
-  return new BppRateMatrix(*this);
-}
-
-// const std::vector<double>& BppRateMatrix::getTransitionRates(void)
-// {
-  
-// }
-
-double BppRateMatrix::averageRate(void) const
-{
-  return pModel_->getRate();
-}
 
 void BppRateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const
 {
@@ -97,22 +87,24 @@ void BppRateMatrix::setStationaryFrequencies(const std::vector<double>& f)
 }
 
 
-void BppRateMatrix::calculateStationaryFrequencies(void)
-{
-}
+// void BppRateMatrix::calculateStationaryFrequencies(void)
+// {
+// }
 
 void BppRateMatrix::setParameterValue(const std::string& name, double value)
 {
   parList_.setParameterValue(name,value);
+  needsUpdate_=true;
+  
 }
 
   
 void BppRateMatrix::updateMatrix( void )
 {
-    if ( needsUpdate ) 
+    if ( needsUpdate_ ) 
     {
       pModel_->matchParametersValues(parList_);
-      needsUpdate = false;
+      needsUpdate_ = false;
     }
 }
 

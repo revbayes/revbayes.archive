@@ -205,6 +205,10 @@
 #include "Func_type.h"
 #include "Func_vector.h"
 
+#ifdef WITH_BPP
+#include "Func_BppAlphabet.h"
+#include "Func_BppGeneticCode.h"
+#endif
 
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_clade.h"
@@ -698,7 +702,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "VT",       new Func_vt()      );
         addFunction( "WAG",      new Func_wag()     );
 
+        /* Call of BPP parser */
 
+#ifdef WITH_BPP
+        addFunction( "BppAlphabet",   new Func_BppAlphabet()     );
+        addFunction( "BppGeneticCode",      new Func_BppGeneticCode()     );
+#endif
+        
         /* Inference functions (in folder "functions/inference") */
 
         

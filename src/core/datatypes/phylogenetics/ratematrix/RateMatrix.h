@@ -31,14 +31,13 @@ namespace RevBayesCore {
     public:
         virtual                            ~RateMatrix(void);                                                                 //!< Destructor
 
-        // overloaded operators
-        virtual std::vector<double>&                operator[](size_t i) = 0;                                                             //!< Subscript operator
+        // // overloaded operators
         virtual const std::vector<double>&          operator[](size_t i) const = 0;                                                       //!< Subscript operator (const)
            
-        virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
-        virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;
-        virtual std::vector<std::vector<double> >::const_iterator       end(void) const = 0;
-        virtual std::vector<std::vector<double> >::iterator             end(void) = 0;
+        // virtual std::vector<std::vector<double> >::const_iterator       begin(void) const = 0;
+        // virtual std::vector<std::vector<double> >::iterator             begin(void) = 0;
+        // virtual std::vector<std::vector<double> >::const_iterator       end(void) const = 0;
+        // virtual std::vector<std::vector<double> >::iterator             end(void) = 0;
 
         // public methods
         size_t                              getNumberOfStates(void) const;                                                          //!< Return the number of states
@@ -50,7 +49,7 @@ namespace RevBayesCore {
         virtual RateMatrix*                 clone(void) const = 0;
         virtual const std::vector<double>&  getStationaryFrequencies(void) const = 0;                                               //!< Return the stationary frequencies
         virtual void                        rescaleToAverageRate(double r) = 0;                                                         //!< Rescale the rate matrix such that the average rate is "r"
-        virtual void                        setDiagonal(void) = 0;                                                                      //!< Set the diagonal such that each row sums to zero
+//        virtual void                        setDiagonal(void) = 0;                                                                      //!< Set the diagonal such that each row sums to zero
         virtual void                        updateMatrix(void) = 0;                                                                 //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
     protected:

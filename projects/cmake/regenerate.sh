@@ -60,6 +60,7 @@ echo 'not building boost libraries'
 fi
 
 
+
 #################
 # generate cmake configuration
 cd "$HERE"
@@ -134,12 +135,48 @@ MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
 #INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
+######## optional bio++ ###############
+
+SET(WITH_BPP True) 
+
+#here is a useful function:
+MACRO(IMPROVED_FIND_LIBRARY OUTPUT_LIBS lib_name include_to_find)
+  #start:
+  FIND_PATH(${lib_name}_INCLUDE_DIR ${include_to_find})
+
+  IF(${${lib_name}_INCLUDE_DIR} MATCHES ${lib_name}_INCLUDE_DIR-NOTFOUND)
+    MESSAGE("${lib_name} not found.")
+    UNSET(WITH_BPP)
+  ELSE(${${lib_name}_INCLUDE_DIR} MATCHES ${lib_name}_INCLUDE_DIR-NOTFOUND)
+    SET(${lib_name}_NAMES ${lib_name} ${lib_name}lib ${lib_name}dll)
+    FIND_LIBRARY(${lib_name}_LIBRARY NAMES ${${lib_name}_NAMES} PATH_SUFFIXES lib${LIB_SUFFIX})
+    MESSAGE("-- Library ${lib_name} found here:")
+    MESSAGE("   includes : ${${lib_name}_INCLUDE_DIR}")
+    MESSAGE("   libraries: ${${lib_name}_LIBRARY}")
+    LINK_DIRECTORIES(${${lib_name}_LIBRARY})
+  ENDIF(${${lib_name}_INCLUDE_DIR} MATCHES ${lib_name}_INCLUDE_DIR-NOTFOUND)
+  
+  #add the dependency:
+  IF (WITH_BPP)
+    INCLUDE_DIRECTORIES(${${lib_name}_INCLUDE_DIR})
+    SET(${OUTPUT_LIBS} ${${OUTPUT_LIBS}} ${${lib_name}_LIBRARY})
+  ENDIF (WITH_BPP)
+  
+ENDMACRO(IMPROVED_FIND_LIBRARY)
+
+#Find the Bio++ libraries:
+IMPROVED_FIND_LIBRARY(BPP_LIBS bpp-core Bpp/Clonable.h)
+IMPROVED_FIND_LIBRARY(BPP_LIBS bpp-seq Bpp/Seq/Alphabet/Alphabet.h)
+IMPROVED_FIND_LIBRARY(BPP_LIBS bpp-phyl Bpp/Phyl/Tree.h)
 
 # TODO Split these up based on sub-package dependency
 INCLUDE_DIRECTORIES(' >> "$HERE/CMakeLists.txt"
 find ui libs core revlanguage -type d | grep -v "svn" | sed 's|^|    ${PROJECT_SOURCE_DIR}/|g' >> "$HERE/CMakeLists.txt"
 echo ' ${Boost_INCLUDE_DIR} )
 
+IF (WITH_BPP)
+add_definitions(-DWITH_BPP)
+ENDIF (WITH_BPP)
 
 ####
 
@@ -156,6 +193,12 @@ target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
 
 # extended rev-bayes binary
 add_executable(rb-extended ${PROJECT_SOURCE_DIR}/ui/main.cpp)
+
+IF (WITH_BPP)
+target_link_libraries(rb ${BPP_LIBS})
+target_link_libraries(rb-extended ${BPP_LIBS})
+ENDIF(WITH_BPP)
+
 
 ' >> "$HERE/CMakeLists.txt"
 
@@ -179,56 +222,13 @@ add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenera
 target_link_libraries(help-html-generator rb-parser rb-core libs ${Boost_LIBRARIES})
 
 
-######## optional bio++ ###############
-
-SET(WITH_BPP)
-
-#here is a useful function:
-MACRO(IMPROVED_FIND_LIBRARY OUTPUT_LIBS lib_name include_to_find)
-  #start:
-  FIND_PATH(${lib_name}_INCLUDE_DIR ${include_to_find})
-  SET(${lib_name}_NAMES ${lib_name} ${lib_name}lib ${lib_name}dll)
-  FIND_LIBRARY(${lib_name}_LIBRARY NAMES ${${lib_name}_NAMES} PATH_SUFFIXES lib${LIB_SUFFIX})
-
-  IF(${lib_name}_LIBRARY)
-    MESSAGE("-- Library ${lib_name} found here:")
-    MESSAGE("   includes : ${${lib_name}_INCLUDE_DIR}")
-    MESSAGE("   libraries: ${${lib_name}_LIBRARY}")
-  ELSE(${lib_name}_LIBRARY)
-    MESSAGE("${lib_name} required but not found.")
-    UNSET(WITH_BPP)
-  ENDIF(${lib_name}_LIBRARY)
-  
-  #add the dependency:
-  INCLUDE_DIRECTORIES(${${lib_name}_INCLUDE_DIR})
-  SET(${OUTPUT_LIBS} ${${OUTPUT_LIBS}} ${${lib_name}_LIBRARY})
-ENDMACRO(IMPROVED_FIND_LIBRARY)
-
-#Find the Bio++ libraries:
-IMPROVED_FIND_LIBRARY(LIBS bpp-core Bpp/Clonable.h)
-IMPROVED_FIND_LIBRARY(LIBS bpp-seq Bpp/Seq/Alphabet/Alphabet.h)
-IMPROVED_FIND_LIBRARY(LIBS bpp-phyl Bpp/Phyl/Tree.h)
-
-# Subdirectories
-
-
-# IF (DWITH_BPP)
-#  SET(bpp-lib bpp-core bpp-seq bpp-phyl)
-#  
-#  FOREACH(bpplib ${bpp-lib})
-#      find_library(${bpplib} SHARED ${BPPDIR})
-#      set_target_properties(${bpplib} PROPERTIES LINKER_LANGUAGE CXX)
-#      MESSAGE(${bpplib})
-#  ENDFOREACH(bpplib)
-# 
-# 
-#  #ADD_SUBDIRECTORY(bpp)
-# ENDIF(DEFINED ${BPPDIR}) 
-# 
-
 ' >> $HERE/CMakeLists.txt
 
 echo
+
+
+########################
+### ui
 
 if [ ! -d "$HERE/ui" ]; then
 mkdir "$HERE/ui"
@@ -238,6 +238,9 @@ find ui | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/ui/CMakeL
 echo ')
 add_library(rb-ui ${UI_FILES})'  >> "$HERE/ui/CMakeLists.txt"
 
+########################
+### libs
+
 if [ ! -d "$HERE/libs" ]; then
 mkdir "$HERE/libs"
 fi
@@ -246,13 +249,27 @@ find libs | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/libs/CM
 echo ')
 add_library(libs ${LIBS_FILES})'  >> "$HERE/libs/CMakeLists.txt"
 
+########################
+### core
+
 if [ ! -d "$HERE/core" ]; then
 mkdir "$HERE/core"
 fi
 echo 'set(CORE_FILES' > "$HERE/core/CMakeLists.txt"
 find core | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/core/CMakeLists.txt"
 echo ')
+
+IF (NOT WITH_BPP)
+list(REMOVE_ITEM CORE_FILES ' >> "$HERE/core/CMakeLists.txt"
+find core | grep "Bpp" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/core/CMakeLists.txt"
+echo ')
+ENDIF (NOT WITH_BPP)
+
 add_library(rb-core ${CORE_FILES})'  >> "$HERE/core/CMakeLists.txt"
+
+
+##########################
+### revlanguage
 
 if [ ! -d "$HERE/revlanguage" ]; then
 mkdir "$HERE/revlanguage"
@@ -260,5 +277,12 @@ fi
 echo 'set(PARSER_FILES' > "$HERE/revlanguage/CMakeLists.txt"
 find revlanguage | grep -v "svn" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
 echo ')
+
+IF (NOT WITH_BPP)
+list(REMOVE_ITEM PARSER_FILES ' >> "$HERE/revlanguage/CMakeLists.txt"
+find revlanguage | grep "Bpp" | sed 's|^|${PROJECT_SOURCE_DIR}/|g' >> "$HERE/revlanguage/CMakeLists.txt"
+echo ')
+ENDIF (NOT WITH_BPP)
+
 add_library(rb-parser ${PARSER_FILES})'  >> "$HERE/revlanguage/CMakeLists.txt"
 
