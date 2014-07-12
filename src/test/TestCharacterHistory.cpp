@@ -131,7 +131,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> seed;
     seed.push_back(15); seed.push_back(1);
 //    old_seed = seed;
-    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -168,7 +168,7 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "vireya.atlas.txt";
-    afn = "hawaii_hard.atlas.txt";
+    afn = "hawaii.atlas.txt";
 //    afn = "hawaii_hard.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
@@ -262,10 +262,11 @@ bool TestCharacterHistory::run_exp(void) {
     else
         charactermodel->clamp( data[0] );
     
-    // initialize mapping
-    charactermodel->redraw();
     
-    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
+    // initialize mapping
+//    charactermodel->redraw();
+    
+//    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
     
 //    GLOBAL_RNG->setSeed(old_seed);

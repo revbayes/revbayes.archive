@@ -15,7 +15,7 @@
 
 #include "Vector.h"
 #include "RealPos.h"
-#include "Func_expBranchTree.h"
+// #include "Func_expBranchTree.h"
 #include "RlTypedFunction.h"
 #include "TypedDagNode.h"
 

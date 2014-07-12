@@ -50,11 +50,12 @@ double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
     
     double lnProb = 0;
     if (omega->getValue().isPositive()) {
-        lnProb = 0.5 * log(omega->getValue().getLogDet()) + recursiveLnProb(tau->getValue().getRoot());
+        lnProb = 0.5 * omega->getValue().getLogDet() + recursiveLnProb(tau->getValue().getRoot());
     }
     else{
         lnProb = RbConstants::Double::neginf;
     }
+
     return lnProb;
 }
 
@@ -98,6 +99,7 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 }
 
 void MultivariateBrownianPhyloProcess::redrawValue(void) {
+    std::cerr << "redraw brownian\n";
     simulate();
     std::cerr << "Brownian:\t\t" << *value << std::endl;
 }
@@ -105,6 +107,7 @@ void MultivariateBrownianPhyloProcess::redrawValue(void) {
 
 void MultivariateBrownianPhyloProcess::simulate() {
     
+    std::cerr << "SIMULATE\n";
     recursiveSimulate(tau->getValue().getRoot());
 }
 
@@ -113,8 +116,15 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
     
     size_t index = from.getIndex();
     
-    if (! from.isRoot())    {
+    if (from.isRoot())    {
         
+        std::vector<double>& val = (*value)[index];
+        for (size_t i=0; i<getDim(); i++)   {
+            val[i] += rootVal->getValue()[i];
+        }
+    }
+    
+    else    {
         // x ~ normal(x_up, omega^2 * branchLength)
 
         std::vector<double>& val = (*value)[index];

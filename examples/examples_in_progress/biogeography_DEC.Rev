@@ -80,7 +80,7 @@ moves[5] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo"
 ############
 
 # standard monitors
-monitors[1] <- screenmonitor(printgen=10, separator=" ", M)
+monitors[1] <- screenmonitor(printgen=10, separator=" ", glr[1], glr[2], dp)
 monitors[2] <- modelmonitor(filename=out_fp+params_fn, printgen=10, separator=" ")
 
 # character history monitors

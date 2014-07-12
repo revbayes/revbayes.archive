@@ -70,7 +70,19 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
         }
         return NULL;
     }
-    else if (name == "names") 
+    else if (name == "excludeAll")
+    {
+        
+    }
+    else if (name == "includeCharacter")
+    {
+        
+    }
+    else if (name == "CodonPos")
+    {
+    
+    }
+    else if (name == "names")
     {
         Vector<RlString> *n = new Vector<RlString>();
         for (size_t i = 0; i < this->dagNode->getValue().getNumberOfTaxa(); ++i)
