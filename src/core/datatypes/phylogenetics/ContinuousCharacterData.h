@@ -40,6 +40,7 @@ namespace RevBayesCore {
         // CharacterData functions
         void                                            addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                            addTaxonData(const ContinuousTaxonData &obs);                               //!< Add Continuous taxon data
+        void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                            excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                            excludeTaxon(std::string& s);                                               //!< Exclude taxon
@@ -59,6 +60,7 @@ namespace RevBayesCore {
         const ContinuousTaxonData&                      getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
         const std::vector<std::string>&                 getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                              getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        void                                            includeCharacter(size_t i);                                                 //!< Include character
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                            isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
         bool                                            isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded

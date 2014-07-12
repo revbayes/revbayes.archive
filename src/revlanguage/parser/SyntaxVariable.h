@@ -42,9 +42,7 @@ class SyntaxVariable : public SyntaxElement {
 
     public:
         SyntaxVariable(const std::string &n, std::list<SyntaxElement*>* indx);                                                      //!< Global variable
-        SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);                                               //!< Global variable expression
-        SyntaxVariable(SyntaxVariable* var, const std::string &n, std::list<SyntaxElement*>* indx);                                 //!< Member variable 
-        SyntaxVariable(SyntaxVariable* var, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);                          //!< Member variable expression
+        SyntaxVariable(SyntaxVariable* var, const std::string &n, std::list<SyntaxElement*>* indx);                                 //!< Member variable
         SyntaxVariable(const SyntaxVariable& x);                                                                                    //!< Copy constructor
 	   
         virtual                            ~SyntaxVariable(void);                                                                   //!< Destructor deletes variable, identifier and index
@@ -63,13 +61,11 @@ class SyntaxVariable : public SyntaxElement {
         RevPtr<Variable>                    evaluateContent(Environment& env);                                                      //!< Get semantic value
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
-        bool                                hasFunctionCall(void) const;                                                            //!< Does this variable have a function call (e.g. a.xxx() )
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
         void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);        //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                         identifier;                                                                             //!< The name of the variable, if identified by name
-        SyntaxFunctionCall*                 functionCall;                                                                           //!< Function call giving a reference to a variable (we hope)
         std::list<SyntaxElement*>*          index;                                                                                  //!< Vector of int indices to variable element
         SyntaxVariable*                     baseVariable;                                                                           //!< Base variable (pointing to a composite node)
         RevObject*                          replacementValue;

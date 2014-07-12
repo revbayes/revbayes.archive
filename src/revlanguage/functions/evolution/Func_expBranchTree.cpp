@@ -9,9 +9,12 @@
 #include "ExponentialBranchTree.h"
 #include "Func_expBranchTree.h"
 
+#include "Integer.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "Vector.h"
+#include "MatrixReal.h"
+#include "RealMatrix.h"
 
 using namespace RevLanguage;
 
@@ -43,7 +46,9 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "nodevals", true, Vector<Real>::getClassTypeSpec() ) );
+//        argumentRules.push_back( new ArgumentRule( "nodevals", true, Vector<Real>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "mvtnodevals", true, RealMatrix::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -93,9 +98,14 @@ RevObject* Func_expBranchTree::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* val = static_cast<const Vector<Real> &>( args[1].getVariable()->getRevObject() ).getDagNode();
+   // RevBayesCore::TypedDagNode<std::vector<double> >* val = static_cast<const Vector<Real> &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, val );
+    RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* mvtval = static_cast<const RealMatrix &>( args[1].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &>( args[2].getVariable()->getRevObject() ).getDagNode();
+
+//    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, val, mvtval, traitindex );
+    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, mvtval, traitindex );
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
@@ -115,10 +125,27 @@ void Func_expBranchTree::printValue(std::ostream& o) const {
     } else {
         o << "?";
     }
-    
+    o << ", ";
+/*
     o << "nodevals=";
     if ( args[1].getVariable() != NULL ) {
         o << args[1].getVariable()->getName();
+    } else {
+        o << "?";
+    }
+    o << ", ";
+*/    
+    o << "mvtnodevals=";
+    if ( args[2].getVariable() != NULL ) {
+        o << args[2].getVariable()->getName();
+    } else {
+        o << "?";
+    }
+    o << ", ";
+    
+    o << "traitindex=";
+    if ( args[3].getVariable() != NULL ) {
+        o << args[3].getVariable()->getName();
     } else {
         o << "?";
     }
