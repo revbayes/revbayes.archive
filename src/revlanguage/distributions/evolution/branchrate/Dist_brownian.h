@@ -13,14 +13,14 @@
 
 
 #include "BrownianPhyloProcess.h"
+#include "ModelVector.h"
 #include "RlTypedDistribution.h"
 #include "RlSimplex.h"
 #include "Real.h"
-#include "Vector.h"
 
 namespace RevLanguage {
 
-    class Dist_brownian :  public TypedDistribution< Vector<Real>  > {
+    class Dist_brownian :  public TypedDistribution< ModelVector<Real>  > {
         
     public:
         Dist_brownian( void ) {};
@@ -28,7 +28,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Dist_brownian*                           clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)

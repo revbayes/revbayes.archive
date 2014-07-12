@@ -58,7 +58,7 @@ RevPtr<Variable> UserFunctionArgs::execute( void ) {
 
 
 /** Get class name of object */
-const std::string& UserFunctionArgs::getClassName(void) {
+const std::string& UserFunctionArgs::getClassType(void) {
     
     static std::string rbClassName = "UserFunctionArgs";
     
@@ -69,7 +69,7 @@ const std::string& UserFunctionArgs::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& UserFunctionArgs::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }

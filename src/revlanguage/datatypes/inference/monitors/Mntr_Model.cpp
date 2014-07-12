@@ -4,12 +4,13 @@
 #include "Mntr_Model.h"
 #include "Model.h"
 #include "ModelMonitor.h"
+#include "ModelVector.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
 #include "RlModel.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -57,7 +58,7 @@ void Mntr_Model::constructInternalObject( void )
 
 
 /** Get class name of object */
-const std::string& Mntr_Model::getClassName(void) 
+const std::string& Mntr_Model::getClassType(void) 
 { 
     
     static std::string rbClassName = "Mntr_Model";
@@ -69,7 +70,7 @@ const std::string& Mntr_Model::getClassName(void)
 const TypeSpec& Mntr_Model::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

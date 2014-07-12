@@ -37,7 +37,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         DistributionFunctionRv*                 clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassName(void);                                                             //!< Get class name
+        static const std::string&               getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
@@ -127,7 +127,7 @@ RevLanguage::RevPtr<Variable> RevLanguage::DistributionFunctionRv<valueType>::ex
     
     
     int n = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
-    Vector<valueType> *values = new Vector<valueType>();
+    ModelVector<valueType> *values = new ModelVector<valueType>();
     for (int i = 0;  i < n; ++i) {
         valueType* value = copyObject->createRandomVariable();
         value->makeConstantValue();
@@ -148,7 +148,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionRv<valueType>
 
 /** Get class name of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassName(void) { 
+const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassType(void) { 
     
     static std::string rbClassName = "DistributionFunctionRv";
     
@@ -159,7 +159,7 @@ const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassName(
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

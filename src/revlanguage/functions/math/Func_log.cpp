@@ -60,7 +60,7 @@ const ArgumentRules& Func_log::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_log::getClassName(void) { 
+const std::string& Func_log::getClassType(void) { 
     
     static std::string rbClassName = "Func_log";
     
@@ -70,7 +70,7 @@ const std::string& Func_log::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_log::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

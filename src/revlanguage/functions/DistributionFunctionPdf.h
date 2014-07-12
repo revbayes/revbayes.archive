@@ -37,7 +37,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         DistributionFunctionPdf*                clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassName(void);                                                             //!< Get class name
+        static const std::string&               getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
@@ -149,7 +149,7 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionPdf<valueType
 
 /** Get class name of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassName(void) { 
+const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassType(void) { 
     
     static std::string rbClassName = "DistributionFunctionPdf";
     
@@ -160,7 +160,7 @@ const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassName
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

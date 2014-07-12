@@ -145,7 +145,7 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent(Environment& env) {
 void SyntaxFunctionDef::printValue(std::ostream& o) const {
 
     o << "SyntaxFunctionDef:" << std::endl;
-    o << "returnType   = " << returnType.toString() << std::endl;
+    o << "returnType   = " << returnType.getType() << std::endl;
     o << "functionName = " << functionName;
     o << std::endl;
     o << "formalArgs   = <" << formalArgs->size() << " formals (argument rules)>" << std::endl;

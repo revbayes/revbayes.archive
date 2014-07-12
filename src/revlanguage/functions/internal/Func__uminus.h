@@ -32,7 +32,7 @@ public:
     
     // Basic utility functions
     Func__uminus*                                    clone(void) const;                                                              //!< Clone the object
-    static const std::string&                       getClassName(void);                                                             //!< Get class name
+    static const std::string&                       getClassType(void);                                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
     
@@ -89,7 +89,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__uminus<firstValType, retTyp
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "value", true, firstValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "value", true, firstValType::getClassType() ) );
         rulesSet = true;
     }
     
@@ -98,9 +98,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__uminus<firstValType, retTyp
 
 
 template <typename firstValType, typename retType>
-const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__uminus<" + firstValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__uminus<" + firstValType::getClassType() + "," + retType::getClassType() + ">";
     
 	return rbClassName; 
 }
@@ -109,7 +109,7 @@ const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassNam
 template <typename firstValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

@@ -18,11 +18,11 @@
 
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
+#include "ModelVector.h"
 #include "RbException.h"
 #include "Function.h"
 #include "RevObject.h"
 #include "RbUtil.h"
-#include "Vector.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -299,7 +299,7 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
                 score = j;
                 break;
             }
-            parent = parent->getParentType();
+            parent = &parent->getParentTypeSpec();
             j++;
             if ( j >= score ) 
             {
@@ -316,7 +316,7 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
 std::string Function::callSignature(void) const {
     
     std::ostringstream o;
-    o << getTypeSpec() << ": " << std::endl;
+    o << getType() << ": " << std::endl;
     
     if (argsProcessed)
         o << "Arguments processed; there are " << args.size() << " values." << std::endl;
@@ -344,7 +344,7 @@ std::vector<Argument>& Function::getArguments(void) {
 
 
 /** Get class name of object */
-const std::string& Function::getClassName(void) { 
+const std::string& Function::getClassType(void) { 
     
     static std::string rbClassName = "Function";
     
@@ -354,7 +354,7 @@ const std::string& Function::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Function::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -382,7 +382,7 @@ std::string Function::getRevDeclaration(void) const {
     /* It is unclear whether the 'function' specifier is needed. We leave it out for now. */
     // o << "function ";
  
-    o << getReturnType();
+    o << getReturnType().getType();
     if ( name == "" )
         o << " <unnamed> (";
     else
@@ -415,7 +415,7 @@ void Function::printValue(std::ostream& o) const {
 
     const ArgumentRules& argRules = getArgumentRules();
 
-    o << getReturnType() << " function (";
+    o << getReturnType().getType() << " function (";
     for (size_t i=0; i<argRules.size(); i++) {
         if (i != 0)
             o << ", ";
@@ -604,7 +604,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         
         /* Final test if we found a match */
         if ( !taken[i] ) {
-            throw RbException("Argument of type \"" + passedArgs[i].getVariable()->getRevObject().getTypeSpec() + "\" is not valid for function " + getTypeSpec() + ".");
+            throw RbException("Argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' is not valid for function '" + getType() + "'.");
         }
     }
 

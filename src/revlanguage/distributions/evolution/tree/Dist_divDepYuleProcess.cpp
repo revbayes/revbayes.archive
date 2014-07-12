@@ -3,6 +3,7 @@
 #include "Clade.h"
 #include "Dist_divDepYuleProcess.h"
 #include "DiversityDependentPureBirthProcess.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
@@ -12,7 +13,6 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -63,9 +63,9 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     
     std::vector<RevBayesCore::Taxon> taxa;
     for (size_t i = 0; i < names.size(); ++i) 
@@ -86,7 +86,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
  *
  * \return The class' name.
  */
-const std::string& Dist_divDepYuleProcess::getClassName( void ) 
+const std::string& Dist_divDepYuleProcess::getClassType( void ) 
 { 
     
     static std::string rbClassName = "Dist_divDepYuleProcess";
@@ -103,7 +103,7 @@ const std::string& Dist_divDepYuleProcess::getClassName( void )
 const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -130,14 +130,14 @@ const MemberRules& Dist_divDepYuleProcess::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "capacity", true, Natural::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
-        Vector<RlString> optionsCondition;
+        std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
         optionsCondition.push_back( RlString("nTaxa") );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, ModelVector<Clade>::getClassTypeSpec(), new ModelVector<Clade>() ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();

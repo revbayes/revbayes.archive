@@ -19,15 +19,15 @@
 #define Dist_dpp_H
 
 #include "DirichletProcessPriorDistribution.h"
+#include "ModelVector.h"
 #include "RealPos.h"
 #include "RlTypedDistribution.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 namespace RevLanguage {
     
     template <typename valType>
-    class Dist_dpp :  public TypedDistribution< Vector<valType> >{
+    class Dist_dpp :  public TypedDistribution< ModelVector<valType> >{
         
     public:
         Dist_dpp( void );
@@ -35,7 +35,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Dist_dpp*                                       clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
@@ -70,7 +70,7 @@ namespace RevLanguage {
 
 
 template <typename valType>
-RevLanguage::Dist_dpp<valType>::Dist_dpp() : TypedDistribution< Vector<valType> >(), 
+RevLanguage::Dist_dpp<valType>::Dist_dpp() : TypedDistribution< ModelVector<valType> >(), 
 concentration( NULL ),
 baseDistribution( NULL ),
 numElements( NULL )
@@ -110,7 +110,7 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
 
 /* Get class name of object */
 template <typename valType>
-const std::string& RevLanguage::Dist_dpp<valType>::getClassName(void) { 
+const std::string& RevLanguage::Dist_dpp<valType>::getClassType(void) { 
     
     static std::string rbClassName = "Dist_dpp";
     
@@ -121,7 +121,7 @@ const std::string& RevLanguage::Dist_dpp<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector< valType > >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector< valType > >::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -172,7 +172,7 @@ void RevLanguage::Dist_dpp<valType>::setConstMemberVariable(const std::string& n
         numElements = var;
     }
     else {
-        TypedDistribution< Vector< valType > >::setConstMemberVariable(name, var);
+        TypedDistribution< ModelVector< valType > >::setConstMemberVariable(name, var);
     }
 }
 

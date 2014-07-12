@@ -31,6 +31,7 @@ namespace RevLanguage {
      * also contains a function table, and a class (type) table.
      *
      */
+
     class Environment {
         
     public:
@@ -58,7 +59,6 @@ namespace RevLanguage {
         RevPtr<Variable>                    executeFunction(const std::string& name, const std::vector<Argument>& args);        //!< Execute function
         bool                                existsFunction(const std::string &name) const;                                      //!< Does a function exists with given name?
         bool                                existsVariable(const std::string& name) const;                                      //!< Does variable exist?
-        RevPtr<Variable>&                   findOrCreateVariable(const std::string& name);                                      //!< Find variable or create it if it does not exist
         std::string                         generateUniqueVariableName(void);                                                   //!< Automatically generate a unique variable name
         const Function&                     getFunction(const std::string& name);                                               //!< Get function copy
         Function&                           getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function copy

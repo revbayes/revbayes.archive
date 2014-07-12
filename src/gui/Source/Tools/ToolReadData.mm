@@ -12,7 +12,7 @@
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
-#include "VectorRlPointer.h"
+#include "WorkspaceVector.h"
 #include "Workspace.h"
 
 #import "AnalysisView.h"
@@ -367,7 +367,7 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *dnc = dynamic_cast<const RevLanguage::VectorRlPointer<RevLanguage::RevObject> *>( &dv );
+    const RevLanguage::WorkspaceVector<RevLanguage::RevObject> *dnc = dynamic_cast<const RevLanguage::WorkspaceVector<RevLanguage::RevObject> *>( &dv );
 
     if ( dnc != NULL )
         {

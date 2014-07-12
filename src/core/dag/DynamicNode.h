@@ -42,6 +42,9 @@ namespace RevBayesCore {
         // public methods
         DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;                   //!< Clone the entire DAG which is connected to this node
 
+        // this function provided for derived classes used in the language layer, which need to override it
+        virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
+
     protected:
         virtual void                                        keepMe(DagNode* affecter);                                                      //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                                   //!< Restore value of this node
@@ -121,9 +124,22 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
 }
 
 
+/**
+ * This function returns the Rev language type of the value. When used in the Rev
+ * language layer, a DAG node must know the Rev language type of its value, or
+ * construction of dynamic variables will not be safe. Here we just throw an
+ * error, as a core DAG node need not know and should not know the language type
+ * of its value.
+ */
+template<class valueType>
+const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
+{
+    throw RbException( "Rev language type of dynamic DAG node value not known" );
+}
+
 
 /**
- * Keep the current value of the node. 
+ * Keep the current value of the node.
  * At this point, we also need to make sure we update the stored ln probability.
  */
 template<class valueType>

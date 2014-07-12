@@ -38,7 +38,7 @@ namespace RevLanguage {
     
         // Basic utility functions
         DiscreteCharacterData*              clone(void) const;                                                                                  //!< Clone object
-        static const std::string&           getClassName(void);                                                                                 //!< Get class name
+        static const std::string&           getClassType(void);                                                                                 //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
 
@@ -53,11 +53,11 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 
 template <class rlCharType>
@@ -111,7 +111,7 @@ RevPtr<Variable> RevLanguage::DiscreteCharacterData<charType>::executeMethod(std
 
 /* Get class name of object */
 template <typename rlType>
-const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassName(void) { 
+const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void) { 
     
     static std::string rbClassName = "DiscreteCharacterData";
     
@@ -122,7 +122,7 @@ const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassName(void
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

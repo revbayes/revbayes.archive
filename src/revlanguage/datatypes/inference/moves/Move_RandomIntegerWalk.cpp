@@ -66,7 +66,7 @@ void Move_RandomIntegerWalk::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_RandomIntegerWalk::getClassName(void) 
+const std::string& Move_RandomIntegerWalk::getClassType(void) 
 { 
     
     static std::string rbClassName = "Move_RandomIntegerWalk";
@@ -83,7 +83,7 @@ const std::string& Move_RandomIntegerWalk::getClassName(void)
 const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

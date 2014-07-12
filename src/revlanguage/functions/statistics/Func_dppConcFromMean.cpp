@@ -10,6 +10,7 @@
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
 #include "Func_dppConcFromMean.h"
+#include "ModelVector.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
@@ -17,7 +18,7 @@
 #include "RealPos.h"
 #include "Topology.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
+#include "ModelVector.h"
 
 using namespace RevLanguage;
 
@@ -66,7 +67,7 @@ const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_dppConcFromMean::getClassName(void) { 
+const std::string& Func_dppConcFromMean::getClassType(void) { 
     
     static std::string rbClassName = "Func_dppConcFromMean";
     
@@ -76,7 +77,7 @@ const std::string& Func_dppConcFromMean::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_dppConcFromMean::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

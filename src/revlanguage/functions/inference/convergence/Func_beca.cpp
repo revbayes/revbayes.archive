@@ -12,6 +12,7 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
+#include "Ellipsis.h"
 #include "EssMax.h"
 #include "Func_beca.h"
 #include "OptionRule.h"
@@ -22,7 +23,7 @@
 #include "SemMin.h"
 #include "Trace.h"
 #include "TypeSpec.h"
-#include "VectorRlPointer.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -47,7 +48,7 @@ RevPtr<Variable> Func_beca::execute( void ) {
     
     const std::string&   fn     = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     const std::string&   method = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[2].getVariable()->getRevObject() ).getValue();
+    const std::vector<Trace*>& traces = static_cast<const WorkspaceVector<Trace> &>( args[2].getVariable()->getRevObject() ).getVectorRlPointer();
     
     std::ostream* outStream = NULL;
     if ( fn != "" ) 
@@ -118,12 +119,12 @@ const ArgumentRules& Func_beca::getArgumentRules( void ) const {
     {
         
         argumentRules.push_back( new ArgumentRule( "filename", true, RlString::getClassTypeSpec(), new RlString("") ) );
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("ESS") );
         options.push_back( RlString("SEM") );
         argumentRules.push_back( new OptionRule( "method", new RlString("ESS"), options ) );
-        argumentRules.push_back( new ArgumentRule( "traces", true, VectorRlPointer<Trace>::getClassTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis( VectorRlPointer<Trace>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "traces", true, WorkspaceVector<Trace>::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis( WorkspaceVector<Trace>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -133,7 +134,7 @@ const ArgumentRules& Func_beca::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_beca::getClassName(void) { 
+const std::string& Func_beca::getClassType(void) { 
     
     static std::string rbClassName = "Func_beca";
     
@@ -143,7 +144,7 @@ const std::string& Func_beca::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_beca::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -160,7 +161,7 @@ const TypeSpec& Func_beca::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_beca::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<RlBoolean>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<RlBoolean>::getClassTypeSpec();
     
     return returnTypeSpec;
 }

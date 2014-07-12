@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BranchRateJumpProcess.h"
+#include "ModelVector.h"
 #include "Move_RLCRateScale.h"
 #include "RbException.h"
 #include "RevObject.h"
@@ -9,7 +10,6 @@
 #include "RlcRateScaleMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -57,7 +57,7 @@ void Move_RLCRateScale::constructInternalObject( void )
     double w                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double l                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     bool t                                                      = static_cast<const RlBoolean &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const Vector<RealPos> &>( v->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const ModelVector<RealPos> &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< std::vector<double> > *n      = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     
     // just to make sure also test that the stochastic node has the correct distribution
@@ -78,7 +78,7 @@ void Move_RLCRateScale::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_RLCRateScale::getClassName(void) 
+const std::string& Move_RLCRateScale::getClassType(void) 
 { 
     
     static std::string rbClassName = "Move_RLCRateScale";
@@ -95,7 +95,7 @@ const std::string& Move_RLCRateScale::getClassName(void)
 const TypeSpec& Move_RLCRateScale::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -118,7 +118,7 @@ const MemberRules& Move_RLCRateScale::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<RealPos>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", false, RealPos::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         

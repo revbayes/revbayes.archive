@@ -99,7 +99,7 @@ RevPtr<Variable> UserFunctionCall::execute( void ) {
 
 
 /** Get class name of object */
-const std::string& UserFunctionCall::getClassName(void) {
+const std::string& UserFunctionCall::getClassType(void) {
     
     static std::string rbClassName = "UserFunctionCall";
     
@@ -110,7 +110,7 @@ const std::string& UserFunctionCall::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& UserFunctionCall::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }

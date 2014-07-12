@@ -27,7 +27,7 @@
 #include "Trace.h"
 #include "RlTrace.h"
 #include "RlUserInterface.h"
-#include "VectorRlPointer.h"
+#include "WorkspaceVector.h"
 
 #include <map>
 #include <set>
@@ -141,7 +141,7 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
         }
     }
     
-    VectorRlPointer<Trace> *rv = new VectorRlPointer<Trace>();
+    WorkspaceVector<Trace> *rv = new WorkspaceVector<Trace>();
     for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it) {
         Trace *t = new Trace( *it );
         t->computeStatistics();
@@ -191,7 +191,7 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_readTrace::getClassName(void) { 
+const std::string& Func_readTrace::getClassType(void) { 
     
     static std::string rbClassName = "Func_readTrace";
     
@@ -201,7 +201,7 @@ const std::string& Func_readTrace::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTrace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -218,7 +218,7 @@ const TypeSpec& Func_readTrace::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTrace::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRlPointer<Trace>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

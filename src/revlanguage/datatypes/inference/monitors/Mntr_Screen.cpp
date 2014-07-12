@@ -2,13 +2,15 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "Ellipsis.h"
+#include "ModelVector.h"
 #include "Mntr_Screen.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
 #include "RlString.h"
 #include "ScreenMonitor.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -45,7 +47,7 @@ void Mntr_Screen::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Mntr_Screen::getClassName(void) { 
+const std::string& Mntr_Screen::getClassType(void) { 
     
     static std::string rbClassName = "Mntr_Screen";
     
@@ -55,7 +57,7 @@ const std::string& Mntr_Screen::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_Screen::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

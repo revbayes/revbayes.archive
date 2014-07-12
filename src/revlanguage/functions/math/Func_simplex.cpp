@@ -68,7 +68,7 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_simplex::getClassName(void) { 
+const std::string& Func_simplex::getClassType(void) { 
     
     static std::string rbClassName = "Func_simplex";
     
@@ -79,7 +79,7 @@ const std::string& Func_simplex::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

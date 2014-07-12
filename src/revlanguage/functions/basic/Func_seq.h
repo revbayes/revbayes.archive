@@ -37,7 +37,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_seq*                   clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
@@ -85,7 +85,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_seq<valType>::execu
     
     typename valType::valueType val = from;
     
-    Vector<valType> *seq = new Vector<valType>();
+    ModelVector<valType> *seq = new ModelVector<valType>();
     while ( (val >= from && val <= to) || (val <= from && val >= to) )
     {
         seq->push_back( valType( val ) );
@@ -106,9 +106,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "from", true, valType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "to",   true, valType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "by",   true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "from", true, valType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "to",   true, valType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "by",   true, valType::getClassType() ) );
         rulesSet = true;
     }
     
@@ -118,9 +118,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
 
 /** Get class name of object */
 template <typename valType>
-const std::string& RevLanguage::Func_seq<valType>::getClassName(void) {
+const std::string& RevLanguage::Func_seq<valType>::getClassType(void) {
     
-    static std::string rbClassName = "Func_seq<" + valType::getClassTypeSpec() + ">";
+    static std::string rbClassName = "Func_seq<" + valType::getClassType() + ">";
     
 	return rbClassName;
 }
@@ -130,7 +130,7 @@ const std::string& RevLanguage::Func_seq<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -150,7 +150,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getTypeSpec( void )
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getReturnType( void ) const {
     
-    return Vector<valType>::getClassTypeSpec();
+    return ModelVector<valType>::getClassTypeSpec();
 }
 
 

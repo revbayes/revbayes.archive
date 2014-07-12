@@ -47,7 +47,7 @@ void Move_TreeScale::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_TreeScale::getClassName(void) { 
+const std::string& Move_TreeScale::getClassType(void) { 
     
     static std::string rbClassName = "Move_Move_TreeScale";
     
@@ -57,7 +57,7 @@ const std::string& Move_TreeScale::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Move_TreeScale::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

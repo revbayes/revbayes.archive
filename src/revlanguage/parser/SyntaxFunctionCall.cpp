@@ -19,6 +19,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RlString.h"
 #include "SyntaxFunctionCall.h"
 #include "Workspace.h"
 

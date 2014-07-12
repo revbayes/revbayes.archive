@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Container, a container type
- * that acts as a base class for all constant Containers.
- *
- * @brief Declaration of Container
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-12-04, version 1.0
- *
- * $Id$
- */
-
 #ifndef Container_H
 #define Container_H
 
@@ -26,45 +9,59 @@
 
 namespace RevLanguage {
 
+    /**
+     * @brief Generic container base class
+     *
+     * Container is the base class for all generic Rev containers, that is, Rev objects with a type of the
+     * form element type followed by one or more pairs of square brackets marking the dimension of the
+     * container. For instance, a generic Rev vector of Real elements will have type "Real[]", and a
+     * vector of probabilities will have type "Probability[][]". The actual generic vector types used
+     * in Rev are classes deriving directly from either ModelContainer (for ModelObject elements) or
+     * from WorkspaceContainer (for WorkspaceObject elements).
+     *
+     * More specialized containers derive from the generic container classes, and thus inherit all
+     * of the container properties.
+     *
+     * Generic containers support assignment to individual elements by default, but derived classes
+     * defining specialized classes typically override this behavior by appropriate modification of
+     * the element access functions. Specifically, to protect the parser from assigning to container
+     * elements, simply throw an appropriate error in the findOrCreateElement function.
+     */
     class Container : public RevObject {
     
     public:
     
         // Basic utility functions you have to override
-        virtual RevObject*                          convertTo(const TypeSpec& type) const;                              //!< Convert to type
         virtual Container*                          clone(void) const = 0;                                              //!< Clone object
-        static const std::string&                   getClassName(void);                                                 //!< Get class name
+        static const std::string&                   getClassType(void);                                                 //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
-        virtual bool                                isConvertibleTo(const TypeSpec& type) const;                        //!< Is convertible to type?
-        virtual void                                printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        virtual const TypeSpec&                     getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
+        virtual void                                printStructure(std::ostream& o) const = 0;                          //!< Print structure of language object for user
         virtual void                                printValue(std::ostream& o) const = 0;                              //!< Print value for user
     
         // Container functions you have to override
-        virtual size_t                              size(void) const = 0;                                               //!< get the number of elements in the Container
+        virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices) = 0;   //!< Find or create element (for direct element assignment)
+        virtual size_t                              getDim(void) const = 0;                                                 //!< Get the dimension (1 for vector, 2 for matrix etc)
+        virtual RevPtr<Variable>                    getElement(const std::vector<size_t>& oneOffsetIndices) = 0;            //!< Get element variable (vector of indices)
+        virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths) = 0; //!< Set elements from Rev objects
+        virtual size_t                              size(void) const = 0;                                                   //!< Get number of elements in container
     
-        virtual void                                clear(void) = 0;                                                    //!< Clear
-        virtual RevPtr<Variable>                    getElement(size_t index) = 0;                                       //!< Get element (non-const to return non-const element)
-    
-        // Member method inits
+        // Member method functions
         virtual const MethodTable&                  getMethods(void) const;                                             //!< Get methods
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
 
-        // Container functions you do not have to override
-        const TypeSpec&                             getElementType(void) const { return elementType; }                  //!< Get element type
-        bool                                        empty(void) const { return size() == 0; }                           //!< Test whether the container is empty
-    
+        // Container function you do not have to override
+        virtual RevPtr<Variable>                    getElement(size_t oneOffsetIndex);                                  //!< Get element variable (single index)
+        
     protected:
-        Container(const TypeSpec &elemType);                                                                    //!< Set type spec of container from type of elements
-        Container(const TypeSpec &elemType, const MemberRules& memberRules);                                    //!< Set type spec of container from type of elements
-    
-        Container&                                  operator=(const Container& x);                                          //!< Assignment operator
+        Container(void);                                                                                                //!< Default constructor
+        Container(const MemberRules& memberRules);                                                                      //!< Constructor taking member rules
 
-        // Member variables
-        const TypeSpec                              elementType;                                                            //!< Type of elements
+        Container&                                  operator=(const Container& x);                                      //!< Assignment operator
 
     };
 
 }
-    
+
 #endif
 

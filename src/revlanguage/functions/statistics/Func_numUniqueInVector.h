@@ -32,7 +32,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_numUniqueInVector*                     clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
@@ -45,13 +45,13 @@ namespace RevLanguage {
     
 }
 
+#include "Integer.h"
+#include "ModelVector.h"
 #include "NumUniqueInVector.h"
 #include "RealPos.h"
-#include "Integer.h"
 #include "RlDeterministicNode.h"
-#include "TypedDagNode.h"
-#include "Vector.h"
 #include "StochasticNode.h"
+#include "TypedDagNode.h"
 
 //using namespace RevLanguage;
 
@@ -71,7 +71,7 @@ RevLanguage::Func_numUniqueInVector<valType>* RevLanguage::Func_numUniqueInVecto
 
 template <typename valType>
 RevLanguage::RevPtr<Variable> RevLanguage::Func_numUniqueInVector<valType>::execute() {
-    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* vect = static_cast<const Vector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* vect = static_cast<const ModelVector<valType> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::NumUniqueInVector<typename valType::valueType>* f = new RevBayesCore::NumUniqueInVector<typename valType::valueType>( vect );
     
     DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
@@ -91,7 +91,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "vector", true, Vector<valType>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "vector", true, ModelVector<valType>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -101,7 +101,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
 
 
 template <typename valType>
-const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassName(void) { 
+const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void) { 
     
     static std::string rbClassName = "Func_numUniqueInVector";
     
@@ -112,7 +112,7 @@ const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassName(vo
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

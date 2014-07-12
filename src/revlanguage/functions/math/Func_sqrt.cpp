@@ -58,7 +58,7 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_sqrt::getClassName(void) { 
+const std::string& Func_sqrt::getClassType(void) { 
     
     static std::string rbClassName = "Func_sqrt";
     
@@ -68,7 +68,7 @@ const std::string& Func_sqrt::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_sqrt::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

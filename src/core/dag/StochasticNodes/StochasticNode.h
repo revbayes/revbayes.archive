@@ -58,7 +58,8 @@ namespace RevBayesCore {
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
-
+        void                                                unclamp(void);                                                              //!< Unclamp the variable
+        
     protected:    
         
         virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
@@ -385,5 +386,12 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher ) {
     DynamicNode<valueType>::touchMe( toucher );
 }
 
+
+/** unclamp this node */
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::unclamp( void )
+{
+    throw RbException( "Unclamping not supported yet" );
+}
 #endif
 

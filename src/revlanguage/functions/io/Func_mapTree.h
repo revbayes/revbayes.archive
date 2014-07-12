@@ -31,7 +31,7 @@ namespace RevLanguage {
     public:
         // Basic utility functions
         Func_mapTree*                   clone(void) const;                                                      //!< Clone the object
-        static const std::string&       getClassName(void);                                                     //!< Get class name
+        static const std::string&       getClassType(void);                                                     //!< Get class name
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
@@ -51,6 +51,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "NexusWriter.h"
 #include "RbException.h"
 #include "RevNullObject.h"
@@ -63,7 +64,6 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 #include "TreeTrace.h"
 #include "UserInterface.h"
-#include "Vector.h"
 
 #include <map>
 #include <set>
@@ -128,9 +128,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
 
 /** Get class name of object */
 template <typename treeType>
-const std::string& RevLanguage::Func_mapTree<treeType>::getClassName(void) { 
+const std::string& RevLanguage::Func_mapTree<treeType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_mapTree<" + treeType::getClassName() + ">";
+    static std::string rbClassName = "Func_mapTree<" + treeType::getClassType() + ">";
     
 	return rbClassName; 
 }
@@ -139,7 +139,7 @@ const std::string& RevLanguage::Func_mapTree<treeType>::getClassName(void) {
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

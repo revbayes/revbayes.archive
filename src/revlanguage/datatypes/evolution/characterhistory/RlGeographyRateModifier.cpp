@@ -9,10 +9,10 @@
 #include "RlGeographyRateModifier.h"
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -56,7 +56,7 @@ RevPtr<Variable> RlGeographyRateModifier::executeMethod(std::string const &name,
 
 
 /* Get class name of object */
-const std::string& RlGeographyRateModifier::getClassName(void) {
+const std::string& RlGeographyRateModifier::getClassType(void) {
     
     static std::string rbClassName = "RlGeographyRateModifier";
     
@@ -66,7 +66,7 @@ const std::string& RlGeographyRateModifier::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& RlGeographyRateModifier::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -84,7 +84,7 @@ const MethodTable& RlGeographyRateModifier::getMethods(void) const {
 //        // add method for call "x[]" as a function
 //        ArgumentRules* squareBracketArgRules = new ArgumentRules();
 //        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-//        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+//        methods.addFunction("[]",  new MemberFunction( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
 //        
 //        // add method for call "x[]" as a function
 //        ArgumentRules* sizeArgRules = new ArgumentRules();

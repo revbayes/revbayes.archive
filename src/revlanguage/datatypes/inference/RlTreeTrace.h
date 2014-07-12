@@ -39,7 +39,7 @@ namespace RevLanguage {
         // Basic utility functions
         virtual TreeTrace*                          clone(void) const;                                                          //!< Clone object
         void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassName(void);                                                         //!< Get class name
+        static const std::string&                   getClassType(void);                                                         //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
@@ -116,9 +116,9 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
 
 /** Get class name of object */
 template <typename treeType>
-const std::string& RevLanguage::TreeTrace<treeType>::getClassName(void) { 
+const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) { 
     
-    static std::string rbClassName = "TreeTrace<" + treeType::getClassName() + ">";
+    static std::string rbClassName = "TreeTrace<" + treeType::getClassType() + ">";
     
 	return rbClassName; 
 }
@@ -127,7 +127,7 @@ const std::string& RevLanguage::TreeTrace<treeType>::getClassName(void) {
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -143,8 +143,8 @@ const RevLanguage::MemberRules& RevLanguage::TreeTrace<treeType>::getMemberRules
     
     if ( !rulesSet ) {
 //        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-//        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
-//        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+//        modelMemberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
+//        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

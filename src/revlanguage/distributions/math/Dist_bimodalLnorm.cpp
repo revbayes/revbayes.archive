@@ -64,7 +64,7 @@ Dist_bimodalLnorm* Dist_bimodalLnorm::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& Dist_bimodalLnorm::getClassName(void) 
+const std::string& Dist_bimodalLnorm::getClassType(void) 
 { 
     
     static std::string rbClassName = "Dist_bimodalLnorm";
@@ -81,7 +81,7 @@ const std::string& Dist_bimodalLnorm::getClassName(void)
 const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

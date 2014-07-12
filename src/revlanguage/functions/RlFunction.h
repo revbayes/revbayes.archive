@@ -9,6 +9,8 @@
 #include "ArgumentRules.h"
 #include "Environment.h"
 #include "RevPtr.h"
+#include "TypeSpec.h"
+
 
 namespace RevLanguage {
 
@@ -29,10 +31,6 @@ namespace RevLanguage {
      * The processing of labeled argument values is done in the function
      * processArguments, which will throw an error if the provided
      * arguments do not match.
-     *
-     * \author RevBayes Core Development Team
-     * \copyright GPL version 3
-     *
      */
     class Function : public RevObject {
     public:
@@ -41,7 +39,7 @@ namespace RevLanguage {
 
         // Basic utility functions you have to override
         virtual Function*                               clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Basic utility functions you may want to override

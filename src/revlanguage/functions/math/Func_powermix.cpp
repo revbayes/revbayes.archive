@@ -69,7 +69,7 @@ const ArgumentRules& Func_powermix::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_powermix::getClassName(void) {
+const std::string& Func_powermix::getClassType(void) {
     
     static std::string rbClassName = "Func_powermix";
     
@@ -79,7 +79,7 @@ const std::string& Func_powermix::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_powermix::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }

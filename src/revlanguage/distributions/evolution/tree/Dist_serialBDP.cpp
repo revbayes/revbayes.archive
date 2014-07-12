@@ -3,8 +3,10 @@
 #include "Clade.h"
 #include "ConstantRateSerialSampledBirthDeathProcess.h"
 #include "Dist_serialBDP.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
@@ -12,7 +14,6 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -69,9 +70,9 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::create
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     
     std::vector<RevBayesCore::Taxon> taxa;
     for (size_t i = 0; i < names.size(); ++i) 
@@ -92,7 +93,7 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::create
  *
  * \return The class' name.
  */
-const std::string& Dist_serialBDP::getClassName( void ) 
+const std::string& Dist_serialBDP::getClassType( void ) 
 { 
     
     static std::string rbClassName = "Dist_serialBDP";
@@ -109,7 +110,7 @@ const std::string& Dist_serialBDP::getClassName( void )
 const TypeSpec& Dist_serialBDP::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -139,13 +140,13 @@ const MemberRules& Dist_serialBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho", true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
-        Vector<RlString> optionsCondition;
+        std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
         optionsCondition.push_back( RlString("nTaxa") );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, ModelVector<Clade>::getClassTypeSpec(), new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();

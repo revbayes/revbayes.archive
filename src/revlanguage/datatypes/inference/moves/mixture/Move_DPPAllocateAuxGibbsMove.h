@@ -30,7 +30,7 @@ namespace RevLanguage {
         // Basic utility functions
         virtual Move_DPPAllocateAuxGibbsMove*                        clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
-        static const std::string&                   getClassName(void);                                                                             //!< Get class name
+        static const std::string&                   getClassType(void);                                                                             //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
@@ -50,6 +50,8 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "DPPAllocateAuxGibbsMove.h"
+#include "ModelVector.h"
+#include "Integer.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
@@ -58,8 +60,6 @@ namespace RevLanguage {
 #include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
-#include "Integer.h"
 
 
 using namespace RevLanguage;
@@ -86,7 +86,7 @@ void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
     // now allocate a new vector-scale move
     int na = static_cast<const Integer &>( nAux->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<typename valType::valueType> >* tmp = static_cast<const Vector<valType> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<typename valType::valueType> >* tmp = static_cast<const ModelVector<valType> &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< std::vector<typename valType::valueType> > *sn = static_cast<RevBayesCore::StochasticNode<std::vector<typename valType::valueType> > *>( tmp );
     
     value = new RevBayesCore::DPPAllocateAuxGibbsMove<typename valType::valueType>(sn, na, w);
@@ -95,7 +95,7 @@ void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
 
 /** Get class name of object */
 template <class valType>
-const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassName(void) { 
+const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void) { 
     
     static std::string rbClassName = "Move_DPPAllocateAuxGibbsMove";
     
@@ -106,7 +106,7 @@ const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassName(void) {
 template <class valType>
 const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -121,7 +121,7 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getMemberRules(void) c
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<valType>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<valType>::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */

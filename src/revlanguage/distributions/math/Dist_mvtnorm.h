@@ -19,13 +19,13 @@
 #define Dist_mvtnormal_H
 
 #include "MultivariateNormalDistribution.h"
-#include "Vector.h"
+#include "ModelVector.h"
 #include "Real.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
     
-    class Dist_mvtnorm :  public TypedDistribution< Vector<Real> > {
+    class Dist_mvtnorm :  public TypedDistribution< ModelVector<Real> > {
         
     public:
                                                         Dist_mvtnorm( void );
@@ -33,7 +33,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Dist_mvtnorm*                                   clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)

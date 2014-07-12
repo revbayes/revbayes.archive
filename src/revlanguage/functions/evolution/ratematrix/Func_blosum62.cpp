@@ -50,7 +50,7 @@ const ArgumentRules& Func_blosum62::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_blosum62::getClassName(void) { 
+const std::string& Func_blosum62::getClassType(void) { 
     
     static std::string rbClassName = "Func_blosum62";
     
@@ -60,7 +60,7 @@ const std::string& Func_blosum62::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_blosum62::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

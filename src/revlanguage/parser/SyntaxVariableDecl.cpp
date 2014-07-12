@@ -85,7 +85,9 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const {
 }
 
 
-/** Get semantic value: insert symbol and return the rhs value of the assignment */
+/** Get semantic value: insert symbol and return the rhs value of the assignment
+ * @todo Fix this: This is not correct.
+ */
 RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
     
 #ifdef DEBUG_PARSER
@@ -97,7 +99,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
         throw RbException( "Illegal attempt to redefine variable " + variableName );
     
     // Check if type exists
-    if ( !Workspace::userWorkspace().existsType( TypeSpec(elementTypeName) ) )
+    if ( !Workspace::userWorkspace().existsType( elementTypeName ) )
         throw RbException( "Type " + elementTypeName + " does not exist" );
 
     // Evaluate length specification

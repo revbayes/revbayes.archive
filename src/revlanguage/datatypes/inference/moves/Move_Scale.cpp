@@ -75,7 +75,7 @@ void Move_Scale::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_Scale::getClassName(void) 
+const std::string& Move_Scale::getClassType(void) 
 { 
     
     static std::string rbClassName = "Move_Scale";
@@ -92,7 +92,7 @@ const std::string& Move_Scale::getClassName(void)
 const TypeSpec& Move_Scale::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

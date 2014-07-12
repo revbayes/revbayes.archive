@@ -60,7 +60,7 @@ Dist_norm* Dist_norm::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& Dist_norm::getClassName(void)
+const std::string& Dist_norm::getClassType(void)
 { 
     
     static std::string rbClassName = "Dist_norm";
@@ -77,7 +77,7 @@ const std::string& Dist_norm::getClassName(void)
 const TypeSpec& Dist_norm::getClassTypeSpec(void)
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

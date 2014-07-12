@@ -2,12 +2,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "Ellipsis.h"
 #include "Model.h"
+#include "ModelVector.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <vector>
 
@@ -40,7 +41,7 @@ void Model::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Model::getClassName(void) { 
+const std::string& Model::getClassType(void) { 
     
     static std::string rbClassName = "Model";
     
@@ -50,7 +51,7 @@ const std::string& Model::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

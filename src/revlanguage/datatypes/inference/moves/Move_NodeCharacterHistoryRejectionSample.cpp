@@ -103,7 +103,7 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_NodeCharacterHistoryRejectionSample::getClassName(void)
+const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 {
     
     static std::string rbClassName = "Move_NodeCharacterHistoryRejectionSample";
@@ -120,7 +120,7 @@ const std::string& Move_NodeCharacterHistoryRejectionSample::getClassName(void)
 const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -149,7 +149,7 @@ const MemberRules& Move_NodeCharacterHistoryRejectionSample::getMemberRules(void
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", true, Probability::getClassTypeSpec() , new Probability(1.0) ) );
 //        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("std") );
         options.push_back( RlString("biogeo") );
         nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options ) );

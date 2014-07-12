@@ -8,11 +8,11 @@
 
 #include "MeanFunction.h"
 #include "Func_mean.h"
+#include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -31,7 +31,7 @@ Func_mean* Func_mean::clone( void ) const {
 
 RevPtr<Variable> Func_mean::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const Vector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* arg = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::MeanFunction* f = new RevBayesCore::MeanFunction( arg );
     
     DeterministicNode<double> *detNode = new DeterministicNode<double>("", f, this->clone());
@@ -50,7 +50,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, Vector<Real>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, ModelVector<Real>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -59,7 +59,7 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_mean::getClassName(void) { 
+const std::string& Func_mean::getClassType(void) { 
     
     static std::string rbClassName = "Func_mean";
     
@@ -69,7 +69,7 @@ const std::string& Func_mean::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_mean::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

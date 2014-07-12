@@ -11,6 +11,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_mvtBrownian.h"
+#include "ModelVector.h"
 #include "MultivariateBrownianPhyloProcess.h"
 #include "PrecisionMatrix.h"
 #include "Real.h"
@@ -18,7 +19,6 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -34,7 +34,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om  = static_cast<const RealSymmetricMatrix&>( omega->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const Vector<Real>&>( rootval->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
     
     RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
     
@@ -45,7 +45,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
 
 
 /* Get class name of object */
-const std::string& Dist_mvtBrownian::getClassName(void) {
+const std::string& Dist_mvtBrownian::getClassType(void) {
     
     static std::string rbClassName = "Dist_multivariateBrownian";
     
@@ -55,7 +55,7 @@ const std::string& Dist_mvtBrownian::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_mvtBrownian::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -72,7 +72,7 @@ const MemberRules& Dist_mvtBrownian::getMemberRules(void) const {
     {
         dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
         dist.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "rootval", true, ModelVector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

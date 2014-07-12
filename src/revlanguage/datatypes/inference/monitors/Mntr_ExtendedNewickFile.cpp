@@ -2,15 +2,18 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "Ellipsis.h"
 #include "ExtendedNewickTreeMonitor.h"
 #include "Mntr_ExtendedNewickFile.h"
+#include "ModelVector.h"
+#include "Natural.h"
 #include "RbException.h"
+#include "Real.h"
 #include "RevObject.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -38,7 +41,7 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
     for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getRevObject()).getDagNode();
+        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
@@ -49,7 +52,7 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Mntr_ExtendedNewickFile::getClassName(void) { 
+const std::string& Mntr_ExtendedNewickFile::getClassType(void) { 
     
     static std::string rbClassName = "Mntr_ExtendedNewickFile";
     
@@ -59,7 +62,7 @@ const std::string& Mntr_ExtendedNewickFile::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
