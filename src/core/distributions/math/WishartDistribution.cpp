@@ -38,6 +38,7 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
     kappa(inkappa),
     df(indf)    {
     
+        addParameter(dim);
         addParameter( kappa );
         addParameter(df);
         
@@ -52,10 +53,15 @@ WishartDistribution::WishartDistribution(const WishartDistribution& from) :
     df(from.df)    {
 
         if (omega0) {
+            std::cerr << "omega0??\n";
+            exit(1);
             addParameter( omega0 );
         }
         if (kappa)  {
             addParameter(kappa);
+        }
+        if (dim)    {
+            addParameter(dim);
         }
         addParameter(df);
 
@@ -69,10 +75,18 @@ WishartDistribution* WishartDistribution::clone(void) const   {
 
 void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     if (oldP == omega0) {
+            std::cerr << "omega0??\n";
+            exit(1);
         omega0 = static_cast<const TypedDagNode<PrecisionMatrix>* >( newP );
     }
     if (oldP == kappa)  {
         kappa = static_cast<const TypedDagNode<double>* >(newP);
+    }
+    if (oldP == dim)    {
+        dim = static_cast<const TypedDagNode<int>* >(newP);
+    }
+    if (oldP == df)    {
+        df = static_cast<const TypedDagNode<int>* >(newP);
     }
 }
 
@@ -82,9 +96,14 @@ double WishartDistribution::computeLnProbability(void)  {
     size_t dim = getValue().getDim();
     
     double ret = 0;
-    ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
-    ret += 0.5 * (getDF() - long(dim) - 1) * getValue().getLogDet();
-
+    if (omega0) {
+        ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
+        ret += 0.5 * (getDF() - long(dim) - 1) * getValue().getLogDet();
+    }
+    else    {
+        ret -= 0.5 * getDF() * dim * kappa->getValue();
+        ret += 0.5 * (getDF() - long(dim) - 1) * getValue().getLogDet();
+    }
     double trace = 0;
  
     if (omega0) {
@@ -104,7 +123,7 @@ double WishartDistribution::computeLnProbability(void)  {
     }
 
     ret -= 0.5 * trace;
-    
+
     return ret;
 }
 
