@@ -96,6 +96,21 @@ ContinuousCharacterData* ContinuousCharacterData::clone( void ) const
 }
 
 
+/**
+ * Exclude all characters.
+ * We don't actually delete the characters but mark them for exclusion.
+ */
+void ContinuousCharacterData::excludeAllCharacters(void)
+{
+    
+    for (size_t i = 0; i < getTaxonData( 0 ).size(); ++i)
+    {
+        deletedCharacters.insert( i );
+    }
+    
+}
+
+
 /** 
  * Exclude a character.
  * We don't actually delete the character but mark it for exclusion.
@@ -456,6 +471,29 @@ const std::string& ContinuousCharacterData::getTaxonNameWithIndex( size_t idx ) 
 {
     
     return sequenceNames[idx];
+}
+
+
+/**
+ * Include a character.
+ * Since we didn't actually deleted the character but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The position of the character that will be included.
+ */
+void ContinuousCharacterData::includeCharacter(size_t i)
+{
+    
+    if (i >= getTaxonData( 0 ).size() )
+    {
+        std::stringstream o;
+        o << "Only " << getNumberOfCharacters() << " characters in matrix";
+        throw RbException( o.str() );
+    }
+    
+    
+    deletedCharacters.erase( i );
+    
 }
 
 

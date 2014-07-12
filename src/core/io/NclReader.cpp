@@ -59,13 +59,14 @@ void NclReader::constructBranchLengthTreefromNclRecursively(TopologyNode* tn, st
 
 
 /** Reads the blocks stored by NCL and converts them to RevBayes character matrices */
-std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string& fileName) {
+std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string& fileName)
+{
     
 	std::vector<AbstractCharacterData* > cmv;
     
 	size_t numTaxaBlocks = nexusReader.GetNumTaxaBlocks();
 	for (unsigned tBlck=0; tBlck<numTaxaBlocks; tBlck++)
-        {
+    {
 		NxsTaxaBlock* taxaBlock = nexusReader.GetTaxaBlock(tBlck);
 		std::string taxaBlockTitle          = taxaBlock->GetTitle();
 		const unsigned nCharBlocks          = nexusReader.GetNumCharactersBlocks(taxaBlock);
@@ -73,47 +74,76 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
         
         // make alignment objects
 		for (unsigned cBlck=0; cBlck<nCharBlocks; cBlck++)
-            {
+        {
 			AbstractCharacterData* m = NULL;
 			NxsCharactersBlock* charBlock = nexusReader.GetCharactersBlock(taxaBlock, cBlck);
 			std::string charBlockTitle = taxaBlock->GetTitle();
 			int dt = charBlock->GetDataType();
 			if (dt == NxsCharactersBlock::dna || dt == NxsCharactersBlock::nucleotide)
-                {
+            {
                 m = createDnaMatrix(charBlock);
-                }
+            }
 			else if (dt == NxsCharactersBlock::rna)
-                {
+            {
                 m = createRnaMatrix(charBlock);
-                }
+            }
 			else if (dt == NxsCharactersBlock::protein)
-                {
+            {
                 m = createAminoAcidMatrix(charBlock);
-                }
+            }
 			else if (dt == NxsCharactersBlock::standard)
-                {
+            {
                 m = createStandardMatrix(charBlock);
-                }
+            }
 			else if (dt == NxsCharactersBlock::continuous)
-                {
+            {
                 m = createContinuousMatrix(charBlock);
-                }
+            }
 			else if (dt == NxsCharactersBlock::mixed)
-                {
+            {
                 addWarning("Mixed data types are not allowed");
-                }
+            }
             else 
-                {
+            {
                 addWarning("Unknown data type");
-                }
+            }
             
 			if (m != NULL)
-                {
+            {
                 m->setFileName( StringUtilities::getLastPathComponent(fileName) );
                 m->setFilePath( StringUtilities::getStringWithDeletedLastPathComponent(fileName) );
-				cmv.push_back( m );
+                
+                unsigned int nAssumptions = nexusReader.GetNumAssumptionsBlocks(charBlock);
+                if ( nAssumptions > 0 )
+                {
+                    for (unsigned int i = 0; i < nAssumptions; ++i)
+                    {
+                        NxsAssumptionsBlock *assumption = nexusReader.GetAssumptionsBlock(charBlock,i);
+                        size_t nSets = assumption->GetNumCharSets();
+                        NxsStringVector names;
+                        assumption->GetCharSetNames(names);
+                        for (size_t j = 0; j < nSets; ++j)
+                        {
+                            const NxsUnsignedSet *set = assumption->GetCharSet(names[j]);
+                            AbstractCharacterData *m_tmp = m->clone();
+                            m_tmp->excludeAllCharacters();
+                            for (std::set<unsigned>::iterator k = set->begin(); k != set->end(); k++)
+                            {
+                                m_tmp->includeCharacter( *k );
+                            }
+                            cmv.push_back( m_tmp );
+                            
+                        }
+                        
+                    }
                 }
+                else
+                {
+                    cmv.push_back( m );
+                }
+                
             }
+        }
         
         // create unaligned data objects
 		for (unsigned cBlck=0; cBlck<nUnalignedCharBlocks; cBlck++)

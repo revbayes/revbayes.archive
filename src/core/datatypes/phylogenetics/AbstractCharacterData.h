@@ -38,6 +38,7 @@ namespace RevBayesCore {
     
         // CharacterData functions
         virtual void                            addTaxonData(const AbstractTaxonData &obs) = 0;                             //!< Add taxon data
+        virtual void                            excludeAllCharacters(void) = 0;                                             //!< Exclude all characters
         virtual void                            excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual void                            excludeTaxon(size_t i) = 0;                                                 //!< Exclude taxon
         virtual void                            excludeTaxon(std::string& s) = 0;                                           //!< Exclude taxon
@@ -57,6 +58,7 @@ namespace RevBayesCore {
         virtual const AbstractTaxonData&        getTaxonData(const std::string &tn) const = 0;                              //!< Return a reference to a sequence in the character matrix
         virtual const std::vector<std::string>& getTaxonNames(void) const = 0;                                              //!< Get the names of the taxa
         virtual const std::string&              getTaxonNameWithIndex(size_t idx) const = 0;                                //!< Returns the idx-th taxon name
+        virtual void                            includeCharacter(size_t i) = 0;                                             //!< Include character
         virtual bool                            isCharacterExcluded(size_t i) const = 0;                                    //!< Is the character excluded
         virtual bool                            isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         virtual bool                            isTaxonExcluded(size_t i) const = 0;                                        //!< Is the taxon excluded
