@@ -234,6 +234,8 @@
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
+#include "Func_discretizedGammaRates.h"
+
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
 #include "Func_blosum62.h"
@@ -724,6 +726,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
+        addFunction( "discretizeGamma",             new Func_discretizedGammaRates()    );
         
         // nonstandard names (for backward compatibility)
         addFunction( "expbranchtree",               new Func_expBranchTree()            );
