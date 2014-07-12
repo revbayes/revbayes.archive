@@ -9,9 +9,9 @@
 #include "ExponentialBranchTree.h"
 #include "Func_expBranchTree.h"
 
+#include "ModelVector.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -43,7 +43,7 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "nodevals", true, Vector<Real>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "nodevals", true, ModelVector<Real>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -54,7 +54,7 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
 
 
 /* Get class name of object */
-const std::string& Func_expBranchTree::getClassName(void) {
+const std::string& Func_expBranchTree::getClassType(void) {
     
     static std::string rbClassName = "Func_expBranchTree";
     
@@ -64,7 +64,7 @@ const std::string& Func_expBranchTree::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_expBranchTree::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -73,7 +73,7 @@ const TypeSpec& Func_expBranchTree::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_expBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<RealPos>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
@@ -93,13 +93,13 @@ RevPtr<Variable> Func_expBranchTree::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* val = static_cast<const Vector<Real> &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* val = static_cast<const ModelVector<Real> &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, val );
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
-    Vector<RealPos>* wrappedresult = new Vector<RealPos>(dag);
+    ModelVector<RealPos>* wrappedresult = new ModelVector<RealPos>(dag);
     
     return new Variable( wrappedresult );
 }

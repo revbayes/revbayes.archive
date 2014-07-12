@@ -1,10 +1,10 @@
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "RlTaxon.h"
 #include "TimeAndDate.h"
 #include "RbUtil.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -77,7 +77,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string cons
 //    }
 //    else if (name == "names") {
 //        const std::vector<std::string>& n = this->value->getValue().getNames();
-//        return new Vector<RlString>( n );
+//        return new ModelVector<RlString>( n );
 //    } 
     
     return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args );
@@ -104,7 +104,7 @@ const MemberRules& Taxon::getMemberRules(void) const {
 
 
 /** Get class name of object */
-const std::string& Taxon::getClassName(void) { 
+const std::string& Taxon::getClassType(void) { 
     
     static std::string rbClassName = "Taxon";
     
@@ -114,7 +114,7 @@ const std::string& Taxon::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Taxon::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
     return rbClass; 
 }
@@ -132,7 +132,7 @@ const RevLanguage::MethodTable& Taxon::getMethods(void) const {
 //        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
 //        
 //        ArgumentRules* namesArgRules = new ArgumentRules();
-//        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+//        methods.addFunction("names", new MemberFunction(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

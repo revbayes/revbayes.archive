@@ -132,8 +132,8 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
         else
         {
             std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec() << "'" << std::endl;
-            msg << " because the variable requires type '" << theSlot->getRevObjectTypeSpec() << "'" << std::endl;
+            msg << "Cannot reassign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
+            msg << " because the variable requires type '" << theSlot->getRevObjectTypeSpec().getType() << "'" << std::endl;
             throw RbException( msg );
         }
     }

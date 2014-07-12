@@ -213,7 +213,7 @@ Real* Real::divide(const Integer &rhs) const
 
 
 /** Get class name of object */
-const std::string& Real::getClassName(void) { 
+const std::string& Real::getClassType(void) { 
     
     static std::string rbClassName = "Real";
     
@@ -223,7 +223,7 @@ const std::string& Real::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Real::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

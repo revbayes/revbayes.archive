@@ -2,11 +2,11 @@
 #include "ArgumentRules.h"
 #include "BranchRateJumpProcess.h"
 #include "Dist_branchRateJumpProcess.h"
+#include "ModelVector.h"
 #include "Probability.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_branchRateJumpProcess::Dist_branchRateJumpProcess( void ) : TypedDistribution< Vector<RealPos> >(),
+Dist_branchRateJumpProcess::Dist_branchRateJumpProcess( void ) : TypedDistribution< ModelVector<RealPos> >(),
     valueDistribution( NULL ),
     tree( NULL ),
     lambda( NULL ),
@@ -75,7 +75,7 @@ Dist_branchRateJumpProcess* Dist_branchRateJumpProcess::clone( void ) const
  *
  * \return The class' name.
  */
-const std::string& Dist_branchRateJumpProcess::getClassName(void) 
+const std::string& Dist_branchRateJumpProcess::getClassType(void) 
 { 
     
     static std::string rbClassName = "Dist_branchRateJumpProcess";
@@ -92,7 +92,7 @@ const std::string& Dist_branchRateJumpProcess::getClassName(void)
 const TypeSpec& Dist_branchRateJumpProcess::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector<RealPos> >::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<RealPos> >::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -174,7 +174,7 @@ void Dist_branchRateJumpProcess::setConstMemberVariable(const std::string& name,
     }
     else 
     {
-        TypedDistribution< Vector< RealPos > >::setConstMemberVariable(name, var);
+        TypedDistribution< ModelVector< RealPos > >::setConstMemberVariable(name, var);
     }
     
 }

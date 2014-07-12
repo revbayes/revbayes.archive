@@ -62,7 +62,7 @@ const ArgumentRules& Func_jc::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_jc::getClassName(void) { 
+const std::string& Func_jc::getClassType(void) { 
     
     static std::string rbClassName = "Func_jc";
     
@@ -72,7 +72,7 @@ const std::string& Func_jc::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_jc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

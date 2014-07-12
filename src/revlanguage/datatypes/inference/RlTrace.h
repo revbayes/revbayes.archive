@@ -39,7 +39,7 @@ namespace RevLanguage {
         virtual Trace*                              clone(void) const;                                                          //!< Clone object
         void                                        computeStatistics(void);
         void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassName(void);                                                         //!< Get class name
+        static const std::string&                   getClassType(void);                                                         //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object

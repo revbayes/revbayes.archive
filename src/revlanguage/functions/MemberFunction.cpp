@@ -55,7 +55,7 @@ RevPtr<Variable> MemberFunction::execute( void )
 
 
 /** Get class name of object */
-const std::string& MemberFunction::getClassName(void) { 
+const std::string& MemberFunction::getClassType(void) { 
     
     static std::string rbClassName = "MemberFunction";
     
@@ -65,7 +65,7 @@ const std::string& MemberFunction::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& MemberFunction::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

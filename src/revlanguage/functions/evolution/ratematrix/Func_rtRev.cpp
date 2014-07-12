@@ -50,7 +50,7 @@ const ArgumentRules& Func_rtRev::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_rtRev::getClassName(void) { 
+const std::string& Func_rtRev::getClassType(void) { 
     
     static std::string rbClassName = "Func_rtRev";
     
@@ -60,7 +60,7 @@ const std::string& Func_rtRev::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_rtRev::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

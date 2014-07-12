@@ -24,7 +24,7 @@ namespace RevLanguage {
     public:
         // Basic utility functions
         Func_writeFasta*            clone(void) const;                                                      //!< Clone the object
-        static const std::string&   getClassName(void);                                                     //!< Get class name
+        static const std::string&   getClassType(void);                                                     //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                                //!< Get language type of the object
         

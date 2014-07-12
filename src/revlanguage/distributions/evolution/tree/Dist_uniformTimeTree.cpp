@@ -2,6 +2,7 @@
 #include "ArgumentRules.h"
 #include "Clade.h"
 #include "Dist_uniformTimeTree.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Real.h"
@@ -11,7 +12,6 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "UniformTimeTreeDistribution.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -37,7 +37,7 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 
     // Get the parameters
     RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getRevObject() ).getDagNode();
-    const std::vector<std::string>      &names  = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string>      &names  = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
 
     RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( originT, names );
 
@@ -47,7 +47,7 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 
 
 /* Get class name of object */
-const std::string& Dist_uniformTimeTree::getClassName(void) {
+const std::string& Dist_uniformTimeTree::getClassType(void) {
     
     static std::string rbClassName = "Dist_uniformTimeTree";
     
@@ -58,7 +58,7 @@ const std::string& Dist_uniformTimeTree::getClassName(void) {
 /* Get class type spec describing type of object. TODO: Check if the correct parent is TypedDistribution or Distribution */
 const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -73,7 +73,7 @@ const MemberRules& Dist_uniformTimeTree::getMemberRules(void) const {
     if ( !rulesSet ) {
 
         distUTTDMemberRules.push_back( new ArgumentRule( "originTime", true, RealPos::getClassTypeSpec() ) );
-        distUTTDMemberRules.push_back( new ArgumentRule( "taxonNames", true, Vector<RlString>::getClassTypeSpec() ) );
+        distUTTDMemberRules.push_back( new ArgumentRule( "taxonNames", true, ModelVector<RlString>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

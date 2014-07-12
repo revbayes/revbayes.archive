@@ -224,7 +224,7 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
 
 
 /** Get class name of object */
-const std::string& BurninEstimationConvergenceAssessment::getClassName(void) {
+const std::string& BurninEstimationConvergenceAssessment::getClassType(void) {
     
     static std::string rbClassName = "BurninEstimationConvergenceAssessment";
     
@@ -234,7 +234,7 @@ const std::string& BurninEstimationConvergenceAssessment::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -270,7 +270,7 @@ const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const
         ArgumentRules* runArgRules = new ArgumentRules();
         methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
         
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("ESS") );
         options.push_back( RlString("SEM") );
         

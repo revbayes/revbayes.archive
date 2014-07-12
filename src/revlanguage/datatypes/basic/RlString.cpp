@@ -98,7 +98,7 @@ RlString* RevLanguage::RlString::clone() const {
 
 
 /** Get class name of object */
-const std::string& RlString::getClassName(void) { 
+const std::string& RlString::getClassType(void) { 
     
     static std::string rbClassName = "String";
     
@@ -108,7 +108,7 @@ const std::string& RlString::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RlString::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

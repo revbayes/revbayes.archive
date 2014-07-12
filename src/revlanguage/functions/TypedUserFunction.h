@@ -50,6 +50,7 @@ namespace RevLanguage {
 #include "RateMatrix.h"
 #include "RateMatrix_JC.h"
 #include "RlDeterministicNode.h"
+#include "Variable.h"
 
 using namespace RevLanguage;
 

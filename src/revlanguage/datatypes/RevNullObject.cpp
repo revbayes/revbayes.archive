@@ -56,7 +56,7 @@ bool RevNullObject::operator==(const RevObject& obj) {
 
 
 /** Get class name of object */
-const std::string& RevNullObject::getClassName(void) { 
+const std::string& RevNullObject::getClassType(void) { 
     
     static std::string rbClassName = "NULL";
     
@@ -66,7 +66,7 @@ const std::string& RevNullObject::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RevNullObject::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

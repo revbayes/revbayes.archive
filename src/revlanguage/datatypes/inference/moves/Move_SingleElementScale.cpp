@@ -1,5 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "ModelVector.h"
 #include "Move_SingleElementScale.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -10,7 +11,6 @@
 #include "SingleElementScaleMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -34,7 +34,7 @@ void Move_SingleElementScale::constructInternalObject( void ) {
     // now allocate a new sliding move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
     const std::set<const RevBayesCore::DagNode*> &p = tmp->getParents();
     std::vector< RevBayesCore::StochasticNode<double> *> n;
     for (std::set<const RevBayesCore::DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) 
@@ -48,7 +48,7 @@ void Move_SingleElementScale::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_SingleElementScale::getClassName(void) {
+const std::string& Move_SingleElementScale::getClassType(void) {
     
     static std::string rbClassName = "Move_SingleElementScale";
     
@@ -58,7 +58,7 @@ const std::string& Move_SingleElementScale::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Move_SingleElementScale::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -72,7 +72,7 @@ const MemberRules& Move_SingleElementScale::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<RealPos>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         

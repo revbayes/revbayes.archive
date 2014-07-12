@@ -28,7 +28,7 @@ namespace RevLanguage {
         // Basic utility functions
         virtual Move_DPPScaleCatValsMove*                        clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
-        static const std::string&                   getClassName(void);                                                                             //!< Get class name
+        static const std::string&                   getClassType(void);                                                                             //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object

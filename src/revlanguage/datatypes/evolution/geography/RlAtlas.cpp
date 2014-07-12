@@ -8,12 +8,12 @@
 
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlAtlas.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
 #include "TimeAtlas.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -57,7 +57,7 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
 
 
 /* Get class name of object */
-const std::string& RlAtlas::getClassName(void) {
+const std::string& RlAtlas::getClassType(void) {
     
     static std::string rbClassName = "RlAtlas";
     
@@ -67,7 +67,7 @@ const std::string& RlAtlas::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& RlAtlas::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }
@@ -85,7 +85,7 @@ const MethodTable& RlAtlas::getMethods(void) const {
         //        // add method for call "x[]" as a function
         //        ArgumentRules* squareBracketArgRules = new ArgumentRules();
         //        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        //        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+        //        methods.addFunction("[]",  new MemberFunction( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
         //
         //        // add method for call "x[]" as a function
         //        ArgumentRules* sizeArgRules = new ArgumentRules();

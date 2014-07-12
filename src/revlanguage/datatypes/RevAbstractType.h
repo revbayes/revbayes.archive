@@ -28,6 +28,7 @@ namespace RevLanguage {
         // Basic utility functions you have to override (also getClassTypeSpec()!)
         RevAbstractType*                    clone(void) const;                                                      //!< Clone object
         const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get the type spec for this instance
+        bool                                isAbstract(void) const;                                                 //!< Return true because we are abstract
         void                                printValue(std::ostream& o) const;                                      //!< Print value for user
         
 

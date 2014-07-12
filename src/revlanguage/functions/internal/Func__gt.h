@@ -31,7 +31,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func__gt*                   clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
@@ -97,8 +97,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__gt<leftValType,rightValType
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "", true, leftValType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "", true, rightValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, leftValType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, rightValType::getClassType() ) );
         rulesSet = true;
     }
     
@@ -108,9 +108,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__gt<leftValType,rightValType
 
 /** Get class name of object */
 template <typename leftValType, typename rightValType>
-const std::string& RevLanguage::Func__gt<leftValType,rightValType>::getClassName(void) { 
+const std::string& RevLanguage::Func__gt<leftValType,rightValType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__gt<" + leftValType::getClassTypeSpec() + "," + rightValType::getClassTypeSpec() + ">";
+    static std::string rbClassName = "Func__gt<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
 	return rbClassName; 
 }
@@ -120,7 +120,7 @@ const std::string& RevLanguage::Func__gt<leftValType,rightValType>::getClassName
 template <typename leftValType, typename rightValType>
 const RevLanguage::TypeSpec& RevLanguage::Func__gt<leftValType,rightValType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

@@ -8,8 +8,9 @@
 
 
 #include "Func_clade.h"
+#include "ModelVector.h"
 #include "RlClade.h"
-#include "Vector.h"
+#include "RlString.h"
 
 using namespace RevLanguage;
 
@@ -29,7 +30,7 @@ Func_clade* Func_clade::clone( void ) const {
 RevPtr<Variable> Func_clade::execute() {
     
     // now allocate a new Clade
-    const std::vector<std::string>& n = static_cast<const Vector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
+    const std::vector<std::string>& n = static_cast<const ModelVector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::Clade *c = new RevBayesCore::Clade(n,0.0);
     
     return new Variable( new Clade(c) );
@@ -45,7 +46,7 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const {
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "taxa", true, Vector<RlString>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "taxa", true, ModelVector<RlString>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -54,7 +55,7 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_clade::getClassName(void) { 
+const std::string& Func_clade::getClassType(void) { 
     
     static std::string rbClassName = "Func_clade";
     
@@ -64,7 +65,7 @@ const std::string& Func_clade::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_clade::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

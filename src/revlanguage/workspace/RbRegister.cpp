@@ -54,7 +54,7 @@
 #include "RealPos.h"
 
 /* Container types (in folder "datatypes/container") */
-#include "Vector.h"
+#include "ModelVector.h"
 
 /* Evolution types (in folder "datatypes/evolution") */
 
@@ -342,12 +342,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RlString()                 );
         
         /* Add container types (in folder "datatypes/container") (alphabetic order) */
-        addType( new Vector<Integer>()          );
-        addType( new Vector<Natural>()          );
-        addType( new Vector<Real>()             );
-        addType( new Vector<RealPos>()          );
-        addType( new Vector<RlBoolean>()        );
-        addType( new Vector<RlString>()         );
+        addType( new ModelVector<Integer>()          );
+        addType( new ModelVector<Natural>()          );
+        addType( new ModelVector<Real>()             );
+        addType( new ModelVector<RealPos>()          );
+        addType( new ModelVector<RlBoolean>()        );
+        addType( new ModelVector<RlString>()         );
         
 
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
@@ -657,7 +657,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // TAH: these don't seem to work with the moves, probably need to figure this out
 		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
 		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
-		//addDistribution( "dpp",				new Dist_dpp< Vector<RealPos> >() );
+		//addDistribution( "dpp",				new Dist_dpp< ModelVector<RealPos> >() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -808,36 +808,36 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_add",      new Func__add< RlString        , RlString          , RlString          >(  )  );
         addFunction( "_add",      new Func__add< RlString        , Real              , RlString          >(  )  );
         addFunction( "_add",      new Func__add< RlString        , Integer           , RlString          >(  )  );
-        addFunction( "_add",      new Func__add< Vector<Natural> , Vector<Natural>   , Vector<Natural>   >(  )  );
-        addFunction( "_add",      new Func__add< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
-        addFunction( "_add",      new Func__add< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  )  );
-        addFunction( "_add",      new Func__add< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
+        addFunction( "_add",      new Func__add< ModelVector<Natural> , ModelVector<Natural>   , ModelVector<Natural>   >(  )  );
+        addFunction( "_add",      new Func__add< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
+        addFunction( "_add",      new Func__add< ModelVector<RealPos> , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_add",      new Func__add< ModelVector<Real>    , ModelVector<Real>      , ModelVector<Real>      >(  )  );
         
         // division
         addFunction( "_div",      new Func__div< Natural         , Natural           , RealPos           >(  )  );
         addFunction( "_div",      new Func__div< Integer         , Integer           , Real              >(  )  );
         addFunction( "_div",      new Func__div< Real            , Real              , Real              >(  )  );
         addFunction( "_div",      new Func__div< RealPos         , RealPos           , RealPos           >(  )  );
-        addFunction( "_div",      new Func__div< Vector<Natural> , Vector<Natural>   , Vector<RealPos>   >(  )  );
-        addFunction( "_div",      new Func__div< Vector<Integer> , Vector<Integer>   , Vector<Real>      >(  )  );
-        addFunction( "_div",      new Func__div< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  )  );
-        addFunction( "_div",      new Func__div< Vector<Real>    , Vector<Real>      , Vector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Natural> , ModelVector<Natural>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Real>      >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<RealPos> , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Real>    , ModelVector<Real>      , ModelVector<RealPos>   >(  )  );
         
         // multiplication
         addFunction( "_mul",      new Func__mult< Natural            , Natural           , Natural           >(  )  );
         addFunction( "_mul",      new Func__mult< Integer            , Integer           , Integer           >(  )  );
         addFunction( "_mul",      new Func__mult< Real               , Real              , Real              >(  )  );
         addFunction( "_mul",      new Func__mult< RealPos            , RealPos           , RealPos           >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<Natural>    , Vector<Natural>   , Vector<Natural>   >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<Integer>    , Vector<Integer>   , Vector<Integer>   >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<RealPos>    , Vector<RealPos>   , Vector<RealPos>   >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<Real>       , Vector<Real>      , Vector<Real>      >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Natural>    , ModelVector<Natural>   , ModelVector<Natural>   >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Integer>    , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<RealPos>    , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Real>       , ModelVector<Real>      , ModelVector<Real>      >(  )  );
         
         // subtraction
         addFunction( "_sub",      new Func__sub< Integer         , Integer           , Integer           >(  )  );
         addFunction( "_sub",      new Func__sub< Real            , Real              , Real              >(  )  );
-        addFunction( "_sub",      new Func__sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
-        addFunction( "_sub",      new Func__sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
+        addFunction( "_sub",      new Func__sub< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
+        addFunction( "_sub",      new Func__sub< ModelVector<Real>    , ModelVector<Real>      , ModelVector<Real>      >(  )  );
         
         // modulo
         addFunction( "_mod",      new Func__mod() );

@@ -60,7 +60,7 @@ RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( voi
  *
  * \return The class' name.
  */
-const std::string& Dist_exponential::getClassName(void) 
+const std::string& Dist_exponential::getClassType(void) 
 { 
     
     static std::string rbClassName = "Dist_exponential";
@@ -77,7 +77,7 @@ const std::string& Dist_exponential::getClassName(void)
 const TypeSpec& Dist_exponential::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

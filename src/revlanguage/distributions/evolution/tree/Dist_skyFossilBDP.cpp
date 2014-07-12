@@ -2,9 +2,11 @@
 #include "ArgumentRules.h"
 #include "Clade.h"
 #include "Dist_skyFossilBDP.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "PiecewiseConstantFossilizedBirthDeathProcess.h"
+#include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
@@ -12,7 +14,6 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -56,27 +57,27 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
     // the origin
     RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     // speciation rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const Vector<RealPos> &>( lambda->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const Vector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* st    = static_cast<const ModelVector<RealPos> &>( lambdaTimes->getRevObject() ).getDagNode();
     // extinction rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const Vector<RealPos> &>( mu->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* e     = static_cast<const ModelVector<RealPos> &>( mu->getRevObject() ).getDagNode();
     // extinction rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const Vector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* et    = static_cast<const ModelVector<RealPos> &>( muTimes->getRevObject() ).getDagNode();
     // sampling rates
-    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const Vector<RealPos> &>( psi->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* p     = static_cast<const ModelVector<RealPos> &>( psi->getRevObject() ).getDagNode();
     // sampling rate change times
-    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const Vector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
     // sampling probabilities
-    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const Vector<Probability> &>( rho->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const Vector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
     // condition
     const std::string& cond                                 = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names                   = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names                   = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c               = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c               = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     // time between now and most recent sample, no need for the fossilized birth-death process
 
     std::vector<RevBayesCore::Taxon> taxa;
@@ -97,7 +98,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
  *
  * \return The class' name.
  */
-const std::string& Dist_skyFossilBDP::getClassName( void )
+const std::string& Dist_skyFossilBDP::getClassType( void )
 {
     static std::string rbClassName = "Dist_skyFossilBDP";
     
@@ -112,7 +113,7 @@ const std::string& Dist_skyFossilBDP::getClassName( void )
  */
 const TypeSpec& Dist_skyFossilBDP::getClassTypeSpec( void )
 {
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -136,21 +137,21 @@ const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
     if ( !rulesSet ) 
     {
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"      , true, RealPos::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"      , true, Vector<RealPos>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes" , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>( std::vector<double>(0.0) ) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"     , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>( std::vector<double>(0.0) ) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"    , true, Vector<RealPos>::getClassTypeSpec(), new Vector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , true, Vector<Probability>::getClassTypeSpec(), new Vector<Probability>(std::vector<double>(0.0)) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"    , true, Vector<Probability>::getClassTypeSpec(), new Vector<Probability>() ) );
-        Vector<RlString> optionsCondition;
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"      , true, ModelVector<RealPos>::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes" , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"     , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"         , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"    , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"         , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>(std::vector<double>(0.0)) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"    , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>() ) );
+        std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
         optionsCondition.push_back( RlString("nTaxa") );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, ModelVector<Clade>::getClassTypeSpec(), new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getMemberRules();

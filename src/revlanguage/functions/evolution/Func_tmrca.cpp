@@ -8,6 +8,7 @@
 
 #include "Clade.h"
 #include "Func_tmrca.h"
+#include "ModelVector.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
@@ -16,7 +17,6 @@
 #include "TmrcaStatistic.h"
 #include "Topology.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -65,7 +65,7 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_tmrca::getClassName(void) { 
+const std::string& Func_tmrca::getClassType(void) { 
     
     static std::string rbClassName = "Func_tmrca";
     
@@ -75,7 +75,7 @@ const std::string& Func_tmrca::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_tmrca::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

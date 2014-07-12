@@ -10,10 +10,12 @@
 
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
+#include "Real.h"
+#include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -53,7 +55,7 @@ RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::v
         for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }
-        return new Variable( new Vector<Real>( elementVector ) );
+        return new Variable( new ModelVector<Real>( elementVector ) );
     }
     else if (name == "size") {
         int n = (int)this->dagNode->getValue().getNumberOfStates();
@@ -65,7 +67,7 @@ RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::v
 
 
 /* Get class name of object */
-const std::string& RateMatrix::getClassName(void) { 
+const std::string& RateMatrix::getClassType(void) { 
     
     static std::string rbClassName = "RateMatrix";
     
@@ -75,7 +77,7 @@ const std::string& RateMatrix::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& RateMatrix::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -93,7 +95,7 @@ const MethodTable& RateMatrix::getMethods(void) const {
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberFunction( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
         
         
         // add method for call "x[]" as a function

@@ -70,7 +70,7 @@ void Move_RandomGeometricWalk::constructInternalObject( void )
  *
  * \return The class' name.
  */
-const std::string& Move_RandomGeometricWalk::getClassName(void) 
+const std::string& Move_RandomGeometricWalk::getClassType(void) 
 { 
     
     static std::string rbClassName = "Move_RandomGeometricWalk";
@@ -87,7 +87,7 @@ const std::string& Move_RandomGeometricWalk::getClassName(void)
 const TypeSpec& Move_RandomGeometricWalk::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

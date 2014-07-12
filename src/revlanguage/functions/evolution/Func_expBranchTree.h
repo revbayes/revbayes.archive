@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "Vector.h"
+#include "ModelVector.h"
 #include "RealPos.h"
 #include "Func_expBranchTree.h"
 #include "RlTypedFunction.h"
@@ -34,7 +34,7 @@ namespace RevLanguage {
                                                         Func_expBranchTree(const Func_expBranchTree &x);                                //!< Copy constuctor
 
         Func_expBranchTree*                             clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
@@ -65,7 +65,7 @@ namespace RevLanguage {
 
 namespace RevLanguage {
     
-    class Func_expBranchTree : public TypedFunction<Vector<RealPos> > {
+    class Func_expBranchTree : public TypedFunction<ModelVector<RealPos> > {
         
     public:
         Func_expBranchTree(void);
@@ -78,7 +78,7 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override
         virtual Func_expBranchTree*                     clone(void) const;                                                          //!< Clone object
-        static const std::string&                       getClassName(void);                                                         //!< Get class name
+        static const std::string&                       getClassType(void);                                                         //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                     //!< Get class type spec
         virtual const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value

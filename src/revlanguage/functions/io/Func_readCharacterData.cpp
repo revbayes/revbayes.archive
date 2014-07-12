@@ -16,8 +16,8 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
+#include "RevObjectVector.h"
 #include "RlUserInterface.h"
-#include "VectorRlPointer.h"
 
 #include <map>
 #include <set>
@@ -64,7 +64,7 @@ RevPtr<Variable> Func_readCharacterData::execute( void ) {
     reader.clearWarnings();
     
     // the return value
-    VectorRlPointer<RevObject> *m = new VectorRlPointer<RevObject>();
+    RevObjectVector<RevObject> *m = new RevObjectVector<RevObject>();
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
@@ -236,7 +236,7 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_readCharacterData::getClassName(void) { 
+const std::string& Func_readCharacterData::getClassType(void) { 
     
     static std::string rbClassName = "Func_readCharacterData";
     
@@ -246,7 +246,7 @@ const std::string& Func_readCharacterData::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -263,10 +263,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRlPointer<RevObject>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RevObjectVector<RevObject>::getClassTypeSpec();
     return returnTypeSpec;
 }
-
-
-
 

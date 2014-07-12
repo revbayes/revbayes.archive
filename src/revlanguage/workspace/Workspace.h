@@ -82,7 +82,7 @@ namespace RevLanguage {
         bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
         bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
-        bool                    existsType(const TypeSpec& name) const;                                     //!< Does the type exist in the type table?
+        bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
         RevObject*              getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
         TypeTable               getTypeTable(void){ return typeTable; }

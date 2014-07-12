@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_uniformTopology.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -8,7 +9,6 @@
 #include "RlTopology.h"
 #include "StochasticNode.h"
 #include "UniformTopologyDistribution.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -50,7 +50,7 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 {
     // get the parameters
     int n = static_cast<const Natural &>( numTaxa->getRevObject() ).getDagNode()->getValue();
-    const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
     
     return d;
@@ -62,7 +62,7 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
  *
  * \return The class' name.
  */
-const std::string& Dist_uniformTopology::getClassName(void) 
+const std::string& Dist_uniformTopology::getClassType(void) 
 { 
     
     static std::string rbClassName = "Dist_uniformTopology";
@@ -79,7 +79,7 @@ const std::string& Dist_uniformTopology::getClassName(void)
 const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -103,7 +103,7 @@ const MemberRules& Dist_uniformTopology::getMemberRules(void) const
     if ( !rulesSet ) 
     {
         distUniformTopologyMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
+        distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

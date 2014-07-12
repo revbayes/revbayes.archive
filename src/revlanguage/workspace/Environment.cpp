@@ -88,6 +88,17 @@ bool Environment::addFunction(const std::string& name, Function* func)
 }
 
 
+/** Add an empty (NULL) variable to frame. */
+void Environment::addNullVariable( const std::string& name )
+{
+    // Create a new variable object
+    RevPtr<Variable> var = RevPtr<Variable>( new Variable( NULL ) );
+    
+    // Add the variable to the table
+    addVariable( name, var );
+}
+
+
 /** Add reference variable to frame. */
 void Environment::addReferenceVariable( const std::string& name, const RevPtr<const Variable>& refVar )
 {
@@ -129,17 +140,6 @@ void Environment::addVariable(const std::string& name, RevObject* obj)
 {
     // Create a new variable object
     RevPtr<Variable> var = RevPtr<Variable>( new Variable( obj ) );
-
-    // Add the variable to the table
-    addVariable( name, var );
-}
-
-
-/** Add an empty (NULL) variable to frame. */
-void Environment::addNullVariable( const std::string& name )
-{
-    // Create a new variable object
-    RevPtr<Variable> var = RevPtr<Variable>( new Variable( NULL ) );
 
     // Add the variable to the table
     addVariable( name, var );
@@ -241,26 +241,6 @@ bool Environment::existsVariable(const std::string& name) const
     }
 
     return true;
-}
-
-
-/** Return the variable if it exists, otherwise create it */
-RevPtr<Variable>& Environment::findOrCreateVariable(const std::string& name)
-{
-    if ( !existsVariable( name) )
-    {
-        // Check that we have a name
-        if ( name == "" )
-            throw RbException( "Invalid attempt to add a variable without name to frame");
-
-        // Create new null variable
-        RevPtr<Variable> theVar = new Variable( NULL );
-        
-        // Insert null variable in variable table
-        variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
-    }
-
-    return getVariable( name );
 }
 
 

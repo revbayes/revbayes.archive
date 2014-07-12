@@ -10,10 +10,10 @@
 
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -57,7 +57,7 @@ RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vect
 
 
 /* Get class name of object */
-const std::string& RateMap::getClassName(void) {
+const std::string& RateMap::getClassType(void) {
     
     static std::string rbClassName = "RateMap";
     
@@ -67,7 +67,7 @@ const std::string& RateMap::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& RateMap::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass;
 }

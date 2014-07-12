@@ -21,14 +21,16 @@
 #include "Argument.h"
 #include "Environment.h"
 #include "Integer.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "Vector.h"
+#include "RlString.h"
 #include "SyntaxFunctionCall.h"
 #include "Variable.h"
+#include "Workspace.h"
 #include "SyntaxVariable.h"
 
 using namespace RevLanguage;
@@ -145,9 +147,9 @@ SyntaxVariable* SyntaxVariable::clone () const {
  *
  * @todo Add conversion to Natural when needed
  */
-std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
+std::vector<size_t> SyntaxVariable::computeIndex( Environment& env ) {
     
-    std::vector<int> theIndex;
+    std::vector<size_t> theIndex;
     
     int count = 1;
     for ( std::list<SyntaxElement*>::iterator i=index->begin(); i!=index->end(); i++, count++ ) {
@@ -176,8 +178,8 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
                     throw RbException( msg );
                 }
                 
-                // Get zero-based value corresponding to integer index
-                theIndex.push_back( intIndex-1 );
+                // Get value corresponding to integer index
+                theIndex.push_back( intIndex );
             }
             
             else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) ) {
@@ -193,7 +195,7 @@ std::vector<int> SyntaxVariable::computeIndex( Environment& env ) {
                 if ( baseVariable != NULL )
                     msg << baseVariable->getFullName( env ) << ".";
                 msg << identifier;
-                msg << " of wrong type (neither " << Integer::getClassName() << " nor " << RlString::getClassName() << ")";
+                msg << " of wrong type (neither " << Integer::getClassType() << " nor " << RlString::getClassType() << ")";
                 throw RbException( msg );
             }
         }
@@ -255,7 +257,7 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
  */
 RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     
-    // test whether this variable was replace inside a loop. TODO: REMOVE!!!
+    // test whether this variable was replace inside a loop. TODO: remove this when control variables supported
     if ( replacementValue != NULL )
     {
         RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( replacementValue->clone() ) );
@@ -298,9 +300,9 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     // Get dynamic index
     std::vector< RevPtr<Variable> > indices = computeDynamicIndex( env );
     
-    // Get dynamic element of a container if indices are provided.
+    // Get dynamic element lookup of a container if indices are provided.
     if ( !indices.empty() )
-        theVar = theVar->getRevObject().getDynamicElement( indices );
+        theVar = new Variable( theVar->getRevObject().makeElementLookup( indices ) );
     
     // Return the variable for assignment
     return theVar;
@@ -314,10 +316,10 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
  * do not throw an error if the variable does not exist in the
  * frame; instead, we create and return a new null variable.
  */
-RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env)
+RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
 {
     // Get index
-    std::vector<int> indices = computeIndex( env );
+    std::vector<size_t> indices = computeIndex( env );
     
     RevPtr<Variable> theVar;
     
@@ -325,8 +327,24 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env)
     {
         if ( functionCall == NULL )
         {
-            // Find or create the variable.
-            theVar = env.findOrCreateVariable( identifier );
+            // Find or create the variable
+            if ( env.existsVariable( identifier ) )
+                theVar = env.getVariable( identifier );
+            else    // add it
+            {
+                if ( indices.size() == 0 )
+                    theVar = new Variable( NULL );
+                else
+                {
+                    std::string containerType = elemType;
+                    for ( size_t i = 0; i < indices.size(); ++i )
+                        containerType += "[]";
+                    if ( !Workspace::userWorkspace().existsType( containerType ) )
+                        throw RbException( "Implicit creation of containers of type '" + containerType + "' by assignment not supported (yet)" );
+                    theVar = new Variable( Workspace::userWorkspace().getNewTypeObject( containerType ) );
+                }
+                env.addVariable( identifier, theVar );
+            }
         }
         else
         {
@@ -426,7 +444,7 @@ RevPtr<Variable> SyntaxVariable::evaluateIndirectReferenceContent( Environment& 
     // syntax element will be a function call and not a variable. This means that
     // we do not have to test for functionCall being NULL in the second branch.
     if ( !indices.empty() )
-        theVar = theVar->getRevObject().getDynamicElement( indices );
+        theVar = new Variable( theVar->getRevObject().makeElementLookup( indices ) );
     else
         theVar = new Variable( theVar->getRevObject().makeDagReference() );
     

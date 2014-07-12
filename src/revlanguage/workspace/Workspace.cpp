@@ -81,7 +81,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
 #endif
 
     if ( typeTable.find(name) != typeTable.end() )
-        throw RbException("There is already a type named '" + dist->getTypeSpec() + "' in the workspace");
+        throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
 
 #ifdef DEBUG_WORKSPACE
     printf("Adding type %s to workspace\n", dist->getTypeSpec().getType().c_str());
@@ -98,7 +98,7 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
 /** Add type to the workspace */
 bool Workspace::addType(RevObject *exampleObj) {
 
-    std::string name = exampleObj->getTypeSpec();
+    std::string name = exampleObj->getType();
     
 #ifdef DEBUG_WORKSPACE
     printf("Adding type %s to workspace\n", name.c_str());
@@ -139,7 +139,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ
     if (typeTable.find(name) != typeTable.end())
         throw RbException("There is already a type named '" + name + "' in the workspace");
 
-    typeTable.insert(std::pair<std::string, RevObject*>(templ->getTypeSpec(), templ->clone()));
+    typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
     
     functionTable.addFunction(name, new ConstructorFunction(templ));
 
@@ -186,7 +186,7 @@ RevObject* Workspace::getNewTypeObject(const std::string& type) const {
 
 
 /* Is the type added to the workspace? */
-bool Workspace::existsType( const TypeSpec& name ) const {
+bool Workspace::existsType( const std::string& name ) const {
 
     std::map<std::string, RevObject *>::const_iterator it = typeTable.find( name );
     if ( it == typeTable.end() ) 
@@ -199,6 +199,7 @@ bool Workspace::existsType( const TypeSpec& name ) const {
     else
         return true;
 }
+
 
 /** Print the frame content, not the entire environment. */
 void Workspace::printValue(std::ostream& o) const {
@@ -232,7 +233,7 @@ void Workspace::printValue(std::ostream& o) const {
         for (i=typeTable.begin(); i!=typeTable.end(); i++)
         {
             if ( (*i).second != NULL )
-                o << (*i).first << " = " << (*i).second->getTypeSpec() << std::endl;
+                o << (*i).first << " = " << (*i).second->getTypeSpec().getType() << std::endl;
             else
                 o << (*i).first << " = " << "unknown class vector" << std::endl;
         }

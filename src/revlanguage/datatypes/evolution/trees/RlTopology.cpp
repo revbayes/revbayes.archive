@@ -17,6 +17,7 @@
  */
 
 
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlTopology.h"
 #include "RbUtil.h"
@@ -24,7 +25,6 @@
 #include "RealPos.h"
 #include "TopologyNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -74,7 +74,7 @@ RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, c
     }
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Variable( new Vector<RlString>( n ) );
+        return new Variable( new ModelVector<RlString>( n ) );
     } 
     
     return ModelObject<RevBayesCore::Topology>::executeMethod( name, args );
@@ -82,7 +82,7 @@ RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, c
 
 
 /** Get class name of object */
-const std::string& Topology::getClassName(void) { 
+const std::string& Topology::getClassType(void) { 
     
     static std::string rbClassName = "Topology";
     
@@ -92,7 +92,7 @@ const std::string& Topology::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Topology::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -110,7 +110,7 @@ const RevLanguage::MethodTable& Topology::getMethods(void) const {
         methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
         
         ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+        methods.addFunction("names", new MemberFunction(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

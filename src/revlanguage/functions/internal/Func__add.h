@@ -33,7 +33,7 @@ public:
     
     // Basic utility functions
     Func__add*                                      clone(void) const;                                                              //!< Clone the object
-    static const std::string&                       getClassName(void);                                                             //!< Get class name
+    static const std::string&                       getClassType(void);                                                             //!< Get class name
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
 
@@ -92,8 +92,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__add<firstValType, secondVal
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "first", true, firstValType::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "second", true, secondValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "first", true, firstValType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "second", true, secondValType::getClassType() ) );
         rulesSet = true;
     }
     
@@ -102,9 +102,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__add<firstValType, secondVal
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__add<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string rbClassName = "Func__add<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
 	return rbClassName; 
 }
@@ -113,7 +113,7 @@ const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>:
 template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

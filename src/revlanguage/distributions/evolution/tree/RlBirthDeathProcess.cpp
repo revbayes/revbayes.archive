@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Clade.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "Probability.h"
@@ -11,7 +12,6 @@
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -32,7 +32,7 @@ BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
  *
  * \return The class' name.
  */
-const std::string& BirthDeathProcess::getClassName(void) 
+const std::string& BirthDeathProcess::getClassType(void) 
 { 
     
     static std::string rbClassName = "BirthDeathProcess";
@@ -49,7 +49,7 @@ const std::string& BirthDeathProcess::getClassName(void)
 const TypeSpec& BirthDeathProcess::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -80,18 +80,18 @@ const MemberRules& BirthDeathProcess::getMemberRules(void) const
     {
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
-        Vector<RlString> optionsStrategy;
+        std::vector<RlString> optionsStrategy;
         optionsStrategy.push_back( RlString("uniform") );
         optionsStrategy.push_back( RlString("diversified") );
         distcBirthDeathMemberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy ) );
-        Vector<RlString> optionsCondition;
+        std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
         optionsCondition.push_back( RlString("nTaxa") );
         distcBirthDeathMemberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, Vector<Clade>::getClassTypeSpec(), new Vector<Clade>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints"  , true, ModelVector<Clade>::getClassTypeSpec(), new ModelVector<Clade>() ) );
         
         rulesSet = true;
     }

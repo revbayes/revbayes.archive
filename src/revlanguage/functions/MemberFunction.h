@@ -20,6 +20,7 @@
 #define MemberFunction_H
 
 #include "RlFunction.h"
+#include "TypeSpec.h"
 
 #include <map>
 #include <set>
@@ -38,7 +39,7 @@ public:
     
     // Basic utility functions
     MemberFunction*                     clone(void) const;                                                          //!< Clone the object
-    static const std::string&           getClassName(void);                                                         //!< Get class name
+    static const std::string&           getClassType(void);                                                         //!< Get class name
     static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     

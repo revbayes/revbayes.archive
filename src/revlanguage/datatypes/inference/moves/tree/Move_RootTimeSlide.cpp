@@ -47,7 +47,7 @@ void Move_RootTimeSlide::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_RootTimeSlide::getClassName(void) { 
+const std::string& Move_RootTimeSlide::getClassType(void) { 
     
     static std::string rbClassName = "Move_Move_RootTimeSlide";
     
@@ -57,7 +57,7 @@ const std::string& Move_RootTimeSlide::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Move_RootTimeSlide::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

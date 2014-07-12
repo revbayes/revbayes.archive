@@ -159,7 +159,7 @@ const ArgumentRules& DistributionFunctionQuantile::getArgumentRules(void) const 
 
 
 /** Get class name of object */
-const std::string& DistributionFunctionQuantile::getClassName(void) { 
+const std::string& DistributionFunctionQuantile::getClassType(void) { 
     
     static std::string rbClassName = "DistributionFunctionQuantile";
     
@@ -169,7 +169,7 @@ const std::string& DistributionFunctionQuantile::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& DistributionFunctionQuantile::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

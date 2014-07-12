@@ -7,6 +7,7 @@
 //
 
 #include "Func_treeHeight.h"
+#include "ModelVector.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
 #include "RealPos.h"
@@ -14,7 +15,6 @@
 #include "Topology.h"
 #include "TreeHeightStatistic.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -62,7 +62,7 @@ const ArgumentRules& Func_treeHeight::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_treeHeight::getClassName(void) { 
+const std::string& Func_treeHeight::getClassType(void) { 
     
     static std::string rbClassName = "Func_treeHeight";
     
@@ -72,7 +72,7 @@ const std::string& Func_treeHeight::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Func_treeHeight::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

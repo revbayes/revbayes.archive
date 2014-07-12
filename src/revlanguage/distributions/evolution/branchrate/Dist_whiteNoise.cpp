@@ -11,17 +11,17 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_whiteNoise.h"
+#include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
-#include "Vector.h"
 #include "WhiteNoisePhyloProcess.h"
 
 using namespace RevLanguage;
 
-Dist_whiteNoise::Dist_whiteNoise() : TypedDistribution< Vector<RealPos> >() {
+Dist_whiteNoise::Dist_whiteNoise() : TypedDistribution< ModelVector<RealPos> >() {
     
 }
 
@@ -53,7 +53,7 @@ RevBayesCore::WhiteNoisePhyloProcess* Dist_whiteNoise::createDistribution( void 
 
 
 /* Get class name of object */
-const std::string& Dist_whiteNoise::getClassName(void) {
+const std::string& Dist_whiteNoise::getClassType(void) {
     
     static std::string rbClassName = "Dist_whiteNoise";
     
@@ -63,7 +63,7 @@ const std::string& Dist_whiteNoise::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_whiteNoise::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass;
 }

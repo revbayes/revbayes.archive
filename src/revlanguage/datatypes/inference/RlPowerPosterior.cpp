@@ -3,19 +3,22 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "DistributionBeta.h"
-#include "PowerPosteriorMcmc.h"
+#include "ModelVector.h"
 #include "Model.h"
+#include "Natural.h"
+#include "PowerPosteriorMcmc.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
+#include "RealPos.h"
 #include "RevNullObject.h"
-#include "RlPowerPosterior.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
+#include "RlPowerPosterior.h"
+#include "RlString.h"
 #include "TypeSpec.h"
-#include "VectorRbPointer.h"
-#include "Vector.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -38,7 +41,7 @@ void PowerPosterior::constructInternalObject( void ) {
     
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
     const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
@@ -46,7 +49,7 @@ void PowerPosterior::constructInternalObject( void ) {
     std::vector<double> beta;
     if ( powers->getRevObject() != RevNullObject::getInstance() )
     {
-        beta = static_cast<const Vector<RealPos> &>( powers->getRevObject() ).getValue();
+        beta = static_cast<const ModelVector<RealPos> &>( powers->getRevObject() ).getValue();
     }
     else if( cats->getRevObject() != RevNullObject::getInstance() ){
         int k = static_cast<const Natural &>( cats->getRevObject() ).getValue();
@@ -93,7 +96,7 @@ RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const st
 
 
 /** Get class name of object */
-const std::string& PowerPosterior::getClassName(void) { 
+const std::string& PowerPosterior::getClassType(void) { 
     
     static std::string rbClassName = "PowerPosterior";
     
@@ -103,7 +106,7 @@ const std::string& PowerPosterior::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& PowerPosterior::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -119,9 +122,9 @@ const MemberRules& PowerPosterior::getMemberRules(void) const {
     if ( !rulesSet )
     {
         modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
         modelMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("powers", true, Vector<RealPos>::getClassTypeSpec(), NULL ) );
+        modelMemberRules.push_back( new ArgumentRule("powers", true, ModelVector<RealPos>::getClassTypeSpec(), NULL ) );
         modelMemberRules.push_back( new ArgumentRule("cats", true, Natural::getClassTypeSpec(), NULL ) );
         
         rulesSet = true;

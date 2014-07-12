@@ -52,7 +52,7 @@ RevObject* StandardState::convertTo(const TypeSpec& type) const {
 
 
 /** Get class name of object */
-const std::string& StandardState::getClassName(void) { 
+const std::string& StandardState::getClassType(void) { 
     
     static std::string rbClassName = "Standard";
     
@@ -62,7 +62,7 @@ const std::string& StandardState::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& StandardState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

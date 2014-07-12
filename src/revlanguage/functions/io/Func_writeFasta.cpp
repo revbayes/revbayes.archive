@@ -78,7 +78,7 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
  *
  * \return The class' name.
  */
-const std::string& Func_writeFasta::getClassName(void) 
+const std::string& Func_writeFasta::getClassType(void) 
 { 
     
     static std::string rbClassName = "Func_writeFasta";
@@ -95,7 +95,7 @@ const std::string& Func_writeFasta::getClassName(void)
 const TypeSpec& Func_writeFasta::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

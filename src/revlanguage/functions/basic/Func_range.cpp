@@ -21,9 +21,9 @@
 #include "ArgumentRule.h"
 #include "Func_range.h"
 #include "Integer.h"
+#include "ModelVector.h"
 #include "RbException.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -46,7 +46,7 @@ RevPtr<Variable> Func_range::execute( void ) {
     int f = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getValue();
     int l = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
     
-    Vector<Integer> *range = new Vector<Integer>();
+    ModelVector<Integer> *range = new ModelVector<Integer>();
     if (f < l) {
         for ( int i = f; i <= l; i++ )
             range->push_back( Integer(i) );
@@ -79,7 +79,7 @@ const ArgumentRules& Func_range::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_range::getClassName(void) { 
+const std::string& Func_range::getClassType(void) { 
     
     static std::string rbClassName = "Func_range";
     
@@ -89,7 +89,7 @@ const std::string& Func_range::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_range::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -106,7 +106,7 @@ const TypeSpec& Func_range::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_range::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<Integer>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<Integer>::getClassTypeSpec();
     
     return returnTypeSpec;
 }

@@ -57,7 +57,7 @@ Probability* Dist_beta::createRandomVariable(void) const {
 
 
 /* Get class name of object */
-const std::string& Dist_beta::getClassName(void) { 
+const std::string& Dist_beta::getClassType(void) { 
     
     static std::string rbClassName = "Dist_beta";
     
@@ -67,7 +67,7 @@ const std::string& Dist_beta::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_beta::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

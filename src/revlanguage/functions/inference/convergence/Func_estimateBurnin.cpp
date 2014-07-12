@@ -21,6 +21,7 @@
 #include "ArgumentRule.h"
 #include "EssMax.h"
 #include "Func_estimateBurnin.h"
+#include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlString.h"
@@ -28,7 +29,7 @@
 #include "SemMin.h"
 #include "Trace.h"
 #include "TypeSpec.h"
-#include "VectorRlPointer.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -50,7 +51,7 @@ Func_estimateBurnin* Func_estimateBurnin::clone( void ) const {
 RevPtr<Variable> Func_estimateBurnin::execute( void ) {
     
     
-    const std::vector<Trace*>& traces = static_cast<const VectorRlPointer<Trace> &>( args[0].getVariable()->getRevObject() ).getValue();
+    const std::vector<Trace*>& traces = static_cast<const WorkspaceVector<Trace> &>( args[0].getVariable()->getRevObject() ).getVectorRlPointer();
     const std::string&   method = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     
     std::vector<int> burnin;
@@ -73,7 +74,7 @@ RevPtr<Variable> Func_estimateBurnin::execute( void ) {
         throw RbException("Method with name \"" + method + "\" not applicable.");
     }
     
-    return new Variable( new Vector<Natural>( burnin ) );
+    return new Variable( new ModelVector<Natural>( burnin ) );
 }
 
 
@@ -85,8 +86,8 @@ const ArgumentRules& Func_estimateBurnin::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "traces", true, VectorRlPointer<Trace>::getClassTypeSpec() ) );
-        Vector<RlString> options;
+        argumentRules.push_back( new ArgumentRule( "traces", true, WorkspaceVector<Trace>::getClassTypeSpec() ) );
+        std::vector<RlString> options;
         options.push_back( RlString("ESS") );
         options.push_back( RlString("SEM") );
         argumentRules.push_back( new OptionRule( "method", new RlString("ESS"), options ) );
@@ -99,7 +100,7 @@ const ArgumentRules& Func_estimateBurnin::getArgumentRules( void ) const {
 
 
 /** Get class name of object */
-const std::string& Func_estimateBurnin::getClassName(void) { 
+const std::string& Func_estimateBurnin::getClassType(void) { 
     
     static std::string rbClassName = "Func_estimateBurnin";
     
@@ -109,7 +110,7 @@ const std::string& Func_estimateBurnin::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_estimateBurnin::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -126,7 +127,7 @@ const TypeSpec& Func_estimateBurnin::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_estimateBurnin::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<Natural>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<Natural>::getClassTypeSpec();
     
     return returnTypeSpec;
 }

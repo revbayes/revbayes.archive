@@ -1,11 +1,11 @@
 #include "RlAbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -57,9 +57,9 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
             // but externally represent it as 1 to n
             dagNode->getValue().excludeCharacter( n-1 );
         }
-        else if ( argument.isTypeSpec( Vector<Natural>::getClassTypeSpec() ) ) 
+        else if ( argument.isTypeSpec( ModelVector<Natural>::getClassTypeSpec() ) ) 
         {
-            const Vector<Natural>& x = static_cast<const Vector<Natural>&>( argument );
+            const ModelVector<Natural>& x = static_cast<const ModelVector<Natural>&>( argument );
             RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
             for ( size_t i=0; i<x.size(); i++ )
             {
@@ -72,7 +72,7 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
     }
     else if (name == "names") 
     {
-        Vector<RlString> *n = new Vector<RlString>();
+        ModelVector<RlString> *n = new ModelVector<RlString>();
         for (size_t i = 0; i < this->dagNode->getValue().getNumberOfTaxa(); ++i)
         {
             n->push_back( this->dagNode->getValue().getTaxonNameWithIndex( i ) );
@@ -83,7 +83,7 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
     else if (name == "nchar") 
     {
         
-        Vector<Natural> *numChar = new Vector<Natural>();
+        ModelVector<Natural> *numChar = new ModelVector<Natural>();
         for (size_t i=0; i<this->dagNode->getValue().getNumberOfTaxa(); i++)
         {
             
@@ -220,7 +220,7 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
 
 
 /* Get class name of object */
-const std::string& AbstractCharacterData::getClassName(void) { 
+const std::string& AbstractCharacterData::getClassType(void) { 
     
     static std::string rbClassName = "AbstractCharacterData";
     
@@ -230,7 +230,7 @@ const std::string& AbstractCharacterData::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& AbstractCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -276,20 +276,20 @@ void AbstractCharacterData::initMethods(void) {
     
         
     excludecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
-    excludecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+    excludecharArgRules2->push_back(       new ArgumentRule(     "", true, ModelVector<Natural>::getClassTypeSpec() ) );
         
-    methods.addFunction("names",               new MemberFunction(TypeSpec(Vector<RlString>::getClassTypeSpec(), new TypeSpec( RlString::getClassTypeSpec() ) ),  namesArgRules              ) );
-    methods.addFunction("nchar",               new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
+    methods.addFunction("names",               new MemberFunction( ModelVector<RlString>::getClassTypeSpec(), namesArgRules              ) );
+    methods.addFunction("nchar",               new MemberFunction( ModelVector<Natural>::getClassTypeSpec(),  ncharArgRules              ) );
     methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
     methods.addFunction("chartype",            new MemberFunction(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
 //    methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
 //    methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
 //    methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
 //    methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-//    methods.addFunction("excludedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-//    methods.addFunction("excludedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
-//    methods.addFunction("includedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
-//    methods.addFunction("includedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
+//    methods.addFunction("excludedtaxa",        new MemberFunction(ModelVector<Natural>::getClassTypeSpec(), excludedtaxaArgRules       ) );
+//    methods.addFunction("excludedchars",       new MemberFunction(ModelVector<Natural>::getClassTypeSpec(), excludedcharsArgRules      ) );
+//    methods.addFunction("includedtaxa",        new MemberFunction(ModelVector<Natural>::getClassTypeSpec(), includedtaxaArgRules       ) );
+//    methods.addFunction("includedchars",       new MemberFunction(ModelVector<Natural>::getClassTypeSpec(), includedcharsArgRules      ) );
 //    methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
 //    methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
     methods.addFunction("excludeCharacter",    new MemberFunction(RlUtils::Void,        excludecharArgRules        ) );

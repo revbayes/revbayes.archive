@@ -10,16 +10,16 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_mvtnorm.h"
+#include "ModelVector.h"
 #include "MultivariateNormalDistribution.h"
 #include "Real.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 #include "PrecisionMatrix.h"
 #include "RealSymmetricMatrix.h"
 
 using namespace RevLanguage;
 
-Dist_mvtnorm::Dist_mvtnorm() : TypedDistribution<Vector<Real> >() {
+Dist_mvtnorm::Dist_mvtnorm() : TypedDistribution<ModelVector<Real> >() {
     
 }
 
@@ -38,7 +38,7 @@ Dist_mvtnorm* Dist_mvtnorm::clone( void ) const {
 RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const Vector<Real> &>( mean->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* m = static_cast<const ModelVector<Real> &>( mean->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix >* p = static_cast<const RealSymmetricMatrix &>( precision->getRevObject() ).getDagNode();
     RevBayesCore::MultivariateNormalDistribution* d     = new RevBayesCore::MultivariateNormalDistribution( m,p );
     
@@ -48,7 +48,7 @@ RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( 
 
 
 /* Get class name of object */
-const std::string& Dist_mvtnorm::getClassName(void) {
+const std::string& Dist_mvtnorm::getClassType(void) {
     
     static std::string rbClassName = "Dist_mvtnorm";
     
@@ -58,7 +58,7 @@ const std::string& Dist_mvtnorm::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -73,7 +73,7 @@ const MemberRules& Dist_mvtnorm::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "mean", true, Vector<Real>::getClassTypeSpec() ) );
+        distExpMemberRules.push_back( new ArgumentRule( "mean", true, ModelVector<Real>::getClassTypeSpec() ) );
         distExpMemberRules.push_back( new ArgumentRule( "precision", true, RealSymmetricMatrix::getClassTypeSpec() ) );
         
         rulesSet = true;

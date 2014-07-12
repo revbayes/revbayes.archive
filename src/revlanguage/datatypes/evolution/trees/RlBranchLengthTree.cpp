@@ -17,13 +17,13 @@
  */
 
 
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlBranchLengthTree.h"
 #include "RbUtil.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -77,7 +77,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
     } 
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Variable( new Vector<RlString>( n ) );
+        return new Variable( new ModelVector<RlString>( n ) );
     } 
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args );
@@ -85,7 +85,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
 
 
 /** Get class name of object */
-const std::string& BranchLengthTree::getClassName(void) { 
+const std::string& BranchLengthTree::getClassType(void) { 
     
     static std::string rbClassName = "BranchLengthTree";
     
@@ -95,7 +95,7 @@ const std::string& BranchLengthTree::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& BranchLengthTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -116,7 +116,7 @@ const RevLanguage::MethodTable& BranchLengthTree::getMethods(void) const {
         methods.addFunction("height", new MemberFunction(Natural::getClassTypeSpec(),       heightArgRules              ) );
         
         ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+        methods.addFunction("names", new MemberFunction(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

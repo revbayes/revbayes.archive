@@ -45,7 +45,7 @@ RevBayesCore::OneOverXDistribution* Dist_oneOverX::createDistribution( void ) co
 
 
 /* Get class name of object */
-const std::string& Dist_oneOverX::getClassName(void) { 
+const std::string& Dist_oneOverX::getClassType(void) { 
     
     static std::string rbClassName = "Dist_oneOverX";
     
@@ -55,7 +55,7 @@ const std::string& Dist_oneOverX::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_oneOverX::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

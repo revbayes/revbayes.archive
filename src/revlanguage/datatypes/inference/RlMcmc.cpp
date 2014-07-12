@@ -4,6 +4,7 @@
 #include "ConstantNode.h"
 #include "Mcmc.h"
 #include "Model.h"
+#include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlMcmc.h"
@@ -12,7 +13,7 @@
 #include "RlMove.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "VectorRbPointer.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -35,8 +36,8 @@ void Mcmc::constructInternalObject( void ) {
     
     // now allocate a new MCMC object
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
+    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() ).getVectorRbPointer();
     const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     value->setScheduleType( sched );
@@ -75,7 +76,7 @@ RevPtr<Variable> Mcmc::executeMethod(std::string const &name, const std::vector<
 
 
 /** Get class name of object */
-const std::string& Mcmc::getClassName(void) { 
+const std::string& Mcmc::getClassType(void) { 
     
     static std::string rbClassName = "MCMC";
     
@@ -85,7 +86,7 @@ const std::string& Mcmc::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Mcmc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
@@ -100,10 +101,10 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         memberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
 
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("sequential") );
         options.push_back( RlString("random") );
         options.push_back( RlString("single") );

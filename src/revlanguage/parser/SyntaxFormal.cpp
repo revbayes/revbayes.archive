@@ -139,7 +139,7 @@ RevPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
 void SyntaxFormal::printValue(std::ostream& o) const {
 
     o << "SyntaxFormal:" << std::endl;
-    o << "type        = " << argType.toString() << std::endl;
+    o << "type        = " << argType.getType() << std::endl;
     o << "label       = " << label << std::endl;
     o << "defaultExpr = ";
     defaultExpr->printValue(o);

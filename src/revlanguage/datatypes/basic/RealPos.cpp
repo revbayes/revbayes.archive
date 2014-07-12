@@ -17,7 +17,7 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
     
     if ( x->getValue() < 0.0 )
-        throw RbException( "Nonpositive value for " + getClassName() );
+        throw RbException( "Nonpositive value for " + getClassType() );
 }
 
 
@@ -25,7 +25,7 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
 RealPos::RealPos( double x ) : Real( x ) {
 
     if ( x < 0.0 )
-        throw RbException( "Nonpositive value for " + getClassName() );
+        throw RbException( "Nonpositive value for " + getClassType() );
 }
 
 
@@ -33,7 +33,7 @@ RealPos::RealPos( double x ) : Real( x ) {
 RealPos::RealPos( int x ) : Real( x ) {
 
     if ( x < 0 )
-        throw RbException( "Nonpositive value for " + getClassName() );
+        throw RbException( "Nonpositive value for " + getClassType() );
 }
 
 
@@ -155,7 +155,7 @@ RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 
 
 /** Get class name of object */
-const std::string& RealPos::getClassName(void) { 
+const std::string& RealPos::getClassType(void) { 
     
     static std::string rbClassName = "RealPos";
     
@@ -165,7 +165,7 @@ const std::string& RealPos::getClassName(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RealPos::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Real::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
