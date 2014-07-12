@@ -155,8 +155,11 @@
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_branchRateJumpProcess.h"
-#include "Dist_brownian.h"
 #include "Dist_whiteNoise.h"
+
+/* Trait evolution models (in folder "distributions/evolution/tree") */
+#include "Dist_brownian.h"
+#include "Dist_mvtBrownian.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
@@ -231,6 +234,8 @@
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
+#include "Func_discretizedGammaRates.h"
+
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
 #include "Func_blosum62.h"
@@ -501,16 +506,21 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnDist_branchRateJumpProcess", new Dist_branchRateJumpProcess() );
         addDistribution( "branchRateJumpProcess",   new Dist_branchRateJumpProcess() );
         
-        // brownian motion
-        addDistribution( "dnBrownian",  new Dist_brownian() );
-        addDistribution( "brownian",    new Dist_brownian() );
-        
         // white noise process
         addDistribution( "dnWhiteNoise",    new Dist_whiteNoise() );
         addDistribution( "whiteNoise",      new Dist_whiteNoise() );
         addDistribution( "whitenoise",      new Dist_whiteNoise() );
         
+        /* trait evolution (in folder "distributions/evolution/branchrate") */
+
+        // brownian motion
+        addDistribution( "dnBrownian",  new Dist_brownian() );
+        addDistribution( "brownian",    new Dist_brownian() );
         
+        // multivariate brownian motion
+        addDistribution( "dnmvtBrownian",  new Dist_mvtBrownian() );
+        addDistribution( "mvtBrownian",    new Dist_mvtBrownian() );
+  
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
         // simple phylogenetic CTMC on fixed number of discrete states
@@ -716,6 +726,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
+        addFunction( "discretizeGamma",             new Func_discretizedGammaRates()    );
         
         // nonstandard names (for backward compatibility)
         addFunction( "expbranchtree",               new Func_expBranchTree()            );

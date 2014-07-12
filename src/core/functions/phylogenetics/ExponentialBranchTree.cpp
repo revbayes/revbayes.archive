@@ -13,16 +13,24 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector<double> >* n): TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ), tau(t),
-nodeval( n ) {
+ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, /*const TypedDagNode< std::vector<double> >* n,*/ const TypedDagNode< MatrixReal >* m, const TypedDagNode< int >* i): TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ), tau(t),
+/*nodeval( n ),*/ mvtnodeval(m), traitindex(i) {
     this->addParameter( tau );
-    this->addParameter( nodeval );
-    
+/*    if (nodeval != NULL) {
+        this->addParameter( nodeval );
+    }
+*/
+    if (mvtnodeval != NULL) {
+         this->addParameter( mvtnodeval );   
+    }    
+    if (traitindex != NULL) {
+        this->addParameter(traitindex) ;
+    }
     update();
 }
 
 
-ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n): TypedFunction< std::vector< double > >( n ), tau( n.tau ), nodeval( n.nodeval ) {
+ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n): TypedFunction< std::vector< double > >( n ), tau( n.tau ), /*nodeval( n.nodeval ),*/ mvtnodeval( n.mvtnodeval), traitindex( n.traitindex) {
     
 }
 
@@ -37,9 +45,17 @@ void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const Dag
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
-    
+    /*
     if ( oldP == nodeval ) {
         nodeval = static_cast< const TypedDagNode<std::vector<double> >* >( newP );
+    }
+    */
+    if (oldP == mvtnodeval) {
+        mvtnodeval = static_cast<const TypedDagNode< MatrixReal >* >(newP);
+    }
+    
+    if (oldP == traitindex) {
+        traitindex = static_cast<const TypedDagNode< int >* >(newP);
     }
 }
 
@@ -51,6 +67,10 @@ void ExponentialBranchTree::update(void)    {
     
 }
 
+int ExponentialBranchTree::getTraitIndex()  {
+    return traitindex->getValue() - 1;
+}
+
 void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)    {
 
     size_t index = from.getIndex();
@@ -60,13 +80,31 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
         
         size_t upindex = from.getParent().getIndex();
 
-        double x1 = nodeval->getValue()[index];
-        double x2 = nodeval->getValue()[upindex];
-
-        double y = 0.5 * (exp(x1) + exp(x2));
+        if (getTraitIndex() >= 0)    {
+            
+            double x1 = mvtnodeval->getValue()[index][getTraitIndex()];
+            double x2 = mvtnodeval->getValue()[upindex][getTraitIndex()];
+            double y = 0.5 * (exp(x1) + exp(x2));
         
-        // we store this val here
-        (*value)[index] = y;
+            // we store this val here
+            (*value)[index] = y;
+            
+        }
+        else    {
+
+            std::cerr << "should not be in simple univariate case\n";
+            exit(1);
+            /*
+            double x1 = nodeval->getValue()[index];
+            double x2 = nodeval->getValue()[upindex];
+            
+            double y = 0.5 * (exp(x1) + exp(x2));
+        
+            // we store this val here
+            (*value)[index] = y;
+             */
+            
+        }        
     }
     
     // simulate the val for each child (if any)
