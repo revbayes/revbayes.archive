@@ -43,7 +43,7 @@ Q_atpB := gtr(er_atpB,sf_atpB)                                                  
 
 shape_prior_atpB <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
 shape_atpB ~ dnExponential( shape_prior_atpB )
-norm_gamma_rates := discretizeGamma( 4, shape )
+norm_gamma_rates := discretizeGamma( shape, 4 )
  
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
 moves[3] <- mvScale(shape_atpB, lambda=1.0, tune=true, weight=1.0)

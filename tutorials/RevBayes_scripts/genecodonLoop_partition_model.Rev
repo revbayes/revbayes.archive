@@ -81,7 +81,7 @@ for (i in 1:n_parts){
 
   shape_prior[i] <- 0.05
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates := discretizeGamma( 4, shape )
+  norm_gamma_rates := discretizeGamma( shape[i], 4 )
 
   # add moves for the stationary frequencies, exchangeability rates and the shape parameter
   moves[mv_idx++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=1.0)
