@@ -52,6 +52,7 @@ namespace RevBayesCore {
         // public methods
         valueType&                      getValue(void);                                                     //!< Get the current value (non-const)
         const valueType&                getValue(void) const;                                               //!< Get the current value
+        StochasticNode<valueType>*      getStochasticNode(void);                                            //!< Get the stochastic node holding this distribution
         void                            setStochasticNode(StochasticNode<valueType> *n);                    //!< Set the stochastic node holding this distribution
         
         // virtual methods
@@ -141,6 +142,13 @@ template <class valueType>
 const valueType& RevBayesCore::TypedDistribution<valueType>::getValue(void) const {
     
     return *value;
+}
+
+
+template <class valueType>
+RevBayesCore::StochasticNode<valueType>* RevBayesCore::TypedDistribution<valueType>::getStochasticNode( void ) {
+    
+    return dagNode;
 }
 
 template <class valueType>
