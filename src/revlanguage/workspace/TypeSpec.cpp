@@ -105,10 +105,12 @@ const size_t TypeSpec::getDim( void ) const
  */
 const std::string& TypeSpec::getElementType( void ) const
 {
-    if ( element == NULL)
-        throw RbException( "Illegal attempt to get element type for type without elements" );
+    static std::string emptyString;
     
-    return element->getType();
+    if ( element == NULL)
+        return emptyString;
+    else
+        return parent->getType();
 }
 
 
@@ -116,12 +118,9 @@ const std::string& TypeSpec::getElementType( void ) const
  * Get element type spec. Simply return the element type spec
  * that we computed in the constructor.
  */
-const TypeSpec& TypeSpec::getElementTypeSpec( void ) const
+const TypeSpec* TypeSpec::getElementTypeSpec( void ) const
 {
-    if ( element == NULL)
-        throw RbException( "Illegal attempt to get element type spec for type without elements" );
-    
-    return *element;
+    return element;
 }
 
 
@@ -156,10 +155,12 @@ const TypeSpec* TypeSpec::getElementTypeSpecFromClass(void) const
  */
 const std::string& TypeSpec::getParentType( void ) const
 {
-    if ( parent == NULL)
-        throw RbException( "Illegal attempt to get parent type for type without parent" );
+    static std::string emptyString;
     
-    return parent->getType();
+    if ( parent == NULL)
+        return emptyString;
+    else
+        return parent->getType();
 }
 
 
@@ -167,12 +168,9 @@ const std::string& TypeSpec::getParentType( void ) const
  * Get parent type spec. Simply return the parent type spec
  * but throw an error if the parent is NULL.
  */
-const TypeSpec& TypeSpec::getParentTypeSpec( void ) const
+const TypeSpec* TypeSpec::getParentTypeSpec( void ) const
 {
-    if ( parent == NULL)
-        throw RbException( "Illegal attempt to get parent type spec for type without parent" );
-    
-    return *parent;
+    return parent;
 }
 
 
@@ -249,12 +247,21 @@ ModelVector<RlString>* TypeSpec::makeRevClass( void ) const
 
 
 /**
- * Output as string. Simply print the type to keep the
- * output as short as possible.
+ * Output the class vector (type spec) to a stream.
  */
-std::ostream& operator<<(std::ostream& o, const TypeSpec& x)
+std::ostream& RevLanguage::operator<<(std::ostream& o, const TypeSpec& x)
 {
-    o << x.getType();
+    o << "[ " << x.getType();
+    
+    const TypeSpec* par = x.getParentTypeSpec();
+    while ( par != NULL ) {
+        
+        o << ", " << par->getType();
+        par = par->getParentTypeSpec();
+    }
+    
+    o << " ]";
+
     return o;
 }
 

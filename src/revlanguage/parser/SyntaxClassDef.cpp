@@ -96,15 +96,3 @@ void SyntaxClassDef::printValue(std::ostream& o) const {
 }
 
 
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the elements.
- */
-void SyntaxClassDef::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    for (std::list<SyntaxElement*>::iterator i = definitions->begin(); i != definitions->end(); i++) {
-        (*i)->replaceVariableWithConstant(name, c);
-    }
-}
-
-

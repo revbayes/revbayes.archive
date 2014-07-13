@@ -40,20 +40,19 @@ namespace RevLanguage {
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
+        RevPtr<Variable>            evaluateContent(Environment& env);                                              //!< Get semantic value
         void                        finalizeLoop(void);                                                             //!< Finalize loop
         const std::string&          getIndexVarName(void) const;                                                    //!< Get the name of the index variable
-        RevObject*                  getNextLoopState(void);                                                         //!< Get next state of loop
+        void                        getNextLoopState(void);                                                         //!< Get next state of loop
         bool                        isFinished() const;                                                             //!< Have we iterated over the whole loop?
         void                        initializeLoop(Environment& env);                                               //!< Initialize loop
-        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                 varName;                                                                        //!< The name of the loop variable
         SyntaxElement*              inExpression;                                                                   //!< The in expression (a vector of values)
         Container*                  stateSpace;                                                                     //!< Vector result of 'in' expression
-        int                         nextElement;                                                                    //!< Next element in vector
-    
+        size_t                      nextOneoffsetElementIndex;                                                      //!< Next element in vector
+        RevPtr<Variable>            loopVariable;                                                                   //!< Smart pointer to the loop variable in the environment
     };
     
 }

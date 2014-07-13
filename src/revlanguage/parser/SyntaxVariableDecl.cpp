@@ -123,7 +123,7 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env ) {
     }
     
     // Make type specification
-    TypeSpec typeSpec( elementTypeName );
+    TypeSpec typeSpec = Workspace::userWorkspace().getClassTypeSpecOfType( elementTypeName );
 
     // Check if we have some positive lengths
     bool positiveLengthSpec = false;
@@ -170,16 +170,4 @@ void SyntaxVariableDecl::printValue(std::ostream& o) const {
     
 }
 
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the elements.
- */
-void SyntaxVariableDecl::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    // the first set of statements
-    for (std::list<SyntaxElement*>::iterator i = lengthExpr->begin(); i != lengthExpr->end(); i++) {
-        (*i)->replaceVariableWithConstant(name, c);
-    }
-}
 

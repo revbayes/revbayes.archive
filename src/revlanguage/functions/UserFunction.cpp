@@ -115,7 +115,7 @@ RevPtr<Variable> UserFunction::execute( void )
     // If the return type object has a DAG node inside it, we return an appropriate model/container/factor object
     // with a deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
-    RevObject* retVal = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
+    RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( returnType.getType() );
 
     if ( retVal->hasDagNode() )
     {

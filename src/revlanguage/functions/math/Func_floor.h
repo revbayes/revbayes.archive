@@ -92,7 +92,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::get
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, valType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, valType::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -104,7 +104,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::get
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_floor<valType, retType>::getClassType(void) { 
 
-    static std::string rbClassName = "Func_floor";
+    static std::string rbClassName = "Func_floor<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
 	return rbClassName; 
 }
@@ -113,7 +113,7 @@ const std::string& RevLanguage::Func_floor<valType, retType>::getClassType(void)
 template <typename valType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func_floor<valType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( valType::getClassType() ), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

@@ -35,9 +35,9 @@ namespace RevLanguage {
     class ContainerNode : public RevBayesCore::DynamicNode< valueType > {
 
     public:
-        ContainerNode(const std::string &n);                                                                            //!< Constructor of empty container node
-        ContainerNode(const std::string &n, const valueType& v);                                                        //!< Construct container from valueType
-        ContainerNode(const std::string &n, std::vector<RevObject*> elems, const std::vector<size_t>& lengths);         //!< Construct container from Rev objects
+        ContainerNode(const std::string& n);                                                                            //!< Constructor of empty container node
+        ContainerNode(const std::string& n, const valueType& v);                                                        //!< Construct container from valueType
+        ContainerNode(const std::string& n, std::vector<RevObject*> elems, const std::vector<size_t>& lengths);         //!< Construct container from Rev objects
         ContainerNode(const ContainerNode<rlElemType, valueType>& n);                                                   //!< Copy constructor
 
         virtual                                 ~ContainerNode(void);                                                   //!< Virtual destructor
@@ -45,23 +45,23 @@ namespace RevLanguage {
         // STL-like container functions
         void                                    pop_back(void);                                                         //!< Drop element from back
         void                                    pop_front(void);                                                        //!< Drop element from front
-        void                                    push_back(const rlElemType &x);                                         //!< Push element onto back
-        void                                    push_front(const rlElemType &x);                                        //!< Push element onto front
+        void                                    push_back(rlElemType* x);                                               //!< Push element onto back
+        void                                    push_front(rlElemType* x);                                              //!< Push element onto front
         
         
         // Public methods
         ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone
-        RevPtr<Variable>                        findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);       //!< Find or create element variable
-        RevPtr<Variable>                        getElement(const std::vector<size_t>& oneOffsetIndices);                //!< Get element variable
+        RevPtr<Variable>&                       getElement(size_t index);                                               //!< Return an element
         double                                  getLnProbability(void);                                                 //!< Get ln prob (0.0)
         double                                  getLnProbabilityRatio(void);                                            //!< Get ln prob ratio (0.0)
         valueType&                              getValue(void);                                                         //!< Get the value
         const valueType&                        getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream &o) const;                              //!< Print structure info
-        void                                    update(void);                                                           //!< Update current value
+        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
         void                                    redraw(void);                                                           //!< Redraw (or not)
-        void                                    swapParameter(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP);    //!< Swap parameter: just touch ourselves to be on the safe side
+        void                                    setName(const std::string& n);                                          //!< Set the name of myself and of elements
+        void                                    swapParameter(const RevBayesCore::DagNode* oldP, const RevBayesCore::DagNode* newP);    //!< Swap parameter: just touch ourselves to be on the safe side
+        void                                    update(void);                                                           //!< Update current value
         
     protected:
         void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
@@ -180,48 +180,6 @@ ContainerNode<rlElemType, valueType>* ContainerNode<rlElemType, valueType>::clon
 
 
 /**
- * Find or create a variable for parser assignment.
- */
-template <typename rlElemType, typename valueType>
-RevPtr<Variable> ContainerNode<rlElemType, valueType>::findOrCreateElement(const std::vector<size_t>& oneOffsetIndices)
-{
-    // Check the indices first
-    if ( oneOffsetIndices.size() == 0 || oneOffsetIndices[0] == 0 )
-        throw RbException( "Illegal attempt to assign to multiple vector elements" );
-    
-    // Split indices into myIndex and elementIndices
-    size_t myIndex = oneOffsetIndices[0];
-    std::vector<size_t> elementIndices;
-    for ( size_t i = 1; i < oneOffsetIndices.size(); ++i )
-        elementIndices.push_back( oneOffsetIndices[i] );
-    
-    if ( elementIndices.size() == 0 )
-    {
-        // We want to assign to an element in the vector
-        
-        // Resize if myIndex is out of range. We need to use NULL variables in case we have
-        // abstract Rev language objects.
-        for ( size_t it = elements.size(); it < myIndex; ++it )
-            elements.push_back( new Variable( NULL ) );
-        
-        // Return the assignable element
-        return elements[ myIndex - 1 ];
-    }
-    else
-    {
-        // We want to assign to a subelement
-        
-        // Check if the index is out of range
-        if ( myIndex > elements.size() )
-            throw RbException( "Index out of range" );
-        
-        // Return the assignable subelement
-        return elements[ myIndex - 1 ]->getRevObject().getElement( elementIndices );
-    }
-}
-
-
-/**
  * Get the affected nodes.
  * This call is started by the parent. We need to delegate this call to all our children.
  */
@@ -233,39 +191,14 @@ void ContainerNode<rlElemType, valueType>::getAffected( std::set<RevBayesCore::D
 
 
 /**
- * Get a specific element in the vector. This throws an error if the
- * index is out of range. Any superfluous indices are passed onto the
- * element at that index.
- *
- * If the indices passed in are empty or have a zero in the first
- * position, the entire vector is returned.
- *
- * An error is thrown if the index is out of range.
+ * Return a reference to the vector of elements. The caller can modify the
+ * elements; the elements will tell us through their DAG nodes if they have
+ * been modified, so that our touched flag gets set, so this should be safe.
  */
 template<typename rlElemType, typename valueType>
-RevPtr<Variable> ContainerNode<rlElemType, valueType>::getElement( const std::vector<size_t>& oneOffsetIndices )
+RevPtr<Variable>& ContainerNode<rlElemType, valueType>::getElement( size_t index )
 {
-    // Check first if we want the entire vector
-    if ( oneOffsetIndices.size() == 0 || oneOffsetIndices[0] == 0 )
-        throw RbException( "ContainerNode cannot make a copy of the vector - ask my owner instead" );
-    
-    // We want a single element
-    
-    // Split indices into myIndex and elementIndices
-    size_t myIndex = oneOffsetIndices[0];
-    std::vector<size_t> elementIndices;
-    for ( size_t i = 1; i < oneOffsetIndices.size(); ++i )
-        elementIndices.push_back( oneOffsetIndices[i] );
-    
-    // Check that myIndex is in range
-    if ( myIndex > elements.size() )
-        throw RbException( "Index out of range" );
-    
-    // Return an element or subelement
-    if ( elementIndices.size() == 0 )
-        return elements[ myIndex - 1 ];
-    else
-        return elements[ myIndex - 1 ]->getRevObject().getElement( elementIndices );
+    return elements[ index ];
 }
 
 
@@ -366,7 +299,15 @@ void ContainerNode<rlElemType, valueType>::keepMe( RevBayesCore::DagNode* affect
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::pop_back( void )
 {
+    // Detach our bond to the element DAG node
+    RevBayesCore::DagNode* theElementNode = elements.rbegin()->getRevObject().getDagNode();
+    this->removeParent( theElementNode );
+    theElementNode->removeChild( this );
+    
+    // Now get rid of it
     elements.pop_back();
+    
+    // We are dirty
     touched = true;
 }
 
@@ -375,25 +316,70 @@ void ContainerNode<rlElemType, valueType>::pop_back( void )
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::pop_front( void )
 {
+    // Detach our bond to the element DAG node
+    RevBayesCore::DagNode* theElementNode = elements.begin()->getRevObject().getDagNode();
+    this->removeParent( theElementNode );
+    theElementNode->removeChild( this );
+    
+    // Now get rid of it
     elements.erase( elements.begin() );
+
+    // We are dirty
     touched = true;
 }
 
 
 /** Push an element onto the back */
 template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::push_back( const rlElemType& x )
+void ContainerNode<rlElemType, valueType>::push_back( rlElemType* x )
 {
-    elements.push_back( new Variable( x.clone() ) );
+    // Connect the new element
+    x->getDagNode()->addChild( this );
+    this->addParent( x->getDagNode() );
+    
+    // Guard the type of object put in the variable
+    Variable* newVar = new Variable( x );
+    newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
+    
+    // Name the new element
+    std::ostringstream o;
+    o << this->name;
+    o << "[" << elements.size() + 1 << "]";
+    newVar->setName( o.str() );
+
+    // Push it onto the end of the vector
+    elements.push_back( newVar );
+
+    // We are dirty
     touched = true;
 }
 
 
 /** Push an element onto the front */
 template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::push_front( const rlElemType& x )
+void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
 {
-    elements.insert( elements.begin(), new Variable( x.clone() ) );
+    // Connect the new element
+    x->getDagNode()->addChild( this );
+    this->addParent( x->getDagNode() );
+    
+    // Guard the type of object put in the variable
+    Variable* newVar = new Variable( x );
+    newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
+
+    // Push it onto the front of the vector
+    elements.insert( elements.begin(), new Variable( x ) );
+
+    // Rename all the elements because their names are now incorrect
+    for ( size_t i = 0; i < elements.size(); ++i )
+    {
+        std::ostringstream o;
+        o << this->name;
+        o << "[" << i + 1 << "]";
+        elements[ i ]->setName( o.str() );
+    }
+    
+    // We are dirty
     touched = true;
 }
 
@@ -472,6 +458,26 @@ void ContainerNode<rlElemType, valueType>::swapParameter( const RevBayesCore::Da
 }
 
 
+/**
+ * Set the name of this node. We also need to update the name of our
+ * elements.
+ */
+template<typename rlElemType, typename valueType>
+void ContainerNode<rlElemType, valueType>::setName( const std::string& n )
+{
+    RevBayesCore::DynamicNode<valueType>::setName( n );
+    
+    // Rename all the elements
+    for ( size_t i = 0; i < elements.size(); ++i )
+    {
+        std::ostringstream o;
+        o << this->name;
+        o << "[" << i + 1 << "]";
+        elements[ i ]->setName( o.str() );
+    }
+}
+
+
 /** Touch this node for recalculation */
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::touchMe( RevBayesCore::DagNode *toucher )
@@ -499,7 +505,7 @@ void ContainerNode<rlElemType, valueType>::update()
     size_t i;
     std::vector< RevPtr<Variable> >::iterator it;
     for ( i = 0, it = elements.begin(); it != elements.end(); ++it, ++i )
-        value[i] = static_cast<rlElemType&>( (*it)->getRevObject() ).getValue();
+        value.push_back( static_cast<rlElemType&>( (*it)->getRevObject() ).getValue() );
     
     // We are clean!
     touched = false;

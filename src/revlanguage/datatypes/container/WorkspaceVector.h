@@ -215,11 +215,16 @@ const std::string& WorkspaceVector<rlType>::getClassType(void)
 }
 
 
-/** Get class type spec describing type of object */
+/**
+ * Get class type spec describing type of object. Note that we have to
+ * use the special version of the TypeSpec constructor because we derive
+ * directly from WorkspaceContainer and have the special "rlType[]" type
+ * specification.
+ */
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &WorkspaceContainer::getClassTypeSpec() );
+    static TypeSpec rbClass = TypeSpec( getClassType(), &WorkspaceContainer::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
 	return rbClass;
 }
@@ -386,7 +391,12 @@ void WorkspaceVector<rlType>::pop_front( void )
 template <typename rlType>
 void WorkspaceVector<rlType>::push_back( rlType* x )
 {
-    elements.push_back( new Variable( x ) );
+    // Make sure our variable guards the type of element
+    Variable* newVar = new Variable( x );
+    newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
+
+    // Push it onto the back of the elements vector
+    elements.push_back( newVar );
 }
 
 
@@ -396,7 +406,12 @@ void WorkspaceVector<rlType>::push_back( rlType* x )
 template <typename rlType>
 void WorkspaceVector<rlType>::push_front( rlType* x )
 {
-    elements.insert( elements.begin(), x );
+    // Make sure our variable guards the type of element
+    Variable* newVar = new Variable( x );
+    newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
+    
+    // Push it onto the front of the elements vector
+    elements.insert( elements.begin(), newVar );
 }
 
 

@@ -185,13 +185,3 @@ void SyntaxAdditionAssignment::printValue(std::ostream& o) const
 }
 
 
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxAdditionAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
-}
-
-

@@ -223,7 +223,7 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
         // We ensure that the variables are of type Natural or can be converted to Natural numbers
         // No sense in checking indices against permissible range here; errors are thrown later if
         // we are out of range by the container or member object
-        // TODO: This is static conversion, should be replaced by dynamic conversion
+        // TODO: This is static conversion, replace with dynamic conversion
         if ( !theIndex->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
         {
             if (theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) )
@@ -234,8 +234,10 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
                 theIndex->setRevObject( convObj );
             }
             else
-                throw RbException( "No known conversion of type '" + theIndex->getRevObject().getType() + "' to Natural, required for index");
+                throw RbException( "No known conversion of type '" + theIndex->getRevObject().getType() + "' to 'Natural', required for index");
         }
+        
+        indexVars.push_back( theIndex );
     }
     
     return indexVars;
@@ -256,13 +258,6 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
  * identifier.
  */
 RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
-    
-    // test whether this variable was replace inside a loop. TODO: remove this when control variables supported
-    if ( replacementValue != NULL )
-    {
-        RevPtr<Variable> theVar = RevPtr<Variable>( new Variable( replacementValue->clone() ) );
-        return theVar;
-    }
     
     RevPtr<Variable> theVar;
     
@@ -297,13 +292,22 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
         }
     }
     
+#if 0
     // Get dynamic index
     std::vector< RevPtr<Variable> > indices = computeDynamicIndex( env );
     
     // Get dynamic element lookup of a container if indices are provided.
     if ( !indices.empty() )
         theVar = new Variable( theVar->getRevObject().makeElementLookup( indices ) );
+#endif
     
+    // Get static index
+    std::vector< size_t > indices = computeIndex( env );
+    
+    // Get element if indices are provided.
+    if ( !indices.empty() )
+        theVar = theVar->getRevObject().getElement( indices );
+
     // Return the variable for assignment
     return theVar;
 }
@@ -333,16 +337,9 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
             else    // add it
             {
                 if ( indices.size() == 0 )
-                    theVar = new Variable( NULL );
+                    theVar = new Variable( NULL, identifier );
                 else
-                {
-                    std::string containerType = elemType;
-                    for ( size_t i = 0; i < indices.size(); ++i )
-                        containerType += "[]";
-                    if ( !Workspace::userWorkspace().existsType( containerType ) )
-                        throw RbException( "Implicit creation of containers of type '" + containerType + "' by assignment not supported (yet)" );
-                    theVar = new Variable( Workspace::userWorkspace().getNewTypeObject( containerType ) );
-                }
+                    theVar = new Variable( Workspace::userWorkspace().makeNewEmptyContainer( elemType, indices.size() ) );
                 env.addVariable( identifier, theVar );
             }
         }
@@ -499,35 +496,5 @@ void SyntaxVariable::printValue(std::ostream& o) const {
 
     for (std::list<SyntaxElement*>::const_iterator i=index->begin(); i!=index->end(); i++)
         (*i)->printValue(o);
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * 
- */
-void SyntaxVariable::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    // test whether this variable is the one we are looking for
-    if ( identifier != "" && name == identifier ) {
-        delete replacementValue;
-        replacementValue = c.clone();
-    }
-    
-    // also change the indices if we had some
-    if ( index != NULL) {
-        for (std::list<SyntaxElement*>::iterator i = index->begin(); i != index->end(); i++) {
-            (*i)->replaceVariableWithConstant(name, c);
-        }
-    }
-    
-    // also change the function call if we had some
-    if ( functionCall != NULL) {
-        functionCall->replaceVariableWithConstant(name, c);
-    }
-    
-    // also change the base variable if we had some
-    if ( baseVariable != NULL) {
-        baseVariable->replaceVariableWithConstant(name, c);
-    }
 }
 

@@ -76,9 +76,10 @@ namespace RevLanguage {
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
         
-        // Container functions that you need to override to protect from assignment or external modification
-        virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);   //!< Find or create element variable
-        virtual RevPtr<Variable>                    getElement(const std::vector<size_t>& oneOffsetIndices);            //!< Get element variable
+        // Container functions that you have to override
+        virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices) = 0;               //!< Find or create element variable
+        virtual RevPtr<Variable>                    getElement(const std::vector<size_t>& oneOffsetIndices) = 0;                        //!< Get element variable
+        virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths) = 0; //!< Set elements from Rev objects
 
         // Container functions you should not have to override
         size_t                                      getDim(void) const;                                                 //!< Get the dimensions
@@ -86,7 +87,6 @@ namespace RevLanguage {
         size_t                                      size(void) const;                                                   //!< Get the number of elements
         
         // Container function you have to override
-        virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths) = 0; //!< Set elements from Rev objects
         
     protected:
         ModelContainer(void);                                           //!< Construct empty container
@@ -339,41 +339,6 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
 }
 
 
-/**
- * Find an element for assignment. We simply delegate this call to our
- * container node, if we have one. If we are a stochastic node or
- * deterministic node, we ask the user first if they want to break up
- * the previous association of the variable with a single dynamic DAG
- * node and make it a composite of several individual DAG nodes instead.
- * If we are a constant node, we simply go ahead quietly with the
- * replacement.
- */
-template<typename rlType, size_t dim, typename valueType>
-RevPtr<Variable> ModelContainer<rlType, dim, valueType>::findOrCreateElement( const std::vector<size_t>& oneOffsetIndices )
-{
-    ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( dagNode );
-    
-    if ( theContainerNode == NULL )
-    {
-        if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( dagNode ) == NULL )
-        {
-            bool answer = UserInterface::userInterface().ask( "Do you want to convert the container to a composite value?" );
-
-            if ( answer == true )
-                makeCompositeValue();
-            else
-                throw RbException( "Assignment to elements of a homogeneous container not allowed" );
-        }
-        else
-            makeCompositeValue();
-
-        theContainerNode = static_cast< ContainerNode<rlType, valueType>* >( dagNode );
-    }
-    
-    return theContainerNode->findOrCreateElement( oneOffsetIndices );
-}
-
-
 /** Get class name of object */
 template <typename rlType, size_t dim, typename valueType>
 const std::string& ModelContainer<rlType, dim, valueType>::getClassType(void)
@@ -391,63 +356,6 @@ const TypeSpec& ModelContainer<rlType, dim, valueType>::getClassTypeSpec(void)
     static TypeSpec rbClass = TypeSpec( getClassType(), &Container::getClassTypeSpec() );
     
 	return rbClass;
-}
-
-
-/**
- * Get an element. We support reference assignment by giving out a smart pointer to the actual
- * element if we are a composite node. We do that by delegating the call to our container node.
- * If we are a constant node, we transform ourselves to a composite conatiner node first. If we
- * are a dynamic node, we simply give out a new temporary variable, a clone of the original
- * element. In this way, we can guard ourselves from attempts by others to modify the element
- * in cases where that would be inappropriate.
- *
- * Because we need to know something about the structure of our value type if we need to retrieve
- * the element from the value rather than from a container node, we delegate the task
- * to a derived class through the getElementFromValue function.
- *
- *
- */
-template<typename rlType, size_t dim, typename valueType>
-RevPtr<Variable> ModelContainer<rlType, dim, valueType>::getElement( const std::vector<size_t>& oneOffsetIndices )
-{
-    // First check if we want to return a slice
-    size_t sliceDim = 0;
-    for ( size_t i = 0; i < dim && i < oneOffsetIndices.size(); ++i )
-    {
-        if ( oneOffsetIndices[i] > 1 )
-            sliceDim++;
-    }
-
-    // Full clone is easy, simply return a clone of ourselves
-    if ( sliceDim == dim )
-    {
-        if ( oneOffsetIndices.size() > dim )
-            throw RbException( "Slicing across Rev objects not supported" );
-        
-        return new Variable( this->clone() );
-    }
-
-    // Partial slice requires more work of us
-    if ( sliceDim > 0 )
-        throw RbException ( "Partial container slices not supported yet" );
-
-    // We want a single element: delegate the work to our container node
-    ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( dagNode );
-    
-    if ( theContainerNode == NULL )
-    {
-        if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( dagNode ) != NULL )
-            makeCompositeValue();
-        
-        theContainerNode = static_cast< ContainerNode<rlType, valueType>* >( dagNode );
-    }
-
-    if ( theContainerNode != NULL )
-        return theContainerNode->getElement( oneOffsetIndices );
-
-    // That did not work. We need to do it ourselves.
-    return getElementFromValue( oneOffsetIndices );
 }
 
 

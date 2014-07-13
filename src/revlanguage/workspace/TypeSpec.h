@@ -34,11 +34,15 @@ namespace RevLanguage {
      * be created in a top-down manner, and remain in place throughout the
      * duration of the run because of the use of the static type spec
      * functions in all Rev classes.
+     *
+     * We give out pointers to parentTypeSpec and elementTypeSpec here
+     * without any checking because this is performance-critical code.
+     * We assume that the caller uses the class appropriately.
      */
     class TypeSpec {
     
     public:
-                                    TypeSpec(const std::string& objType, const TypeSpec* par = NULL);                       //!< Standard constructor
+                                    TypeSpec(const std::string& objType, const TypeSpec* par);                              //!< Standard constructor
                                     TypeSpec(const std::string& objType, const TypeSpec* par, const TypeSpec* elemType);    //!< Constructor for container object
         
                                     // Operators
@@ -49,9 +53,9 @@ namespace RevLanguage {
         const size_t                getDim(void) const;                                                             //!< Get object dimensions
         const size_t                getTotalDim(void) const;                                                        //!< Get object + element dimensions
         const std::string&          getElementType(void) const;                                                     //!< Get element type, if container
-        const TypeSpec&             getElementTypeSpec(void) const;                                                 //!< Get element type spec, if container
+        const TypeSpec*             getElementTypeSpec(void) const;                                                 //!< Get element type spec, if container
         const std::string&          getParentType(void) const;                                                      //!< Get parent type
-        const TypeSpec&             getParentTypeSpec(void) const;                                                  //!< Get parent type spec
+        const TypeSpec*             getParentTypeSpec(void) const;                                                  //!< Get parent type spec
         const std::string&          getType(void) const;                                                            //!< Get object type
         bool                        isDerivedOf(const TypeSpec& x) const;                                           //!< Test whether the type is the same or derived from x
 //        ModelVector<RlString>*      makeRevClass(void) const;                                                       //!< Make Rev representation of class vector
@@ -73,5 +77,6 @@ namespace RevLanguage {
     std::ostream&                   operator<<(std::ostream& o, const TypeSpec& x);                                 //!< Overloaded output operator
 
 }
+
 
 #endif

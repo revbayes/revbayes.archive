@@ -88,7 +88,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_seq<valType>::execu
     ModelVector<valType> *seq = new ModelVector<valType>();
     while ( (val >= from && val <= to) || (val <= from && val >= to) )
     {
-        seq->push_back( valType( val ) );
+        seq->push_back( new valType( val ) );
         val += by;
     }
     
@@ -106,9 +106,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "from", true, valType::getClassType() ) );
-        argumentRules.push_back( new ArgumentRule( "to",   true, valType::getClassType() ) );
-        argumentRules.push_back( new ArgumentRule( "by",   true, valType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "from", true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "to",   true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "by",   true, valType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

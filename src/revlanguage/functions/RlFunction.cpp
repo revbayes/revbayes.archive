@@ -53,6 +53,27 @@ Function::~Function(void) {
 }
 
 
+/** Debug info about object */
+std::string Function::callSignature(void) const {
+    
+    std::ostringstream o;
+    o << getType() << ": " << std::endl;
+    
+    if (argsProcessed)
+        o << "Arguments processed; there are " << args.size() << " values." << std::endl;
+    else
+        o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
+    
+    for ( size_t i = 0;  i < args.size(); i++ ) {
+        o << " args[" << i << "] = ";
+        args[i].getVariable()->getRevObject().printValue(o);
+        o << std::endl;
+    }
+    
+    return o.str();
+}
+
+
 /**
  * @brief Check arguments
  *
@@ -299,7 +320,7 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
                 score = j;
                 break;
             }
-            parent = &parent->getParentTypeSpec();
+            parent = parent->getParentTypeSpec();
             j++;
             if ( j >= score ) 
             {
@@ -309,27 +330,6 @@ int Function::computeMatchScore(const Variable *var, const ArgumentRule &rule) {
     }
     
     return score;    // We needed type conversion for this argument
-}
-
-
-/** Debug info about object */
-std::string Function::callSignature(void) const {
-    
-    std::ostringstream o;
-    o << getType() << ": " << std::endl;
-    
-    if (argsProcessed)
-        o << "Arguments processed; there are " << args.size() << " values." << std::endl;
-    else
-        o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
-    
-    for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = ";
-        args[i].getVariable()->getRevObject().printValue(o);
-        o << std::endl;
-    }
-    
-    return o.str();
 }
 
 
