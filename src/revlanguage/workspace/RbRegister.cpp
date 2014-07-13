@@ -118,6 +118,7 @@
 
 
 ///* Moves on precision matrices */
+#include "Move_PrecisionMatrixSimple.h"
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
@@ -442,6 +443,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Moves on matrices of real values */
         addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
+
+        /* Moves on matrices of real values */
+        addTypeWithConstructor("mvPrecisionMatrixSimple",       new Move_PrecisionMatrixSimple() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );

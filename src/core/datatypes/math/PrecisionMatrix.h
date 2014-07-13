@@ -63,7 +63,8 @@ namespace RevBayesCore {
         
     };
     
-    
+    std::ostream&                       operator<<(std::ostream& o, const PrecisionMatrix& x);                                           //!< Overloaded output operator
+  
 }
 
 #endif /* defined(__revbayes__PrecisionMatrix__) */
