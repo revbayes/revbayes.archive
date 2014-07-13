@@ -113,6 +113,10 @@
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorScale.h"
 
+/* Moves on real valued matrices */
+#include "Move_MatrixSingleElementSlide.h"
+
+
 ///* Moves on precision matrices */
 
 
@@ -436,6 +440,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
         
+        /* Moves on matrices of real values */
+        addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
+
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
