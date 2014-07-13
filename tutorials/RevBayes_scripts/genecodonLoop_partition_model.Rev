@@ -21,35 +21,29 @@ vec_1pos <- seq(1,n_sites_rbcL,3)
 vec_2pos <- seq(2,n_sites_rbcL,3)
 vec_3pos <- seq(3,n_sites_rbcL,3)
 
+data[2] <- data_rbcL
+data[3] <- data_rbcL
+data[4] <- data_rbcL
+
+for(i in vec_1pos){
+   data[3].excludeCharacter(i)
+   data[4].excludeCharacter(i)
+}
+for(i in vec_2pos){
+   data[2].excludeCharacter(i)
+   data[4].excludeCharacter(i)
+}
+for(i in vec_3pos){
+   data[2].excludeCharacter(i)
+   data[3].excludeCharacter(i)
+}
+
 n_sites[1] <- data[1].nchar()[1]
 n_sites[2] <- vec_1pos.size()
 n_sites[3] <- vec_2pos.size()
 n_sites[4] <- vec_3pos.size()
 
-data[2] <- data_rbcL
-for(i in vec_2pos){
-   data[2].excludeCharacter(i)
-}
-for(i in vec_3pos){
-   data[2].excludeCharacter(i)
-}
 
-
-data[3] <- data_rbcL
-for(i in vec_1pos){
-  data[3].excludeCharacter(i)
-}
-for(i in vec_3pos){
-  data[3].excludeCharacter(i)
-}
-
-data[4] <- data_rbcL
-for(i in vec_1pos){
-  data[4].excludeCharacter(i)
-}
-for(i in vec_2pos){
-   data[4].excludeCharacter(i)
-}
 
 n_parts <- data.size()
 
