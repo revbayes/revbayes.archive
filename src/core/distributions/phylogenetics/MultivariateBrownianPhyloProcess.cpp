@@ -99,15 +99,12 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 }
 
 void MultivariateBrownianPhyloProcess::redrawValue(void) {
-    std::cerr << "redraw brownian\n";
     simulate();
-    std::cerr << "Brownian:\t\t" << *value << std::endl;
 }
 
 
 void MultivariateBrownianPhyloProcess::simulate() {
     
-    std::cerr << "SIMULATE\n";
     recursiveSimulate(tau->getValue().getRoot());
 }
 

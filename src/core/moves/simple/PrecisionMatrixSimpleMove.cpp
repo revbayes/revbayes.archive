@@ -54,8 +54,12 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     
     mymat = newmat;
     
-    double lnHastingsratio = 0;
+    mymat.getLogDet();
+//    std::cerr << mymat << '\n';
+//    std::cerr << mymat.getLogDet() << '\n';
     
+    double lnHastingsratio = 0;
+        
     return lnHastingsratio;
 }
 

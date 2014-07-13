@@ -15,6 +15,8 @@
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
 
+#include <iomanip>
+
 using namespace RevBayesCore;
 
 PrecisionMatrix::PrecisionMatrix(void) : MatrixReal(1,1,0.0), eigensystem(this), eigenflag(false), inverse(1,1,0.0) {
@@ -157,3 +159,33 @@ void PrecisionMatrix::update()  const {
         eigenflag = true;
     }
 }
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const PrecisionMatrix& x) {
+    
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < x.getNumberOfRows(); i++) 
+    {
+        
+        for (size_t j = i+1; j < x.getNumberOfColumns(); ++j) 
+        {
+            o << x[i][j] << '\t';
+        }
+    }
+    for (size_t i=0; i < x.getNumberOfRows(); i++) {
+            o << x[i][i] << '\t';
+    }
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+    return o;
+}
+
+
