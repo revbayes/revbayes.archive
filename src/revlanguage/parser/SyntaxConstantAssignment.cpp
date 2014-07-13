@@ -101,22 +101,19 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
     printf( "Evaluating constant assignment\n" );
 #endif
 
-    // Get variable from lhs
-    RevPtr<Variable> theSlot;
-    if ( variable != NULL )
-        theSlot = variable->evaluateLHSContent( env );
-    else
-        theSlot = functionCall->evaluateContent( env );
-    
     // Declare variable storing the return value of the assignment expression
     RevPtr<Variable> theVariable;
     
     // Get the rhs expression wrapped and executed into a variable.
-    // We need to call evaluateIndirectReferenceContent in case the rhs
-    // is a variable. If not, evaluateIndirectReferenceContent will
-    // fall back to evaluateDynamicContent
     theVariable = expression->evaluateContent(env);
 
+    // Get variable slot from lhs
+    RevPtr<Variable> theSlot;
+    if ( variable != NULL )
+        theSlot = variable->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    else
+        theSlot = functionCall->evaluateContent( env );
+    
     // Get a reference to the Rev object value
     const RevObject& value = theVariable->getRevObject();
     
@@ -132,7 +129,7 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
         else
         {
             std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
+            msg << "Cannot assign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
             msg << " because the variable requires type '" << theSlot->getRevObjectTypeSpec().getType() << "'" << std::endl;
             throw RbException( msg );
         }
@@ -175,16 +172,6 @@ void SyntaxConstantAssignment::printValue(std::ostream& o) const
     o << "expression    = ";
     expression->printValue(o);
     o << std::endl;
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxConstantAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
 }
 
 

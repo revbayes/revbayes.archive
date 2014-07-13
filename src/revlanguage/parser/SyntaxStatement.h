@@ -53,7 +53,6 @@ class SyntaxStatement : public SyntaxElement {
 
         // Regular functions
         RevPtr<Variable>                            evaluateContent(Environment& env);                                              //!< Get semantic value
-        void                                        replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         bool                                        isTrue(SyntaxElement* expression, Environment& env) const;                      //!< Does expression evaluate to true?

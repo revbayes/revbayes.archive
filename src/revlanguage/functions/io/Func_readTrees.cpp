@@ -43,7 +43,7 @@ RevPtr<Variable> Func_readTrees::execute( void ) {
     std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );
     for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
     {
-        trees->push_back( TimeTree(*t) );
+        trees->push_back( new TimeTree(*t) );
     }
     
     return new Variable( trees );

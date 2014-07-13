@@ -138,7 +138,13 @@ SyntaxStatement* SyntaxStatement::clone () const {
 }
 
 
-/** Get semantic value: it is here that we execute the statement */
+/**
+ * Get semantic value: it is here that we execute the statement.
+ *
+ * @todo Return statements do not appear to be correctly handled in
+ *       for loops. The return variable is discarded and the loop
+ *       just continues.
+ */
 RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 
     RevPtr<Variable> result = NULL;
@@ -149,36 +155,41 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         SyntaxForLoop* forLoop = dynamic_cast<SyntaxForLoop*>( expression );
         assert (forLoop != NULL);
 
-        // Initialize for loop
+        // Initialize for loop. We use current environment for the loop variables (as in R)
         Signals::getSignals().clearFlags();
-        
-        // use the current environment so that the variables are available outside the loop
-        Environment& loopEnv = env;
-        
-        // here we initialize the loop
-        forLoop->initializeLoop(loopEnv);
+        forLoop->initializeLoop( env );
 
         // Now loop over statements inside the for loop
-        while ( !forLoop->isFinished() ) {
-            
-            RevObject* indexValue = forLoop->getNextLoopState();
-            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
+        while ( !forLoop->isFinished() )
+        {
+            // Get next loop state. This will update the value of the loop variable
+            forLoop->getNextLoopState();
 
+            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++)
+            {
+                // Get a convenient pointer to the syntax element
                 SyntaxElement* theSyntaxElement = *i;
-                // replace the index variable first with its new value
-                theSyntaxElement->replaceVariableWithConstant(forLoop->getIndexVarName(), *indexValue);
-                // Execute statement
-                result = theSyntaxElement->evaluateContent(loopEnv);
                 
-                // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
+                // Execute statement
+                result = theSyntaxElement->evaluateContent( env );
+
+                // We do not print the result (as in R). Uncomment the code below to change this behavior
+
+#if 0
+                // Print result if it is not an assign expression (== NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() &&
+                     result != NULL && result->getRevObject() != RevNullObject::getInstance())
+                {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
+#endif
 
-                // Free memory
-				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL) {
+                // Catch a return signal
+                // TODO: This appears to inappropriately discard the return value of a return statement
+				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL)
+                {
                     result = NULL;  // discard result
                 }
 
@@ -187,20 +198,20 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                     break;
             }
             
-            // free memory
-            delete indexValue;
-
             // Catch signals
-            if ( Signals::getSignals().isSet(Signals::BREAK) ) {
+            // TODO Return statement not handled correctly
+            if ( Signals::getSignals().isSet(Signals::BREAK) )
+            {
                 Signals::getSignals().clearFlags();
                 break;
             }
-            else if ( Signals::getSignals().isSet(Signals::CONTINUE) ) {
+            else if ( Signals::getSignals().isSet(Signals::CONTINUE) )
+            {
                 Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
         
-        // finalize the loop
+        // Finalize the loop (resets the forloop state for next execution round)
         forLoop->finalizeLoop();
         
     }
@@ -418,33 +429,5 @@ void SyntaxStatement::printValue(std::ostream& o) const {
             (*i)->printValue(o);
         }
     }
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the elements.
- */
-void SyntaxStatement::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    // the first set of statements
-    if ( statements1 != NULL ) {
-        for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
-            (*i)->replaceVariableWithConstant(name, c);
-        }
-    }
-    
-    // the second set of statements
-    if ( statements2 != NULL ) {
-        for (std::list<SyntaxElement*>::iterator i = statements2->begin(); i != statements2->end(); i++) {
-            (*i)->replaceVariableWithConstant(name, c);
-        }
-    }
-    
-    // the expression itself
-    if ( expression != NULL ) {
-        expression->replaceVariableWithConstant(name, c);
-    }
-    
 }
 

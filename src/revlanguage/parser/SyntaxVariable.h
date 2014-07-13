@@ -61,12 +61,11 @@ class SyntaxVariable : public SyntaxElement {
         std::vector<size_t>                 computeIndex(Environment& env);                                                         //!< Evaluate index (constant content)
         RevPtr<Variable>                    evaluateIndirectReferenceContent(Environment& env);                                     //!< Get semantic value if indirect variable reference
         RevPtr<Variable>                    evaluateContent(Environment& env);                                                      //!< Get semantic value (static or dynamic)
-        RevPtr<Variable>                    evaluateLHSContent(Environment& env, const std::string& elemType = "");                 //!< Get semantic value of lhs variable expression
+        RevPtr<Variable>                    evaluateLHSContent(Environment& env, const std::string& elemType);                      //!< Get semantic value of lhs variable expression
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                hasFunctionCall(void) const;                                                            //!< Does this variable have a function call (e.g. a.xxx() )
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
-        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);               //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                         identifier;                                                                             //!< The name of the variable, if identified by name

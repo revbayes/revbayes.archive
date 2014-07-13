@@ -92,7 +92,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ceil<valType, retType>::getA
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, valType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, valType::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -113,7 +113,7 @@ const std::string& RevLanguage::Func_ceil<valType, retType>::getClassType(void) 
 template <typename valType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( valType::getClassType() ), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( valType::getClassTypeSpec() ), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

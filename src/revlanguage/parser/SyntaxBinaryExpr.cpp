@@ -146,14 +146,3 @@ void SyntaxBinaryExpr::printValue(std::ostream& o) const
     rightOperand->printValue(o);
 }
 
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to both elements.
- */
-void SyntaxBinaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c)
-{
-    leftOperand->replaceVariableWithConstant(name, c);
-    rightOperand->replaceVariableWithConstant(name, c);
-}
-

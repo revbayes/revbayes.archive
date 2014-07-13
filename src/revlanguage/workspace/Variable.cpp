@@ -12,8 +12,8 @@
 using namespace RevLanguage;
 
 /** Constructor of empty variable with specified type. */
-Variable::Variable(const TypeSpec& ts) : 
-    name(""),
+Variable::Variable( const TypeSpec& ts, const std::string& n ) :
+    name( n ),
     refCount( 0 ),
     revObject( NULL ),
     revObjectTypeSpec( ts ),

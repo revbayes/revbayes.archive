@@ -147,15 +147,3 @@ void SyntaxFormal::printValue(std::ostream& o) const {
 }
 
 
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We only change the default expression.
- * Some crazy kids might declare functions inside loops!?!
- */
-void SyntaxFormal::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    defaultExpr->replaceVariableWithConstant(name, c);
-    
-}
-
-

@@ -34,9 +34,9 @@ namespace RevLanguage {
         elementType                                 operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
         void                                        pop_back(void);                                             //!< Drop element from back
         void                                        pop_front(void);                                            //!< Drop element from front
-        void                                        push_back(const rlType &x);                                 //!< Push Rev object element onto back
+        void                                        push_back(rlType* x);                                       //!< Push Rev object element onto back
         void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
-        void                                        push_front(const rlType &x);                                //!< Push Rev object element onto front
+        void                                        push_front(rlType* x);                                      //!< Push Rev object element onto front
         void                                        push_front(const elementType& x);                           //!< Push internal value of Rev object element onto front
         
         // Basic utility functions you have to override
@@ -52,7 +52,9 @@ namespace RevLanguage {
         // Member object functions
         RevPtr<Variable>                            executeMethod(std::string const &name, const std::vector<Argument> &args);  //!< Execute member methods
         
-        // Container function
+        // Container functions implemented here. Override findOrCreateElement and getElement to protect from assignment
+        virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
+        virtual RevPtr<Variable>                    getElement(const std::vector<size_t>& oneOffsetIndices);                        //!< Get element variable
         void                                        setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
 
         // ModelVector functions: override if you do not want to support these in-place algorithms
@@ -158,7 +160,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         // We are both model vectors. Rely on generic code to cover all allowed conversions
         
         // First generate an empty model vector of the desired type
-        Container* theConvertedContainer = static_cast<Container*>( Workspace::userWorkspace().getNewTypeObject( type.getType() ) );
+        Container* theConvertedContainer = Workspace::userWorkspace().makeNewEmptyContainer( type.getType(), type.getDim() );
         
         // Now generate the vector of elements
         std::vector<RevObject*> theConvertedObjects;
@@ -166,7 +168,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         for ( typename valueType::const_iterator i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
             RevObject* orgElement = new rlType( *i );
-            theConvertedObjects.push_back( orgElement->convertTo( type.getElementType() ) );
+            theConvertedObjects.push_back( orgElement->convertTo( *type.getElementTypeSpec() ) );
         }
         
         // Set the elements of the converted container, which assumes ownership of the objects
@@ -215,6 +217,71 @@ RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, co
 
 
 /**
+ * Find an element for assignment. If we are a stochastic node or
+ * deterministic node, we ask the user first if they want to break up
+ * the previous association of the variable with a single dynamic DAG
+ * node and make it a composite of several individual DAG nodes instead.
+ * If we are a constant node, we simply go ahead quietly with the
+ * replacement.
+ */
+template<typename rlType>
+RevPtr<Variable> ModelVector<rlType>::findOrCreateElement( const std::vector<size_t>& oneOffsetIndices )
+{
+    // First retrieve the variable elements vector, if possible
+    ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
+    if ( theContainerNode == NULL )
+    {
+        if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode ) == NULL )
+        {
+            bool answer = UserInterface::userInterface().ask( "Do you want to convert the container to a composite value?" );
+            
+            if ( answer == true )
+                this->makeCompositeValue();
+            else
+                throw RbException( "Assignment to elements of a homogeneous container not allowed" );
+        }
+        else
+            this->makeCompositeValue();
+        
+        theContainerNode = static_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
+    }
+    
+    // Check the indices first
+    if ( oneOffsetIndices.size() == 0 || oneOffsetIndices[0] == 0 )
+        throw RbException( "Illegal attempt to assign to multiple vector elements" );
+
+    // Split indices into myIndex and elementIndices (one-offset!)
+    size_t myIndex = oneOffsetIndices[0];
+    std::vector<size_t> elementIndices;
+    for ( size_t i = 1; i < oneOffsetIndices.size(); ++i )
+        elementIndices.push_back( oneOffsetIndices[i] );
+    
+    if ( elementIndices.size() == 0 )
+    {
+        // We want to assign to an element in the vector
+        
+        // Resize if myIndex is out of range.
+        for ( size_t it = this->size(); it < myIndex; ++it )
+            theContainerNode->push_back( new rlType() );
+        
+        // Return the assignable element
+        return theContainerNode->getElement( myIndex - 1 );
+    }
+    else
+    {
+        // We want to assign to a subelement
+        
+        // Check if the index is out of range
+        if ( myIndex > this->size() )
+            throw RbException( "Index out of range" );
+        
+        // Return the assignable subelement
+        return theContainerNode->getElement( myIndex - 1 )->getRevObject().getElement( elementIndices );
+    }
+}
+
+
+/**
  * Get class name of object. This is the Rev object element type followed by
  * a single set of square brackets. This provides a nice and convenient way
  * of specifying generic types of vectors for all Rev object types.
@@ -228,13 +295,76 @@ const std::string& ModelVector<rlType>::getClassType(void)
 }
 
 
-/** Get class type spec describing type of object */
+/**
+ * Get class type spec describing type of object. Note that we have to
+ * use the special version of the TypeSpec constructor because we derive
+ * directly from ModelContainer and have the special "rlType[]" type
+ * specification.
+ */
 template <typename rlType>
 const RevLanguage::TypeSpec& ModelVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec() );
+    static TypeSpec rbClass = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
 
 	return rbClass;
+}
+
+
+/**
+ * Get an element. We support reference assignment by giving out a smart pointer to the actual
+ * element if we are a composite node. We do that by retrieving the elements from our container
+ * node, and then returning the appropriate element or elements if a slice is requested. If we
+ * are a constant node, we transform ourselves to a composite conatiner node first
+ * and then get the elements from it. If we are a dynamic node, we simply give out a new
+ * temporary variable, a clone of the original element. In this way, we can guard ourselves
+ * from attempts by others to modify the element in cases where that would be inappropriate.
+ *
+ * Note that we use oneOffsetIndices, so substract one before using them to retrieve elements
+ * from the internal elements vector. A zero in the first position of the index means that we
+ * want to return the entire vector.
+ */
+template<typename rlType>
+RevPtr<Variable> ModelVector<rlType>::getElement( const std::vector<size_t>& oneOffsetIndices )
+{
+    // First check if we want to return a slice
+    if ( oneOffsetIndices.size() == 0 || oneOffsetIndices[0] == 0 )
+    {
+        if ( oneOffsetIndices.size() > 1 )
+            throw RbException( "Slicing across Rev objects not supported" );
+        return new Variable( this->clone() );
+    }
+    
+    // We want a single element: first check if we have or can get element variables
+    ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
+    if ( theContainerNode == NULL )
+    {
+        if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode ) != NULL )
+            this->makeCompositeValue();
+        
+        theContainerNode = static_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
+    }
+    
+    // We need to retrieve the element from the value vector if we do not have a container node
+    if ( theContainerNode == NULL )
+        return getElementFromValue( oneOffsetIndices );
+    
+    // We have a container node. We retrieve the element from its elements vector
+    
+    // Split indices into myIndex and elementIndices
+    size_t myIndex = oneOffsetIndices[0];
+    std::vector<size_t> elementIndices;
+    for ( size_t i = 1; i < oneOffsetIndices.size(); ++i )
+        elementIndices.push_back( oneOffsetIndices[i] );
+    
+    // Check that myIndex is in range
+    if ( myIndex > this->size() )
+        throw RbException( "Index out of range" );
+    
+    // Return an element or subelement
+    if ( elementIndices.size() == 0 )
+        return theContainerNode->getElement( myIndex - 1 );
+    else
+        return theContainerNode->getElement( myIndex - 1 )->getRevObject().getElement( elementIndices );
 }
 
 
@@ -297,7 +427,7 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
             rlType orgElement = rlType(*i);
             
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isTypeSpec( type.getElementType() ) && !orgElement.isConvertibleTo( type.getElementType() ) )
+            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec() ) )
                 return false;
         }
         
@@ -343,9 +473,10 @@ void ModelVector<rlType>::pop_front( void )
  * dynamic variable but throw an error in that case.
  */
 template <typename rlType>
-void ModelVector<rlType>::push_back( const rlType& x )
+void ModelVector<rlType>::push_back( rlType* x )
 {
-    if ( dynamic_cast< RevBayesCore::DynamicNode<valueType>* >( this->dagNode ) != NULL )
+    if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode ) == NULL &&
+        dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode ) == NULL )
         throw RbException( "Cannot push element onto dynamic vector variable" );
     
     this->makeCompositeValue();
@@ -360,11 +491,12 @@ void ModelVector<rlType>::push_back( const rlType& x )
 template <typename rlType>
 void ModelVector<rlType>::push_back( const elementType& x )
 {
-    if ( dynamic_cast< RevBayesCore::DynamicNode<valueType>* >( this->dagNode ) != NULL )
+    if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode ) == NULL &&
+         dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode ) == NULL )
         throw RbException( "Cannot push element onto dynamic vector variable" );
     
     this->makeCompositeValue();
-    static_cast< ContainerNode<rlType, valueType>* >( this->dagNode )->push_back( rlType(x) );
+    static_cast< ContainerNode<rlType, valueType>* >( this->dagNode )->push_back( new rlType(x) );
 }
 
 
@@ -373,7 +505,7 @@ void ModelVector<rlType>::push_back( const elementType& x )
  * dynamic variable but throw an error in that case.
  */
 template <typename rlType>
-void ModelVector<rlType>::push_front( const rlType& x )
+void ModelVector<rlType>::push_front( rlType* x )
 {
     if ( dynamic_cast< RevBayesCore::DynamicNode<valueType>* >( this->dagNode ) != NULL )
         throw RbException( "Cannot push element onto dynamic vector variable" );
@@ -394,7 +526,7 @@ void ModelVector<rlType>::push_front( const elementType& x )
         throw RbException( "Cannot push element onto dynamic vector variable" );
     
     this->makeCompositeValue();
-    static_cast< ContainerNode<rlType, valueType>* >( this->dagNode )->push_back( rlType(x) );
+    static_cast< ContainerNode<rlType, valueType>* >( this->dagNode )->push_back( new rlType(x) );
 }
 
 

@@ -115,15 +115,3 @@ void SyntaxUnaryExpr::printValue(std::ostream& o) const {
     expression->printValue(o);
 }
 
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element.
- */
-void SyntaxUnaryExpr::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    // the expression itself
-    expression->replaceVariableWithConstant(name, c);
-    
-}
-

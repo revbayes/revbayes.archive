@@ -78,7 +78,7 @@ namespace RevBayesCore {
         void                                                        replace(DagNode *n);                                                            //!< Replace this node with node p.
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                          //!< Restore value of affected nodes recursively
-        void                                                        setName(const std::string &n);                                                  //!< Set the name of this variable for identification purposes.
+        virtual void                                                setName(const std::string &n);                                                  //!< Set the name of this variable for identification purposes.
         void                                                        swapParent(const DagNode *oldP, const DagNode *newP);                           //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
         void                                                        touch(void);
         virtual void                                                touchAffected(void);                                                            //!< Touch affected nodes (flag for recalculation)

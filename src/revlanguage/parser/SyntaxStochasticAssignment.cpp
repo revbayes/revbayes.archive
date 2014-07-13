@@ -100,13 +100,6 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     printf( "Evaluating tilde assignment\n" );
 #endif
     
-    // Get variable from lhs
-    RevPtr<Variable> theSlot;
-    if ( variable != NULL )
-        theSlot = variable->evaluateLHSContent( env );
-    else
-        theSlot = functionCall->evaluateContent( env );
-    
     // Evaluate the rhs expression and wrap it into a dynamic variable
     RevPtr<Variable> theVariable = expression->evaluateDynamicContent(env);
         
@@ -121,6 +114,13 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     // Create new stochastic variable
     RevObject* rv = dist.createRandomVariable();
         
+    // Get variable slot from lhs
+    RevPtr<Variable> theSlot;
+    if ( variable != NULL )
+        theSlot = variable->evaluateLHSContent( env, rv->getType() );
+    else
+        theSlot = functionCall->evaluateContent( env );
+    
     // Fill the slot with the new stochastic variable
     theSlot->setRevObject( rv );
         
@@ -149,18 +149,6 @@ void SyntaxStochasticAssignment::printValue(std::ostream& o) const
     o << "expression    = ";
     expression->printValue(o);
     o << std::endl;
-    
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxStochasticAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
     
 }
 

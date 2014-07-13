@@ -121,11 +121,16 @@ const std::string& ModelVectorAbstractElement<rlType>::getClassType(void)
 }
 
 
-/** Get class type spec describing type of object */
+/**
+ * Get class type spec describing type of object. Note that we have to
+ * use the special version of the TypeSpec constructor because we derive
+ * directly from ModelContainer and have the special "rlType[]" type
+ * specification.
+ */
 template <typename rlType>
 const RevLanguage::TypeSpec& ModelVectorAbstractElement<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec() );
+    static TypeSpec rbClass = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
 	return rbClass;
 }

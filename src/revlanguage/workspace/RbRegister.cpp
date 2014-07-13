@@ -21,10 +21,6 @@
  * Some explanation of the directory structure is provided in the comments
  * in this file. Consult these comments if you are uncertain about where
  * to add your objects in the code.
- *
- * (c) Copyright 2009-
- * @license GPL version 3
- *
  */
 
 #include <sstream>
@@ -55,6 +51,8 @@
 
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
+#include "RevObjectVector.h"
+#include "WorkspaceVector.h"
 
 /* Evolution types (in folder "datatypes/evolution") */
 
@@ -342,13 +340,28 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RlString()                 );
         
         /* Add container types (in folder "datatypes/container") (alphabetic order) */
+
+        // Note: Only these types of containers can be created implicitly by assignment
+        // or explicitly using the v function or the "[ x1, x2, ... ]" syntax.
+
+        // Model vectors
         addType( new ModelVector<Integer>()          );
         addType( new ModelVector<Natural>()          );
         addType( new ModelVector<Real>()             );
         addType( new ModelVector<RealPos>()          );
         addType( new ModelVector<RlBoolean>()        );
         addType( new ModelVector<RlString>()         );
-        
+
+        // Workspace vectors
+        addType( new WorkspaceVector<Mcmc>()         );
+        addType( new WorkspaceVector<Model>()        );
+        addType( new WorkspaceVector<Monitor>()      );
+        addType( new WorkspaceVector<Move>()         );
+
+        // RevObject vectors
+        addType( new RevObjectVector<Function>()     );
+        addType( new RevObjectVector<Distribution>() );
+        addType( new RevObjectVector<RevObject>()    );
 
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
 

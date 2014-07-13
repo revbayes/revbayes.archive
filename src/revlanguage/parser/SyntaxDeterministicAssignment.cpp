@@ -99,21 +99,21 @@ RevPtr<Variable> SyntaxDeterministicAssignment::evaluateContent( Environment& en
     printf( "Evaluating equation assignment\n" );
 #endif
     
-    // Get variable from lhs
-    RevPtr<Variable> theSlot;
-    if ( variable != NULL )
-        theSlot = variable->evaluateLHSContent( env );
-    else
-        theSlot = functionCall->evaluateContent( env );
-
     // Declare variable storing the return value of the assignment expression
     RevPtr<Variable> theVariable;
 
     // Get the rhs expression wrapped and executed into a variable.
     // We need to call evaluateIndirectReferenceContent in case the rhs
     // is a variable. If not, evaluateIndirectReferenceContent will
-    // fall back to evaluateDynamicContent
+    // fall back to evaluateDynamicContent.
     theVariable = expression->evaluateIndirectReferenceContent(env);
+    
+    // Get variable slot from lhs
+    RevPtr<Variable> theSlot;
+    if ( variable != NULL )
+        theSlot = variable->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    else
+        theSlot = functionCall->evaluateContent( env );
     
     // Fill the slot with a clone of the variable. The variable itself
     // will be passed on as the semantic value of the statement and can
@@ -146,16 +146,6 @@ void SyntaxDeterministicAssignment::printValue(std::ostream& o) const
     o << "expression    = ";
     expression->printValue(o);
     o << std::endl;
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxDeterministicAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
 }
 
 

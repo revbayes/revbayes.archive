@@ -230,19 +230,3 @@ void SyntaxFunctionCall::printValue(std::ostream& o) const {
 }
 
 
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the arguments.
- */
-void SyntaxFunctionCall::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    
-    for (std::list<SyntaxLabeledExpr*>::iterator i = arguments->begin(); i != arguments->end(); i++) {
-        (*i)->replaceVariableWithConstant(name, c);
-    }
-    
-    // replace base variable too if this is a method
-    if ( variable != NULL ) {
-        variable->replaceVariableWithConstant(name, c);
-    }
-}
-

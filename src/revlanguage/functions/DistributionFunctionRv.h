@@ -131,8 +131,7 @@ RevLanguage::RevPtr<Variable> RevLanguage::DistributionFunctionRv<valueType>::ex
     for (int i = 0;  i < n; ++i) {
         valueType* value = copyObject->createRandomVariable();
         value->makeConstantValue();
-        values->push_back( *value );
-        delete value;
+        values->push_back( value );
     }
     return new Variable( values );
 }

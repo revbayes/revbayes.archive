@@ -96,8 +96,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__lt<leftValType,rightValType
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "", true, leftValType::getClassType() ) );
-        argumentRules.push_back( new ArgumentRule( "", true, rightValType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, leftValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, rightValType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

@@ -102,8 +102,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_vector<valType>::getArgument
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "", true, valType::getClassType() ) );
-        argumentRules.push_back( new Ellipsis (     valType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "", true, valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis (     valType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

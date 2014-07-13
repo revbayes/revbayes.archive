@@ -91,8 +91,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__div<firstValType, secondVal
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "first", true, firstValType::getClassType() ) );
-        argumentRules.push_back( new ArgumentRule( "second", true, secondValType::getClassType() ) );
+        argumentRules.push_back( new ArgumentRule( "first", true, firstValType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "second", true, secondValType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

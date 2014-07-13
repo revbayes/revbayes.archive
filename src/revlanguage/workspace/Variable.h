@@ -38,45 +38,46 @@ namespace RevLanguage {
      */
     class Variable {
     public:
-                            Variable(const TypeSpec& ts);               //!< Constructor of empty unnamed variable with a type specification
-                            Variable(RevObject *revObj, const std::string &n = "");     //!< Constructor of filled, potentially named variable
-                            Variable(const RevPtr<const Variable>& refVar, const std::string &n = "");      //!< Constructor of reference variable
-                            Variable(const Variable &v);                //!< Copy constructor
-        virtual            ~Variable(void);
+        Variable(const TypeSpec& ts, const std::string& n="");                          //!< Constructor of empty variable with a type specification
+        Variable(RevObject *revObj, const std::string &n = "");                         //!< Constructor of filled variable
+        Variable(const RevPtr<const Variable>& refVar, const std::string &n = "");      //!< Constructor of reference variable
+        Variable(const Variable &v);                                                    //!< Copy constructor
 
-        Variable&           operator=(const Variable &v);               //!< Assignment operator
+        virtual                 ~Variable(void);                                        //!< Virtual destructor
+
+        Variable&               operator=(const Variable &v);                           //!< Assignment operator
 
         // Regular functions
-        Variable*           clone(void) const;                          //!< Clone variable
-        const std::string&  getName(void) const;                        //!< Get the name of the variable
-        RevObject&          getRevObject(void) const;                   //!< Get the value of the variable (non-const to return non-const value)
-        const TypeSpec&     getRevObjectTypeSpec(void) const;           //!< Get the required Rev object type spec
-        bool                isControlVar(void) const;                   //!< Is this a control variable?
-        bool                isReferenceVar(void) const;                 //!< Is this a reference variable?
-        void                makeReference(const RevPtr<const Variable>& refVar);    //!< Make this a reference variable
-        void                printValue(std::ostream& o) const;          //!< Print value of variable
-        void                setControlVar(bool flag = true);            //!< Set (or unset) control variable status
-        void                setName(const std::string &n);              //!< Set the name of this variable
-        void                setRevObject(RevObject *newObj);            //!< Set a variable with a Rev object
-        void                setRevObjectTypeSpec(const TypeSpec& ts);   //!< set the required Rev object type spec
+        Variable*               clone(void) const;                                      //!< Clone variable
+        const std::string&      getName(void) const;                                    //!< Get the name of the variable
+        RevObject&              getRevObject(void) const;                               //!< Get the value of the variable (non-const to return non-const value)
+        const TypeSpec&         getRevObjectTypeSpec(void) const;                       //!< Get the required Rev object type spec
+        bool                    isControlVar(void) const;                               //!< Is this a control variable?
+        bool                    isReferenceVar(void) const;                             //!< Is this a reference variable?
+        void                    makeReference(const RevPtr<const Variable>& refVar);    //!< Make this a reference variable
+        void                    printValue(std::ostream& o) const;                      //!< Print value of variable
+        void                    setControlVar(bool flag = true);                        //!< Set (or unset) control variable status
+        void                    setName(const std::string &n);                          //!< Set the name of this variable
+        void                    setRevObject(RevObject *newObj);                        //!< Set a variable with a Rev object
+        void                    setRevObjectTypeSpec(const TypeSpec& ts);               //!< set the required Rev object type spec
 
         // Smart pointer functions
-        size_t              decrementReferenceCount(void) const;        //!< Decrement the reference count for reference counting in smart pointers
-        size_t              getReferenceCount(void) const;              //!< Get the reference count for reference counting in smart pointers
-        void                incrementReferenceCount(void) const;        //!< Increment the reference count for reference counting in smart pointers
+        size_t                  decrementReferenceCount(void) const;                    //!< Decrement the reference count for reference counting in smart pointers
+        size_t                  getReferenceCount(void) const;                          //!< Get the reference count for reference counting in smart pointers
+        void                    incrementReferenceCount(void) const;                    //!< Increment the reference count for reference counting in smart pointers
 
     private:
         // Help functions
-        void                replaceRevObject(RevObject *newObj);        //!< Replace the old Rev object with the new one and set the children and parent
+        void                    replaceRevObject(RevObject *newObj);                    //!< Replace object, update DAG
 
         // Member variables
-        std::string             name;                                   //!< Name of variable
-        mutable size_t          refCount;                               //!< Reference count used by RevPtr
-        RevObject*              revObject;                              //!< Pointer to the Rev object inside the variable
-        TypeSpec                revObjectTypeSpec;                      //!< Required type of the object
-        bool                    isReferenceVariable;                    //!< Is this a reference variable?
-        bool                    isControlVariable;                      //!< Is this a control variable?
-        RevPtr<const Variable>  referencedVariable;                     //!< Smart pointer to referenced variable
+        std::string             name;                                                   //!< Name of variable
+        mutable size_t          refCount;                                               //!< Reference count used by RevPtr
+        RevObject*              revObject;                                              //!< Pointer to the Rev object inside the variable
+        TypeSpec                revObjectTypeSpec;                                      //!< Required type of the object
+        bool                    isReferenceVariable;                                    //!< Is this a reference variable?
+        bool                    isControlVariable;                                      //!< Is this a control variable?
+        RevPtr<const Variable>  referencedVariable;                                     //!< Smart pointer to referenced variable
     };
 
 }

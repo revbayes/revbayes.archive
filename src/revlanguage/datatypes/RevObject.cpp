@@ -168,11 +168,14 @@ const std::string& RevObject::getClassType(void)
 }
 
 
-/** Get class vector describing type of object */
+/**
+ * Get class vector describing type of object. We are
+ * the base class of all other classes, so parent is NULL.
+ */
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassType() );
+    static TypeSpec rbClass = TypeSpec( getClassType(), NULL );
 	
     return rbClass; 
 }

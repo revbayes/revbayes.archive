@@ -32,6 +32,7 @@
 namespace RevLanguage {
 
     class RevObject;
+    class Container;
     class Distribution;
     class RandomNumberGenerator;
     class Function;
@@ -84,10 +85,11 @@ namespace RevLanguage {
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
-        RevObject*              getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
-        TypeTable               getTypeTable(void){ return typeTable; }
+//        TypeTable               getTypeTable(void){ return typeTable; }
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
-
+        RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
+        Container*              makeNewEmptyContainer(const std::string& elemType, size_t dim) const;       //!< Make an empty container of specified element type and dim
+        
         static Workspace& globalWorkspace(void) //!< Get global workspace
         {
             static Workspace globalSpace = Workspace();
