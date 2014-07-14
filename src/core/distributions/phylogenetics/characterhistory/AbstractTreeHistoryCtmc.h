@@ -42,9 +42,9 @@ namespace RevBayesCore {
         virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
         virtual void                                                        initializeValue(void) = 0;
-        virtual double                                                      samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
-        virtual double                                                      samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
-        virtual double                                                      samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual bool                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual bool                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
+        virtual bool                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         
         // virtual (you need to overwrite this method if you have additional parameters)
         virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);         //!< Implementation of swaping paramoms
@@ -217,7 +217,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
         this->lnProb += nodeLnProb;
     }
     
-//    std::cout << "sum " << this->lnProb << "\n";
+//    std::cout << "sum " << this->lnProb << "\n\n";
     
 //    int numEvents =0 ;
 //    for (size_t i = 0; i < histories.size(); i++)
@@ -416,30 +416,31 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
 
-    StochasticNode<AbstractCharacterData>* n = this->getStochasticNode();
     
-    
-
+//    StochasticNode<AbstractCharacterData>* n = this->getStochasticNode();
+//    n->touch();
 //    this->getStochasticNode()->touch();
 //    n->touch();
-//    
-//    
-////    this->getStochasticNode()->redraw();
+//
 //    n->redraw();
-//    
+//
 //    n->touch();
 //    
 //    n->getLnProbability();
 //    
 //    n->touch();
+//    
+//    n->getLnProbability();
+//    
 //    n->keep();
 //    
+//    n->touch();
+////
 //    n->touch();
     
 //    n->getLnProbability();
 //    n->touch();
 //    std::cout << getStochasticNode()->getLnProbability() << "\n";
-    std::cout << "blah\n";
 }
 
 
