@@ -119,7 +119,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 1 ;
+    mcmcGenerations *= 10;
 //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
@@ -135,25 +135,22 @@ bool TestCharacterHistory::run_exp(void) {
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
-    bool usingAmbiguousCharacters = !true;
-    bool simulate = false;
-    bool useClock = !true;
-    bool forbidExtinction = true;
-    bool useCladogenesis = true;
-    bool useEpochs = true;
-    bool useDistances = !true;
-    bool useAdjacency = true;
-    bool useAvailable = true;
+    bool usingAmbiguousCharacters   = !true;
+    bool simulate                   = false;
+    bool useClock                   = !true;
+    bool forbidExtinction           = true;
+    bool useCladogenesis            = !true;
+    bool useDistances               = !true;
+    bool useAdjacency               = !true;
+    bool useAvailable               = !true;
+    
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
-    fn = "psychotria.nex";
-//    fn = "16tip_4areas.nex";
-//    fn = "2tip_4areas.nex";
-//    fn = "vireya_gain0_01_loss0_03_dp0.nex";
-//    fn = "16tip_100areas_dp0.nex";
+//    fn = "psychotria.nex";
+    fn = "16tip_20areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -167,9 +164,9 @@ bool TestCharacterHistory::run_exp(void) {
 
     // geo by epochs
     std::string afn="";
-//    afn = "vireya.atlas.txt";
-    afn = "hawaii.atlas.txt";
-//    afn = "hawaii_hard.atlas.txt";
+    afn = "malesia_static.atlas.txt";
+//    afn = "hawaii_static.atlas.txt";
+//    afn = "hawaii_dynamic.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -198,19 +195,17 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<GeographyRateModifier>* ddd = NULL;
     ContinuousStochasticNode* dp = NULL;
     ConstantNode<double> *dp_pr = NULL;
-//    if (useDistances)
-    {
-//        dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
-//        dp = new ContinuousStochasticNode("distancePower", new NormalDistribution(new ConstantNode<double>("dp_mu",new double(0.0)), dp_pr));
-        dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
-        dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
-        dp->setValue(new double(0.00001));
-//        dp->setValue(new double(1.0));
-        ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
-    }
+    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
+    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+    dp->setValue(new double(0.00001));
+    ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
     
     // ctmc rates
     ConstantNode<double>* glr_pr = new ConstantNode<double>("glr_pr", new double(10.0));
+    
+//    ConstantNode<double>* glr_pr_a = new ConstantNode<double>("glr_pr_a", new double(1.1));
+//    ConstantNode<double>* glr_pr_b = new ConstantNode<double>("glr_pr_b", new double(11.0));
+    
     std::vector<const TypedDagNode<double> *> glr;
     std::vector<StochasticNode<double>* > glr_stoch;
 	std::vector< ContinuousStochasticNode *> glr_nonConst;
@@ -218,6 +213,7 @@ bool TestCharacterHistory::run_exp(void) {
         std::ostringstream glr_name;
         glr_name << "r(" << i << ")";
 		ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new ExponentialDistribution(glr_pr));
+//        ContinuousStochasticNode* tmp_glr = new ContinuousStochasticNode( glr_name.str(), new GammaDistribution(glr_pr_a, glr_pr_b));
 //        tmp_glr->setValue(new double(0.1));
 		glr.push_back( tmp_glr );
 		glr_nonConst.push_back( tmp_glr );
@@ -262,12 +258,11 @@ bool TestCharacterHistory::run_exp(void) {
     else
         charactermodel->clamp( data[0] );
     
-    
     // initialize mapping
-//    charactermodel->redraw();
+    charactermodel->redraw();
+    
     
 //    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
-    
     
 //    GLOBAL_RNG->setSeed(old_seed);
 //    glr_nonConst[0]->redraw();
@@ -281,7 +276,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::cout << "Adding moves\n";
     std::vector<Move*> moves;
-    TopologyNode* nd = NULL; // &tau->getValue().getNode(60); 
+//    TopologyNode* nd = NULL; // &tau->getValue().getNode(60); 
     
     if (useClock)
     {
@@ -291,61 +286,67 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useDistances)
     {
-        moves.push_back(new SlidingMove(dp, 0.1, false, 5 ));
-        moves.push_back(new SlidingMove(dp, 0.3, false, 2 ));
+        moves.push_back(new SlidingMove(dp, 0.1, false, 5.0 ));
+        moves.push_back(new SlidingMove(dp, 0.3, false, 2.0 ));
     }
     
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2));
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.05, false, 2.0));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.01, false, 2.0));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 1, false ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.05), 2.0, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.01), 2.0, false ) );
+//        moves.push_back( new SlidingMove( glr_nonConst[i], 0.1, false, 2.0 ));
     }
 
-    moves.push_back( new MetropolisHastingsMove( new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), numNodes*2, false));
-    moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), numNodes, false));
     
-    // (old) path proposals
-    if (false)
+    bool useChMoves = true;
+    bool useMhMoves = !true;
+    
+    if (useChMoves == false)
     {
-        if (useEpochs)
-        {
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes * 2));
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
-        }
-        else if (!useEpochs)
-        {
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
-        }
+        ;
+    }
+    else if (useMhMoves)
+    {
+        // path
+        moves.push_back( new MetropolisHastingsMove( new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), numNodes*2, false));
+        moves.push_back( new MetropolisHastingsMove( new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), numNodes, false));
         
-        // node proposals
-        if (useEpochs)
-        {
-            BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.2, nd), 0.2, false, numNodes*2));
-            
-        }
-        else if (useCladogenesis && !useEpochs)
-        {
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2, nd), 0.2, false, numNodes*2));
-        }
-        else if (!useCladogenesis && !useEpochs)
-        {
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
-            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
-        }
+        // node
+        moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), numNodes*2, false));
+        moves.push_back( new MetropolisHastingsMove( new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), numNodes, false));
+    }
+    else if (useCladogenesis)
+    {
+        // path
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes * 2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), 0.3, false, numNodes));
         
-//        // tip proposals
-//        if (usingAmbiguousCharacters)
-//        {
-//            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.5, nd), 0.5, false, numNodes/2));
-//            moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new TipRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.05, false, numNodes/1));
-//        }
+        // node
+        BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3);
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.2), 0.2, false, numNodes*2));
+        
+        //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1, nd), 0.1, false, numNodes*2));
+        //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd), 0.3, false, numNodes));
 
     }
     
+    else if (!useCladogenesis)
+    {
+        // path
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes * 2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new PathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), 0.3, false, numNodes));
+        
+        // node
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new NodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2), 0.2, false, numNodes*2));
+    }
+    
+    //        BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
+    //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.1, nd), 0.1, false, numNodes*2));
+    //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.3, nd), 0.3, false, numNodes));
+    
+    //        BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3, nd);
 
 
     
@@ -360,11 +361,12 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert(clockRate);
-    monitoredNodes.insert( dp );
+    if (useDistances)
+        monitoredNodes.insert( dp );
     monitoredNodes.insert( glr_nonConst[0] );
     monitoredNodes.insert( glr_nonConst[1] );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb3" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
