@@ -110,7 +110,7 @@ const std::string& TypeSpec::getElementType( void ) const
     if ( element == NULL)
         return emptyString;
     else
-        return parent->getType();
+        return element->getType();
 }
 
 

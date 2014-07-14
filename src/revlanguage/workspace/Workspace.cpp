@@ -32,6 +32,7 @@
 #include "UserInterface.h"
 #include "Workspace.h"
 
+#include <cassert>
 #include <sstream>
 #include <vector>
 
@@ -229,22 +230,30 @@ Container* Workspace::makeNewEmptyContainer( const std::string& elemType, size_t
     for ( size_t i = 0; i < dim; ++i )
         type << "[]";
     
+    // Try to find the container
     std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type.str() );
     if ( it != typeTable.end() )
         return static_cast<Container*>( it->second->clone() );
     
+    // If that fails, ask our parent
     if ( parentEnvironment != NULL )
         return static_cast<Workspace*>( parentEnvironment )->makeNewEmptyContainer( elemType, dim );
     
-    // We are the global workspace and cannot ask anyon for help.
+    // If that fails, we are the global workspace and cannot ask for help.
     // We try element type promotion to base class element types.
     // We first get the typespec from the template element type object
     // and then proceed up the type hierarchy until we find a suitable
     // container.
     
+    // Find the element type in the type table.
     it = typeTable.find( elemType );
+    if ( it == typeTable.end() )
+        throw RbException( "Element type '" + elemType + "' missing" );
+    
+    // Get its type specification
     const TypeSpec& elemTypeSpec = it->second->getTypeSpec();
 
+    // 
     const TypeSpec* parentElement = elemTypeSpec.getParentTypeSpec();
     while ( parentElement != NULL )
     {
