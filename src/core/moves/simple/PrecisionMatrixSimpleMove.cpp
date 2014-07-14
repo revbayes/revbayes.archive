@@ -53,10 +53,9 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     storedValue = mymat;
     
     mymat = newmat;
+    mymat *= (1.0 / df);
     
     mymat.getLogDet();
-//    std::cerr << mymat << '\n';
-//    std::cerr << mymat.getLogDet() << '\n';
     
     double lnHastingsratio = 0;
         
