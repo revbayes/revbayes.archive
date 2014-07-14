@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class EigenSystem {
 
     public:
-                                                EigenSystem(MatrixReal* m);                                                                                     //!< Constructor from rate matrix
+                                                EigenSystem(const MatrixReal* m);                                                                                     //!< Constructor from rate matrix
     
         double                                  getDeterminant(void);                                                                                               //!< Return determinant
         const MatrixReal&                       getEigenvectors(void) const { return eigenvectors; }                                                                //!< Return the eigenvector matrix
@@ -39,7 +39,7 @@ namespace RevBayesCore {
         const MatrixComplex&                    getComplexEigenvectors(void) const { return complexEigenvectors; }                                                  //!< Return the eigenvector matrix
         const MatrixComplex&                    getComplexInverseEigenvectors() const { return complexInverseEigenvectors; }                                        //!< Return the inverse eigenvector matrix
         bool                                    isComplex(void) const { return complex; } 
-        void                                    setRateMatrixPtr(MatrixReal* qp) { qPtr = qp; }
+        void                                    setRateMatrixPtr(const MatrixReal* qp) { qPtr = qp; }
         void                                    update(void);                                                                                                       //!< Update the eigen system for the matrix q;
 
     private:
@@ -60,7 +60,7 @@ namespace RevBayesCore {
         int                                     luDecompose(MatrixReal& a, double *vv, int *indx, double *pd);                                                   //!< calculates the LU-decomposition of a matrix
 
         size_t                                  n;                                                                                                                  //!< Row and column dimension (square matrix)
-        MatrixReal*                             qPtr;                                                                                                               //!< A pointer to the rate matrix for this system of eigen values and vectors
+        const MatrixReal*                             qPtr;                                                                                                               //!< A pointer to the rate matrix for this system of eigen values and vectors
         MatrixReal                              eigenvectors;                                                                                                       //!< Matrix for internal storage of eigenvectors
         MatrixReal                              inverseEigenvectors;                                                                                                //!< Matrix for internal storage of the inverse eigenvectors
         MatrixComplex                           complexEigenvectors;                                                                                                //!< Matrix for internal storage of complex eigenvectors

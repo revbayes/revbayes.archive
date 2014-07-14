@@ -35,7 +35,7 @@
 using namespace RevBayesCore;
 
 /** Constructor from real matrix */
-EigenSystem::EigenSystem(MatrixReal* m) : 
+EigenSystem::EigenSystem(const MatrixReal* m) : 
 eigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ), 
 inverseEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
 complexEigenvectors( m->getNumberOfRows(), m->getNumberOfRows() ),
@@ -1253,7 +1253,7 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
  */
 void EigenSystem::update(void) {
 	
-	// copy the rate matrix into A because we don't want to destroy
+    // copy the rate matrix into A because we don't want to destroy
     // the rate matrix
     MatrixReal A(*qPtr);
     
