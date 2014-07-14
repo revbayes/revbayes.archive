@@ -20,14 +20,13 @@
 using namespace RevBayesCore;
 
 PrecisionMatrix::PrecisionMatrix(void) : MatrixReal(1,1,0.0), eigensystem(this), eigenflag(false), inverse(1,1,0.0) {
-    
 }
 
 PrecisionMatrix::PrecisionMatrix(size_t n) : MatrixReal(n,n,0), eigensystem(this), eigenflag(false), inverse(n,n,0) {
-    
 }
 
-PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from.getDim(), from.getDim(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {}
+PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from.getDim(), from.getDim(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {
+}
 
 
 PrecisionMatrix*  PrecisionMatrix::clone(void) const    {
@@ -177,13 +176,17 @@ void PrecisionMatrix::update()  const {
     if (! eigenflag)    {
                 
         try {
-            
+
+            // why is that necessary ???
+            eigensystem.setRateMatrixPtr(this);
+
             eigensystem.update();
 
             // this may not be optimal but...
             // aim is to get the inverse of the matrix into inverse
             const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
 
+            /*
             double det = (*this)[0][0] * (*this)[1][1] -  (*this)[1][0] * (*this)[0][1];
             double trace = (*this)[0][0] + (*this)[1][1];
             double delta = trace * trace - 4 * det;
@@ -203,7 +206,8 @@ void PrecisionMatrix::update()  const {
             // double res2 = ((*this)[0][0] - lambda2) * ((*this)[1][1] - lambda2) -  (*this)[1][0] * (*this)[0][1];
             // std::cerr << res1 << '\t' << res2 << '\n'; 
             exit(1);
-
+            */
+            
             MatrixReal tmp(getDim(), getDim(), 0);
 
             for (size_t i = 0; i < getDim(); i++) {
