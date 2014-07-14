@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class ExponentialBranchTree : public TypedFunction< std::vector<double> > {
         
     public:
-        ExponentialBranchTree(const TypedDagNode< TimeTree > *t, /*const TypedDagNode<std::vector<double> > *n, */ const TypedDagNode< MatrixReal > *m, const TypedDagNode< int > *i);
+        ExponentialBranchTree(const TypedDagNode< TimeTree > *t, /*const TypedDagNode<std::vector<double> > *n, */ const TypedDagNode< MatrixReal > *m, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
         ExponentialBranchTree(const ExponentialBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~ExponentialBranchTree(void) {}                                                         //!< Virtual destructor
         
@@ -47,6 +47,7 @@ namespace RevBayesCore {
         const TypedDagNode< TimeTree >*                     tau;
  //       const TypedDagNode< std::vector<double> >*          nodeval;
         const TypedDagNode< MatrixReal >*                   mvtnodeval;
+        const TypedDagNode< double >*                       offset;
         const TypedDagNode< int >*                          traitindex;
     };
     

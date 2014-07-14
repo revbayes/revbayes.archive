@@ -22,7 +22,8 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega, const TypedDagNode< std::vector<double> >* inrootval);
+        // MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega, const TypedDagNode< std::vector<double> >* inrootval);
+        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega);
         MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &from);
         
         // public member functions
@@ -42,7 +43,7 @@ namespace RevBayesCore {
         // private members
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< PrecisionMatrix >*                  omega;
-        const TypedDagNode< std::vector<double> >*              rootVal;
+//      const TypedDagNode< std::vector<double> >*              rootVal;
         
     };
     

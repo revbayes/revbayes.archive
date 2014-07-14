@@ -120,6 +120,7 @@ double WishartDistribution::computeLnProbability(void)  {
         for (size_t i=0; i<dim; i++)   {
             trace += getValue()[i][i];
         }
+        trace /= kappa->getValue();
     }
 
     ret -= 0.5 * trace;
