@@ -50,7 +50,7 @@ double PrecisionMatrix::getLogDet()  const {
     for (size_t i=0; i<getDim(); i++)   {
         tot += log(eigenval[i]);
     }
-    
+    /*
     if (std::isnan(tot))    {
         std::cerr << "log det is nan\n";
         std::cerr << "eigen values:\n";
@@ -81,8 +81,9 @@ double PrecisionMatrix::getLogDet()  const {
             std::cerr << (*this) << '\n';
         }
         throw(NULL);
-
+    
     }
+    */
     return tot;
 }
 
@@ -182,6 +183,26 @@ void PrecisionMatrix::update()  const {
             // this may not be optimal but...
             // aim is to get the inverse of the matrix into inverse
             const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
+
+            double det = (*this)[0][0] * (*this)[1][1] -  (*this)[1][0] * (*this)[0][1];
+            double trace = (*this)[0][0] + (*this)[1][1];
+            double delta = trace * trace - 4 * det;
+            // std::cerr << delta << '\n';
+            // std::cerr << "eigenvalues:\n";
+            double lambda1 =  0.5 * (trace + sqrt(delta));
+            double lambda2 =  0.5 * (trace - sqrt(delta));
+            std::cerr << "checking eigenvalues\n";
+            std::cerr << "from eigensystem:\n";
+            std::cerr << eigenval[0] << '\n';
+            std::cerr << eigenval[1] << '\n';
+            std::cerr << "from direct calcuation:\n";
+            std::cerr << lambda1 << '\n';
+            std::cerr << lambda2 << '\n';
+            // std::cerr << "final check that eigenvalues are roots of characteristic polynomial:\n";
+            // double res1 = ((*this)[0][0] - lambda1) * ((*this)[1][1] - lambda1) -  (*this)[1][0] * (*this)[0][1];
+            // double res2 = ((*this)[0][0] - lambda2) * ((*this)[1][1] - lambda2) -  (*this)[1][0] * (*this)[0][1];
+            // std::cerr << res1 << '\t' << res2 << '\n'; 
+            exit(1);
 
             MatrixReal tmp(getDim(), getDim(), 0);
 
