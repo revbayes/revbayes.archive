@@ -15,17 +15,16 @@
 #include "DistributionNormal.h"
 #include "DistributionWishart.h"
 
-
 using namespace RevBayesCore;
 
 WishartDistribution::WishartDistribution(const TypedDagNode<PrecisionMatrix> *inomega0, const TypedDagNode<int>* indf)  :
 TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(inomega0->getValue().getDim())),
-dim(0),
 omega0(inomega0),
 kappa(NULL),
-df(indf)    {
+df(indf),
+dim(0)  {
     
-    addParameter( omega0 );
+    addParameter(omega0);
     addParameter(df);
 
     redrawValue();
@@ -33,13 +32,13 @@ df(indf)    {
 
 WishartDistribution::WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
 TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(indim->getValue()) )),
-    dim(indim),
     omega0(NULL),
     kappa(inkappa),
-    df(indf)    {
+    df(indf),
+    dim(indim)    {
     
         addParameter(dim);
-        addParameter( kappa );
+        addParameter(kappa);
         addParameter(df);
         
         redrawValue();
@@ -47,10 +46,10 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
 
 WishartDistribution::WishartDistribution(const WishartDistribution& from) :
     TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getValue().getDim())),
-    dim(from.dim),
     omega0(from.omega0),
     kappa(from.kappa),
-    df(from.df)    {
+    df(from.df),
+    dim(from.dim)   {
 
         if (omega0) {
             std::cerr << "omega0??\n";
@@ -93,11 +92,51 @@ void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP
 
 double WishartDistribution::computeLnProbability(void)  {
     
-    size_t dim = getValue().getDim();
+    double ret = 0;
+    
+    if (omega0) {    
+        ret = RbStatistics::Wishart::lnPdf(omega0->getValue(),df->getValue(),getValue());
+    }
+    else    {
+        ret = RbStatistics::Wishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
+    }
+
+    return ret;
+}
+
+void WishartDistribution::redrawValue(void)  {
+
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+
+    if (omega0) {
+        getValue() = RbStatistics::Wishart::rv(omega0->getValue(),df->getValue(), *rng);
+    }
+    else    {
+        getValue() = RbStatistics::Wishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);        
+    }
+
+    // this will calculate the eigenvalues and eigenvectors
+    getValue().update();
+
+    // check the result by just calling PrecisionMatrix::getLogDet() (further checking takes place over there)
+    getValue().getLogDet();
+
+}
+    
+    
+    /*
+    
+double WishartDistribution::computeLnProbability(void)  {
     
     double ret = 0;
-    if (omega0) {
-        ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
+    
+    if (omega0) {    
+        ret = RbStatistics::Wishart::lnPdf(omega0->getValue(),df->getValue(),getValue());
+    }
+    else    {
+        ret = RbStatistics::Wishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
+    }
+    ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
         ret += 0.5 * (getDF() - long(dim) - 1) * getValue().getLogDet();
     }
     else    {
@@ -124,29 +163,32 @@ double WishartDistribution::computeLnProbability(void)  {
     }
 
     ret -= 0.5 * trace;
-
+    
     return ret;
 }
+    */
 
+/*
 void WishartDistribution::drawNormalSample(std::vector<double>& tmp)    {
 
     size_t dim = getValue().getDim();
 
     if (omega0) {
-        omega0->getValue().drawNormalSampleFromInverse(tmp);
+        omega0->getValue().drawNormalSamplePrecision(tmp);
     }
     else{
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
         for (size_t i=0; i<dim; i++)  {
-            tmp[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(kappa->getValue()), *rng);
+            tmp[i] = RbStatistics::Normal::rv(0, sqrt(kappa->getValue()), *rng);
         }
     }
 }
+*/
 
-void WishartDistribution::redrawValue(void)  {
 
+    /*    
     size_t dim = getValue().getDim();
 
     for (size_t i=0; i<dim; i++)   {
@@ -164,4 +206,4 @@ void WishartDistribution::redrawValue(void)  {
             }
         }
     }
-}
+}*/

@@ -115,7 +115,6 @@ void MultivariateBrownianPhyloProcess::simulate() {
 void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& from)  {
     
     size_t index = from.getIndex();
-    
     if (from.isRoot())    {
         
         std::vector<double>& val = (*value)[index];
@@ -125,11 +124,12 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
     }
     
     else    {
+        
         // x ~ normal(x_up, omega^2 * branchLength)
 
         std::vector<double>& val = (*value)[index];
-        
-        omega->getValue().drawNormalSample((*value)[index]);
+                
+        omega->getValue().drawNormalSamplePrecision((*value)[index]);
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double>& upval = (*value)[upindex];
