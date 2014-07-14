@@ -39,6 +39,8 @@ namespace RevBayesCore {
         void                                touch();
         void                                update() const;
         
+        bool                                isUpdated() const {return eigenflag;}
+        
         
         
         virtual PrecisionMatrix*            clone(void) const;
@@ -48,8 +50,8 @@ namespace RevBayesCore {
         
         const MatrixReal&                   getInverse(void) const;
         
-        void                                drawNormalSample(std::vector<double>& v) const;
-        void                                drawNormalSampleFromInverse(std::vector<double>& v) const;
+        void                                drawNormalSamplePrecision(std::vector<double>& v) const;
+        void                                drawNormalSampleCovariance(std::vector<double>& v) const;
 
     protected:
         
