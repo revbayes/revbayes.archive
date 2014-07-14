@@ -230,7 +230,7 @@ void Variable::replaceRevObject( RevObject *newObj ) {
  *  is a reference variable. If so, you need to set the Rev object first, and then set
  *  the control variable flag.
  */
-void Variable::setControlVar(bool flag)
+void Variable::setControlVarState(bool flag)
 {
     if ( isReferenceVariable )
         throw "A reference variable cannot be made a control variable";
@@ -243,6 +243,8 @@ void Variable::setControlVar(bool flag)
 void Variable::setName(std::string const &n) {
     
     name = n;
+    if ( revObject != NULL )
+        revObject->setName( n );
 }
 
 
@@ -264,8 +266,9 @@ void Variable::setRevObject( RevObject *newValue )
 }
 
 
-/** We set here the required value type spec. An error is thrown if the
- *  current Rev object of the variable, if any, is not of the specified type.
+/**
+ * We set here the required value type spec. An error is thrown if the
+ * current Rev object of the variable, if any, is not of the specified type.
  */
 void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
     

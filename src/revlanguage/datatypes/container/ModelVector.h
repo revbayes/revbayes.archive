@@ -160,7 +160,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         // We are both model vectors. Rely on generic code to cover all allowed conversions
         
         // First generate an empty model vector of the desired type
-        Container* theConvertedContainer = Workspace::userWorkspace().makeNewEmptyContainer( type.getType(), type.getDim() );
+        Container* theConvertedContainer = Workspace::userWorkspace().makeNewEmptyContainer( type.getElementType(), type.getDim() );
         
         // Now generate the vector of elements
         std::vector<RevObject*> theConvertedObjects;
@@ -233,7 +233,7 @@ RevPtr<Variable> ModelVector<rlType>::findOrCreateElement( const std::vector<siz
     {
         if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode ) == NULL )
         {
-            bool answer = UserInterface::userInterface().ask( "Do you want to convert the container to a composite value?" );
+            bool answer = UserInterface::userInterface().ask( "Do you want to convert the container to a composite value" );
             
             if ( answer == true )
                 this->makeCompositeValue();

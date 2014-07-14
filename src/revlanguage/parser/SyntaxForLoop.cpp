@@ -116,7 +116,7 @@ void SyntaxForLoop::getNextLoopState( void )
 
     // Set the loop variable to the next value using a control variable assignment
     loopVariable->setRevObject( elm );
-    loopVariable->setControlVar( true );
+    loopVariable->setControlVarState( true );
 
     // Increment the element index
     nextOneoffsetElementIndex++;

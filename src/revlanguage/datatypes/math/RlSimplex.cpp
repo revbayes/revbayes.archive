@@ -46,10 +46,14 @@ Simplex::Simplex( RevBayesCore::TypedDagNode<std::vector<double> >* n ) :
 {
     // Make sure we actually have a simplex
     RevBayesCore::DynamicNode< std::vector<double> >* dynNode = dynamic_cast<RevBayesCore::DynamicNode< std::vector<double> >* >( n );
-    if ( dynNode == NULL )
+    if ( dynNode != NULL )
     {
-        if ( dynNode->getRevTypeOfValue() != getClassType() )
-            throw RbException( "Invalid attempt to initialize a simplex with a dynamic DAG node of Rev type '" + dynNode->getRevTypeOfValue() + "'" );
+        // We just make sure the type is right before setting the dynamic node
+        // TODO: Ask the DAG node for the Rev object type
+//        if ( dynNode->getRevTypeOfValue() != getClassType() )
+//            throw RbException( "Invalid attempt to initialize a simplex with a dynamic DAG node of Rev type '" + dynNode->getRevTypeOfValue() + "'" );
+
+        this->setDagNode( n );
     }
     else
     {
@@ -57,7 +61,9 @@ Simplex::Simplex( RevBayesCore::TypedDagNode<std::vector<double> >* n ) :
         // replace the node.
         const std::vector<double>& v = n->getValue();
         std::vector<double>* newVal = makeNormalizedValue( v );
+
         RevBayesCore::ConstantNode< std::vector< double > >* newNode = new RevBayesCore::ConstantNode< std::vector< double > >( "", newVal );
+        
         this->setDagNode( newNode );
     }
 }

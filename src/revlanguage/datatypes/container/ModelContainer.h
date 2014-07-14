@@ -293,7 +293,7 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
     {
         // Check whether the variable is actually a stochastic node
         if ( !dagNode->isStochastic() )
-            throw RbException("You can only set the value for stochastic variables.");
+            throw RbException("You can only redraw the value of a stochastic variable.");
 
         // Convert the node
         RevBayesCore::StochasticNode<valueType>* stochNode = static_cast< RevBayesCore::StochasticNode<valueType>* >( dagNode );
@@ -454,7 +454,7 @@ void ModelContainer<rlType, dim, valueType>::makeCompositeValue( void )
     if ( dynamic_cast< ContainerNode<rlType, valueType>* >( dagNode ) != NULL )
         return;
 
-    ContainerNode<rlType, valueType>* newNode = new ContainerNode<rlType, valueType>( "" );
+    ContainerNode<rlType, valueType>* newNode = new ContainerNode<rlType, valueType>( "", getValue() );
 
     setDagNode( newNode );
 }
@@ -464,7 +464,7 @@ void ModelContainer<rlType, dim, valueType>::makeCompositeValue( void )
 template <typename rlType, size_t dim, typename valueType>
 void ModelContainer<rlType, dim, valueType>::makeConstantValue( void )
 {
-    if ( !dagNode->isConstant() )
+    if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( dagNode ) == NULL )
     {
         RevBayesCore::ConstantNode<valueType>* newNode = new RevBayesCore::ConstantNode<valueType>( dagNode->getName(), new valueType( dagNode->getValue() ) );
 

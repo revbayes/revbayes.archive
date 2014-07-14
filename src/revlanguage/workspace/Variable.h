@@ -56,7 +56,7 @@ namespace RevLanguage {
         bool                    isReferenceVar(void) const;                             //!< Is this a reference variable?
         void                    makeReference(const RevPtr<const Variable>& refVar);    //!< Make this a reference variable
         void                    printValue(std::ostream& o) const;                      //!< Print value of variable
-        void                    setControlVar(bool flag = true);                        //!< Set (or unset) control variable status
+        void                    setControlVarState(bool flag = true);                   //!< Set (or unset) control variable status
         void                    setName(const std::string &n);                          //!< Set the name of this variable
         void                    setRevObject(RevObject *newObj);                        //!< Set a variable with a Rev object
         void                    setRevObjectTypeSpec(const TypeSpec& ts);               //!< set the required Rev object type spec
