@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
         // double                                              getLogDet() const;
         
-        void                                                drawNormalSample(std::vector<double>& v);
+//      void                                                drawNormalSample(std::vector<double>& v);
         
     private:
 
