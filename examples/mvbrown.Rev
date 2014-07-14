@@ -21,7 +21,7 @@ tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
 
 # work under fixed topology
 # set tau equal to externally given tree
-treeArray <- readTrees("data/mam.tree")
+treeArray <- readTrees("data/plac.tree")
 fixedTree <- treeArray[1]
 tau.clamp(fixedTree)
 
@@ -77,7 +77,7 @@ omega ~ wishart(dim=dim,kappa=kappa,df=df)
 # moves on kappa and precision matrix
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(omega, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mvPrecisionMatrixSimple(omega, lambda=10.0, tune=false, weight=3.0)
 index <- index + 1
 
 # root value for the Brownian process
@@ -85,14 +85,21 @@ rootval[1] ~ norm(0,10)
 rootval[2] ~ norm(0,10)
 #rootval <- [0,0]
 
-# bivariate Brownian process
-br ~ mvtBrownian(tau,omega=omega,rootval=rootval)
+rootval[1].clamp(-5)
+rootval[2].clamp(-5)
 
 # moves on root value
-moves[index] <- mSlide(rootval[1], delta=2.0, tune=true, weight=3.0)
+moves[index] <- mSlide(rootval[1], delta=1, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mSlide(rootval[2], delta=2.0, tune=true, weight=3.0)
+moves[index] <- mSlide(rootval[2], delta=1, tune=true, weight=3.0)
 index <- index + 1
+moves[index] <- mSlide(rootval[1], delta=0.1, tune=true, weight=3.0)
+index <- index + 1
+moves[index] <- mSlide(rootval[2], delta=0.1, tune=true, weight=3.0)
+index <- index + 1
+
+# bivariate Brownian process
+br ~ mvtBrownian(tau,omega=omega)
 
 # moves on the Brownian process
 moves[index] <- mvMatrixSingleElementSliding(br,lambda=1,tune=true,weight=10) 
@@ -100,11 +107,10 @@ index <- index + 1
 
 # rate variation along the tree
 # first component of the Brownian process: nuclear rate variation
-nucRate := expbranchtree(tree=tau,mvtnodevals=br,1)
+nucRate := expbranchtree(tree=tau,mvtnodevals=br,offset=rootval[1],1)
 
 # second component of the Brownian process: mitochondrial rate variation
-mitRate := expbranchtree(tree=tau,mvtnodevals=br,2)
-
+mitRate := expbranchtree(tree=tau,mvtnodevals=br,offset=rootval[2],2)
 
 # the sequence evolution models
 nucSeq ~ substModel(tree=tau, Q=nucQ, branchRates=nucRate, nSites=nucNSites, type="DNA")
@@ -116,9 +122,10 @@ mitSeq.clamp(mitData)
 
 mymodel <- model(nucpi)
 
-monitors[1] <- screenmonitor(printgen=10, separator = "	", omega)
-monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", omega)
-monitors[3] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")
+monitors[1] <- screenmonitor(printgen=10, separator = "	", omega, rootval[1], rootval[2], kappa)
+monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", omega, rootval[1], rootval[2], kappa)
+monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
+monitors[4] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
