@@ -106,7 +106,7 @@ PrecisionMatrix RbStatistics::InverseWishart::rv(const PrecisionMatrix &sigma0, 
         }
     }
 
-    return PrecisionMatrix(z.getInverse());
+    return z.getInverse();
 }
 
 
@@ -159,10 +159,10 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Precis
    
     double trace = 0;
     
+    const MatrixReal& y = z.getInverse();
     for (size_t i=0; i<dim; i++)   {
-        trace += 1.0 / z[i][i];
+        trace += kappa * y[i][i];
     }
-    trace *= kappa;
     
     ret -= 0.5 * trace;
     

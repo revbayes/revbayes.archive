@@ -73,6 +73,11 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
+        if (from.getParent().isRoot())  {
+            for (size_t j=0; j<getDim(); j++)   {
+                upval[j] = 0;
+            }
+        }
         
         const MatrixReal& om = sigma->getValue().getInverse();
         
@@ -85,8 +90,8 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
             s2 += (val[i] - upval[i]) * tmp;
         }
         
-        lnProb -= 0.5 * s2;
-        lnProb -= 0.5 * sigma->getValue().getLogDet();
+        lnProb -= 0.5 * s2 / from.getBranchLength();
+        lnProb -= 0.5 * (sigma->getValue().getLogDet() + log(from.getBranchLength()));
     }
     
     // propagate forward
