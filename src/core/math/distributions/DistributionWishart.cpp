@@ -52,6 +52,10 @@ double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, size_t df, co
     omega0.update();
     z.update();
      
+    if (! z.isPositive())    {
+        return -200;
+    }
+    
     double ret = 0;
     ret -= 0.5 * df * omega0.getLogDet();
     ret += 0.5 * (df - omega0.getDim() - 1) * z.getLogDet();
@@ -134,10 +138,20 @@ double RbStatistics::Wishart::pdf(double kappa, size_t df, const PrecisionMatrix
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
+
+// this log density is only up to a normalization factor that *does* depend on df
+// df is therefore assumed to be constant throughout
+
 double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const PrecisionMatrix &z) {
 
+    
     z.update();
     size_t dim = z.getDim();
+    
+    if (! z.isPositive())    {
+        // std::cerr << "not positive\n";
+        return -200;
+    }
     
     double ret = 0;
     ret -= 0.5 * df * dim * log(kappa);

@@ -51,7 +51,7 @@ double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
     
     double lnProb = 0;
     if (omega->getValue().isPositive()) {
-        lnProb = 0.5 * omega->getValue().getLogDet() + recursiveLnProb(tau->getValue().getRoot());
+        lnProb = recursiveLnProb(tau->getValue().getRoot());
     }
     else{
         lnProb = RbConstants::Double::neginf;
@@ -71,8 +71,6 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
         
         // x ~ normal(x_up, omega^2 * branchLength)
 
-//         std::vector<double> upval = (from.getParent().isRoot()) ? rootVal->getValue() : (*value)[from.getParent().getIndex()];
-
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
         
@@ -88,6 +86,7 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
         }
         
         lnProb -= 0.5 * s2;
+        lnProb += 0.5 * om.getLogDet();
     }
     
     // propagate forward

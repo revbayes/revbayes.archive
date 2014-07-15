@@ -38,18 +38,12 @@ namespace RevBayesCore {
         void                                                redrawValue(void);
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);
         
-//         size_t                                              getDim() const;
-        
         int                                                 getDF() const {return df->getValue();}
         
-        // double                                              getLogDet() const;
         
-//      void                                                drawNormalSample(std::vector<double>& v);
         
     private:
 
-        // resample itself based on a sufficient statistic (empirical Precision, or scatter matrix)
-        // void                                             GibbsResample(const PrecisionMatrix& empcov);
         // members
         
         const TypedDagNode<PrecisionMatrix>*                omega0;
