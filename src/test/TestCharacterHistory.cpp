@@ -119,7 +119,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 10;
+    mcmcGenerations *= 100;
 //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
@@ -131,7 +131,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> seed;
     seed.push_back(15); seed.push_back(1);
 //    old_seed = seed;
-//    GLOBAL_RNG->setSeed(seed);
+    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -290,12 +290,12 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new SlidingMove(dp, 0.3, false, 2.0 ));
     }
     
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.05, false, 2.0));
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.01, false, 2.0));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2.0));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2.0));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.05), 2.0, false ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.01), 2.0, false ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 2.0, !true ) );
 //        moves.push_back( new SlidingMove( glr_nonConst[i], 0.1, false, 2.0 ));
     }
 
@@ -366,8 +366,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_nonConst[0] );
     monitoredNodes.insert( glr_nonConst[1] );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));

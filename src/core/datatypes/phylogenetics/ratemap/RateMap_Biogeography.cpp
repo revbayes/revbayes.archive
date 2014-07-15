@@ -51,17 +51,12 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     epochs = m.epochs;
     numEpochs = m.numEpochs;
     epochOffset = m.epochOffset;
-//    extinctionValues = m.extinctionValues;
-//    dispersalValues = m.dispersalValues;
     adjacentAreaVector = m.adjacentAreaVector;
     availableAreaVector = m.availableAreaVector;
     
     useAreaAvailable = m.useAreaAvailable;
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
-    
-//    inboundDispersalValues = m.inboundDispersalValues;
-//    useUnnormalizedRates = m.useUnnormalizedRates;
     
     geographyRateModifier = m.geographyRateModifier;
     useGeographyRateModifier = m.useGeographyRateModifier;
@@ -94,12 +89,8 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         epochs = r.epochs;
         numEpochs = r.numEpochs;
         epochOffset = r.epochOffset;
-//        extinctionValues = r.extinctionValues;
-//        dispersalValues = r.dispersalValues;
         adjacentAreaVector = r.adjacentAreaVector;
         availableAreaVector = r.availableAreaVector;
-//        inboundDispersalValues = r.inboundDispersalValues;
-//        useUnnormalizedRates = r.useUnnormalizedRates;
         
         geographyRateModifier = r.geographyRateModifier;
         useGeographyRateModifier = r.useGeographyRateModifier;
