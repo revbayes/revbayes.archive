@@ -28,17 +28,6 @@ BranchRateJumpProcess::BranchRateJumpProcess(TypedDistribution<double> *d, const
     lambda( l ),
     instantaneousJumpProbability( r )
 {
-    addParameter( tau );
-    addParameter( lambda );
-    addParameter( r );
-    
-    const std::set<const DagNode*> pars = valueDistribution->getParameters();
-    // add the parameters of the distribution
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it) 
-    {
-        addParameter( *it );
-    }
-    
     redrawValue();
 }
 
@@ -150,6 +139,20 @@ void BranchRateJumpProcess::redrawValue(void)
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BranchRateJumpProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( tau );
+    parameters.insert( lambda );
+    parameters.insert( instantaneousJumpProbability );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
 /**
  * Swap the parameters held by this distribution.
  *
@@ -157,7 +160,8 @@ void BranchRateJumpProcess::redrawValue(void)
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void BranchRateJumpProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void BranchRateJumpProcess::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
     
     if ( oldP == tau ) 
     {
@@ -175,7 +179,5 @@ void BranchRateJumpProcess::swapParameter(const DagNode *oldP, const DagNode *ne
     }
     
 }
-
-
 
 

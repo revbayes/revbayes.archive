@@ -25,24 +25,11 @@ AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(BranchHistory* bh, Ty
 
 AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(TypedDagNode<RateMatrix> *rateMtx, std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), rateMatrix(rateMtx), rates(r), branchRate(br), tree(t), numStates(ns), numCharacters(nc), index(idx)
 {
-    for (size_t i = 0; i < r.size(); i++)
-        addParameter(rates[i]);
-    
-    addParameter(rateMatrix);
-    addParameter(tree);
-    addParameter(branchRate);
-    
     //redrawValue();
 }
 
 AbstractCharacterHistoryCtmc::AbstractCharacterHistoryCtmc(std::vector<const TypedDagNode<double>* > r, const TypedDagNode<TimeTree>* t, const TypedDagNode<double>* br, size_t nc, size_t ns, size_t idx) : TypedDistribution<BranchHistory>(new BranchHistory(nc, ns, idx)), rates(r), branchRate(br), tree(t), numStates(ns), numCharacters(nc), index(idx)
 {
-    for (size_t i = 0; i < r.size(); i++)
-        addParameter(rates[i]);
-    
-    addParameter(tree);
-    addParameter(branchRate);
-    
     //redrawValue();
 }
 
@@ -203,6 +190,25 @@ void AbstractCharacterHistoryCtmc::redrawValue(void)
     //value->print();
 }
 
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> AbstractCharacterHistoryCtmc::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    for (size_t i = 0; i < rates.size(); i++)
+        parameters.insert( rates[i] );
+
+    parameters.insert( tree );
+    parameters.insert( branchRate );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void AbstractCharacterHistoryCtmc::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
     for (size_t i = 0; i < rates.size(); i++)

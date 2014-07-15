@@ -107,7 +107,6 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     
     for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
-        
         // get the i-th member and get the clone back
         const DagNode *theParam = (*i);
         

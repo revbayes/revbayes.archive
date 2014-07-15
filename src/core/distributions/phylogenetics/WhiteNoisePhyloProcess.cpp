@@ -18,10 +18,8 @@ using namespace RevBayesCore;
 // constructor(s)
 WhiteNoisePhyloProcess::WhiteNoisePhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() - 1, 0.0 ) ),
         tau( t ), 
-        sigma( s ) {
-    this->addParameter( tau );
-    this->addParameter( sigma );
-    
+        sigma( s )
+{
     simulate();
 }
 
@@ -72,13 +70,30 @@ void WhiteNoisePhyloProcess::redrawValue(void) {
 }
 
 
-void WhiteNoisePhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> WhiteNoisePhyloProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
-    if ( oldP == tau ) {
+    parameters.insert( tau );
+    parameters.insert( sigma );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void WhiteNoisePhyloProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    
+    if ( oldP == tau )
+    {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
-    if ( oldP == sigma ) {
+    if ( oldP == sigma )
+    {
         sigma = static_cast< const TypedDagNode<double> * >( newP );
     }
     

@@ -10,11 +10,6 @@ LognormalDistribution::LognormalDistribution(const TypedDagNode<double> *m, cons
     sd( s ),
     offset( o )
 {
-    // add the parameters to the parents set
-    addParameter( mean );
-    addParameter( sd );
-    addParameter( offset );
-    
     *value = offset->getValue() + RbStatistics::Lognormal::rv(mean->getValue(), sd->getValue(), *GLOBAL_RNG);
 }
 
@@ -67,7 +62,22 @@ void LognormalDistribution::redrawValue( void )
 }
 
 
-void LognormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> LognormalDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( mean );
+    parameters.insert( sd );
+    parameters.insert( offset );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void LognormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == mean) 

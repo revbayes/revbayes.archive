@@ -27,9 +27,6 @@ MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDa
 tau( intau ),
 omega( inomega ),
 rootVal( inrootVal ) {
-    this->addParameter( tau );
-    this->addParameter( omega );
-    this->addParameter( rootVal );
     
     simulate();
 }
@@ -138,17 +135,35 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
 }
 
 
-void MultivariateBrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> MultivariateBrownianPhyloProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
-    if ( oldP == tau ) {
+    parameters.insert( tau );
+    parameters.insert( omega );
+    parameters.insert( rootVal );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if ( oldP == tau )
+    {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
-    if ( oldP == omega ) {
+    if ( oldP == omega )
+    {
         omega = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
     }
     
-    if ( oldP == rootVal ) {
+    if ( oldP == rootVal )
+    {
         rootVal = static_cast< const TypedDagNode< std::vector<double> > * >( newP );
     }
 }

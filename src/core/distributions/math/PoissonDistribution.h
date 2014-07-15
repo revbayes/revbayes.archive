@@ -37,7 +37,10 @@ namespace RevBayesCore {
         PoissonDistribution*                                clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Implementation of swaping parameters
+        
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         

@@ -42,13 +42,16 @@ namespace RevBayesCore {
         void                                                redrawValue(void);
         void                                                setCurrentIndex(size_t i);
         void                                                setValue(const mixtureType &v);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
         
         // special handling of state changes
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
         void                                                keepSpecialization(DagNode* affecter);
         void                                                restoreSpecialization(DagNode *restorer);
         void                                                touchSpecialization(DagNode *toucher);
+        
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         
     private:
@@ -191,9 +194,23 @@ void RevBayesCore::RbMixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const RevBayesCore::DagNode*> RevBayesCore::RbMixtureDistribution<mixtureType>::getParameters( void ) const
+{
+    std::set<const RevBayesCore::DagNode*> parameters;
+    
+    parameters.insert( parameterValues );
+    parameters.insert( probabilities );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
+
+/** Swap a parameter of the distribution */
 template <class mixtureType>
-void RevBayesCore::RbMixtureDistribution<mixtureType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::RbMixtureDistribution<mixtureType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
     
     if (oldP == parameterValues) 
     {

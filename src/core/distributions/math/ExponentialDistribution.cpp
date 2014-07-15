@@ -10,9 +10,6 @@ ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l) 
 lambda( l ),
 offset( NULL )
 {
-    // add the lambda parameter as a parent
-    addParameter( l );
-    
     *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG);
 }
 
@@ -20,10 +17,6 @@ ExponentialDistribution::ExponentialDistribution(const TypedDagNode<double> *l, 
     lambda( l ),
     offset( o )
 {
-    // add the lambda parameter as a parent
-    addParameter( l );
-    addParameter( o );
-    
     *value = RbStatistics::Exponential::rv(lambda->getValue(), *GLOBAL_RNG) + offset->getValue();
 }
 
@@ -32,7 +25,6 @@ ExponentialDistribution::ExponentialDistribution(const ExponentialDistribution &
     lambda( n.lambda ),
     offset( n.offset )
 {
-    // parameters are automatically copied
 }
 
 
@@ -90,26 +82,29 @@ void ExponentialDistribution::redrawValue( void )
 }
 
 
-void ExponentialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> ExponentialDistribution::getParameters( void ) const
 {
+    std::set<const DagNode*> parameters;
     
-    if (oldP == lambda) 
+    parameters.insert( lambda );
+    parameters.insert( offset );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void ExponentialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == lambda)
     {
         lambda = static_cast<const TypedDagNode<double>* >( newP );
     }
     if (oldP == offset) 
     {
         offset = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    
-    std::cerr << "Exponential parameters after swap:" << std::endl;
-    std::set<const DagNode*> params = this->getParameters();
-    for ( std::set<const DagNode*>::iterator it = params.begin(); it != params.end(); ++it )
-    {
-        if ( it == params.begin() )
-            std::cerr << "<" << (*it) << ">";
-        else
-            std::cerr << ", <" << (*it) << ">";
     }
 }
 

@@ -32,11 +32,6 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
     timeSinceLastSample( tLastSample )
 {
     
-    addParameter( lambda );
-    addParameter( mu );
-    addParameter( psi );
-    addParameter( rho );
-    
     simulateTree();
     
 }
@@ -211,6 +206,21 @@ std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(
     return times;
 }
 
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> ConstantRateSerialSampledBirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
+    
+    parameters.insert( lambda );
+    parameters.insert( mu );
+    parameters.insert( psi );
+    parameters.insert( rho );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
 /**

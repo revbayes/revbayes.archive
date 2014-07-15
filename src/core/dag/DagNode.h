@@ -79,11 +79,9 @@ namespace RevBayesCore {
         void                                                        touch(void);
         virtual void                                                touchAffected(void);                                                            //!< Touch affected nodes (flag for recalculation)
 
-        // Parent management functions that nodes with parents need to override. Here we just throw an error.
-        virtual std::set<const DagNode*>                            getParents(void) const;                                                         //!< Get the set of parents
+        // Parent management functions that nodes with parents need to override. Here we just return an empty set or throw an error.
+        virtual std::set<const DagNode*>                            getParents(void) const;                                                         //!< Get the set of parents (empty set here)
         virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                           //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
-        //        virtual void                                                addParent(const DagNode *p);                                                    //!< Add a parent node
-//        virtual void                                                removeParent(const DagNode *p);                                                 //!< Remove a parent
         
     protected:
                                                                     DagNode(const std::string &n);                                                  //!< Constructor

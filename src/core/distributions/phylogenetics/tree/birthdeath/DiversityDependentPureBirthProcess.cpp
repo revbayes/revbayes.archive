@@ -24,12 +24,7 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const Typ
         initialSpeciation( s ), 
         capacity( k ) 
 {
-    
-    addParameter( initialSpeciation );
-    addParameter( capacity );
-    
     simulateTree();
-    
 }
 
 
@@ -152,6 +147,19 @@ std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n
     return times;
 }
 
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> DiversityDependentPureBirthProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
+    
+    parameters.insert( initialSpeciation );
+    parameters.insert( capacity );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
 /**

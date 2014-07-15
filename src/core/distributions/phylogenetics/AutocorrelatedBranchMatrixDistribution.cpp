@@ -15,11 +15,6 @@ using namespace RevBayesCore;
 
 // constructor(s)
 AutocorrelatedBranchMatrixDistribution::AutocorrelatedBranchMatrixDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* p, const TypedDagNode< std::vector< double > >* rf, const TypedDagNode< std::vector< double > >* er, const TypedDagNode< double >* a): TypedDistribution< RbVector< RateMatrix > >( new RbVector<RateMatrix>(t->getValue().getNumberOfNodes()-1, RateMatrix_GTR(rf->getValue().size()) ) ), tau( t ), changeProbability( p ), rootFrequencies( rf ), exchangeabilityRates( er ), alpha( a ) {
-    this->addParameter( tau );
-    this->addParameter( changeProbability );
-    this->addParameter( rootFrequencies );
-    this->addParameter( exchangeabilityRates );
-    this->addParameter( alpha );
     
     delete value;
     value = simulate();
@@ -142,25 +137,48 @@ void AutocorrelatedBranchMatrixDistribution::redrawValue(void) {
 }
 
 
-void AutocorrelatedBranchMatrixDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> AutocorrelatedBranchMatrixDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
-    if ( oldP == tau ) {
+    parameters.insert( tau );
+    parameters.insert( changeProbability );
+    parameters.insert( rootFrequencies );
+    parameters.insert( exchangeabilityRates );
+    parameters.insert( alpha );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void AutocorrelatedBranchMatrixDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    
+    if ( oldP == tau )
+    {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
-    if ( oldP == changeProbability ) {
+    if ( oldP == changeProbability )
+    {
         changeProbability = static_cast< const TypedDagNode<double> * >( newP );
     }
     
-    if ( oldP == rootFrequencies ) {
+    if ( oldP == rootFrequencies )
+    {
         rootFrequencies = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
     }
     
-    if ( oldP == exchangeabilityRates ) {
+    if ( oldP == exchangeabilityRates )
+    {
         exchangeabilityRates = static_cast< const TypedDagNode< std::vector< double > > * >( newP );
     }
     
-    if ( oldP == alpha ) {
+    if ( oldP == alpha )
+    {
         alpha = static_cast< const TypedDagNode<double> * >( newP );
     }
 }

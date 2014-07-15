@@ -109,7 +109,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
     for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->addChild( this );
-        
+    
         // Increment the reference count
         // We don't want this parent to get deleted while we are still alive
         (*it)->incrementReferenceCount();
@@ -152,17 +152,17 @@ RevBayesCore::StochasticNode<valueType>::~StochasticNode( void ) {
 
     // Remove us as the child of the distribution parameters
     const std::set<const DagNode*>& distParents = distribution->getParameters();
+    delete distribution;
     for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->removeChild( this );
-        
+    
         // Decrement the reference count and check whether we need to delete the DAG node
         // The distribution does not do this for us
         if ( (*it)->decrementReferenceCount() == 0)
             delete (*it);
     }
     
-    delete distribution;
 }
 
 
@@ -200,11 +200,12 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         distParents = distribution->getParameters();
         for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
         {
-            (*it)->addChild( this );
+            (*it)->removeChild( this );
             
-            // Increment the reference count
-            // We don't want this parent to get deleted while we are still alive
-            (*it)->incrementReferenceCount();
+            // Decrement the reference count and check whether we need to delete the DAG node
+            // The distribution does not do this for us
+            if ( (*it)->decrementReferenceCount() == 0)
+                delete (*it);
         }
         
         // Set us as the DAG node of the new distribution

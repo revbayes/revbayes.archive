@@ -28,7 +28,12 @@ RevPtr<Variable> Func_structure::execute( void ) {
     std::ostringstream o;
 
     o << std::endl;
-    o << "_valueType    = " << args[0].getVariable()->getRevObject().getType() << std::endl;
+    o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    if ( hasDagNode() )
+        o << "_dagAddress   = " << args[0].getVariable()->getRevObject().getDagNode()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    o << "_RevType      = " << args[0].getVariable()->getRevObject().getType() << std::endl;
+    o << "_RevClass     = " << args[0].getVariable()->getRevObjectTypeSpec() << std::endl;
+
     args[0].getVariable()->getRevObject().printStructure( o );
     o << std::endl;
 

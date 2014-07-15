@@ -99,8 +99,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     if ( dt == "DNA" ) 
     {
-        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
-//        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, 4, true, n);
+        RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType> *dist =
+            new RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<RevBayesCore::DnaState, typename treeType::valueType>(tau, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

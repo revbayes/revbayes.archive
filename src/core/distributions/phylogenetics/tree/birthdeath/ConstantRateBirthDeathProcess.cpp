@@ -17,9 +17,6 @@ ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<
                                                      const std::vector<std::string> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, r, ss, cdt, nTaxa, tn, c ), 
 speciation( s ), extinction( e ) {
 
-    addParameter( speciation );
-    addParameter( extinction );
-    
     simulateTree();
 
 }
@@ -97,6 +94,20 @@ std::vector<double> ConstantRateBirthDeathProcess::simSpeciations(size_t n, doub
 
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> ConstantRateBirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters= BirthDeathProcess::getParameters();
+    
+    parameters.insert( speciation );
+    parameters.insert( extinction );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void ConstantRateBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == speciation) 

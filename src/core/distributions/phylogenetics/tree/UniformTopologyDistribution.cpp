@@ -139,6 +139,17 @@ void UniformTopologyDistribution::simulateTree( void ) {
 
 
 
-void UniformTopologyDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> UniformTopologyDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void UniformTopologyDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
 }
