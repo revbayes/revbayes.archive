@@ -194,6 +194,7 @@
 #include "Dist_positiveUnif.h"
 #include "Dist_unif.h"
 #include "Dist_wishart.h"
+#include "Dist_inverseWishart.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
@@ -663,9 +664,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "unif",            new Dist_unif() );
         addDistribution( "unif",            new Dist_positiveUnif() );
         
-        // wishart distribution
+        // Wishart distribution
         addDistribution( "dnWishart",       new Dist_wishart() );
         addDistribution( "wishart",         new Dist_wishart() );
+        
+        // inverse Wishart distribution
+        addDistribution( "dnInvWishart",       new Dist_inverseWishart() );
+        addDistribution( "invWishart",         new Dist_inverseWishart() );
         
         
         /* Mixture distributions (in folder "distributions/mixture") */

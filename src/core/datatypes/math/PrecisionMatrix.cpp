@@ -25,7 +25,16 @@ PrecisionMatrix::PrecisionMatrix(void) : MatrixReal(1,1,0.0), eigensystem(this),
 PrecisionMatrix::PrecisionMatrix(size_t n) : MatrixReal(n,n,0), eigensystem(this), eigenflag(false), inverse(n,n,0) {
 }
 
-PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from.getDim(), from.getDim(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {
+// PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from.getDim(), from.getDim(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {
+PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.inverse) {
+}
+
+// PrecisionMatrix::PrecisionMatrix(const MatrixReal& from) : MatrixReal(from.getNumberOfRows(), from.getNumberOfRows(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {
+PrecisionMatrix::PrecisionMatrix(const MatrixReal& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.getNumberOfColumns(), from.getNumberOfColumns(), 0) {
+    if (getNumberOfRows() != getNumberOfColumns())    {
+        std::cerr << "error in PrecisionMatrix: copy constructor from a non-square matrix\n";
+        throw(NULL);
+    }
 }
 
 
