@@ -100,7 +100,9 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     std::cerr << lnHastingsratio << '\n';
     
     */
-        
+
+    variable->getValue().update();
+
     return lnHastingsratio;
 }
 
