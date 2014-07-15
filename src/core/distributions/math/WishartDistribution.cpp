@@ -15,17 +15,16 @@
 #include "DistributionNormal.h"
 #include "DistributionWishart.h"
 
-
 using namespace RevBayesCore;
 
 WishartDistribution::WishartDistribution(const TypedDagNode<PrecisionMatrix> *inomega0, const TypedDagNode<int>* indf)  :
 TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(inomega0->getValue().getDim())),
-dim(0),
 omega0(inomega0),
 kappa(NULL),
-df(indf)    {
+df(indf),
+dim(0)  {
     
-    addParameter( omega0 );
+    addParameter(omega0);
     addParameter(df);
 
     redrawValue();
@@ -33,12 +32,13 @@ df(indf)    {
 
 WishartDistribution::WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
 TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(indim->getValue()) )),
-    dim(indim),
     omega0(NULL),
     kappa(inkappa),
-    df(indf)    {
+    df(indf),
+    dim(indim)    {
     
-        addParameter( kappa );
+        addParameter(dim);
+        addParameter(kappa);
         addParameter(df);
         
         redrawValue();
@@ -46,16 +46,21 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
 
 WishartDistribution::WishartDistribution(const WishartDistribution& from) :
     TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getValue().getDim())),
-    dim(from.dim),
     omega0(from.omega0),
     kappa(from.kappa),
-    df(from.df)    {
+    df(from.df),
+    dim(from.dim)   {
 
         if (omega0) {
+            std::cerr << "omega0??\n";
+            exit(1);
             addParameter( omega0 );
         }
         if (kappa)  {
             addParameter(kappa);
+        }
+        if (dim)    {
+            addParameter(dim);
         }
         addParameter(df);
 
@@ -69,79 +74,49 @@ WishartDistribution* WishartDistribution::clone(void) const   {
 
 void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     if (oldP == omega0) {
+            std::cerr << "omega0??\n";
+            exit(1);
         omega0 = static_cast<const TypedDagNode<PrecisionMatrix>* >( newP );
     }
     if (oldP == kappa)  {
         kappa = static_cast<const TypedDagNode<double>* >(newP);
+    }
+    if (oldP == dim)    {
+        dim = static_cast<const TypedDagNode<int>* >(newP);
+    }
+    if (oldP == df)    {
+        df = static_cast<const TypedDagNode<int>* >(newP);
     }
 }
 
 
 double WishartDistribution::computeLnProbability(void)  {
     
-    size_t dim = getValue().getDim();
-    
     double ret = 0;
-    ret -= 0.5 * getDF() * omega0->getValue().getLogDet();
-    ret += 0.5 * (getDF() - long(dim) - 1) * getValue().getLogDet();
-
-    double trace = 0;
- 
-    if (omega0) {
-        const MatrixReal& inv = omega0->getValue().getInverse();
-        
-        for (size_t i=0; i<dim; i++)   {
-            for (size_t j=0; j<dim; j++)   {
-                trace += inv[i][j] * getValue()[j][i];
-            }
-        }
-    }
-    else{
     
-        for (size_t i=0; i<dim; i++)   {
-            trace += getValue()[i][i];
-        }
+    if (omega0) {    
+        ret = RbStatistics::Wishart::lnPdf(omega0->getValue(),df->getValue(),getValue());
+    }
+    else    {
+        ret = RbStatistics::Wishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
     }
 
-    ret -= 0.5 * trace;
-    
     return ret;
-}
-
-void WishartDistribution::drawNormalSample(std::vector<double>& tmp)    {
-
-    size_t dim = getValue().getDim();
-
-    if (omega0) {
-        omega0->getValue().drawNormalSampleFromInverse(tmp);
-    }
-    else{
-        // simulate the new Val
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        for (size_t i=0; i<dim; i++)  {
-            tmp[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(kappa->getValue()), *rng);
-        }
-    }
 }
 
 void WishartDistribution::redrawValue(void)  {
 
-    size_t dim = getValue().getDim();
+    RandomNumberGenerator* rng = GLOBAL_RNG;
 
-    for (size_t i=0; i<dim; i++)   {
-        for (size_t j=0; j<dim; j++)   {
-            getValue()[i][j] = 0;
-        }
+    if (omega0) {
+        getValue() = RbStatistics::Wishart::rv(omega0->getValue(),df->getValue(), *rng);
     }
-    
-    std::vector<double> tmp(dim);
-    for (size_t k=0; k<dim; k++)   {
-        drawNormalSample(tmp);
-        for (size_t i=0; i<dim; i++)   {
-            for (size_t j=0; j<dim; j++)   {
-                getValue()[i][j] += tmp[i] * tmp[j];
-            }
-        }
+    else    {
+        getValue() = RbStatistics::Wishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);        
     }
+
+    // this will calculate the eigenvalues and eigenvectors
+    getValue().update();
+
+
 }

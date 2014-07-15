@@ -1,32 +1,30 @@
-//
-//  RlWhiteNoiseProcess.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-22.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
+/* 
+ * File:   Dist_InverseWishart.h
+ * Author: nl
+ *
+ * Created on 15 juillet 2014, 10:31
+ */
 
-#ifndef __revbayes__Dist_mvtBrownian__
-#define __revbayes__Dist_mvtBrownian__
+#ifndef DIST_INVERSEWISHART_H
+#define	DIST_INVERSEWISHART_H
+
 
 #include <iostream>
 
-
-#include "MultivariateBrownianPhyloProcess.h"
+#include "RealSymmetricMatrix.h"
 #include "RlTypedDistribution.h"
-#include "RealMatrix.h"
-#include "Real.h"
+#include "InverseWishartDistribution.h"
 
 namespace RevLanguage {
-
-    class Dist_mvtBrownian :  public TypedDistribution< RealMatrix  > {
+    
+    class Dist_inverseWishart :  public  TypedDistribution<RealSymmetricMatrix> {
         
     public:
-        Dist_mvtBrownian( void ) {};
-        virtual ~Dist_mvtBrownian() {};
+        Dist_inverseWishart( void );
+        virtual ~Dist_inverseWishart();
         
         // Basic utility functions
-        Dist_mvtBrownian*                               clone(void) const;                                                              //!< Clone the object
+        Dist_inverseWishart*                            clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassName(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
@@ -35,7 +33,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::MultivariateBrownianPhyloProcess* createDistribution(void) const;
+        RevBayesCore::InverseWishartDistribution*              createDistribution(void) const;
         
     protected:
         
@@ -43,13 +41,13 @@ namespace RevLanguage {
         
         
     private:
-        
-        RevPtr<const Variable>                          tree;
-        RevPtr<const Variable>                          sigma;
- //       RevPtr<const Variable>                          rootval;
-        
+ //       RevPtr<const Variable>                          omega;
+        RevPtr<const Variable>                          kappa;
+        RevPtr<const Variable>                          df;
+        RevPtr<const Variable>                          dim;
     };
     
 }
 
-#endif /* defined(__revbayes__Dist_mvtBrownian__) */
+#endif	/* DIST_INVERSEWISHART_H */
+
