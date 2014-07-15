@@ -41,13 +41,15 @@ namespace RevLanguage {
         ContainerNode(const ContainerNode<rlElemType, valueType>& n);                                                   //!< Copy constructor
 
         virtual                                 ~ContainerNode(void);                                                   //!< Virtual destructor
-        
+
+        // Assignment operator
+        ContainerNode&                          operator=(const ContainerNode& x);                                      //!< Assignment operator
+
         // STL-like container functions
         void                                    pop_back(void);                                                         //!< Drop element from back
         void                                    pop_front(void);                                                        //!< Drop element from front
         void                                    push_back(rlElemType* x);                                               //!< Push element onto back
         void                                    push_front(rlElemType* x);                                              //!< Push element onto front
-        
         
         // Public methods
         ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone
@@ -60,8 +62,11 @@ namespace RevLanguage {
         virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
         void                                    redraw(void);                                                           //!< Redraw (or not)
         void                                    setName(const std::string& n);                                          //!< Set the name of myself and of elements
-        void                                    swapParameter(const RevBayesCore::DagNode* oldP, const RevBayesCore::DagNode* newP);    //!< Swap parameter: just touch ourselves to be on the safe side
         void                                    update(void);                                                           //!< Update current value
+        
+        // Parent DAG nodes management functions
+        std::set<const RevBayesCore::DagNode*>  getParents(void) const;                                                                     //!< Get the set of parents
+        void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
         void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
@@ -71,7 +76,6 @@ namespace RevLanguage {
         
     private:
         std::vector< RevPtr<Variable> >         elements;                                                               //!< The elements
-        Container*                              myOwner;
         bool                                    touched;                                                                //!< Are we dirty?
         valueType                               value;                                                                  //!< Current value
     };
@@ -79,6 +83,7 @@ namespace RevLanguage {
 }
 
 
+#include "ModelObject.h"
 #include "RevPtr.h"
 #include "Variable.h"
 
@@ -114,7 +119,7 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, const
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 
     for ( size_t i = 0; i < v.size(); ++i )
-        elements.push_back( new Variable( new rlElemType( v[i] ) ) );
+        this->push_back( new rlElemType( v[i] ) );
 }
 
 
@@ -136,38 +141,93 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::
         throw RbException( "Invalid lengths specification in ContainerNode" );
     
     for ( size_t i = 0; i < elems.size(); ++i )
-        elements.push_back( new Variable( elems[i] ) );
+    {
+        if ( !elems[i]->isTypeSpec( rlElemType::getClassTypeSpec() ) )
+            throw RbException( "Invalid attempt to set container element of type '" + rlElemType::getClassType() + "' with object of type '" + elems[i]->getClassType() + "'" );
+        this->push_back( static_cast<rlElemType*>( elems[i] ) );
+    }
 }
 
 
 /**
- * Copy constructor. We make a deep copy of the variable elements here.
- * Simply mark ourselves as dirty and recalculate value later, when asked
- * about the value.
+ * Copy constructor. We cannot make a deep copy of the variable elements here.
+ * Instead, we have to wait until we get the swapParent call. However, we do
+ * need to add ourselves as an extra child of the template container elements,
+ * since we share those to start with at least.
  */
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemType, valueType>& n ) :
     RevBayesCore::DynamicNode<valueType>( n ),
-    elements(),
+    elements( n.elements ),
     touched( true ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
-    // Make sure we have independent copies of the elements, not just smart pointers to the same elements
-    for ( std::vector< RevPtr<Variable> >::const_iterator it = n.elements.begin(); it != n.elements.end(); ++it )
+    for ( std::vector< RevPtr<Variable> >::iterator it = elements.begin(); it != elements.end(); ++it )
     {
-        Variable* newVar = new Variable( (*it)->getRevObject().clone() );
-        elements.push_back( newVar );
+        RevBayesCore::DagNode* theParent = (*it)->getRevObject().getDagNode();
+        theParent->addChild( this );
+        theParent->incrementReferenceCount();
     }
-    
 }
 
 
-/** Destructor. No need to delete variables here because the variables are smart pointers. */
+/**
+ * Destructor. No need to delete variable elements here because the variable elements are smart pointers.
+ * However, we need to remove us as a child of the variable element DAG nodes (our parents). The variable
+ * elements still reference our parents, so we do not have to delete them here. By decrementing their
+ * reference count, we ensure they die with our elements, if they need to.
+ */
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::~ContainerNode( void )
 {
+    for ( std::vector< RevPtr<Variable> >::iterator it = elements.begin(); it != elements.end(); ++it )
+    {
+        RevBayesCore::DagNode* theParent = (*it)->getRevObject().getDagNode();
+        theParent->removeChild( this );
+        theParent->decrementReferenceCount();
+    }
+}
+
+
+/**
+ * Assignment operator. We cannot make a deep copy of the elements here.
+ * Instead we have to wait for the swapParent call.
+ */
+template<typename rlElemType, typename valueType>
+ContainerNode<rlElemType, valueType>& ContainerNode<rlElemType, valueType>::operator=( const ContainerNode<rlElemType, valueType>& x )
+{
+    if (this != &x)
+    {
+        RevBayesCore::DynamicNode<valueType>::operator=( x );
+
+        this->type = RevBayesCore::DagNode::DETERMINISTIC;
+        
+        // Release the old parents
+        for ( std::vector< RevPtr<Variable> >::iterator it = elements.begin(); it != elements.end(); ++it )
+        {
+            RevBayesCore::DagNode* theParent = (*it)->getRevObject().getDagNode();
+            theParent->removeChild( this );
+            theParent->decrementReferenceCount();
+        }
+
+        // Get the new parents
+        elements = x.elements;
+
+        // Adopt the new parents
+        for ( std::vector< RevPtr<Variable> >::iterator it = elements.begin(); it != elements.end(); ++it )
+        {
+            RevBayesCore::DagNode* theParent = (*it)->getRevObject().getDagNode();
+            theParent->addChild( this );
+            theParent->incrementReferenceCount();
+        }
+
+        // Tell everybody we have been changed
+        this->touch();
+    }
+
+    return *this;
 }
 
 
@@ -194,6 +254,7 @@ void ContainerNode<rlElemType, valueType>::getAffected( std::set<RevBayesCore::D
  * Return a reference to the vector of elements. The caller can modify the
  * elements; the elements will tell us through their DAG nodes if they have
  * been modified, so that our touched flag gets set, so this should be safe.
+ * The user can even replace the RevObject inside the Variable instance.
  */
 template<typename rlElemType, typename valueType>
 RevPtr<Variable>& ContainerNode<rlElemType, valueType>::getElement( size_t index )
@@ -221,6 +282,22 @@ template<typename rlElemType, typename valueType>
 double ContainerNode<rlElemType, valueType>::getLnProbabilityRatio( void )
 {
     return 0.0;
+}
+
+
+/**
+ * Get the parents of this node. We simply walk through the elements and return
+ * a set with their DAG nodes.
+ */
+template<typename rlElemType, typename valueType>
+std::set<const RevBayesCore::DagNode*> ContainerNode<rlElemType, valueType>::getParents( void ) const
+{
+    std::set<const RevBayesCore::DagNode*> parents;
+
+    for ( std::vector< RevPtr<Variable> >::const_iterator it = this->elements.begin(); it != this->elements.end(); ++it )
+        parents.insert( (*it)->getRevObject().getDagNode() );
+    
+    return parents;
 }
 
 
@@ -253,16 +330,14 @@ const valueType& ContainerNode<rlElemType, valueType>::getValue( void ) const {
 
 /**
  * Is this node constant? Only if all parents are constant.
- *
- * @todo It seems like this could be taken care of by the DagNode base class.
  */
 template<typename rlElemType, typename valueType>
 bool ContainerNode<rlElemType, valueType>::isConstant( void ) const
 {
     // iterate over all parents and only if all parents are constant then this node is constant too
-    for (std::set<const RevBayesCore::DagNode*>::iterator it = this->parents.begin(); it != this->parents.end(); ++it)
+    for ( std::vector< RevPtr<Variable> >::const_iterator it = elements.begin(); it != elements.end(); ++it )
     {
-        if ( !(*it)->isConstant() )
+        if ( !(*it)->getRevObject().isConstant() )
             return false;
     }
     
@@ -271,27 +346,20 @@ bool ContainerNode<rlElemType, valueType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node.
- * At this point, we just delegate to the children.
+ * Keep the current value of the node. If we have been touched
+ * but noone asked for our value, we just leave our touched flag
+ * set, which should be safe. We do not want to set the touched
+ * flag to false without calling update, as done in 
+ * RevBayesCore::DeterministicNode.
  *
- * @todo This is just a copy of what is in the deterministic node.
- *       I do not fully understand this. Is it not dangerous to
- *       mark ourselves as clean when we have not checked first if
- *       we are dirty and then update ourselves if so?
+ * @todo Check whether behavior in RevBayesCore::DeterministicNode is
+ *       correct, or if there is some subtle point I have missed -- FR
  */
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-    // we just mark ourselves as clean
-    if ( touched )
-        throw RbException( "Inconsistent touched state in ContainerNode" );
-    this->touched = false;
-    
-    // delegate call
+    // We just pass the call on
     this->keepAffected();
-    
-    // clear the list of touched element indices
-    this->touchedElements.clear();
 }
 
 
@@ -300,15 +368,15 @@ template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::pop_back( void )
 {
     // Detach our bond to the element DAG node
-    RevBayesCore::DagNode* theElementNode = elements.rbegin()->getRevObject().getDagNode();
-    this->removeParent( theElementNode );
+    RevBayesCore::DagNode* theElementNode = ( *elements.rbegin() )->getRevObject().getDagNode();
     theElementNode->removeChild( this );
-    
+    theElementNode->decrementReferenceCount();      // Still referenced by variable/RevObject so we need not delete it
+
     // Now get rid of it
     elements.pop_back();
     
-    // We are dirty
-    touched = true;
+    // Tell everybody we have been changed
+    this->touch();
 }
 
 
@@ -317,70 +385,15 @@ template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::pop_front( void )
 {
     // Detach our bond to the element DAG node
-    RevBayesCore::DagNode* theElementNode = elements.begin()->getRevObject().getDagNode();
-    this->removeParent( theElementNode );
+    RevBayesCore::DagNode* theElementNode = ( *elements.begin() )->getRevObject().getDagNode();
     theElementNode->removeChild( this );
+    theElementNode->decrementReferenceCount();      // Still referenced by variable/RevObject so we need not delete it
     
     // Now get rid of it
     elements.erase( elements.begin() );
 
-    // We are dirty
-    touched = true;
-}
-
-
-/** Push an element onto the back */
-template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::push_back( rlElemType* x )
-{
-    // Connect the new element
-    x->getDagNode()->addChild( this );
-    this->addParent( x->getDagNode() );
-    
-    // Guard the type of object put in the variable
-    Variable* newVar = new Variable( x );
-    newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
-    
-    // Name the new element
-    std::ostringstream o;
-    o << this->name;
-    o << "[" << elements.size() + 1 << "]";
-    newVar->setName( o.str() );
-
-    // Push it onto the end of the vector
-    elements.push_back( newVar );
-
-    // We are dirty
-    touched = true;
-}
-
-
-/** Push an element onto the front */
-template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
-{
-    // Connect the new element
-    x->getDagNode()->addChild( this );
-    this->addParent( x->getDagNode() );
-    
-    // Guard the type of object put in the variable
-    Variable* newVar = new Variable( x );
-    newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
-
-    // Push it onto the front of the vector
-    elements.insert( elements.begin(), new Variable( x ) );
-
-    // Rename all the elements because their names are now incorrect
-    for ( size_t i = 0; i < elements.size(); ++i )
-    {
-        std::ostringstream o;
-        o << this->name;
-        o << "[" << i + 1 << "]";
-        elements[ i ]->setName( o.str() );
-    }
-    
-    // We are dirty
-    touched = true;
+    // Tell everybody we have been changed
+    this->touch();
 }
 
 
@@ -391,9 +404,11 @@ void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
 template< typename rlElemType, typename valueType >
 void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o ) const
 {
+    o << "_address      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Container node" << std::endl;
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+    
     o << "_value        = ";
     RevBayesCore::TypedDagNode<valueType>::printValue(o, ", ");
     o << std::endl;
@@ -405,6 +420,63 @@ void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o
     o << "_children     = ";
     this->printChildren(o);
     o << std::endl;
+}
+
+
+/** Push an element onto the back */
+template<typename rlElemType, typename valueType>
+void ContainerNode<rlElemType, valueType>::push_back( rlElemType* x )
+{
+    // Connect the new element
+    RevBayesCore::DagNode* theParent = x->getDagNode();
+    theParent->addChild( this );
+    theParent->incrementReferenceCount();
+    
+    // Guard the type of object put in the variable
+    Variable* newVar = new Variable( x );
+    newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
+    
+    // Name the new element
+    std::ostringstream s;
+    s << this->name;
+    s << "[" << elements.size() + 1 << "]";
+    newVar->setName( s.str() );
+    
+    // Push it onto the end of the vector
+    elements.push_back( newVar );
+    
+    // Tell everybody we have been changed
+    this->touch();
+}
+
+
+/** Push an element onto the front */
+template<typename rlElemType, typename valueType>
+void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
+{
+    // Connect the new element
+    RevBayesCore::DagNode* theParent = x->getDagNode();
+    theParent->addChild( this );
+    theParent->incrementReferenceCount();
+    
+    // Guard the type of object put in the variable
+    Variable* newVar = new Variable( x );
+    newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
+    
+    // Push it onto the front of the vector
+    elements.insert( elements.begin(), new Variable( x ) );
+    
+    // Rename all the elements because their names are now incorrect
+    for ( size_t i = 0; i < elements.size(); ++i )
+    {
+        std::stringstream s;
+        s << this->name;
+        s << "[" << i + 1 << "]";
+        elements[ i ]->setName( s.str() );
+    }
+    
+    // Tell everybody we have been changed
+    this->touch();
 }
 
 
@@ -430,31 +502,11 @@ void ContainerNode<rlElemType, valueType>::redraw( void )
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
-    // we need to recompute our value?!
+    // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
-    // we just mark ourselves as clean (actually done by update)
-    this->touched = false;
-    
-    // delegate call
+    // dispatch call to others
     this->restoreAffected();
-    
-    // clear the list of touched element indices
-    this->touchedElements.clear();
-}
-
-
-/**
- * Swap parameter. This should be done automatically by the reassignment.
- * We just touch ourselves to make sure we are updated later, in case the
- * touch is not called by the reassignment as it should.
- *
- * @todo Check whether this is needed.
- */
-template<typename rlElemType, typename valueType>
-void ContainerNode<rlElemType, valueType>::swapParameter( const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP )
-{
-    this->touched = true;
 }
 
 
@@ -470,10 +522,10 @@ void ContainerNode<rlElemType, valueType>::setName( const std::string& n )
     // Rename all the elements
     for ( size_t i = 0; i < elements.size(); ++i )
     {
-        std::ostringstream o;
-        o << this->name;
-        o << "[" << i + 1 << "]";
-        elements[ i ]->setName( o.str() );
+        std::stringstream s;
+        s << this->name;
+        s << "[" << i + 1 << "]";
+        elements[ i ]->setName( s.str() );
     }
 }
 
@@ -490,6 +542,32 @@ void ContainerNode<rlElemType, valueType>::touchMe( RevBayesCore::DagNode *touch
         // Dispatch the touch message to downstream nodes
         this->touchAffected();
     }
+}
+
+
+/**
+ * Swap parent. We get this call just before an element is being replaced by another element.
+ * We need to make sure we detach ourselves as a child of the old node and add ourselves as
+ * a child to the new node. The actual replacement is managed by the Variable instance holding
+ * the RevObject instance that is our element.
+ */
+template <typename rlElemType, typename valueType>
+void ContainerNode<rlElemType, valueType>::swapParent(const RevBayesCore::DagNode* oldParent, const RevBayesCore::DagNode* newParent)
+{
+    if ( oldParent != NULL )
+    {
+        oldParent->removeChild( this );
+        oldParent->decrementReferenceCount();       // No need to delete the element; the Variable instance does that
+    }
+
+    if ( newParent != NULL )
+    {
+        newParent->addChild( this );
+        newParent->incrementReferenceCount();
+    }
+    
+    // Tell everybody we have been changed
+    this->touch();
 }
 
 

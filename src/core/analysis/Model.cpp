@@ -10,7 +10,7 @@ using namespace RevBayesCore;
  * Constructor from a single DAG node.
  * The model graph is extracted by obtaining all DAG nodes connected to the provide source node.
  * The entire model graph is copied and a map between the pointers to the original DAG nodes and
- * the copied DAG nodes is created for convinience access.
+ * the copied DAG nodes is created for convenient access.
  *
  * \param[in]    source    The DAG node from which the model graph is extracted.
  */
@@ -27,7 +27,7 @@ Model::Model(const DagNode *source)
  * Constructor from a set of DAG nodes.
  * The model graph is extracted by obtaining all DAG nodes that are connected to either of the provide source nodes.
  * The entire model graph is copied and a map between the pointers to the original DAG nodes and
- * the copied DAG nodes is created for convinience access.
+ * the copied DAG nodes is created for convenient access.
  *
  * \param[in]    sources    The set of DAG nodes from which the model graph is extracted.
  */

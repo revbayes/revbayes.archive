@@ -101,6 +101,16 @@ void ExponentialDistribution::swapParameter(const DagNode *oldP, const DagNode *
     {
         offset = static_cast<const TypedDagNode<double>* >( newP );
     }
+    
+    std::cerr << "Exponential parameters after swap:" << std::endl;
+    std::set<const DagNode*> params = this->getParameters();
+    for ( std::set<const DagNode*>::iterator it = params.begin(); it != params.end(); ++it )
+    {
+        if ( it == params.begin() )
+            std::cerr << "<" << (*it) << ">";
+        else
+            std::cerr << ", <" << (*it) << ">";
+    }
 }
 
 

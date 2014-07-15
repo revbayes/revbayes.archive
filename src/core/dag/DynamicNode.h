@@ -81,6 +81,7 @@ RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
 template<class valueType>
 RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes ) const {
     
+    // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
     
@@ -90,7 +91,13 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     // Add this node to the map
     newNodes[ this ] = copy;
     
-    for ( std::set<const DagNode*>::const_iterator i = this->parents.begin(); i != this->parents.end(); i++ )
+    // Note that functions and distributions have copies of DAG node pointers, so the copy and
+    // the original will have the same parents after the call to clone(). In fact, this is the
+    // desired behavior to not interfere with the cloning of the entire DAG in this function.
+    // Thus, all dynamic DAG nodes should adopt this convention.
+    std::set<const DagNode*> parents = this->getParents();
+
+    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         const DagNode *theParam = (*i);
         
@@ -98,7 +105,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         theParam->removeChild( copy );
     }
     
-    for ( std::set<const DagNode*>::const_iterator i = this->parents.begin(); i != this->parents.end(); i++ ) 
+    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         
         // get the i-th member and get the clone back
