@@ -1,5 +1,3 @@
-
-
 #include "DagNode.h"
 #include "DynamicNode.h"
 #include "RbException.h"
@@ -7,7 +5,11 @@
 
 using namespace RevBayesCore;
 
-DagNode::DagNode( const std::string &n ) : 
+/**
+ * Construct an empty DAG node, potentially
+ * with a name (default is "").
+ */
+DagNode::DagNode( const std::string &n ) :
         children(),
         heat( 1.0 ),
         name( n ), 
@@ -18,6 +20,14 @@ DagNode::DagNode( const std::string &n ) :
 }
 
 
+/**
+ * Copy constructor. We delegate the handling
+ * of parents to derived classes with parents,
+ * and they need to take care of the management
+ * of those parents, removing them as a child
+ * from those parents and deleting the parents
+ * if necessary.
+ */
 DagNode::DagNode( const DagNode &n ) : 
         children(),
         heat( n.heat ),
@@ -25,73 +35,57 @@ DagNode::DagNode( const DagNode &n ) :
         touchedElements( n.touchedElements ),
         refCount( 0 )
 {
-
-#if 0
-    // add myself as a new child of all my parents
-    for (std::set<const DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it) 
-    {
-        (*it)->addChild( this );
-        (*it)->incrementReferenceCount();
-    }
-#endif
 }
 
 
-DagNode::~DagNode( void ) 
+/**
+ * Destructor. The destructor should never be called when the reference count
+ * is larger than 0, or when we have children. All children should increase the
+ * reference count, so there should be no children left when the reference count
+ * is 0. Other Rev objects may also increase the reference count to protect a
+ * DAG node from being deleted before they die, so the reference count can be
+ * larger than the number of children, but never smaller.
+ *
+ * Deletion of parents is delegated to the destructors of derived classes with
+ * parents.
+ */
+DagNode::~DagNode( void )
 {
-    
+    // For debugging memory leak issues
     if ( getName() != "" )
         std::cerr << "Deleting DAG node '" << name << "' <" << this << ">" << std::endl;
     else
         std::cerr << "Deleting DAG node <" << this << ">" << std::endl;
 
-    // sanity check
+    // Sanity checks
     if ( refCount != 0 )
     {
-        std::cerr << "Deleting DAG Node with " << refCount << " references to it (reported)!" << std::endl;
+        std::stringstream s;
+        s << "Deleting DAG Node with " << refCount << " references to it (reported)!" << std::endl;
+        throw RbException( s.str() );
     }
     if ( children.size() != 0 )
     {
-        std::cerr << "DAG node has " << children.size() << " remaining children!" << std::endl;
-        std::cout << "Remaining children are: " << std::endl;
-        printChildren( std::cout );
+        std::ostringstream o;
+        o << "DAG node has " << children.size() << " remaining children!" << std::endl;
+        o << "Remaining children are: " << std::endl;
+        printChildren( o );
+        o << std::endl;
+        throw RbException( o );
     }
-    // we do not release anything here
-    // children and parents need to be clean somewhere else!
-#if 0
-    while ( !children.empty() )
-    {
-        ( *children.begin() )->removeParent( this );
-    }
-    
-    while ( !parents.empty() )
-    {
-        const DagNode *theParent = ( *parents.begin() );
-        theParent->removeChild( this );
-        parents.erase( theParent );
-        
-        if ( theParent->decrementReferenceCount() == 0)
-        {
-            delete theParent;
-        }
-    }
-#endif
 }
 
 
 /**
  * Assignment operator. Note that parent management is delegated to
- * derived classes that actuallty have parents, so their assignment
- * operators deal with parent replacement at assignment.
+ * derived classes that actually have parents, so their assignment
+ * operators need to deal with parent replacement at assignment.
  */
 DagNode& DagNode::operator=(const DagNode &d)
 {
     
     if ( &d != this )
     {
-        // we do not release anything here
-        // children and parents need to be clean somewhere else!
-
         // As far as I can tell, it would be a bug if we tried to change a
         // DAG node with children through assignment because the putative
         // call to removeParent on all the children would delete us unless
@@ -99,41 +93,13 @@ DagNode& DagNode::operator=(const DagNode &d)
         // not count on. Use the swapParent functionality instead. -- Fredrik
         if ( refCount != 0 || children.size() > 0 )
         {
-            throw RbException( "Replacing DAG Node with persisting references to it (counted or not counted) through assignment (a bug)." );
+            throw RbException( "Replacing DAG Node with persisting references to it through assignment (a bug)." );
         }
-#if 0
-        while ( !children.empty() )
-        {
-            ( *children.begin() )->removeParent( this );
-        }
-        
-        while ( !parents.empty() )
-        {
-            const DagNode *theParent = ( *parents.begin() );
-            theParent->removeChild( this );
-            parents.erase( theParent );
-            
-            if ( theParent->decrementReferenceCount() == 0)
-            {
-                delete theParent;
-            }
-        }
-#endif
-        children.clear();
+
         heat = d.heat;
         name = d.name;  
         touchedElements = d.touchedElements;
             
-#if 0
-        // Detach myself from my old parents
-        const std::vector<const DagNode*>
-        // Adopt my new parents
-        for (std::set<const DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it) 
-        {
-            (*it)->addChild( this );
-            (*it)->incrementReferenceCount();
-        }
-#endif
     }
     
     return *this;
@@ -143,20 +109,6 @@ void DagNode::addChild(DagNode *child) const {
 
     children.insert( child );
 }
-
-
-#if 0
-/* Add parent node */
-void DagNode::addParent( const DagNode *newParent ) {
-    
-    parents.insert( newParent );
-    newParent->addChild( this );
-    
-    // increment the reference count
-    // we don't want that this parent get's deleted while we are still alive
-    newParent->incrementReferenceCount();
-}
-#endif
 
 
 /* Add the index of an element that has been touched */
@@ -213,20 +165,25 @@ void DagNode::collectDownstreamGraph(std::set<RevBayesCore::DagNode *> &nodes) {
  */
 size_t DagNode::decrementReferenceCount( void ) const 
 {
-    // Sanity check...
+    // Sanity checks
     if ( refCount == 0) {
+        std::ostringstream o;
         if ( getName() != "" )
-            std::cerr << "Decrementing reference count of node " << getName() << " below 0" << std::endl;
+            o << "Decrementing reference count of node " << getName() << " below 0" << std::endl;
         else
-            std::cerr << "Decrementing reference count of node <" << this << "> below 0" << std::endl;
+            o << "Decrementing reference count of node <" << this << "> below 0" << std::endl;
+        throw RbException( o );
     }
     else if ( refCount <= children.size() )
     {
+        std::ostringstream o;
         if ( getName() != "" )
-            std::cerr << "Decrementing reference count of node " << getName() << " below number of children" << std::endl;
+            o << "Decrementing reference count of node " << getName() << " below number of children" << std::endl;
         else
-            std::cerr << "Decrementing reference count of node <" << this << "> below number of children" << std::endl;
+            o << "Decrementing reference count of node <" << this << "> below number of children" << std::endl;
+        throw RbException( o );
     }
+
     refCount--;
     
     return refCount;
@@ -316,6 +273,8 @@ void DagNode::incrementReferenceCount( void ) const
 {
     
     refCount++;
+    
+    // For debugging
     if ( refCount - children.size() > 1 )
     {
         if ( getName() != "" )
@@ -397,12 +356,15 @@ void DagNode::printChildren( std::ostream& o ) const {
  * Print parents. This function does not access the parents directly, but
  * through the getParents function. This is to allow derived classes to
  * handle parents in a different way than done in this class.
+ *
+ * Note the use of a const reference here to potentially avoid one copy
+ * operation on the set of DAG nodes.
  */
-void DagNode::printParents( std::ostream& o ) const {
-    
+void DagNode::printParents( std::ostream& o ) const
+{
     o << "[ ";
     
-    std::set<const DagNode*> parents = getParents();
+    const std::set<const DagNode*>& parents = getParents();
 
     for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
         if ( i != parents.begin() )
@@ -439,25 +401,7 @@ void DagNode::removeChild(DagNode *child) const
 }
 
 
-#if 0
-/* Remove parent node */
-void DagNode::removeParent( const DagNode *p ) {
-    
-    parents.erase( p );
-    p->removeChild( this );
-    
-    // decrement the reference count
-    // we didn't want that this parent get's deleted while we are still alive
-    // but now it's not our parent anymore ...
-    if ( p->decrementReferenceCount() == 0 )
-    {
-        delete p;
-    }
-}
-#endif
-
-
-/** 
+/**
  * Replace the DAG node. 
  * We call replace for all children so that they get a new parent. We do not change the parents.
  */
@@ -506,28 +450,14 @@ void DagNode::setName(std::string const &n)
 }
 
 
-/* Swap parent node */
-void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent ) {
-    
+/**
+ * Swap parent node. We delegate this task to derived DAG node classes
+ * with parents. Here we just throw an error in case a derived class
+ * with parents forgets to override this function.
+ */
+void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent )
+{
     throw RbException( "This DAG node does not have any parents" );
-    
-#if 0
-    if ( parents.find( oldParent ) == parents.end() )
-        throw RbException( "Node '" + oldParent->getName() + "' is not a parent" );
-    
-    oldParent->removeChild( this );
-    if ( newParent != NULL ) {
-        newParent->addChild( this );   
-        addParent( newParent );
-    }
-    removeParent( oldParent );
-    
-    // delegate a call to swap the parameters in the internal implementation too.
-    // this provides a hook to catch swaps of hard coded pointers to parameters.
-    swapParameter(oldParent, newParent);
-    
-    this->touch();
-#endif
 }
 
 
@@ -537,9 +467,11 @@ void DagNode::swapParent( const DagNode *oldParent, const DagNode *newParent ) {
  * This function should be called if the value of the variable has changed or if you want this node to be reevaluated. 
  * The function will automatically call the touchMe() which is implemented differently in the different DAG node types.
  *
- * Since the DAG node was touch and possibly changed, we tell affected variable nodes to keep the current value.
+ * Since the DAG node was touched and possibly changed, we tell affected DAG nodes that they too have been touched
+ * and need to update their value.
  */
-void DagNode::touch() {
+void DagNode::touch()
+{
     // first touch myself
     touchMe( this );
     
@@ -551,8 +483,8 @@ void DagNode::touch() {
 /**
  * Tell affected variable nodes to touch themselves (i.e. that they've been touched).
  */
-void DagNode::touchAffected() {
-    
+void DagNode::touchAffected()
+{
     // touch all my children
     for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
         (*i)->touchMe( this );

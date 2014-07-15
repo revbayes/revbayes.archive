@@ -25,16 +25,12 @@ numTaxa( g2s.size() ),
 logTreeTopologyProb (0.0)
  {
     
-    addParameter( speciesTree );
-  //  addParameter( Ne );
-    
     double lnFact = RbMath::lnFactorial((int)(numTaxa));
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
     
     //Default value for Ne
     Ne = new ConstantNode<double>("Ne", new double(1.0) );
-    addParameter( Ne );
     
     redrawValue();
     
@@ -49,7 +45,6 @@ MultispeciesCoalescent::MultispeciesCoalescent(const MultispeciesCoalescent &v) 
         Ne( v.Ne ),  
         numTaxa( v.numTaxa ), 
         logTreeTopologyProb( v.logTreeTopologyProb ) {
-    // parameters are automatically copied
 }
 
 
@@ -587,30 +582,16 @@ void MultispeciesCoalescent::redrawValue( void ) {
 }
 
 void MultispeciesCoalescent::setNes(TypedDagNode<std::vector<double> >* inputNes) {
-    if (Nes != NULL) {
-        removeParameter(Nes);
-    }
-    if (Ne != NULL) {
-        removeParameter(Ne);
-    }
+
     Nes = inputNes;
     Ne= NULL;
-    addParameter(Nes);
 }
 
 
 void MultispeciesCoalescent::setNe(TypedDagNode<double>* inputNe) {
-    if (Ne != NULL) {
-        removeParameter(Ne);
-    }
-       if (Nes != NULL) {
-        removeParameter(Nes);
-    }
- 
+
     Ne = inputNe;
     Nes = NULL;
-    addParameter(Ne);
-
 }
 
 
@@ -740,7 +721,23 @@ void MultispeciesCoalescent::simulateTree( void ) {
 
 
 
-void MultispeciesCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> MultispeciesCoalescent::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( Nes );
+    parameters.insert( Ne );
+    parameters.insert( speciesTree );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void MultispeciesCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == Nes) 
     {

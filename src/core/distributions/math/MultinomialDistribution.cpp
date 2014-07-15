@@ -13,16 +13,12 @@
 using namespace RevBayesCore;
 
 MultinomialDistribution::MultinomialDistribution(const TypedDagNode< std::vector<double> > *p, const TypedDagNode<int> *n) : TypedDistribution< std::vector<int> >( new std::vector<int>() ), p( p ), n( n ) {
-    // add the lambda parameter as a parent
-    addParameter( p );
-    addParameter( n );
         
     *value = RbStatistics::Multinomial::rv(p->getValue(), size_t( n->getValue() ), *GLOBAL_RNG);
 }
 
 
 MultinomialDistribution::MultinomialDistribution(const MultinomialDistribution &m) : TypedDistribution<std::vector<int> >( m ), p( m.p ), n (m.n) {
-    // parameters are automatically copied
 }
 
 
@@ -47,6 +43,20 @@ void MultinomialDistribution::redrawValue( void ) {
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> MultinomialDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( p );
+    parameters.insert( n );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void MultinomialDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == p)

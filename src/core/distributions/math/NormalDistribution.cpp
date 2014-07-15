@@ -7,16 +7,11 @@
 using namespace RevBayesCore;
 
 NormalDistribution::NormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s) : ContinuousDistribution( new double( 0.0 ) ), mean( m ), stDev( s ) {
-    // add the parameters to the parents list
-    addParameter( mean );
-    addParameter( stDev );
-    
     *value = RbStatistics::Normal::rv(mean->getValue(), stDev->getValue(), *GLOBAL_RNG);
 }
 
 
 NormalDistribution::NormalDistribution(const NormalDistribution &n) : ContinuousDistribution( n ), mean( n.mean ), stDev( n.stDev ) {
-    // parameters are automatically copied
 }
 
 
@@ -60,11 +55,28 @@ void NormalDistribution::redrawValue( void ) {
 }
 
 
-void NormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == mean) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> NormalDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( mean );
+    parameters.insert( stDev );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void NormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == mean)
+    {
         mean = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if (oldP == stDev) {
+    if (oldP == stDev)
+    {
         stDev = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

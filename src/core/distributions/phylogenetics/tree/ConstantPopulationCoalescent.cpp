@@ -18,8 +18,6 @@ ConstantPopulationCoalescent::ConstantPopulationCoalescent(const TypedDagNode<do
                                                      const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( NULL ), constraints( c ), 
 Ne( N ), numTaxa( nTaxa ), taxonNames( tn ) {
     
-    addParameter( Ne );
-    
     double lnFact = RbMath::lnFactorial( int(nTaxa) );
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
@@ -31,7 +29,6 @@ Ne( N ), numTaxa( nTaxa ), taxonNames( tn ) {
 
 
 ConstantPopulationCoalescent::ConstantPopulationCoalescent(const ConstantPopulationCoalescent &v) : TypedDistribution<TimeTree>( v ), Ne( v.Ne ), numTaxa( v.numTaxa ), taxonNames( v.taxonNames ), logTreeTopologyProb( v.logTreeTopologyProb ) {
-    // parameters are automatically copied
 }
 
 
@@ -260,12 +257,23 @@ void ConstantPopulationCoalescent::simulateTree( void ) {
 }
 
 
-
-void ConstantPopulationCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> ConstantPopulationCoalescent::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
-    if (oldP == Ne) 
+    parameters.insert( Ne );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void ConstantPopulationCoalescent::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == Ne)
     {
         Ne = static_cast<const TypedDagNode<double>* >( newP );
     }
-    
 }

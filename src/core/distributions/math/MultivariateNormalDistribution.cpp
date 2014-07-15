@@ -5,10 +5,8 @@
 
 using namespace RevBayesCore;
 
-MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< std::vector<double> > *inmean, const TypedDagNode<PrecisionMatrix>* inprec) : TypedDistribution< std::vector<double> >( new std::vector<double>() ), mean( inmean ), precision(inprec) {
-    // add the lambda parameter as a parent
-    addParameter( mean );
-    addParameter( precision );
+MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< std::vector<double> > *inmean, const TypedDagNode<PrecisionMatrix>* inprec) :
+    TypedDistribution< std::vector<double> >( new std::vector<double>() ), mean( inmean ), precision(inprec) {
     
     redrawValue();
 }
@@ -42,11 +40,28 @@ void MultivariateNormalDistribution::redrawValue( void ) {
 }
 
 
-void MultivariateNormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == mean) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> MultivariateNormalDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( mean );
+    parameters.insert( precision );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void MultivariateNormalDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == mean)
+    {
         mean = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
     }
-    if (oldP == precision) {
+    if (oldP == precision)
+    {
         precision = static_cast<const TypedDagNode<PrecisionMatrix >* >( newP );
     }
 }

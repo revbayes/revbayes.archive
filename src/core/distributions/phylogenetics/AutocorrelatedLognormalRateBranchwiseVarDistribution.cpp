@@ -22,11 +22,6 @@ sigma( s ),
 rootRate( rr ),
 scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
 	
-    this->addParameter( tau );
-    this->addParameter( sigma );
-    this->addParameter( rootRate );
-	this->addParameter( scaleValue );
-    
     simulate();
 }
 
@@ -36,11 +31,6 @@ sigma( s ),
 rootRate( rr ),
 scaleValue( sv ) {
 	
-    this->addParameter( tau );
-    this->addParameter( sigma );
-    this->addParameter( rootRate );
-	this->addParameter( scaleValue );
-    
     simulate();
 }
 
@@ -164,6 +154,22 @@ void AutocorrelatedLognormalRateBranchwiseVarDistribution::restoreSpecialization
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> AutocorrelatedLognormalRateBranchwiseVarDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( tau );
+    parameters.insert( sigma );
+    parameters.insert( rootRate );
+    parameters.insert( scaleValue );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void AutocorrelatedLognormalRateBranchwiseVarDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {

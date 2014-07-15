@@ -43,18 +43,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     rhoTimes( rt ),
     timeSinceLastSample( tLastSample )
 {
-    
-    addParameter( lambda );
-    addParameter( lambdaTimes );
-    addParameter( mu );
-    addParameter( muTimes );
-    addParameter( psi );
-    addParameter( psiTimes );
-    addParameter( rho );
-    addParameter( rhoTimes );
-    
     simulateTree();
-    
 }
 
 
@@ -436,6 +425,25 @@ int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
     return survivors;
 }
 
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> PiecewiseConstantSerialSampledBirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
+    
+    parameters.insert( lambdaTimes );
+    parameters.insert( muTimes );
+    parameters.insert( psiTimes );
+    parameters.insert( rhoTimes );
+    parameters.insert( lambda );
+    parameters.insert( mu );
+    parameters.insert( psi );
+    parameters.insert( rho );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
 /**

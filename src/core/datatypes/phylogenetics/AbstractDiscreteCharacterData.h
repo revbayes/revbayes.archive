@@ -21,6 +21,7 @@ namespace RevBayesCore {
      * This simplifies return values because it is known that all are derived from discrete characters
      * and there are several function that only work on discrete characters and not on
      * continuous characters.
+     *
      * Note that this class is a pure interface and thus contains only pure virtual functions!
      *
      * @copyright Copyright 2009-

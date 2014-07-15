@@ -30,8 +30,11 @@ namespace RevBayesCore {
         
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
         size_t                                                  getDim() {return omega->getValue().getDim();}
+        
+        // Parameter management functions
+        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
+        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         // helper methods

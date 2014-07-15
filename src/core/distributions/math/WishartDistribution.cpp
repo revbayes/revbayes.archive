@@ -24,9 +24,6 @@ dim(0),
 omega0(inomega0),
 kappa(NULL),
 df(indf)    {
-    
-    addParameter( omega0 );
-    addParameter(df);
 
     redrawValue();
 }
@@ -38,9 +35,6 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
     kappa(inkappa),
     df(indf)    {
     
-        addParameter( kappa );
-        addParameter(df);
-        
         redrawValue();
 }
 
@@ -51,14 +45,6 @@ WishartDistribution::WishartDistribution(const WishartDistribution& from) :
     kappa(from.kappa),
     df(from.df)    {
 
-        if (omega0) {
-            addParameter( omega0 );
-        }
-        if (kappa)  {
-            addParameter(kappa);
-        }
-        addParameter(df);
-
         redrawValue();
 }
 
@@ -67,11 +53,29 @@ WishartDistribution* WishartDistribution::clone(void) const   {
     return new WishartDistribution(*this);
 }
 
-void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == omega0) {
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> WishartDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( omega0 );
+    parameters.insert( kappa );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void WishartDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if (oldP == omega0)
+    {
         omega0 = static_cast<const TypedDagNode<PrecisionMatrix>* >( newP );
     }
-    if (oldP == kappa)  {
+    if (oldP == kappa)
+    {
         kappa = static_cast<const TypedDagNode<double>* >(newP);
     }
 }

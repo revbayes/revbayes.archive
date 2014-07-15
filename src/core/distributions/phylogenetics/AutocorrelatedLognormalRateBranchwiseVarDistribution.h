@@ -37,13 +37,16 @@ namespace RevBayesCore {
         AutocorrelatedLognormalRateBranchwiseVarDistribution*                clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
         
         // special handling of state changes
         void                                                    getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
         void                                                    keepSpecialization(DagNode* affecter);
         void                                                    restoreSpecialization(DagNode *restorer);
         void                                                    touchSpecialization(DagNode *toucher);
+
+        // Parameter management functions
+        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
+        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
         
     private:

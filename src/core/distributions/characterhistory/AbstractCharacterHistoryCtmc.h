@@ -45,11 +45,14 @@ namespace RevBayesCore
 
         // pure virtual functions
         virtual AbstractCharacterHistoryCtmc*                   clone(void) const = 0;
-        virtual void                                            swapParameter(const DagNode *oldP, const DagNode *newP) = 0;
         virtual double                                          computeLnProbability(void) = 0;
         virtual double                                          computeLnProposal(void) = 0;
         virtual double                                          sumOfRates(std::vector<CharacterEvent*> s) = 0;
         virtual double                                          transitionRate(std::vector<CharacterEvent*> oldState, CharacterEvent* evt) = 0;
+        
+        // Parameter management functions. You need to override both if you have additional parameters.
+        virtual std::set<const DagNode*>                        getParameters(void) const;                                          //!< Return parameters
+        virtual void                                            swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         //virtual std::set<CharacterEvent*>                       simulateCharacterState(double t);

@@ -68,12 +68,6 @@ cloned(false)
 {
     numBlocks = numSites / blockSize;
     
-    // add model parameters
-    this->addParameter( tau );
-    this->addParameter( diffusionRate );
-    this->addParameter( admixtureRate );
-    this->addParameter( branchRates );
-    
     std::cout << "numTaxa\t" << numTaxa << "\n";
     std::cout << "numSites\t" << numSites << "\n";
     std::cout << "numBlocks\t" << numBlocks << "\n";
@@ -174,9 +168,27 @@ BrownianMotionAdmixtureGraph* BrownianMotionAdmixtureGraph::clone(void) const
     return new BrownianMotionAdmixtureGraph( *this );
 }
 
-void BrownianMotionAdmixtureGraph::swapParameter(const DagNode *oldP, const DagNode *newP)
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BrownianMotionAdmixtureGraph::getParameters( void ) const
 {
-    if (oldP == tau) {
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( tau );
+    parameters.insert( diffusionRate );
+    parameters.insert( admixtureRate );
+    parameters.insert( branchRates );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void BrownianMotionAdmixtureGraph::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if (oldP == tau)
+    {
         tau = static_cast<const TypedDagNode< AdmixtureTree >* >( newP );
         //std::cout << "swapParameter() for Tau\n";
     }
