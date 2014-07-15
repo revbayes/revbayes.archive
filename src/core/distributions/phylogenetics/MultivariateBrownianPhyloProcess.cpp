@@ -23,20 +23,20 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-// MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* inomega, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), inomega->getValue().getDim(), 0.0 )),
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* inomega) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), inomega->getValue().getDim(), 0.0 )),
+// MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
 tau( intau ),
-omega( inomega ) {
+sigma( insigma ) {
 // rootVal( inrootVal ) {
     this->addParameter( tau );
-    this->addParameter( omega );
+    this->addParameter( sigma );
 //    this->addParameter( rootVal );
     
     simulate();
 }
 
 
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MatrixReal>( n ), tau( n.tau ), omega( n.omega ) /*, rootVal( n.rootVal )*/ {
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MatrixReal>( n ), tau( n.tau ), sigma( n.sigma ) /*, rootVal( n.rootVal )*/ {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -50,7 +50,7 @@ MultivariateBrownianPhyloProcess* MultivariateBrownianPhyloProcess::clone(void) 
 double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
     
     double lnProb = 0;
-    if (omega->getValue().isPositive()) {
+    if (sigma->getValue().isPositive()) {
         lnProb = recursiveLnProb(tau->getValue().getRoot());
     }
     else{
@@ -69,12 +69,12 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
     
     if (! from.isRoot()) {
         
-        // x ~ normal(x_up, omega^2 * branchLength)
+        // x ~ normal(x_up, sigma^2 * branchLength)
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
         
-        const PrecisionMatrix& om = omega->getValue();
+        const MatrixReal& om = sigma->getValue().getInverse();
         
         double s2 = 0;
         for (size_t i=0; i<getDim(); i++)   {
@@ -86,7 +86,7 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
         }
         
         lnProb -= 0.5 * s2;
-        lnProb += 0.5 * om.getLogDet();
+        lnProb -= 0.5 * sigma->getValue().getLogDet();
     }
     
     // propagate forward
@@ -124,18 +124,18 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
     
     else    {
         
-        // x ~ normal(x_up, omega^2 * branchLength)
+        // x ~ normal(x_up, sigma^2 * branchLength)
 
         std::vector<double>& val = (*value)[index];
                 
-        omega->getValue().drawNormalSamplePrecision((*value)[index]);
+        sigma->getValue().drawNormalSampleCovariance((*value)[index]);
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double>& upval = (*value)[upindex];
 
         for (size_t i=0; i<getDim(); i++)   {
             val[i] += upval[i];
-        }
+        }        
     }
     
     // propagate forward
@@ -147,14 +147,56 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
 }
 
 
+double MultivariateBrownianPhyloProcess::getMean(int k) {
+    
+    int n = 0;
+    double e1 = 0;
+    double e2 = 0;
+    recursiveGetStats(k, tau->getValue().getRoot(), e1, e2, n);
+    e1 /= n;
+    e2 /= n;
+    e2 -= e1 * e1;
+    return e1;
+}
+
+double MultivariateBrownianPhyloProcess::getStdev(int k) {
+    
+    int n = 0;
+    double e1 = 0;
+    double e2 = 0;
+    recursiveGetStats(k, tau->getValue().getRoot(), e1, e2, n);
+    e1 /= n;
+    e2 /= n;
+    e2 -= e1 * e1;
+    return sqrt(e2);
+}
+
+
+void MultivariateBrownianPhyloProcess::recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n)  {
+
+    double tmp = (*value)[from.getIndex()][k];
+
+    n++;
+    e1 += tmp;
+    e2 += tmp * tmp;
+    
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveGetStats(k,from.getChild(i),e1,e2,n);
+    }
+    
+}
+
+
 void MultivariateBrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     
-    if ( oldP == omega ) {
-        omega = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
+    if ( oldP == sigma ) {
+        sigma = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
     }
     /*
     if ( oldP == rootVal ) {

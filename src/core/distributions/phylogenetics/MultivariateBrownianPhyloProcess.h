@@ -22,8 +22,8 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        // MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega, const TypedDagNode< std::vector<double> >* inrootval);
-        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega);
+        // MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* insigma, const TypedDagNode< std::vector<double> >* inrootval);
+        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* insigma);
         MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &from);
         
         // public member functions
@@ -32,8 +32,12 @@ namespace RevBayesCore {
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
-        size_t                                                  getDim() {return omega->getValue().getDim();}
+        size_t                                                  getDim() {return sigma->getValue().getDim();}
         
+        double                                                  getMean(int k);
+        double                                                  getStdev(int k);
+        void                                                    recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n);
+
     private:
         // helper methods
         void                                                    simulate();
@@ -42,7 +46,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< PrecisionMatrix >*                  omega;
+        const TypedDagNode< PrecisionMatrix >*                  sigma;
 //      const TypedDagNode< std::vector<double> >*              rootVal;
         
     };
