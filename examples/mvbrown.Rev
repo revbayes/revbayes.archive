@@ -70,7 +70,7 @@ mitQ := gtr(miter,mitpi)
 # precision matrix (2x2)
 # of parameters kappa * I2 and 1 degrees of freedom
 kappa ~ exponential(1.0)
-df <- 3
+df <- 4
 dim <- 2
 "kappa"
 kappa
@@ -81,7 +81,9 @@ omega ~ wishart(dim=dim,kappa=kappa,df=df)
 # moves on kappa and precision matrix
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(omega, lambda=10.0, tune=false, weight=3.0)
+moves[index] <- mvPrecisionMatrixSimple(omega, lambda=1.0, tune=false, weight=3.0)
+index <- index + 1
+moves[index] <- mvPrecisionMatrixSimple(omega, lambda=0.1, tune=false, weight=3.0)
 index <- index + 1
 
 # root value for the Brownian process
