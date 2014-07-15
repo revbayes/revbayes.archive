@@ -54,6 +54,7 @@ namespace RevLanguage {
         void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
+        void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
         void                                    replaceVariable(RevObject *newVar);                                         //!< Replace the internal DAG node (and prepare to replace me...)
         
@@ -74,7 +75,6 @@ namespace RevLanguage {
     private:
         
         void                                    initMethods(void);
-        void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
         
     };
     

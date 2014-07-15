@@ -62,11 +62,6 @@ TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
     userFunctionCall( uFC ),
     returnVariable( NULL )
 {
-    // Add parameters to conform to RevBayesCore::Function
-    std::vector<const RevBayesCore::DagNode*> params = userFunctionCall->getParameters();
-    for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = params.begin(); it != params.end(); it++ )
-        RevBayesCore::TypedFunction<valueType>::addParameter( (*it) );
-
     // Set dirty flag
     this->setDirty( true );
 }

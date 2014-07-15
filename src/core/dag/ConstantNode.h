@@ -47,7 +47,6 @@ namespace RevBayesCore {
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Empty implementation of swaping parameters
         void                                                touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
 
     private:
@@ -182,6 +181,7 @@ template<class valueType>
 /** Print struct for user */
 void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) const 
 {
+    o << "_address      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Constant DAG node" << std::endl;
     o << "_value        = " << *value << std::endl;
     
@@ -213,12 +213,6 @@ void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v) {
     *value = v;
     this->touch();
     
-}
-
-
-template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    // nothing to do
 }
 
 

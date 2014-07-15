@@ -37,9 +37,13 @@ namespace RevBayesCore {
      
         StochasticNode(const std::string &n, TypedDistribution<valueType> *d);
         StochasticNode(const StochasticNode<valueType> &n);                                                                             //!< Copy constructor
+
         virtual                                            ~StochasticNode(void);                                                       //!< Virtual destructor
     
-        // pure virtual methods
+        // Assignment operator
+        StochasticNode&                                     operator=(const StochasticNode& n);                                         //!< Assignment operator
+
+        // Basic utility function
         virtual StochasticNode<valueType>*                  clone(void) const;
     
         // methods    
@@ -60,12 +64,15 @@ namespace RevBayesCore {
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
-    protected:    
+        // Parent DAG nodes management functions
+        std::set<const DagNode*>                            getParents(void) const;                                                     //!< Get the set of parents
+        void                                                swapParent(const DagNode *oldP, const DagNode *newP);                       //!< Exchange the parent (distribution parameter)
+
+    protected:
         
         virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
         virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
         virtual void                                        touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
     
         // protected members
@@ -87,39 +94,125 @@ namespace RevBayesCore {
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ), clamped( false ), ignoreRedraw(false), lnProb( RbConstants::Double::neginf ), needsProbabilityRecalculation( true ), distribution( d ) {
-    
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) :
+    DynamicNode<valueType>( n ),
+    clamped( false ),
+    ignoreRedraw(false),
+    lnProb( RbConstants::Double::neginf ),
+    needsProbabilityRecalculation( true ),
+    distribution( d )
+{
     this->type = DagNode::STOCHASTIC;
     
-    // set myself as the DAG node of the distribution
-    distribution->setStochasticNode( this );
-    
-    // get the parameters from the distribution and add them as my parents in the DAG
-    const std::set<const DagNode*> distParents = distribution->getParameters();
-    
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it) 
+    // Get the parameters from the distribution and add us as a child of them in the DAG
+    const std::set<const DagNode*>& distParents = distribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
-        this->addParent( *it );
+        (*it)->addChild( this );
+        
+        // Increment the reference count
+        // We don't want this parent to get deleted while we are still alive
+        (*it)->incrementReferenceCount();
     }
+    
+    // Set us as the DAG node of the distribution
+    distribution->setStochasticNode( this );
 }
 
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ), clamped( n.clamped ), ignoreRedraw(n.ignoreRedraw), needsProbabilityRecalculation( true ), distribution( n.distribution->clone() ) {
-    
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) :
+    DynamicNode<valueType>( n ),
+    clamped( n.clamped ),
+    ignoreRedraw(n.ignoreRedraw),
+    needsProbabilityRecalculation( true ),
+    distribution( n.distribution->clone() )
+{
     this->type = DagNode::STOCHASTIC;
     
-    // set myself as the DAG node of the distribution
+    // Get the parameters from the distribution and add us as a child of them in the DAG
+    const std::set<const DagNode*>& distParents = distribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    {
+        (*it)->addChild( this );
+        
+        // Increment the reference count
+        // We don't want this parent to get deleted while we are still alive
+        (*it)->incrementReferenceCount();
+    }
+    
+    // Set us as the DAG node of the distribution
     distribution->setStochasticNode( this );
 }
 
 
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::~StochasticNode( void ) {
+
+    // Remove us as the child of the distribution parameters
+    const std::set<const DagNode*>& distParents = distribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    {
+        (*it)->removeChild( this );
+        
+        // Decrement the reference count and check whether we need to delete the DAG node
+        // The distribution does not do this for us
+        if ( (*it)->decrementReferenceCount() == 0)
+            delete (*it);
+    }
+    
     delete distribution;
 }
 
+
+/**
+ * Assignment operator. Make sure we deal with parent nodes correctly here.
+ */
+template<class valueType>
+RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>::operator=( const StochasticNode<valueType>& n )
+{
+    
+    if ( &n != this )
+    {
+        // Call base class assignment operator
+        DynamicNode<valueType>::operator=( n );
+        
+        // Remove us as the child of the distribution parameters
+        const std::set<const DagNode*>& distParents = distribution->getParameters();
+        for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+        {
+            (*it)->removeChild( this );
+            
+            // Decrement the reference count and check whether we need to delete the DAG node
+            // The distribution does not do this for us
+            if ( (*it)->decrementReferenceCount() == 0)
+                delete (*it);
+        }
+        
+        // Delete the distribution
+        delete distribution;
+        
+        // Recreate the distribution
+        distribution = n.function->clone();
+        
+        // Get the parameters from the new distribution and add us as child of them in the DAG
+        distParents = distribution->getParameters();
+        for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+        {
+            (*it)->addChild( this );
+            
+            // Increment the reference count
+            // We don't want this parent to get deleted while we are still alive
+            (*it)->incrementReferenceCount();
+        }
+        
+        // Set us as the DAG node of the new distribution
+        distribution->setDeterministicNode( this );
+    }
+    
+    return *this;
+}
 
 
 template<class valueType>
@@ -196,6 +289,17 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void ) {
 }
 
 
+/**
+ * Get the parents of this node. Simply ask the distribution to provide its parameters,
+ * no need to keep parents here.
+ */
+template<class valueType>
+std::set<const RevBayesCore::DagNode*> RevBayesCore::StochasticNode<valueType>::getParents( void ) const
+{
+    return distribution->getParameters();
+}
+
+
 template<class valueType>
 valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) {
     
@@ -259,6 +363,7 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &o ) const
 {
+    o << "_address      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Stochastic DAG node" << std::endl;
     o << "_distribution = " << "<unnamed>" << std::endl;
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
@@ -360,11 +465,32 @@ void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
     ignoreRedraw = tf;
 }
 
-template <class valueType>
-void RevBayesCore::StochasticNode<valueType>::swapParameter(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP) {
-    distribution->swapParameter(oldP, newP);
-}
 
+/**
+ * This function replaces the earlier swapParameter function. If we rely on the
+ * internal RevBayesCore::Distribution to manage our parents, we simply need to ask
+ * the distribution to swap its parameters, and then manage the connection of the
+ * parents (parameters) to this node.
+ */
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent )
+{
+    // We are sure to get into trouble if either one of these is NULL
+    if( oldParent == NULL || newParent == NULL )
+        throw RbException( "Attempt to swap NULL distribution parameter of RevBayesCore::StochasticNode" );
+    
+    // This throws an error if the oldParent cannot be found
+    distribution->swapParameter( oldParent, newParent );
+    
+    oldParent->removeChild( this );
+    if ( oldParent->decrementReferenceCount() == 0 )
+        delete ( oldParent );
+    
+    newParent->addChild( this );
+    newParent->incrementReferenceCount();
+    
+    this->touch();
+}
 
 
 /** touch this node for recalculation */
@@ -387,11 +513,18 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher ) {
 }
 
 
-/** unclamp this node */
+/**
+ * Unclamp this node. If I understand this correctly, we
+ * can just set the clamped flag to false if we keep the
+ * current value. We do not need to tell anyone that we
+ * have changed value because we really haven't.
+ */
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::unclamp( void )
 {
-    throw RbException( "Unclamping not supported yet" );
+    clamped = false;
 }
+
+
 #endif
 

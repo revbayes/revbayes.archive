@@ -91,9 +91,9 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
             {
                 
                 if (this->dagNode->getValue().isHomologyEstablished() == true)
-                    numChar->push_back( new Natural( this->dagNode->getValue().getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfCharacters() ) );
                 else
-                    numChar->push_back( new Natural( this->dagNode->getValue().getTaxonData(i).getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( this->dagNode->getValue().getTaxonData(i).getNumberOfCharacters() ) );
                 
             }
             

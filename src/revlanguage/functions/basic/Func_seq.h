@@ -88,7 +88,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_seq<valType>::execu
     ModelVector<valType> *seq = new ModelVector<valType>();
     while ( (val >= from && val <= to) || (val <= from && val >= to) )
     {
-        seq->push_back( new valType( val ) );
+        seq->push_back( valType( val ) );
         val += by;
     }
     

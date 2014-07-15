@@ -49,11 +49,11 @@ RevPtr<Variable> Func_range::execute( void ) {
     ModelVector<Integer> *range = new ModelVector<Integer>();
     if (f < l) {
         for ( int i = f; i <= l; i++ )
-            range->push_back( new Integer(i) );
+            range->push_back( Integer(i) );
     }
     else {
         for ( int i = f; i >= l; i-- )
-            range->push_back( new Integer(i) );
+            range->push_back( Integer(i) );
     }
     
     return new Variable( range );

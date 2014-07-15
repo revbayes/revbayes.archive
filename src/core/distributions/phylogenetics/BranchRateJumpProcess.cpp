@@ -32,7 +32,7 @@ BranchRateJumpProcess::BranchRateJumpProcess(TypedDistribution<double> *d, const
     addParameter( lambda );
     addParameter( r );
     
-    const std::set<const DagNode*>& pars = valueDistribution->getParameters();
+    const std::set<const DagNode*> pars = valueDistribution->getParameters();
     // add the parameters of the distribution
     for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it) 
     {
