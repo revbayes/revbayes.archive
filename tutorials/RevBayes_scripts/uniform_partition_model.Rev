@@ -39,7 +39,7 @@ Q := gtr(er,sf)                                                                 
 shape_prior <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
 shape ~ dnExponential( shape_prior )
 # Get the vector of normalized, discretized gamma rates for 4 categories
-norm_gamma_rates := discretizeGamma( 4, shape )
+norm_gamma_rates := discretizeGamma( shape, 4 )
 
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
 moves[3] <- mvScale(shape, lambda=1.0, tune=true, weight=1.0)

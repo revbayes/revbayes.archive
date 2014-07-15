@@ -48,6 +48,7 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
 //        argumentRules.push_back( new ArgumentRule( "nodevals", true, Vector<Real>::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "mvtnodevals", true, RealMatrix::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
         
         rulesSet = true;
@@ -102,10 +103,12 @@ RevObject* Func_expBranchTree::execute() {
 
     RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* mvtval = static_cast<const RealMatrix &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &>( args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* offset = static_cast<const Real &>( args[2].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &>( args[3].getVariable()->getRevObject() ).getDagNode();
 
 //    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, val, mvtval, traitindex );
-    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, mvtval, traitindex );
+    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, mvtval, offset, traitindex );
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
@@ -136,6 +139,14 @@ void Func_expBranchTree::printValue(std::ostream& o) const {
     o << ", ";
 */    
     o << "mvtnodevals=";
+    if ( args[1].getVariable() != NULL ) {
+        o << args[1].getVariable()->getName();
+    } else {
+        o << "?";
+    }
+    o << ", ";
+    
+    o << "offset=";
     if ( args[2].getVariable() != NULL ) {
         o << args[2].getVariable()->getName();
     } else {

@@ -1,0 +1,11 @@
+
+# covariance or precision matrix (2x2)
+# of scale matrix = I_2 and 4 degrees of freedom
+
+"create omega"
+
+omega ~ wishart(dim=2,kappa=1,df=4)
+
+"omega OK"
+
+
