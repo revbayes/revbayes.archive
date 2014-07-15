@@ -44,6 +44,7 @@
 #include "ScaleProposal.h"
 #include "ScreenMonitor.h"
 #include "SimplexMove.h"
+#include "SlidingMove.h"
 #include "SubtreeScale.h"
 #include "TestDPPRelClock.h"
 #include "TimeTree.h"
@@ -64,6 +65,9 @@ TestDPPRelClock::~TestDPPRelClock() {
 }
 
 bool TestDPPRelClock::run( void ) {
+    
+    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
+    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -81,8 +85,10 @@ bool TestDPPRelClock::run( void ) {
 
 	//   Constant nodes
 	ConstantNode<double> *dLambda = new ConstantNode<double>("div_rate", new double(1.0 / 5.0));		// Exponential rate for prior on div
-	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
-	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
+//	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
+//	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
+	ConstantNode<double> *turnA   = new ConstantNode<double>("turn.uni_min", new double(0.0));			// Uniform distribution min
+	ConstantNode<double> *turnB   = new ConstantNode<double>("turn.uni_max", new double(1.0));				// Uniform distribution max
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
 //	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(trees[0]->getRoot().getAge()*1.5));
 //	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(10.0));
@@ -91,9 +97,8 @@ bool TestDPPRelClock::run( void ) {
 	//   Stochastic nodes
 //    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
-//	ConstantNode<double> *turnA   = new ConstantNode<double>("turn.uni_min", new double(0.0));			// Uniform distribution min
-//	ConstantNode<double> *turnB   = new ConstantNode<double>("turn.uni_max", new double(1.0));				// Uniform distribution max
-    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
+    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new UniformDistribution(turnA, turnB));
+//    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
 
 	//   Deterministic nodes
 	//    birthRate = div / (1 - turn)
@@ -118,7 +123,7 @@ bool TestDPPRelClock::run( void ) {
 	size_t numBranches = 2 * data[0]->getNumberOfTaxa() - 2;
 
 	// The prior mean number of rate categories induces an expected concentration parameter of ~meanCP
-	double priorMean = 3.0;
+	double priorMean = 5.0;
 	double meanCP = RbStatistics::Helper::dppConcParamFromNumTables(priorMean, (double)numBranches);
 	
 	// Setting up the hyper prior on the concentratino parameter
@@ -145,10 +150,10 @@ bool TestDPPRelClock::run( void ) {
 //	ConstantNode<double> *crL  = new ConstantNode<double>("CR.gammL", new double(100.0) );
 //	StochasticNode<double> *clockRate  = new StochasticNode<double>("clockRate", new GammaDistribution(crA, crL) );
 
-	ConstantNode<double> *crInv  = new ConstantNode<double>("invCr", new double(1.0) );
-	DeterministicNode<double> *scaleRate = new DeterministicNode<double>("scaleRate", new BinaryDivision<double, double, double>(crInv, treeHeight));
-
-	DeterministicNode<std::vector<double> > *branchSubRates = new DeterministicNode< std::vector<double> >("branchSRs", new VectorDoubleProductStatistic(branchRates, scaleRate));
+//	ConstantNode<double> *crInv  = new ConstantNode<double>("invCr", new double(1.0) );
+//	DeterministicNode<double> *scaleRate = new DeterministicNode<double>("scaleRate", new BinaryDivision<double, double, double>(crInv, treeHeight));
+//
+//	DeterministicNode<std::vector<double> > *branchSubRates = new DeterministicNode< std::vector<double> >("branchSRs", new VectorDoubleProductStatistic(branchRates, scaleRate));
     
 //    ConstantNode<double> *tPoisL = new ConstantNode<double>("tp", new double(1.0));
 //    TypedDistribution<int> *pois = new PoissonDistribution(tPoisL);
@@ -172,7 +177,7 @@ bool TestDPPRelClock::run( void ) {
 	// ####### Gamma Rate Het. ######
 	
 	ConstantNode<double> *shapePr = new ConstantNode<double>("gammaShPr", new double(0.5));
-	StochasticNode<double> *srAlpha = new StochasticNode<double>("siteRates.alpha", new ExponentialDistribution(shapePr));
+	ContinuousStochasticNode *srAlpha = new ContinuousStochasticNode("siteRates.alpha", new ExponentialDistribution(shapePr));
     ConstantNode<double> *q1 = new ConstantNode<double>("q1", new double(0.125) );
     DeterministicNode<double> *q1Value = new DeterministicNode<double>("q1_value", new QuantileFunction(q1, new GammaDistribution(srAlpha, srAlpha) ) );
     ConstantNode<double> *q2 = new ConstantNode<double>("q2", new double(0.375) );
@@ -196,12 +201,12 @@ bool TestDPPRelClock::run( void ) {
 	std::cout << " ** root age " << trees[0]->getRoot().getAge() << std::endl;
 
     GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
-//	phyloCTMC->setClockRate( branchRates );
-	phyloCTMC->setClockRate( branchSubRates );
+    phyloCTMC->setClockRate( branchRates );
+//	phyloCTMC->setClockRate( branchSubRates );
     phyloCTMC->setRateMatrix( q );
 	phyloCTMC->setSiteRates( siteRatesNormed );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
-//	charactermodel->clamp( data[0] );
+	charactermodel->clamp( data[0] );
 	
 	std::cout << " branch rates: " << branchRates->getValue() << std::endl;
 	std::cout << " diversification: " << div->getValue() << std::endl;
@@ -211,7 +216,7 @@ bool TestDPPRelClock::run( void ) {
 
 	/* add the moves */
     std::vector<Move*> moves;
-    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
+    moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 //    moves.push_back( new NarrowExchange( tau, 10.0 ) );
@@ -229,8 +234,7 @@ bool TestDPPRelClock::run( void ) {
     moves.push_back( new DPPScaleCatValsMove( branchRates, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( branchRates, 4, 2.0 ) );
     moves.push_back( new DPPGibbsConcentrationMove( cp, numCats, dpA, dpB, (int)numBranches, 2.0 ) );
-    
-//    moves.push_back( new DPPAllocateAuxGibbsMove<int>(poiVals, 4, 2.0) );
+    moves.push_back( new SlidingMove( srAlpha, 0.25, false, 1.0 ) );
 	
     // add some tree stats to monitor
 	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
@@ -243,6 +247,8 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( numCats );
     monitoredNodes.push_back( meanBrRate );
     monitoredNodes.push_back( cp );
+    monitoredNodes.push_back( div );
+    monitoredNodes.push_back( srAlpha );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "  " ) );
  
 	monitoredNodes.push_back( div );
@@ -253,22 +259,22 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( er );
     monitoredNodes.push_back( srAlpha );
  	monitoredNodes.push_back( branchRates );
- 	monitoredNodes.push_back( scaleRate );
- 	monitoredNodes.push_back( branchSubRates );
+// 	monitoredNodes.push_back( scaleRate );
+// 	monitoredNodes.push_back( branchSubRates );
 
-	std::string logFN = "bears/RBDPP_bears_rel_2_pr.log";
+	std::string logFN = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/rb_tt_CLK_pr.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 
-    std::set<DagNode*> monitoredNodes2;
-    monitoredNodes2.insert( tau );
-
-	std::string treFN = "bears/RBDPP_bears_rel_2_pr.tre";
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
+//    std::set<DagNode*> monitoredNodes2;
+//    monitoredNodes2.insert( tau );
+//
+//	std::string treFN = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/rb_tt_CLK_pr.trees";
+//    monitors.push_back( new FileMonitor( monitoredNodes2, 10, treFN, "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
     
-	mcmcGenerations = 30000;
+	mcmcGenerations = 3000;
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
