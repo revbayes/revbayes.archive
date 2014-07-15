@@ -143,7 +143,7 @@ treatAmbiguousAsGaps( true ),
 tipsInitialized( false )
 {
     
-    // add the paramoms to the parents list
+    // add the parameters to the parents list
     this->addParameter( tau );
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     

@@ -142,7 +142,6 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     siteRates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
-//    distancePower               = new ConstantNode<double>("distancePower", new double(0.0));
     tipProbs.clear();
     redrawCount                 = 0;
     
@@ -228,7 +227,6 @@ template<class charType, class treeType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
 //    return 0.0;
-    
     size_t nodeIndex = node.getIndex();
     double lnL = 0.0;
 
@@ -257,6 +255,12 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         double startAge = currAge;
         double endAge = node.getAge();
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
+        
+//        if (nodeIndex==1)
+//        {
+//            std::vector<double> glr = rm.getHomogeneousGainLossRates();
+//            std::cout << "glr " << glr[0] << " " << glr[1] << "\n";
+//        }
 
         // handle stratified/epoch models
         const std::vector<double>& epochs = rm.getEpochs();
@@ -611,7 +615,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
         
         // for sampling probs
         const std::vector<CharacterEvent*>& nodeChildState = this->histories[node.getIndex() ]->getChildCharacters();
-        std::cout << "**\n";
+
         // to update
         std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
