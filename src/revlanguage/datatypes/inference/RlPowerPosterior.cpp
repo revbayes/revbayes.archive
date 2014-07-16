@@ -39,7 +39,7 @@ void PowerPosterior::constructInternalObject( void ) {
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
     const VectorRbPointer<Move>&                rlmvs   = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() );
-    RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getInternalValue();
+    RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getValue();
     const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
