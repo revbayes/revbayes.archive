@@ -172,7 +172,8 @@ const RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<v
 
 
 template<class valueType>
-double RevBayesCore::StochasticNode<valueType>::getLnProbability( void ) {
+double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
+{
     
     if ( needsProbabilityRecalculation ) 
     {
@@ -184,19 +185,21 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void ) {
         needsProbabilityRecalculation = false;
     }
     
-    return this->heat*lnProb;
+    return lnProb;
 }
 
 
 template<class valueType>
-double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void ) {
+double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
+{
     
     return getLnProbability() - storedLnProb;
 }
 
 
 template<class valueType>
-valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) {
+valueType& RevBayesCore::StochasticNode<valueType>::getValue( void )
+{
     
     return distribution->getValue();
 }

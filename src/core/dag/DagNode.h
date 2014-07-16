@@ -101,7 +101,6 @@ namespace RevBayesCore {
         
         // members
         mutable std::set<DagNode*>                                  children;                                                                       //!< The children in the model graph of this node
-        double                                                      heat;                                                                           //!< The heat that will be applied to the likelihood function
         std::string                                                 name;
         std::set<const DagNode*>                                    parents;                                                                        //!< The parents in the DAG of this node
         std::set<size_t>                                            touchedElements;
