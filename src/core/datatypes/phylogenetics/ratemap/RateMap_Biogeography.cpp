@@ -51,17 +51,12 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     epochs = m.epochs;
     numEpochs = m.numEpochs;
     epochOffset = m.epochOffset;
-//    extinctionValues = m.extinctionValues;
-//    dispersalValues = m.dispersalValues;
     adjacentAreaVector = m.adjacentAreaVector;
     availableAreaVector = m.availableAreaVector;
     
     useAreaAvailable = m.useAreaAvailable;
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
-    
-//    inboundDispersalValues = m.inboundDispersalValues;
-//    useUnnormalizedRates = m.useUnnormalizedRates;
     
     geographyRateModifier = m.geographyRateModifier;
     useGeographyRateModifier = m.useGeographyRateModifier;
@@ -94,12 +89,8 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         epochs = r.epochs;
         numEpochs = r.numEpochs;
         epochOffset = r.epochOffset;
-//        extinctionValues = r.extinctionValues;
-//        dispersalValues = r.dispersalValues;
         adjacentAreaVector = r.adjacentAreaVector;
         availableAreaVector = r.availableAreaVector;
-//        inboundDispersalValues = r.inboundDispersalValues;
-//        useUnnormalizedRates = r.useUnnormalizedRates;
         
         geographyRateModifier = r.geographyRateModifier;
         useGeographyRateModifier = r.useGeographyRateModifier;
@@ -167,8 +158,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         // get dispersal and extinction rates for site
         size_t idx = this->numCharacters * epochIdx + charIdx;
         
-        double dispersalRate  = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
-        double extinctionRate = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
+        double dispersalRate  = ( (availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
+        double extinctionRate = ( (availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
         
         // get age of start of next oldest epoch
         double epochAge = epochs[ epochIdx ];
@@ -207,6 +198,10 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         P[0][1] = p00 * q01 + p01 * q11;
         P[1][0] = p10 * q00 + p11 * q10;
         P[1][1] = p10 * q01 + p11 * q11;
+        
+//        std::cout << P[0][0] << "," << P[0][1] << ";" << P[1][0] << "," << P[1][1] << "\n";
+        
+        
         
         if (!stop)
         {

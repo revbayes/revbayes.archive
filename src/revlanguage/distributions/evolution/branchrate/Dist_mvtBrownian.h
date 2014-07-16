@@ -45,7 +45,7 @@ namespace RevLanguage {
     private:
         
         RevPtr<const Variable>                          tree;
-        RevPtr<const Variable>                          omega;
+        RevPtr<const Variable>                          sigma;
  //       RevPtr<const Variable>                          rootval;
         
     };

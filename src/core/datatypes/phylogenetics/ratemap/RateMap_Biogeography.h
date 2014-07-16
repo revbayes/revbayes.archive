@@ -63,9 +63,6 @@ namespace RevBayesCore {
         size_t                                      numOn(const std::vector<CharacterEvent*>& s) const;
         size_t                                      numOn(const std::vector<CharacterEvent*>& s, double age) const;
         unsigned                                    getEpochIndex(double age) const;
-//        void                                        setInboundDispersal(const std::vector<double>& v);
-//        void                                        setExtinctionValues(const std::vector<double>& v);
-
         size_t                                      branchOffset;
 
         double                                      homogeneousClockRate;
@@ -80,8 +77,6 @@ namespace RevBayesCore {
         std::vector<double>                         epochs;
         size_t                                      numEpochs;
         size_t                                      epochOffset;
-//        std::vector<double>                         dispersalValues;
-//        std::vector<double>                         extinctionValues;
         std::vector<double>                         adjacentAreaVector;
         std::vector<double>                         availableAreaVector;
 

@@ -54,7 +54,7 @@ namespace RevLanguage {
         
         // Basic utility functions 
         VectorAbstractElement*                          clone(void) const;                                              //!< Clone object
-        RevObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        RevObject*                                      convertTo(const TypeSpec& type) const;                          //!< Convert to type
         static const std::string&                       getClassName(void);                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
@@ -66,7 +66,7 @@ namespace RevLanguage {
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        RevObject*                                      getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
         void                                            push_back(const rlType &x);                                     //!< Append element to end
         void                                            push_back(elementType *x);                                      //!< Append element to end
         void                                            push_front(const rlType &x);                                    //!< Append element to end

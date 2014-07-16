@@ -79,7 +79,7 @@ RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::Bioge
 }
 
 template<class charType, class treeType>
-RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal(const BiogeographyPathRejectionSampleProposal& m) : PathRejectionSampleProposal<charType,treeType> (m.n, m.t, m.q, m.l, m.nd)
+RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::BiogeographyPathRejectionSampleProposal(const BiogeographyPathRejectionSampleProposal& m) : PathRejectionSampleProposal<charType,treeType> (m.ctmc, m.tau, m.qmap, m.lambda, m.node)
 {
     if (this != &m)
     {
