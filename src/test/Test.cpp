@@ -123,7 +123,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         TestACLNRatesGen testACLNG = TestACLNRatesGen("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
 		
-		testACLNG.run();
+//		testACLNG.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }

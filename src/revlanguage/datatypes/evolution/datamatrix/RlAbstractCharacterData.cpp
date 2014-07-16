@@ -10,21 +10,27 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(), methods() {
+AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(),
+    methods()
+{
     
     initMethods();
     
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ), methods() {
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ),
+    methods()
+{
     
     initMethods();
     
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ), methods() {
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ),
+    methods()
+{
     
     initMethods();
     
@@ -32,14 +38,26 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBaye
 
 
 
-AbstractCharacterData* AbstractCharacterData::clone() const {
+AbstractCharacterData& AbstractCharacterData::add(const RevLanguage::AbstractCharacterData &d)
+{
+    dagNode->getValue().add( d.getValue() );
+    
+    // return a reference to myself
+    return *this;
+}
+
+
+
+AbstractCharacterData* AbstractCharacterData::clone() const
+{
     
     return new AbstractCharacterData( *this );
 }
 
 
 /* Map calls to member methods */
-RevObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args)
+{
     
     
     if (name == "chartype") 

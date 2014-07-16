@@ -27,7 +27,7 @@
 #include "Trace.h"
 #include "RlTrace.h"
 #include "RlUserInterface.h"
-#include "VectorRlPointer.h"
+#include "Vector.h"
 
 #include <map>
 #include <set>
@@ -141,11 +141,11 @@ RevObject* Func_readTrace::execute( void ) {
         }
     }
     
-    VectorRlPointer<Trace> *rv = new VectorRlPointer<Trace>();
-    for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it) {
-        Trace *t = new Trace( *it );
-        t->computeStatistics();
-        rv->push_back( t );
+    Vector<Trace> *rv = new Vector<Trace>();
+    for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it)
+    {
+        it->computeStatistics();
+        rv->push_back( *it );
     }
     
     // return the vector of traces
@@ -216,9 +216,10 @@ const TypeSpec& Func_readTrace::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readTrace::getReturnType( void ) const {
+const TypeSpec& Func_readTrace::getReturnType( void ) const
+{
     
-    static TypeSpec returnTypeSpec = VectorRlPointer<Trace>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = Vector<Trace>::getClassTypeSpec();
     return returnTypeSpec;
 }
 
