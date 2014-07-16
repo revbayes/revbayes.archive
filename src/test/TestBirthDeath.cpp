@@ -64,12 +64,12 @@ bool TestBirthDeath::run( void ) {
     std::cout << "tau-clamped:\t" << tau->getValue() << std::endl;
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(lambda, 1.0), 1, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(mu, 1.0), 1, true ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( lambda );
     monitoredNodes.insert( mu );
@@ -90,18 +90,6 @@ bool TestBirthDeath::run( void ) {
     delete b;
     delete c;
     delete tau;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
-//    for (std::vector<TimeTree*>::iterator it = trees.begin(); it != trees.end(); ++it) {
-//        const TimeTree *theTree = *it;
-//        delete theTree;
-//    }
     
     return true;
 }

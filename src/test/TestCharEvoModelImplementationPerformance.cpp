@@ -81,12 +81,12 @@ bool TestCharEvoModelImplementationPerformance::run( void ) {
     
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SimplexSingleElementScale( er, 10.0, true, 6.0 ) );
     moves.push_back( new SimplexSingleElementScale( pi, 10.0, true, 4.0 ) );
         
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( pi );
     monitors.push_back( new ScreenMonitor( monitoredNodes, 100, "\t" ) );
