@@ -79,7 +79,7 @@ const MemberRules& Move_PrecisionMatrixSimple::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<Real>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, RealSymmetricMatrix::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         

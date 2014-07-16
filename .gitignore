@@ -18,6 +18,10 @@ boost_1_55_0/b2
 boost_1_55_0/bjam
 boost_1_55_0/tools/build/v2/engine/bin.macosxx86_64/b2
 boost_1_55_0/tools/build/v2/engine/bin.macosxx86_64/bjam
+boost_1_55_0/tools/build/v2/engine/bin.linuxx86_64/b2
+boost_1_55_0/tools/build/v2/engine/bin.linuxx86_64/bjam
 projects/xcode/revbayes.xcodeproj
 downloads
 .DS_Store
+TSWLatexianTemp_*
+*-converted-to.pdf

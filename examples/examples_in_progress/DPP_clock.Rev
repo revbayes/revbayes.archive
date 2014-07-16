@@ -2,9 +2,10 @@
 
 # read the data
 # the readCharacter function returns a vector of matrices. We just take the first one
-D <- readCharacterData(file="clock_test/test_data_clock_gtr.nex")[1]
-T <- readTrees("clock_test/true_calib_clk.tre")[1]
-
+data <- readCharacterData("clock_test/test_data_clock_gtr.nex")
+D <- data[1]
+trees <- readTrees("clock_test/true_rel_clk.tre")
+T <- trees[1]
 
 #######################################
 ###### birth-death process priors #####
@@ -25,10 +26,11 @@ birth_rate := diversification / (denom)
 death_rate := (turnover * diversification) / (denom)
 
 ## putting a Normal prior on the age of the origin
-mean_origin <- treeHeight(T) * 1.5	
-stdv_origin <- 20.0
-origin_time ~ dnNorm(mean_origin, stdv_origin)
-rp_ot := abs(origin_time) # there's no truncated normal, and origin must be RealPos for cBDP
+#mean_origin <- treeHeight(T) * 1.5	
+#stdv_origin <- 20.0
+#origin_time ~ dnNorm(mean_origin, stdv_origin)
+#rp_ot := abs(origin_time) # there's no truncated normal, and origin must be RealPos for cBDP
+rp_ot <- 1.5
 
 rho <- 1.0
 
@@ -72,10 +74,10 @@ n_cats := numUniqueInVector(branch_rates)
 ## create a deterministic node of scaled branch_rates
 ## this rescales the time units of the time tree so that the 
 ### branch rates aren't so tiny 
-scale_rate <- 0.01
-for (i in 1:branch_rates.size()) {
-	branch_subrates[i] := branch_rates[i] * scale_rate
-}
+#scale_rate <- 0.01
+#for (i in 1:branch_rates.size()) {
+#	branch_subrates[i] := branch_rates[i] * scale_rate
+#}
 
 ## a statistic to monitor
 mean_brate := mean(branch_rates) ## Mean func
@@ -92,33 +94,40 @@ er ~ dirichlet(e)
 # the rate matrix
 Q := gtr(er,pi)
 
+shape_prior <- 0.05
+shape ~ dnExponential( shape_prior )
+# Get the vector of normalized, discretized gamma rates for 4 categories
+norm_gamma_rates := discretizeGamma( shape, 4 )
+
 # the sequence evolution model
-phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
+#phySeq ~ phyloCTMC(tree=tau, Q=Q, siteRates=norm_gamma_rates, branchRates=branch_subrates, nSites=n_sites, type="DNA")
+phySeq ~ phyloCTMC(tree=tau, Q=Q, siteRates=norm_gamma_rates, branchRates=branch_rates, nSites=n_sites, type="DNA")
 
 # attach the data
 phySeq.clamp(D)
 
+mv_it <- 0
+moves[mv_it++] <- mvScale(diversification,lambda=1.0,tune=true,weight=1.0)
+moves[mv_it++] <- mvScale(turnover,lambda=1.0,tune=true,weight=2.0)
+moves[mv_it++] <- mvNodeTimeSlideUniform(tau, weight=30.0)
+#moves[mv_it++] <- mvRootTimeSlide(tau, delta=50.0, tune=true, weight=10.0)
 
-moves[1] <- mvScale(diversification,lambda=1.0,tune=true,weight=1.0)
-moves[2] <- mvScale(turnover,lambda=1.0,tune=true,weight=2.0)
-moves[3] <- mvNodeTimeSlideUniform(tau, weight=30.0)
-moves[4] <- mvRootTimeSlide(tau, delta=50.0, tune=true, weight=10.0)
+#moves[mv_it++] <- mvOriginTimeSlide(origin_time, tau, delta=50.0, tune=true, weight=10.0)
 
-moves[5] <- mvOriginTimeSlide(origin_time, tau, delta=50.0, tune=true, weight=10.0)
+moves[mv_it++] <- mvSimplexElementScale(pi, alpha=100.0, tune=true, weight=4.0)
+moves[mv_it++] <- mvSimplexElementScale(er, alpha=100.0, tune=true, weight=6.0)
 
-moves[6] <- mvSimplexElementScale(pi, alpha=100.0, tune=true, weight=4.0)
-moves[7] <- mvSimplexElementScale(er, alpha=100.0, tune=true, weight=6.0)
+moves[mv_it++] <- mvScale(shape, lambda=1.0, tune=true, weight=1.0)
 
-
-moves[8] <- mvDPPScaleCatVals(branch_rates, ln(2.0), 2.0)
-moves[9] <- mvDPPAllocateAuxGibbs(branch_rates, 4, 2.0)
-moves[10] <- mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
+moves[mv_it++] <- mvDPPScaleCatVals(branch_rates, ln(2.0), 2.0)
+moves[mv_it++] <- mvDPPAllocateAuxGibbs(branch_rates, 4, 2.0)
+moves[mv_it++] <- mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
 
 mymodel <- model(pi)
 
-monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10, separator = "\t")
-monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, separator = "\t", tau)
-monitors[3] <- screenmonitor(printgen=10, separator = "  ", pi)
+monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, separator = "	", tau)
+monitors[3] <- screenmonitor(printgen=10, separator = "	", mean_brate, n_cats)
 
 ### This works up until this point
 mymcmc <- mcmc(mymodel, monitors, moves)
