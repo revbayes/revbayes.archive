@@ -20,6 +20,7 @@
 
 #include "Move.h"
 #include "MoveSchedule.h"
+#include "RbVector.h"
 
 #include <vector>
 
@@ -28,13 +29,13 @@ namespace RevBayesCore {
     class RandomMoveSchedule : public MoveSchedule  {
         
     public:
-        RandomMoveSchedule(const std::vector<Move*> &m);                                                                                                                                         //!< Default constructor
+        RandomMoveSchedule(RbVector<Move> *m);                                                                                                                                         //!< Default constructor
         virtual                                        ~RandomMoveSchedule(void);                                                                             //!< Destructor
         
         // pure virtual public methods
         RandomMoveSchedule*                             clone(void) const;
         double                                          getNumberMovesPerIteration(void) const;
-        Move*                                           nextMove(unsigned long g);
+        Move&                                           nextMove(unsigned long g);
 
     private:
         

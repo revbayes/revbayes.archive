@@ -90,6 +90,9 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
             
             double x1 = mvtnodeval->getValue()[index][getTraitIndex()] + offset->getValue();
             double x2 = mvtnodeval->getValue()[upindex][getTraitIndex()] + offset->getValue();
+            if (from.getParent().isRoot())  {
+                x2 = offset->getValue();
+            }
             double y = 0.5 * (exp(x1) + exp(x2));
         
             // we store this val here

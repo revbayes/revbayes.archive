@@ -33,7 +33,7 @@ using namespace RevBayesCore;
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons) : MonteCarloSampler(m,mvs,mons)
+Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MonteCarloSampler(m,mvs,mons)
 {
     
 }
@@ -63,7 +63,7 @@ void Mcmc::monitor(unsigned long g)
     // Monitor
     for (size_t i = 0; i < monitors.size(); i++) 
     {
-        monitors[i]->monitor( g );
+        monitors[i].monitor( g );
     }
     
 }
@@ -89,8 +89,8 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
 #endif
 
         // Get the move
-        Move* theMove = schedule->nextMove( generation );
-        theMove->perform( chainHeat, false);
+        Move& theMove = schedule->nextMove( generation );
+        theMove.perform( chainHeat, false);
         
 #ifdef DEBUG_MCMC
         double lnProb = 0.0;
@@ -120,7 +120,7 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
         
         if ( fabs(lnProb - touchedLnProb) > 1E-8 )
         {
-            std::cout << "Failure occurred after move:\t" << theMove->getMoveName() << std::endl;
+            std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
             throw RbException("Error in MCMC probability computation.");
         }
 #endif
@@ -173,9 +173,9 @@ void Mcmc::run(size_t kIterations) {
     }
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
+    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        (*it)->resetCounters();
+        it->resetCounters();
     }
     
     // Run the chain

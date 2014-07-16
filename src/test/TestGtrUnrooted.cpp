@@ -112,7 +112,7 @@ bool TestGtrUnrooted::run( void ) {
     
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
@@ -124,7 +124,7 @@ bool TestGtrUnrooted::run( void ) {
     }
         
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     //    monitoredNodes.insert( er );
     //    monitoredNodes.insert( pi );
@@ -157,14 +157,6 @@ bool TestGtrUnrooted::run( void ) {
     delete a;
     //    delete b;
     //    delete c;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     std::cout << "Finished GTR model test." << std::endl;
     

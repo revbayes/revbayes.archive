@@ -212,7 +212,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     ConstantNode<double> *one = new ConstantNode<double>("one", new double(1.0) );
     DeterministicNode<double> *rate = new DeterministicNode<double>("rate", new BinaryDivision<double, double, double>(one,scale));
  
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     //Move on population size prior distribution scale
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(scale, 1.0), 2, true ) );
 
@@ -329,7 +329,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
     
     
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     monitors.push_back( new ModelMonitor( 10, "TestMultispeciesCoalescentWithSequences.p", "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );

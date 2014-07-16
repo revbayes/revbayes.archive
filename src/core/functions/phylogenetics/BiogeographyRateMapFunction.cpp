@@ -18,7 +18,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : T
     heterogeneousGainLossRates          = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
-    geographyRateModifier      = NULL;
+    geographyRateModifier               = NULL;
     
     branchHeterogeneousClockRates       = false;
     branchHeterogeneousGainLossRates    = false;

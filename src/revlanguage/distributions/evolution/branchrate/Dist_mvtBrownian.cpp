@@ -33,11 +33,11 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om  = static_cast<const RealSymmetricMatrix&>( omega->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* sig  = static_cast<const RealSymmetricMatrix&>( sigma->getRevObject() ).getDagNode();
 //    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const Vector<Real>&>( rootval->getRevObject() ).getDagNode();
     
 //    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
-    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om );
+    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, sig );
     
     return process;
 
@@ -72,7 +72,7 @@ const MemberRules& Dist_mvtBrownian::getMemberRules(void) const {
     if ( !rulesSet )
     {
         dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "sigma", true, RealSymmetricMatrix::getClassTypeSpec() ) );
 //        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }
@@ -106,9 +106,9 @@ const TypeSpec& Dist_mvtBrownian::getTypeSpec( void ) const {
 
      o << ",";
      
-     o << "omega=";
-     if ( omega != NULL ) {
-         o << omega->getName();
+     o << "sigma=";
+     if ( sigma != NULL ) {
+         o << sigma->getName();
      } else {
          o << "?";
      }
@@ -135,9 +135,9 @@ void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const Rev
     {
         tree = var;
     }
-    else if ( name == "omega" )
+    else if ( name == "sigma" )
     {
-        omega = var;
+        sigma = var;
     }
     /*
     else if ( name == "rootval" )

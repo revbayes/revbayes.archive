@@ -34,10 +34,10 @@ void Mcmc::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new MCMC object
-    const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
-    const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
+    const RevBayesCore::Model&                              mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::Move>&       mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::Monitor>&    mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const std::string &                                     sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     value->setScheduleType( sched );
 }

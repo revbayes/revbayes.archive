@@ -41,7 +41,7 @@ bool TestBayesFactor::run( void ) {
     
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SlidingMove( p, 1.0, false, 1.0 ) );
         
     /* instantiate the model */
@@ -79,10 +79,6 @@ bool TestBayesFactor::run( void ) {
 //    delete p;
 //    delete l;
 //    delete u;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
     
     return true;
 }

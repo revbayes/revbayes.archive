@@ -38,7 +38,8 @@ void PowerPosterior::constructInternalObject( void ) {
     
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
+    const VectorRbPointer<Move>&                rlmvs   = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() );
+    RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getValue();
     const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
@@ -48,9 +49,11 @@ void PowerPosterior::constructInternalObject( void ) {
     {
         beta = static_cast<const Vector<RealPos> &>( powers->getRevObject() ).getValue();
     }
-    else if( cats->getRevObject() != RevNullObject::getInstance() ){
+    else if( cats->getRevObject() != RevNullObject::getInstance() )
+    {
         int k = static_cast<const Natural &>( cats->getRevObject() ).getValue();
-        for (int i = k; i >= 0; --i) {
+        for (int i = k; i >= 0; --i)
+        {
             double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
             beta.push_back( b );
         }
@@ -58,7 +61,8 @@ void PowerPosterior::constructInternalObject( void ) {
     else
     {
         int k     = 100;
-        for (int i = k; i >= 0; --i) {
+        for (int i = k; i >= 0; --i)
+        {
             double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
             beta.push_back( b );
         }
