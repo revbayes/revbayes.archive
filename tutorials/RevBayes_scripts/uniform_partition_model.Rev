@@ -14,34 +14,37 @@
 
 ### Read in sequence data for both genes
 
-data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
-data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+D <- readCharacterData("data/conifer_atpB.nex")
+data_atpB <- D[1]
+D <- readCharacterData("data/conifer_rbcL.nex")
+data_rbcL <- D[1]
 
 ### Create concatenated data matrix
 data <- data_atpB + data_rbcL
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data.ntaxa()
-n_sites <- data.nchar()[1]
+ns <- data.nchar()
+n_sites <- ns[1]
 names <- data.names()
-n_branches <- 2 * n_species - 2
+n_branches <- 2 * n_species - 3
 
 #### specify the GTR+G substitution model applied uniformly to all sites ###
-er_prior <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+er_prior <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(er_prior)
-moves[1] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+moves[1] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 
 
-sf_prior <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+sf_prior <- v(1,1,1,1) 
 sf ~ dnDirichlet(sf_prior)
-moves[2] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+moves[2] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
 
 
 #### create a deterministic variable for the rate matrix ####
-Q := gtr(er,sf)                                                                                # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+Q := gtr(er,sf) 
 
 
-shape_prior <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+shape_prior <- 0.05
 shape ~ dnExponential( shape_prior )
 # Get the vector of normalized, discretized gamma rates for 4 categories
 norm_gamma_rates := discretizeGamma( shape, 4 )
@@ -56,14 +59,14 @@ moves[3] <- mvScale(shape, lambda=1.0, tune=true, weight=1.0)
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[4] <- mvNNI(topology, weight=1.0)
+moves[4] <- mvNNI(topology, weight=10.0)
 
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
 for (i in 1:n_branches) {
   # We use here the exponential distribution with rate 1.0 as the branch length prior
-  br_lens[i] ~ exponential(1.0)
+  br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[i+4] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
