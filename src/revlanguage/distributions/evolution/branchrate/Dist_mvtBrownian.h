@@ -13,13 +13,14 @@
 
 
 #include "MultivariateBrownianPhyloProcess.h"
+#include "RlMultivariatePhyloProcess.h"
 #include "RlTypedDistribution.h"
 #include "RealMatrix.h"
 #include "Real.h"
 
 namespace RevLanguage {
 
-    class Dist_mvtBrownian :  public TypedDistribution< RealMatrix  > {
+    class Dist_mvtBrownian :  public TypedDistribution< MultivariatePhyloProcess  > {
         
     public:
         Dist_mvtBrownian( void ) {};

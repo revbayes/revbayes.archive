@@ -130,6 +130,11 @@
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
 
+
+/* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
+#include "Move_MultivariatePhyloProcessTranslation.h"
+#include "Move_MultivariatePhyloProcessSliding.h"
+
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
 #include "Move_NarrowExchange.h"
@@ -488,6 +493,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
 
+        /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
+        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariatePhyloProcessTranslation() );
+        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariatePhyloProcessSliding() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );

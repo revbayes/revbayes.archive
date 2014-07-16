@@ -15,10 +15,11 @@
 #include "PrecisionMatrix.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
+#include "MultivariatePhyloProcess.h"
 
 namespace RevBayesCore {
     
-    class MultivariateBrownianPhyloProcess : public TypedDistribution<MatrixReal> {
+    class MultivariateBrownianPhyloProcess : public TypedDistribution<MultivariatePhyloProcess> {
         
     public:
         // constructor(s)
@@ -37,7 +38,8 @@ namespace RevBayesCore {
         double                                                  getMean(int k);
         double                                                  getStdev(int k);
         void                                                    recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n);
-
+        const TypedDagNode< TimeTree >*                         getTree() {return tau;}
+        
     private:
         // helper methods
         void                                                    simulate();
