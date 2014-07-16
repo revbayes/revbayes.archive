@@ -107,9 +107,9 @@ namespace RevBayesCore {
         TopologyNode*                           proposedTrunkNode;
 
         
-        PathRejectionSampleProposal<charType,treeType>* nodeProposal;
-        PathRejectionSampleProposal<charType,treeType>* leftProposal;
-        PathRejectionSampleProposal<charType,treeType>* rightProposal;
+        BiogeographyPathRejectionSampleProposal<charType,treeType>* nodeProposal;
+        BiogeographyPathRejectionSampleProposal<charType,treeType>* leftProposal;
+        BiogeographyPathRejectionSampleProposal<charType,treeType>* rightProposal;
         
         TransitionProbabilityMatrix nodeTpMatrix;
         TransitionProbabilityMatrix trunkTpMatrix;
@@ -162,9 +162,9 @@ sampleSiteIndexSet(true)
     nodes.insert(tau);
     nodes.insert(qmap);
     
-    nodeProposal  = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    leftProposal  = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    rightProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    nodeProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    leftProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    rightProposal = new BiogeographyPathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
     
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
@@ -210,9 +210,9 @@ sampleSiteIndexSet(true)
     nodes.insert(tau);
     nodes.insert(qmap);
     
-    nodeProposal  = new PathRejectionSampleProposal<charType,treeType>(*p);
-    leftProposal  = new PathRejectionSampleProposal<charType,treeType>(*p);
-    rightProposal = new PathRejectionSampleProposal<charType,treeType>(*p);
+    nodeProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(*p);
+    leftProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(*p);
+    rightProposal = new BiogeographyPathRejectionSampleProposal<charType,treeType>(*p);
     
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
@@ -458,7 +458,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     // propose new cladogenic state
     storedCladogenicState = p->getCladogenicState(*proposedTrunkNode);
     double u = GLOBAL_RNG->uniform01();
-    if (u < 0.5 || !p->useCladogenicEvents())
+    if (u < 0.5 || p->useCladogenicEvents() == false)
         proposedCladogenicState = 0;
     else if (u < 1.0)
         proposedCladogenicState = 1;

@@ -64,6 +64,40 @@ const ContinuousCharacterState& ContinuousTaxonData::operator[](size_t i) const
 }
 
 
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+ContinuousTaxonData& ContinuousTaxonData::add(const AbstractTaxonData &obsd)
+{
+    
+    const ContinuousTaxonData* rhs = dynamic_cast<const ContinuousTaxonData* >( &obsd );
+    if ( rhs == NULL )
+    {
+        throw RbException("Adding wrong character data type into TaxonData!!!");
+    }
+    
+    
+    return add( *rhs );
+}
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+ContinuousTaxonData& ContinuousTaxonData::add(const ContinuousTaxonData &obsd)
+{
+    
+    sequence.insert( sequence.end(), obsd.sequence.begin(), obsd.sequence.end() );
+    
+    // return a reference to this object
+    return *this;
+}
+
+
 
 /**
  * Push back a new character.

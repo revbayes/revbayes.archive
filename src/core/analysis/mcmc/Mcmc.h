@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class Mcmc : public MonteCarloSampler {
     
     public:
-        Mcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons);
+        Mcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons);
         virtual                                            ~Mcmc(void);                                                                             //!< Virtual destructor
         
         // public methods

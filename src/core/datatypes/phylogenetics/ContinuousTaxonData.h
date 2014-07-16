@@ -14,15 +14,17 @@ namespace RevBayesCore {
     class ContinuousTaxonData : public AbstractTaxonData {
         
     public:
-        ContinuousTaxonData(void);                                                                                    //!< Set type spec of container from type of elements
-        ContinuousTaxonData(const std::string &tname);                                                                //!< Set type spec of container from type of elements
+        ContinuousTaxonData(void);                                                                                  //!< Set type spec of container from type of elements
+        ContinuousTaxonData(const std::string &tname);                                                              //!< Set type spec of container from type of elements
         
         ContinuousCharacterState&               operator[](size_t i);                                               //!< Index op allowing change
         const ContinuousCharacterState&         operator[](size_t i) const;                                         //!< Const index op
         
         // TaxonData functions
+        ContinuousTaxonData&                    add(const AbstractTaxonData &d);                                    //!< Addition operator used for example in '+=' statements
+        ContinuousTaxonData&                    add(const ContinuousTaxonData &d);                                  //!< Addition operator used for example in '+=' statements
         void                                    addCharacter(const CharacterState &newChar );                       //!< Push back a new character
-        void                                    addCharacter(const ContinuousCharacterState &newChar );               //!< Push back a new character
+        void                                    addCharacter(const ContinuousCharacterState &newChar );             //!< Push back a new character
         const ContinuousCharacterState&         getCharacter(size_t index) const;                                   //!< Get the character at position index
         ContinuousCharacterState&               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         ContinuousCharacterState&               getElement(size_t i);                                               //!< Index op allowing change

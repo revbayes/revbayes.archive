@@ -75,11 +75,11 @@ bool TestNNI::run( void ) {
     
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new NearestNeighborInterchange( tau, 1.0 ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( tau );
     monitors.push_back( new FileMonitor( monitoredNodes, 1, "NNITest.tree", "\t" ) );

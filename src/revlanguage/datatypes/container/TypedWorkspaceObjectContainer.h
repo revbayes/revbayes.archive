@@ -34,6 +34,7 @@ namespace RevLanguage {
     public:
         // the value type definition
         typedef rbType valueType;
+        //        typedef typename rbType::valueType elementType;
         typedef typename rbType::iterator iterator;
         typedef typename rbType::const_iterator const_iterator;
         
@@ -51,8 +52,8 @@ namespace RevLanguage {
         void                                        replaceVariable(RevObject *newVar);                          //!< Replace the internal DAG node
         
         // function you might want to overwrite
-        virtual RevObject*                   convertTo(const TypeSpec& type) const;                          //!< Convert to type
-        virtual RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual RevObject*                          convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        virtual RevObject*                          executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
         
         // Container functions you should not have to override
@@ -61,14 +62,14 @@ namespace RevLanguage {
         void                                        clear(void);                                                    //!< Clear
         iterator                                    end(void);                                                      //!< Iterator to the end of the Vector
         const_iterator                              end(void) const;                                                //!< Const-iterator to the end of the Vector
-        int                                         findIndex(const RevObject& x) const;                     //!< Find the index if the element being equal to that one
-        //        const std::vector<elementType>&             getValue(void) const;                                           //!< Get the stl Vector of elements
+        int                                         findIndex(const RevObject& x) const;                            //!< Find the index if the element being equal to that one
+        // const elementType&                          getInternalValue(void) const;                                   //!< Get the stl Vector of elements
         void                                        pop_back(void);                                                 //!< Drop element at back
         void                                        pop_front(void);                                                //!< Drop element from front
         size_t                                      size(void) const;                                               //!< get the number of elements in the AbstractVector
         
         // Container functions you have to overwrite
-        virtual RevObject*                   getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
+        virtual RevObject*                          getElement(size_t index) = 0;                                   //!< Get element (non-const to return non-const element)
         
     protected:
         TypedWorkspaceObjectContainer(const TypeSpec &elemType);                                                                       //!< Set type spec of container from type of elements

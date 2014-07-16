@@ -12,6 +12,7 @@
 #include <cmath>
 #include "DistributionWishart.h"
 #include "RbException.h"
+#include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
@@ -53,7 +54,7 @@ double RbStatistics::Wishart::lnPdf(const PrecisionMatrix &omega0, size_t df, co
     z.update();
      
     if (! z.isPositive())    {
-        return -200;
+         return RbConstants::Double::neginf;
     }
     
     double ret = 0;
@@ -149,8 +150,7 @@ double RbStatistics::Wishart::lnPdf(double kappa, size_t df, const PrecisionMatr
     size_t dim = z.getDim();
     
     if (! z.isPositive())    {
-        // std::cerr << "not positive\n";
-        return -200;
+        return RbConstants::Double::neginf;
     }
     
     double ret = 0;
