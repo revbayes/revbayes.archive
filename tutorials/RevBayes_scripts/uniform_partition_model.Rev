@@ -29,15 +29,17 @@ n_sites <- ns[1]
 names <- data.names()
 n_branches <- 2 * n_species - 3
 
+mi <- 0
+
 #### specify the GTR+G substitution model applied uniformly to all sites ###
 er_prior <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(er_prior)
-moves[1] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 
 
 sf_prior <- v(1,1,1,1) 
 sf ~ dnDirichlet(sf_prior)
-moves[2] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
+moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
 
 
 #### create a deterministic variable for the rate matrix ####
@@ -50,7 +52,7 @@ shape ~ dnExponential( shape_prior )
 norm_gamma_rates := discretizeGamma( shape, 4 )
 
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
-moves[3] <- mvScale(shape, lambda=1.0, tune=true, weight=1.0)
+moves[mi++] <- mvScale(shape, lambda=1.0, tune=true, weight=1.0)
 
 
 
@@ -59,7 +61,7 @@ moves[3] <- mvScale(shape, lambda=1.0, tune=true, weight=1.0)
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[4] <- mvNNI(topology, weight=10.0)
+moves[mi++] <- mvNNI(topology, weight=10.0)
 
 
 #### Specify a prior and moves on the branch lengths #### 
@@ -69,7 +71,7 @@ for (i in 1:n_branches) {
   br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-  moves[i+4] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
+  moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
 
 
@@ -78,7 +80,8 @@ phylogeny := treeAssembly(topology, br_lens)
 
 
 # the sequence evolution model
-phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, nSites=n_sites, type="DNA")
+#phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, nSites=n_sites, type="DNA")
+phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, nSites=n_sites, type="DNA")
 
 # attach the data
 phyloSeq.clamp(data)
