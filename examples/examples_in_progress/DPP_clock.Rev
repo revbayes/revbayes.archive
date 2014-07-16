@@ -2,9 +2,9 @@
 
 # read the data
 # the readCharacter function returns a vector of matrices. We just take the first one
-data <- readCharacterData("clock_test/test_data_clock_gtr.nex")
+data <- readCharacterData("test_data_clock_gtr.nex")
 D <- data[1]
-trees <- readTrees("clock_test/true_rel_clk.tre")
+trees <- readTrees("true_rel_clk.tre")
 T <- trees[1]
 
 #######################################
@@ -135,7 +135,7 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 ### Error:	Cannot find node with name 'branch_rates' in the model but received a move working on it.
 
 mymcmc.burnin(generations=1000,tuningInterval=100)
-mymcmc.run(generations=10000)
+mymcmc.run(generations=100000)
 
 treetrace <- readTreeTrace("./dpp_rclock_test.trees")
 treetrace.summarize()
