@@ -375,7 +375,7 @@
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::AbstractCharacterData *rlan = (*dnc)[i];
+            const RevLanguage::AbstractCharacterData *rlan = &(*dnc)[i];
             RbData* newMatrix = NULL;
             
             // DNA
