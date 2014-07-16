@@ -281,18 +281,34 @@ RevBayes > log()
 %Next, load the sequences into the program using the \cl{execute} command.
 %\mbcl{execute conifer\_dna.nex}
 
-\bigskip
-\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
+%\bigskip
+%\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
 
+
+
+\bigskip
+\subsection{An Unpartitioned Analysis}\label{secUnif} 
+
+\textbf{\textit{Load Data}}
 
 First load in the sequences using the \cl{readCharacterData} function:
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]
+RevBayes > D <- readCharacterData("data/conifer_atpB.nex")RevBayes > data_atpB <- D[1]RevBayes > D <- readCharacterData("data/conifer_rbcL.nex")RevBayes > data_rbcL <- D[1]
 \end{lstlisting}
 \end{snugshade*}}
 
+\taha{Concatenate two datasets}
+
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data <- data_atpB + data_rbcL\end{lstlisting}\end{snugshade*}}
+
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data
+   Origination:                   conifer_atpB.nex
+   Number of taxa:                9
+   Number of characters:          2659
+   Number of included characters: 2659
+   Datatype:                      DNA\end{lstlisting}\end{snugshade*}}
 
 \taha{can we specify an outgroup?}
 
@@ -302,9 +318,7 @@ RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]
 %\mbcl{outgroup Ginkgo\_biloba}
 
 Next we will specify some useful variables based on our dataset. The variable \cl{data} has \textsl{member functions} that we can use to retrieve information. 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data.ntaxa()RevBayes > n_sites <- data.nchar()[1]RevBayes > names <- data.names()RevBayes > n_nodes <- 2 * n_species - 3\end{lstlisting}\end{snugshade*}}
-\bigskip
-\subsection{An Unpartitioned Analysis}\label{secUnif} 
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data.ntaxa()RevBayes > n_sites <- data.nchar()[1]RevBayes > names <- data.names()RevBayes > n_nodes <- 2 * n_species - 3\end{lstlisting}\end{snugshade*}}
 
 \textbf{\textit{The GTR Parameters}}
 
@@ -383,7 +397,7 @@ RevBayes > sf ~ dnDirichlet(sf_prior)
 And specify the simplex scale move:
 {\tt \small \begin{snugshade*}\begin{lstlisting}RevBayes > moves[2] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2)  \end{lstlisting}\end{snugshade*}}
 
-\taha{Now say something about the instantaneous rate matrix here}
+\taha{Now say something about the instantaneous rate matrix here and deterministic nodes}
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > Q := gtr(er,sf)\end{lstlisting}\end{snugshade*}}\textbf{\textit{Gamma-Distributed Site Rates}}
 
