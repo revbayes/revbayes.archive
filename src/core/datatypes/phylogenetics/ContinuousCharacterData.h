@@ -38,6 +38,8 @@ namespace RevBayesCore {
         void                                            clear(void);
         
         // CharacterData functions
+        ContinuousCharacterData&                        add(const ContinuousCharacterData &d);                                      //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData&                        add(const AbstractCharacterData &d);                                        //!< Addition operator used for example in '+=' statements
         void                                            addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                            addTaxonData(const ContinuousTaxonData &obs);                               //!< Add Continuous taxon data
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
@@ -49,6 +51,7 @@ namespace RevBayesCore {
         const std::string&                              getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                              getFilePath(void) const;                                                    //!< Returns the name of the file path the data came from
         const bool                                      getHomologyEstablished(void) const;                                         //!< Returns whether the homology of the characters has been established
+        size_t                                          getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
