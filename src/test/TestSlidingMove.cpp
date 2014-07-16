@@ -34,11 +34,11 @@ bool TestSlidingMove::run( void ) {
     ContinuousStochasticNode *x = new ContinuousStochasticNode( "x", new UniformDistribution(a, b) );
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SlidingMove( x, 1.0, 1.0, false ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     monitors.push_back( new FileMonitor( x, 1, "SlidingMoveTest.log", "\t" ) );
     
     /* instantiate the model */
@@ -53,14 +53,6 @@ bool TestSlidingMove::run( void ) {
     delete x;
     delete a;
     delete b;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     return true;
 }
