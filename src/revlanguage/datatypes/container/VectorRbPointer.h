@@ -120,7 +120,7 @@ rlType& RevLanguage::VectorRbPointer<rlType>::operator[]( size_t index ) {
 template <typename rlType>
 const rlType& RevLanguage::VectorRbPointer<rlType>::operator[]( size_t index ) const {
     
-    return *this->value[index];
+    return *this->languageVector[index];
 }
 
 
