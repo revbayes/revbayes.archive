@@ -60,7 +60,7 @@ void PowerPosteriorMcmc::run(size_t gen)
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     /* Run the chain */    
-    RandomMoveSchedule schedule = RandomMoveSchedule(moves);
+    RandomMoveSchedule schedule = RandomMoveSchedule(&moves);
     for (size_t i = 0; i < powers.size(); ++i)
     {
         double p = powers[i];

@@ -13,10 +13,10 @@
 
 using namespace RevBayesCore;
 
-SequentialMoveSchedule::SequentialMoveSchedule(const RbVector<Move> &s) : MoveSchedule( s ), currentMove( 0 ), usedPropOfCurrentMove( 0 ) {
+SequentialMoveSchedule::SequentialMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ), currentMove( 0 ), usedPropOfCurrentMove( 0 ) {
     
     movesPerIteration = 0.0;
-    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+    for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
     {
         movesPerIteration += it->getUpdateWeight();
     }
@@ -43,7 +43,7 @@ Move& SequentialMoveSchedule::nextMove( unsigned long gen )
     bool found = false;
     do {
         
-        double remainingWeight = moves[currentMove].getUpdateWeight() - usedPropOfCurrentMove;
+        double remainingWeight = (*moves)[currentMove].getUpdateWeight() - usedPropOfCurrentMove;
         if ( remainingWeight >= 1.0 )
         {
             usedPropOfCurrentMove++;
@@ -61,14 +61,14 @@ Move& SequentialMoveSchedule::nextMove( unsigned long gen )
             do
             {
                 currentMove++;
-                if ( currentMove >= moves.size())
+                if ( currentMove >= moves->size())
                 {
                     currentMove = 0;
                 }
-            } while ( !moves[currentMove].isActive( gen ) );
+            } while ( !(*moves)[currentMove].isActive( gen ) );
         }
         
     } while ( !found );
     
-    return moves[currentMove];
+    return (*moves)[currentMove];
 }
