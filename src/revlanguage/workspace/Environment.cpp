@@ -111,22 +111,22 @@ void Environment::addReferenceVariable( const std::string& name, const RevPtr<co
 
 
 /** Add variable to frame. */
-void Environment::addVariable( const std::string& n, const RevPtr<Variable>& theVar )
+void Environment::addVariable( const std::string& name, const RevPtr<Variable>& theVar )
 {
-    std::string name = n;
     
     /* Throw an error if the name string is empty. */
-    if ( n == "" )
+    if ( name == "" )
         throw RbException("Invalid attempt to add unnamed variable to frame.");
 
     /* Throw an error if the variable exists. Note that we cannot use the function
         existsVariable because that function looks recursively in parent frames, which
         would make it impossible to hide global variables. */
-    if (variableTable.find(name) != variableTable.end())
-        throw RbException("Variable " + name + " already exists in frame");
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
 
     /* Insert new variable in variable table */
     variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    theVar->setName( name );
 
 #ifdef DEBUG_WORKSPACE
     printf("Inserted \"%s\" in frame\n", name.c_str());
@@ -139,7 +139,7 @@ void Environment::addVariable( const std::string& n, const RevPtr<Variable>& the
 void Environment::addVariable(const std::string& name, RevObject* obj)
 {
     // Create a new variable object
-    RevPtr<Variable> var = RevPtr<Variable>( new Variable( obj ) );
+    RevPtr<Variable> var = new Variable( obj ) ;
 
     // Add the variable to the table
     addVariable( name, var );
