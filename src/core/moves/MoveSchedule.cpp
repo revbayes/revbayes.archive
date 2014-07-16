@@ -2,7 +2,8 @@
 
 using namespace RevBayesCore;
 
-MoveSchedule::MoveSchedule(const std::vector<Move*> &m ) : moves( m ) {
+MoveSchedule::MoveSchedule(const RbVector<Move> &m ) : moves( m )
+{
     
 }
 

@@ -74,10 +74,11 @@ RevLanguage::Func_rlvector<valType>* RevLanguage::Func_rlvector<valType>::clone(
 template <typename valType>
 RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
     
-    std::vector<typename valType::valueType*> params;
-    for ( size_t i = 0; i < args.size(); i++ ) {
+    std::vector<valType *> params;
+    for ( size_t i = 0; i < args.size(); i++ )
+    {
         const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
-        params.push_back( val.getValue().clone() );
+        params.push_back( val.clone() );
     }
     
     VectorRbPointer<valType> *theVector = new VectorRbPointer<valType>( params );

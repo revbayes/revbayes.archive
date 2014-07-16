@@ -7,6 +7,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbIterator.h"
 #include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "SequenctialMoveSchedule.h"
@@ -33,7 +34,7 @@ using namespace RevBayesCore;
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-MonteCarloSampler::MonteCarloSampler(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons) :
+MonteCarloSampler::MonteCarloSampler(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) :
     chainActive( true ),
     chainHeat( 1.0 ),
     chainIdx( 0 ),
@@ -71,8 +72,8 @@ MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) :
 {
     
     // temporary references
-    const std::vector<Monitor*>& mons = m.monitors;
-    const std::vector<Move*>& mvs = m.moves;
+    const RbVector<Monitor>& mons = m.monitors;
+    const RbVector<Move>& mvs = m.moves;
     
     
     // create an independent copy of the model, monitors and moves
@@ -86,20 +87,8 @@ MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) :
 /**
  * Destructor. Frees the DAG nodes (the model), moves, monitor and the move schedule.
  */
-MonteCarloSampler::~MonteCarloSampler(void) {
-    
-    // free the moves and monitors
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it)
-    {
-        Move *theMove = (*it);
-        delete theMove;
-    }
-    
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it)
-    {
-        Monitor *theMonitor = (*it);
-        delete theMonitor;
-    }
+MonteCarloSampler::~MonteCarloSampler(void)
+{
     
     // delete the move schedule
     delete schedule;
@@ -114,10 +103,10 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
     
     // reset the counters for the move schedules
     double movesPerIteration = 0.0;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it)
+    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        (*it)->resetCounters();
-        movesPerIteration += (*it)->getUpdateWeight();
+        it->resetCounters();
+        movesPerIteration += it->getUpdateWeight();
     }
     
     std::cout << "Running Monte Carlo Sampler while performing " << movesPerIteration << " proposals per iteration." << std::endl;
@@ -151,7 +140,7 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
             // tune the moves
             for (size_t i=0; i<moves.size(); i++)
             {
-                moves[i]->autoTune();
+                moves[i].autoTune();
             }
         }
         
@@ -194,7 +183,7 @@ double MonteCarloSampler::getModelLnProbability(void)
 }
 
 
-std::vector<Monitor*>& MonteCarloSampler::getMonitors(void)
+RbVector<Monitor>& MonteCarloSampler::getMonitors(void)
 {
     return monitors;
 }
@@ -374,7 +363,7 @@ void MonteCarloSampler::initializeMonitors(void)
 {
     for (size_t i=0; i<monitors.size(); i++)
     {
-        monitors[i]->setModel( &model );
+        monitors[i].setModel( &model );
     }
 }
 
@@ -391,7 +380,7 @@ void MonteCarloSampler::monitor(unsigned long g)
     // Monitor
     for (size_t i = 0; i < monitors.size(); i++)
     {
-        monitors[i]->monitor( g );
+        monitors[i].monitor( g );
     }
     
 }
@@ -416,8 +405,8 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
 #endif
         
         // Get the move
-        Move* theMove = schedule->nextMove( generation );
-        theMove->perform( chainHeat, false);
+        Move& theMove = schedule->nextMove( generation );
+        theMove.perform( chainHeat, false);
         
 #ifdef DEBUG_MCMC
         double lnProb = 0.0;
@@ -447,7 +436,7 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle) {
         
         if ( fabs(lnProb - touchedLnProb) > 1E-6 )
         {
-            std::cout << "Failure occurred after move:\t" << theMove->getMoveName() << std::endl;
+            std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
             throw RbException("Error in MonteCarloSampler probability computation.");
         }
 #endif
@@ -471,9 +460,9 @@ void MonteCarloSampler::printOperatorSummary(void) const {
     std::cerr << std::endl;
     std::cerr << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
     std::cerr << "===============================================================================================================================" << std::endl;
-    for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it)
+    for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        (*it)->printSummary(std::cerr);
+        it->printSummary(std::cerr);
     }
     
     std::cout << std::endl;
@@ -481,13 +470,13 @@ void MonteCarloSampler::printOperatorSummary(void) const {
 
 
 
-void MonteCarloSampler::replaceDag(const std::vector<Move *> &mvs, const std::vector<Monitor *> &mons)
+void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
 {
     
     // we need to replace the DAG nodes of the monitors and moves
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
-    for (std::vector<Move*>::const_iterator it = mvs.begin(); it != mvs.end(); ++it) {
-        Move *theMove = (*it)->clone();
+    for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it) {
+        Move *theMove = it->clone();
         std::set<DagNode*> nodes = theMove->getDagNodes();
         for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
             
@@ -513,9 +502,9 @@ void MonteCarloSampler::replaceDag(const std::vector<Move *> &mvs, const std::ve
         moves.push_back( theMove );
     }
     
-    for (std::vector<Monitor*>::const_iterator it = mons.begin(); it != mons.end(); ++it)
+    for (RbConstIterator<Monitor> it = mons.begin(); it != mons.end(); ++it)
     {
-        Monitor *theMonitor = (*it)->clone();
+        Monitor *theMonitor = it->clone();
         std::vector<DagNode*> nodes = theMonitor->getDagNodes();
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
@@ -583,9 +572,9 @@ void MonteCarloSampler::run(size_t kIterations) {
     }
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it)
+    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        (*it)->resetCounters();
+        it->resetCounters();
     }
     
     // Run the chain
@@ -639,8 +628,8 @@ void MonteCarloSampler::startMonitors( void ) {
         // if this chain is active, print the header
         if (chainActive) // surprised this works properly...
         {
-            monitors[i]->openStream();
-            monitors[i]->printHeader();
+            monitors[i].openStream();
+            monitors[i].printHeader();
             
         }
     }

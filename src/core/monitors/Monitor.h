@@ -18,6 +18,8 @@
 #ifndef Monitor_H
 #define Monitor_H
 
+#include "Cloneable.h"
+
 #include <ostream>
 #include <set>
 #include <vector>
@@ -28,7 +30,7 @@ namespace RevBayesCore {
     class Mcmc;
     class Model;
 
-    class Monitor {
+    class Monitor : public Cloneable {
     
     public:
         // Constructors and Destructors
