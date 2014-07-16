@@ -113,7 +113,12 @@
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorScale.h"
 
+/* Moves on real valued matrices */
+#include "Move_MatrixSingleElementSlide.h"
+
+
 ///* Moves on precision matrices */
+#include "Move_PrecisionMatrixSimple.h"
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
@@ -155,8 +160,11 @@
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 #include "Dist_branchRateJumpProcess.h"
-#include "Dist_brownian.h"
 #include "Dist_whiteNoise.h"
+
+/* Trait evolution models (in folder "distributions/evolution/tree") */
+#include "Dist_brownian.h"
+#include "Dist_mvtBrownian.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
 #include "Dist_bdp.h"
@@ -186,6 +194,7 @@
 #include "Dist_positiveUnif.h"
 #include "Dist_unif.h"
 #include "Dist_wishart.h"
+#include "Dist_inverseWishart.h"
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
@@ -231,6 +240,8 @@
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
+#include "Func_discretizedGammaRates.h"
+
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
 #include "Func_blosum62.h"
@@ -432,6 +443,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvVectorSingleElementScale",    new Move_VectorSingleElementScale() );
         addTypeWithConstructor("mvVectorSingleElementSliding",  new Move_VectorSingleElementSlide() );
         
+        /* Moves on matrices of real values */
+        addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
+
+        /* Moves on matrices of real values */
+        addTypeWithConstructor("mvPrecisionMatrixSimple",       new Move_PrecisionMatrixSimple() );
+
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
@@ -502,16 +519,21 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "dnDist_branchRateJumpProcess", new Dist_branchRateJumpProcess() );
         addDistribution( "branchRateJumpProcess",   new Dist_branchRateJumpProcess() );
         
-        // brownian motion
-        addDistribution( "dnBrownian",  new Dist_brownian() );
-        addDistribution( "brownian",    new Dist_brownian() );
-        
         // white noise process
         addDistribution( "dnWhiteNoise",    new Dist_whiteNoise() );
         addDistribution( "whiteNoise",      new Dist_whiteNoise() );
         addDistribution( "whitenoise",      new Dist_whiteNoise() );
         
+        /* trait evolution (in folder "distributions/evolution/branchrate") */
+
+        // brownian motion
+        addDistribution( "dnBrownian",  new Dist_brownian() );
+        addDistribution( "brownian",    new Dist_brownian() );
         
+        // multivariate brownian motion
+        addDistribution( "dnmvtBrownian",  new Dist_mvtBrownian() );
+        addDistribution( "mvtBrownian",    new Dist_mvtBrownian() );
+  
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
         // simple phylogenetic CTMC on fixed number of discrete states
@@ -643,9 +665,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addDistribution( "unif",            new Dist_unif() );
         addDistribution( "unif",            new Dist_positiveUnif() );
         
-        // wishart distribution
+        // Wishart distribution
         addDistribution( "dnWishart",       new Dist_wishart() );
         addDistribution( "wishart",         new Dist_wishart() );
+        
+        // inverse Wishart distribution
+        addDistribution( "dnInvWishart",       new Dist_inverseWishart() );
+        addDistribution( "invWishart",         new Dist_inverseWishart() );
         
         
         /* Mixture distributions (in folder "distributions/mixture") */
@@ -717,6 +743,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
+        addFunction( "discretizeGamma",             new Func_discretizedGammaRates()    );
         
         // nonstandard names (for backward compatibility)
         addFunction( "expbranchtree",               new Func_expBranchTree()            );
