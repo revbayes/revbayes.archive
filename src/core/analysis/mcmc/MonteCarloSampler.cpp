@@ -40,8 +40,8 @@ MonteCarloSampler::MonteCarloSampler(const Model& m, const RbVector<Move> &mvs, 
     chainIdx( 0 ),
     generation(0),
     model( m ),
-    monitors(),
-    moves(),
+    monitors( mons ),
+    moves( mvs ),
     schedule(NULL),
     scheduleType("random")
 {
@@ -65,8 +65,8 @@ MonteCarloSampler::MonteCarloSampler(const MonteCarloSampler &m) :
     chainIdx(m.chainIdx),
     generation(m.generation),
     model( m.model ),
-    monitors(),
-    moves(),
+    monitors( m.monitors ),
+    moves( m.moves ),
     schedule(NULL),
     scheduleType( m.scheduleType )
 {

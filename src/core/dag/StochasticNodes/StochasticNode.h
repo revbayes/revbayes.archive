@@ -363,17 +363,22 @@ void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
 }
 
 template <class valueType>
-void RevBayesCore::StochasticNode<valueType>::swapParameter(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP) {
+void RevBayesCore::StochasticNode<valueType>::swapParameter(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP)
+{
+
     distribution->swapParameter(oldP, newP);
+
 }
 
 
 
 /** touch this node for recalculation */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher ) {
+void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
+{
     
-    if (!this->touched) {
+    if (!this->touched)
+    {
         
         storedLnProb = lnProb;
         
