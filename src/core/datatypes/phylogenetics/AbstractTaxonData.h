@@ -28,6 +28,7 @@ namespace RevBayesCore {
         virtual const CharacterState&           operator[](size_t i) const = 0;                                     //!< Const index op
     
         // AbstractTaxonData functions
+        virtual AbstractTaxonData&              add(const AbstractTaxonData &d) = 0;                                //!< Addition operator used for example in '+=' statements
         virtual void                            addCharacter(const CharacterState &newChar ) = 0;                   //!< Push back a new character
         virtual const CharacterState&           getCharacter(size_t index) const = 0;                               //!< Get the character at position index
         virtual CharacterState&                 getCharacter(size_t index) = 0;                                     //!< Get the character at position index (non-const to return non-const character)
