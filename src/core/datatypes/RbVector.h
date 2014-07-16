@@ -119,14 +119,8 @@ template <class valueType>
 RevBayesCore::RbVector<valueType>::~RbVector( void ) {
     
     // delete the independent copies
-    size_t n = values.size();
-    for (size_t i = 0; i < n; ++i) 
-    {
-        valueType* v = values[i];
-        delete v;
-    }
-    
-    values.clear();
+    // we delegate to the clear method
+    clear();
 
 }
 

@@ -281,6 +281,7 @@
 #include "Func__div.h"
 #include "Func__mult.h"
 #include "Func__mod.h"
+#include "Func__rlvectorIndexOperator.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
 #include "Func__vectorIndexOperator.h"

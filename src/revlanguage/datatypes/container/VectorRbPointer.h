@@ -23,6 +23,7 @@
 #define VectorRbPointer_H
 
 #include "TypedWorkspaceObjectContainer.h"
+#include "RbVector.h"
 
 #include <iostream>
 #include <vector>
@@ -30,19 +31,20 @@
 namespace RevLanguage {
     
     template <typename rlType>
-    class VectorRbPointer : public TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> > {
+    class VectorRbPointer : public TypedWorkspaceObjectContainer<std::vector<rlType *> > {
         
     public:
         
         typedef typename rlType::valueType elementType;
-        typedef typename std::vector<elementType*> valueType;
+        typedef typename RevBayesCore::RbVector<elementType> valueType;
         
         VectorRbPointer(void);                                                                                                   //!< Default constructor
+        VectorRbPointer(const std::vector<rlType *> &v);                                                                         //!< Constructor with values
         VectorRbPointer(const valueType &v);                                                                                     //!< Constructor with values
         
         // overloaded operators
-        elementType&                                    operator[](size_t index);                                       //!< subscript operator
-        const elementType&                              operator[](size_t index) const;                                 //!< subscript operator (const)
+        rlType&                                         operator[](size_t index);                                       //!< subscript operator
+        const rlType&                                   operator[](size_t index) const;                                 //!< subscript operator (const)
         //        Vector&                                         operator=(const Vector& x);                                     //!< Assignment operator
         //        Vector&                                         operator+=(const rlType& x);                                    //!< Concatenate
         //        Vector&                                         operator+=(const Vector& x);                                    //!< Concatenate
@@ -52,8 +54,8 @@ namespace RevLanguage {
         //        bool                                            operator!=(const Vector& x) const;                              //!< Inequality
         
         // Basic utility functions 
-        VectorRbPointer*                                  clone(void) const;                                              //!< Clone object
-        RevObject*                               convertTo(const TypeSpec& type) const;                          //!< Convert to type
+        VectorRbPointer*                                clone(void) const;                                              //!< Clone object
+        RevObject*                                      convertTo(const TypeSpec& type) const;                          //!< Convert to type
         static const std::string&                       getClassName(void);                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                        //!< Get language type of the object
@@ -65,13 +67,17 @@ namespace RevLanguage {
         const MethodTable&                              getMethods(void) const;                                         //!< Get methods
         
         // Container functions
-        RevObject*                               getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
-        void                                            push_back(const rlType &x);                                     //!< Append element to end
-        void                                            push_back(elementType *x);                                      //!< Append element to end
-        void                                            push_front(const rlType &x);                                    //!< Append element to end
-        void                                            push_front(elementType *x);                                     //!< Append element to end
+        rlType*                                         getElement(size_t index);                                       //!< Get element (non-const to return non-const element)
+        rlType*                                         getElement(size_t index) const;                                 //!< Get element (const to return const element)
+        RevBayesCore::RbVector<elementType>             getInternalValue() const;                                       //!< Get the vector of internal element
+        void                                            push_back(const rlType &x);                                     //!< Append element to the end
+        void                                            push_back(elementType *x);                                      //!< Append element to the end
+        void                                            push_front(const rlType &x);                                    //!< Append element to the front
+        void                                            push_front(elementType *x);                                     //!< Append element to the front
         
     private:
+        
+        RevBayesCore::RbVector<elementType>             coreVector;
         
     };
     
@@ -99,50 +105,38 @@ namespace RevLanguage {
 
 /** Vector type of elements */
 template <typename rlType>
-RevLanguage::VectorRbPointer<rlType>::VectorRbPointer( void ) : TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> >( rlType::getClassTypeSpec() ) {
+RevLanguage::VectorRbPointer<rlType>::VectorRbPointer( void ) : TypedWorkspaceObjectContainer<std::vector<rlType *> >( rlType::getClassTypeSpec() ) {
     
 }
 
 
 /** Constructor with dimension (n) and copys of x for every object */
 template <typename rlType>
-RevLanguage::VectorRbPointer<rlType>::VectorRbPointer(const valueType &v) : TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> >( rlType::getClassTypeSpec(), v )  {
+RevLanguage::VectorRbPointer<rlType>::VectorRbPointer(const valueType &v) : TypedWorkspaceObjectContainer<std::vector<rlType *> >( rlType::getClassTypeSpec(), v )  {
     
 }
 
 
-///** Assignment operator; make sure we get independent elements */
-//template <typename rlType>
-//RevLanguage::Vector<rlType>& RevLanguage::Vector<rlType>::operator=( const Vector<rlType>& x ) {
-//    
-//    if ( this != &x ) {
-//        
-//        // First assign using parent assignment operator. This will test to make sure the containers
-//        // are of the same type, and throw an error if they are not. By calling it before we destroy
-//        // our own elements, we can make sure that an assignment error leaves us intact, which it should
-//        TypedContainer<std::vector<typename rlType::valueType> >::operator=( x );
-//        
-//        // just call clear which will free the memory of the objects
-//        clear();
-//    }
-//    
-//    return ( *this );
-//}
-
-
-/* Subscript operator */
+/** Constructor with dimension (n) and copys of x for every object */
 template <typename rlType>
-typename rlType::valueType& RevLanguage::VectorRbPointer<rlType>::operator[]( size_t index ) {
+RevLanguage::VectorRbPointer<rlType>::VectorRbPointer(const std::vector<rlType *> &v) : TypedWorkspaceObjectContainer<std::vector<rlType *> >( rlType::getClassTypeSpec(), v )  {
     
-    return *this->value->getValue()[index];
 }
 
 
 /* Subscript operator */
 template <typename rlType>
-const typename rlType::valueType& RevLanguage::VectorRbPointer<rlType>::operator[]( size_t index ) const {
+rlType& RevLanguage::VectorRbPointer<rlType>::operator[]( size_t index ) {
     
-    return *this->value->getValue()[index];
+    return *this->value[index];
+}
+
+
+/* Subscript operator */
+template <typename rlType>
+const rlType& RevLanguage::VectorRbPointer<rlType>::operator[]( size_t index ) const {
+    
+    return *this->value[index];
 }
 
 
@@ -235,11 +229,28 @@ const RevLanguage::TypeSpec& RevLanguage::VectorRbPointer<rlType>::getClassTypeS
 
 /* Get element */
 template <typename rlType>
-RevLanguage::RevObject* RevLanguage::VectorRbPointer<rlType>::getElement(size_t index) {
+rlType* RevLanguage::VectorRbPointer<rlType>::getElement(size_t index)
+{
     
-    //    return this->value->getValue()[index];
-    throw RbException("Cannot access element in pointer vector.");
-    return NULL;
+    return this->value[index]->clone();
+}
+
+
+/* Get element */
+template <typename rlType>
+rlType* RevLanguage::VectorRbPointer<rlType>::getElement(size_t index) const
+{
+    
+    return this->value[index]->clone();
+}
+
+
+/* Get element */
+template <typename rlType>
+RevBayesCore::RbVector<typename rlType::valueType> RevLanguage::VectorRbPointer<rlType>::getInternalValue(void) const
+{
+    
+    return coreVector;
 }
 
 
@@ -275,7 +286,8 @@ const RevLanguage::MethodTable& RevLanguage::VectorRbPointer<rlType>::getMethods
     static MethodTable methods;
     static bool methodsSet = false;
     
-    if (!methodsSet) {
+    if (!methodsSet)
+    {
         
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
@@ -283,7 +295,7 @@ const RevLanguage::MethodTable& RevLanguage::VectorRbPointer<rlType>::getMethods
         methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &TypedWorkspaceObjectContainer<std::vector<typename rlType::valueType *> >::getMethods() );
+        methods.setParentTable( &TypedWorkspaceObjectContainer<std::vector<rlType *> >::getMethods() );
         
         methodsSet = true;
     }
@@ -347,23 +359,28 @@ bool RevLanguage::VectorRbPointer<rlType>::isConvertibleTo(const TypeSpec &type)
 template <typename rlType>
 void RevLanguage::VectorRbPointer<rlType>::push_back( const rlType &x ) {
     
-    std::vector<typename rlType::valueType *>& val = this->value;
+    std::vector<rlType *>& val = this->value;
+    val.push_back( x.clone() );
+    
     const typename rlType::valueType &element = x.getValue();
-    val.push_back( element.clone() );
+    coreVector.push_back( element.clone() );
     
 }
 
 
-/** Push an int onto the back of the vector */
+/** Push an rlType onto the back of the vector */
 template <typename rlType>
 void RevLanguage::VectorRbPointer<rlType>::push_back( typename rlType::valueType *x ) {
     
     this->value->getValue().push_back( x );
     
+    const typename rlType::valueType &element = x->getValue();
+    coreVector.push_back( element.clone() );
+    
 }
 
 
-/** Push an int onto the front of the vector */
+/** Push an rlType onto the front of the vector */
 template <typename rlType>
 void RevLanguage::VectorRbPointer<rlType>::push_front( const rlType &x ) {
     
@@ -371,7 +388,7 @@ void RevLanguage::VectorRbPointer<rlType>::push_front( const rlType &x ) {
 }
 
 
-/** Push an int onto the front of the vector */
+/** Push an rlType onto the front of the vector */
 template <typename rlType>
 void RevLanguage::VectorRbPointer<rlType>::push_front( typename rlType::valueType *x ) {
     

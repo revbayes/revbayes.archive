@@ -51,6 +51,8 @@ namespace RevBayesCore {
 }
 
 
+#include "RbException.h"
+
 template <class valueType>
 RevBayesCore::VectorIndexOperator<valueType>::VectorIndexOperator( const TypedDagNode<std::vector<valueType> >* v, const TypedDagNode<int> *idx) : TypedFunction<valueType>( new valueType() ), index( idx ), vector( v ) {
     // add the vector parameter as a parent
@@ -75,10 +77,19 @@ RevBayesCore::VectorIndexOperator<valueType>* RevBayesCore::VectorIndexOperator<
 
 
 template <class valueType>
-void RevBayesCore::VectorIndexOperator<valueType>::update( void ) {
+void RevBayesCore::VectorIndexOperator<valueType>::update( void )
+{
     
     const std::vector<valueType> &v = vector->getValue();
-    *(this->value) = v[size_t(index->getValue()) - 1];
+    size_t idx = size_t(index->getValue());
+    
+    if ( idx < 1 || idx > v.size() )
+    {
+        std::stringstream ss_err;
+        ss_err << "Index out of bounds: The vector of size " << v.size() << " does not have an element for index " << idx << ".";
+        throw RbException(ss_err.str());
+    }
+    *(this->value) = v[idx - 1];
 }
 
 

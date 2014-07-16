@@ -9,14 +9,16 @@
 #include "SequenctialMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbIterator.h"
 
 using namespace RevBayesCore;
 
-SequentialMoveSchedule::SequentialMoveSchedule(const std::vector<Move*> &s) : MoveSchedule( s ), currentMove( 0 ), usedPropOfCurrentMove( 0 ) {
+SequentialMoveSchedule::SequentialMoveSchedule(const RbVector<Move> &s) : MoveSchedule( s ), currentMove( 0 ), usedPropOfCurrentMove( 0 ) {
     
     movesPerIteration = 0.0;
-    for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it) {
-        movesPerIteration += (*it)->getUpdateWeight();
+    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
+    {
+        movesPerIteration += it->getUpdateWeight();
     }
 }
 
@@ -35,12 +37,13 @@ double SequentialMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* SequentialMoveSchedule::nextMove( unsigned long gen ) {
+Move& SequentialMoveSchedule::nextMove( unsigned long gen )
+{
     
     bool found = false;
     do {
         
-        double remainingWeight = moves[currentMove]->getUpdateWeight() - usedPropOfCurrentMove;
+        double remainingWeight = moves[currentMove].getUpdateWeight() - usedPropOfCurrentMove;
         if ( remainingWeight >= 1.0 )
         {
             usedPropOfCurrentMove++;
@@ -62,7 +65,7 @@ Move* SequentialMoveSchedule::nextMove( unsigned long gen ) {
                 {
                     currentMove = 0;
                 }
-            } while ( !moves[currentMove]->isActive( gen ) );
+            } while ( !moves[currentMove].isActive( gen ) );
         }
         
     } while ( !found );
