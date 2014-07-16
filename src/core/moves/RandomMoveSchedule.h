@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class RandomMoveSchedule : public MoveSchedule  {
         
     public:
-        RandomMoveSchedule(const RbVector<Move> &m);                                                                                                                                         //!< Default constructor
+        RandomMoveSchedule(RbVector<Move> *m);                                                                                                                                         //!< Default constructor
         virtual                                        ~RandomMoveSchedule(void);                                                                             //!< Destructor
         
         // pure virtual public methods

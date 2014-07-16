@@ -35,11 +35,14 @@ namespace RevBayesCore {
         virtual double                                          getNumberMovesPerIteration(void) const = 0;
         virtual Move&                                           nextMove(unsigned long g) = 0;
         
+        // public methods
+        void                                                    tune(void);                                                                                     //!< The the moves to achieve better performance.
+        
     protected:
-        MoveSchedule(const RbVector<Move> &m);                                                                                                                                         //!< Default constructor
+        MoveSchedule(RbVector<Move> *m);                                                                                                                  //!< Default constructor
                 
         // Hidden member variables
-        RbVector<Move>                                          moves;
+        RbVector<Move>*                                         moves;
         
     };
     

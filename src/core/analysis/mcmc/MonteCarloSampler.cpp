@@ -137,11 +137,7 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
         if ( k % tuningInterval == 0 )
         {
             
-            // tune the moves
-            for (size_t i=0; i<moves.size(); i++)
-            {
-                moves[i].autoTune();
-            }
+            schedule->tune();
         }
         
     }
@@ -214,18 +210,24 @@ void MonteCarloSampler::getOrderedStochasticNodes(const DagNode* dagNode,  std::
         const std::set<const DagNode *>& parents = dagNode->getParents() ;
         std::set<const DagNode *>::const_iterator it;
         for ( it=parents.begin() ; it != parents.end(); it++ )
+        {
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+        }
         
         // Then I can add myself to the nodes visited, and to the ordered vector of stochastic nodes
         //        visitedNodes.insert(dagNode);
         if ( dagNode->isStochastic() ) //if the node is stochastic
+        {
             orderedStochasticNodes.push_back( const_cast<DagNode*>( dagNode ) );
+        }
         
         // Finally I will visit my children
         std::set<DagNode*> children = dagNode->getChildren() ;
         std::set<DagNode*>::iterator it2;
         for ( it2 = children.begin() ; it2 != children.end(); it2++ )
+        {
             getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
+        }
     }
     
     return;
@@ -343,15 +345,15 @@ void MonteCarloSampler::initializeChain( void ) {
     /* Create the move scheduler */
     if ( scheduleType == "sequential" )
     {
-        schedule = new SequentialMoveSchedule( moves );
+        schedule = new SequentialMoveSchedule( &moves );
     }
     else if ( scheduleType == "single" )
     {
-        schedule = new SingleRandomMoveSchedule( moves );
+        schedule = new SingleRandomMoveSchedule( &moves );
     }
     else
     {
-        schedule = new RandomMoveSchedule( moves );
+        schedule = new RandomMoveSchedule( &moves );
     }
     
     generation = 0;
@@ -473,26 +475,36 @@ void MonteCarloSampler::printOperatorSummary(void) const {
 void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
 {
     
+    moves.clear();
+    monitors.clear();
+    
     // we need to replace the DAG nodes of the monitors and moves
     const std::vector<DagNode*>& modelNodes = model.getDagNodes();
-    for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it) {
+    for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
+    {
         Move *theMove = it->clone();
         std::set<DagNode*> nodes = theMove->getDagNodes();
-        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j) {
+        for (std::set<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
+        {
             
             // error checking
             if ( (*j)->getName() == "" )
+            {
                 throw RbException( "Unable to connect move to DAG copy because variable name was lost");
+            }
             
             DagNode* theNewNode = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k) {
-                if ( (*k)->getName() == (*j)->getName() ) {
+            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
+            {
+                if ( (*k)->getName() == (*j)->getName() )
+                {
                     theNewNode = *k;
                     break;
                 }
             }
             // error checking
-            if ( theNewNode == NULL ) {
+            if ( theNewNode == NULL )
+            {
                 throw RbException("Cannot find node with name '" + (*j)->getName() + "' in the model but received a move working on it.");
             }
             
@@ -532,7 +544,9 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             theMonitor->swapNode( *j, theNewNode );
         }
         monitors.push_back( theMonitor );
+        
     }
+    
 }
 
 

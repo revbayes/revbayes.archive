@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class SequentialMoveSchedule : public MoveSchedule  {
         
     public:
-        SequentialMoveSchedule(const RbVector<Move> &m);                                                                                                                                         //!< Default constructor
+        SequentialMoveSchedule(RbVector<Move> *m);                                                                                                                                         //!< Default constructor
         virtual                                        ~SequentialMoveSchedule(void);                                                                             //!< Destructor
         
         // pure virtual public methods
