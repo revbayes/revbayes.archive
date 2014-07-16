@@ -169,7 +169,7 @@ size_t DagNode::decrementReferenceCount( void ) const
     if ( refCount == 0) {
         std::ostringstream o;
         if ( getName() != "" )
-            o << "Decrementing reference count of node " << getName() << " below 0" << std::endl;
+            o << "Decrementing reference count of node " << getName() << " <" << this << "> below 0" << std::endl;
         else
             o << "Decrementing reference count of node <" << this << "> below 0" << std::endl;
         throw RbException( o );

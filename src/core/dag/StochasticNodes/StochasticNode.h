@@ -151,7 +151,7 @@ template<class valueType>
 RevBayesCore::StochasticNode<valueType>::~StochasticNode( void ) {
 
     // Remove us as the child of the distribution parameters
-    const std::set<const DagNode*>& distParents = distribution->getParameters();
+    std::set<const DagNode*> distParents = distribution->getParameters();
     delete distribution;
     for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
@@ -364,7 +364,7 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &o ) const
 {
-    o << "_address      = " << this->name << " <" << this << ">" << std::endl;
+    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Stochastic DAG node" << std::endl;
     o << "_distribution = " << "<unnamed>" << std::endl;
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
@@ -470,8 +470,8 @@ void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw(bool tf)
 /**
  * This function replaces the earlier swapParameter function. If we rely on the
  * internal RevBayesCore::Distribution to manage our parents, we simply need to ask
- * the distribution to swap its parameters, and then manage the connection of the
- * parents (parameters) to this node.
+ * the distribution to swap its parameter, and then manage the connection of the
+ * old and new parents (parameters) to this node.
  */
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent )

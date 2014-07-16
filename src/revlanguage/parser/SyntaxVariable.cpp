@@ -339,7 +339,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
                 if ( indices.size() == 0 )
                     theVar = new Variable( NULL, identifier );
                 else
-                    theVar = new Variable( Workspace::userWorkspace().makeNewEmptyContainer( elemType, indices.size() ) );
+                    theVar = new Variable( Workspace::userWorkspace().makeNewEmptyContainer( elemType, indices.size() ), identifier );
                 env.addVariable( identifier, theVar );
             }
         }

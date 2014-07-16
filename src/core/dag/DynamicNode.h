@@ -40,7 +40,7 @@ namespace RevBayesCore {
         virtual double                                      getLnProbabilityRatio(void) = 0;
 
         // public methods
-        DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;                   //!< Clone the entire DAG which is connected to this node
+        virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap) const;                   //!< Clone the entire DAG which is connected to this node
 
         // this function provided for derived classes used in the language layer, which need to override it
         virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
@@ -85,42 +85,41 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
     
-    // Get pristine copy
+    // Get a shallow copy
     DynamicNode* copy = clone();
     
-    // Add this node to the map
+    // Add this node and its copy to the map
     newNodes[ this ] = copy;
     
-    // Note that functions and distributions have copies of DAG node pointers, so the copy and
-    // the original will have the same parents after the call to clone(). In fact, this is the
-    // desired behavior to not interfere with the cloning of the entire DAG in this function.
-    // Thus, all dynamic DAG nodes should adopt this convention.
-    std::set<const DagNode*> parents = this->getParents();
-
+    // Parent management is delegated to derived classes, so get the parents through their getParents function
+    const std::set<const DagNode*>& parents = this->getParents();
+    
+    // We need to remove the copy as a child of our parents in order to stop recursive calls to
+    // cloneDAG on our copy, its copy, etc, when we call cloneDAG on our parents
     for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         const DagNode *theParam = (*i);
         
-        // remove myself from the param as a child, because cloning the param will call of cloning this already cloned node
         theParam->removeChild( copy );
     }
     
+    // Now replace the parents of the copy (which our now the same as our parents) with the parent clones
     for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
-        // get the i-th member and get the clone back
+        // Get the i-th parent
         const DagNode *theParam = (*i);
         
-        // if we already have cloned this parent (parameter), then we will get the previously created clone
+        // Get its clone if we already have cloned this parent (parameter), then we will get the previously created clone
         DagNode* theParamClone = theParam->cloneDAG( newNodes );
         
-        // add myself back as a child so that the swapping works
+        // Add the copy back as a child of this parent so that the swapping works
         theParam->addChild( copy );
         
-        // set the clone of the member as the member of the clone
+        // Swap the parent of the copy with its clone. This will remove the copy again as the child of our parent.
         copy->swapParent( theParam, theParamClone);
     }
     
-    /* Make sure the children clone themselves */
+    // Make sure the children clone themselves
     for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ ) 
     {
         (*i)->cloneDAG( newNodes );

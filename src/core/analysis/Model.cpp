@@ -193,14 +193,14 @@ void Model::addSourceNode(const DagNode *sourceNode)
         // get the copied node
         DagNode* theNewNode = (*i).second;
         
-        // increment the iterator;
-        ++i;
-        
         // increment the reference count to the new node
         theNewNode->incrementReferenceCount();
             
         // insert in direct access vector
         nodes.push_back( theNewNode );
+
+        // increment the iterator;
+        ++i;
     }
     
 }

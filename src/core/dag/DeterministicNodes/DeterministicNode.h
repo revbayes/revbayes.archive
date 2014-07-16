@@ -122,7 +122,8 @@ template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
 
     // Remove us as the child of the function parameters
-    const std::set<const DagNode*>& funcParents = function->getParameters();
+    std::set<const DagNode*> funcParents = function->getParameters();
+    delete function;
     for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
     {
         (*it)->removeChild( this );
@@ -133,7 +134,6 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
             delete (*it);
     }
     
-    delete function;
 }
 
 
@@ -307,7 +307,7 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
 {
     
-    o << "_address      = " << this->name << " <" << this << ">" << std::endl;
+    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Deterministic DAG node" << std::endl;
 
     o << "_function     = <" << function << ">" << std::endl;
