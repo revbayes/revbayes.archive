@@ -80,8 +80,7 @@ phylogeny := treeAssembly(topology, br_lens)
 
 
 # the sequence evolution model
-#phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, nSites=n_sites, type="DNA")
-phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, nSites=n_sites, type="DNA")
+phyloSeq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, nSites=n_sites, type="DNA")
 
 # attach the data
 phyloSeq.clamp(data)
