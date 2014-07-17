@@ -64,6 +64,8 @@ namespace RevBayesCore {
         void                                removeParameter(const DagNode* p);                                      //!< remove a parameter from the function
         virtual void                        swapParameterInternal(const DagNode *oldP, const DagNode *newP) = 0;    //!< Exchange the parameter
         
+        mutable bool                        dirty;
+        
     private:
         std::set<const DagNode*>            parameters;
     };
