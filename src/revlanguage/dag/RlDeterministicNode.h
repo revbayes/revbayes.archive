@@ -102,14 +102,17 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
     
     this->touched = true;     //!< To be on the safe side; the flag is not used by this class
     
-    if ( !this->isFunctionDirty() )
-    {
+    
+    // We need to touch the function anyways because it might not be filthy enough.
+    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
+//    if ( !this->isFunctionDirty() )
+//    {
         // Essential for lazy evaluation
         this->touchFunction( toucher );
 
         // Dispatch the touch message to downstream nodes
         this->touchAffected();
-    }
+//    }
 }
 
 
