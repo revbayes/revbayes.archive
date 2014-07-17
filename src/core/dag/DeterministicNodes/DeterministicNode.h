@@ -301,14 +301,16 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
     this->touched = true;
     
-    if ( !this->isFunctionDirty() )
-    {
+    // We need to touch the function anyways because it might not be filthy enough.
+    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
+//    if ( !this->isFunctionDirty() )
+//    {
         // Essential for lazy evaluation
         this->touchFunction( toucher );
         
         // Dispatch the touch message to downstream nodes
         this->touchAffected();
-    }
+//    }
 
 //#if 0
 //    // Uncomment this code if you do not want to use lazy evaluation
