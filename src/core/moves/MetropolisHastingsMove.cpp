@@ -182,7 +182,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
             (*i)->keep();
         }
         
-//        lnProbability += lnProbabilityRatio;
     }
     else if (lnAcceptanceRatio < -300.0)
     {
@@ -210,7 +209,6 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
             }
             
             proposal->cleanProposal();
-//            lnProbability += lnProbabilityRatio;
         }
         else 
         {
