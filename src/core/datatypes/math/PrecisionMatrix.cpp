@@ -156,6 +156,13 @@ void PrecisionMatrix::touch(void)   {
 
 void PrecisionMatrix::update()  const {
     
+    /*
+    std::vector<double> bkeigenval = eigensystem.getRealEigenvalues();
+
+    bool check = eigenflag;
+    eigenflag = false;
+    */
+    
     if (! eigenflag)    {
                 
         try {
@@ -165,12 +172,20 @@ void PrecisionMatrix::update()  const {
 
             eigensystem.update();
 
-            // this may not be optimal but...
-            // aim is to get the inverse of the matrix into inverse
+            /*
+            if (check)  {
+                for (size_t i=0; i<getDim(); i++)   {
+                    if (std::fabs(eigenval[i] - bkeigenval[i]) > 1e-6)    {
+                        std::cerr << "error: diag flag up but eigen vals not correct\n";
+                        exit(1);
+                    }
+                }
+            }
+            */
+
             const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
             
             MatrixReal tmp(getDim(), getDim(), 0);
-
             for (size_t i = 0; i < getDim(); i++) {
                 tmp[i][i] = 1.0 / eigenval[i];
             }
@@ -178,6 +193,28 @@ void PrecisionMatrix::update()  const {
             tmp *= eigensystem.getInverseEigenvectors();
             inverse = eigensystem.getEigenvectors() * tmp;
 
+            // chcek matrix inversion
+            /*
+            for (size_t i=0; i<getDim(); i++)   {
+                for (size_t j=0; j<getDim(); j++)   {
+                    double tot = 0;
+                    for (size_t k=0; k<getDim(); k++)   {
+                        tot += (*this)[i][k] * inverse[k][j];
+                    }
+                    if (i==j)   {
+                        tot -= 1;
+                    }
+                    if (std::fabs(tot) > 1e-6)  {
+                        std::cerr << "error in inversion: " << tot << '\n';
+                        exit(1);
+                    }
+                    else    {
+                        std::cerr << "inversion ok\n";
+                        
+                    }
+                }
+            }
+            */
             eigenflag = true;
            
         }

@@ -12,13 +12,14 @@
 ### Load data file and uniform partition model
 source("data/uniform_partition_model.Rev")
 
-monitors[1] <- modelmonitor(filename="output/conifer_uniform.log",printgen=100, separator = "	")
-monitors[2] <- filemonitor(filename="output/conifer_uniform.trees",printgen=100, separator = "	", phylogeny)
-monitors[3] <- screenmonitor(printgen=10, separator = "	", sf, shape)
- 
+monitors[1] <- modelmonitor(filename="conifer_uniform.log",printgen=100, separator = "	")
+monitors[2] <- filemonitor(filename="conifer_uniform.trees",printgen=100, separator = "	", phylogeny)
+monitors[3] <- screenmonitor(printgen=1, separator = "  ", sf, shape, norm_gamma_rates)
+monitors[4] <- filemonitor(filename="conifer_uniform_fm.log",printgen=100, separator = "	", sf, shape, norm_gamma_rates)
+
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=10000,tuningInterval=1000)
+##mymcmc.burnin(generations=10000,tuningInterval=1000)
 mymcmc.run(generations=100000)
 
 # Now, we will analyze the tree output.

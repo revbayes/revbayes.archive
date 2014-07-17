@@ -23,8 +23,8 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-// MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MatrixReal >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
+// MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MultivariatePhyloProcess >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MultivariatePhyloProcess >( new MultivariatePhyloProcess(&intau->getValue(), insigma->getValue().getDim())),
 tau( intau ),
 sigma( insigma ) {
 // rootVal( inrootVal ) {
@@ -36,7 +36,7 @@ sigma( insigma ) {
 }
 
 
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MatrixReal>( n ), tau( n.tau ), sigma( n.sigma ) /*, rootVal( n.rootVal )*/ {
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariatePhyloProcess>( n ), tau( n.tau ), sigma( n.sigma ) /*, rootVal( n.rootVal )*/ {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -73,11 +73,13 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
+        /*
         if (from.getParent().isRoot())  {
             for (size_t j=0; j<getDim(); j++)   {
                 upval[j] = 0;
             }
         }
+        */
         
         const MatrixReal& om = sigma->getValue().getInverse();
         
@@ -91,7 +93,7 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
         }
         
         lnProb -= 0.5 * s2 / from.getBranchLength();
-        lnProb -= 0.5 * (sigma->getValue().getLogDet() + log(from.getBranchLength()));
+        lnProb -= 0.5 * (sigma->getValue().getLogDet() + sigma->getValue().getDim() * log(from.getBranchLength()));
     }
     
     // propagate forward
