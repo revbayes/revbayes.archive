@@ -33,14 +33,12 @@ namespace RevBayesCore {
         const TimeTree*                             getTimeTree() const {return tree;}
         size_t                                      getDim() const {return getNumberOfColumns();}
         
+
         // MultivariatePhyloProcess functions
-        /*
-        double                                      getAge(size_t idx) const;
-        double                                      getBranchLength(size_t idx) const;
-        double                                      getTime(size_t idx) const;
-        double                                      getTreeLength(void) const;
-        void                                        setBranchLength(size_t idx, double bl);
-        */
+        double                                      getRootVal(int k) const;
+        double                                      getMean(int k) const;
+        double                                      getStdev(int k) const;
+        void                                        recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
         
     protected:
         // void                                        resizeElementVectors(size_t n);

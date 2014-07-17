@@ -101,13 +101,15 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     
     */
 
-    variable->getValue().update();
-
+    mymat.update();
+        
     return lnHastingsratio;
 }
 
 void PrecisionMatrixMove::acceptSimpleMove()   {
+
     variable->clearTouchedElementIndices();
+    
 }
 
 void PrecisionMatrixMove::printParameterSummary(std::ostream &o) const {
@@ -116,7 +118,7 @@ void PrecisionMatrixMove::printParameterSummary(std::ostream &o) const {
 
 
 void PrecisionMatrixMove::rejectSimpleMove( void ) {
-    
+ 
     variable->getValue() = storedValue;
     variable->getValue().touch();
     variable->getValue().update();

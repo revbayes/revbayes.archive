@@ -154,48 +154,6 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
 }
 
 
-double MultivariateBrownianPhyloProcess::getMean(int k) {
-    
-    int n = 0;
-    double e1 = 0;
-    double e2 = 0;
-    recursiveGetStats(k, tau->getValue().getRoot(), e1, e2, n);
-    e1 /= n;
-    e2 /= n;
-    e2 -= e1 * e1;
-    return e1;
-}
-
-double MultivariateBrownianPhyloProcess::getStdev(int k) {
-    
-    int n = 0;
-    double e1 = 0;
-    double e2 = 0;
-    recursiveGetStats(k, tau->getValue().getRoot(), e1, e2, n);
-    e1 /= n;
-    e2 /= n;
-    e2 -= e1 * e1;
-    return sqrt(e2);
-}
-
-
-void MultivariateBrownianPhyloProcess::recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n)  {
-
-    double tmp = (*value)[from.getIndex()][k];
-
-    n++;
-    e1 += tmp;
-    e2 += tmp * tmp;
-    
-    // propagate forward
-    size_t numChildren = from.getNumberOfChildren();
-    for (size_t i = 0; i < numChildren; ++i) {
-        recursiveGetStats(k,from.getChild(i),e1,e2,n);
-    }
-    
-}
-
-
 void MultivariateBrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {

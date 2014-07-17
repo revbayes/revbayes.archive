@@ -69,6 +69,53 @@ void MultivariatePhyloProcess::resizeElementVectors(size_t n) {
 */
 
 
+double MultivariatePhyloProcess::getRootVal(int k) const {
+    
+        return (*this)[getTimeTree()->getRoot().getIndex()][k];
+}
+
+double MultivariatePhyloProcess::getMean(int k) const {
+    
+    int n = 0;
+    double e1 = 0;
+    double e2 = 0;
+    recursiveGetStats(k, getTimeTree()->getRoot(), e1, e2, n);
+    e1 /= n;
+    e2 /= n;
+    e2 -= e1 * e1;
+    return e1;
+}
+
+double MultivariatePhyloProcess::getStdev(int k) const {
+    
+    int n = 0;
+    double e1 = 0;
+    double e2 = 0;
+    recursiveGetStats(k, getTimeTree()->getRoot(), e1, e2, n);
+    e1 /= n;
+    e2 /= n;
+    e2 -= e1 * e1;
+    return sqrt(e2);
+}
+
+
+void MultivariatePhyloProcess::recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
+
+    double tmp = (*this)[from.getIndex()][k];
+
+    n++;
+    e1 += tmp;
+    e2 += tmp * tmp;
+    
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveGetStats(k,from.getChild(i),e1,e2,n);
+    }
+    
+}
+
+
 /*
 std::ostream& operator<<(std::ostream& o, const MultivariatePhyloProcess& x) {
     o << x.getNewickRepresentation();
@@ -76,3 +123,4 @@ std::ostream& operator<<(std::ostream& o, const MultivariatePhyloProcess& x) {
     return o;
 }
 */
+

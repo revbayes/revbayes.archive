@@ -25,16 +25,12 @@ treeArray <- readTrees("data/chronoplac2.tree")
 fixedTree <- treeArray[1]
 tau.clamp(fixedTree)
 
-# moves on the tree
+# moves on the tree: only relative dates
 index <- 1
 moves[index] <- mSubtreeScale(tau, weight=5.0)
 index <- index + 1
-#moves[index] <- mTreeScale(tau, lambda=1.0, tune=true, weight=3.0)
-#index <- index + 1
 moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
 index <- index + 1
-#moves[index] <- mRootTimeSlide(tau, delta=1.0, tune=true, weight=3.0)
-#index <- index + 1
 
 # substition models
 # constant hypernodes
@@ -67,50 +63,41 @@ index <- index + 1
 # rate matrix
 mitQ := gtr(miter,mitpi)
 
-# precision matrix (2x2)
+# covariance matrix (2x2)
 # of parameters kappa * I2 and 1 degrees of freedom
 kappa ~ exponential(1.0)
 df <- 4
 dim <- 2
-"kappa"
-kappa
-"create sigma"
 sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
-"sigma OK"
 
 # moves on kappa and precision matrix
-moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=1.0)
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1.0)
+moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=10.0)
 index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1.0)
+moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=10.0)
 index <- index + 1
 
-# root value for the Brownian process
-rootval[1] ~ norm(0,100)
-rootval[2] ~ norm(0,100)
-#rootval <- [0,0]
-
-rootval[1].clamp(0)
-rootval[2].clamp(0)
-
-# moves on root value
-#moves[index] <- mSlide(rootval[1], delta=1, tune=true, weight=10.0)
-#index <- index + 1
-#moves[index] <- mSlide(rootval[2], delta=1, tune=true, weight=10.0)
-#index <- index + 1
-#moves[index] <- mSlide(rootval[1], delta=0.1, tune=true, weight=10.0)
-#index <- index + 1
-#moves[index] <- mSlide(rootval[2], delta=0.1, tune=true, weight=10.0)
-#index <- index + 1
+rootval[1] <- 0
+rootval[2] <- 0
 
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
+
 # moves on the Brownian process
-moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=30) 
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=3) 
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
+
+#stats on brownian process
+mean1 := br.mean(1)
+stdev1 := br.stdev(1)
+
+# why can t I call redraw on the brownian process?
+mean1
+br.redraw()
+mean1
 
 "exp rates"
 # rate variation along the tree
@@ -132,15 +119,15 @@ mitSeq.clamp(mitData)
 "model"
 mymodel <- model(nucpi)
 
-monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, rootval[1], rootval[2], kappa)
-monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, rootval[1], rootval[2], kappa)
+# why can t I monitor the summary statistics mean1 and stdev1 ?
+monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, kappa, mean1, stdev1)
+monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, kappa)
 monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
 monitors[4] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")
  
 "mcmc"
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-#mymcmc.burnin(generations=300,tuningInterval=100)
 mymcmc.run(100000)
 
 
