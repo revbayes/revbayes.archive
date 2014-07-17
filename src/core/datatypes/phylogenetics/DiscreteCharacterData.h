@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 namespace RevBayesCore {
     
@@ -563,7 +564,7 @@ const bool RevBayesCore::DiscreteCharacterData<charType>::getHomologyEstablished
 template<class charType>
 size_t RevBayesCore::DiscreteCharacterData<charType>::getIndexOfTaxon(const std::string &n) const
 {
-    long pos = find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
+    long pos = std::find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
     
     if ( pos == sequenceNames.size() )
     {
