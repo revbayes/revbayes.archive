@@ -95,12 +95,15 @@ RevBayesCore::VectorFunction<valueType>* RevBayesCore::VectorFunction<valueType>
 
 template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher ) {
+    TypedFunction<std::vector<valueType> >::keep( toucher );
     this->dagNode->clearTouchedElementIndices();
 }
 
 
 template <class valueType>
-void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher ) {
+void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher )
+{
+    TypedFunction<std::vector<valueType> >::restore( toucher );
     
     this->update();
     
@@ -157,6 +160,9 @@ void RevBayesCore::VectorFunction<valueType>::swapParameterInternal(const DagNod
 
 template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher ) {
+    
+    //delegate to base class
+    TypedFunction<std::vector<valueType> >::touch( toucher );
     
     for (size_t i = 0; i < parameters.size(); ++i) 
     {

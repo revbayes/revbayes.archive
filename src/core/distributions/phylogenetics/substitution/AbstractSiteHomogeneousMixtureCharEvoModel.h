@@ -590,7 +590,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
         if ( !changedNodes[index] ) 
         {
-            activeLikelihood[index] ^= 1;
+            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
             changedNodes[index] = true;
         }
         
