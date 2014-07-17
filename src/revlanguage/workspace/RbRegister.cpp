@@ -130,6 +130,11 @@
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
 
+
+/* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
+#include "Move_MultivariatePhyloProcessTranslation.h"
+#include "Move_MultivariatePhyloProcessSliding.h"
+
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
 #include "Move_NarrowExchange.h"
@@ -279,19 +284,21 @@
    and therefore their class names have two underscore characters. They are typically
    templated. */
 
+#include "Func__add.h"
 #include "Func__and.h"
+#include "Func__div.h"
 #include "Func__eq.h"
 #include "Func__ge.h"
 #include "Func__gt.h"
 #include "Func__le.h"
 #include "Func__lt.h"
+#include "Func__mult.h"
+#include "Func__mod.h"
 #include "Func__ne.h"
 #include "Func__or.h"
 #include "Func__unot.h"
-#include "Func__add.h"
-#include "Func__div.h"
-#include "Func__mult.h"
-#include "Func__mod.h"
+#include "Func__rladd.h"
+#include "Func__rlvectorIndexOperator.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
 #include "Func__vectorIndexOperator.h"
@@ -486,6 +493,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
 
+        /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
+        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariatePhyloProcessTranslation() );
+        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariatePhyloProcessSliding() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -835,17 +845,19 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_uminus",   new Func__uminus<RealPos, Real>()     );
         
         // addition (e.g. a+b )
-        addFunction( "_add",      new Func__add< Natural         , Natural           , Natural           >(  )  );
-        addFunction( "_add",      new Func__add< Integer         , Integer           , Integer           >(  )  );
-        addFunction( "_add",      new Func__add< Real            , Real              , Real              >(  )  );
-        addFunction( "_add",      new Func__add< RealPos         , RealPos           , RealPos           >(  )  );
-        addFunction( "_add",      new Func__add< RlString        , RlString          , RlString          >(  )  );
-        addFunction( "_add",      new Func__add< RlString        , Real              , RlString          >(  )  );
-        addFunction( "_add",      new Func__add< RlString        , Integer           , RlString          >(  )  );
-        addFunction( "_add",      new Func__add< Vector<Natural> , Vector<Natural>   , Vector<Natural>   >(  )  );
-        addFunction( "_add",      new Func__add< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
-        addFunction( "_add",      new Func__add< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  )  );
-        addFunction( "_add",      new Func__add< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
+        addFunction( "_add",      new Func__add< Natural                , Natural               , Natural               >(  )   );
+        addFunction( "_add",      new Func__add< Integer                , Integer               , Integer               >(  )   );
+        addFunction( "_add",      new Func__add< Real                   , Real                  , Real                  >(  )   );
+        addFunction( "_add",      new Func__add< RealPos                , RealPos               , RealPos               >(  )   );
+        addFunction( "_add",      new Func__add< RlString               , RlString              , RlString              >(  )   );
+        addFunction( "_add",      new Func__add< RlString               , Real                  , RlString              >(  )   );
+        addFunction( "_add",      new Func__add< RlString               , Integer               , RlString              >(  )   );
+        addFunction( "_add",      new Func__add< Vector<Natural>        , Vector<Natural>       , Vector<Natural>       >(  )   );
+        addFunction( "_add",      new Func__add< Vector<Integer>        , Vector<Integer>       , Vector<Integer>       >(  )   );
+        addFunction( "_add",      new Func__add< Vector<RealPos>        , Vector<RealPos>       , Vector<RealPos>       >(  )   );
+        addFunction( "_add",      new Func__add< Vector<Real>           , Vector<Real>          , Vector<Real>          >(  )   );
+        
+        addFunction( "_add",      new Func__rladd< AbstractCharacterData  , AbstractCharacterData , AbstractCharacterData >(  )   );
         
         // division
         addFunction( "_div",      new Func__div< Natural         , Natural           , RealPos           >(  )  );

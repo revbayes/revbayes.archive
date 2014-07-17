@@ -103,7 +103,7 @@ bool RevBayesCore::RbConstIterator<valueType>::operator==(const RbConstIterator<
 template <typename valueType>
 bool RevBayesCore::RbConstIterator<valueType>::operator!=(const RbConstIterator<valueType> &x) const {
     
-    return it == x.it;
+    return it != x.it;
 }
 
 

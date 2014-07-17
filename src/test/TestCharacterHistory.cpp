@@ -275,7 +275,7 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     
     std::cout << "Adding moves\n";
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
 //    TopologyNode* nd = NULL; // &tau->getValue().getNode(60); 
     
     if (useClock)
@@ -358,7 +358,7 @@ bool TestCharacterHistory::run_exp(void) {
     ////////////
     
     std::cout << "Adding monitors\n";
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert(clockRate);
@@ -400,16 +400,6 @@ bool TestCharacterHistory::run_exp(void) {
 //    delete dp;
 //    delete glr;
 //    delete sglr;
-    
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
-    
     std::cout << "Finished CharacterHistory model test." << std::endl;
     
     return true;
@@ -560,7 +550,7 @@ bool TestCharacterHistory::run_dollo(void) {
     ////////////
     
     std::cout << "Adding moves\n";
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     if (useClock)
     {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.5), 5, true ) );
@@ -598,7 +588,7 @@ bool TestCharacterHistory::run_dollo(void) {
     ////////////
     
     std::cout << "Adding monitors\n";
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     
     std::set<DagNode*> monitoredNodes;
     if (useClock)
@@ -639,15 +629,6 @@ bool TestCharacterHistory::run_dollo(void) {
     //    delete dp;
     //    delete glr;
     //    delete sglr;
-    
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     std::cout << "Finished CharacterHistory model test." << std::endl;
     

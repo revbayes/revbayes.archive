@@ -144,7 +144,7 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
 
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
@@ -169,7 +169,7 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     //    monitoredNodes.insert( er );
     //    monitoredNodes.insert( pi );
@@ -210,14 +210,6 @@ bool TestBranchHeterogeneousTamura92Model::run( void ) {
     //    delete a;
     //    delete b;
     //    delete c;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     std::cout << "Finished GTR model test." << std::endl;
     

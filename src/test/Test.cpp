@@ -38,10 +38,8 @@
 #include "TestMultispeciesCoalescent.h"
 #include "TestMultispeciesCoalescentCombinatorics.h"
 #include "TestMultispeciesCoalescentWithSequences.h"
-#include "TestNumericalIntegration.h"
 #include "TestNNI.h"
 #include "TestNormalModel.h"
-#include "TestRevLanguage.h"
 #include "TestScalingMove.h"
 #include "TestSimplexMove.h"
 #include "TestSequenceSimulation.h"
@@ -94,9 +92,9 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A DPP relaxed model test */
     try {
 		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
-        TestDPPRelClock testDPPRC = TestDPPRelClock("clock_test/test_data_clock_gtr.nex", "clock_test/true_calib_clk.tre", 100000);
+        TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_data_clock_gtr.nex", "data/true_calib_clk.tre", 100000);
 		
-//		testDPPRC.run();
+		testDPPRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -386,15 +384,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
 
-    
-    /* A numerical integration test */
-    try {
-        TestNumericalIntegration testIntegration = TestNumericalIntegration();
-//        testIntegration.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-
     /* A UCLN relaxed model test */
     try {
 //        TestUCLNRelaxedClock testUCLNRC = TestUCLNRelaxedClock("data/ucln_sim.nex", "data/ucln_sim.tre", 1000);
@@ -473,16 +462,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
-    
-    
-    /* The whole RevLanguage test suite */
-    try {
-        TestRevLanguage testRL = TestRevLanguage();
-        //testRL.run();
-    } catch (RbException &e) {
-        std::cout << e.getMessage() << std::endl;
-    }
-    
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;

@@ -40,12 +40,13 @@
 \renewcommand{\headrulewidth}{0.5pt}
 \headsep = 20pt
 \lhead{ }
-\rhead{\textsc {RevBayes Tutorial}}
+\rhead{\textsc {RevBayes Tutorial --- Model Selection \& Partitioning}}
 
 \thispagestyle{plain}
 \begin{center}
 
-\textbf{\LARGE Phylogenetic Inference using RevBayes}\\\vspace{4mm}
+\textbf{\LARGE Phylogenetic Inference using RevBayes}\\\vspace{2mm}
+\textbf{\it{\Large Model Selection \& Data Partitioning}}\\\vspace{2mm}
 \end{center}
 
 \section*{Overview}
@@ -82,7 +83,7 @@ RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{data <- readCharacterData("data/conifer\_dna.nex")[1]}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is included simply included to replicate what you see on your screen. 
+For this command, type in the command and its options:\\ \cl{data <- readCharacterData("data/conifer\_dna.nex")[1]}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
 
 %Screen output resulting from the execution of a function or command will be in \colorbox{shadecolor}{\textcolor{outputcol}{\cl{forest green typewriter text in a shaded box}}}: 
 %
@@ -280,18 +281,34 @@ RevBayes > log()
 %Next, load the sequences into the program using the \cl{execute} command.
 %\mbcl{execute conifer\_dna.nex}
 
-\bigskip
-\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
+%\bigskip
+%\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
 
+
+
+\bigskip
+\subsection{An Unpartitioned Analysis}\label{secUnif} 
+
+\textbf{\textit{Load Data}}
 
 First load in the sequences using the \cl{readCharacterData} function:
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]
+RevBayes > D <- readCharacterData("data/conifer_atpB.nex")RevBayes > data_atpB <- D[1]RevBayes > D <- readCharacterData("data/conifer_rbcL.nex")RevBayes > data_rbcL <- D[1]
 \end{lstlisting}
 \end{snugshade*}}
 
+\taha{Concatenate two datasets}
+
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data <- data_atpB + data_rbcL\end{lstlisting}\end{snugshade*}}
+
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data
+   Origination:                   conifer_atpB.nex
+   Number of taxa:                9
+   Number of characters:          2659
+   Number of included characters: 2659
+   Datatype:                      DNA\end{lstlisting}\end{snugshade*}}
 
 \taha{can we specify an outgroup?}
 
@@ -301,9 +318,7 @@ RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]
 %\mbcl{outgroup Ginkgo\_biloba}
 
 Next we will specify some useful variables based on our dataset. The variable \cl{data} has \textsl{member functions} that we can use to retrieve information. 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data.ntaxa()RevBayes > n_sites <- data.nchar()[1]RevBayes > names <- data.names()RevBayes > n_nodes <- 2 * n_species - 3\end{lstlisting}\end{snugshade*}}
-\bigskip
-\subsection{An Unpartitioned Analysis}\label{secUnif} 
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data.ntaxa()RevBayes > n_sites <- data.nchar()[1]RevBayes > names <- data.names()RevBayes > n_nodes <- 2 * n_species - 3\end{lstlisting}\end{snugshade*}}
 
 \textbf{\textit{The GTR Parameters}}
 
@@ -382,7 +397,7 @@ RevBayes > sf ~ dnDirichlet(sf_prior)
 And specify the simplex scale move:
 {\tt \small \begin{snugshade*}\begin{lstlisting}RevBayes > moves[2] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2)  \end{lstlisting}\end{snugshade*}}
 
-\taha{Now say something about the instantaneous rate matrix here}
+\taha{Now say something about the instantaneous rate matrix here and deterministic nodes}
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > Q := gtr(er,sf)\end{lstlisting}\end{snugshade*}}\textbf{\textit{Gamma-Distributed Site Rates}}
 
@@ -769,10 +784,10 @@ You can carry out these batch commands by providing the file name when you execu
 
 \begin{itemize}
 \item RevBayes: \href{https://github.com/revbayes/code}{https://github.com/revbayes/code} \\ \vspace{-7mm}
-\item MrBayes: \href{http://mrbayes.sourceforge.net/}{http://mrbayes.sourceforge.net/} \\ \vspace{-7mm}
-\item PhyloBayes: \href{http://megasun.bch.umontreal.ca/People/lartillot/www/index.htm}{www.phylobayes.org/} \\ \vspace{-7mm}
-\item BEAGLE: \href{http://code.google.com/p/beagle-lib/}{http://code.google.com/p/beagle-lib/} \\ \vspace{-7mm}
-\item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org/} \\ \vspace{-7mm}
+\item MrBayes: \href{http://mrbayes.sourceforge.net/}{http://mrbayes.sourceforge.net} \\ \vspace{-7mm}
+\item PhyloBayes: \href{http://megasun.bch.umontreal.ca/People/lartillot/www/index.htm}{www.phylobayes.org} \\ \vspace{-7mm}
+%\item BEAGLE: \href{http://code.google.com/p/beagle-lib/}{http://code.google.com/p/beagle-lib/} \\ \vspace{-7mm}
+\item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
 \end{itemize}
 
 Questions about this tutorial can be directed to: \\\vspace{-10mm}

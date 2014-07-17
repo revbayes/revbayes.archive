@@ -33,7 +33,7 @@ using namespace RevBayesCore;
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-Mcmc::Mcmc(const Model& m, const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons) : MonteCarloSampler(m,mvs,mons)
+Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MonteCarloSampler(m,mvs,mons)
 {
     
 }
@@ -63,7 +63,7 @@ void Mcmc::monitor(unsigned long g)
     // Monitor
     for (size_t i = 0; i < monitors.size(); i++) 
     {
-        monitors[i]->monitor( g );
+        monitors[i].monitor( g );
     }
     
 }
@@ -89,25 +89,16 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
 #endif
 
         // Get the move
-        Move* theMove = schedule->nextMove( generation );
-        theMove->perform( chainHeat, false);
+        Move& theMove = schedule->nextMove( generation );
+        theMove.perform( chainHeat, false);
         
 #ifdef DEBUG_MCMC
         double lnProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            lnProb += (*it)->getLnProbability();
-        }
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            (*it)->touch();
-        }
-        double touchedLnProb = 0.0;
         double lnLikelihoodProb = 0.0;
         double lnPriorProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
-            touchedLnProb += (*it)->getLnProbability();
+            lnProb += (*it)->getLnProbability();
             if ( (*it)->isClamped() )
             {
                 lnLikelihoodProb += (*it)->getLnProbability();
@@ -117,11 +108,54 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
                 lnPriorProb += (*it)->getLnProbability();
             }
         }
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->touch();
+        }
+        double touchedLnProb = 0.0;
+        double touchedLnLikelihoodProb = 0.0;
+        double touchedLnPriorProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            touchedLnProb += (*it)->getLnProbability();
+            if ( (*it)->isClamped() )
+            {
+                touchedLnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                touchedLnPriorProb += (*it)->getLnProbability();
+            }
+        }
+        
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->keep();
+            (*it)->touch();
+        }
+        double touchedAgainLnProb = 0.0;
+        double touchedAgainLnLikelihoodProb = 0.0;
+        double touchedAgainLnPriorProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            touchedAgainLnProb += (*it)->getLnProbability();
+            if ( (*it)->isClamped() )
+            {
+                touchedAgainLnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                touchedAgainLnPriorProb += (*it)->getLnProbability();
+            }
+        }
         
         if ( fabs(lnProb - touchedLnProb) > 1E-8 )
         {
-            std::cout << "Failure occurred after move:\t" << theMove->getMoveName() << std::endl;
-            throw RbException("Error in MCMC probability computation.");
+            std::cout << lnPriorProb << "\t\t-\t\t" << touchedLnPriorProb << "\t\t-\t\t" << touchedAgainLnPriorProb << std::endl;
+            std::cout << lnLikelihoodProb << "\t\t-\t\t" << touchedLnLikelihoodProb << "\t\t-\t\t" << touchedAgainLnLikelihoodProb << std::endl;
+            std::cout << lnProb << "\t\t-\t\t" << touchedLnProb << "\t\t-\t\t" << touchedAgainLnProb << std::endl;
+            std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
+//            throw RbException("Error in MCMC probability computation.");
         }
 #endif
         
@@ -173,9 +207,9 @@ void Mcmc::run(size_t kIterations) {
     }
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) 
+    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        (*it)->resetCounters();
+        it->resetCounters();
     }
     
     // Run the chain

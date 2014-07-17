@@ -95,12 +95,15 @@ RevBayesCore::VectorFunction<valueType>* RevBayesCore::VectorFunction<valueType>
 
 template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::keep( DagNode *toucher ) {
+    TypedFunction<std::vector<valueType> >::keep( toucher );
     this->dagNode->clearTouchedElementIndices();
 }
 
 
 template <class valueType>
-void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher ) {
+void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher )
+{
+    TypedFunction<std::vector<valueType> >::restore( toucher );
     
     this->update();
     
@@ -110,20 +113,22 @@ void RevBayesCore::VectorFunction<valueType>::restore( DagNode *toucher ) {
 
 
 template <class valueType>
-void RevBayesCore::VectorFunction<valueType>::update( void ) {
+void RevBayesCore::VectorFunction<valueType>::update( void )
+{
     
     bool updateAll = true;
     if ( this->dagNode != NULL )
     {
         const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
-        if (indices.size() > 0 ) 
+        if ( indices.size() > 0 )
         {
             updateAll = false;
-            for (std::set<size_t>::const_iterator it = indices.begin(); it != indices.end(); ++it) 
+            for (std::set<size_t>::const_iterator it = indices.begin(); it != indices.end(); ++it)
             {
                 (*this->value)[*it] = parameters[*it]->getValue();
             }
-        } 
+            
+        }
     }
     
     if ( updateAll )
@@ -157,6 +162,9 @@ void RevBayesCore::VectorFunction<valueType>::swapParameterInternal(const DagNod
 
 template <class valueType>
 void RevBayesCore::VectorFunction<valueType>::touch( DagNode *toucher ) {
+    
+    //delegate to base class
+    TypedFunction<std::vector<valueType> >::touch( toucher );
     
     for (size_t i = 0; i < parameters.size(); ++i) 
     {

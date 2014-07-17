@@ -53,6 +53,7 @@ namespace RevLanguage {
 #include "RbUtil.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 #include "VectorRbPointer.h"
 
 
@@ -74,13 +75,12 @@ RevLanguage::Func_rlvector<valType>* RevLanguage::Func_rlvector<valType>::clone(
 template <typename valType>
 RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
     
-    std::vector<typename valType::valueType*> params;
-    for ( size_t i = 0; i < args.size(); i++ ) {
+    VectorRbPointer<valType> *theVector = new VectorRbPointer<valType>();
+    for ( size_t i = 0; i < args.size(); i++ )
+    {
         const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
-        params.push_back( val.getValue().clone() );
+        theVector->push_back( val.clone() );
     }
-    
-    VectorRbPointer<valType> *theVector = new VectorRbPointer<valType>( params );
         
     return theVector;
 }
