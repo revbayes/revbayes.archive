@@ -17,7 +17,6 @@ BppAlphabet::BppAlphabet(void) : ModelObject<RevBayesCore::BppAlphabet>() {
 
 /** Construct from core BppAlphabet */
 BppAlphabet::BppAlphabet(RevBayesCore::BppAlphabet *c) : ModelObject<RevBayesCore::BppAlphabet>( c ) {
-    
 }
 
 /** Construct from core BppAlphabet */
@@ -39,9 +38,9 @@ BppAlphabet::BppAlphabet(const BppAlphabet &t) : ModelObject<RevBayesCore::BppAl
 
 
 /** Clone object */
-BppAlphabet* BppAlphabet::clone(void) const {
-    
-    return new BppAlphabet(*this);
+BppAlphabet* BppAlphabet::clone(void) const
+{
+  return new BppAlphabet(*this);
 }
 
 

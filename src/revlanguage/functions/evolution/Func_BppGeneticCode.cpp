@@ -43,7 +43,6 @@ RevObject* Func_BppGeneticCode::execute() {
   ostringstream o;
   fn.printValue(o);
 
-
   bpp::GeneticCode* gc=bpp::SequenceApplicationTools::getGeneticCode(static_cast<const bpp::CodonAlphabet*>(dalph->getValue().getAlphabet())->getNucleicAlphabet(),o.str());
 
   RevBayesCore::BppGeneticCode* rbgc= new RevBayesCore::BppGeneticCode(gc);
@@ -62,7 +61,7 @@ const ArgumentRules& Func_BppGeneticCode::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "alphabet", true, BppAlphabet::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "BppO genetic description", true, RlString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "desc", true, RlString::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

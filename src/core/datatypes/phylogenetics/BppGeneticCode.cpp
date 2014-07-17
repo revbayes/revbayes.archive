@@ -19,20 +19,22 @@ BppGeneticCode::BppGeneticCode(const GeneticCode* gc) : pGeneticCode_(gc)
 }
 
 
-BppGeneticCode::BppGeneticCode(const BppGeneticCode &rm) : pGeneticCode_(rm.pGeneticCode_)
+BppGeneticCode::BppGeneticCode(const BppGeneticCode &rm) : pGeneticCode_(rm.pGeneticCode_->clone())
 {
 }
 
 
 BppGeneticCode::~BppGeneticCode(void)
 {
+  if (pGeneticCode_)
+    delete pGeneticCode_;
 }
 
 
 BppGeneticCode& BppGeneticCode::operator=(const BppGeneticCode &rm)
 {
-   if (this != &rm)
-     pGeneticCode_=  rm.pGeneticCode_;
+  if (this != &rm)
+     pGeneticCode_=  rm.pGeneticCode_->clone();
     
   return *this;
 }

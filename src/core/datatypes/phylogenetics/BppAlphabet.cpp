@@ -19,20 +19,23 @@ BppAlphabet::BppAlphabet(const Alphabet* alphabet) : pAlphabet_(alphabet)
 }
 
 
-BppAlphabet::BppAlphabet(const BppAlphabet &rm) : pAlphabet_(rm.pAlphabet_)
+BppAlphabet::BppAlphabet(const BppAlphabet &rm) : pAlphabet_(rm.pAlphabet_->clone())
 {
 }
 
 
 BppAlphabet::~BppAlphabet(void)
 {
+  if (pAlphabet_)
+    delete pAlphabet_;
+  
 }
 
 
 BppAlphabet& BppAlphabet::operator=(const BppAlphabet &rm)
 {
-   if (this != &rm)
-     pAlphabet_=  rm.pAlphabet_;
+  if (this != &rm)
+    pAlphabet_=  rm.pAlphabet_->clone();
     
   return *this;
 }

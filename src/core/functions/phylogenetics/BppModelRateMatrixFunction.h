@@ -35,7 +35,7 @@ namespace RevBayesCore {
     class BppModelRateMatrixFunction : public TypedFunction<RateMatrix> {
         
     public:
-      BppModelRateMatrixFunction(std::set<const TypedDagNode<double > *>& sTDN, bpp::SubstitutionModel* pSM);
+      BppModelRateMatrixFunction(std::map<std::string, const TypedDagNode<double > *>& sTDN, bpp::SubstitutionModel* pSM);
       BppModelRateMatrixFunction(const BppModelRateMatrixFunction &n);  //!< Copy constructor
       virtual ~BppModelRateMatrixFunction(void);                   //!< Virtual destructor
         

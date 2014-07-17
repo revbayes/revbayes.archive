@@ -7,14 +7,14 @@ using namespace RevBayesCore;
 using namespace std;
 
 
-BppModelRateMatrixFunction::BppModelRateMatrixFunction(std::set<const TypedDagNode< double > *>& sTDN, bpp::SubstitutionModel* pSM ) : TypedFunction<RateMatrix>( new BppRateMatrix( pSM ))
+BppModelRateMatrixFunction::BppModelRateMatrixFunction(std::map<std::string, const TypedDagNode< double > *>& sTDN, bpp::SubstitutionModel* pSM ) : TypedFunction<RateMatrix>( new BppRateMatrix( pSM ))
 {
-  std::set<const TypedDagNode<double>* >::const_iterator it;
-  
+  std::map<std::string, const TypedDagNode<double>* >::const_iterator it;
+
   for (it=sTDN.begin();it!=sTDN.end();it++)
   {
-    addParameter(*it);
-    static_cast< BppRateMatrix*>(value)->setParameterValue((*it)->getName(),(*it)->getValue());
+    this->addParameter(it->second);
+    static_cast< BppRateMatrix*>(value)->setParameterValue(it->first,it->second->getValue());
   }
   
   update();

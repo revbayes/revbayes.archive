@@ -208,6 +208,7 @@
 #ifdef WITH_BPP
 #include "Func_BppAlphabet.h"
 #include "Func_BppGeneticCode.h"
+#include "Func_BppModel.h"
 #endif
 
 /* Functions related to evolution (in folder "functions/evolution") */
@@ -707,6 +708,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 #ifdef WITH_BPP
         addFunction( "BppAlphabet",   new Func_BppAlphabet()     );
         addFunction( "BppGeneticCode",      new Func_BppGeneticCode()     );
+        addFunction( "BppModel",      new Func_BppModel()     );
 #endif
         
         /* Inference functions (in folder "functions/inference") */

@@ -46,7 +46,7 @@ RevObject* Func_BppAlphabet::execute() {
   bpp::Alphabet* alph=bpp::SequenceApplicationTools::getAlphabet(mdesc);
 
   RevBayesCore::BppAlphabet* rbAlph= new RevBayesCore::BppAlphabet(alph);
-  
+
   return new BppAlphabet(rbAlph);
 }
 
@@ -59,7 +59,7 @@ const ArgumentRules& Func_BppAlphabet::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "BppO alphabet description", true, RlString::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "desc", true, RlString::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
