@@ -109,7 +109,7 @@ void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& f
         std::vector<double> tmp(getDim());
 
         for (size_t i = 0; i < getDim(); i++) {
-            tmp[i] = (*this)[from.getIndex()][i] - (*this)[from.getParent().getIndex()][i];
+            tmp[i] = ((*this)[from.getIndex()][i] - (*this)[from.getParent().getIndex()][i]) / sqrt(from.getBranchLength());
         }
 
         for (size_t i = 0; i < getDim(); i++) {

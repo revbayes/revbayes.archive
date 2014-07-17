@@ -23,14 +23,11 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-// MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma, const TypedDagNode< std::vector<double> >* inrootVal) : TypedDistribution< MultivariatePhyloProcess >( new MatrixReal(intau->getValue().getNumberOfNodes(), insigma->getValue().getDim(), 0.0 )),
 MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MultivariatePhyloProcess >( new MultivariatePhyloProcess(&intau->getValue(), insigma->getValue().getDim())),
-tau( intau ),
-sigma( insigma ) {
-// rootVal( inrootVal ) {
+    tau( intau ),
+    sigma( insigma ) {
     this->addParameter( tau );
     this->addParameter( sigma );
-//    this->addParameter( rootVal );
     
     simulate();
 }
@@ -73,6 +70,8 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 
         size_t upindex = from.getParent().getIndex();
         std::vector<double> upval = (*value)[upindex];
+
+        // if root is clapmed at 0 and offset is used instead
         /*
         if (from.getParent().isRoot())  {
             for (size_t j=0; j<getDim(); j++)   {
@@ -163,10 +162,5 @@ void MultivariateBrownianPhyloProcess::swapParameter(const DagNode *oldP, const 
     if ( oldP == sigma ) {
         sigma = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
     }
-    /*
-    if ( oldP == rootVal ) {
-        rootVal = static_cast< const TypedDagNode< std::vector<double> > * >( newP );
-    }
-    */
 }
 

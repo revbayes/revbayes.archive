@@ -25,11 +25,9 @@ PrecisionMatrix::PrecisionMatrix(void) : MatrixReal(1,1,0.0), eigensystem(this),
 PrecisionMatrix::PrecisionMatrix(size_t n) : MatrixReal(n,n,0), eigensystem(this), eigenflag(false), inverse(n,n,0) {
 }
 
-// PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from.getDim(), from.getDim(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {
 PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.inverse) {
 }
 
-// PrecisionMatrix::PrecisionMatrix(const MatrixReal& from) : MatrixReal(from.getNumberOfRows(), from.getNumberOfRows(), 0), eigensystem(this), eigenflag(false), inverse(from.inverse) {
 PrecisionMatrix::PrecisionMatrix(const MatrixReal& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.getNumberOfColumns(), from.getNumberOfColumns(), 0) {
     if (getNumberOfRows() != getNumberOfColumns())    {
         std::cerr << "error in PrecisionMatrix: copy constructor from a non-square matrix\n";
@@ -155,14 +153,34 @@ void PrecisionMatrix::touch(void)   {
 }
 
 void PrecisionMatrix::update()  const {
-    
-    /*
-    std::vector<double> bkeigenval = eigensystem.getRealEigenvalues();
 
-    bool check = eigenflag;
-    eigenflag = false;
+    // just for debugging (checking that eigen systm is indeed updated when it says it is))
+    /*
+    if (eigenflag)  {
+
+        MatrixReal tmp(getDim(), getDim(), 0);
+        MatrixReal tmp2(getDim(), getDim(), 0);
+        const std::vector<double>& eigenval = eigensystem.getRealEigenvalues();
+        for (size_t i = 0; i < getDim(); i++) {
+            tmp[i][i] = eigenval[i];
+        }
+
+        tmp *= eigensystem.getInverseEigenvectors();
+        tmp2 = eigensystem.getEigenvectors() * tmp;
+        
+        for (size_t i = 0; i < getDim(); i++) {
+            for (size_t j = 0; j < getDim(); j++) {
+                if (fabs(tmp2[i][j] - (*this)[i][j])>1e-6)  {
+                    std::cerr << "error: diag not correctly set up\n";
+                    std::cerr << i << '\t' << j << '\t' << tmp[i][j] << '\n';
+                    exit(1);
+                }
+            }
+        }
+
+        
+    }
     */
-    
     if (! eigenflag)    {
                 
         try {
@@ -193,28 +211,6 @@ void PrecisionMatrix::update()  const {
             tmp *= eigensystem.getInverseEigenvectors();
             inverse = eigensystem.getEigenvectors() * tmp;
 
-            // chcek matrix inversion
-            /*
-            for (size_t i=0; i<getDim(); i++)   {
-                for (size_t j=0; j<getDim(); j++)   {
-                    double tot = 0;
-                    for (size_t k=0; k<getDim(); k++)   {
-                        tot += (*this)[i][k] * inverse[k][j];
-                    }
-                    if (i==j)   {
-                        tot -= 1;
-                    }
-                    if (std::fabs(tot) > 1e-6)  {
-                        std::cerr << "error in inversion: " << tot << '\n';
-                        exit(1);
-                    }
-                    else    {
-                        std::cerr << "inversion ok\n";
-                        
-                    }
-                }
-            }
-            */
             eigenflag = true;
            
         }

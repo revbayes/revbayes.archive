@@ -21,16 +21,17 @@ tau ~ uniformTimeTree( originTime = 2.0, taxonNames = names)
 
 # work under fixed topology
 # set tau equal to externally given tree
-treeArray <- readTrees("data/chronoplac2.tree")
+treeArray <- readTrees("data/chronoplac.tree")
 fixedTree <- treeArray[1]
 tau.clamp(fixedTree)
 
-# moves on the tree: only relative dates
 index <- 1
-moves[index] <- mSubtreeScale(tau, weight=5.0)
-index <- index + 1
-moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
-index <- index + 1
+
+# moves on the tree: only relative dates
+#moves[index] <- mSubtreeScale(tau, weight=5.0)
+#index <- index + 1
+#moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+#index <- index + 1
 
 # substition models
 # constant hypernodes
@@ -84,8 +85,6 @@ rootval[2] <- 0
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
 
-br
-
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
@@ -112,7 +111,6 @@ mitSeq.clamp(mitData)
 "model"
 mymodel <- model(nucpi)
 
-# why can t I monitor the summary statistics mean1 and stdev1 ?
 monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
 monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, br)
 monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
