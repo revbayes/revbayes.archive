@@ -43,14 +43,20 @@ namespace RevBayesCore {
       BppModelRateMatrixFunction* clone(void) const;               //!< Create an independent clone
 
       void update(void);
-        
+
+      void addParameter(const DagNode* p);
+
+      void removeParameter(const DagNode* p);
+      
     protected:
       void swapParameterInternal(const DagNode *oldP, const DagNode *newP); //!< Implementation of swaping parameters
         
     private:
         
-      // members
-      std::map<std::string, const TypedDagNode< double >* >  _mTDN;
+      // members map from names to DagNode and the reverse
+      
+      std::map<std::string, const TypedDagNode< double >* >  _mN2D;
+      std::map<const TypedDagNode< double >*,  std::string>  _mD2N;
     };
     
 }
