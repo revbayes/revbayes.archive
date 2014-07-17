@@ -134,3 +134,42 @@ const TypeSpec& MultivariatePhyloProcess::getTypeSpec( void ) const {
     return typeSpec;
 }
 
+
+/** Print value for user */
+void MultivariatePhyloProcess::printValue(std::ostream &os) const {
+
+    /*
+    long previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    std::fixed( o );
+    o.precision( 3 );
+    o << dagNode->getValue();
+    
+    o.setf( previousFlags );
+    o.precision( previousPrecision );
+
+    */
+    
+    os << dagNode->getValue();
+
+    /*
+    RevBayesCore::MultivariatePhyloProcess x = dagNode->getValue();
+    
+    os << x << '\t';
+
+    for (size_t i=0; i<x.getDim(); i++)   {
+        os << x.getMean(i) << '\t';
+    }
+    
+    for (size_t i=0; i<x.getDim(); i++)   {
+        os << x.getStdev(i) << '\t';
+    }    
+    
+    for (size_t i=0; i<x.getDim(); i++)   {
+        os << x.getRootVal(i) << '\t';
+    }    
+    */
+}
+
+
