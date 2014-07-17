@@ -10,7 +10,8 @@
 #define __revbayes__ExponentialBranchTree__
 
 #include <iostream>
-
+#include <stdlib.h>
+#include <cstdlib>
 
 #include "RateMatrix.h"
 #include "TypedDagNode.h"
