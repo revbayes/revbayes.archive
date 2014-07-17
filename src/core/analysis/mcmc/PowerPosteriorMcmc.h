@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class PowerPosteriorMcmc : public MonteCarloSampler {
         
     public:
-        PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &moves, const std::string &fn);
+        PowerPosteriorMcmc(const Model& m, const RbVector<Move> &moves, const std::string &fn);
         virtual                                            ~PowerPosteriorMcmc(void);                                                          //!< Virtual destructor
         
         // public methods

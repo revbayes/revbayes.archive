@@ -66,8 +66,14 @@ TestDPPRelClock::~TestDPPRelClock() {
 
 bool TestDPPRelClock::run( void ) {
     
-    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
-    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
+    // fix the rng seed
+    std::vector<unsigned int> seed;
+    seed.push_back(25);
+    seed.push_back(42);
+    GLOBAL_RNG->setSeed(seed);
+    
+//    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
+//    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -215,7 +221,7 @@ bool TestDPPRelClock::run( void ) {
 	std::cout << " death rate: " << deathRate->getValue() << std::endl;
 
 	/* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
@@ -240,7 +246,7 @@ bool TestDPPRelClock::run( void ) {
 	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
 
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( treeHeight );
 	monitoredNodes.push_back( origin );
@@ -259,10 +265,12 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( er );
     monitoredNodes.push_back( srAlpha );
  	monitoredNodes.push_back( branchRates );
+    monitoredNodes.push_back( siteRates );
+    monitoredNodes.push_back( siteRatesNormed );
 // 	monitoredNodes.push_back( scaleRate );
 // 	monitoredNodes.push_back( branchSubRates );
 
-	std::string logFN = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/rb_tt_CLK_pr.log";
+	std::string logFN = "rb_tt_CLK_pr.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 
 //    std::set<DagNode*> monitoredNodes2;
@@ -281,15 +289,6 @@ bool TestDPPRelClock::run( void ) {
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();
-	
-	for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
 	
    
 	/* clean up */

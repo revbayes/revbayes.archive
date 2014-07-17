@@ -38,11 +38,11 @@ bool TestSimplexMove::run( void ) {
     x->setValue( x_val );
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SimplexMove( x, 100.0, 4, 0, false, 1.0 ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     monitors.push_back( new FileMonitor( x, 1, "SimplexMoveTest.log", "\t" ) );
     
     /* instantiate the model */
@@ -56,14 +56,6 @@ bool TestSimplexMove::run( void ) {
     /* clean up */
     delete x;
     delete a;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     return true;
 }

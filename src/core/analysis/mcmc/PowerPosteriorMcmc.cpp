@@ -14,7 +14,7 @@
 
 using namespace RevBayesCore;
 
-PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const std::vector<Move*> &mvs, const std::string &fn) : MonteCarloSampler( m, mvs, std::vector<Monitor*>() ),
+PowerPosteriorMcmc::PowerPosteriorMcmc(const Model& m, const RbVector<Move> &mvs, const std::string &fn) : MonteCarloSampler( m, mvs, RbVector<Monitor>() ),
     filename( fn ),
     powers(),
     sampleFreq( 100 )
@@ -49,9 +49,9 @@ void PowerPosteriorMcmc::run(size_t gen)
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
     
     // reset the counters for the move schedules
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it)
+    for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-        (*it)->resetCounters();
+        it->resetCounters();
     }
     
     size_t burnin = size_t( ceil( 0.25*gen ) );
@@ -60,8 +60,9 @@ void PowerPosteriorMcmc::run(size_t gen)
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     /* Run the chain */    
-    RandomMoveSchedule schedule = RandomMoveSchedule(moves);
-    for (size_t i = 0; i < powers.size(); ++i) {
+    RandomMoveSchedule schedule = RandomMoveSchedule(&moves);
+    for (size_t i = 0; i < powers.size(); ++i)
+    {
         double p = powers[i];
         std::cout << "Step ";
         for (size_t d = size_t( ceil( log10( i+1.1 ) ) ); d < digits; d++ )
@@ -83,9 +84,9 @@ void PowerPosteriorMcmc::run(size_t gen)
             for (size_t j=0; j<proposals; j++)
             {
                 /* Get the move */
-                Move* theMove = schedule.nextMove(k);
+                Move& theMove = schedule.nextMove(k);
                 
-                theMove->perform( p, true );
+                theMove.perform( p, true );
             
             }
         

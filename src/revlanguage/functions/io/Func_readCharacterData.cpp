@@ -17,7 +17,7 @@
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "RlUserInterface.h"
-#include "VectorRlPointer.h"
+#include "VectorRbPointer.h"
 
 #include <map>
 #include <set>
@@ -64,13 +64,14 @@ RevObject* Func_readCharacterData::execute( void ) {
     reader.clearWarnings();
     
     // the return value
-    VectorRlPointer<RevObject> *m = new VectorRlPointer<RevObject>();
+    VectorRbPointer<AbstractCharacterData> *m = new VectorRbPointer<AbstractCharacterData>();
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
     size_t numFilesRead = 0;
-    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
+    for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+    {
         bool isInterleaved = false;
         std::string myFileType = "unknown";
         std::string dType = "unknown";
@@ -82,9 +83,11 @@ RevObject* Func_readCharacterData::execute( void ) {
             myFileType = "fasta";
         
         int numMatricesReadForThisFile=0;
-        if (myFileType != "unknown") {
+        if (myFileType != "unknown")
+        {
             std::string suffix = "|" + dType;
-            if ( myFileType == "phylip" ) {
+            if ( myFileType == "phylip" )
+            {
                 if (isInterleaved == true)
                     suffix += "|interleaved";
                 else
@@ -105,37 +108,46 @@ RevObject* Func_readCharacterData::execute( void ) {
                 // Assume success; correct below if failure
                 numMatricesReadForThisFile++;
                 
-                if ( dType == "DNA" ) {
+                if ( dType == "DNA" )
+                {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-                    DiscreteCharacterData<DnaState> *mDNA = new DiscreteCharacterData<DnaState>( coreM );
+                    DiscreteCharacterData<DnaState> mDNA = DiscreteCharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                 }
-                else if ( dType == "RNA" ) {
+                else if ( dType == "RNA" )
+                {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-                    DiscreteCharacterData<RnaState> *mRNA = new DiscreteCharacterData<RnaState>( coreM );
+                    DiscreteCharacterData<RnaState> mRNA = DiscreteCharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                 }
-                else if ( dType == "Protein" ) {
+                else if ( dType == "Protein" )
+                {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                    DiscreteCharacterData<AminoAcidState> *mAA = new DiscreteCharacterData<AminoAcidState>( coreM );
+                    DiscreteCharacterData<AminoAcidState> mAA = DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
-                else if ( dType == "Standard" ) {
+                else if ( dType == "Standard" )
+                {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-                    DiscreteCharacterData<StandardState> *mSS = new DiscreteCharacterData<StandardState>( coreM );
+                    DiscreteCharacterData<StandardState> mSS = DiscreteCharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                 }
-                else {
+                else
+                {
                     numMatricesReadForThisFile--;
                     throw RbException("Unknown data type \"" + dType + "\".");
                 }
             }
         }
-        else {
+        else
+        {
             reader.addWarning("Unknown file type");
         }
-    if (numMatricesReadForThisFile > 0)
-        numFilesRead++;
+        
+        if (numMatricesReadForThisFile > 0)
+        {
+            numFilesRead++;
+        }
     }
     
     
@@ -263,7 +275,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRlPointer<RevObject>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = VectorRbPointer<AbstractCharacterData>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

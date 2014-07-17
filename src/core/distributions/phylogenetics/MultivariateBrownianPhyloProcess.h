@@ -15,10 +15,11 @@
 #include "PrecisionMatrix.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
+#include "MultivariatePhyloProcess.h"
 
 namespace RevBayesCore {
     
-    class MultivariateBrownianPhyloProcess : public TypedDistribution<MatrixReal> {
+    class MultivariateBrownianPhyloProcess : public TypedDistribution<MultivariatePhyloProcess> {
         
     public:
         // constructor(s)
@@ -32,12 +33,10 @@ namespace RevBayesCore {
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
-        size_t                                                  getDim() {return sigma->getValue().getDim();}
+        size_t                                                  getDim() const {return sigma->getValue().getDim();}
         
-        double                                                  getMean(int k);
-        double                                                  getStdev(int k);
-        void                                                    recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n);
-
+        const TypedDagNode< TimeTree >*                         getTimeTree() const {return tau;}
+        
     private:
         // helper methods
         void                                                    simulate();

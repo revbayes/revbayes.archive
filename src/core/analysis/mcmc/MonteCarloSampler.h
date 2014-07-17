@@ -6,6 +6,7 @@
 #include "Move.h"
 #include "MoveSchedule.h"
 #include "RandomMoveSchedule.h"
+#include "RbVector.h"
 #include "SequenctialMoveSchedule.h"
 
 #include <vector>
@@ -33,7 +34,7 @@ namespace RevBayesCore {
     class MonteCarloSampler {
         
     public:
-        MonteCarloSampler(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons);
+        MonteCarloSampler(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons);
         MonteCarloSampler(const MonteCarloSampler &m);
         virtual                                            ~MonteCarloSampler(void);                                                                             //!< Virtual destructor
         
@@ -47,7 +48,7 @@ namespace RevBayesCore {
         size_t                                              getChainIndex(void);
         double                                              getLnPosterior(void);
         double                                              getModelLnProbability(void);
-        std::vector<Monitor*>&                              getMonitors(void);
+        RbVector<Monitor>&                                  getMonitors(void);
         bool                                                isChainActive(void);
         void                                                monitor(unsigned long g);
         virtual unsigned long                               nextCycle(bool advanceCycle);
@@ -67,7 +68,7 @@ namespace RevBayesCore {
                                                                                       std::set<const DagNode*>&   visitedNodes);
         void                                                initializeChain(void);                                                                  //!< Initialize objects for mcmc sampling
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
-        void                                                replaceDag(const std::vector<Move*> &mvs, const std::vector<Monitor*> &mons);
+        void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
         
         // members
         bool                                                chainActive;
@@ -76,8 +77,8 @@ namespace RevBayesCore {
         unsigned long                                       generation;
         double                                              lnProbability;
         Model                                               model;
-        std::vector<Monitor*>                               monitors;
-        std::vector<Move*>                                  moves;
+        RbVector<Monitor>                                   monitors;
+        RbVector<Move>                                      moves;
         std::map<Monitor*, std::set<DagNode*> >             orgNodesMonitors;
         std::map<Move*, std::set<DagNode*> >                orgNodesMoves;
         MoveSchedule*                                       schedule;

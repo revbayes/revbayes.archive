@@ -1,16 +1,19 @@
 #include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbIterator.h"
+
 #include <iostream>
 
 using namespace RevBayesCore;
 
-RandomMoveSchedule::RandomMoveSchedule(const std::vector<Move*> &s) : MoveSchedule( s ) {
+RandomMoveSchedule::RandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ) {
     
     movesPerIteration = 0.0;
-    for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it) {
-        movesPerIteration += (*it)->getUpdateWeight();
-        weights.push_back( (*it)->getUpdateWeight() );
+    for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
+    {
+        movesPerIteration += it->getUpdateWeight();
+        weights.push_back( it->getUpdateWeight() );
     }
 }
 
@@ -29,12 +32,12 @@ double RandomMoveSchedule::getNumberMovesPerIteration( void ) const {
 }
 
 
-Move* RandomMoveSchedule::nextMove( unsigned long gen ) {
+Move& RandomMoveSchedule::nextMove( unsigned long gen ) {
     
     movesPerIteration = 0.0;
     for (size_t i = 0; i < weights.size(); ++i)
     {
-        if ( moves[i]->isActive( gen ) )
+        if ( (*moves)[i].isActive( gen ) )
         {
             movesPerIteration += weights[i];
         }
@@ -46,16 +49,16 @@ Move* RandomMoveSchedule::nextMove( unsigned long gen ) {
     
     size_t index = 0;
     // only if the move is inactive or the weight of the move is smaller than u
-    while ( !moves[index]->isActive(gen) || weights[index] <= u ) 
+    while ( !(*moves)[index].isActive(gen) || weights[index] <= u )
     {
         // check if this move is active
         // if not, then we just subtract the weight of this move
-        if ( moves[index]->isActive( gen ) )
+        if ( (*moves)[index].isActive( gen ) )
         {
             u -= weights[index];
         }
         ++index;
     }
     
-    return moves[index];
+    return (*moves)[index];
 }
