@@ -57,20 +57,23 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 /* Map calls to member methods */
 RevLanguage::RevObject* MultivariatePhyloProcess::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    /*
-    if (name == "nnodes") {
-        size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new Natural( n );
+    if (name == "mean") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double mean = this->dagNode->getValue().getMean(k->getValue());
+        return new Real( mean );
     }
-    else if (name == "height") {
-        const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new RealPos( r.getBranchLength() );
-    } 
-    else if (name == "names") {
-        const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Vector<RlString>( n );
-    } 
-    */
+    
+    if (name == "stdev") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double mean = this->dagNode->getValue().getStdev(k->getValue());
+        return new Real( mean );
+    }
+    
+    if (name == "rootVal") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double mean = this->dagNode->getValue().getRootVal(k->getValue());
+        return new Real( mean );
+    }
     
     return ModelObject<RevBayesCore::MultivariatePhyloProcess>::executeMethod( name, args );
 }
@@ -101,16 +104,17 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
     
     if ( methodsSet == false ) {
         
-        /*
-        ArgumentRules* nnodesArgRules = new ArgumentRules();
-        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
+        ArgumentRules* meanArgRules = new ArgumentRules();
+        meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+        methods.addFunction("mean", new MemberFunction(Real::getClassTypeSpec(),       meanArgRules              ) );
         
-        ArgumentRules* heightArgRules = new ArgumentRules();
-        methods.addFunction("height", new MemberFunction(Natural::getClassTypeSpec(),       heightArgRules              ) );
+        ArgumentRules* stdevArgRules = new ArgumentRules();
+        stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+        methods.addFunction("stdev", new MemberFunction(Real::getClassTypeSpec(),       stdevArgRules              ) );
         
-        ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        */
+        ArgumentRules* rootArgRules = new ArgumentRules();
+        rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+        methods.addFunction("rootVal", new MemberFunction(Real::getClassTypeSpec(),       rootArgRules              ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );
