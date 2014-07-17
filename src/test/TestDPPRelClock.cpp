@@ -66,6 +66,12 @@ TestDPPRelClock::~TestDPPRelClock() {
 
 bool TestDPPRelClock::run( void ) {
     
+    // fix the rng seed
+    std::vector<unsigned int> seed;
+    seed.push_back(25);
+    seed.push_back(42);
+    GLOBAL_RNG->setSeed(seed);
+    
 //    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
 //    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
@@ -259,6 +265,8 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( er );
     monitoredNodes.push_back( srAlpha );
  	monitoredNodes.push_back( branchRates );
+    monitoredNodes.push_back( siteRates );
+    monitoredNodes.push_back( siteRatesNormed );
 // 	monitoredNodes.push_back( scaleRate );
 // 	monitoredNodes.push_back( branchSubRates );
 

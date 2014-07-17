@@ -70,8 +70,6 @@ namespace RevBayesCore {
         DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
         valueType*                          value;
     
-    private:
-        mutable bool                        dirty;
     };
     
     // Global functions using the class
@@ -87,8 +85,7 @@ namespace RevBayesCore {
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(),
     dagNode( NULL ), 
-    value( v ), 
-    dirty( true )
+    value( v )
 {
     
 }
@@ -96,8 +93,7 @@ RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function()
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), 
     dagNode( NULL ), 
-    value( NULL ),
-    dirty( true )
+    value( NULL )
 {
     
     if ( f.value != NULL )
