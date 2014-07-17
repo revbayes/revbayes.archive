@@ -84,20 +84,13 @@ rootval[2] <- 0
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
 
+br
+
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
-
-#stats on brownian process
-mean1 := br.mean(1)
-stdev1 := br.stdev(1)
-
-# why can t I call redraw on the brownian process?
-mean1
-br.redraw()
-mean1
 
 "exp rates"
 # rate variation along the tree
@@ -120,8 +113,8 @@ mitSeq.clamp(mitData)
 mymodel <- model(nucpi)
 
 # why can t I monitor the summary statistics mean1 and stdev1 ?
-monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, kappa, mean1, stdev1)
-monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, kappa)
+monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
+monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, br)
 monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
 monitors[4] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")
  

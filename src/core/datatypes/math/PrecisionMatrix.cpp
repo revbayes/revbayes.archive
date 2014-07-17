@@ -248,7 +248,10 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const PrecisionMatrix& x
         }
     }
     for (size_t i=0; i < x.getNumberOfRows(); i++) {
-            o << x[i][i] << '\t';
+            o << x[i][i];
+            if (i < x.getNumberOfRows() -1) {
+                o << '\t';
+            }
     }
     
     o.setf(previousFlags);
