@@ -5,10 +5,13 @@
 # analysis input
 in_fp           <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
 data_fn         <- "psychotria.nex"
-area_fn         <- "hawaii.atlas.txt"
-data            <- readCharacterData(in_fp + data_fn)[1]
+area_fn         <- "hawaii_dynamic.atlas.txt"
+vdata           <- readCharacterData(in_fp + data_fn)
 atlas           <- readAtlas(in_fp + area_fn)
-tree            <- readTrees(in_fp + data_fn)[1]
+vtree           <- readTrees(in_fp + data_fn)
+tree			<- vtree[1]
+data			<- vdata[1]
+
 
 # analysis output
 out_fp          <- "/Users/mlandis/data/bayarea/output/"
@@ -50,8 +53,8 @@ M           ~  dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinctio
 M.clamp(data)
 
 # hack to sample paths history
-M.redraw()
-M.lnProb
+#M.redraw()
+#M.lnProb
 
 # create the model!
 my_model    <- model(M)
