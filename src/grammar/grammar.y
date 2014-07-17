@@ -482,14 +482,6 @@ variable    :   identifier optElements
                     $$ = new SyntaxVariable(*$1, $2);
                     delete $1;
                 }
-            |   fxnCall '[' expression ']' optElements
-                {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting variable (FUNCTION_VAR) in syntax tree\n");
-#endif
-                    $5->push_front($3);
-                    $$ = new SyntaxVariable($1, $5);
-                }
             |   variable '.' identifier optElements
                 {
 #ifdef DEBUG_BISON_FLEX
@@ -497,14 +489,6 @@ variable    :   identifier optElements
 #endif
                     $$ = new SyntaxVariable($1, *$3, $4);
                     delete $3;
-                }
-            |   variable '.' fxnCall '[' expression ']' optElements
-                {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting member variable (FUNCTION_VAR) in syntax tree\n");
-#endif
-                    $7->push_front($5);
-                    $$ = new SyntaxVariable($1, $3, $7);
                 }
             ;
 

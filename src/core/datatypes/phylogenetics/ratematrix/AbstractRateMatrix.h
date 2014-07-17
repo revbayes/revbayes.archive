@@ -15,7 +15,11 @@ namespace RevBayesCore {
      * @brief Abstract rate matrix class.
      *
      * The abstract rate matrix class provides some basic functionality of most
-     * rate matrices. It inherits from the interface RateMatrix.
+     * rate matrices. It implements some functionality of the interface RateMatrix.
+     * The key element of this abstract class is that it hold a matrix of doubles as the internal value
+     * which represent the rates of this matrix. Specific behaviour how the rates are updated,
+     * how the stationary frequencies are computed, and how the transition probabilities are computed are
+     * left for derived classes.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
@@ -24,11 +28,11 @@ namespace RevBayesCore {
     class AbstractRateMatrix : public RateMatrix {
         
     public:
-        virtual                            ~AbstractRateMatrix(void);                                                               //!< Destructor
+        virtual                            ~AbstractRateMatrix(void);                                                                   //!< Destructor
         
         // overloaded operators
-        std::vector<double>&                operator[](size_t i);                                                                   //!< Subscript operator
-        const std::vector<double>&          operator[](size_t i) const;                                                             //!< Subscript operator (const)
+        std::vector<double>&                operator[](size_t i);                                                                       //!< Subscript operator
+        const std::vector<double>&          operator[](size_t i) const;                                                                 //!< Subscript operator (const)
         
         std::vector<std::vector<double> >::const_iterator       begin(void) const;
         std::vector<std::vector<double> >::iterator             begin(void);
@@ -36,29 +40,30 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >::iterator             end(void);
         
         // public methods
-        size_t                              getNumberOfStates(void) const;                                                          //!< Return the number of states
-        void                                rescaleToAverageRate(double r);                                                         //!< Rescale the rate matrix such that the average rate is "r"
-        void                                setDiagonal(void);                                                                      //!< Set the diagonal such that each row sums to zero
-        size_t                              size(void) const;                                                                       //!< Get the size of the rate matrix, which is the same as the number of states
+        size_t                              getNumberOfStates(void) const;                                                              //!< Return the number of states
+        void                                rescaleToAverageRate(double r);                                                             //!< Rescale the rate matrix such that the average rate is "r"
+        void                                setDiagonal(void);                                                                          //!< Set the diagonal such that each row sums to zero
+        size_t                              size(void) const;                                                                           //!< Get the size of the rate matrix, which is the same as the number of states
         
         // pure virtual methods you have to overwrite
-        virtual double                      averageRate(void) const = 0;                                                            //!< Calculate the average rate
-        virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition probabilities for the rate matrix
+        virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
+        virtual void                        calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const = 0;       //!< Calculate the transition probabilities for the rate matrix
         virtual AbstractRateMatrix*         clone(void) const = 0;
-        virtual const std::vector<double>&  getStationaryFrequencies(void) const = 0;                                               //!< Return the stationary frequencies
-        virtual void                        updateMatrix(void) = 0;                                                                 //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
+        virtual const std::vector<double>&  getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
+        virtual void                        updateMatrix(void) = 0;                                                                     //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
+
     protected:
         // prevent instantiation
-        AbstractRateMatrix(size_t n);                                                                                               //!< Construct rate matrix with n states
-        AbstractRateMatrix(const AbstractRateMatrix& m);                                                                            //!< Copy constructor
-        AbstractRateMatrix&                 operator=(const AbstractRateMatrix& r);                                                 //!< Assignment operator
+        AbstractRateMatrix(size_t n);                                                                                                   //!< Construct rate matrix with n states
+        AbstractRateMatrix(const AbstractRateMatrix& m);                                                                                //!< Copy constructor
+        AbstractRateMatrix&                 operator=(const AbstractRateMatrix& r);                                                     //!< Assignment operator
         
         // protected methods available for derived classes
         bool                                checkTimeReversibity(double tolerance);
         
         // protected members available for derived classes
-        MatrixReal*                         theRateMatrix;                                                                          //!< Holds the rate matrix
+        MatrixReal*                         theRateMatrix;                                                                              //!< Holds the rate matrix
         bool                                needsUpdate;
         
     };

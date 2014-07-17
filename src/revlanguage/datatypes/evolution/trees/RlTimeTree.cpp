@@ -71,23 +71,23 @@ RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const s
     
     if (name == "nnodes") 
     {
-        size_t n = this->value->getValue().getNumberOfNodes();
+        size_t n = this->dagNode->getValue().getNumberOfNodes();
         return new Natural( n );
     }
     else if (name == "height") 
     {
-        const RevBayesCore::TopologyNode& r = this->value->getValue().getTipNode( 0 );
+        const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
         return new RealPos( r.getTime() );
     } 
     else if (name == "names") 
     {
-        const std::vector<std::string>& n = this->value->getValue().getTipNames();
+        const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
         return new Vector<RlString>( n );
     } 
     else if (name == "rescale")
     {
         double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::TimeTree &tree = value->getValue();
+        RevBayesCore::TimeTree &tree = dagNode->getValue();
         RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
         
         return NULL;

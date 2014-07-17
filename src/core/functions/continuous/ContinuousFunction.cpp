@@ -9,6 +9,6 @@
 #include "ContinuousFunction.h"
 
 
-RevBayesCore::ContinuousFunction::ContinuousFunction(double *v, std::string revDecl) : TypedFunction<double>( v, revDecl ) {
+RevBayesCore::ContinuousFunction::ContinuousFunction(double *v, std::string revDecl) : TypedFunction<double>( v ) {
     
 }

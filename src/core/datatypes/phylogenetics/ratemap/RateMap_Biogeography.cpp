@@ -12,14 +12,14 @@
 using namespace RevBayesCore;
 
 RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
-    geographicDistanceRateModifier()
+    geographyRateModifier()
 {
-    useGeographicDistanceRateModifier = false;
+    useGeographyRateModifier = false;
 //    useUnnormalizedRates = false;
     branchHeterogeneousClockRates = false;
     branchHeterogeneousGainLossRates = false;
     forbidExtinction = fe;
-    geographicDistanceRateModifier = NULL;
+    geographyRateModifier = NULL;
     distancePower = 0.0;
     
     
@@ -51,8 +51,6 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     epochs = m.epochs;
     numEpochs = m.numEpochs;
     epochOffset = m.epochOffset;
-//    extinctionValues = m.extinctionValues;
-//    dispersalValues = m.dispersalValues;
     adjacentAreaVector = m.adjacentAreaVector;
     availableAreaVector = m.availableAreaVector;
     
@@ -60,11 +58,8 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
     
-//    inboundDispersalValues = m.inboundDispersalValues;
-//    useUnnormalizedRates = m.useUnnormalizedRates;
-    
-    geographicDistanceRateModifier = m.geographicDistanceRateModifier;
-    useGeographicDistanceRateModifier = m.useGeographicDistanceRateModifier;
+    geographyRateModifier = m.geographyRateModifier;
+    useGeographyRateModifier = m.useGeographyRateModifier;
     
     branchHeterogeneousClockRates = m.branchHeterogeneousClockRates;
     branchHeterogeneousGainLossRates = m.branchHeterogeneousClockRates;
@@ -94,15 +89,11 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         epochs = r.epochs;
         numEpochs = r.numEpochs;
         epochOffset = r.epochOffset;
-//        extinctionValues = r.extinctionValues;
-//        dispersalValues = r.dispersalValues;
         adjacentAreaVector = r.adjacentAreaVector;
         availableAreaVector = r.availableAreaVector;
-//        inboundDispersalValues = r.inboundDispersalValues;
-//        useUnnormalizedRates = r.useUnnormalizedRates;
         
-        geographicDistanceRateModifier = r.geographicDistanceRateModifier;
-        useGeographicDistanceRateModifier = r.useGeographicDistanceRateModifier;
+        geographyRateModifier = r.geographyRateModifier;
+        useGeographyRateModifier = r.useGeographyRateModifier;
         
         useAreaAdjacency = r.useAreaAdjacency;
         useAreaAvailable = r.useAreaAvailable;
@@ -167,8 +158,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         // get dispersal and extinction rates for site
         size_t idx = this->numCharacters * epochIdx + charIdx;
         
-        double dispersalRate  = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
-        double extinctionRate = ( (useUnnormalizedRates && availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
+        double dispersalRate  = ( (availableAreaVector[ idx ] > 0) ? 1.0 : 0.0);
+        double extinctionRate = ( (availableAreaVector[ idx ] > 0) ? 1.0 : 1e10);
         
         // get age of start of next oldest epoch
         double epochAge = epochs[ epochIdx ];
@@ -207,6 +198,10 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         P[0][1] = p00 * q01 + p01 * q11;
         P[1][0] = p10 * q00 + p11 * q10;
         P[1][1] = p10 * q01 + p11 * q11;
+        
+//        std::cout << P[0][0] << "," << P[0][1] << ";" << P[1][0] << "," << P[1][1] << "\n";
+        
+        
         
         if (!stop)
         {
@@ -249,8 +244,8 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
         rate *= homogeneousClockRate;
     
     // apply rate modifiers
-    if (useGeographicDistanceRateModifier) // want this to take in age as an argument...
-        rate *= geographicDistanceRateModifier->computeRateModifier(node, from, to, age);
+    if (useGeographyRateModifier) // want this to take in age as an argument...
+        rate *= geographyRateModifier->computeRateModifier(node, from, to, age);
     
     return rate;
 
@@ -283,8 +278,8 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
         rate *= homogeneousClockRate;
     
     // area effects
-    if (useGeographicDistanceRateModifier)
-        rate *= geographicDistanceRateModifier->computeSiteRateModifier(node,from,to,age);
+    if (useGeographyRateModifier)
+        rate *= geographyRateModifier->computeSiteRateModifier(node,from,to,age);
 
     
     return rate;
@@ -308,8 +303,8 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
         rate *= homogeneousClockRate;
     
     // area effects
-    if (useGeographicDistanceRateModifier)
-        rate *= geographicDistanceRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
+    if (useGeographyRateModifier)
+        rate *= geographyRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
 
     
     return rate;
@@ -468,36 +463,36 @@ void RateMap_Biogeography::setHeterogeneousClockRates(const std::vector<double> 
     heterogeneousClockRates = r;
 }
 
-void RateMap_Biogeography::setGeographicDistanceRateModifier(const GeographicDistanceRateModifier& gdrm)
+void RateMap_Biogeography::setGeographyRateModifier(const GeographyRateModifier& gdrm)
 {
-    useGeographicDistanceRateModifier = true;
+    useGeographyRateModifier = true;
     
     // ugly hack, prob better way to handle constness...
-    geographicDistanceRateModifier = &const_cast<GeographicDistanceRateModifier&>(gdrm);
+    geographyRateModifier = &const_cast<GeographyRateModifier&>(gdrm);
 
-    epochs = geographicDistanceRateModifier->getEpochs();
+    epochs = geographyRateModifier->getEpochs();
     numEpochs = epochs.size();
-    adjacentAreaVector = geographicDistanceRateModifier->getAdjacentAreaVector();
-    availableAreaVector = geographicDistanceRateModifier->getAvailableAreaVector();
+    adjacentAreaVector = geographyRateModifier->getAdjacentAreaVector();
+    availableAreaVector = geographyRateModifier->getAvailableAreaVector();
     
     useUnnormalizedRates = true;
     
-//    extinctionValues = geographicDistanceRateModifier->getAdjacentVector();
-//    dispersalValues = geographicDistanceRateModifier->getAvailableVector();
-//    setInboundDispersal( geographicDistanceRateModifier->getDispersalValues() );
+//    extinctionValues = geographyRateModifier->getAdjacentVector();
+//    dispersalValues = geographyRateModifier->getAvailableVector();
+//    setInboundDispersal( geographyRateModifier->getDispersalValues() );
 
 }
 
-void RateMap_Biogeography::setGeographicDistancePowers(const GeographicDistanceRateModifier& gdrm)
+void RateMap_Biogeography::setGeographicDistancePowers(const GeographyRateModifier& gdrm)
 {
-    useGeographicDistanceRateModifier = true;
-    geographicDistanceRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
+    useGeographyRateModifier = true;
+    geographyRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
 }
 
 
-const GeographicDistanceRateModifier& RateMap_Biogeography::getGeographicDistanceRateModifier(void)
+const GeographyRateModifier& RateMap_Biogeography::getGeographyRateModifier(void)
 {
-    return *geographicDistanceRateModifier;
+    return *geographyRateModifier;
 }
 
 const bool RateMap_Biogeography::isAreaAvailable(size_t charIdx, double age) const

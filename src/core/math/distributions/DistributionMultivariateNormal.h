@@ -25,10 +25,16 @@ namespace RevBayesCore {
     namespace RbStatistics {
         
         namespace MultivariateNormal {
-            double                      pdf(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
-            double                      lnPdf(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
-            std::vector<double>         rv(const std::vector<double>& mu, const PrecisionMatrix& omega, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
-            std::vector<double>         rvcov(const std::vector<double>& mu, const PrecisionMatrix& omega, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
+
+            // parameterization in terms of the covariance matrix sigma
+            double                      pdfCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
+            double                      lnPdfCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
+            std::vector<double>         rvCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
+
+            // parameterization in terms of the precision matrix (i.e. inverse covariance matrix) omega
+            double                      pdfPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
+            double                      lnPdfPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
+            std::vector<double>         rvPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
         }
     }
 }

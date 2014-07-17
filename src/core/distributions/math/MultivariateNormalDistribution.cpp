@@ -32,13 +32,13 @@ MultivariateNormalDistribution* MultivariateNormalDistribution::clone( void ) co
 
 double MultivariateNormalDistribution::computeLnProbability( void ) {
     
-    return RbStatistics::MultivariateNormal::lnPdf(mean->getValue(), precision->getValue(), *value);
+    return RbStatistics::MultivariateNormal::lnPdfPrecision(mean->getValue(), precision->getValue(), *value);
 }
 
 
 void MultivariateNormalDistribution::redrawValue( void ) {
     
-    precision->getValue().drawNormalSample(getValue());
+    precision->getValue().drawNormalSamplePrecision(getValue());
 }
 
 

@@ -48,11 +48,11 @@ Taxon* Taxon::clone(void) const {
 void Taxon::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( value != NULL )
+    if ( dagNode != NULL )
     {
-        if ( value->decrementReferenceCount() == 0 ) 
+        if ( dagNode->decrementReferenceCount() == 0 )
         {
-            delete value;
+            delete dagNode;
         }
     }
     
@@ -62,8 +62,8 @@ void Taxon::constructInternalObject( void )
 //    std::string taxonDate = static_cast<const RlDate &>( (date)->getRevObject() ).getValue() ;
 //    RevBayesCore::TimeAndDate d = RevBayesCore::TimeAndDate();
     
-    value = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName, taxonSpecies ) );
-    value->incrementReferenceCount();
+    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName, taxonSpecies ) );
+    dagNode->incrementReferenceCount();
     
 }
 

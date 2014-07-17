@@ -48,8 +48,8 @@ namespace RevLanguage {
     
 }
 
-#include "DeterministicNode.h"
 #include "BinaryMultiplication.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 /** default constructor */
@@ -73,7 +73,8 @@ RevLanguage::RevObject* RevLanguage::Func__mult<firstValType, secondValType, ret
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BinaryMultiplication<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinaryMultiplication<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
-    RevBayesCore::DeterministicNode<typename retType::valueType> *detNode = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
+
+    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
     
     retType* value = new retType( detNode );
     

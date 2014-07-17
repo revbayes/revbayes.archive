@@ -1,9 +1,8 @@
-#include "DeterministicNode.h"
 #include "Func_phyloRateMultiplier.h"
 #include "RateMultiplierPhyloFunction.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "RlTimeTree.h"
-#include "TypedDagNode.h"
 #include "Vector.h"
 
 using namespace RevLanguage;
@@ -29,7 +28,8 @@ RevObject* Func_phyloRateMultiplier::execute()
     RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* baseRate = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RateMultiplierPhyloFunction* f = new RevBayesCore::RateMultiplierPhyloFunction( tree, rates, baseRate );
-    RevBayesCore::DeterministicNode< std::vector<double> > *detNode = new RevBayesCore::DeterministicNode< std::vector<double> >("", f);
+    
+    DeterministicNode< std::vector<double> > *detNode = new DeterministicNode< std::vector<double> >("", f, this->clone());
     
     Vector<RealPos>* value = new Vector<RealPos>( detNode );
     

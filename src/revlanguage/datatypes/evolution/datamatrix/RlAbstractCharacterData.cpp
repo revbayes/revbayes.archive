@@ -10,21 +10,27 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(), methods() {
+AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(),
+    methods()
+{
     
     initMethods();
     
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ), methods() {
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ),
+    methods()
+{
     
     initMethods();
     
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ), methods() {
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ),
+    methods()
+{
     
     initMethods();
     
@@ -32,20 +38,32 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBaye
 
 
 
-AbstractCharacterData* AbstractCharacterData::clone() const {
+AbstractCharacterData& AbstractCharacterData::add(const RevLanguage::AbstractCharacterData &d)
+{
+    dagNode->getValue().add( d.getValue() );
+    
+    // return a reference to myself
+    return *this;
+}
+
+
+
+AbstractCharacterData* AbstractCharacterData::clone() const
+{
     
     return new AbstractCharacterData( *this );
 }
 
 
 /* Map calls to member methods */
-RevObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevObject* AbstractCharacterData::executeMethod(std::string const &name, const std::vector<Argument> &args)
+{
     
     
     if (name == "chartype") 
     {
         
-        return new RlString( this->value->getValue().getDatatype() );
+        return new RlString( this->dagNode->getValue().getDatatype() );
     }
     else if (name == "excludeCharacter")
     {
@@ -55,12 +73,12 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
             size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
             // remember that we internally store the character indeces from 0 to n-1
             // but externally represent it as 1 to n
-            value->getValue().excludeCharacter( n-1 );
+            dagNode->getValue().excludeCharacter( n-1 );
         }
         else if ( argument.isTypeSpec( Vector<Natural>::getClassTypeSpec() ) ) 
         {
             const Vector<Natural>& x = static_cast<const Vector<Natural>&>( argument );
-            RevBayesCore::AbstractCharacterData &v = value->getValue();
+            RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
             for ( size_t i=0; i<x.size(); i++ )
             {
                 // remember that we internally store the character indeces from 0 to n-1
@@ -70,12 +88,24 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
         }
         return NULL;
     }
-    else if (name == "names") 
+    else if (name == "excludeAll")
+    {
+        
+    }
+    else if (name == "includeCharacter")
+    {
+        
+    }
+    else if (name == "CodonPos")
+    {
+    
+    }
+    else if (name == "names")
     {
         Vector<RlString> *n = new Vector<RlString>();
-        for (size_t i = 0; i < this->value->getValue().getNumberOfTaxa(); ++i) 
+        for (size_t i = 0; i < this->dagNode->getValue().getNumberOfTaxa(); ++i)
         {
-            n->push_back( this->value->getValue().getTaxonNameWithIndex( i ) );
+            n->push_back( this->dagNode->getValue().getTaxonNameWithIndex( i ) );
         }
         
         return n;
@@ -84,16 +114,16 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     {
         
         Vector<Natural> *numChar = new Vector<Natural>();
-        for (size_t i=0; i<this->value->getValue().getNumberOfTaxa(); i++) 
+        for (size_t i=0; i<this->dagNode->getValue().getNumberOfTaxa(); i++)
         {
             
-            if ( this->value->getValue().isTaxonExcluded(i) == false ) 
+            if ( this->dagNode->getValue().isTaxonExcluded(i) == false )
             {
                 
-                if (this->value->getValue().isHomologyEstablished() == true)
-                    numChar->push_back( Natural( this->value->getValue().getNumberOfCharacters() ) );
+                if (this->dagNode->getValue().isHomologyEstablished() == true)
+                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
                 else
-                    numChar->push_back( Natural( this->value->getValue().getTaxonData(i).getNumberOfCharacters() ) );
+                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
                 
             }
             
@@ -102,13 +132,13 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     }
     else if (name == "ntaxa") 
     {
-        int n = (int)this->value->getValue().getNumberOfTaxa();
+        int n = (int)this->dagNode->getValue().getNumberOfTaxa();
         
         return new Natural(n);
     }
     else if (name == "size") 
     {
-        int n = (int)this->value->getValue().getNumberOfTaxa();
+        int n = (int)this->dagNode->getValue().getNumberOfTaxa();
         
         return new Natural(n);
     }
@@ -182,12 +212,12 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     else if (name == "show") 
     {
         
-        size_t nt = this->value->getValue().getNumberOfTaxa();
+        size_t nt = this->dagNode->getValue().getNumberOfTaxa();
         for (size_t i=0; i<nt; i++)
         {
             
-            const RevBayesCore::AbstractTaxonData& taxonData = this->value->getValue().getTaxonData(i);
-            std::string taxonName = this->value->getValue().getTaxonNameWithIndex(i);
+            const RevBayesCore::AbstractTaxonData& taxonData = this->dagNode->getValue().getTaxonData(i);
+            std::string taxonName = this->dagNode->getValue().getTaxonNameWithIndex(i);
             size_t nc = taxonData.getNumberOfCharacters();
             std::cout << "   " << taxonName << std::endl;
             std::cout << "   ";
@@ -210,7 +240,7 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     }
     else if (name == "ishomologous")
     {
-        bool ih = this->value->getValue().isHomologyEstablished();
+        bool ih = this->dagNode->getValue().isHomologyEstablished();
     
         return new RlBoolean(ih);
     } 

@@ -14,7 +14,6 @@
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -152,7 +151,7 @@ bool TestIndependentClockRates::run( void ) {
 	std::cout << " death rate: " << deathRate->getValue() << std::endl;
 	
 	/* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
 	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
@@ -175,7 +174,7 @@ bool TestIndependentClockRates::run( void ) {
 	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
 	
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( meanBrRate );
 	monitoredNodes.push_back( treeHeight );
@@ -208,15 +207,6 @@ bool TestIndependentClockRates::run( void ) {
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();
-	
-	for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
 	
 	
 	/* clean up */

@@ -44,16 +44,18 @@ namespace RevBayesCore {
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
-        void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        virtual void                                        printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                update(void);                                                               //!< Update the current value by recomputation
         void                                                redraw(void);
 
     protected:
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        bool                                                isFunctionDirty(void) const;                                                //!< Is my function dirty?
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
-        void                                                touchMe(DagNode *toucher);                                                  //!< Tell affected nodes value is reset
+        virtual void                                        touchMe(DagNode *toucher);                                                  //!< Touch myself and tell affected nodes value is reset
+        void                                                touchFunction(DagNode* toucher) const;                                      //!< Touch my function
 
     private:
         TypedFunction<valueType>*                           function;
@@ -125,41 +127,47 @@ RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueTyp
 
 
 template<class valueType>
-const RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueType>::getFunction( void ) const {
+const RevBayesCore::TypedFunction<valueType>& RevBayesCore::DeterministicNode<valueType>::getFunction( void ) const
+{
     
     return *function;
 }
 
 template<class valueType>
-double RevBayesCore::DeterministicNode<valueType>::getLnProbability( void ) {
+double RevBayesCore::DeterministicNode<valueType>::getLnProbability( void )
+{
     
     return 0.0;
 }
 
 
 template<class valueType>
-double RevBayesCore::DeterministicNode<valueType>::getLnProbabilityRatio( void ) {
+double RevBayesCore::DeterministicNode<valueType>::getLnProbabilityRatio( void )
+{
     
     return 0.0;
 }
 
 
 template<class valueType>
-valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) {
+valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void )
+{
     
     return function->getValue();
 }
 
 
 template<class valueType>
-const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) const {
+const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) const
+{
     
     return function->getValue();
 }
 
 
 template<class valueType>
-bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const {
+bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const
+{
     
     // iterate over all parents and only if all parents are constant then this node is constant too
     for (std::set<const DagNode*>::iterator it = this->parents.begin(); it != this->parents.end(); ++it) 
@@ -174,12 +182,22 @@ bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const {
 }
 
 
+/** check whether function is dirty (function provided for derived classes) */
+template<class valueType>
+bool RevBayesCore::DeterministicNode<valueType>::isFunctionDirty( void ) const
+{
+    
+    return function->isDirty();
+}
+
+
 /**
  * Keep the current value of the node. 
  * At this point, we just delegate to the children.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter ) {
+void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
+{
     
     // we just mark ourselves as clean
     this->touched = false;
@@ -200,15 +218,12 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
 {
     
-    o << "_variableType = Deterministic DAG node" << std::endl;
+    o << "_dagType      = Deterministic DAG node" << std::endl;
 
-    if ( function->getRevDeclaration().size() == 0)
-        o << "_function     = Unknown function <" << function << ">" << std::endl;
-    else
-        o << "_function     = " << function->getRevDeclaration() << std::endl;
+    o << "_function     = <" << function << ">" << std::endl;
 
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = " << function->getValue() << std::endl;
+    o << "_value        = " << getValue() << std::endl;
     
     o << "_parents      = ";
     this->printParents(o);
@@ -222,7 +237,8 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
 
 
 template <class valueType>
-void RevBayesCore::DeterministicNode<valueType>::update() {
+void RevBayesCore::DeterministicNode<valueType>::update()
+{
     
     function->update();
 
@@ -239,7 +255,8 @@ void RevBayesCore::DeterministicNode<valueType>::redraw( void ) {
 
 /** Restore the old value of the node and tell affected */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer ) {
+void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
+{
     
     // we need to recompute our value?!
     this->update();
@@ -268,26 +285,48 @@ void RevBayesCore::DeterministicNode<valueType>::swapParameter(const RevBayesCor
 }
 
 
+/** touch my function for recalculation (function provided for derived classes) */
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher ) const {
+    
+    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
+    // This is essential for lazy evaluation
+    function->touch( toucher );
+}
+
 
 /** touch this node for recalculation */
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
-    if (!this->touched) {
-        this->touched = true;
+    this->touched = true;
+    
+    // We need to touch the function anyways because it might not be filthy enough.
+    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
+//    if ( !this->isFunctionDirty() )
+//    {
+        // Essential for lazy evaluation
+        this->touchFunction( toucher );
         
-    }
-    
-    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
-    function->touch( toucher );
-    
-    // @todo: until now we update directly without lazy evaluation
-    update();
-    
-    // we call the affected nodes every time
-    this->touchAffected();
-    
+        // Dispatch the touch message to downstream nodes
+        this->touchAffected();
+//    }
+
+//#if 0
+//    // Uncomment this code if you do not want to use lazy evaluation
+//
+//    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
+//    function->touch( toucher );
+//    
+//    // @todo: until now we update directly without lazy evaluation
+//    this->update();
+//    
+//    // we call the affected nodes every time
+//    this->touchAffected();
+//#endif
+
 }
+
 
 #endif
 

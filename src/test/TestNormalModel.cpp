@@ -48,12 +48,12 @@ bool TestNormalModel::run( void ) {
     }
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SlidingMove( mu, 1.0, 1.0, false ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(sigma, 1.0), 1, true ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( mu );
     monitoredNodes.insert( sigma );
@@ -77,14 +77,6 @@ bool TestNormalModel::run( void ) {
     delete a;
     delete b;
     delete c;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     return true;
 }

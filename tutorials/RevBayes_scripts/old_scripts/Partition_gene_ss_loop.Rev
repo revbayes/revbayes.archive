@@ -1,0 +1,118 @@
+################################################################################
+#
+# Example of a Bayesian phylogenetic analysis with different partitition schemes.
+# Here we run a marginal likelihood estimation.
+# 
+# Model:
+# uniform unrooted topology
+# GTR + gamma model
+# two partitions 
+#   * atpB = 1-1394
+#   * rbcL = 1395-2659
+#
+# Data:
+# conifer DNA sequences
+#
+#
+# author: Tracy A. Heath, Brian R. Moore and Sebastian Hoehna
+#
+################################################################################
+
+# read in the character data
+filenames <- v("data/conifer_atpb.nex", "data/conifer_rbcL.nex")
+nPartitions <- filenames.size()
+for (i in 1:nData)
+	data[i] <- readCharacterData(filenames[i])[1]
+
+# Get some useful variables from the data. We need these later on.
+taxaCount <- data[1].ntaxa()
+names <- data[1].names()
+
+#####################
+# Subsitution Model #
+#   Per Partition   #
+#####################
+	
+mvIdx <- 0
+for (i in 1:nPartitions)
+{
+
+    # specify the GTR+G substitution model applied uniformly to all sites
+    erPrior[i] <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+    er[i] ~ dirichlet(erPrior[i])
+    piPrior[i] <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+    pi[i] ~ dirichlet(piPrior[i])
+    alphaPrior[i] <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+    alpha[i] ~ exponential( alphaPrior[i] )
+    
+    # construct the gamma distributed rate variables
+    for ( j in 1:4 ) 
+    	gammaRates[i][j] := qgamma( j*0.25 - 0.125, alpha[i], alpha[i] )
+    
+    # now normalize the rates
+    # this is necessary to keep the parameters identifiable
+    normGammaRates[i] := normalize( gammaRates[i] )
+
+    # add moves for the base frequencies, exchangeability rates and the shape parameter
+    moves[mvIdx++] <- mSimplexElementScale(pi[i], alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+    moves[mvIdx++] <- mSimplexElementScale(er[i], alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+    moves[mvIdx++] <- mScale(alpha[i], lambda=1.0, tune=true, weight=1.0)
+
+    # create a deterministic variable for the rate matrix
+    Q[i] := gtr(er[i], pi[i])                                                                  # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+}
+
+#####################
+# Single Tree Model #
+#####################
+
+# Specify a uniform topology prior
+tau ~ uniformTopology(taxaCount, names)
+
+# moves on the tree
+moves[mvIdx++] <- mNNI(tau, weight=1.0)
+
+# create a random variable for each branch length
+numNodes <- tau.nnodes()
+for (i in 1:numNodes) {
+  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  brlens[i] ~ exponential(10.0)
+  
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[mvIdx++] <- mScale(brlens[i],lambda=1,tune=true,weight=1) 
+}
+
+# Build the tree by combining the topology with the branch length.
+psi := treeAssembly(tau, brlens)
+
+#####################
+# Combine Tree and  #
+# Partition Models  #
+#####################
+
+# the sequence evolution model
+for (i in 1:nPartitions)
+{
+    seq[i] ~ substModel(tree=psi, Q=Q[i], siteRates=normGammaRates[i], nSites=data[i].nChar()[1], type="DNA")
+    seq[i].clamp(data[i])
+}
+
+mymodel <- model(tau)
+
+###########################
+# Stepping Stone analysis #
+###########################
+mnIdx<-0
+monitors[mnIdx++] <- modelmonitor(filename="conifer_byGene_ss.log",printgen=100, separator = "	")
+monitors[mnIdx++] <- filemonitor(filename="conifer_byGene_ss.trees",printgen=100, separator = "	", psi)
+monitors[mnIdx++] <- screenmonitor(printgen=10, separator = "	", alpha[1], alpha[2])
+
+ss <- powerPosterior(mymodel, moves, "ss_out.txt", cats=50)
+ss.burnin(generations=1000,tuningInterval=100)
+ss.run(generations=1000)
+
+ss.pathSampling()
+ss.steppingStoneSampling()
+
+# quit RevBayes. DANGER!!! ;)
+q()

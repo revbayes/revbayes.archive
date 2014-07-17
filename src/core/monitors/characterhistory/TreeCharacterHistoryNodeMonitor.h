@@ -254,8 +254,12 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         characterStream << "[";
         
         // character history
-        characterStream << "&ch={" << buildCharacterHistoryString(n,"child") << "}";
-        characterStream << ",&pa={" << buildCharacterHistoryString(n,"parent") << "}";
+        characterStream << "&pa={" << buildCharacterHistoryString(n,"child") << "}";
+        if (!n->isTip())
+        {
+            characterStream << ",&ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
+            characterStream << ",&ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
+        }
         
         // # events
         characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";
@@ -411,13 +415,13 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::monitor(
         
         if (showNumEvents)
         {
-            for (size_t s = 0; s < numStates; s++)
+            for (unsigned s = 0; s < numStates; s++)
             {
                 outStream << separator << buildNumEventsForTreeStr(s);
             }
             for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
             {
-                for (size_t s = 0; s < numStates; s++)
+                for (unsigned s = 0; s < numStates; s++)
                 {
                     TopologyNode* nd = &tree->getValue().getNode(i);
                     if (nd->isRoot())

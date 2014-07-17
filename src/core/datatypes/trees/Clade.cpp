@@ -7,6 +7,19 @@ using namespace RevBayesCore;
 
 
 /**
+ * Default constructor required by the revlanguage code.
+ * We use an empty string and an age of 0.0 for
+ * this default object.
+ */
+Clade::Clade( void ) :
+    age( 0.0 ),
+    taxonNames( std::vector<std::string>() )
+{
+    
+}
+
+
+/**
  * Default constructor that instantiates the object.
  * Additionally, we sort the vector of taxon names.
  *

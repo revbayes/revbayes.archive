@@ -9,10 +9,10 @@
 #include "Func__and.h"
 
 #include "ArgumentRule.h"
-#include "DeterministicNode.h"
 #include "LogicalAndFunction.h"
 #include "RbUtil.h"
 #include "RlBoolean.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -36,7 +36,9 @@ RevObject* Func__and::execute( void ) {
     const RevBayesCore::TypedDagNode<bool>* rightVal = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::LogicalAndFunction *func = new RevBayesCore::LogicalAndFunction( leftVal, rightVal );
-    RevBayesCore::TypedDagNode<bool> *detNode = new RevBayesCore::DeterministicNode<bool>("", func);
+
+    DeterministicNode<bool> *detNode = new DeterministicNode<bool>("", func, this->clone());
+    
     RlBoolean *theBool = new RlBoolean( detNode );
     
     return theBool;

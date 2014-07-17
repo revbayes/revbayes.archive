@@ -11,10 +11,7 @@
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
 #include "DirichletProcessPriorDistribution.h"
-#include "DPPAllocateAuxGibbsMove.h"
-#include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -146,7 +143,7 @@ bool TestStrictClockModel::run( void ) {
 
 	
 	/* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(globalRate, 1.0), 3, true ) );
@@ -166,7 +163,7 @@ bool TestStrictClockModel::run( void ) {
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( treeHeight );
 	monitoredNodes.push_back( globalRate );
@@ -198,15 +195,6 @@ bool TestStrictClockModel::run( void ) {
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();
-	
-	for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
 	
 	
 	/* clean up */

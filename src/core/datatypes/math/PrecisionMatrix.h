@@ -21,10 +21,12 @@ namespace RevBayesCore {
     class PrecisionMatrix : public MatrixReal {
         
     public:
-        PrecisionMatrix(size_t n);                                                             //!< Construct rate matrix with n states
-        PrecisionMatrix(const PrecisionMatrix& m);                                                  //!< Copy constructor
+                                            PrecisionMatrix(void);                                              //!< Default constructor required by revlanguae use
+                                            PrecisionMatrix(size_t n);                                          //!< Construct rate matrix with n states
+                                            PrecisionMatrix(const PrecisionMatrix& m);                          //!< Copy constructor
+                                            PrecisionMatrix(const MatrixReal& m);                          //!< Copy constructor
         
-        virtual                            ~PrecisionMatrix(void) {}                                                                 //!< Destructor
+        virtual                            ~PrecisionMatrix(void) {}                                            //!< Destructor
                 
         // public methods
         // could not make them constant
@@ -38,6 +40,8 @@ namespace RevBayesCore {
         void                                touch();
         void                                update() const;
         
+        bool                                isUpdated() const {return eigenflag;}
+        
         
         
         virtual PrecisionMatrix*            clone(void) const;
@@ -47,8 +51,8 @@ namespace RevBayesCore {
         
         const MatrixReal&                   getInverse(void) const;
         
-        void                                drawNormalSample(std::vector<double>& v) const;
-        void                                drawNormalSampleFromInverse(std::vector<double>& v) const;
+        void                                drawNormalSamplePrecision(std::vector<double>& v) const;
+        void                                drawNormalSampleCovariance(std::vector<double>& v) const;
 
     protected:
         
@@ -62,7 +66,8 @@ namespace RevBayesCore {
         
     };
     
-    
+    std::ostream&                       operator<<(std::ostream& o, const PrecisionMatrix& x);                                           //!< Overloaded output operator
+  
 }
 
 #endif /* defined(__revbayes__PrecisionMatrix__) */

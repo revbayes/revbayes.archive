@@ -126,7 +126,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     std::cerr << *simTrees[0] << "\n\n\n" << std::endl;
     
 
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
 
     // construct the parameters for the gamma prior of the population sizes
     // shape of the gamma (we fix it to 2.0)
@@ -192,7 +192,7 @@ bool TestMultispeciesCoalescent::run( void ) {
     
     Model myModel = Model(spTree_inf);
     
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     monitors.push_back( new ModelMonitor( 10, "TestMultispeciesCoalescent.p", "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );

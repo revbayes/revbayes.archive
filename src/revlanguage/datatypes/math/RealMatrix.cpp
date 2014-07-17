@@ -30,7 +30,7 @@ RealMatrix::RealMatrix(void) : ModelObject<RevBayesCore::MatrixReal>( new RevBay
 
 
 /* Construct from double */
-RealMatrix::RealMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal(mat->getValue().getNumberOfRows(),mat->getValue().getNumberOfColumns(),0) ) {
+RealMatrix::RealMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : ModelObject<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal( mat->getValue() ) ) {
 }
 
 
@@ -92,7 +92,7 @@ void RealMatrix::printValue(std::ostream &o) const {
     
     std::fixed( o );
     o.precision( 3 );
-    o << value->getValue();
+    o << dagNode->getValue();
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

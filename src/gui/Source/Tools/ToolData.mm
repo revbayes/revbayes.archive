@@ -143,6 +143,9 @@
         // make certain that the data matrices are instantiated in the core
         if ([dataMatrices count] > 0)
             [self makeDataInspector];
+        
+        numAligned   = [self numAlignedMatrices];
+        numUnaligned = [self numUnalignedMatrices];
 		}
 	return self;
 }

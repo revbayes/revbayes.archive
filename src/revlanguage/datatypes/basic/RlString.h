@@ -20,7 +20,7 @@ namespace RevLanguage {
             RlString(RevBayesCore::TypedDagNode<std::string> *x);                                   //!< Construct from DAG node
         
             // Basic operator functions
-            RevObject*               add(const RevObject &rhs) const;                 //!< Addition operator used for example in '+=' statements
+            RevObject*                      add(const RevObject &rhs) const;                        //!< Addition operator used for example in '+=' statements
             RlString*                       add(const RlString &rhs) const;                         //!< Addition operator used for example in '+=' statements
 
             // Basic utility functions

@@ -168,28 +168,6 @@ const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
 }
 
 
-/**
- * Get the internal value type of the object as a string corresponding to the type name.
- * Type <double> should return "double", < std::vector<double> > should return "std::vector<double>" etc.
- * For RevBayesCore value types, the string is the class name. For instance, <RevBayesCore::Mcmc> should
- * return "Mcmc", etc.
- */
-const std::string& Workspace::getInternalValueType(const std::string& type) const {
-    
-    std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
-    
-    if ( it == typeTable.end() )
-    {
-        if ( parentEnvironment != NULL )
-            return static_cast<Workspace*>( parentEnvironment )->getInternalValueType( type );
-        else
-            throw RbException( "Type '" + type + "' does not exist in environment" );;
-    }
-    else
-        return it->second->getInternalValueType();
-}
-
-
 /** Get a clone of the template object of a specified type */
 RevObject* Workspace::getNewTypeObject(const std::string& type) const {
     

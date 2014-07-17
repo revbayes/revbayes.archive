@@ -178,6 +178,19 @@ bool Environment::addFunction(const std::string& name, Function* func) {
     return true;
 }
 
+/** Add reference variable */
+void Environment::addReferenceVariable(const std::string& name, const RevPtr<const Variable>& refVar) {
+    
+    // create new reference variable
+    RevPtr<Variable> theVar = new Variable( refVar, name );
+
+    // create a new slot
+    VariableSlot* theSlot = new VariableSlot(name, RevObject::getClassTypeSpec(), theVar);
+    
+    // call function to add the slot
+    addVariable(name, theSlot);
+}
+
 /* Add variable */
 void Environment::addVariable(const std::string& n, VariableSlot* theSlot) {
 
@@ -341,7 +354,7 @@ const Function& Environment::getFunction(const std::string& name) {
 }
 
 /* Get function */
-const Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args) {
+Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args) {
 
     return functionTable.getFunction(name, args);
 }

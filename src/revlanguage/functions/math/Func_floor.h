@@ -47,10 +47,10 @@ namespace RevLanguage {
 }
 
 
-#include "DeterministicNode.h"
 #include "FloorFunction.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 /** default constructor */
@@ -73,7 +73,8 @@ RevLanguage::RevObject* RevLanguage::Func_floor<valType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::FloorFunction* f = new RevBayesCore::FloorFunction( arg );
-    RevBayesCore::DeterministicNode<int> *detNode = new RevBayesCore::DeterministicNode<int>("", f);
+    
+    DeterministicNode<int> *detNode = new DeterministicNode<int>("", f, this->clone());
     
     retType* value = new retType( detNode );
     

@@ -6,7 +6,8 @@ using namespace RevBayesCore;
 
 
 
-Function::Function(void)  : parameters() 
+Function::Function(void)  : parameters(),
+dirty( true )
 {
     
 }
@@ -34,7 +35,9 @@ const std::set<const DagNode*>& Function::getParameters( void ) const {
 
 /* Method stumb that can be overwritten for specialized treatment. */
 void Function::keep( DagNode* affecter ) {
-    // do nothing
+
+    // restore flags
+//    dirty = false;
 }
 
 
@@ -48,9 +51,11 @@ void Function::removeParameter(const RevBayesCore::DagNode *p)
 }
 
 
-/* Method stumb that can be overwritten for specialized treatment. */
+/* Method stub that can be overwritten for specialized treatment. */
 void Function::restore( DagNode *restorer ) {
-    // do nothing
+    
+    // restore flags
+//    dirty = false;
 }
 
 void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
@@ -70,10 +75,11 @@ void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
 }
 
 
-/* Method stumb that can be overwritten for specialized treatment. */
+/* Method stub that can be overwritten for specialized treatment. */
 void Function::touch( DagNode *toucher ) {
     // do nothing
 }
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Function& f) {
     

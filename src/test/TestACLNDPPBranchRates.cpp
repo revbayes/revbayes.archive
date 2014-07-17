@@ -16,7 +16,7 @@
 #include "DPPAllocateAuxGibbsMove.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "MeanVecContinuousValStatistic.h"
-#include "DppNumTablesStatistic.h"
+#include "NumUniqueInVector.h"
 #include "DPPScaleCatValsMove.h"
 #include "ExponentialDistribution.h"
 #include "FileMonitor.h"
@@ -130,7 +130,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	// nodeNus ~ DPP(g, cp, numnodes)
 	StochasticNode<std::vector<double> > *nodeNus = new StochasticNode<std::vector<double> >("Node.nu", new DirichletProcessPriorDistribution<double>(g, cp, (int)numNodes) );
 	// a deterministic node for calculating the number of parameter categories (required for the Gibbs move on cp)
-	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new DppNumTablesStatistic<double>(nodeNus) );
+	DeterministicNode<int> *numCats = new DeterministicNode<int>("DPPNumCats", new NumUniqueInVector<double>(nodeNus) );
 	
     // root rate
 	ConstantNode<double> *a          = new ConstantNode<double>("rootRate.alpha", new double(4.0) );
@@ -191,7 +191,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	std::cout << " death rate: " << deathRate->getValue() << std::endl;
 	
 	/* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2.0, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2.0, true ) );
 	//	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
@@ -218,7 +218,7 @@ bool TestACLNDPPBranchRates::run( void ) {
 	DeterministicNode<double> *meanNdRate = new DeterministicNode<double>("MeanNodeRate", new MeanVecContinuousValStatistic(nodeRates) );
 	
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( meanNdRate );
 	monitoredNodes.push_back( treeHeight );
@@ -258,15 +258,6 @@ bool TestACLNDPPBranchRates::run( void ) {
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();
-	
-	for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
 	
 	
 	/* clean up */

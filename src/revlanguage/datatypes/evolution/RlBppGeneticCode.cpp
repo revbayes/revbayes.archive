@@ -48,19 +48,19 @@ BppGeneticCode* BppGeneticCode::clone(void) const {
 void BppGeneticCode::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( value != NULL )
+  if ( dagNode != NULL )
+  {
+    if ( dagNode->decrementReferenceCount() == 0 ) 
     {
-        if ( value->decrementReferenceCount() == 0 ) 
-        {
-            delete value;
-        }
+      delete dagNode;
     }
+  }
     
-    // now allocate a new BppGeneticCode
-    const bpp::GeneticCode* pgc = getValue().getGeneticCode();
+  // now allocate a new BppGeneticCode
+  const bpp::GeneticCode* pgc = getValue().getGeneticCode();
     
-    value = new RevBayesCore::ConstantNode<RevBayesCore::BppGeneticCode>("", new RevBayesCore::BppGeneticCode( pgc ) );
-    value->incrementReferenceCount();
+  dagNode = new RevBayesCore::ConstantNode<RevBayesCore::BppGeneticCode>("", new RevBayesCore::BppGeneticCode( pgc ) );
+  dagNode->incrementReferenceCount();
 }
 
 

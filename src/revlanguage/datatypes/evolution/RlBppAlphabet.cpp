@@ -47,19 +47,19 @@ BppAlphabet* BppAlphabet::clone(void) const
 void BppAlphabet::constructInternalObject( void ) 
 {
     // we free the memory first
-    if ( value != NULL )
+  if ( dagNode != NULL )
+  {
+    if ( dagNode->decrementReferenceCount() == 0 ) 
     {
-        if ( value->decrementReferenceCount() == 0 ) 
-        {
-            delete value;
-        }
+      delete dagNode;
     }
+  }
     
-    // now allocate a new BppAlphabet
-    const bpp::Alphabet* alph = getValue().getAlphabet();
-    
-    value = new RevBayesCore::ConstantNode<RevBayesCore::BppAlphabet>("", new RevBayesCore::BppAlphabet( alph ) );
-    value->incrementReferenceCount();
+  // now allocate a new BppAlphabet
+  const bpp::Alphabet* alph = getValue().getAlphabet();
+  
+  dagNode = new RevBayesCore::ConstantNode<RevBayesCore::BppAlphabet>("", new RevBayesCore::BppAlphabet( alph ) );
+  dagNode->incrementReferenceCount();
 }
 
 

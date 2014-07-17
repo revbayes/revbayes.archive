@@ -39,7 +39,7 @@ namespace RevBayesCore {
     
         // pure virtual methods
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
-    
+
         // member functions
         virtual bool                                        isSimpleNumeric(void) const;                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual void                                        printName(std::ostream &o, const std::string &sep) const;                   //!< Monitor/Print this variable 

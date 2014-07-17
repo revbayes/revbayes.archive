@@ -141,7 +141,7 @@ bool TestGtrGammaModel::run( void ) {
     std::cout << "LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
 //    moves.push_back( new ScaleMove(div, 1.0, true, 2.0) );
 //    moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
 //    moves.push_back( new NarrowExchange( tau, 10.0 ) );
@@ -165,7 +165,7 @@ bool TestGtrGammaModel::run( void ) {
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
 //    monitoredNodes.insert( er );
 //    monitoredNodes.insert( pi );
@@ -202,14 +202,6 @@ bool TestGtrGammaModel::run( void ) {
     //    delete a;
     //    delete b;
     //    delete c;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     std::cout << "Finished GTR+Gamma model test." << std::endl;
     
