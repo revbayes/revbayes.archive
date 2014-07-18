@@ -132,6 +132,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // that will set the flags for recomputation
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
+        
         (*it)->touch();
     }
     
@@ -149,6 +150,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     {
         if ( (*it)->isClamped() )
         {
+            
             lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
         }
         else

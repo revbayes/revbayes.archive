@@ -88,17 +88,90 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
         }
         return NULL;
     }
-    else if (name == "excludeAll")
+    else if (name == "setCodonPartition")
     {
         
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
+        size_t nChars = v.getNumberOfCharacters();
+        
+        // e.g. data.setCodonPartition(sites=v(3))
+        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) )
+        {
+            size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
+            for (size_t i = 0; i < nChars; i++)
+            {
+                if (i % 3 == (n-1))
+                    v.includeCharacter(i);
+                else
+                    v.excludeCharacter(i);
+            }
+        }
+        
+        // e.g. data.setCodonPartition(sites=v(1,2))
+        else if ( argument.isTypeSpec( Vector<Natural>::getClassTypeSpec() ) )
+        {
+            const Vector<Natural>& x = static_cast<const Vector<Natural>&>( argument );
+            if (x.size() == 0)
+                return NULL;
+          
+            for (size_t i = 0; i < nChars; i++)
+                v.excludeCharacter(i);
+            
+            for (size_t i = 0; i < x.size(); i++)
+            {
+                size_t n = x[i];
+                for (size_t j = 0; j < nChars; j++)
+                {
+                    if (j % 3 == (n-1))
+                        v.includeCharacter(j);
+                }
+            }
+        }
+        return NULL;
+    }
+    else if (name == "excludeAll")
+    {
+        RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
+        size_t nChars = v.getNumberOfCharacters();
+        
+        for (size_t i = 0; i < nChars; i++)
+            v.excludeCharacter(i);
+        return NULL;
+
     }
     else if (name == "includeCharacter")
     {
-        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) )
+        {
+            size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
+            // remember that we internally store the character indeces from 0 to n-1
+            // but externally represent it as 1 to n
+            dagNode->getValue().includeCharacter( n-1 );
+        }
+        else if ( argument.isTypeSpec( Vector<Natural>::getClassTypeSpec() ) )
+        {
+            const Vector<Natural>& x = static_cast<const Vector<Natural>&>( argument );
+            RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
+            for ( size_t i=0; i<x.size(); i++ )
+            {
+                // remember that we internally store the character indeces from 0 to n-1
+                // but externally represent it as 1 to n
+                v.includeCharacter( size_t(x[i])-1 );
+            }
+        }
+        return NULL;
     }
-    else if (name == "CodonPos")
+    else if (name == "includeAll")
     {
-    
+        RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
+        size_t nChars = v.getNumberOfCharacters();
+        
+        for (size_t i = 0; i < nChars; i++)
+            v.includeCharacter(i);
+        return NULL;
+        
     }
     else if (name == "names")
     {
@@ -299,15 +372,26 @@ void AbstractCharacterData::initMethods(void) {
 //    ArgumentRules* includedcharsArgRules       = new ArgumentRules();    
 //    ArgumentRules* nconstantpatternsArgRules   = new ArgumentRules();    
 //    ArgumentRules* ncharswithambiguityArgRules = new ArgumentRules();
+    ArgumentRules* excludeallArgRules          = new ArgumentRules();
+    ArgumentRules* includeallArgRules          = new ArgumentRules();
     ArgumentRules* excludecharArgRules         = new ArgumentRules();
     ArgumentRules* excludecharArgRules2        = new ArgumentRules();
+    ArgumentRules* includecharArgRules         = new ArgumentRules();
+    ArgumentRules* includecharArgRules2        = new ArgumentRules();
     ArgumentRules* showdataArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules        = new ArgumentRules();   
+    ArgumentRules* ishomologousArgRules        = new ArgumentRules();
+    ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
+    ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     
         
     excludecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
     excludecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
-        
+    includecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
+    includecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+    setCodonPartitionArgRules->push_back(  new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+
+    
     methods.addFunction("names",               new MemberProcedure(TypeSpec(Vector<RlString>::getClassTypeSpec(), new TypeSpec( RlString::getClassTypeSpec() ) ),  namesArgRules              ) );
     methods.addFunction("nchar",               new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
     methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
@@ -324,10 +408,16 @@ void AbstractCharacterData::initMethods(void) {
 //    methods.addFunction("ncharswithambiguity", new MemberProcedure(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
     methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules        ) );
     methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules2       ) );
+    methods.addFunction("excludeAll",          new MemberProcedure(RlUtils::Void,        excludeallArgRules         ) );
+    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,        includecharArgRules        ) );
+    methods.addFunction("includeCharacter",    new MemberProcedure(RlUtils::Void,        includecharArgRules2       ) );
+    methods.addFunction("includeAll",          new MemberProcedure(RlUtils::Void,        includeallArgRules         ) );
+    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules  ) );
+    methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
-        
+    
     
     // add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
