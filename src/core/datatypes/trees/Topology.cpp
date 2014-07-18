@@ -275,12 +275,10 @@ void Topology::setRoot( TopologyNode* r) {
     // bootstrap all nodes from the root and add the in a pre-order traversal
     // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
-    for (unsigned int i = 0; i < nodes.size(); ++i) {
+    for (unsigned int i = 0; i < nodes.size(); ++i)
+    {
         nodes[i]->setIndex(i);
     }
-    
-//    if (nodesByIndex.size() == 0)
-//        fillNodesByIndex();
     
     numNodes = nodes.size();
     
