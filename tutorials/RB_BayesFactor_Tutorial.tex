@@ -79,11 +79,11 @@ The various RevBayes commands and syntax are specified using \cl{typewriter text
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data <- readCharacterData("data/conifer_dna.nex")[1]
+RevBayes > D <- readCharacterData("data/conifer_atpB.nex")
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{data <- readCharacterData("data/conifer\_dna.nex")[1]}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
+For this command, type in the command and its options:\\ \cl{D <- readCharacterData("data/conifer\_atpB.nex")}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
 
 %Screen output resulting from the execution of a function or command will be in \colorbox{shadecolor}{\textcolor{outputcol}{\cl{forest green typewriter text in a shaded box}}}: 
 %
@@ -193,47 +193,17 @@ Alas, exact solutions for calculating marginal likelihoods are not known for phy
 In this exercise, we will estimate the marginal likelihood for each partition schemeusing both the harmonic-mean (unreliable) and stepping-stone (preferable) estimators.
 
 
-\exs{Open the file \cl{conifer\_dna.nex} in your text editor. This file contains the sequences for 2 different genes sampled from 9 species (Box 1). The elements of the \cl{DATA} block indicate the type of data, number of taxa, and length of the sequences.}
+\exs{Open the file \cl{conifer\_atpB.nex} in your text editor. This file contains the sequences for the atpB gene sampled from 9 species (Box 1). The elements of the \cl{DATA} block indicate the type of data, number of taxa, and length of the sequences.}
+
 
 \begin{center}
-\texttt{\scriptsize
-\fbox{
-\begin{minipage}{6in}
-\begin{tabbing}
-\#NEX\=US\\
-BEGIN DATA;\\
-\>DIMENSIONS NTAX=9 NCHAR=2659;\\
-\>FORMAT DATATYPE = DNA GAP = - MISSING = ? INTERLEAVE;\\
-\>MATRIX\\
-$[$ATPB$]$\\
-\>Ginkgo\_biloba\ \ \ \ \ \ \ \ \ \ \ \ \ \ TTATTGGTCCAGTACTGGATGTAGCTTTTCCCCCGGG...\\
-\>Araucaria\_araucana\ \ \ \ \ \ \ \ \ -----GGTCCGGTACTGGATGTATCTTTTCCTCCAGA...\\
-\>Cedrus\_deodara\ \ \ \ \ \ \ \ \ \ \ \ \ TCATTGGCCCAGTACTGGA?GTCTCTTTTCCTCCAGG...\\
-\>Cupressus\_arizonica\ \ \ \ \ \ \ \ -----------------GATGTATCTTTCCCTCCAGG...\\
-\>Juniperus\_communis\ \ \ \ \ \ \ \ \ -------------------------------------...\\
-\>Pinus\_densiflora\ \ \ \ \ \ \ \ \ \ \ TCATTGGCCCAGTACTGGATGTCTCTTTTCCTCCAGG...\\
-\>Podocarpus\_chinensis\ \ \ \ \ \ \ TCATCGGCCCTGTACTGGATGTATCTTTTCCTCCAGA...\\
-\>Sciadopitys\_verticillata\ \ \ TCATTGGTCCAGTACTAGATGTATCTTTCCCTCCAGG...\\
-\>Taxus\_baccata\ \ \ \ \ \ \ \ \ \ \ \ \ \ TTATCGGCCCAGTACTAGATGTCTCTTTTCCTCCAGG...\\
-\\
-$[$RBCL$]$\\
-\>Ginkgo\_biloba\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ATGGATAAGTT------------------AAAGAG...\\
-\>Araucaria\_araucana\ \ \ \ \ \ \ \ \ \ \ ATAGATTAACTACTCCGCAATATCAGACCAAAGAT...\\
-\>Cedrus\_deodara\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ACAGATTAACTACTCCTGAATATCAGACCAAAGAT...\\
-\>Cupressus\_arizonica\ \ \ \ \ \ \ \ \ \ ----ATTAACTACTCCGGAATATCAGACCAAAGAT...\\
-\>Juniperus\_communis\ \ \ \ \ \ \ \ \ \ \ ACAGATTAACTACTCCGGAATATCAGACAAAAGAT...\\
-\>Pinus\_densiflora\ \ \ \ \ \ \ \ \ \ \ \ \ ACAGATTAACTACTCCTGAATATCAGACCAAAGAT...\\
-\>Podocarpus\_chinensis\ \ \ \ \ \ \ \ \ ACAGATTAACTACTCCGGAATATCAGACCAAAGAT...\\
-\>Sciadopitys\_verticillata\ \ \ \ \ ACAGATTAACTACCCCTGAATATCAGACCAAAGAC...\\
-\>Taxus\_baccata\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ACAGACTAACTACTCCACAATATCAGACCAAAGAT...\\
-;\\
-END;\\
-\end{tabbing}
-\end{minipage}
-}}
-\vspace{3mm}\\
-Box 1: A fragment of the NEXUS file containing the sequences for this exercise. \\
+Box 1: A fragment of the NEXUS file containing the atpB sequences for this exercise. \\
 \end{center}
+{\tt \scriptsize \begin{framed}
+\begin{lstlisting}
+#NEXUS Begin data;	Dimensions ntax=9 nchar=1394;	Format datatype=dna gap=-;	MatrixGinkgo_biloba            TTATTGGTCCAGTACTGGATGTAGCTTTTCCCCCGGGCAATATGCCTAATATTTACAATTCTTTG...Araucaria_araucana       -----GGTCCGGTACTGGATGTATCTTTTCCTCCAGATGAAATGCCCTATATTTACAATTCTTTG...Cedrus_deodara           TCATTGGCCCAGTACTGGA?GTCTCTTTTCCTCCAGGTAATATGCCTAATATTTACAATTCATTG...Cupressus_arizonica      -----------------GATGTATCTTTCCCTCCAGGTAGTATGCCTAGAATTTACAATTCTTTG...Juniperus_communis       -----------------------------------------------------------------...Pinus_densiflora         TCATTGGCCCAGTACTGGATGTCTCTTTTCCTCCAGGTAATATGCCTAATATTTACAATTCATTG...Podocarpus_chinensis     TCATCGGCCCTGTACTGGATGTATCTTTTCCTCCAGATGGTATGCCTTTTATTTACAATTCTTTA...Sciadopitys_verticillata TCATTGGTCCAGTACTAGATGTATCTTTCCCTCCAGGCAATATGCCTAGAATTTACAATTCTTTG...Taxus_baccata            TTATCGGCCCAGTACTAGATGTCTCTTTTCCTCCAGGTAATATGCCTAAAATTTACAATTCCTTA...	;End;\end{lstlisting}
+\end{framed}}
+
 
 \exs{Open the Rev file, \taha{Rev file name}, in a text editor.  This file contains all of the commands required to perform the necessary analyses to explore variouspartition schemes (unpartitioned, partitioned by gene region, and partitioned bygene region$+$codon position).  The details of each command are described in adjacent comments, after a \cl{\#}; {\it e.g.}, \cl{\# this is a Rev comment}. }
 
@@ -259,18 +229,19 @@ This displays a list of the different elements and commands available in RevBaye
 For example, we can view the \cl{help()} information about the \cl{log()} function:
 
 {\tt \begin{snugshade*}\begin{lstlisting}
-RevBayes > help(log)
+RevBayes > ?mcmc
 \end{lstlisting}\end{snugshade*}}
 
-\taha{This doesn't do anything}
+\taha{this is the only really good help file that exists}
 
-The \cl{log()} function computes the \cl{base} logarithm of a positive number \cl{x}. \taha{maybe say something about types, e.g., RealPos}
+The \cl{mcmc()} function...
 
 Additionally, RevBayes will print the correct usage of a function if it is executed without any arguments:
-{\tt \begin{snugshade*}\begin{lstlisting}
-RevBayes > log()
-     Error:    Argument mismatch for call to function `log'( ). 
-     Correct usage is: Real function (RealPos x, RealPos base)
+{\tt \small \begin{snugshade*}\begin{lstlisting}
+RevBayes > mcmc()
+   Error:   Argument mismatch for call to function 'mcmc'( ). Correct usage is:
+   MCMC function (Model model, VectorRbPointer<Monitor> monitors,
+   VectorRbPointer<Move> moves, String moveschedule = sequential|random|single)
 \end{lstlisting}\end{snugshade*}}
 
 %allows you to save all of the screen output from your analysis to a log file. 
@@ -293,15 +264,18 @@ RevBayes > log()
 
 First load in the sequences using the \cl{readCharacterData} function:
 
+\taha{It'd be nice if we could get the function indexing again...}
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > D <- readCharacterData("data/conifer_atpB.nex")RevBayes > data_atpB <- D[1]RevBayes > D <- readCharacterData("data/conifer_rbcL.nex")RevBayes > data_rbcL <- D[1]
 \end{lstlisting}
 \end{snugshade*}}
 
-\taha{Concatenate two datasets}
+Concatenate the two data matrices using the \cl{+} operator. This returns a single data matrix with both genes.
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data <- data_atpB + data_rbcL\end{lstlisting}\end{snugshade*}}
+
+To report the current value of any variable, simply type the variable name and press enter. For the \cl{data} matrix, this provides information about the alignment:
 
 {\tt \begin{snugshade*}\begin{lstlisting}RevBayes > data
    Origination:                   conifer_atpB.nex
@@ -317,8 +291,8 @@ RevBayes > D <- readCharacterData("data/conifer_atpB.nex")RevBayes > data_atpB 
 %If we do not specify an outgroup, the trees will be rooted on the first species in the data matrix by default. 
 %\mbcl{outgroup Ginkgo\_biloba}
 
-Next we will specify some useful variables based on our dataset. The variable \cl{data} has \textsl{member functions} that we can use to retrieve information. 
-{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data.ntaxa()RevBayes > n_sites <- data.nchar()[1]RevBayes > names <- data.names()RevBayes > n_nodes <- 2 * n_species - 3\end{lstlisting}\end{snugshade*}}
+Next we will specify some useful variables based on our dataset. The variable \cl{data} has \textit{member functions} that we can use to retrieve information. 
+{\tt \begin{snugshade*}\begin{lstlisting}RevBayes > n_species <- data.ntaxa()RevBayes > ns <- data.nchar()RevBayes > n_sites <- ns[1] RevBayes > names <- data.names()	RevBayes > n_branches <- 2 * n_species - 3 \end{lstlisting}\end{snugshade*}}
 
 \textbf{\textit{The GTR Parameters}}
 

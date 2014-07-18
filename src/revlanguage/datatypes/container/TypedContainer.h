@@ -90,7 +90,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RlUtils.h"
@@ -339,22 +339,22 @@ const RevLanguage::MethodTable&  RevLanguage::TypedContainer<rbType>::getMethods
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
+        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
+        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
         
         ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
+        methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
         
         // add method for call "x.sort()" as a function
         ArgumentRules* sortArgRules = new ArgumentRules();
-        methods.addFunction("sort",  new MemberFunction( RlUtils::Void, sortArgRules) );
+        methods.addFunction("sort",  new MemberProcedure( RlUtils::Void, sortArgRules) );
         
         // add method for call "x.unique()" as a function
         ArgumentRules* uniqueArgRules = new ArgumentRules();
-        methods.addFunction("unique",  new MemberFunction( RlUtils::Void, uniqueArgRules) );
+        methods.addFunction("unique",  new MemberProcedure( RlUtils::Void, uniqueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &Container::getMethods() );

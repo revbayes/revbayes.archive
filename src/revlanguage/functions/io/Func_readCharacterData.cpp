@@ -10,6 +10,8 @@
 #include "RlBoolean.h"
 #include "RlAminoAcidState.h"
 #include "RlDiscreteCharacterData.h"
+#include "RlContinuousCharacterData.h"
+
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
@@ -125,6 +127,12 @@ RevObject* Func_readCharacterData::execute( void ) {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
                     DiscreteCharacterData<AminoAcidState> mAA = DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
+                }
+                else if ( dType == "Continuous" )
+                {
+                    RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
+                    AbstractCharacterData mCC = AbstractCharacterData (coreM );
+                    m->push_back( mCC );
                 }
                 else if ( dType == "Standard" )
                 {
