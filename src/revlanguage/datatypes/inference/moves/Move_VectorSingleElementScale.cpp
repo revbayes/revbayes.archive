@@ -52,17 +52,17 @@ void Move_VectorSingleElementScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Move_VectorSingleElementScale::getClassType(void) { 
     
-    static std::string rbClassName = "Move_VectorSingleElementScale";
+    static std::string revType = "Move_VectorSingleElementScale";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_VectorSingleElementScale::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

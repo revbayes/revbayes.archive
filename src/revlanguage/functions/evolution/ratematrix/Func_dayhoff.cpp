@@ -52,17 +52,17 @@ const ArgumentRules& Func_dayhoff::getArgumentRules( void ) const {
 
 const std::string& Func_dayhoff::getClassType(void) { 
     
-    static std::string rbClassName = "Func_dayhoff";
+    static std::string revType = "Func_dayhoff";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_dayhoff::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

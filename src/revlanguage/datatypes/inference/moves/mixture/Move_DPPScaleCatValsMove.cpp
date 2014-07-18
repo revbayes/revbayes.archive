@@ -44,17 +44,17 @@ void Move_DPPScaleCatValsMove::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Move_DPPScaleCatValsMove::getClassType(void) { 
     
-    static std::string rbClassName = "Move_DPPScaleCatValsMove";
+    static std::string revType = "Move_DPPScaleCatValsMove";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_DPPScaleCatValsMove::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -106,18 +106,18 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 template <class treeType>
 const std::string& RevLanguage::Dist_phyloDACTMC<treeType>::getClassType(void) {
     
-    static std::string rbClassName = "Dist_phyloDACTMC";
+    static std::string revType = "Dist_phyloDACTMC";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 template <class treeType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

@@ -57,17 +57,17 @@ RevPtr<Variable> MemberFunction::execute( void )
 /** Get class name of object */
 const std::string& MemberFunction::getClassType(void) { 
     
-    static std::string rbClassName = "MemberFunction";
+    static std::string revType = "MemberFunction";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MemberFunction::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

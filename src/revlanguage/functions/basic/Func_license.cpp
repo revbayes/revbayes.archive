@@ -67,17 +67,17 @@ const ArgumentRules& Func_license::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_license::getClassType(void) {
     
-    static std::string rbClassName = "Func_license";
+    static std::string revType = "Func_license";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_license::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

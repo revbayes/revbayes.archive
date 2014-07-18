@@ -130,18 +130,18 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
 template <typename treeType>
 const std::string& RevLanguage::Func_mapTree<treeType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_mapTree<" + treeType::getClassType() + ">";
+    static std::string revType = "Func_mapTree<" + treeType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

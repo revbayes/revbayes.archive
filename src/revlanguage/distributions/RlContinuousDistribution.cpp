@@ -44,16 +44,16 @@ Real* ContinuousDistribution::createRandomVariable(void) const {
 /* Get class name of object */
 const std::string& ContinuousDistribution::getClassType(void) { 
     
-    static std::string rbClassName = "ContinuousDistribution";
+    static std::string revType = "ContinuousDistribution";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& ContinuousDistribution::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Real>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Real>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 

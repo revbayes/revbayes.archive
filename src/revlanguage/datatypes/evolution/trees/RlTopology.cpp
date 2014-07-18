@@ -84,17 +84,17 @@ RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, c
 /** Get class name of object */
 const std::string& Topology::getClassType(void) { 
     
-    static std::string rbClassName = "Topology";
+    static std::string revType = "Topology";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Topology::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

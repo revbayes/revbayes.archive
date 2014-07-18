@@ -69,17 +69,17 @@ RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::v
 /* Get class name of object */
 const std::string& RateMatrix::getClassType(void) { 
     
-    static std::string rbClassName = "RateMatrix";
+    static std::string revType = "RateMatrix";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateMatrix::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

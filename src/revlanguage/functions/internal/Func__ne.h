@@ -110,9 +110,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__ne<leftValType,rightValType
 template <typename leftValType, typename rightValType>
 const std::string& RevLanguage::Func__ne<leftValType,rightValType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__ne<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
+    static std::string revType = "Func__ne<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -120,9 +120,9 @@ const std::string& RevLanguage::Func__ne<leftValType,rightValType>::getClassType
 template <typename leftValType, typename rightValType>
 const RevLanguage::TypeSpec& RevLanguage::Func__ne<leftValType,rightValType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

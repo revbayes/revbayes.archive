@@ -61,17 +61,17 @@ const ArgumentRules& Func_mean::getArgumentRules( void ) const {
 
 const std::string& Func_mean::getClassType(void) { 
     
-    static std::string rbClassName = "Func_mean";
+    static std::string revType = "Func_mean";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_mean::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -51,17 +51,17 @@ const ArgumentRules& Func_wag::getArgumentRules( void ) const {
 
 const std::string& Func_wag::getClassType(void) { 
     
-    static std::string rbClassName = "Func_wag";
+    static std::string revType = "Func_wag";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_wag::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

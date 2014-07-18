@@ -56,17 +56,17 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
 /* Get class name of object */
 const std::string& Func_expBranchTree::getClassType(void) {
     
-    static std::string rbClassName = "Func_expBranchTree";
+    static std::string revType = "Func_expBranchTree";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_expBranchTree::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

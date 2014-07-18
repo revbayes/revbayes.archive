@@ -90,9 +90,9 @@ valueType* RevLanguage::TypedDistribution<valueType>::createRandomVariable(void)
 template <typename valueType>
 const std::string& RevLanguage::TypedDistribution<valueType>::getClassType(void) { 
     
-    static std::string rbClassName = "Distribution<"+ valueType::getClassType() +">";
+    static std::string revType = "Distribution<"+ valueType::getClassType() +">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -100,9 +100,9 @@ const std::string& RevLanguage::TypedDistribution<valueType>::getClassType(void)
 template <typename valueType>
 const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

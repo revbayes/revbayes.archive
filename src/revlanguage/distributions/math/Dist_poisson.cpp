@@ -62,9 +62,9 @@ RevBayesCore::PoissonDistribution* Dist_poisson::createDistribution( void ) cons
 const std::string& Dist_poisson::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_poisson";
+    static std::string revType = "Dist_poisson";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -76,9 +76,9 @@ const std::string& Dist_poisson::getClassType(void)
 const TypeSpec& Dist_poisson::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

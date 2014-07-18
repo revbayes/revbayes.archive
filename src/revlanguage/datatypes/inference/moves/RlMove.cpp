@@ -26,17 +26,17 @@ Move::Move(const Move &m) : WorkspaceObject<RevBayesCore::Move>( m ) {
 /** Get class name of object */
 const std::string& Move::getClassType(void) { 
     
-    static std::string rbClassName = "Move";
+    static std::string revType = "Move";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Move>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Move>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

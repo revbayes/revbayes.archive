@@ -47,17 +47,17 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
 /* Get class name of object */
 const std::string& Dist_mvtBrownian::getClassType(void) {
     
-    static std::string rbClassName = "Dist_multivariateBrownian";
+    static std::string revType = "Dist_multivariateBrownian";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_mvtBrownian::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

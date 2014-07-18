@@ -78,17 +78,17 @@ RevPtr<Variable> Mcmc::executeMethod(std::string const &name, const std::vector<
 /** Get class name of object */
 const std::string& Mcmc::getClassType(void) { 
     
-    static std::string rbClassName = "MCMC";
+    static std::string revType = "MCMC";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mcmc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

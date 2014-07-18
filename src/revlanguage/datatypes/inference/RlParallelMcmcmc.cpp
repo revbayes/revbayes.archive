@@ -107,17 +107,17 @@ RevPtr<Variable> ParallelMcmcmc::executeMethod(std::string const &name, const st
 /** Get class name of object */
 const std::string& ParallelMcmcmc::getClassType(void) {
     
-    static std::string rbClassName = "ParallelMcmcmc";
+    static std::string revType = "ParallelMcmcmc";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

@@ -89,9 +89,9 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
 const std::string& Dist_divDepYuleProcess::getClassType( void ) 
 { 
     
-    static std::string rbClassName = "Dist_divDepYuleProcess";
+    static std::string revType = "Dist_divDepYuleProcess";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -103,9 +103,9 @@ const std::string& Dist_divDepYuleProcess::getClassType( void )
 const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

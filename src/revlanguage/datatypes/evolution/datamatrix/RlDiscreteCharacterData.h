@@ -113,18 +113,18 @@ RevPtr<Variable> RevLanguage::DiscreteCharacterData<charType>::executeMethod(std
 template <typename rlType>
 const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void) { 
     
-    static std::string rbClassName = "DiscreteCharacterData";
+    static std::string revType = "DiscreteCharacterData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

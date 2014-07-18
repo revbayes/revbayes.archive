@@ -52,17 +52,17 @@ void Move_VectorSingleElementSlide::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Move_VectorSingleElementSlide::getClassType(void) { 
     
-    static std::string rbClassName = "Move_VectorSingleElementSlide";
+    static std::string revType = "Move_VectorSingleElementSlide";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_VectorSingleElementSlide::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

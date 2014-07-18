@@ -54,17 +54,17 @@ RevObject* AminoAcidState::convertTo(const TypeSpec& type) const {
 /** Get class name of object */
 const std::string& AminoAcidState::getClassType(void) { 
     
-    static std::string rbClassName = "AminoAcid";
+    static std::string revType = "AminoAcid";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& AminoAcidState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

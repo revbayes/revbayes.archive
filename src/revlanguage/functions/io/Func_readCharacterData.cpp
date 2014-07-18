@@ -238,17 +238,17 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readCharacterData::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readCharacterData";
+    static std::string revType = "Func_readCharacterData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

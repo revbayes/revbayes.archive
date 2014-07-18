@@ -73,17 +73,17 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
 /* Get class name of object */
 const std::string& Dist_wishart::getClassType(void) {
     
-    static std::string rbClassName = "Dist_wishart";
+    static std::string revType = "Dist_wishart";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_wishart::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

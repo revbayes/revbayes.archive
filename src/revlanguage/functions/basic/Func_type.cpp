@@ -71,17 +71,17 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_type::getClassType(void) { 
     
-    static std::string rbClassName = "Func_type";
+    static std::string revType = "Func_type";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_type::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

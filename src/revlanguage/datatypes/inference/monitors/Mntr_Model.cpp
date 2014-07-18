@@ -61,18 +61,18 @@ void Mntr_Model::constructInternalObject( void )
 const std::string& Mntr_Model::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Mntr_Model";
+    static std::string revType = "Mntr_Model";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_Model::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

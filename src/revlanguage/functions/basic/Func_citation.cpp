@@ -67,17 +67,17 @@ const ArgumentRules& Func_citation::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_citation::getClassType(void) {
     
-    static std::string rbClassName = "Func_citation";
+    static std::string revType = "Func_citation";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_citation::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

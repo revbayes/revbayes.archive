@@ -190,17 +190,17 @@ RealPos* Natural::divide(const RevLanguage::RealPos &rhs) const
 /** Get class name of object */
 const std::string& Natural::getClassType(void) { 
     
-    static std::string rbClassName = "Natural";
+    static std::string revType = "Natural";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Natural::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

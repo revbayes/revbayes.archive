@@ -58,17 +58,17 @@ RevPtr<Variable> RlGeographyRateModifier::executeMethod(std::string const &name,
 /* Get class name of object */
 const std::string& RlGeographyRateModifier::getClassType(void) {
     
-    static std::string rbClassName = "RlGeographyRateModifier";
+    static std::string revType = "RlGeographyRateModifier";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RlGeographyRateModifier::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

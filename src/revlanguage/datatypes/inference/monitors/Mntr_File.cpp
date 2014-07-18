@@ -54,17 +54,17 @@ void Mntr_File::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Mntr_File::getClassType(void) { 
     
-    static std::string rbClassName = "Mntr_File";
+    static std::string revType = "Mntr_File";
     
-	return rbClassName; 
+	return revType; 
     }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_File::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

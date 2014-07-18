@@ -37,17 +37,17 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::clone() const {
 /* Get class name of object */
 const std::string& AbstractDiscreteCharacterData::getClassType(void) { 
     
-    static std::string rbClassName = "AbstractDiscreteCharacterData";
+    static std::string revType = "AbstractDiscreteCharacterData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& AbstractDiscreteCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -65,17 +65,17 @@ const ArgumentRules& Func_hky::getArgumentRules( void ) const {
 
 const std::string& Func_hky::getClassType(void) { 
     
-    static std::string rbClassName = "Func_hky";
+    static std::string revType = "Func_hky";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_hky::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

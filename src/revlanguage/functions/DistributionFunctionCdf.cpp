@@ -157,17 +157,17 @@ const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const {
 /** Get class name of object */
 const std::string& DistributionFunctionCdf::getClassType(void) { 
     
-    static std::string rbClassName = "DistributionFunctionCdf";
+    static std::string revType = "DistributionFunctionCdf";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

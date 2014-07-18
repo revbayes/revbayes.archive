@@ -44,16 +44,16 @@ RealPos* PositiveContinuousDistribution::createRandomVariable(void) const {
 /* Get class name of object */
 const std::string& PositiveContinuousDistribution::getClassType(void) { 
     
-    static std::string rbClassName = "PositiveContinuousDistribution";
+    static std::string revType = "PositiveContinuousDistribution";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& PositiveContinuousDistribution::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<RealPos>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<RealPos>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 

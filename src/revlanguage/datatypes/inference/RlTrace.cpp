@@ -68,17 +68,17 @@ RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector
 /** Get class name of object */
 const std::string& Trace::getClassType(void) { 
     
-    static std::string rbClassName = "Trace";
+    static std::string revType = "Trace";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Trace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

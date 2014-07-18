@@ -63,9 +63,9 @@ Dist_norm* Dist_norm::clone( void ) const
 const std::string& Dist_norm::getClassType(void)
 { 
     
-    static std::string rbClassName = "Dist_norm";
+    static std::string revType = "Dist_norm";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -77,9 +77,9 @@ const std::string& Dist_norm::getClassType(void)
 const TypeSpec& Dist_norm::getClassTypeSpec(void)
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

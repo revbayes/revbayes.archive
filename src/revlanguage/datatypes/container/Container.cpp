@@ -56,18 +56,18 @@ Container::Container( const MemberRules& memberRules ) :
 /** Get class name of object */
 const std::string& Container::getClassType( void )
 {
-    static std::string rbClassName = "Container";
+    static std::string revType = "Container";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& Container::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

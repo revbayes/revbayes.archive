@@ -104,18 +104,18 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__add<firstValType, secondVal
 template <typename firstValType, typename secondValType, typename retType>
 const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__add<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string revType = "Func__add<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -163,8 +163,8 @@ RevPtr<Variable> RevObject::findOrCreateElement( const std::vector<size_t>& indi
 const std::string& RevObject::getClassType(void)
 {
     
-    static std::string rbClassName = "RevObject";
-	return rbClassName; 
+    static std::string revType = "RevObject";
+	return revType; 
 }
 
 
@@ -175,9 +175,9 @@ const std::string& RevObject::getClassType(void)
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), NULL );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), NULL );
 	
-    return rbClass; 
+    return revTypeSpec; 
 }
 
 

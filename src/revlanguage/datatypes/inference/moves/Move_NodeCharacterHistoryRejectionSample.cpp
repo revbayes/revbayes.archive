@@ -106,9 +106,9 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
 const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 {
     
-    static std::string rbClassName = "Move_NodeCharacterHistoryRejectionSample";
+    static std::string revType = "Move_NodeCharacterHistoryRejectionSample";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -120,9 +120,9 @@ const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

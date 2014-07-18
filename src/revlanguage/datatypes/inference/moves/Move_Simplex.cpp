@@ -55,17 +55,17 @@ void Move_Simplex::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Move_Simplex::getClassType(void) { 
     
-    static std::string rbClassName = "Move_Simplex";
+    static std::string revType = "Move_Simplex";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

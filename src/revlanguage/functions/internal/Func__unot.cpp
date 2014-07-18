@@ -63,18 +63,18 @@ const ArgumentRules& Func__unot::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func__unot::getClassType(void) { 
     
-    static std::string rbClassName = "Func__unot";
+    static std::string revType = "Func__unot";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func__unot::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

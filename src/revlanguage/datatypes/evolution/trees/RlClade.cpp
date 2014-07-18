@@ -124,17 +124,17 @@ const MemberRules& Clade::getMemberRules(void) const {
 /** Get class name of object */
 const std::string& Clade::getClassType(void) { 
     
-    static std::string rbClassName = "Clade";
+    static std::string revType = "Clade";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Clade::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

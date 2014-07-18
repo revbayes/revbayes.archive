@@ -96,9 +96,9 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::create
 const std::string& Dist_serialBDP::getClassType( void ) 
 { 
     
-    static std::string rbClassName = "Dist_serialBDP";
+    static std::string revType = "Dist_serialBDP";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -110,9 +110,9 @@ const std::string& Dist_serialBDP::getClassType( void )
 const TypeSpec& Dist_serialBDP::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -98,17 +98,17 @@ RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const st
 /** Get class name of object */
 const std::string& PowerPosterior::getClassType(void) { 
     
-    static std::string rbClassName = "PowerPosterior";
+    static std::string revType = "PowerPosterior";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& PowerPosterior::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

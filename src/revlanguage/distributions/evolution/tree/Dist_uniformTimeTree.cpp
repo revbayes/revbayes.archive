@@ -49,18 +49,18 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 /* Get class name of object */
 const std::string& Dist_uniformTimeTree::getClassType(void) {
     
-    static std::string rbClassName = "Dist_uniformTimeTree";
+    static std::string revType = "Dist_uniformTimeTree";
     
-	return rbClassName;
+	return revType;
 }
 
 
 /* Get class type spec describing type of object. TODO: Check if the correct parent is TypedDistribution or Distribution */
 const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

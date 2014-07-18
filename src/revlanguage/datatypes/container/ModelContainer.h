@@ -343,9 +343,9 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
 template <typename rlType, size_t dim, typename valueType>
 const std::string& ModelContainer<rlType, dim, valueType>::getClassType(void)
 {
-    static std::string rbClassName = "ModelContainer";
+    static std::string revType = "ModelContainer";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -353,9 +353,9 @@ const std::string& ModelContainer<rlType, dim, valueType>::getClassType(void)
 template <typename rlType, size_t dim, typename valueType>
 const TypeSpec& ModelContainer<rlType, dim, valueType>::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &Container::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Container::getClassTypeSpec() );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

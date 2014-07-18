@@ -35,17 +35,17 @@ RevBayesCore::LognormalDistribution* Dist_offsetLnorm::createDistribution( void 
 /* Get class name of object */
 const std::string& Dist_offsetLnorm::getClassType(void) {
     
-    static std::string rbClassName = "Dist_offsetLnorm";
+    static std::string revType = "Dist_offsetLnorm";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_offsetLnorm::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

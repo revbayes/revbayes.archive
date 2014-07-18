@@ -59,17 +59,17 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
 /* Get class name of object */
 const std::string& RlAtlas::getClassType(void) {
     
-    static std::string rbClassName = "RlAtlas";
+    static std::string revType = "RlAtlas";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RlAtlas::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

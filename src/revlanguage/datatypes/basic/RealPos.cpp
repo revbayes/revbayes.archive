@@ -157,17 +157,17 @@ RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 /** Get class name of object */
 const std::string& RealPos::getClassType(void) { 
     
-    static std::string rbClassName = "RealPos";
+    static std::string revType = "RealPos";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& RealPos::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

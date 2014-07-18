@@ -67,17 +67,17 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const {
 
 const std::string& Func_treeAssembly::getClassType(void) { 
     
-    static std::string rbClassName = "Func_treeAssembly";
+    static std::string revType = "Func_treeAssembly";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_treeAssembly::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -48,17 +48,17 @@ RevBayesCore::BernoulliDistribution* Dist_bernoulli::createDistribution( void ) 
 /* Get class name of object */
 const std::string& Dist_bernoulli::getClassType(void) { 
     
-    static std::string rbClassName = "Dist_bernoulli";
+    static std::string revType = "Dist_bernoulli";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_bernoulli::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

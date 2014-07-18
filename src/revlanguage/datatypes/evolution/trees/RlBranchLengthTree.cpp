@@ -87,17 +87,17 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
 /** Get class name of object */
 const std::string& BranchLengthTree::getClassType(void) { 
     
-    static std::string rbClassName = "BranchLengthTree";
+    static std::string revType = "BranchLengthTree";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& BranchLengthTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -62,9 +62,9 @@ RevBayesCore::GeometricDistribution* Dist_geom::createDistribution( void ) const
 const std::string& Dist_geom::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_geom";
+    static std::string revType = "Dist_geom";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -76,9 +76,9 @@ const std::string& Dist_geom::getClassType(void)
 const TypeSpec& Dist_geom::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

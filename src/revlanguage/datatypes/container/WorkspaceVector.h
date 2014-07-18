@@ -208,9 +208,9 @@ RevPtr<Variable> WorkspaceVector<rlType>::findOrCreateElement(const std::vector<
 template <typename rlType>
 const std::string& WorkspaceVector<rlType>::getClassType(void)
 {
-    static std::string rbClassName = rlType::getClassType() + "[]";
+    static std::string revType = rlType::getClassType() + "[]";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -223,9 +223,9 @@ const std::string& WorkspaceVector<rlType>::getClassType(void)
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &WorkspaceContainer::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceContainer::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

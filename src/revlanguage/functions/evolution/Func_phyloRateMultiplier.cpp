@@ -60,17 +60,17 @@ const ArgumentRules& Func_phyloRateMultiplier::getArgumentRules( void ) const
 
 const std::string& Func_phyloRateMultiplier::getClassType(void) { 
     
-    static std::string rbClassName = "Func_phyloRateMultiplier";
+    static std::string revType = "Func_phyloRateMultiplier";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_phyloRateMultiplier::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
