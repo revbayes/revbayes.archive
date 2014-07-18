@@ -150,3 +150,34 @@ void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const Rev
     }
 }
 
+/*
+RevLanguage::RevObject* Dist_mvtBrownian::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+    
+    if (name == "test") {        
+        this->dagNode->getValue().test();
+        return new Real( 0.0 );
+    }
+    
+    return ModelObject<RevBayesCore::MultivariateBrownianPhyloProcess>::executeMethod( name, args );
+}
+
+
+const RevLanguage::MethodTable& Dist_mvtBrownian::getMethods(void) const {
+    
+    static MethodTable    methods                     = MethodTable();
+    static bool           methodsSet                  = false;
+    
+    if ( methodsSet == false ) {
+        
+        ArgumentRules* testArgRules = new ArgumentRules();
+        methods.addFunction("test", new MemberFunction(Real::getClassTypeSpec(),       testArgRules              ) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &RevObject::getMethods() );
+        methodsSet = true;
+    }
+    
+    
+    return methods;
+}
+*/

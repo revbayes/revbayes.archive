@@ -28,10 +28,10 @@ tau.clamp(fixedTree)
 index <- 1
 
 # moves on the tree: only relative dates
-#moves[index] <- mSubtreeScale(tau, weight=5.0)
-#index <- index + 1
-#moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
-#index <- index + 1
+moves[index] <- mSubtreeScale(tau, weight=5.0)
+index <- index + 1
+moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+index <- index + 1
 
 # substition models
 # constant hypernodes
