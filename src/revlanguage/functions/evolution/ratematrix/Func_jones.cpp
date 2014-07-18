@@ -52,17 +52,17 @@ const ArgumentRules& Func_jones::getArgumentRules( void ) const {
 
 const std::string& Func_jones::getClassType(void) { 
     
-    static std::string rbClassName = "Func_jones";
+    static std::string revType = "Func_jones";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_jones::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

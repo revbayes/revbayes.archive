@@ -97,18 +97,18 @@ void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
 template <class valType>
 const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void) { 
     
-    static std::string rbClassName = "Move_DPPAllocateAuxGibbsMove";
+    static std::string revType = "Move_DPPAllocateAuxGibbsMove";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <class valType>
 const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

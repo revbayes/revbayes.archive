@@ -193,17 +193,17 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTrace::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readTrace";
+    static std::string revType = "Func_readTrace";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTrace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

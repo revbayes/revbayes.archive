@@ -89,17 +89,17 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readTrees::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readTrees";
+    static std::string revType = "Func_readTrees";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTrees::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

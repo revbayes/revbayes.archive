@@ -62,17 +62,17 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_quit::getClassType(void) { 
     
-    static std::string rbClassName = "Func_quit";
+    static std::string revType = "Func_quit";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_quit::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

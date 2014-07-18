@@ -125,9 +125,9 @@ const std::string& RevLanguage::WorkspaceObject<rbType>::getClassType(void) {
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::WorkspaceObject<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

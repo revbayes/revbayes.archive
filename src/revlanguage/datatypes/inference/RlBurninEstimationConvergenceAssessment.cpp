@@ -226,17 +226,17 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
 /** Get class name of object */
 const std::string& BurninEstimationConvergenceAssessment::getClassType(void) {
     
-    static std::string rbClassName = "BurninEstimationConvergenceAssessment";
+    static std::string revType = "BurninEstimationConvergenceAssessment";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

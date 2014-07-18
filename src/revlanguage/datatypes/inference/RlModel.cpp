@@ -43,17 +43,17 @@ void Model::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Model::getClassType(void) { 
     
-    static std::string rbClassName = "Model";
+    static std::string revType = "Model";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

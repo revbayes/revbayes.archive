@@ -69,17 +69,17 @@ Complex* Complex::clone(void) const {
 /** Get class name of object */
 const std::string& Complex::getClassType(void) { 
     
-    static std::string rbClassName = "Complex";
+    static std::string revType = "Complex";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Complex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

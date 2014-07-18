@@ -100,9 +100,9 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
  */
 const std::string& Dist_skyFossilBDP::getClassType( void )
 {
-    static std::string rbClassName = "Dist_skyFossilBDP";
+    static std::string revType = "Dist_skyFossilBDP";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -113,9 +113,9 @@ const std::string& Dist_skyFossilBDP::getClassType( void )
  */
 const TypeSpec& Dist_skyFossilBDP::getClassTypeSpec( void )
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

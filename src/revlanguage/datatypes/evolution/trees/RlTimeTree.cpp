@@ -100,17 +100,17 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
 /** Get class name of object */
 const std::string& TimeTree::getClassType(void) { 
     
-    static std::string rbClassName = "TimeTree";
+    static std::string revType = "TimeTree";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& TimeTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

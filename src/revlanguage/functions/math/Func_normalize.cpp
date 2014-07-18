@@ -65,18 +65,18 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_normalize::getClassType(void) { 
     
-    static std::string rbClassName = "Func_normalize";
+    static std::string revType = "Func_normalize";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_normalize::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

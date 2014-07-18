@@ -103,18 +103,18 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
 template <typename valType>
 const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_numUniqueInVector";
+    static std::string revType = "Func_numUniqueInVector";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

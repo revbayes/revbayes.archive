@@ -58,18 +58,18 @@ RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, co
 const std::string& SteppingStoneSampler::getClassType(void)
 {
     
-    static std::string rbClassName = "SteppingStoneSampler";
+    static std::string revType = "SteppingStoneSampler";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

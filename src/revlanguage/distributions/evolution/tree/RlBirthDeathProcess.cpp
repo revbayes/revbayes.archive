@@ -35,9 +35,9 @@ BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
 const std::string& BirthDeathProcess::getClassType(void) 
 { 
     
-    static std::string rbClassName = "BirthDeathProcess";
+    static std::string revType = "BirthDeathProcess";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -49,9 +49,9 @@ const std::string& BirthDeathProcess::getClassType(void)
 const TypeSpec& BirthDeathProcess::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -52,17 +52,17 @@ const ArgumentRules& Func_mtMam::getArgumentRules( void ) const {
 
 const std::string& Func_mtMam::getClassType(void) { 
     
-    static std::string rbClassName = "Func_mtMam";
+    static std::string revType = "Func_mtMam";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_mtMam::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

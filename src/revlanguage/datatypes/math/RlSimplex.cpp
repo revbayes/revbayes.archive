@@ -115,18 +115,18 @@ RevPtr<Variable> Simplex::getElement(const std::vector<size_t> oneOffsetIndices)
 /** Get class name of object */
 const std::string& Simplex::getClassType(void) { 
     
-    static std::string rbClassName = "Simplex";
+    static std::string revType = "Simplex";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& Simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Container::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Container::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

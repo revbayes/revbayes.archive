@@ -59,17 +59,17 @@ RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vect
 /* Get class name of object */
 const std::string& RateMap::getClassType(void) {
     
-    static std::string rbClassName = "RateMap";
+    static std::string revType = "RateMap";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateMap::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

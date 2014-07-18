@@ -54,17 +54,17 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Mntr_ExtendedNewickFile::getClassType(void) { 
     
-    static std::string rbClassName = "Mntr_ExtendedNewickFile";
+    static std::string revType = "Mntr_ExtendedNewickFile";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

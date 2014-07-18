@@ -63,17 +63,17 @@ const ArgumentRules& Func_f81::getArgumentRules( void ) const {
 
 const std::string& Func_f81::getClassType(void) { 
     
-    static std::string rbClassName = "Func_f81";
+    static std::string revType = "Func_f81";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_f81::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

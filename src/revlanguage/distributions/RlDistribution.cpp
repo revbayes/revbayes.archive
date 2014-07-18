@@ -36,9 +36,9 @@ Distribution::~Distribution()
 const std::string& Distribution::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Distribution";
+    static std::string revType = "Distribution";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -50,9 +50,9 @@ const std::string& Distribution::getClassType(void)
 const TypeSpec& Distribution::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

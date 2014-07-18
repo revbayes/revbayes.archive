@@ -57,17 +57,17 @@ Probability* Probability::clone( void ) const {
 /** Get class name of object */
 const std::string& Probability::getClassType(void) { 
     
-    static std::string rbClassName = "Probability";
+    static std::string revType = "Probability";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Probability::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RealPos::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RealPos::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

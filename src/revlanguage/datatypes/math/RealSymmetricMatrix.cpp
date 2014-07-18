@@ -55,17 +55,17 @@ RevObject* RealSymmetricMatrix::convertTo( const TypeSpec& type ) const {
 /** Get class name of object */
 const std::string& RealSymmetricMatrix::getClassType(void) {
     
-    static std::string rbClassName = "RealSymmetricMatrix";
+    static std::string revType = "RealSymmetricMatrix";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& RealSymmetricMatrix::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

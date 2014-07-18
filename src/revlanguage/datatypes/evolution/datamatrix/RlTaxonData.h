@@ -88,18 +88,18 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteTaxonData<charTy
 template <typename rlType>
 const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassType(void) { 
     
-    static std::string rbClassName = "DiscreteTaxonData";
+    static std::string revType = "DiscreteTaxonData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

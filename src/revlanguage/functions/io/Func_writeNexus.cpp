@@ -83,9 +83,9 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
 const std::string& Func_writeNexus::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Func_writeNexus";
+    static std::string revType = "Func_writeNexus";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -97,9 +97,9 @@ const std::string& Func_writeNexus::getClassType(void)
 const TypeSpec& Func_writeNexus::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

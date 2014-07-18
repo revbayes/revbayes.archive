@@ -88,9 +88,9 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
 const std::string& Dist_bdp::getClassType( void ) 
 { 
     
-    static std::string rbClassName = "Dist_bdp";
+    static std::string revType = "Dist_bdp";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -102,9 +102,9 @@ const std::string& Dist_bdp::getClassType( void )
 const TypeSpec& Dist_bdp::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

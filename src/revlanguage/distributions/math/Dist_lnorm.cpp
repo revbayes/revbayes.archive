@@ -41,17 +41,17 @@ RevBayesCore::LognormalDistribution* Dist_lnorm::createDistribution( void ) cons
 /* Get class name of object */
 const std::string& Dist_lnorm::getClassType(void) { 
     
-    static std::string rbClassName = "Dist_lnorm";
+    static std::string revType = "Dist_lnorm";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_lnorm::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

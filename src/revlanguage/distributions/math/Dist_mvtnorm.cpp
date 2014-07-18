@@ -50,17 +50,17 @@ RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( 
 /* Get class name of object */
 const std::string& Dist_mvtnorm::getClassType(void) {
     
-    static std::string rbClassName = "Dist_mvtnorm";
+    static std::string revType = "Dist_mvtnorm";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_mvtnorm::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

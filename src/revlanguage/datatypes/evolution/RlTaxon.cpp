@@ -106,17 +106,17 @@ const MemberRules& Taxon::getMemberRules(void) const {
 /** Get class name of object */
 const std::string& Taxon::getClassType(void) { 
     
-    static std::string rbClassName = "Taxon";
+    static std::string revType = "Taxon";
     
-    return rbClassName; 
+    return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Taxon::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-    return rbClass; 
+    return revTypeSpec; 
 }
 
 

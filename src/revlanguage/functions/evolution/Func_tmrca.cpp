@@ -67,17 +67,17 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const {
 
 const std::string& Func_tmrca::getClassType(void) { 
     
-    static std::string rbClassName = "Func_tmrca";
+    static std::string revType = "Func_tmrca";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_tmrca::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

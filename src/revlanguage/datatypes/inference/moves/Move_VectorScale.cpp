@@ -50,17 +50,17 @@ void Move_VectorScale::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Move_VectorScale::getClassType(void) { 
     
-    static std::string rbClassName = "Move_Move_VectorScale";
+    static std::string revType = "Move_Move_VectorScale";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_VectorScale::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

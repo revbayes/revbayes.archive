@@ -222,17 +222,17 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
 /* Get class name of object */
 const std::string& AbstractCharacterData::getClassType(void) { 
     
-    static std::string rbClassName = "AbstractCharacterData";
+    static std::string revType = "AbstractCharacterData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& AbstractCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

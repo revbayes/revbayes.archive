@@ -78,9 +78,9 @@ void Move_SwitchRateJump::constructInternalObject( void )
 const std::string& Move_SwitchRateJump::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Move_SwitchRateJump";
+    static std::string revType = "Move_SwitchRateJump";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -92,9 +92,9 @@ const std::string& Move_SwitchRateJump::getClassType(void)
 const TypeSpec& Move_SwitchRateJump::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

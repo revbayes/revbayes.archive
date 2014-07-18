@@ -78,17 +78,17 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const {
 
 const std::string& Func_biogeo_de::getClassType(void) {
     
-    static std::string rbClassName = "Func_biogeo_de";
+    static std::string revType = "Func_biogeo_de";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_biogeo_de::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

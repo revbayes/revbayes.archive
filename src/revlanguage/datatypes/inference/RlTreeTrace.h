@@ -118,18 +118,18 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
 template <typename treeType>
 const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) { 
     
-    static std::string rbClassName = "TreeTrace<" + treeType::getClassType() + ">";
+    static std::string revType = "TreeTrace<" + treeType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::TreeTrace<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::TreeTrace<typename treeType::valueType> >::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

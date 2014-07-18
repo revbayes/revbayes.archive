@@ -103,9 +103,9 @@ void Move_PathCharacterHistoryRejectionSample::constructInternalObject( void )
 const std::string& Move_PathCharacterHistoryRejectionSample::getClassType(void)
 {
     
-    static std::string rbClassName = "Move_PathCharacterHistoryRejectionSample";
+    static std::string revType = "Move_PathCharacterHistoryRejectionSample";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -117,9 +117,9 @@ const std::string& Move_PathCharacterHistoryRejectionSample::getClassType(void)
 const TypeSpec& Move_PathCharacterHistoryRejectionSample::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

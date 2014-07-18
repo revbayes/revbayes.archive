@@ -49,17 +49,17 @@ void Mntr_Screen::constructInternalObject( void ) {
 /** Get class name of object */
 const std::string& Mntr_Screen::getClassType(void) { 
     
-    static std::string rbClassName = "Mntr_Screen";
+    static std::string revType = "Mntr_Screen";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_Screen::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -115,9 +115,9 @@ ModelVectorAbstractElement<rlType>* ModelVectorAbstractElement<rlType>::clone() 
 template <typename rlType>
 const std::string& ModelVectorAbstractElement<rlType>::getClassType(void)
 {
-    static std::string rbClassName = rlType::getClassType() + "[]";
+    static std::string revType = rlType::getClassType() + "[]";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -130,9 +130,9 @@ const std::string& ModelVectorAbstractElement<rlType>::getClassType(void)
 template <typename rlType>
 const RevLanguage::TypeSpec& ModelVectorAbstractElement<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

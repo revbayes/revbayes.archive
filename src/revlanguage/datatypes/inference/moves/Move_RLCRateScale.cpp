@@ -81,9 +81,9 @@ void Move_RLCRateScale::constructInternalObject( void )
 const std::string& Move_RLCRateScale::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Move_RLCRateScale";
+    static std::string revType = "Move_RLCRateScale";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -95,9 +95,9 @@ const std::string& Move_RLCRateScale::getClassType(void)
 const TypeSpec& Move_RLCRateScale::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

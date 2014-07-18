@@ -45,17 +45,17 @@ RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) co
 /* Get class name of object */
 const std::string& Dist_brownian::getClassType(void) {
     
-    static std::string rbClassName = "Dist_brownian";
+    static std::string revType = "Dist_brownian";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_brownian::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

@@ -58,18 +58,18 @@ RevPtr<Variable> PathSampler::executeMethod(std::string const &name, const std::
 const std::string& PathSampler::getClassType(void)
 {
     
-    static std::string rbClassName = "PathSampler";
+    static std::string revType = "PathSampler";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& PathSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

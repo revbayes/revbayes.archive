@@ -99,9 +99,9 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 const std::string& Dist_constPopMultispCoal::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_constPopMultispCoal";
+    static std::string revType = "Dist_constPopMultispCoal";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -113,9 +113,9 @@ const std::string& Dist_constPopMultispCoal::getClassType(void)
 const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

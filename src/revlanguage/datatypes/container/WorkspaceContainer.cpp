@@ -68,18 +68,18 @@ void WorkspaceContainer::clear( void )
 /** Get class name of object */
 const std::string& WorkspaceContainer::getClassType(void)
 {
-    static std::string rbClassName = "WorkspaceContainer";
+    static std::string revType = "WorkspaceContainer";
     
-	return rbClassName;
+	return revType;
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& WorkspaceContainer::getClassTypeSpec(void)
 {
-    static TypeSpec rbClass = TypeSpec( getClassType(), &Container::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Container::getClassTypeSpec() );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

@@ -104,18 +104,18 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::get
 template <typename valType, typename retType>
 const std::string& RevLanguage::Func_round<valType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_round<" + valType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string revType = "Func_round<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -81,17 +81,17 @@ const ArgumentRules& Func_readAtlas::getArgumentRules( void ) const {
 /** Get class name of object */
 const std::string& Func_readAtlas::getClassType(void) {
     
-    static std::string rbClassName = "Func_readAtlas";
+    static std::string revType = "Func_readAtlas";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readAtlas::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

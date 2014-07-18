@@ -120,9 +120,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
 template <typename valType>
 const std::string& RevLanguage::Func_seq<valType>::getClassType(void) {
     
-    static std::string rbClassName = "Func_seq<" + valType::getClassType() + ">";
+    static std::string revType = "Func_seq<" + valType::getClassType() + ">";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -130,9 +130,9 @@ const std::string& RevLanguage::Func_seq<valType>::getClassType(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

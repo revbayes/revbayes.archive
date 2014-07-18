@@ -112,18 +112,18 @@ RevBayesCore::DirichletProcessPriorDistribution<typename valType::valueType>* Re
 template <typename valType>
 const std::string& RevLanguage::Dist_dpp<valType>::getClassType(void) { 
     
-    static std::string rbClassName = "Dist_dpp";
+    static std::string revType = "Dist_dpp";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector< valType > >::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector< valType > >::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

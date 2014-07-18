@@ -151,18 +151,18 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionPdf<valueType
 template <class valueType>
 const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassType(void) { 
     
-    static std::string rbClassName = "DistributionFunctionPdf";
+    static std::string revType = "DistributionFunctionPdf";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

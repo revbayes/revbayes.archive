@@ -346,17 +346,17 @@ std::vector<Argument>& Function::getArguments(void) {
 /** Get class name of object */
 const std::string& Function::getClassType(void) { 
     
-    static std::string rbClassName = "Function";
+    static std::string revType = "Function";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Function::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

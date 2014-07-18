@@ -78,9 +78,9 @@ Dist_branchRateJumpProcess* Dist_branchRateJumpProcess::clone( void ) const
 const std::string& Dist_branchRateJumpProcess::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_branchRateJumpProcess";
+    static std::string revType = "Dist_branchRateJumpProcess";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -92,9 +92,9 @@ const std::string& Dist_branchRateJumpProcess::getClassType(void)
 const TypeSpec& Dist_branchRateJumpProcess::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<RealPos> >::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<RealPos> >::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
