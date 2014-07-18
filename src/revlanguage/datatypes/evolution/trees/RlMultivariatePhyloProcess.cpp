@@ -106,15 +106,15 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
         
         ArgumentRules* meanArgRules = new ArgumentRules();
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberFunction(Real::getClassTypeSpec(),       meanArgRules              ) );
+        methods.addFunction("mean", new MemberProcedure(Real::getClassTypeSpec(),       meanArgRules              ) );
         
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberFunction(Real::getClassTypeSpec(),       stdevArgRules              ) );
+        methods.addFunction("stdev", new MemberProcedure(Real::getClassTypeSpec(),       stdevArgRules              ) );
         
         ArgumentRules* rootArgRules = new ArgumentRules();
         rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("rootVal", new MemberFunction(Real::getClassTypeSpec(),       rootArgRules              ) );
+        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(),       rootArgRules              ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

@@ -103,7 +103,7 @@ const MethodTable& PathSampler::getMethods(void) const {
     if ( methodsSet == false )
     {
         ArgumentRules* marginalArgRules = new ArgumentRules();
-        methods.addFunction("marginal", new MemberFunction( Real::getClassTypeSpec(), marginalArgRules) );
+        methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

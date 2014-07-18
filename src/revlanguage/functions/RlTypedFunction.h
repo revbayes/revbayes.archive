@@ -25,17 +25,16 @@
 #include "RlFunction.h"
 #include "TypedFunction.h"
 
-#if 0
 namespace RevLanguage {
     
     template <typename valueType>
     class TypedFunction : public Function {
         
     public:
-        virtual                                         ~TypedFunction(void);                                                                  //!< Destructor
-        TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                //!< Copy constuctor
+        virtual                                         ~TypedFunction(void);                                                               //!< Destructor
+        TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                        //!< Copy constuctor
         
-        virtual valueType*                              execute(void);                                                   //!< Create a random variable from this distribution        
+        virtual valueType*                              execute(void);                                                                      //!< Create a random variable from this distribution
         
         // Basic utility functions you have to override
         virtual TypedFunction<valueType>*               clone(void) const = 0;                                                              //!< Clone object
@@ -44,11 +43,11 @@ namespace RevLanguage {
         
         
         // Class-specific functions you have to override
-        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                                                 //!< Create a random variable from this distribution
+        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                             //!< Create a random variable from this distribution
         
         
     protected:
-        TypedFunction<valueType>(void);                                                                                                 //!< Basic constructor
+        TypedFunction<valueType>(void);                                                                                                     //!< Basic constructor
         
     };
     
@@ -108,5 +107,4 @@ const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassType
 
 #endif
 
-#endif
 
