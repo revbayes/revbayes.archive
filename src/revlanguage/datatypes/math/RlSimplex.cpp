@@ -13,7 +13,7 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "Probability.h"
@@ -202,15 +202,15 @@ const MethodTable&  Simplex::getMethods(void) const {
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( RealPos::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberProcedure( RealPos::getClassTypeSpec(), squareBracketArgRules) );
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
+        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
+        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
                 
         // necessary call for proper inheritance
         methods.setParentTable( &TypedContainer<std::vector<double> >::getMethods() );

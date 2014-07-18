@@ -88,7 +88,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RlUtils.h"

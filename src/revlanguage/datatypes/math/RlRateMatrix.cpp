@@ -9,7 +9,7 @@
 #include "RlRateMatrix.h"
 
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
@@ -93,12 +93,12 @@ const MethodTable& RateMatrix::getMethods(void) const {
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberProcedure( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
         
         
         // add method for call "x[]" as a function
         ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::RateMatrix>::getMethods() );

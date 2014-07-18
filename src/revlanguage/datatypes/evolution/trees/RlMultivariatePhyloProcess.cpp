@@ -7,9 +7,9 @@
 
 #include "RlMultivariatePhyloProcess.h"
 
-
 #include "Natural.h"
 #include "RbUtil.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
@@ -57,18 +57,6 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 /* Map calls to member methods */
 RevLanguage::RevObject* MultivariatePhyloProcess::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "mean") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getMean(k->getValue());
-        return new Real( mean );
-    }
-    
-    if (name == "stdev") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getStdev(k->getValue());
-        return new Real( mean );
-    }
-    
     if (name == "rootVal") {        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
         double mean = this->dagNode->getValue().getRootVal(k->getValue());
@@ -102,22 +90,23 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
     static MethodTable    methods                     = MethodTable();
     static bool           methodsSet                  = false;
     
-    if ( methodsSet == false ) {
+    if ( methodsSet == false )
+    {
         
         ArgumentRules* meanArgRules = new ArgumentRules();
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberFunction(Real::getClassTypeSpec(),       meanArgRules              ) );
+        methods.addFunction("mean", new MemberFunction<MultivariatePhyloProcess,Real>( this, meanArgRules ) );
         
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberFunction(Real::getClassTypeSpec(),       stdevArgRules              ) );
+        methods.addFunction("stdev", new MemberFunction<MultivariatePhyloProcess,RealPos>(  this, stdevArgRules ) );
         
         ArgumentRules* rootArgRules = new ArgumentRules();
         rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("rootVal", new MemberFunction(Real::getClassTypeSpec(),       rootArgRules              ) );
+        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), rootArgRules ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+        methods.setParentTable( &ModelObject<RevBayesCore::MultivariatePhyloProcess>::getMethods() );
         methodsSet = true;
     }
     

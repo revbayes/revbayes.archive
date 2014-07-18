@@ -49,7 +49,8 @@ namespace RevBayesCore {
         virtual void                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
         const std::set<const DagNode*>&     getParameters(void) const;                                              //!< get the parameters of the function
         virtual void                        keep(DagNode* affecter);
-        virtual void                        restore(DagNode *restorer);   
+        virtual void                        reInitialized( void );                                                  //!< The model was re-initialized
+        virtual void                        restore(DagNode *restorer);
         void                                swapParameter(const DagNode *oldP, const DagNode *newP);                //!< Exchange the parameter
         virtual void                        touch(DagNode *toucher );
 

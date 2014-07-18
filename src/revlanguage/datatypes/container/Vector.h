@@ -86,7 +86,7 @@ namespace RevLanguage {
 #include "DeterministicNode.h"
 #include "Ellipsis.h"
 #include "Integer.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -482,15 +482,15 @@ const RevLanguage::MethodTable& RevLanguage::Vector<rlType>::getMethods(void) co
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
+        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
+        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &TypedContainer<std::vector<elementType> >::getMethods() );
