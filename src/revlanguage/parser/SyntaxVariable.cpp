@@ -401,16 +401,16 @@ RevPtr<Variable> SyntaxVariable::evaluateDeterministicExpressionContent( Environ
             args.push_back( Argument( indexVar ) );
             
             // get the member function with name "[]"
-            MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
-            theMemberFunction->processArguments( args );
+            MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
+            theMemberProcedure->processArguments( args );
             // We need to clone because otherwise we overwrite all methods for this object
             
             // set the member object for the member function
-            theMemberFunction->setMemberObject( theVar );
-            //            RevPtr<Function> func( theMemberFunction );
+            theMemberProcedure->setMemberObject( theVar );
+            //            RevPtr<Function> func( theMemberProcedure );
             
-            RevObject* subElement = theMemberFunction->execute();
-            delete theMemberFunction;
+            RevObject* subElement = theMemberProcedure->execute();
+            delete theMemberProcedure;
             
             theVar = RevPtr<Variable>( new Variable( subElement, varName ) );
         }
@@ -561,16 +561,16 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             args.push_back( Argument( indexVar ) );
             
             // get the member function with name "[]"
-            MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
-            theMemberFunction->processArguments( args );
+            MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
+            theMemberProcedure->processArguments( args );
             // We need to clone because otherwise we overwrite all methods for this object
             
             // set the member object for the member function
-            theMemberFunction->setMemberObject( theVar );
-            //            RevPtr<Function> func( theMemberFunction );
+            theMemberProcedure->setMemberObject( theVar );
+            //            RevPtr<Function> func( theMemberProcedure );
             
-            RevObject* subElement = theMemberFunction->execute();
-            delete theMemberFunction;
+            RevObject* subElement = theMemberProcedure->execute();
+            delete theMemberProcedure;
             
             
             
