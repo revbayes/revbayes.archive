@@ -48,7 +48,7 @@ for (i in 1:n_parts){
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
   norm_gamma_rates[i] := discretizeGamma( shape[i], 4 )
-  moves[mv_it++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=1.0)
+  moves[mv_it++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=2.0)
 
 }
 
@@ -57,7 +57,7 @@ for (i in 1:n_parts){
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mv_it++] <- mvNNI(topology, weight=1.0)
+moves[mv_it++] <- mvNNI(topology, weight=10.0)
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
