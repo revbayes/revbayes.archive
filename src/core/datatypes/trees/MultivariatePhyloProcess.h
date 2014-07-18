@@ -10,6 +10,7 @@
 
 
 #include "MatrixReal.h"
+#include "MemberObject.h"
 #include "TimeTree.h"
 
 #include <vector>
@@ -17,19 +18,20 @@
 
 namespace RevBayesCore {
     
-    class MultivariatePhyloProcess : public MatrixReal {
+    class MultivariatePhyloProcess : public MatrixReal, public MemberObject<double> {
     
     public:
-        MultivariatePhyloProcess(void);                                                                                             //!< Default constructor
+        MultivariatePhyloProcess(void);                                                                                                                 //!< Default constructor
         MultivariatePhyloProcess(const TimeTree* intree, size_t indim);                                                                                             //!< Default constructor
-        MultivariatePhyloProcess(const MultivariatePhyloProcess& t);                                                                        //!< Copy constructor
+        MultivariatePhyloProcess(const MultivariatePhyloProcess& t);                                                                                    //!< Copy constructor
         virtual                                    ~MultivariatePhyloProcess(void);                                                                                                        //!< Destructor
     
-        MultivariatePhyloProcess&                           operator=(const MultivariatePhyloProcess& t);
+        MultivariatePhyloProcess&                   operator=(const MultivariatePhyloProcess& t);
     
         // Basic utility functions
-        MultivariatePhyloProcess*                   clone(void) const;                                                      //!< Clone object
+        MultivariatePhyloProcess*                   clone(void) const;                                                                                  //!< Clone object
     
+        void                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         const TimeTree*                             getTimeTree() const {return tree;}
         size_t                                      getDim() const {return getNumberOfColumns();}
         

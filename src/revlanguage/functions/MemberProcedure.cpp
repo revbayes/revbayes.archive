@@ -52,10 +52,18 @@ RevObject* MemberProcedure::execute( void )
     
     RevObject *retValue = object->getRevObject().executeMethod( funcName, args );
     
-    RevBayesCore::DagNode* theNode = object->getRevObject().getDagNode();
-    if ( theNode != NULL )
+    try
     {
-        theNode->touch();
+        RevBayesCore::DagNode* theNode = object->getRevObject().getDagNode();
+        
+        if ( theNode != NULL )
+        {
+            theNode->touch();
+        }
+    }
+    catch (RbException e)
+    {
+        // we do nothing ...
     }
     
     return retValue;
