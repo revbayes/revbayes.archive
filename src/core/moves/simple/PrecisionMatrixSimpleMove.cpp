@@ -46,64 +46,20 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     
     PrecisionMatrix& mymat = variable->getValue();
     storedValue = mymat;
-
     mymat.touch();
     
     size_t dim = mymat.getDim();
-
     size_t indexa = size_t( rng->uniform01() * dim );
     size_t indexb = size_t( rng->uniform01() * dim );
-    
-    
-    double lnHastingsratio = 0;
-    
-    if (indexa == indexb)   {
-        double u = rng->uniform01();
-        double m = lambda * ( u - 0.5 );
-        /*
-        mymat[indexa][indexb] += m;
-        if (mymat[indexa][indexb] < 0)  {
-            mymat[indexa][indexb] *= -1;
-        }
-        */
-        double scalingFactor = exp(m);
-        mymat[indexa][indexb] *= scalingFactor;
-        lnHastingsratio = m;
-    }
-    else    {
-        // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-        double u = rng->uniform01();
-        double slidingFactor = lambda * ( u - 0.5 );
-        mymat[indexa][indexb] += slidingFactor;
-        mymat[indexb][indexa] = mymat[indexa][indexb];
-    }
-    /*
-    size_t df = lambda;
-    size_t dim = mymat.getDim();
-    
-    PrecisionMatrix newmat = RbStatistics::Wishart::rv(mymat,df,*rng);
 
-    double lnHastingsratio = 0;
-    lnHastingsratio -= RbStatistics::Wishart::lnPdf(mymat,df,newmat);
-
-    storedValue = mymat;
+    double u = rng->uniform01();
+    double m = lambda * (u - 0.5);
+    mymat[indexa][indexb] += m;
+    mymat[indexb][indexa] = mymat[indexa][indexb];
     
-    double scalefactor = df - dim - 1;
-    std::cerr << mymat << '\n';
-    mymat *= scalefactor;
-    std::cerr << mymat << '\n';
-    newmat *= 1.0 / scalefactor;
-    lnHastingsratio += RbStatistics::Wishart::lnPdf(newmat,df,mymat);
-    
-    mymat = newmat;        
-        
-    std::cerr << lnHastingsratio << '\n';
-    
-    */
-
     mymat.update();
         
-    return lnHastingsratio;
+    return 0;   
 }
 
 void PrecisionMatrixMove::acceptSimpleMove()   {
@@ -121,7 +77,6 @@ void PrecisionMatrixMove::rejectSimpleMove( void ) {
  
     variable->getValue() = storedValue;
     variable->getValue().touch();
-    variable->getValue().update();
     variable->clearTouchedElementIndices();
 }
 
@@ -130,7 +85,6 @@ void PrecisionMatrixMove::swapNode(DagNode *oldN, DagNode *newN) {
     
     SimpleMove::swapNode(oldN, newN);
     variable = static_cast<StochasticNode<PrecisionMatrix >* >( newN );
-    
 }
 
 
