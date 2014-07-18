@@ -47,7 +47,8 @@ namespace RevBayesCore {
         virtual void                                        printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                update(void);                                                               //!< Update the current value by recomputation
         void                                                redraw(void);
-
+        void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
+        
     protected:
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
         bool                                                isFunctionDirty(void) const;                                                //!< Is my function dirty?
@@ -247,9 +248,19 @@ void RevBayesCore::DeterministicNode<valueType>::update()
 
 
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::redraw( void ) {
+void RevBayesCore::DeterministicNode<valueType>::redraw( void )
+{
     // nothing to do
     // the touch should have called our update
+}
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::reInitializeMe( void )
+{
+    
+    function->reInitialized();
+    
 }
 
 

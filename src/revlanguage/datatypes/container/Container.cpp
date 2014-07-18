@@ -19,7 +19,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Container.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -89,7 +89,7 @@ const MethodTable& Container::getMethods(void) const {
     
     if ( methodsSet == false ) {
         ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size", new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

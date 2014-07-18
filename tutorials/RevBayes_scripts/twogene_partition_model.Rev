@@ -16,13 +16,16 @@ filenames <- v("data/conifer_atpb.nex", "data/conifer_rbcL.nex")
 
 n_parts <- filenames.size()
 for (i in 1:n_parts){
-  data[i] <- readCharacterData(filenames[i])[1]
+  D <- readCharacterData(filenames[i])
+  data[i] <- D[1]
+  ns <- data[i].nchar()
+  n_sites[i] <- ns[1]
 }
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data[1].ntaxa()
 names <- data[1].names()
-n_branches <- 2 * n_species - 2
+n_branches <- 2 * n_species - 3
 
 #################################
 # Subsitution Model #
@@ -45,7 +48,7 @@ for (i in 1:n_parts){
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
   norm_gamma_rates[i] := discretizeGamma( shape[i], 4 )
-  moves[mv_it++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=1.0)
+  moves[mv_it++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=2.0)
 
 }
 
@@ -54,7 +57,7 @@ for (i in 1:n_parts){
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mv_it++] <- mvNNI(topology, weight=1.0)
+moves[mv_it++] <- mvNNI(topology, weight=10.0)
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
@@ -73,7 +76,7 @@ phylogeny := treeAssembly(topology, br_lens)
 
 
 for (i in 1:n_parts){
-  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], siteRates=norm_gamma_rates[i], nSites=data[i].nchar()[1], type="DNA")
+  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 

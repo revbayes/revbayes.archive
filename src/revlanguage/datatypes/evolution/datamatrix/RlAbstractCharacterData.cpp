@@ -1,6 +1,6 @@
 #include "RlAbstractCharacterData.h"
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
@@ -308,30 +308,30 @@ void AbstractCharacterData::initMethods(void) {
     excludecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
     excludecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
         
-    methods.addFunction("names",               new MemberFunction(TypeSpec(Vector<RlString>::getClassTypeSpec(), new TypeSpec( RlString::getClassTypeSpec() ) ),  namesArgRules              ) );
-    methods.addFunction("nchar",               new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
-    methods.addFunction("ntaxa",               new MemberFunction(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
-    methods.addFunction("chartype",            new MemberFunction(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-//    methods.addFunction("nexcludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
-//    methods.addFunction("nexcludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
-//    methods.addFunction("nincludedtaxa",       new MemberFunction(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
-//    methods.addFunction("nincludedchars",      new MemberFunction(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
-//    methods.addFunction("excludedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
-//    methods.addFunction("excludedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
-//    methods.addFunction("includedtaxa",        new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
-//    methods.addFunction("includedchars",       new MemberFunction(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
-//    methods.addFunction("nconstantpatterns",   new MemberFunction(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
-//    methods.addFunction("ncharswithambiguity", new MemberFunction(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
-    methods.addFunction("excludeCharacter",    new MemberFunction(RlUtils::Void,        excludecharArgRules        ) );
-    methods.addFunction("excludeCharacter",    new MemberFunction(RlUtils::Void,        excludecharArgRules2       ) );
-    methods.addFunction("show",                new MemberFunction(RlUtils::Void,        showdataArgRules           ) );
-    methods.addFunction("ishomologous",        new MemberFunction(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction("names",               new MemberProcedure(TypeSpec(Vector<RlString>::getClassTypeSpec(), new TypeSpec( RlString::getClassTypeSpec() ) ),  namesArgRules              ) );
+    methods.addFunction("nchar",               new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
+    methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
+    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
+//    methods.addFunction("nexcludedtaxa",       new MemberProcedure(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
+//    methods.addFunction("nexcludedchars",      new MemberProcedure(Natural::getClassTypeSpec(),       nexcludedcharsArgRules     ) );
+//    methods.addFunction("nincludedtaxa",       new MemberProcedure(Natural::getClassTypeSpec(),       nincludedtaxaArgRules      ) );
+//    methods.addFunction("nincludedchars",      new MemberProcedure(Natural::getClassTypeSpec(),       nincludedcharsArgRules     ) );
+//    methods.addFunction("excludedtaxa",        new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedtaxaArgRules       ) );
+//    methods.addFunction("excludedchars",       new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), excludedcharsArgRules      ) );
+//    methods.addFunction("includedtaxa",        new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedtaxaArgRules       ) );
+//    methods.addFunction("includedchars",       new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), includedcharsArgRules      ) );
+//    methods.addFunction("nconstantpatterns",   new MemberProcedure(Natural::getClassTypeSpec(),       nconstantpatternsArgRules  ) );
+//    methods.addFunction("ncharswithambiguity", new MemberProcedure(Natural::getClassTypeSpec(),       ncharswithambiguityArgRules) );
+    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules        ) );
+    methods.addFunction("excludeCharacter",    new MemberProcedure(RlUtils::Void,        excludecharArgRules2       ) );
+    methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
+    methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
         
     
     // add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
     // necessary call for proper inheritance
     methods.setParentTable( &ModelObject<RevBayesCore::AbstractCharacterData>::getMethods() );

@@ -1,6 +1,6 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
