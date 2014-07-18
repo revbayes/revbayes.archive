@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of SyntaxStatement, which is
- * used to hold control and loop statements in the syntax tree.
- *
- * @brief Implementation of SyntaxStatement
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #include "RlBoolean.h"
 #include "Environment.h"
 #include "RbException.h"
@@ -31,22 +16,41 @@
 
 using namespace RevLanguage;
 
-/** Static vector of RlStrings giving names of statement types */
+
+/** Static vector of string giving names of statement types */
 std::string SyntaxStatement::stmtName[] = { "IF", "IF_ELSE", "FOR", "WHILE", "NEXT", "BREAK", "RETURN" }; 
 
 
 /** Construct from statement type */
-SyntaxStatement::SyntaxStatement(statementT type) : SyntaxElement(), statementType(type), expression(NULL), statements1(NULL), statements2(NULL) {
+SyntaxStatement::SyntaxStatement( statementT type ) :
+    SyntaxElement(),
+    statementType( type ),
+    expression( NULL ),
+    statements1( NULL ),
+    statements2( NULL )
+{
 }
 
 
 /** Construct from statement type and expression (RETURN expression) */
-SyntaxStatement::SyntaxStatement(statementT type, SyntaxElement* expr) : SyntaxElement(), statementType(type), expression(expr), statements1(NULL), statements2(NULL) {
+SyntaxStatement::SyntaxStatement( statementT type, SyntaxElement* expr ) :
+    SyntaxElement(),
+    statementType( type ),
+    expression( expr ),
+    statements1( NULL ),
+    statements2( NULL )
+{
 }
 
 
 /** Construct from statement type, condition and statement list */
-SyntaxStatement::SyntaxStatement(statementT type, SyntaxElement* cond, std::list<SyntaxElement*>* stmts) : SyntaxElement(), statementType(type), expression(cond), statements1(stmts), statements2(NULL) {
+SyntaxStatement::SyntaxStatement( statementT type, SyntaxElement* cond, std::list<SyntaxElement*>* stmts ) :
+    SyntaxElement(),
+    statementType( type ),
+    expression( cond ),
+    statements1( stmts ),
+    statements2( NULL )
+{
 }
 
 
@@ -54,27 +58,36 @@ SyntaxStatement::SyntaxStatement(statementT type, SyntaxElement* cond, std::list
 SyntaxStatement::SyntaxStatement(statementT                   type,
                                  SyntaxElement*               cond,
                                  std::list<SyntaxElement*>*   stmts1,
-                                 std::list<SyntaxElement*>*   stmts2)
-    : SyntaxElement(), statementType(type), expression(cond), statements1(stmts1), statements2(stmts2) {
+                                 std::list<SyntaxElement*>*   stmts2) :
+    SyntaxElement(),
+    statementType( type ),
+    expression( cond ),
+    statements1( stmts1 ),
+    statements2( stmts2 )
+{
 }
 
 
 /** Deep copy constructor */
-SyntaxStatement::SyntaxStatement(const SyntaxStatement& x) : SyntaxElement(x) {
+SyntaxStatement::SyntaxStatement(const SyntaxStatement& x) :
+    SyntaxElement( x )
+{
 
     statementType   = x.statementType;
     expression      = x.expression->clone();
 
     statements1 = new std::list<SyntaxElement*>();
-    if ( x.statements1 != NULL ) {
-        for (std::list<SyntaxElement*>::const_iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
-            statements1->push_back( (*i)->clone() );
+    if ( x.statements1 != NULL )
+    {
+        for ( std::list<SyntaxElement*>::const_iterator it = x.statements1->begin(); it != x.statements1->end(); ++it )
+            statements1->push_back( (*it)->clone() );
     }
     
     statements2 = new std::list<SyntaxElement*>();
-    if ( x.statements2 != NULL ) {
-        for (std::list<SyntaxElement*>::const_iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
-            statements2->push_back( (*i)->clone() );
+    if ( x.statements2 != NULL )
+    {
+        for ( std::list<SyntaxElement*>::const_iterator it = x.statements2->begin(); it != x.statements2->end(); ++it )
+            statements2->push_back( (*it)->clone() );
     }
 }
 
@@ -84,57 +97,77 @@ SyntaxStatement::~SyntaxStatement() {
     
     delete expression;
     
-    if (statements1 != NULL) {
-        for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++) {
-            delete *i;
-        }
+    if (statements1 != NULL)
+    {
+        for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
+            delete *it;
         delete statements1;
     }
     
-    if (statements2 != NULL) {
-        for (std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++) {
-            delete *i;
-        }
+    if (statements2 != NULL)
+    {
+        for ( std::list<SyntaxElement*>::iterator it = statements2->begin(); it != statements2->end(); ++it )
+            delete *it;
         delete statements2;
     }
 }
 
 
 /** Assignment operator */
-SyntaxStatement& SyntaxStatement::operator= (const SyntaxStatement& x) {
+SyntaxStatement& SyntaxStatement::operator=( const SyntaxStatement& x )
+{
+    if ( &x != this )
+    {
+        SyntaxElement::operator=( x );
 
-    if (&x != this) {
-
-        SyntaxElement::operator=(x);
+        if ( expression != NULL )
+        {
+            delete expression;
+            expression = NULL;
+        }
+        
+        if ( statements1 != NULL )
+        {
+            for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
+                delete *it;
+            delete statements1;
+            statements1 = NULL;
+        }
+        
+        if ( statements2 != NULL )
+        {
+            for ( std::list<SyntaxElement*>::iterator it = statements2->begin(); it != statements2->end(); ++it )
+                delete *it;
+            delete statements2;
+            statements2 = NULL;
+        }
 
         statementType   = x.statementType;
-        expression      = x.expression->clone();
-        
-        for (std::list<SyntaxElement*>::iterator i = statements1->begin(); i != statements1->end(); i++) {
-            SyntaxElement* theSyntaxElement = *i;
-            delete theSyntaxElement;
+
+        if ( x.expression != NULL )
+            expression = x.expression->clone();
+
+        if ( x.statements1 != NULL )
+        {
+            for ( std::list<SyntaxElement*>::const_iterator it = x.statements1->begin(); it != x.statements1->end(); ++it )
+                statements1->push_back( (*it)->clone() );
         }
-        statements1->clear();
-        for (std::list<SyntaxElement*>::const_iterator i=x.statements1->begin(); i!=x.statements1->end(); i++)
-            statements1->push_back( (*i)->clone() );
-        
-        for (std::list<SyntaxElement*>::iterator i = statements2->begin(); i != statements2->end(); i++) {
-            SyntaxElement* theSyntaxElement = *i;
-            delete theSyntaxElement;
+
+        if ( x.statements2 != NULL )
+        {
+            for ( std::list<SyntaxElement*>::const_iterator it = x.statements2->begin(); it != x.statements2->end(); ++it )
+                statements2->push_back( (*it)->clone() );
         }
-        statements2->clear();
-        for (std::list<SyntaxElement*>::const_iterator i=x.statements2->begin(); i!=x.statements2->end(); i++)
-            statements2->push_back( (*i)->clone() );
     }
 
-    return (*this);
+    return ( *this );
 }
 
 
-/** Clone syntax element */
-SyntaxStatement* SyntaxStatement::clone () const {
-
-    return new SyntaxStatement(*this);
+/** Type-safe clone of syntax element */
+SyntaxStatement* SyntaxStatement::clone( void ) const
+{
+    return new SyntaxStatement( *this );
 }
 
 
@@ -149,11 +182,11 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
 
     RevPtr<Variable> result = NULL;
     
-    if (statementType == For) {
-
+    if (statementType == For)
+    {
         // Convert expression to for condition
         SyntaxForLoop* forLoop = dynamic_cast<SyntaxForLoop*>( expression );
-        assert (forLoop != NULL);
+        assert ( forLoop != NULL );
 
         // Initialize for loop. We use current environment for the loop variables (as in R)
         Signals::getSignals().clearFlags();
@@ -165,10 +198,10 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
             // Get next loop state. This will update the value of the loop variable
             forLoop->getNextLoopState();
 
-            for (std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++)
+            for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
             {
                 // Get a convenient pointer to the syntax element
-                SyntaxElement* theSyntaxElement = *i;
+                SyntaxElement* theSyntaxElement = *it;
                 
                 // Execute statement
                 result = theSyntaxElement->evaluateContent( env );
@@ -215,37 +248,40 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
         forLoop->finalizeLoop();
         
     }
-    else if (statementType == Break) {
-    
+    else if ( statementType == Break )
+    {
         // Set BREAK signal
         Signals::getSignals().set(Signals::BREAK);
     }
-    else if (statementType == Next) {
-    
+    else if (statementType == Next)
+    {
         // Set CONTINUE signal
         Signals::getSignals().set(Signals::CONTINUE);
     }
-    else if ( statementType == While ) {
-
+    else if ( statementType == While )
+    {
         // Loop over statements inside the while loop, first checking the expression
         while ( isTrue( expression, env ) ) {
 
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
-	 
-                SyntaxElement* theSyntaxElement = *i;
+            for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
+            {
+                SyntaxElement* theSyntaxElement = *it;
 
                 // Execute statement
 	            result = theSyntaxElement->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() && result != NULL && result->getRevObject() != RevNullObject::getInstance()) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment()
+                        && result != NULL && result->getRevObject() != RevNullObject::getInstance() )
+                {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 	 
 	            // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     result = NULL;  // discard result
                 }
 	 
@@ -255,84 +291,93 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
             }
 
             // Catch signals
-            if ( Signals::getSignals().isSet(Signals::BREAK) ) {
+            if ( Signals::getSignals().isSet(Signals::BREAK) )
+            {
 	                 Signals::getSignals().clearFlags();
 	                 break;
             }
-            else if ( Signals::getSignals().isSet(Signals::CONTINUE) ) {
+            else if ( Signals::getSignals().isSet(Signals::CONTINUE) )
+            {
 	                 Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
     }
-    else if (statementType == Return) {
-        
+    else if ( statementType == Return )
+    {
         // Set RETURN signal and return expression value
         Signals::getSignals().set(Signals::RETURN);
         return expression->evaluateContent(env);
     }
-    else if ( statementType == If ) {
-
+    else if ( statementType == If )
+    {
         // Process statements inside the if clause if expression is true
-        if ( isTrue( expression, env ) ) {
-        	 	 
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
-
+        if ( isTrue( expression, env ) )
+        {
+            for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
+            {
                 // Execute statement
-                result = (*i)->evaluateContent(env);
+                result = (*it)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL){
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     result = NULL;  // discard result
                 }
             }
         }
     }
-    else if ( statementType == IfElse ) {
-        
+    else if ( statementType == IfElse )
+    {
         // Process statements inside the if clause if expression is true,
         // otherwise process statements in else clause
-        if ( isTrue( expression, env ) ) {
-            
-            for ( std::list<SyntaxElement*>::iterator i=statements1->begin(); i!=statements1->end(); i++ ) {
-            
+        if ( isTrue( expression, env ) )
+        {
+            for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
+            {
                 // Execute statement
-                result = (*i)->evaluateContent( env );
+                result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
                 
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ){
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     result = NULL;  // discard result
                 }
             }
         }
-        else {	
-            for ( std::list<SyntaxElement*>::iterator i=statements2->begin(); i!=statements2->end(); i++ ) {
-    
+        else
+        {
+            for ( std::list<SyntaxElement*>::iterator it = statements2->begin(); it != statements2->end(); ++it )
+            {
                 // Execute statement
-                result = (*i)->evaluateContent( env );
+                result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     std::ostringstream msg;
                     result->getRevObject().printValue(msg);
                     RBOUT( msg.str() );
                 }
                     
                 // Free memory
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL ) {
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
                     result = NULL;  // discard result
                 }
             }
@@ -348,21 +393,21 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
  * whether the result is true or false, or can be interpreted as a RlBoolean
  * true or false value.
  */
-bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
-    
+bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
+{
     RevPtr<Variable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;
     
-    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) ) {
-        
+    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) )
+    {
         bool retValue = static_cast<const RlBoolean&>( temp->getRevObject() ).getValue();
         
         return retValue;
     }
-    else {
-        
+    else
+    {
         RevObject *tempObject = temp->getRevObject().convertTo( RlBoolean::getClassTypeSpec() );
         RlBoolean* tempBool = static_cast<RlBoolean*>( tempObject );
         bool     retValue = tempBool->getValue();
@@ -375,10 +420,10 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const {
 
 
 /** Print info about the syntax element */
-void SyntaxStatement::printValue(std::ostream& o) const {
-
+void SyntaxStatement::printValue(std::ostream& o) const
+{
     o << "SyntaxStatement:" << std::endl;
-    o << "statementType = " << stmtName[statementType] << std::endl;
+    o << "statementType = " << stmtName[ statementType ] << std::endl;
     if (expression == NULL)
         o << "expression    = NULL" << std::endl;
     else 
@@ -387,47 +432,32 @@ void SyntaxStatement::printValue(std::ostream& o) const {
         expression->printValue(o);
         o << std::endl;
     }
-    if (statements1 == NULL)
+    if ( statements1 == NULL )
         o << "statements1   = NULL" << std::endl;
     else 
     {
         o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
-        int count=1;
-        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++, count++) 
+        int count = 1;
+        for ( std::list<SyntaxElement*>::const_iterator it = statements1->begin(); it !=statements1->end(); ++it, ++count )
         {
-            o << "   stmt " << count << " = [" << (*i) << "] ";
-            (*i)->printValue(o);
+            o << "   stmt " << count << " = [" << (*it) << "] ";
+            (*it)->printValue(o);
             o << std::endl;
         }
     }
-    if (statements2 == NULL)
+    if ( statements2 == NULL )
         o << "statements2   = NULL" << std::endl;
     else 
     {
         o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
-        int count=1;
-        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++, count++) 
+        int count = 1;
+        for ( std::list<SyntaxElement*>::const_iterator it = statements2->begin(); it != statements2->end(); ++it, ++count )
         {
-            o << "   stmt " << count << " = [" << (*i) << "] ";
-            (*i)->printValue(o);
+            o << "   stmt " << count << " = [" << (*it) << "] ";
+            (*it)->printValue(o);
             o << std::endl;
         }
     }
     o << std::endl;
-
-    if (expression != NULL)
-        expression->printValue(o);
-    if (statements1 != NULL) {
-        for (std::list<SyntaxElement*>::const_iterator i=statements1->begin(); i!=statements1->end(); i++) 
-        {
-            (*i)->printValue(o);
-        }
-    }
-    if (statements2 != NULL) {
-        for (std::list<SyntaxElement*>::const_iterator i=statements2->begin(); i!=statements2->end(); i++) 
-        {
-            (*i)->printValue(o);
-        }
-    }
 }
 

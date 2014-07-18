@@ -369,17 +369,16 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
     o << "_distribution = " << "<unnamed>" << std::endl;
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = " << this->distribution->getValue() << std::endl;
     o << "_lnProb       = " << lnProb << std::endl;
     if ( this->touched )
         o << "_storedLnProb = " << storedLnProb << std::endl;    
     
     o << "_parents      = ";
-    this->printParents(o);
+    this->printParents(o, 16, 70);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o);
+    this->printChildren(o, 16, 70);
     o << std::endl;
 }
 

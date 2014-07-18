@@ -1,4 +1,3 @@
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -15,9 +14,9 @@ using namespace RevLanguage;
 /** 
  * Construct from variable expression.
  *
- * \param[in]   v   The variable expression on the left-hand side.
+ * \param[in]   v   The variable expression
  */
-SyntaxDecrement::SyntaxDecrement(SyntaxVariable* v) :
+SyntaxDecrement::SyntaxDecrement( SyntaxVariable* v ) :
     SyntaxElement(),
     variable( v )
 {
@@ -25,20 +24,14 @@ SyntaxDecrement::SyntaxDecrement(SyntaxVariable* v) :
 
 
 /** 
- * Deep copy constructor.
+ * Deep copy constructor. It really should not be possible for the
+ * parser to return a NULL variable statement, so we do not have
+ * to check for a NULL pointer.
  */
-SyntaxDecrement::SyntaxDecrement(const SyntaxDecrement& x) : SyntaxElement(x) 
+SyntaxDecrement::SyntaxDecrement( const SyntaxDecrement& x ) :
+    SyntaxElement(x)
 {
-    
-    if ( x.variable != NULL )
-    {
-        variable   = x.variable->clone();
-    }
-    else
-    {
-        variable = NULL;
-    }
-    
+    variable   = x.variable->clone();
 }
 
 
@@ -52,37 +45,37 @@ SyntaxDecrement::~SyntaxDecrement()
 
 
 /** 
- * Assignment operator performing a deep assignment.
+ * Assignment operator performing deep assignment.
  */
-SyntaxDecrement& SyntaxDecrement::operator=(const SyntaxDecrement& x) 
+SyntaxDecrement& SyntaxDecrement::operator=( const SyntaxDecrement& x ) 
 {
     if ( this != &x )
     {
-        
+        SyntaxElement::operator=( x );
+
         delete variable;
-        
         variable = x.variable->clone();
     }
     
-    return (*this);
+    return ( *this );
 }
 
 
 /**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ * The clone function is a convenience function to create proper copies of inherited objects.
+ * That is, a.clone() will create a clone of type 'b' if the 'a' instance is of derived type 'b'.
  *
- * \return A new copy of myself 
+ * \return A new copy of myself
  */
-SyntaxDecrement* SyntaxDecrement::clone () const 
+SyntaxDecrement* SyntaxDecrement::clone () const
 {
-    return new SyntaxDecrement(*this);
+    return new SyntaxDecrement( *this );
 }
 
 
 /** 
- * Evaluate the content of this syntax element.
- * This will perform a decrement assignment operation.
+ * Evaluate the content of this syntax element. This will perform
+ * a decrement assignment operation.
  */
 RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env ) 
 {
@@ -90,26 +83,27 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env )
     printf( "Evaluating decrement assignment\n" );
 #endif
     
-    // Get variable from lhs. We use standard evaluation because the variable is
+    // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
     RevPtr<Variable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
+        throw RbException( "Invalid NULL variable returned by variable expression in decrement assignment" );
     
     // Make sure that the variable is constant
     if ( !theVariable->getRevObject().isConstant() )
-        throw RbException( "Invalid subtraction assignment to dynamic variable" );
+        throw RbException( "Invalid decrement assignment to dynamic variable" );
     
-    // Get a nonconst reference to the lhs value object
+    // Get a non-const reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
-    
-    // Decrement the lhs value
+
+    // Decrement the lhs value. This will not change the control variable status.
     lhs_value.decrement();
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
-    
+
+    // Return the variable for further assignment
     return theVariable;
 }
 
@@ -124,7 +118,6 @@ void SyntaxDecrement::printValue(std::ostream& o) const
     o << "variable      = ";
     variable->printValue(o);
     o << std::endl;
-    o << "expression    = '++'" << std::endl;
+    o << "expression    = '--'" << std::endl;
 }
-
 

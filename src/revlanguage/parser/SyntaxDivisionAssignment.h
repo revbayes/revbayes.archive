@@ -13,41 +13,47 @@ namespace RevLanguage {
     /**
      * @brief Division assignment operator ('a /= b')
      *
-     * The Division assignment operator adds the value of the right hand side variable
-     * to the value of the left hand side variable.
+     * The division assignment operator divides the value the left-hand side variable
+     * with the right-hand side variable.
      *
-     * Note that the left hand side variable must be constant and that this function
-     * is a constant expression and thus evaluated immidiately. The reason is that otherwise
-     * we would obtain a loop in the DAG, namely that 'a' is a parent of itself.
+     * Note that the left-hand side variable must be either a constant variable or a
+     * control variable, and that the division assignment is interpreted as a constant
+     * assignment or a control variable assignment depending on the original type of the
+     * left-hand side variable. Thus, if the left-hand side variable is a constant, the
+     * division assignment statement 'a /= b' is equivalent to the statement:
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-02-18, version 1.0
+     *    a <- a / b
      *
+     * while if the left-hand side variable is a control variable, the addition assignment
+     * is equivalent to
+     *
+     *    a <<- a / b
+     *
+     * Note that a division assignment could not be a deterministic assignment, because
+     * then it would be rejected as creating loops in the DAG, i.e., 'a' would be a parent
+     * of itself.
      */
     class SyntaxDivisionAssignment : public SyntaxElement {
         
     public:
-        SyntaxDivisionAssignment(SyntaxVariable* var, SyntaxElement* expr);                                                     //!< Constructor with lhs = variable
-        SyntaxDivisionAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr);                                             //!< Constructor with lhs = function call
-        SyntaxDivisionAssignment(const SyntaxDivisionAssignment& x);                                                            //!< Copy constructor
-	    virtual                             ~SyntaxDivisionAssignment();                                                        //!< Destructor
+        SyntaxDivisionAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                           //!< Standard constructor
+        SyntaxDivisionAssignment(const SyntaxDivisionAssignment& x);                                        //!< Copy constructor
+	    virtual                             ~SyntaxDivisionAssignment();                                    //!< Destructor
         
         // Assignment operator
-        SyntaxDivisionAssignment&           operator=(const SyntaxDivisionAssignment& x);                                       //!< Assignment operator
+        SyntaxDivisionAssignment&           operator=(const SyntaxDivisionAssignment& x);                   //!< Assignment operator
         
         // Basic utility functions
-        SyntaxDivisionAssignment*           clone() const;                                                                      //!< Clone object
-        bool                                isAssignment(void) const;                                                           //!< Is this syntax element an assignment?
-        void                                printValue(std::ostream& o) const;                                                  //!< Print info about object
+        SyntaxDivisionAssignment*           clone() const;                                                  //!< Clone object
+        bool                                isAssignment(void) const;                                       //!< Is this syntax element an assignment?
+        void                                printValue(std::ostream& o) const;                              //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                                  //!< Get semantic value
+        RevPtr<Variable>                    evaluateContent(Environment& env);                              //!< Get semantic value
         
     protected:
-        SyntaxVariable*                     variable;                                                                           //!< A lhs variable
-        SyntaxFunctionCall*                 functionCall;                                                                       //!< A lhs function call
-        SyntaxElement*                      expression;                                                                         //!< The rhs expression
+        SyntaxElement*                      lhsExpression;                                                  //!< The lhs expression
+        SyntaxElement*                      rhsExpression;                                                  //!< The rhs expression
         
     };
     

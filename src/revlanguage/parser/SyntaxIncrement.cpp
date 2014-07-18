@@ -1,4 +1,3 @@
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -11,111 +10,109 @@
 
 using namespace RevLanguage;
 
-/** 
- * Construct from expression. 
+
+/**
+ * Construct from variable expression.
  *
- * \param[in]   e           The expression on the right hand side.
+ * \param[in]   v   The variable expression
  */
-SyntaxIncrement::SyntaxIncrement(SyntaxVariable* v) :
+SyntaxIncrement::SyntaxIncrement( SyntaxVariable* v ) :
     SyntaxElement(),
-    variable( v ) 
+    variable( v )
 {
 }
 
 
-/** 
- * Deep copy constructor.
+/**
+ * Deep copy constructor. It really should not be possible for the
+ * parser to return a NULL variable statement, so we do not have
+ * to check for a NULL pointer.
  */
-SyntaxIncrement::SyntaxIncrement(const SyntaxIncrement& x) :
+SyntaxIncrement::SyntaxIncrement( const SyntaxIncrement& x ) :
     SyntaxElement(x)
 {
-    if ( x.variable != NULL )
-    {
-        variable   = x.variable->clone();
-    }
-    else
-    {
-        variable = NULL;
-    }
+    variable   = x.variable->clone();
 }
 
 
-/** 
- * Destructor deletes operands 
+/**
+ * Destructor deletes operands
  */
-SyntaxIncrement::~SyntaxIncrement() 
+SyntaxIncrement::~SyntaxIncrement()
 {
     delete variable;
 }
 
 
-/** 
- * Assignment operator performing a deep assignment.
+/**
+ * Assignment operator performing deep assignment.
  */
-SyntaxIncrement& SyntaxIncrement::operator=(const SyntaxIncrement& x) 
+SyntaxIncrement& SyntaxIncrement::operator=( const SyntaxIncrement& x )
 {
     if ( this != &x )
     {
+        SyntaxElement::operator=( x );
         
         delete variable;
-        
         variable = x.variable->clone();
     }
     
-    return (*this);
+    return ( *this );
 }
 
 
 /**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ * The clone function is a convenience function to create proper copies of inherited objects.
+ * That is, a.clone() will create a clone of type 'b' if the 'a' instance is of derived type 'b'.
  *
- * \return A new copy of myself 
+ * \return A new copy of myself
  */
-SyntaxIncrement* SyntaxIncrement::clone () const 
+SyntaxIncrement* SyntaxIncrement::clone () const
 {
-    return new SyntaxIncrement(*this);
+    return new SyntaxIncrement( *this );
 }
 
 
-/** 
- * Evaluate the content of this syntax element.
- * This will perform an increment assignment operation.
+/**
+ * Evaluate the content of this syntax element. This will perform
+ * an increment assignment operation.
  */
-RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
+RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating increment assignment\n" );
 #endif
     
-    // Get variable from lhs. We use standard evaluation because the variable is
+    // Get variable. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
     RevPtr<Variable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in subtraction assignment" );
+        throw RbException( "Invalid NULL variable returned by variable expression in increment assignment" );
     
     // Make sure that the variable is constant
     if ( !theVariable->getRevObject().isConstant() )
-        throw RbException( "Invalid subtraction assignment to dynamic variable" );
+        throw RbException( "Invalid increment assignment to dynamic variable" );
     
-    // Get a nonconst reference to the lhs value object
+    // Get a non-const reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
     
-    // Increment the lhs value
+    // Increment the lhs value. This will not change the control variable status.
     lhs_value.increment();
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
-    return theVariable;
+    // No further assignment with this type of statement
+    return NULL;
 }
 
 
-/** 
- * Print info about the syntax element 
+
+/**
+ * Print info about the syntax element
  */
-void SyntaxIncrement::printValue(std::ostream& o) const 
+void SyntaxIncrement::printValue(std::ostream& o) const
 {
     o << "SyntaxIncrement:" << std::endl;
     o << "variable      = ";
@@ -123,4 +120,5 @@ void SyntaxIncrement::printValue(std::ostream& o) const
     o << std::endl;
     o << "expression    = '++'" << std::endl;
 }
+
 

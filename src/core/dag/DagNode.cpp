@@ -69,7 +69,7 @@ DagNode::~DagNode( void )
         std::ostringstream o;
         o << "DAG node has " << children.size() << " remaining children!" << std::endl;
         o << "Remaining children are: " << std::endl;
-        printChildren( o );
+        printChildren( o, 0, 80 );
         o << std::endl;
         throw RbException( o );
     }
@@ -335,18 +335,41 @@ void DagNode::keepAffected() {
 }
 
 
-/** Print children */
-void DagNode::printChildren( std::ostream& o ) const {
+/** Print children. We assume indent is from line 2 (hanging indent). Line length is lineLen. */
+void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) const
+{
+    std::string pad;
+    for ( size_t i = 0; i < indent; ++i )
+        pad.push_back( ' ' );
     
     o << "[ ";
+    pad += "  ";
+    indent += 2;
     
-    for ( std::set<DagNode*>::const_iterator i = children.begin(); i != children.end(); i++) {
-        if ( i != children.begin() )
-            o << ", ";
-        if ( (*i)->getName() == "" )
-            o << "<" << (*i) << ">";
+    size_t currentLength = indent + 2;
+    std::ostringstream s;
+
+    std::set<DagNode*>::const_iterator it;
+    size_t i = 0;
+    for ( i = 0, it = children.begin(); it != children.end(); ++it, ++i )
+    {
+        std::ostringstream s;
+        if ( (*it)->getName() == "" )
+            s << "<" << (*it) << ">";
         else
-            o << (*i)->getName() << " <" << (*i) << ">";
+            s << (*it)->getName() << " <" << (*it) << ">";
+        
+        if ( children.size() - i > 1 )
+            s << ", ";
+        
+        if ( s.str().size() + currentLength > lineLen )
+        {
+            o << std::endl << pad;
+            currentLength = pad.size();
+        }
+        o << s;
+        currentLength += s.str().size();
+        s.str("");
     }
     o << " ]";
 }
@@ -360,19 +383,42 @@ void DagNode::printChildren( std::ostream& o ) const {
  * Note the use of a const reference here to potentially avoid one copy
  * operation on the set of DAG nodes.
  */
-void DagNode::printParents( std::ostream& o ) const
+void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen ) const
 {
-    o << "[ ";
-    
     const std::set<const DagNode*>& parents = getParents();
 
-    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); i++) {
-        if ( i != parents.begin() )
-            o << ", ";
-        if ( (*i)->getName() == "" )
-            o << "<" << (*i) << ">";
+    std::string pad;
+    for ( size_t i = 0; i < indent; ++i )
+        pad.push_back( ' ' );
+    
+    o << "[ ";
+    pad += "  ";
+    indent += 2;
+    
+    size_t currentLength = indent + 2;
+    std::ostringstream s;
+
+    std::set<const DagNode*>::const_iterator it;
+    size_t i = 0;
+
+    for ( i = 0, it = parents.begin(); it != parents.end(); ++it, ++i )
+    {
+        if ( (*it)->getName() == "" )
+            s << "<" << (*it) << ">";
         else
-            o << (*i)->getName() << " <" << (*i) << ">";
+            s << (*it)->getName() << " <" << (*it) << ">";
+        
+        if ( parents.size() - i > 1 )
+            s << ", ";
+        
+        if ( s.str().size() + currentLength > lineLen )
+        {
+            o << std::endl << pad;
+            currentLength = pad.size();
+        }
+        o << s.str();
+        currentLength += s.str().size();
+        s.str("");
     }
     o << " ]";
 }

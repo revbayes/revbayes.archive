@@ -116,20 +116,15 @@ RevPtr<Variable> Container::executeMethod(std::string const &name, const std::ve
     {
         return new Variable( new Natural( size() ) );
     } 
-    else if ( name == "[]") 
-    {
-        // Retrieve the index
-        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 
-        if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
-        {
-            throw RbException("Index out of bounds in []");
-        }
-        
-        RevPtr<Variable> element = getElement( size_t(index.getValue()) - 1);
-        return element;
-    }
-    
     return RevObject::executeMethod( name, args );
+}
+
+
+/** Print structure of a container */
+void Container::printStructure( std::ostream& o ) const
+{
+    RevObject::printStructure( o );
+    o << "_size         = " << size() << std::endl;
 }
 

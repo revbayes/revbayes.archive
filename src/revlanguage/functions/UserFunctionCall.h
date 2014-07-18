@@ -16,7 +16,7 @@ namespace RevLanguage {
     class UserFunctionCall :  public Function {
         
     public:
-                                                    UserFunctionCall(const UserFunction* fxn);
+                                                    UserFunctionCall( UserFunction* fxn);
                                                     UserFunctionCall(const UserFunctionCall& x);
         virtual                                    ~UserFunctionCall();
         
@@ -38,8 +38,8 @@ namespace RevLanguage {
     protected:
         
         // Member variables
-        const UserFunction*                         userFunction;                       //!< Smart pointer to function definition (access to argument rules etc)
-        Environment*                                functionFrame;                      //!< Function frame with arguments
+        UserFunction*                               userFunction;                       //!< Pointer to function definition (access to argument rules etc)
+        Environment*                                functionFrame;                      //!< Function execution frame with arguments
     };
     
 }

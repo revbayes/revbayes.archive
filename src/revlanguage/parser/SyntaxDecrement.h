@@ -13,19 +13,29 @@ namespace RevLanguage {
     /**
      * @brief Decrement operator ('a--' and '--a')
      *
-     * The Decrement operator adds one to the value of the variable.
-     * Currently we do not distinguish between post- and pre-decrements.
+     * The decrement operator subtracts one from the value of the variable.
+     * We do not distinguish between post- and pre-decrements, as decrement
+     * statements cannot occur inside the specification of a for loop.
+     * Instead, we use the R-like in-expression syntax for for loops.
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-02-18, version 1.0
+     * Note that we respect the control variable status of the variable.
+     * In other words, the decrement statement 'a--' or '--a' would be
+     * equivalent to
      *
+     *    a <- a - 1
+     *
+     * if 'a' were a constant variable, and to
+     *
+     *    a <<- a - 1
+     *
+     * if 'a' were a control variable.
      */
     class SyntaxDecrement : public SyntaxElement {
         
     public:
-        SyntaxDecrement(SyntaxVariable* v);                                                                                     //!< Constructor with lhs = variable
+        SyntaxDecrement(SyntaxVariable* v);                                                                                     //!< Basic constructor
         SyntaxDecrement(const SyntaxDecrement& x);                                                                              //!< Copy constructor
+
 	    virtual                            ~SyntaxDecrement();                                                                  //!< Destructor
         
         // Assignment operator
@@ -36,7 +46,7 @@ namespace RevLanguage {
         void                                printValue(std::ostream& o) const;                                                  //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                     evaluateContent(Environment& env);                                                  //!< Get semantic value
+        RevPtr<Variable>                    evaluateContent(Environment& env);                                                  //!< Get semantic value
         
     protected:
         SyntaxVariable*                     variable;                                                                           //!< The variable expression

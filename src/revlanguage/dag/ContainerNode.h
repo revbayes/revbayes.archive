@@ -438,16 +438,12 @@ void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
-    o << "_value        = ";
-    RevBayesCore::TypedDagNode<valueType>::printValue(o, ", ");
-    o << std::endl;
-    
     o << "_parents      = ";
-    this->printParents(o);
+    this->printParents(o, 16, 70);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o);
+    this->printChildren(o, 16, 70);
     o << std::endl;
 }
 

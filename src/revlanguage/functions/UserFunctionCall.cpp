@@ -17,7 +17,7 @@ using namespace RevLanguage;
 
 
 /** Constructor */
-UserFunctionCall::UserFunctionCall( const UserFunction* fxn   ) :
+UserFunctionCall::UserFunctionCall( UserFunction* fxn   ) :
     Function(), userFunction(fxn)
 {
 
@@ -25,14 +25,14 @@ UserFunctionCall::UserFunctionCall( const UserFunction* fxn   ) :
     functionFrame = new Environment( fxn->getEnvironment() );
         
     // Add the arguments from the user function fxn to our environment
-    const std::vector<Argument>& fxnArgs = fxn->getArguments();
-    for (std::vector<Argument>::const_iterator it = fxnArgs.begin(); it != fxnArgs.end(); ++it)
+    std::vector<Argument>& fxnArgs = fxn->getArguments();
+    for (std::vector<Argument>::iterator it = fxnArgs.begin(); it != fxnArgs.end(); ++it)
     {
         // Note: We can add also temporary variable arguments as references because we
         // currently store them as arguments of the Rev function in UserFunctionArgs
         // as long as the UserFunctionCall exists.
-        RevPtr<const Variable> theVar = it->getVariable();
-        functionFrame->addReferenceVariable( it->getLabel(), theVar );
+        RevPtr<Variable> theVar = RevPtr<Variable>( it->getVariable() );
+        functionFrame->addVariable( it->getLabel(), theVar );
     }
 }
 

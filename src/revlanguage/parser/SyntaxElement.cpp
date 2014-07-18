@@ -5,14 +5,15 @@ using namespace RevLanguage;
 
 
 /**
- * This function evaluates the semantic value of the element if it is part of an indirect
- * reference deterministic expression. It allows variable syntax elements to produce lookups
- * of themselves. The default behavior is to evaluate the semantic value in the standard way
- * for dynamic expressions, which is sufficient for all other types of syntax elements.
+ * This function evaluates the semantic value of the element if it occurs on the left-hand
+ * side of an assignment. It allows variable syntax elements to do the right thing when they
+ * appear on the left-hand side of an assignment. The default behavior is to evaluate the
+ * semantic value in the standard way for constant expressions, which is appropriate for all
+ * other types of syntax elements when they appear on the left-hand sign of an assignment.
  */
-RevPtr<Variable> SyntaxElement::evaluateIndirectReferenceContent(Environment& env)
+RevPtr<Variable> SyntaxElement::evaluateLHSContent( Environment& env, const std::string& varType )
 {
-    return evaluateDynamicContent(env);
+    return evaluateContent( env );
 }
 
 
@@ -21,11 +22,12 @@ RevPtr<Variable> SyntaxElement::evaluateIndirectReferenceContent(Environment& en
  * expression, or potentially part of a dynamic expression (function arguments in dynamic
  * expressions, before matching to argument rules). The default behavior is to defer to
  * the standard evaluateContent, which must then handle both cases. In function calls,
- * however, it is important to distinguish the two.
+ * however, it is important to distinguish the two contexts. It is also critical for
+ * variables.
  */
-RevPtr<Variable> SyntaxElement::evaluateDynamicContent(Environment& env)
+RevPtr<Variable> SyntaxElement::evaluateDynamicContent( Environment& env )
 {
-    return evaluateContent(env);
+    return evaluateContent( env );
 }
 
 

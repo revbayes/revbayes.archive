@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxFormal, which is
- * used to hold formal argument specifications in the syntax
- * tree.
- *
- * @brief Declaration of SyntaxFormal
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxFormal_H
 #define SyntaxFormal_H
 
@@ -24,16 +8,27 @@
 
 namespace RevLanguage {
 
-class ArgumentRule;
-class ArgumentEnvironment;
-class TypeSpec;
+    class ArgumentRule;
+    class ArgumentEnvironment;
+    class TypeSpec;
 
-
-class SyntaxFormal : public SyntaxElement {
+    /**
+     * @brief Formal arguments
+     *
+     * This syntax element class deals with formal arguments, that is, 
+     * specifications of the type and name of arguments in function
+     * definitions. Formals are also used to declare member variables in
+     * class definitions.
+     *
+     * Note that formal argument specifications can only occur in the user
+     * workspace. They cannot occur in local environments, such as inside
+     * function definitions.
+     */
+    class SyntaxFormal : public SyntaxElement {
 
     public:
-        SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal);                                            //!< Implicit type
-        SyntaxFormal(const std::string &type, const std::string &lbl, SyntaxElement* defaultVal);                   //!< Explicit type
+        SyntaxFormal(const std::string& lbl, SyntaxElement* defaultVal);                            //!< Implicit type
+        SyntaxFormal(const std::string& type, const std::string& lbl, SyntaxElement* defaultVal);   //!< Explicit type or type modifier (const, mutable etc)
         SyntaxFormal(const SyntaxFormal& x);                                                                        //!< Copy constructor
 	    
         virtual                    ~SyntaxFormal();                                                                 //!< Destructor
@@ -49,16 +44,11 @@ class SyntaxFormal : public SyntaxElement {
         const ArgumentRule*         getArgumentRule(void) const;                                                    //!< Get the argument rule
         ArgumentRule*               getArgumentRule(void);                                                          //!< Get the argument rule (non-const to return non-const rule)
         const std::string&          getLabel(void) const;                                                           //!< Get label
-        const TypeSpec&             getArgumentTypeSpec(void) const;                                                //!< Get type spec
         RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
 
     protected:
-        ArgumentRule*               argRule;
-        TypeSpec                    argType;                                                                        //!< The type of the argument
-        std::string                 label;                                                                          //!< The label of the argument
-        SyntaxElement*              defaultExpr;                                                                    //!< Default value expression of argument
-    
-};
+        ArgumentRule*               argRule;                                                                        //!< The argument rule version of the formal
+    };
     
 }
 

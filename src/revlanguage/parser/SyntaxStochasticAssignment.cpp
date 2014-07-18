@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of SyntaxAssignExpr, which is
- * used to hold binary expressions in the syntax tree.
- *
- * @brief Implementation of SyntaxAssignExpr
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-09-07 12:47:31 +0200 (Fri, 07 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: SyntaxAssignExpr.cpp 1801 2012-09-07 10:47:31Z hoehna $
- */
-
 #include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
@@ -28,68 +13,57 @@
 
 using namespace RevLanguage;
 
-/** Construct from operator type, variable and expression */
-SyntaxStochasticAssignment::SyntaxStochasticAssignment(SyntaxVariable* var, SyntaxElement* expr) :
-    SyntaxElement(), variable(var), functionCall(NULL), expression(expr)
-{
-}
-
-
-/** Construct from operator type, function call and expression */
-SyntaxStochasticAssignment::SyntaxStochasticAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) :
-    SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr)
+/**
+ * Basic constructor from lhs expression and
+ * rhs expression.
+ */
+SyntaxStochasticAssignment::SyntaxStochasticAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
+    SyntaxElement(),
+    lhsExpression( lhsExpr ),
+    rhsExpression( rhsExpr )
 {
 }
 
 
 /** Deep copy constructor */
-SyntaxStochasticAssignment::SyntaxStochasticAssignment(const SyntaxStochasticAssignment& x) : SyntaxElement(x), variable( NULL ), functionCall( NULL )
+SyntaxStochasticAssignment::SyntaxStochasticAssignment( const SyntaxStochasticAssignment& x ) :
+    SyntaxElement( x ),
+    lhsExpression( x.lhsExpression->clone() ),
+    rhsExpression( x.rhsExpression->clone() )
 {
-    if ( x.variable != NULL )
-        variable   = x.variable->clone();
-    
-    if ( x.functionCall != NULL )
-        functionCall = x.functionCall->clone();
-    
-    expression = x.expression->clone();
 }
 
 
 /** Destructor deletes operands */
 SyntaxStochasticAssignment::~SyntaxStochasticAssignment()
 {
-    delete variable;
-    delete functionCall;
-    delete expression;
-    
+    delete lhsExpression;
+    delete rhsExpression;
 }
 
 
 /** Assignment operator */
-SyntaxStochasticAssignment& SyntaxStochasticAssignment::operator=(const SyntaxStochasticAssignment& x)
+SyntaxStochasticAssignment& SyntaxStochasticAssignment::operator=( const SyntaxStochasticAssignment& x )
 {
     if ( this != &x )
     {
-        functionCall = NULL;
-        variable = NULL;
+        SyntaxElement::operator=( x );
+
+        delete lhsExpression;
+        delete rhsExpression;
         
-        if ( x.variable != NULL )
-            variable   = x.variable;
-        
-        if ( x.functionCall != NULL )
-            functionCall = x.functionCall;
-        
-        expression = x.expression;
+        lhsExpression = x.lhsExpression->clone();
+        rhsExpression = x.rhsExpression->clone();
     }
     
-    return (*this);
+    return ( *this );
 }
 
 
-/** Clone syntax element */
+/** Type-safe clone of syntax element */
 SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const
 {
-    return new SyntaxStochasticAssignment(*this);
+    return new SyntaxStochasticAssignment( *this );
 }
 
 
@@ -101,7 +75,7 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
 #endif
     
     // Evaluate the rhs expression and wrap it into a dynamic variable
-    RevPtr<Variable> theVariable = expression->evaluateDynamicContent(env);
+    RevPtr<Variable> theVariable = rhsExpression->evaluateDynamicContent(env);
         
     // Get distribution, which should be the return value of the rhs function
     const RevObject& exprValue = theVariable->getRevObject();
@@ -115,11 +89,7 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     RevObject* rv = dist.createRandomVariable();
         
     // Get variable slot from lhs
-    RevPtr<Variable> theSlot;
-    if ( variable != NULL )
-        theSlot = variable->evaluateLHSContent( env, rv->getType() );
-    else
-        theSlot = functionCall->evaluateContent( env );
+    RevPtr<Variable> theSlot = lhsExpression->evaluateLHSContent( env, rv->getType() );
     
     // Fill the slot with the new stochastic variable
     theSlot->setRevObject( rv );
@@ -128,6 +98,7 @@ RevPtr<Variable> SyntaxStochasticAssignment::evaluateContent( Environment& env )
     env.printValue(std::cerr);
 #endif    
     
+    // Return the rhs variable for further assignment
     return theVariable;
 }
 
@@ -142,14 +113,12 @@ bool SyntaxStochasticAssignment::isAssignment( void ) const
 /** Print info about the syntax element */
 void SyntaxStochasticAssignment::printValue(std::ostream& o) const
 {
-    o << "SyntaxAssignExpr:" << std::endl;
-    o << "variable      = ";
-    variable->printValue(o);
+    o << "SyntaxStochasticAssignExpr:" << std::endl;
+    o << "lhsExpression = ";
+    lhsExpression->printValue(o);
     o << std::endl;
-    o << "expression    = ";
-    expression->printValue(o);
+    o << "rhsExpression = ";
+    rhsExpression->printValue(o);
     o << std::endl;
-    
 }
-
 

@@ -502,11 +502,11 @@ RevObject* ModelContainer<rlType, dim, valueType>::makeIndirectReference(void) {
     
 //    IndirectReferenceNode< valueType >* newNode = new IndirectReferenceNode< valueType >( "", this );
     
-    ModelContainer<rlType, dim, valueType>* newObj = this->clone();
+//    ModelContainer<rlType, dim, valueType>* newObj = this->clone();
 
 //    newObj->setDagNode( newNode );
 
-    return newObj;
+    return NULL; // newObj;
 }
 
 
@@ -517,6 +517,8 @@ RevObject* ModelContainer<rlType, dim, valueType>::makeIndirectReference(void) {
 template <typename rlType, size_t dim, typename valueType>
 void ModelContainer<rlType, dim, valueType>::printStructure( std::ostream &o ) const
 {
+    Container::printStructure( o );
+
     dagNode->printStructureInfo( o );
 }
 

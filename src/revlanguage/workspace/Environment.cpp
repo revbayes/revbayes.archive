@@ -74,7 +74,6 @@ Environment& Environment::operator=(const Environment &x)
 /* Add function to frame. */
 bool Environment::addFunction(const std::string& name, Function* func)
 {
-
 #ifdef DEBUG_WORKSPACE
     printf("Adding function %s = %s to workspace\n", name.c_str(), func->callSignature().c_str());
 #endif
@@ -96,17 +95,6 @@ void Environment::addNullVariable( const std::string& name )
     
     // Add the variable to the table
     addVariable( name, var );
-}
-
-
-/** Add reference variable to frame. */
-void Environment::addReferenceVariable( const std::string& name, const RevPtr<const Variable>& refVar )
-{
-    
-    // create new reference variable
-    RevPtr<Variable> theVar = new Variable( refVar, name );
-
-    variableTable.insert( std::pair< std::string, RevPtr<Variable> >( name, theVar ) );
 }
 
 

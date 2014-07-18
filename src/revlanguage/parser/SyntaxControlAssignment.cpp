@@ -1,7 +1,7 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "SyntaxConstantAssignment.h"
+#include "SyntaxControlAssignment.h"
 #include "Workspace.h"
 
 #include <iostream>
@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** Basic constructor from lef-hand side and right-hand side expressions */
-SyntaxConstantAssignment::SyntaxConstantAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
+SyntaxControlAssignment::SyntaxControlAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
     SyntaxElement(),
     lhsExpression( lhsExpr ),
     rhsExpression( rhsExpr )
@@ -20,7 +20,7 @@ SyntaxConstantAssignment::SyntaxConstantAssignment( SyntaxElement* lhsExpr, Synt
 
 
 /** Deep copy constructor */
-SyntaxConstantAssignment::SyntaxConstantAssignment( const SyntaxConstantAssignment& x ) :
+SyntaxControlAssignment::SyntaxControlAssignment( const SyntaxControlAssignment& x ) :
     SyntaxElement( x ),
     lhsExpression( x.lhsExpression->clone() ),
     rhsExpression( x.rhsExpression->clone() )
@@ -29,7 +29,7 @@ SyntaxConstantAssignment::SyntaxConstantAssignment( const SyntaxConstantAssignme
 
 
 /** Destructor deletes operands */
-SyntaxConstantAssignment::~SyntaxConstantAssignment( void )
+SyntaxControlAssignment::~SyntaxControlAssignment( void )
 {
     delete lhsExpression;
     delete rhsExpression;
@@ -37,13 +37,13 @@ SyntaxConstantAssignment::~SyntaxConstantAssignment( void )
 
 
 /** Assignment operator */
-SyntaxConstantAssignment& SyntaxConstantAssignment::operator=( const SyntaxConstantAssignment& x )
+SyntaxControlAssignment& SyntaxControlAssignment::operator=( const SyntaxControlAssignment& x )
 {
     if ( this != &x ) {
         
         delete lhsExpression;
         delete rhsExpression;
-
+        
         lhsExpression = x.lhsExpression->clone();
         rhsExpression = x.rhsExpression->clone();
     }
@@ -53,35 +53,32 @@ SyntaxConstantAssignment& SyntaxConstantAssignment::operator=( const SyntaxConst
 
 
 /** Type-safe clone of the syntax element */
-SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const
+SyntaxControlAssignment* SyntaxControlAssignment::clone () const
 {
-    return new SyntaxConstantAssignment( *this );
+    return new SyntaxControlAssignment( *this );
 }
 
 
 /**
- * Get semantic value. The semantic value of a constant assignment is the same
- * independent of grammatical context, so we only need one evaluate function.
- * We first evaluate the lhs content of the lhs expression. If it is a variable,
- * and the variable does not exist in the workspace, the variable will be created
- * and inserted into the workspace (the environment) before being returned as the
- * content of the lhs expression. Other expressions will typically return temporary
- * variables that will be lost after the assignment, but it could be used in some
- * contexts. For instance, it might be used in a chain assignment or in passing a
- * variable to a function.
+ * Get semantic value. The semantic value of a control assignment is identical to
+ * that of a constant assignment, the only difference being that the control
+ * variable flag of the resulting variable will be set to true.
+ *
+ * Note that the return variable is not set to a control variable, in case it is
+ * used in further assignments of other types.
  */
-RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
+RevPtr<Variable> SyntaxControlAssignment::evaluateContent( Environment& env )
 {
 #ifdef DEBUG_PARSER
-    printf( "Evaluating constant assignment\n" );
+    printf( "Evaluating control assignment\n" );
 #endif
-
+    
     // Declare variable storing the return value of the assignment expression
     RevPtr<Variable> theVariable;
     
     // Get the rhs expression wrapped and executed into a variable.
     theVariable = rhsExpression->evaluateContent( env );
-
+    
     // Get variable slot from lhs
     RevPtr<Variable> theSlot;
     theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
@@ -111,22 +108,24 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
         newValue = value.clone();
         newValue->makeConstantValue();  // We cannot trust evaluateContent to return a constant variable
     }
-
-    // Fill the slot with newValue
+    
+    // Fill the slot with newValue. The variable itself will be
+    // passed on as the semantic value of the statement and can
+    // be used in further assignments.
     theSlot->setRevObject( newValue );
+    theSlot->setControlVarState( true );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
-    // We return the rhs variable itself as the semantic value of the
-    // assignment statement. It can be used in further assignments.
+    // Return variable
     return theVariable;
 }
 
 
 /** This is an assignment, return true. */
-bool SyntaxConstantAssignment::isAssignment( void ) const
+bool SyntaxControlAssignment::isAssignment( void ) const
 {
     return true;
 }
@@ -134,9 +133,9 @@ bool SyntaxConstantAssignment::isAssignment( void ) const
 
 
 /** Print info about the syntax element */
-void SyntaxConstantAssignment::printValue( std::ostream& o ) const
+void SyntaxControlAssignment::printValue( std::ostream& o ) const
 {
-    o << "SyntaxConstantAssignment:" << std::endl;
+    o << "SyntaxControlAssignment:" << std::endl;
     o << "lhsExpression = ";
     lhsExpression->printValue( o );
     o << std::endl;

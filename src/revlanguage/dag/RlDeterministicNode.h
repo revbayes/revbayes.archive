@@ -123,16 +123,13 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
     o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = ";
-    RevBayesCore::TypedDagNode<valueType>::printValue(o, ", ");
-    o << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o);
+    this->printParents(o, 16, 70);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o);
+    this->printChildren(o, 16, 70);
 
     o << std::endl;
 }
