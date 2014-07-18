@@ -39,15 +39,20 @@ namespace RevBayesCore {
         double                                      getMean(int k) const;
         double                                      getStdev(int k) const;
         void                                        recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
+
+        void                                        printBranchContrasts(std::ostream& os) const;
         
     protected:
         // void                                        resizeElementVectors(size_t n);
-    
+        void                                        recursiveGetBranchContrasts(const TopologyNode& from, std::vector<std::vector<double> >& c, int& n) const;
+
     private:
 
         const TimeTree*                     tree;
 
     };
+
+    std::ostream&                       operator<<(std::ostream& o, const MultivariatePhyloProcess& x);                                         //!< Overloaded output operator
 
 }
 

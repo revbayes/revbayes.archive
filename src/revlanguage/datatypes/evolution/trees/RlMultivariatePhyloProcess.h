@@ -38,8 +38,9 @@ namespace RevLanguage {
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         
+        void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
     };
     
 }

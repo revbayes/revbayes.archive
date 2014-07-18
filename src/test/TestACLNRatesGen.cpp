@@ -67,6 +67,9 @@ TestACLNRatesGen::~TestACLNRatesGen() {
 }
 
 bool TestACLNRatesGen::run( void ) {
+
+//    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
+//    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
