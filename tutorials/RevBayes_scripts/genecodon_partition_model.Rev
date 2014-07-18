@@ -12,8 +12,10 @@
 
 
 # read in the character data
-data[1] <- readCharacterData("data/conifer_atpB.nex")[1]
-data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+D <- readCharacterData("data/conifer_atpB.nex")
+data[1] <- D[1]
+D <- readCharacterData("data/conifer_rbcL.nex")
+data_rbcL <- D[1]
 
 n_sites_rbcL <- data_rbcL.nchar()[1]
 
@@ -21,9 +23,9 @@ vec_1pos <- seq(1,n_sites_rbcL,3)
 vec_2pos <- seq(2,n_sites_rbcL,3)
 vec_3pos <- seq(3,n_sites_rbcL,3)
 
-data[2] <- data_rbcL
-data[3] <- data_rbcL
-data[4] <- data_rbcL
+data[2] <- data_rbcL  # 1st position
+data[3] <- data_rbcL  # 2nd position
+data[4] <- data_rbcL  # 3rd position
 
 for(i in vec_1pos){
    data[3].excludeCharacter(i)
@@ -43,15 +45,13 @@ n_sites[2] <- vec_1pos.size()
 n_sites[3] <- vec_2pos.size()
 n_sites[4] <- vec_3pos.size()
 
-
-
 n_parts <- data.size()
 
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data[1].ntaxa()
 names <- data[1].names()
-n_branches <- 2 * n_species - 2
+n_branches <- 2 * n_species - 3
 
 
 
@@ -78,7 +78,7 @@ for (i in 1:n_parts){
   norm_gamma_rates := discretizeGamma( shape[i], 4 )
 
   # add moves for the stationary frequencies, exchangeability rates and the shape parameter
-  moves[mv_idx++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=1.0)
+  moves[mv_idx++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=2.0)
 
 }
 
@@ -95,7 +95,7 @@ moves[mv_idx++] <- mvNNI(topology, weight=1.0)
 # create a random variable for each branch length using a for loop
 for (i in 1:n_branches) {
   # We use here the exponential distribution with rate 1.0 as the branch length prior
-  br_lens[i] ~ exponential(1.0)
+  br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[mv_idx++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
