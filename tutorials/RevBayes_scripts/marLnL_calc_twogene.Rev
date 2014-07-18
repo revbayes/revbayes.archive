@@ -11,7 +11,7 @@
 ################################################################################
 
 ### Load data file and uniform partition model
-source("RevBayes_scripts/twogeneLoop_partition_model.Rev")
+source("RevBayes_scripts/twogene_partition_model.Rev")
 
 ### Compute power posterior distributions
 pow_p <- powerPosterior(mymodel, moves, "output/pow_posterior_twogene.out", cats=50) 
