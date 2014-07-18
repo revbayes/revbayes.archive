@@ -51,6 +51,12 @@ void Function::removeParameter(const RevBayesCore::DagNode *p)
 }
 
 
+void Function::reInitialized( void )
+{
+    // do nothing
+}
+
+
 /* Method stub that can be overwritten for specialized treatment. */
 void Function::restore( DagNode *restorer ) {
     

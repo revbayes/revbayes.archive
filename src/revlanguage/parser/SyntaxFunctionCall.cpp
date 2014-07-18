@@ -15,7 +15,7 @@
 
 #include "Argument.h"
 #include "Environment.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -160,9 +160,9 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent(Environment& env) {
             
         Function* theFunction = mt.getFunction( functionName, args ).clone();
         theFunction->processArguments(args);
-        MemberFunction* theMemberFunction = static_cast<MemberFunction*>( theFunction );
-        theMemberFunction->setMemberObject( theVar );
-        func = theMemberFunction;
+        MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( theFunction );
+        theMemberProcedure->setMemberObject( theVar );
+        func = theMemberProcedure;
 
     }
 

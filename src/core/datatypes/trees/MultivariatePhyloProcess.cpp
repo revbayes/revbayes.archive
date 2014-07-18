@@ -9,6 +9,7 @@
 
 #include "RbException.h"
 #include "RbOptions.h"
+#include "TypedDagNode.h"
 
 #include <cmath>
 
@@ -68,7 +69,29 @@ void MultivariatePhyloProcess::resizeElementVectors(size_t n) {
     // resize to new dimension
     branchLengths.resize( n );
 }
-*/
+ */
+
+
+
+void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "mean" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getMean(k->getValue());
+    }
+    else if ( n == "stdev" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getStdev(k->getValue());        
+    }
+    else
+    {
+        throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
+    }
+    
+}
 
 void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
 

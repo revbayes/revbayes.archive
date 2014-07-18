@@ -82,7 +82,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Integer.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Monitor.h"
 #include "Move.h"
@@ -280,7 +280,7 @@ const RevLanguage::MethodTable& RevLanguage::VectorAbstractElement<rlType>::getM
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         // necessary call for proper inheritance
 //        methods.setParentTable( &TypedContainer<std::vector<elementType> *>::getMethods() );

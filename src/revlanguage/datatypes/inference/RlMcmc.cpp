@@ -126,15 +126,15 @@ const MethodTable& Mcmc::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
+        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-        methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
+        methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

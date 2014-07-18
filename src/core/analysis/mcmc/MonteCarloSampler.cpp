@@ -314,6 +314,7 @@ void MonteCarloSampler::initializeChain( void ) {
                 if ( !(*i)->isClamped() && (*i)->isStochastic() )
                 {
                     (*i)->redraw();
+                    (*i)->reInitialized();
                     
                 }
                 else if ( (*i)->isClamped() )
