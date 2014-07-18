@@ -54,7 +54,7 @@ namespace RevBayesCore {
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
         void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
-        virtual void                                        reInitialized(void);                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
+        virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
@@ -294,7 +294,8 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::reInitialized( void ) {
+void RevBayesCore::StochasticNode<valueType>::reInitializeMe( void )
+{
     
     distribution->reInitialized();
         

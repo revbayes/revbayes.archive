@@ -359,7 +359,34 @@ void DagNode::printParents( std::ostream& o ) const {
 /**
  * By default we do not need to do anything when re-initializiating.
  */
-void DagNode::reInitialized( void ) {
+void DagNode::reInitialized( void )
+{
+    
+    reInitializeMe();
+    reInitializeAffected();
+    
+}
+
+
+/**
+ * By default we do not need to do anything when re-initializiating.
+ */
+void DagNode::reInitializeAffected( void )
+{
+    
+    // next, reInitialize all my children
+    for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    {
+        (*i)->reInitializeMe();
+    }
+
+}
+
+
+/**
+ * By default we do not need to do anything when re-initializiating.
+ */
+void DagNode::reInitializeMe( void ) {
     // nothing to do
 }
 
@@ -432,11 +459,14 @@ void DagNode::restoreAffected(void) {
     
     // next, restore all my children
     for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    {
         (*i)->restoreMe( this );
+    }
+    
 }
 
 
-void DagNode::setName(std::string const &n) 
+void DagNode::setName(std::string const &n)
 {
 
     name = n;

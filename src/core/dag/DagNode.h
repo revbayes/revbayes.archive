@@ -73,6 +73,8 @@ namespace RevBayesCore {
         void                                                        keep(void);
         virtual void                                                keepAffected(void);                                                             //!< Keep value of affected nodes
         virtual void                                                reInitialized(void);                                                            //!< The DAG was re-initialized so maybe you want to reset some stuff
+        virtual void                                                reInitializeAffected(void);                                                     //!< The DAG was re-initialized so maybe you want to reset some stuff
+        virtual void                                                reInitializeMe(void);                                                           //!< The DAG was re-initialized so maybe you want to reset some stuff
         void                                                        removeChild(DagNode *child) const;
         void                                                        removeParent(const DagNode *p);                                                 //!< Remove a parent
         void                                                        replace(DagNode *n);                                                            //!< Replace this node with node p.
