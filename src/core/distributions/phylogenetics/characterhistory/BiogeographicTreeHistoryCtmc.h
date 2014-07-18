@@ -157,20 +157,11 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     cladogenicState                             = std::vector<int>(this->histories.size(), 0);
     if (cladogenicEvents) {
         for (size_t i = 0; i < cladogenicState.size(); i++) {
-            cladogenicState[i] = int(GLOBAL_RNG->uniform01() * 2);
+            cladogenicState[i] = int(GLOBAL_RNG->uniform01() * 1);
         }
     }
     buddingState                                = std::vector<int>(this->histories.size(), 0);
     epochs                                      = std::vector<double>(1,0.0);
-//    epochs                                      = std::vector<double>(1,0.0);
-
-    
-    // add the parameters to the parents list
-//    this->addParameter( homogeneousClockRate );
-//    this->addParameter( distancePower );
-    
-    // Uncomment this to draw the initial state
-    // this->redrawValue();
     
 }
 

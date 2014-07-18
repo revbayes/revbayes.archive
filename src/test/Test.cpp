@@ -206,7 +206,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* The normal model test */
     try {
         TestNormalModel testNormal = TestNormalModel(10000);
-//        testNormal.run();
+        testNormal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
