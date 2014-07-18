@@ -17,7 +17,8 @@ data[1] <- D[1]
 D <- readCharacterData("data/conifer_rbcL.nex")
 data_rbcL <- D[1]
 
-n_sites_rbcL <- data_rbcL.nchar()[1]
+ns <- data_rbcL.nchar()
+n_sites_rbcL <- ns[1]
 
 vec_1pos <- seq(1,n_sites_rbcL,3)
 vec_2pos <- seq(2,n_sites_rbcL,3)
@@ -40,7 +41,8 @@ for(i in vec_3pos){
    data[3].excludeCharacter(i)
 }
 
-n_sites[1] <- data[1].nchar()[1]
+ns <- data[1].nchar()
+n_sites[1] <- ns[1]
 n_sites[2] <- vec_1pos.size()
 n_sites[3] <- vec_2pos.size()
 n_sites[4] <- vec_3pos.size()
@@ -75,7 +77,7 @@ for (i in 1:n_parts){
 
   shape_prior[i] <- 0.05
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates := discretizeGamma( shape[i], 4 )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], 4 )
 
   # add moves for the stationary frequencies, exchangeability rates and the shape parameter
   moves[mv_idx++] <- mvScale(shape[i], lambda=1.0, tune=true, weight=2.0)
@@ -89,7 +91,7 @@ for (i in 1:n_parts){
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mv_idx++] <- mvNNI(topology, weight=1.0)
+moves[mv_idx++] <- mvNNI(topology, weight=10.0)
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
