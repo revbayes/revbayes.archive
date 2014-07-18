@@ -40,7 +40,7 @@ namespace RevLanguage {
     public:
         Variable(const TypeSpec& ts, const std::string& n="");                          //!< Constructor of empty variable with a type specification
         Variable(RevObject *revObj, const std::string &n = "");                         //!< Constructor of filled variable
-        Variable(const RevPtr<const Variable>& refVar, const std::string &n = "");      //!< Constructor of reference variable
+        Variable(const RevPtr<Variable>& refVar, const std::string &n = "");            //!< Constructor of reference variable
         Variable(const Variable &v);                                                    //!< Copy constructor
 
         virtual                 ~Variable(void);                                        //!< Virtual destructor
@@ -54,7 +54,7 @@ namespace RevLanguage {
         const TypeSpec&         getRevObjectTypeSpec(void) const;                       //!< Get the required Rev object type spec
         bool                    isControlVar(void) const;                               //!< Is this a control variable?
         bool                    isReferenceVar(void) const;                             //!< Is this a reference variable?
-        void                    makeReference(const RevPtr<const Variable>& refVar);    //!< Make this a reference variable
+        void                    makeReference(const RevPtr<Variable>& refVar);          //!< Make this a reference variable
         void                    printValue(std::ostream& o) const;                      //!< Print value of variable
         void                    setControlVarState(bool flag = true);                   //!< Set (or unset) control variable status
         void                    setName(const std::string &n);                          //!< Set the name of this variable
@@ -77,7 +77,7 @@ namespace RevLanguage {
         TypeSpec                revObjectTypeSpec;                                      //!< Required type of the object
         bool                    isReferenceVariable;                                    //!< Is this a reference variable?
         bool                    isControlVariable;                                      //!< Is this a control variable?
-        RevPtr<const Variable>  referencedVariable;                                     //!< Smart pointer to referenced variable
+        RevPtr<Variable>        referencedVariable;                                     //!< Smart pointer to referenced variable
     };
 
 }

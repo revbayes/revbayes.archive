@@ -31,12 +31,12 @@ namespace RevLanguage {
     
     public:
     
-        // Basic utility functions you have to override
+        // Basic utility functions you have to or might want to override
         virtual Container*                          clone(void) const = 0;                                              //!< Clone object
         static const std::string&                   getClassType(void);                                                 //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
-        virtual void                                printStructure(std::ostream& o) const = 0;                          //!< Print structure of language object for user
+        virtual void                                printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
         virtual void                                printValue(std::ostream& o) const = 0;                              //!< Print value for user
     
         // Container functions you have to override

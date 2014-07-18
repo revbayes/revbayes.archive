@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Parser, which is
- * used to execute syntax trees and get help info.
- *
- * @brief Implementation of Parser
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
-
 #include "IHelp.h"
 #include "Parser.h"
 #include "RbException.h"

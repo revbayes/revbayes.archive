@@ -48,8 +48,7 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get the object type spec of the instance
 
-        // Basic utility functions provided here
-        void                                        printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        // Basic utility function provided here
         void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
         
         // Container functions provided here
@@ -412,19 +411,6 @@ void WorkspaceVector<rlType>::push_front( rlType* x )
     
     // Push it onto the front of the elements vector
     elements.insert( elements.begin(), newVar );
-}
-
-
-/**
- * Here we print the structure of the vector.
- */
-template<typename rlType>
-void WorkspaceVector<rlType>::printStructure(std::ostream& o) const
-{
-    o << "_type        = " << getClassType() << std::endl;
-    o << "_size        = " << size();
-    o << "_value:" << std::endl;
-    printValue( o );
 }
 
 

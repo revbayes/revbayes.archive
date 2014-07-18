@@ -13,19 +13,29 @@ namespace RevLanguage {
     /**
      * @brief Increment operator ('a++' and '++a')
      *
-     * The increment operator adds one to the value of the variable.
-     * Currently we do not distinguish between post- and pre- increments.
+     * The increment operator subtracts one from the value of the variable.
+     * We do not distinguish between post- and pre-increments, as increment
+     * statements cannot occur inside the specification of a for loop.
+     * Instead, we use the R-like in-expression syntax for for loops.
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-02-18, version 1.0
+     * Note that we respect the control variable status of the variable.
+     * In other words, the increment statement 'a++' or '++a' would be
+     * equivalent to
      *
+     *    a <- a + 1
+     *
+     * if 'a' were a constant variable, and to
+     *
+     *    a <<- a + 1
+     *
+     * if 'a' were a control variable.
      */
     class SyntaxIncrement : public SyntaxElement {
         
     public:
-        SyntaxIncrement(SyntaxVariable* v);                                                                                     //!< Constructor with lhs = variable
+        SyntaxIncrement(SyntaxVariable* v);                                                                                     //!< Basic constructor
         SyntaxIncrement(const SyntaxIncrement& x);                                                                              //!< Copy constructor
+        
 	    virtual                            ~SyntaxIncrement();                                                                  //!< Destructor
         
         // Assignment operator
@@ -46,4 +56,6 @@ namespace RevLanguage {
 }
 
 #endif
+
+
 

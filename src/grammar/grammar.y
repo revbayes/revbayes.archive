@@ -15,9 +15,6 @@
  * @brief Grammar specification in bison format
  *
  * @author Fredrik Ronquist and Sebastian Hoehna
- * @date Last modified: $Date$
- *
- * $Id$
  */
 
 /* The following statements go into the resulting C code */
@@ -36,6 +33,7 @@
 #include "SyntaxClassDef.h"
 #include "SyntaxConstant.h"
 #include "SyntaxConstantAssignment.h"
+#include "SyntaxControlAssignment.h"
 #include "SyntaxDecrement.h"
 #include "SyntaxDeterministicAssignment.h"
 #include "SyntaxDivisionAssignment.h"
@@ -46,6 +44,7 @@
 #include "SyntaxIncrement.h"
 #include "SyntaxLabeledExpr.h"
 #include "SyntaxMultiplicationAssignment.h"
+#include "SyntaxReferenceAssignment.h"
 #include "SyntaxStatement.h"
 #include "SyntaxStochasticAssignment.h"
 #include "SyntaxSubtractionAssignment.h"
@@ -97,14 +96,14 @@ Parser& parser = Parser::getParser();
 %type <realValue> REAL
 %type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
-%type <string> identifier typeSpec optDims dimList optRef
+%type <string> identifier typeSpec optDims dimList 
 %type <syntaxVariable> variable
 %type <syntaxFunctionCall> functionCall fxnCall
 %type <syntaxLabeledExpr> argument
 %type <syntaxFormal> formal
 %type <syntaxElement> constant
 %type <syntaxElement> statement expression stmt_or_expr
-%type <syntaxElement> arrowAssign tildeAssign equationAssign
+%type <syntaxElement> arrowAssign tildeAssign equationAssign controlAssign referenceAssign
 %type <syntaxElement> additionAssign subtractionAssign multiplicationAssign divisionAssign
 %type <syntaxElement> declaration classDef memberDef
 %type <syntaxElement> functionDef
@@ -120,7 +119,8 @@ Parser& parser = Parser::getParser();
 /* Tokens returned by the lexer and handled by the parser */
 %token REAL INT NAME STRING RBNULL FALSE TRUE 
 %token FUNCTION CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
-%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN 
+%token MOD_CONST MOD_DYNAMIC MOD_STOCHASTIC MOD_DETERMINISTIC MOD_MUTABLE
+%token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN CONTROL_ASSIGN REFERENCE_ASSIGN
 %token ADDITION_ASSIGN SUBTRACTION_ASSIGN MULTIPLICATION_ASSIGN DIVISION_ASSIGN 
 %token DECREMENT INCREMENT
 %token EQUAL 
@@ -131,10 +131,10 @@ Parser& parser = Parser::getParser();
 %destructor { for (std::list<SyntaxElement*>::iterator it=$$->begin(); it != $$->end(); it++) { SyntaxElement* theElement = *it; delete theElement; }; delete ($$); } elementList optElements stmts stmtList memberDefs 
 %destructor { for (std::list<SyntaxLabeledExpr*>::iterator it=$$->begin(); it != $$->end(); it++) { SyntaxLabeledExpr* theElement = *it; delete theElement; }; delete ($$); } argumentList optArguments vectorList vector
 %destructor { for (std::list<SyntaxFormal*>::iterator it=$$->begin(); it != $$->end(); it++) { SyntaxFormal* theElement = *it; delete theElement; }; delete ($$); } formalList optFormals
-%destructor { delete ($$); } identifier typeSpec optDims dimList optRef
+%destructor { delete ($$); } identifier typeSpec optDims dimList 
 %destructor { delete ($$); } variable functionCall fxnCall argument formal constant
 %destructor { delete ($$); } statement expression stmt_or_expr 
-%destructor { delete ($$); } arrowAssign tildeAssign equationAssign 
+%destructor { delete ($$); } arrowAssign tildeAssign equationAssign controlAssign referenceAssign
 %destructor { delete ($$); } additionAssign subtractionAssign multiplicationAssign divisionAssign
 %destructor { delete ($$); } declaration classDef memberDef 
 %destructor { delete ($$); } functionDef 
@@ -155,6 +155,8 @@ Parser& parser = Parser::getParser();
 %right      ARROW_ASSIGN
 %right      TILDE_ASSIGN
 %right      EQUATION_ASSIGN
+%right      CONTROL_ASSIGN
+%right      REFERENCE_ASSIGN
 %right      ADDITION_ASSIGN
 %right      SUBTRACTION_ASSIGN
 %right      MULTIPLICATION_ASSIGN
@@ -165,7 +167,7 @@ Parser& parser = Parser::getParser();
 %left       UNOT
 %nonassoc   GT GE LT LE EQ NE
 %left       '+' '-'
-%left       '*' '/' '%'
+%left       '*' '/'
 %left       ':'
 %right      DECREMENT INCREMENT
 %left       UMINUS UPLUS
@@ -184,12 +186,13 @@ Parser& parser = Parser::getParser();
  * in more situations than in R. On the other hand, this
  * makes the language less ambiguous and more intuitive for
  * users familiar with Java or C++. All language objects
- * inherit from "object". RevBayes allows types of variables
+ * inherit from "RevObject". RevBayes allows types of variables
  * and function arguments, as well as return types of func-
- * tions, to be specified. However, types default to "object",
+ * tions, to be specified. However, types default to "RevObject",
  * allowing apparently untyped expressions to be evaluated.
- * Global variables cannot be declared. They are created by
- * assigning to them.
+ * Global variables can be declared but are more typically
+ * created by assigning to them using various assignment
+ * operators.
  *
  * RevBayes allows a natural description of graphical represen-
  * tations of complex probability models. The most essential
@@ -198,9 +201,19 @@ Parser& parser = Parser::getParser();
  * nodes in model DAGs. Constant nodes are created using
  * arrow assignment ('<-'), as in R.
  *
- * The Rev language effectively passes by value except in equation
- * and tilde assignments, in which case variables on the lefthand
- * side are passed by reference.
+ * The Rev language distinguishes between three ways of passing
+ * arguments: constant, dynamic and mutable. The "constant" method
+ * is effectively equivalent to passing by value. The "dynamic"
+ * method is different in dynamic expressions, occurring on the
+ * right-hand side of deterministic or stochastic assignments.
+ * In those contexts, functions receive dynamically update versions
+ * of the variables instead of constant values. This includes
+ * the constructor functions of distributions. Finally, the
+ * "mutable" method is similar to "dynamic", but allows the
+ * function to modify the object passed in. Functions with
+ * mutable arguments can only be used in the workspace, they
+ * are not allowed in model DAGs because they potentially
+ * violate the logic of DAGs, creating implicit loops.
  * 
  * Unlike R, right assignment ('->') is not supported. Also,
  * a number of constructs that are interpreted as expressions
@@ -209,8 +222,8 @@ Parser& parser = Parser::getParser();
  * These constructs include control statements and function def-
  * initions, among others.
  *
- * For more discussion of the language, see the RevBayes docu-
- * mentation.
+ * For more discussion of the language, see the RevBayes
+ * documentation at http://revbayes.net.
  */
 
 prog    :       END_OF_INPUT
@@ -333,7 +346,6 @@ expression  :   constant                    { $$ = $1; }
             |   expression '-' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Sub, $1, $3); }
             |   expression '*' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, $1, $3); }
             |   expression '/' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, $1, $3); }
-            |   expression '%' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mod, $1, $3); }
             |   expression '^' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, $1, $3); }
 
             |   expression LT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, $1, $3); }
@@ -351,6 +363,8 @@ expression  :   constant                    { $$ = $1; }
             |   arrowAssign                 { $$ = $1; }
             |   equationAssign              { $$ = $1; }
             |   tildeAssign                 { $$ = $1; }
+            |   controlAssign               { $$ = $1; }
+            |   referenceAssign             { $$ = $1; }
 
             |   additionAssign              { $$ = $1; }
             |   subtractionAssign           { $$ = $1; }
@@ -362,14 +376,7 @@ expression  :   constant                    { $$ = $1; }
             |   variable                    { $$ = $1; }
             ;
 
-arrowAssign     :   variable ARROW_ASSIGN expression
-                    { 
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxConstantAssignment($1, $3);
-                    }
-                |   functionCall ARROW_ASSIGN expression
+arrowAssign     :   expression ARROW_ASSIGN expression
                     { 
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting arrow assignment (ARROW_ASSIGN) in syntax tree\n");
@@ -378,14 +385,7 @@ arrowAssign     :   variable ARROW_ASSIGN expression
                     }
                 ;
 
-tildeAssign     :   variable TILDE_ASSIGN functionCall
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxStochasticAssignment($1, $3);
-                    }
-                |   functionCall TILDE_ASSIGN functionCall
+tildeAssign     :   expression TILDE_ASSIGN expression
                     {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting tilde assignment (TILDE_ASSIGN) in syntax tree\n");
@@ -394,14 +394,7 @@ tildeAssign     :   variable TILDE_ASSIGN functionCall
                     }
                 ;
 
-equationAssign  :   variable EQUATION_ASSIGN expression
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxDeterministicAssignment($1, $3); 
-                    }
-                |   functionCall EQUATION_ASSIGN expression
+equationAssign  :   expression EQUATION_ASSIGN expression
                     {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting equation assignment (EQUATION_ASSIGN) in syntax tree\n");
@@ -410,62 +403,52 @@ equationAssign  :   variable EQUATION_ASSIGN expression
                     }
                 ;
 
-additionAssign  :   variable ADDITION_ASSIGN expression
+controlAssign   :   expression CONTROL_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting control assignment (CONTROL_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxControlAssignment($1, $3); 
+                    }
+                ;
+
+referenceAssign :   expression REFERENCE_ASSIGN expression
+                    {
+#ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting reference assignment (REFERENCE_ASSIGN) in syntax tree\n");
+#endif
+                        $$ = new SyntaxReferenceAssignment($1, $3); 
+                    }
+                ;
+
+additionAssign  :   expression ADDITION_ASSIGN expression
                     {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting addition assignment (ADDITION_ASSIGN) in syntax tree\n");
 #endif
                         $$ = new SyntaxAdditionAssignment($1, $3); 
                     }
-                |   functionCall ADDITION_ASSIGN expression
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting addition assignment (ADDITION_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxAdditionAssignment($1, $3); 
-                    }
                 ;
 
-subtractionAssign  :   variable SUBTRACTION_ASSIGN expression
-                    {
+subtractionAssign   :   expression SUBTRACTION_ASSIGN expression
+                        {
 #ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting subtraction assignment (SUBTRACTION_ASSIGN) in syntax tree\n");
+                            printf("Parser inserting subtraction assignment (SUBTRACTION_ASSIGN) in syntax tree\n");
 #endif
-                        $$ = new SyntaxSubtractionAssignment($1, $3); 
-                    }
-                |   functionCall SUBTRACTION_ASSIGN expression
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting subtraction assignment (SUBTRACTION_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxSubtractionAssignment($1, $3); 
-                    }
-                ;
+                            $$ = new SyntaxSubtractionAssignment($1, $3); 
+                        }
+                    ;
 
-multiplicationAssign  :   variable MULTIPLICATION_ASSIGN expression
-                    {
+multiplicationAssign    :   expression MULTIPLICATION_ASSIGN expression
+                            {
 #ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting multiplication assignment (MULTIPLICATION_ASSIGN) in syntax tree\n");
+                                printf("Parser inserting multiplication assignment (MULTIPLICATION_ASSIGN) in syntax tree\n");
 #endif
-                        $$ = new SyntaxMultiplicationAssignment($1, $3); 
-                    }
-                |   functionCall MULTIPLICATION_ASSIGN expression
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting multiplication assignment (MULTIPLICATION_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxMultiplicationAssignment($1, $3); 
-                    }
-                ;
+                                $$ = new SyntaxMultiplicationAssignment($1, $3); 
+                            }
+                        ;
 
-divisionAssign  :   variable DIVISION_ASSIGN expression
-                    {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting division assignment (DIVISION_ASSIGN) in syntax tree\n");
-#endif
-                        $$ = new SyntaxDivisionAssignment($1, $3); 
-                    }
-                |   functionCall DIVISION_ASSIGN expression
+divisionAssign  :   expression DIVISION_ASSIGN expression
                     {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting division assignment (DIVISION_ASSIGN) in syntax tree\n");
@@ -477,7 +460,7 @@ divisionAssign  :   variable DIVISION_ASSIGN expression
 variable    :   identifier optElements
                 {
 #ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting variable (NAMED_VAR)in syntax tree\n");
+                    printf("Parser inserting variable (NAMED_VAR) in syntax tree\n");
 #endif
                     $$ = new SyntaxVariable(*$1, $2);
                     delete $1;
@@ -490,10 +473,18 @@ variable    :   identifier optElements
                     $5->push_front($3);
                     $$ = new SyntaxVariable($1, $5);
                 }
+            |   '(' expression ')' '[' expression ']' optElements
+                {
+#ifdef DEBUG_BISON_FLEX
+                    printf("Parser inserting variable (EXPRESSION_VAR) in syntax tree\n");
+#endif
+                    $7->push_front($5);
+                    $$ = new SyntaxVariable($2, $7);
+                }
             |   variable '.' identifier optElements
                 {
 #ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting member variable (NAMED_VAR)in syntax tree\n");
+                    printf("Parser inserting member variable (NAMED_VAR) in syntax tree\n");
 #endif
                     $$ = new SyntaxVariable($1, *$3, $4);
                     delete $3;
@@ -576,14 +567,16 @@ functionDef :   FUNCTION identifier '(' optFormals ')' stmts
                     delete $2;
                 }
  
-            |   FUNCTION typeSpec identifier '(' optFormals ')' stmts
+            |   FUNCTION identifier optDims identifier '(' optFormals ')' stmts
                 {
 #ifdef DEBUG_BISON_FLEX
                     printf("Parser inserting typed function definition in syntax tree\n");
 #endif
-                    $$ = new SyntaxFunctionDef(*$2, *$3, $5, $7);
+                    $2->append(*$3);
+                    $$ = new SyntaxFunctionDef(*$2, *$4, $6, $8);
                     delete $2;
                     delete $3;
+                    delete $4;
                 }
             ;
 
@@ -631,7 +624,12 @@ formal      :   identifier
                 }
             ;
 
-typeSpec    :   identifier optDims optRef   { $1->append(*($2)); $1->append(*($3)); delete $2; delete $3; $$ = $1; }
+typeSpec    :   identifier optDims                      { $1->append(*($2)); delete $2; $$ = $1; }
+            |   MOD_CONST identifier optDims            { $2->append(*($3)); $2->insert(0, "const ");           delete $3; $$ = $2; }
+            |   MOD_DYNAMIC identifier optDims          { $2->append(*($3)); $2->insert(0, "dynamic ");         delete $3; $$ = $2; }
+            |   MOD_STOCHASTIC identifier optDims       { $2->append(*($3)); $2->insert(0, "stochastic ");      delete $3; $$ = $2; }
+            |   MOD_DETERMINISTIC identifier optDims    { $2->append(*($3)); $2->insert(0, "deterministic ");   delete $3; $$ = $2; }
+            |   MOD_MUTABLE identifier optDims          { $2->append(*($3)); $2->insert(0, "mutable ");         delete $3; $$ = $2; }
             ;
 
 optDims     :   /* empty */                 { $$ = new std::string(""); }
@@ -639,26 +637,7 @@ optDims     :   /* empty */                 { $$ = new std::string(""); }
             ;
 
 dimList     :   '[' ']'                     { $$ = new std::string("[]"); }
-            |   '[' INT ']'                 { 
-                                                $$ = new std::string("["); 
-                                                std::stringstream o;
-                                                o << $2;
-                                                $$->append(o.str()); 
-                                                $$->append("]"); 
-                                            }
             |   dimList '[' ']'             { $1->append("[]"); $$ = $1; }
-            |   dimList '[' INT ']'         { 
-                                                $1->append("["); 
-                                                std::stringstream o;
-                                                o << $3;
-                                                $1->append(o.str()); 
-                                                $1->append("]"); 
-                                                $$ = $1;
-                                            }
-            ;
-
-optRef      :   /* empty */                 { $$ = new std::string(""); }
-            |   '&'                         { $$ = new std::string("&"); }
             ;
 
 stmts       :   '{' stmtList '}'                { $$ = $2; }
@@ -692,15 +671,14 @@ stmt_or_expr    :   statement           { $$ = $1; }
 
 declaration     :   classDef            { $$ = $1; }
                 |   functionDef         { $$ = $1; }
-                |   identifier optElements optRef identifier
+                |   identifier optElements identifier
                     {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting variable declaration in syntax tree\n");
 #endif
-                        $$ = new SyntaxVariableDecl(*$1, $2, *$3, *$4);
+                        $$ = new SyntaxVariableDecl(*$1, $2, *$3);
                         delete $1;
                         delete $3;
-                        delete $4;
                     }
                 ;
 

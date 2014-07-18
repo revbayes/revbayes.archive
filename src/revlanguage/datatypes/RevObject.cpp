@@ -353,9 +353,8 @@ void RevObject::makeConstantValue( void )
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
-RevObject* RevObject::makeDagReference(void)
+RevObject* RevObject::makeIndirectReference(void)
 {
-    
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
     throw RbException( msg );
@@ -402,11 +401,14 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
  */
 void RevObject::printStructure( std::ostream &o ) const
 {
+    o << "_RevType      = " << getType() << std::endl;
+    o << "_RevTypeSpec  = " << getTypeSpec() << std::endl;
+    o << "_value        = ";
     
-    o << "No structural information available for an object of type '" << getType() << "'" << std::endl;
-    
+    std::ostringstream o1;
+    printValue( o1 );
+    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 }
-
 
 
 /**

@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxFunctionDef, which is
- * used to hold definitions of functions (user-defined functions).
- *
- * @brief Declaration of SyntaxFunctionDef
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxFunctionDef_H
 #define SyntaxFunctionDef_H
 
@@ -27,7 +12,18 @@
 
 namespace RevLanguage {
 
-class SyntaxFunctionDef : public SyntaxElement {
+    /**
+     * @brief Function definition syntax element
+     *
+     * This syntax element holds function definitions, that is, user-defined
+     * Rev functions. Member variables include the function name, the formal
+     * argument specifications, the return type and the code.
+     *
+     * The semantic content of a function definition is void, but evaluating
+     * it results in the user-defined function being inserted in the function
+     * table in the environment.
+     */
+    class SyntaxFunctionDef : public SyntaxElement {
 
     public:
         SyntaxFunctionDef(const std::string &type, const std::string &name, std::list<SyntaxFormal*>*   formals, std::list<SyntaxElement*>*  stmts);    //!< Standard constructor
@@ -51,7 +47,7 @@ class SyntaxFunctionDef : public SyntaxElement {
         std::list<SyntaxFormal*>*       formalArgs;                                                                                                     //!< The formal arguments
         TypeSpec                        returnType;                                                                                                     //!< The return type specification of the function
     
-};
+    };
     
 }
 

@@ -1,13 +1,11 @@
 %{
 /**
  * @file
- * Lexicographical analysis for the RevBayes language.
+ * Lexicographical analysis for the Rev language.
  *
  * @brief Lexicographical analysis using flex
  *
  * @author Fredrik Ronquist and Sebastian Hoehna
- *
- * $Id$
  */
 
 /* The following statements go into the resulting cpp code */
@@ -60,7 +58,7 @@ size_t yycolumn;
 
 DIGIT    [0-9] 
 EXP      [Ee][+-]?[0-9]+
-ID       [a-zA-Z][a-zA-Z0-9_]*
+ID       [_]*[a-zA-Z][a-zA-Z0-9_]*
 STRING   \x22[^"]*\x22
 COMMENT  \x23.*
 
@@ -161,6 +159,36 @@ TRUE                                    {
 #endif
                                             return TRUE;
                                         }
+const                                   {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'const'\n");
+#endif
+                                            return MOD_CONST;
+                                        }
+dynamic                                 {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'dynamic'\n");
+#endif
+                                            return MOD_DYNAMIC;
+                                        }
+stochastic                              {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'stochastic'\n");
+#endif
+                                            return MOD_STOCHASTIC;
+                                        }
+deterministic                           {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'deterministic'\n");
+#endif
+                                            return MOD_DETERMINISTIC;
+                                        }
+mutable                                 {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'mutable'\n");
+#endif
+                                            return MOD_MUTABLE;
+                                        }
 {DIGIT}+"."{DIGIT}*({EXP})?             {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found real %s -- ", yytext);
@@ -247,6 +275,18 @@ TRUE                                    {
                                             printf("Flex found '~'\n");
 #endif
                                             return TILDE_ASSIGN;
+                                        }
+"<<-"                                   {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '<<-'\n");
+#endif
+                                            return CONTROL_ASSIGN;
+                                        }
+"<-&"                                   {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found '<-&'\n");
+#endif
+                                            return REFERENCE_ASSIGN;
                                         }
 "+="                                    {
 #ifdef DEBUG_BISON_FLEX

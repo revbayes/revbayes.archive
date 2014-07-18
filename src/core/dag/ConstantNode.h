@@ -18,6 +18,7 @@
 #ifndef ConstantNode_H
 #define ConstantNode_H
 
+#include "StringUtilities.h"
 #include "TypedDagNode.h"
 #include "UnivariateFunction.h"
 
@@ -183,14 +184,13 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) 
 {
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Constant DAG node" << std::endl;
-    o << "_value        = " << *value << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o);
+    this->printParents(o, 16, 70);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o);
+    this->printChildren(o, 16, 70);
     o << std::endl;
 }
 

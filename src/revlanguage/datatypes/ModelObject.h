@@ -50,8 +50,8 @@ namespace RevLanguage {
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
-        ModelObject<rbType>*                    makeDagReference(void);                                                     //!< Make reference to object
         void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
@@ -467,24 +467,6 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 }
 
 
-template <typename rbType>
-RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeDagReference(void) {
-    
-    RevBayesLanguage::TypedReferenceFunction< rbType >* f = new RevBayesLanguage::TypedReferenceFunction< rbType >(dagNode);
-
-    RevBayesCore::DeterministicNode< rbType >* newNode = new RevBayesCore::DeterministicNode< rbType >( "", f );
-    
-    RevLanguage::ModelObject<rbType>* newObj = this->clone();
-    
-    // Replace DAG node with deterministic reference and attempt memory management
-    newObj->dagNode->decrementReferenceCount();
-    newObj->dagNode = newNode;
-    newObj->dagNode->incrementReferenceCount();
-    
-    return newObj;
-}
-
-
 /** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
@@ -500,15 +482,39 @@ void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall*
 }
 
 
-/** Print structure info for user */
+/**
+ * Make an indirect reference to the variable. This is appropriate for the contexts
+ * where the object occurs on the righ-hand side of expressions like a := b
+ */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printStructure(std::ostream &o) const {
+RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirectReference(void)
+{
+    RevBayesLanguage::TypedReferenceFunction< rbType >* f = new RevBayesLanguage::TypedReferenceFunction< rbType >(dagNode);
     
-    dagNode->printStructureInfo(o);
+    RevBayesCore::DeterministicNode< rbType >* newNode = new RevBayesCore::DeterministicNode< rbType >( "", f );
+    
+    RevLanguage::ModelObject<rbType>* newObj = this->clone();
+    
+    // Replace DAG node with deterministic reference and attempt memory management
+    newObj->dagNode->decrementReferenceCount();
+    newObj->dagNode = newNode;
+    newObj->dagNode->incrementReferenceCount();
+    
+    return newObj;
 }
 
 
-/** Print value for user */
+/** Print structure info for user */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o ) const
+{
+    RevObject::printStructure( o );
+
+    dagNode->printStructureInfo( o );
+}
+
+
+ /** Print value for user */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
     

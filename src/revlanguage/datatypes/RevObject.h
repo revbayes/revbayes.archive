@@ -76,8 +76,8 @@ public:
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual RevObject*                  makeDagReference(void);                                                                         //!< Make an object referencing the dag node of this object
     virtual void                        makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);                         //!< Convert to deterministic object with a userdefined Rev function
+    virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
     virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
 

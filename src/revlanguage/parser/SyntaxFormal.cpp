@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of SyntaxFormal, which is
- * used to hold formal argument specifications in the syntax tree.
- *
- * @brief Implementation of SyntaxFormal
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #include "ArgumentRule.h"
 #include "Environment.h"
 #include "RbException.h"
@@ -26,124 +11,169 @@
 
 using namespace RevLanguage;
 
-/** Constructor with implicit type */
-SyntaxFormal::SyntaxFormal(const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement() , argType( TypeSpec(RevObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
+
+/**
+ * Constructor from formal argument specification with implicit type. Note that we
+ * make the argument type dynamic by default (false to ArgumentRule constructor).
+ * This is required if the function is to work in a dynamic expression as expected.
+ * Of course, one can argue whether implicit-type formals are appropriate in such
+ * functions, but it is at least conceivable that a user might use implicit-type
+ * formals in a function they intend to use in a dynamic expression. If they
+ * specify the return type of the function, there is also a reasonable chance that
+ * their function will not generate a type error in a dynamic expression.
+ */
+SyntaxFormal::SyntaxFormal( const std::string& label, SyntaxElement* defaultVal ) :
+    SyntaxElement(),
+    argRule( NULL )
+{
+    // Find the type specification
+    const TypeSpec& typeSpec = RevObject::getClassTypeSpec();
     
-    // Make argument rule from element
-    if (defaultExpr == NULL)
-        argRule = new ArgumentRule(label, true, argType);
-    else {
-        Environment env = Environment();
-        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent( env )->getRevObject().clone() );
+    // Make argument rule from the formal specification
+    if ( defaultVal == NULL )
+        argRule = new ArgumentRule( label, false, typeSpec );
+    else
+    {
+        RevObject* defaultObj = defaultVal->evaluateContent( Workspace::userWorkspace() )->getRevObject().clone();
+        argRule = new ArgumentRule( label, false, typeSpec, defaultObj );
     }
 }
 
 
-/** Constructor with explicit type */
-SyntaxFormal::SyntaxFormal(const std::string &type, const std::string &lbl, SyntaxElement* defaultVal) : SyntaxElement(), argType( TypeSpec(RevObject::getClassTypeSpec()) ), label(lbl), defaultExpr(defaultVal) {
-
-    // Count dimensions and check if reference
-    int         nDim        = 0;
-    std::string tpName      = std::string();
-    for (std::string::const_iterator i=type.begin(); i!=type.end(); i++) {
-        if ((*i) == '[')
-            nDim++;
-        else if ((*i) != ']')
-            tpName += (*i);
+/**
+ * Constructor from formal argument specification with explicit type. The only
+ * difference from the constructor with implicit type is that we pay attention to
+ * the type specification provided as part of the formal argument specification.
+ *
+ * Note that the type specification of formals may include a specifier prefix, such as
+ * 'const', 'dynamic', 'mutable' or 'stochastic'. In that case, the type specification
+ * will consist of two words, the first of which is the modifier, and the second of
+ * which is the type.
+ */
+SyntaxFormal::SyntaxFormal( const std::string& type, const std::string& label, SyntaxElement* defaultVal ) :
+    SyntaxElement(),
+    argRule( NULL )
+{
+    // Divide up the type specification into modifier and type
+    std::string modifier;
+    std::string typeName;
+    size_t breakpos = type.find_first_of( " " );
+    if ( breakpos == std::string::npos )
+    {
+        modifier = "";
+        typeName = type;
     }
-
-    // Create the type specification
-    argType = TypeSpec( Workspace::userWorkspace().getClassTypeSpecOfType( type ) );
+    else
+    {
+        modifier = type.substr( 0, breakpos );
+        typeName = type.substr( breakpos + 1, type.length() - breakpos );
+    }
+        
+    // Check that we have a supported modifier
+    if ( modifier != "" && modifier != "const" && modifier != "dynamic" )
+        throw RbException( "Formal type modifier '" + modifier + "' not supported (yet)" );
     
-    // Make argument rule from element
-    if (defaultExpr == NULL)
-        argRule = new ArgumentRule(label, true, argType);
-    else {
-        Environment env = Environment();
-        argRule = new ArgumentRule(label, true, argType, defaultExpr->evaluateContent(env)->getRevObject().clone() );
+    // Find the type specification
+    const TypeSpec& typeSpec = Workspace::userWorkspace().getClassTypeSpecOfType( typeName );
+
+    // Generate the default object
+    RevObject* defaultObj = NULL;
+    if ( defaultVal != NULL )
+        defaultObj = defaultVal->evaluateContent( Workspace::userWorkspace() )->getRevObject().clone();
+    
+    // Now generate argument rule
+    if ( modifier == "const" )
+    {
+        // Make const argument rule from element
+        if ( defaultVal == NULL )
+            argRule = new ArgumentRule( label, true, typeSpec );
+        else
+            argRule = new ArgumentRule( label, true, typeSpec, defaultObj );
+    }
+    else // if ( modifier == "dynamic" || modifier == "" )
+    {
+        // Make dynamic argument rule from element
+        if ( defaultVal == NULL )
+            argRule = new ArgumentRule( label, false, typeSpec );
+        else
+            argRule = new ArgumentRule( label, false, typeSpec, defaultObj );
     }
 }
 
 
 /** Deep copy constructor */
-SyntaxFormal::SyntaxFormal(const SyntaxFormal& x) : SyntaxElement(x) , argType( x.argType ){
-
-    argRule     = x.argRule->clone();
-    label       = x.label;
-    defaultExpr = x.defaultExpr->clone();
-    
+SyntaxFormal::SyntaxFormal( const SyntaxFormal& x ) :
+    SyntaxElement(x) ,
+    argRule( x.argRule->clone() )
+{
 }
 
 
-/** Destructor deletes pointer members */
-SyntaxFormal::~SyntaxFormal() {
-    
+/** Destructor deletes the argument rule, which we own */
+SyntaxFormal::~SyntaxFormal()
+{
     delete argRule;
-    delete defaultExpr;
 }
 
 
 /** Assignment operator */
 SyntaxFormal& SyntaxFormal::operator=(const SyntaxFormal& x) {
 
-    if (&x != this) {
-
+    if (&x != this)
+    {
         SyntaxElement::operator=(x);
 
-        argRule     = x.argRule->clone();
-        argType     = x.argType;
-        label       = x.label;
-        defaultExpr = x.defaultExpr->clone();
+        delete argRule;
+        if ( x.argRule != NULL )
+            argRule = x.argRule->clone();
+        else
+            argRule = NULL;
     }
 
     return (*this);
 }
 
 
-/** Clone syntax element */
-SyntaxFormal* SyntaxFormal::clone () const {
-
+/** Type-safe clone of syntax element */
+SyntaxFormal* SyntaxFormal::clone () const
+{
     return new SyntaxFormal(*this);
 }
 
 
-
-const ArgumentRule* SyntaxFormal::getArgumentRule(void ) const {
+/** Get the processed argument rule (non-const version) */
+ArgumentRule* SyntaxFormal::getArgumentRule(void )
+{
     return argRule;
 }
 
 
-ArgumentRule* SyntaxFormal::getArgumentRule(void ) {
+/** Get the processed argument rule (const version) */
+const ArgumentRule* SyntaxFormal::getArgumentRule(void ) const
+{
     return argRule;
-}
-
-
-const TypeSpec& SyntaxFormal::getArgumentTypeSpec(void) const {
-    return argType;
-}
-
-
-const std::string& SyntaxFormal::getLabel(void) const {
-    return label;
 }
 
 
 /** Get semantic value (not applicable so return NULL) */
-RevPtr<Variable> SyntaxFormal::evaluateContent( Environment& env ) {
-
+RevPtr<Variable> SyntaxFormal::evaluateContent( Environment& env )
+{
     return NULL;
 }
 
 
-/** Print info about the syntax element */
-void SyntaxFormal::printValue(std::ostream& o) const {
-
-    o << "SyntaxFormal:" << std::endl;
-    o << "type        = " << argType.getType() << std::endl;
-    o << "label       = " << label << std::endl;
-    o << "defaultExpr = ";
-    defaultExpr->printValue(o);
+/**
+ * Print info about the syntax element. Note that the language
+ * grammar specification does not currently support multiple formals,
+ * so there can be no more than one element in argRule.
+ */
+void SyntaxFormal::printValue(std::ostream& o) const
+{
+    o << "SyntaxFormal (processed):" << std::endl;
+    o << "type        = " << argRule->getArgumentTypeSpec()[0].getType() << std::endl;
+    o << "label       = " << argRule->getArgumentLabel() << std::endl;
+    o << "defaultVal  = ";
+    argRule->getDefaultVariable().getRevObject().printValue( o );
     o << std::endl;
 }
-
 

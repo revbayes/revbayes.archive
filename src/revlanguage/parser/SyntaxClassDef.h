@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxClassDef, which is
- * used to hold the definitions of user-defined types.
- *
- * @brief Declaration of SyntaxClassDef
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxClassDef_H
 #define SyntaxClassDef_H
 
@@ -26,10 +11,22 @@
 
 namespace RevLanguage {
     
-class SyntaxClassDef : public SyntaxElement {
+    /**
+     * @brief Class definition syntax element
+     *
+     * This syntax element is used to hold Rev class definitions.
+     * These consist of a class name, a base class name, and a list
+     * of definitions of member variables and member functions.
+     *
+     * Note that the Rev language specification only allows definition
+     * of classes in the global namespace. That is, class definitions
+     * within functions or within other class definitions are not
+     * supported.
+     */
+    class SyntaxClassDef : public SyntaxElement {
 
     public:
-        SyntaxClassDef(const std::string &name, const std::string &base, std::list<SyntaxElement*>* defs);          //!< Standard constructor
+        SyntaxClassDef(const std::string& name, const std::string& base, std::list<SyntaxElement*>* defs);          //!< Standard constructor
         SyntaxClassDef(const SyntaxClassDef& x);                                                                    //!< Copy constructor
     
 	    virtual                    ~SyntaxClassDef();                                                               //!< Destructor
@@ -49,7 +46,7 @@ class SyntaxClassDef : public SyntaxElement {
         std::string                 baseClass;                                                                      //!< The name of the base class
         std::list<SyntaxElement*>*  definitions;                                                                    //!< Defined member variables and functions
     
-};
+    };
     
 }
 

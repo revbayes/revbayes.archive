@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of SyntaxForLoop, which is
- * used to hold formal argument specifications in the syntax tree.
- *
- * @brief Implementation of SyntaxForLoop
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #include "ConstantNode.h"
 #include "Container.h"
 #include "Environment.h"
@@ -25,6 +10,7 @@
 #include <sstream>
 
 using namespace RevLanguage;
+
 
 /** Standard constructor */
 SyntaxForLoop::SyntaxForLoop( const std::string& identifier, SyntaxElement* inExpr ) :
@@ -61,9 +47,12 @@ SyntaxForLoop::~SyntaxForLoop()
 /** Assignment operator */
 SyntaxForLoop& SyntaxForLoop::operator=( const SyntaxForLoop& x )
 {
-    if (&x != this) {
-    
+    if ( &x != this )
+    {
         SyntaxElement::operator=(x);
+
+        delete inExpression;
+        delete stateSpace;
 
         varName                     = x.varName;
         inExpression                = x.inExpression->clone();
@@ -76,9 +65,9 @@ SyntaxForLoop& SyntaxForLoop::operator=( const SyntaxForLoop& x )
 
 
 /** Clone syntax element */
-SyntaxElement* SyntaxForLoop::clone () const
+SyntaxElement* SyntaxForLoop::clone( void ) const
 {
-    return (SyntaxElement*)(new SyntaxForLoop(*this));
+    return new SyntaxForLoop( *this );
 }
 
 
@@ -90,7 +79,7 @@ RevPtr<Variable> SyntaxForLoop::evaluateContent( Environment& env )
 
 
 /** Finalize loop. */
-void SyntaxForLoop::finalizeLoop(void)
+void SyntaxForLoop::finalizeLoop( void )
 {
     nextOneoffsetElementIndex = 0;
 }
@@ -139,7 +128,7 @@ bool SyntaxForLoop::isFinished( void ) const
  * use the first dimension of the container to get the values for
  * the loop variable. We also add the loop variable to the environment.
  */
-void SyntaxForLoop::initializeLoop(Environment& env)
+void SyntaxForLoop::initializeLoop( Environment& env )
 {
     assert ( nextOneoffsetElementIndex == 0 );  // Check that we are not running already
 
@@ -149,7 +138,7 @@ void SyntaxForLoop::initializeLoop(Environment& env)
 
     // Check that it is a container (the first dimension of which we will use)
     if ( theValue.isTypeSpec( Container::getClassTypeSpec() ) == false )
-       throw ( RbException("The 'in' expression does not evaluate to a container") );
+       throw RbException( "The 'in' expression does not evaluate to a container" );
 
     stateSpace = dynamic_cast<Container*>(theValue.clone());
 
@@ -166,8 +155,8 @@ void SyntaxForLoop::initializeLoop(Environment& env)
 
 
 /** Print info about syntax element */
-void SyntaxForLoop::printValue(std::ostream& o) const {
-
+void SyntaxForLoop::printValue( std::ostream& o ) const
+{
     o << "SyntaxForLoop:" << std::endl;
     o << "varName      = " << varName << std::endl;
     o << "inExpression = ";

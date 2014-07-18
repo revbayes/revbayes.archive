@@ -146,6 +146,49 @@ bool StringUtilities::isNumber(std::string& s) {
 }
 
 
+/**
+ * Utility function for getting a one-line summary being max maxLen long.
+ * We find the first non-empty line in the input. If it is longer than maxLen,
+ * we truncate it at maxLen - 3 and add "..." at the end. If it is shorter, we
+ * just return the complete line (without line break).
+ */
+std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
+{
+    std::string oneLiner;
+    
+    std::ostringstream x;
+    size_t begin = 0;
+    size_t i = 0;
+    for ( size_t i = 0; i < input.size(); ++i )
+    {
+        if ( input[ i ] == '\n' || input[ i ] == '\r' )
+            begin = i + 1;
+        if ( isgraph( input[ i ] ) )
+            break;
+    }
+    size_t firstGraph = i;
+    
+    if ( firstGraph >= input.size() )
+        return oneLiner;
+    
+    for ( size_t i = begin; i < input.size() && i < maxLen; ++i )
+    {
+        if ( input[ i ] == '\n' || input[ i ] == '\r' )
+            break;
+        oneLiner.push_back( input[ i ] );
+    }
+
+    if ( oneLiner.size() == maxLen )
+    {
+        oneLiner[ maxLen - 1 ] = '.';
+        oneLiner[ maxLen - 2 ] = '.';
+        oneLiner[ maxLen - 3 ] = '.';
+    }
+
+    return oneLiner;
+}
+
+
 /** Utility function for dividing string into pieces */
 void StringUtilities::stringSplit(std::string str, std::string delim, std::vector<std::string>& results) {
 

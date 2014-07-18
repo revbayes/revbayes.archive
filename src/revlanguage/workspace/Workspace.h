@@ -85,7 +85,6 @@ namespace RevLanguage {
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
-//        TypeTable               getTypeTable(void){ return typeTable; }
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
         RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
         Container*              makeNewEmptyContainer(const std::string& elemType, size_t dim) const;       //!< Make an empty container of specified element type and dim
@@ -112,10 +111,7 @@ namespace RevLanguage {
         Workspace&              operator=(const Workspace& w);                                              //!< Prevent assignment
 
         TypeTable               typeTable;                                                                  //!< Type table
-
-        bool                    typesInitialized;                           //!< Is type table initialized? Before then, we can't perform type checking.
-
-        static const TypeSpec   typeSpec;
+        bool                    typesInitialized;                                                           //!< Are types initialized?
     };
 
 }
