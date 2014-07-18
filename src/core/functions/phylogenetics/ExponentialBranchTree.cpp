@@ -29,24 +29,6 @@ ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, 
     update();
 }
 
-// constructor(s)
-/*
-ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t,  const TypedDagNode< MatrixReal >* m, const TypedDagNode<double>* o, const TypedDagNode< int >* i): TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ), tau(t),
-mvtnodeval(m), offset(o), traitindex(i) {
-    this->addParameter( tau );
-    if (mvtnodeval != NULL) {
-         this->addParameter( mvtnodeval );   
-    }    
-    if (offset != NULL) {
-         this->addParameter( offset );   
-    }    
-    if (traitindex != NULL) {
-        this->addParameter(traitindex) ;
-    }
-    update();
-}
-*/
-
 ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n):
 
     TypedFunction< std::vector< double > >( n ), 
@@ -62,6 +44,10 @@ ExponentialBranchTree* ExponentialBranchTree::clone(void) const {
 
 void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
+    if ( oldP == tau ) {
+        tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+    }
+
     if ( oldP == process ) {
         process = static_cast< const TypedDagNode<MultivariatePhyloProcess> * >( newP );
     }
@@ -99,9 +85,6 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
             
             double x1 = process->getValue()[index][getTraitIndex()] + offset->getValue();
             double x2 = process->getValue()[upindex][getTraitIndex()] + offset->getValue();
-            if (from.getParent().isRoot())  {
-                x2 = offset->getValue();
-            }
             double y = 0.5 * (exp(x1) + exp(x2));
         
             // we store this val here
