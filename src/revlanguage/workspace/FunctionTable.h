@@ -16,17 +16,18 @@ namespace RevLanguage {
     class Function;
 
     /**
-     * @brief FunctionTable: A multimap from function call names to functions
+     * @brief FunctionTable: A multimap from function names to functions
      *
      * FunctionTable is used to hold functions in Workspace and Environment (frame)
-     * objects. It holds the functions, which it owns, in a std::multimap data
-     * member variable called table. Function tables can be nested; each table defers
+     * objects. It holds the functions, which it owns, in a std::multimap, which it
+     * is derived from. Function tables can be nested; each table defers
      * calls to its parent(s) when the task cannot be solved locally.
      *
      */
-    class FunctionTable {
-
+    class FunctionTable : public std::multimap<std::string, Function*> {
+        
     public:
+
         FunctionTable(FunctionTable* parent = NULL);                                                                                    //!< Empty table
         FunctionTable(const FunctionTable& x);                                                                                          //!< Copy constructor
         virtual                                 ~FunctionTable();                                                                       //!< Delete functions
@@ -57,7 +58,6 @@ namespace RevLanguage {
                                                              const std::vector<Argument>& args);                                        //!< Find function, process args
     
         // Member variables
-        std::multimap<std::string, Function*>   table;                                                                                  //!< Table of functions
         const FunctionTable*                    parentTable;                                                                            //!< Enclosing table
 
 };

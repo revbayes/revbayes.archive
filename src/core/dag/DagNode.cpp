@@ -51,11 +51,13 @@ DagNode::DagNode( const DagNode &n ) :
  */
 DagNode::~DagNode( void )
 {
-    // For debugging memory leak issues
+#if defined ( DEBUG_MEMORY )
+    // For debugging memory leaks
     if ( getName() != "" )
         std::cerr << "Deleting DAG node '" << name << "' <" << this << ">" << std::endl;
     else
         std::cerr << "Deleting DAG node <" << this << ">" << std::endl;
+#endif
 
     // Sanity checks
     if ( refCount != 0 )
@@ -267,7 +269,8 @@ void DagNode::incrementReferenceCount( void ) const
     
     refCount++;
     
-    // For debugging
+#if defined ( DEBUG_MEMORY )
+    // For debugging memory leaks
     if ( refCount - children.size() > 1 )
     {
         if ( getName() != "" )
@@ -275,6 +278,8 @@ void DagNode::incrementReferenceCount( void ) const
         else
             std::cerr << "More than 1 non-DAG references to node <" << this << std::endl;
     }
+#endif
+
 }
 
 
