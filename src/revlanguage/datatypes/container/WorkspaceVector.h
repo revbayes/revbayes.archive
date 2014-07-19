@@ -136,7 +136,7 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) :
 template <typename rlType>
 rlType& WorkspaceVector<rlType>::operator[]( size_t index )
 {
-    return static_cast<rlType&>( this->elements[ index ]->getRevObject() ).getValue();
+    return static_cast<rlType&>( this->elements[ index ]->getRevObject() );
 }
 
 
@@ -147,7 +147,7 @@ rlType& WorkspaceVector<rlType>::operator[]( size_t index )
 template <typename rlType>
 const rlType& WorkspaceVector<rlType>::operator[]( size_t index ) const
 {
-    return static_cast<rlType&>( this->elements[ index ]->getRevObject() ).getValue();
+    return static_cast<rlType&>( this->elements[ index ]->getRevObject() );
 }
 
 

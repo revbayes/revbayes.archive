@@ -57,7 +57,6 @@ namespace RevLanguage {
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 
 template <class rlCharType>

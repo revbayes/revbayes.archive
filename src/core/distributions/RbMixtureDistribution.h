@@ -76,9 +76,6 @@ namespace RevBayesCore {
 template <class mixtureType>
 RevBayesCore::RbMixtureDistribution<mixtureType>::RbMixtureDistribution(const TypedDagNode< RbVector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p) : TypedDistribution<mixtureType>( v->getValue()[0].clone() ), parameterValues( v ), probabilities( p ), index( 0 ) {
     
-    this->addParameter( parameterValues );
-    this->addParameter( probabilities );
-    
     delete this->value;
     this->value = simulate();
 }
@@ -195,6 +192,7 @@ void RevBayesCore::RbMixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 
 
 /** Get the parameters of the distribution */
+template <class mixtureType>
 std::set<const RevBayesCore::DagNode*> RevBayesCore::RbMixtureDistribution<mixtureType>::getParameters( void ) const
 {
     std::set<const RevBayesCore::DagNode*> parameters;

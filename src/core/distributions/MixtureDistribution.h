@@ -75,9 +75,6 @@ namespace RevBayesCore {
 template <class mixtureType>
 RevBayesCore::MixtureDistribution<mixtureType>::MixtureDistribution(const TypedDagNode<std::vector<mixtureType> > *v, const TypedDagNode<std::vector<double> > *p) : TypedDistribution<mixtureType>( new mixtureType( v->getValue()[0]) ), parameterValues( v ), probabilities( p ), index( 0 ) {
     
-    this->addParameter( parameterValues );
-    this->addParameter( probabilities );
-    
     *this->value = simulate();
 }
 

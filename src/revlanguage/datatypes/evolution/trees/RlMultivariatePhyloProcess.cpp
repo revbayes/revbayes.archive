@@ -14,7 +14,6 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
