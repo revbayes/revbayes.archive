@@ -33,13 +33,7 @@ namespace RevLanguage {
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
-        
-        /*
-        // Member method inits
-        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        */
-        
+                
         // Distribution functions you have to override
         RevBayesCore::MultivariateBrownianPhyloProcess* createDistribution(void) const;
         

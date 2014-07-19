@@ -27,13 +27,13 @@ MultivariatePhyloProcess::MultivariatePhyloProcess(void) : MatrixReal() {
 }
 
 /* constructor based on a timetree and a dimension for the process */
-MultivariatePhyloProcess::MultivariatePhyloProcess(const TimeTree* intree, size_t indim) : MatrixReal(intree->getNumberOfNodes(), indim, 0.0), tree(intree) {
+MultivariatePhyloProcess::MultivariatePhyloProcess(const TimeTree* intree, size_t indim) : MatrixReal(intree->getNumberOfNodes(), indim, 0.0), tree(intree), clampVector(intree->getNumberOfNodes(),std::vector<bool>(indim,false))  {
     
 }
 
 
 /* Copy constructor */
-MultivariatePhyloProcess::MultivariatePhyloProcess(const MultivariatePhyloProcess& p) : MatrixReal(p), tree(p.getTimeTree()) {
+MultivariatePhyloProcess::MultivariatePhyloProcess(const MultivariatePhyloProcess& p) : MatrixReal(p), tree(p.getTimeTree()), clampVector(p.clampVector) {
     
 }
 
@@ -61,18 +61,6 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 }
 
 
-/*
-void MultivariatePhyloProcess::resizeElementVectors(size_t n) {
-    // remove all elements
-    branchLengths.clear();
-    
-    // resize to new dimension
-    branchLengths.resize( n );
-}
- */
-
-
-
 void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
     
@@ -86,12 +74,63 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
         rv = getStdev(k->getValue());        
     }
+    /*
+    else if ( n == "clampAt" )
+    {
+        const TypedDagNode< ContinuousCharacterData >* data = static_cast<const TypedDagNode<ContinuousCharacterData> *>( args[0] );
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[1] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[2] );
+        // clampAt(&data->getValue(), k->getValue(), l->getValue());   
+        rv = 0;
+    }
+    */
     else
     {
         throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
     }
     
 }
+
+bool MultivariatePhyloProcess::isClamped(size_t index, size_t k) const   {
+    return clampVector[index][k];
+}
+
+void MultivariatePhyloProcess::clampAt(const ContinuousCharacterData* data, size_t k, size_t l) {
+
+    std::cerr << "clamp\n";
+    std::cerr << k << '\t' << l << '\n';
+    recursiveClampAt(getTimeTree()->getRoot(),data,k-1,l-1);
+    std::cerr << "clamp ok\n";
+}
+
+
+void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const ContinuousCharacterData* data, size_t k, size_t l) {
+ 
+    if (from.isTip())   {
+        
+        // get taxon index
+        size_t index = from.getIndex();
+
+        std::string taxon = data->getTaxonNameWithIndex(index);
+        
+        std::cerr << index << '\t' << taxon << '\t' << data->getCharacter(index,l).getMean() << '\t' << data->getCharacter(index,l).getVariance() << '\n';
+        
+        if (data->getCharacter(index,l).getVariance() == 0) {
+           (*this)[index][k] = data->getCharacter(index,l).getMean();
+            clampVector[index][k] = true;
+        }
+    }
+    else    {
+        std::cerr << ".";
+    }
+
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveClampAt(from.getChild(i),data,k,l);
+    }    
+}
+
 
 void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
 
