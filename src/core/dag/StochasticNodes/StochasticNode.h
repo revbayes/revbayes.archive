@@ -366,7 +366,9 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
 {
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Stochastic DAG node" << std::endl;
-    o << "_distribution = " << "<unnamed>" << std::endl;
+    o << "_refCount     = " << this->getReferenceCount() << std::endl;
+
+    o << "_distribution = " << "<" << distribution << ">" << std::endl;
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
     o << "_lnProb       = " << lnProb << std::endl;

@@ -219,7 +219,7 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& AbstractCharacterData::getClassType(void) { 
     
     static std::string revType = "AbstractCharacterData";

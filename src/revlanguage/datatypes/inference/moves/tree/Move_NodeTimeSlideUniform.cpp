@@ -43,7 +43,7 @@ void Move_NodeTimeSlideUniform::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Move_NodeTimeSlideUniform::getClassType(void) { 
     
     static std::string revType = "Move_Move_NodeTimeSlideUniform";

@@ -10,11 +10,11 @@
 namespace RevLanguage {
     
     /**
-     * @brief ContainerNode: DAG node for Rev containers
+     * @brief DAG node for composite containers
      *
      * This class is used for composite Rev model containers. These differ from
      * other model containers in that their value is not determined by a single
-     * function. Instead, each element has its own DAG node determining its value.
+     * DAG node. Instead, each element has its own DAG node determining its value.
      * The value of the container as a whole is simply composed by the values of
      * the individual elements.
      * 
@@ -194,8 +194,6 @@ ContainerNode<rlElemType, valueType>& ContainerNode<rlElemType, valueType>::oper
     {
         RevBayesCore::DynamicNode<valueType>::operator=( x );
 
-        this->type = RevBayesCore::DagNode::DETERMINISTIC;
-        
         // Pop old elements (deep copy destructor)
         while ( elements.size() > 0 )
             pop_back();
@@ -280,10 +278,12 @@ void ContainerNode<rlElemType, valueType>::getAffected( std::set<RevBayesCore::D
 
 
 /**
- * Return a reference to the vector of elements. The caller can modify the
- * elements; the elements will tell us through their DAG nodes if they have
+ * Return a reference to a specific element. The caller can modify the
+ * element; the element will tell us through its DAG node if it has
  * been modified, so that our touched flag gets set, so this should be safe.
- * The user can even replace the RevObject inside the Variable instance.
+ * The user can even replace the RevObject inside the Variable instance,
+ * and the integrity of the container node is still ensured through the
+ * call to the swapParent function during variable object replacement.
  */
 template<typename rlElemType, typename valueType>
 RevPtr<Variable>& ContainerNode<rlElemType, valueType>::getElement( size_t index )
@@ -376,7 +376,7 @@ bool ContainerNode<rlElemType, valueType>::isConstant( void ) const
 
 /**
  * Keep the current value of the node. If we have been touched
- * but noone asked for our value, we just leave our touched flag
+ * but no one asked for our value, we just leave our touched flag
  * set, which should be safe. We do not want to set the touched
  * flag to false without calling update, as done in 
  * RevBayesCore::DeterministicNode.
@@ -434,7 +434,8 @@ template< typename rlElemType, typename valueType >
 void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o ) const
 {
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    o << "_dagType      = Container node" << std::endl;
+    o << "_dagType      = Container DAG node" << std::endl;
+    o << "_refCount     = " << this->getReferenceCount() << std::endl;
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     

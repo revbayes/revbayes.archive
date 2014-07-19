@@ -60,7 +60,7 @@ public:
     
     // Basic utility functions you have to override (also getClassTypeSpec()!)
     virtual RevObject*                  clone(void) const = 0;                                                                          //!< Clone object
-    static const std::string&           getClassType(void);                                                                             //!< Get class name
+    static const std::string&           getClassType(void);                                                                             //!< Get Rev type
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
     virtual void                        printStructure(std::ostream& o) const;                                                          //!< Print structure of language object for user

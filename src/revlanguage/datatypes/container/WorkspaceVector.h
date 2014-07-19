@@ -44,7 +44,7 @@ namespace RevLanguage {
 
         // Basic utility functions you have to override
         virtual WorkspaceVector<rlType>*            clone(void) const;                                                  //!< Clone object
-        static const std::string&                   getClassType(void);                                                 //!< Get class name
+        static const std::string&                   getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get the object type spec of the instance
 
@@ -201,7 +201,7 @@ RevPtr<Variable> WorkspaceVector<rlType>::findOrCreateElement(const std::vector<
 
 
 /**
- * Get class name of object. This is the Rev object element type followed by
+ * Get Rev type of object. This is the Rev object element type followed by
  * a single set of square brackets. This provides a nice and convenient way
  * of specifying generic types of vectors for all Rev object types.
  */

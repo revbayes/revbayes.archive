@@ -184,7 +184,8 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o) 
 {
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Constant DAG node" << std::endl;
-    
+    o << "_refCount     = " << this->getReferenceCount() << std::endl;
+
     o << "_parents      = ";
     this->printParents(o, 16, 70);
     o << std::endl;

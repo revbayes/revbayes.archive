@@ -18,7 +18,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Dist_phyloDACTMC*                               clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
@@ -102,7 +102,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <class treeType>
 const std::string& RevLanguage::Dist_phyloDACTMC<treeType>::getClassType(void) {
     

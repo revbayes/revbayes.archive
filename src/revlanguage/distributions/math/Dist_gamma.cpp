@@ -44,7 +44,7 @@ RevBayesCore::GammaDistribution* Dist_gamma::createDistribution( void ) const {
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_gamma::getClassType(void) { 
     
     static std::string revType = "Dist_gamma";

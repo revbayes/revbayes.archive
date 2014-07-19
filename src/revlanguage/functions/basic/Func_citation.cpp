@@ -64,7 +64,7 @@ const ArgumentRules& Func_citation::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_citation::getClassType(void) {
     
     static std::string revType = "Func_citation";

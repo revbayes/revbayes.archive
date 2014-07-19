@@ -31,7 +31,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func__ne*                   clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
@@ -106,7 +106,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__ne<leftValType,rightValType
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename leftValType, typename rightValType>
 const std::string& RevLanguage::Func__ne<leftValType,rightValType>::getClassType(void) { 
     

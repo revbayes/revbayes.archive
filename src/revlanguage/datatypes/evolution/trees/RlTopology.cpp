@@ -81,7 +81,7 @@ RevLanguage::RevPtr<Variable> Topology::executeMethod(std::string const &name, c
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Topology::getClassType(void) { 
     
     static std::string revType = "Topology";

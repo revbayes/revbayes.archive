@@ -93,7 +93,7 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& ConstructorFunction::getClassType(void) { 
     
     static std::string revType = "ConstructorFunction";

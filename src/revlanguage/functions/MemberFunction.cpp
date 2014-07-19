@@ -54,7 +54,7 @@ RevPtr<Variable> MemberFunction::execute( void )
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& MemberFunction::getClassType(void) { 
     
     static std::string revType = "MemberFunction";

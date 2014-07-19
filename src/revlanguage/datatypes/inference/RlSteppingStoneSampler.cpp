@@ -54,7 +54,7 @@ RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, co
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& SteppingStoneSampler::getClassType(void)
 {
     

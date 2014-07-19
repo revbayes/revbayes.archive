@@ -54,7 +54,7 @@ void Move_PrecisionMatrixSimple::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Move_PrecisionMatrixSimple::getClassType(void) {
     
     static std::string revType = "Move_VectorSingleElement";

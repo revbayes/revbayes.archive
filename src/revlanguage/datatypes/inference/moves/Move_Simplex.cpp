@@ -52,7 +52,7 @@ void Move_Simplex::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Move_Simplex::getClassType(void) { 
     
     static std::string revType = "Move_Simplex";

@@ -23,7 +23,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         DiscreteTaxonData*                  clone(void) const;                                                                                  //!< Clone object
-        static const std::string&           getClassType(void);                                                                                 //!< Get class name
+        static const std::string&           getClassType(void);                                                                                 //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
         
@@ -84,7 +84,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteTaxonData<charTy
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <typename rlType>
 const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassType(void) { 
     

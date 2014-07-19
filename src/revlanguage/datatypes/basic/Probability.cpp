@@ -54,7 +54,7 @@ Probability* Probability::clone( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Probability::getClassType(void) { 
     
     static std::string revType = "Probability";

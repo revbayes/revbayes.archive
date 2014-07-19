@@ -2,6 +2,8 @@
 #define ModelContainer_H
 
 #include "Container.h"
+#include "IndirectReferenceNode.h"
+#include "ElementLookupNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUserInterface.h"
 #include "TypedDagNode.h"
@@ -40,51 +42,52 @@ namespace RevLanguage {
     class ModelContainer : public Container {
 
     public:
-    
         typedef typename valueType::iterator        iterator;
         typedef typename valueType::const_iterator  const_iterator;
         
-        virtual                                    ~ModelContainer(void);                                               //!< Destructor
+        virtual                                         ~ModelContainer(void);                                               //!< Destructor
         
         // STL vector-like functions
-        iterator                                    begin(void);                                                        //!< Iterator to the beginning of the Vector
-        const_iterator                              begin(void) const;                                                  //!< Const-iterator to the beginning of the Vector
-        iterator                                    end(void);                                                          //!< Iterator to the end of the Vector
-        const_iterator                              end(void) const;                                                    //!< Const-iterator to the end of the Vector
+        iterator                                        begin(void);                                                        //!< Iterator to the beginning of the Vector
+        const_iterator                                  begin(void) const;                                                  //!< Const-iterator to the beginning of the Vector
+        iterator                                        end(void);                                                          //!< Iterator to the end of the Vector
+        const_iterator                                  end(void) const;                                                    //!< Const-iterator to the end of the Vector
         
         // Basic utility functions you have to override
-        virtual Container*                          clone(void) const = 0;                                              //!< Clone object
-        static const std::string&                   getClassType(void);                                                 //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
-        virtual const TypeSpec&                     getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
+        virtual ModelContainer<rlType,dim,valueType>*   clone(void) const = 0;                                              //!< Clone object
+        static const std::string&                       getClassType(void);                                                 //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                             //!< Get class type spec
+        virtual const TypeSpec&                         getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
+        RevObject*                                      makeIndirectReference(void) = 0;                                    //!< Make an object referencing the dag node of this object
         
         // Basic utility functions you should not have to override
-        RevBayesCore::TypedDagNode<valueType>*      getDagNode(void) const;                                             //!< Get the DAG node
-        const valueType&                            getValue(void) const;                                               //!< Get the internal value
-        bool                                        hasDagNode(void) const;                                             //!< Do we have a DAG node?
-        bool                                        isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
-        void                                        makeCompositeValue();                                               //!< Convert the container to a composite value
-        void                                        makeConstantValue();                                                //!< Convert the container to a constant variable
-        void                                        makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Convert to deterministic object with a userdefined Rev function
-        RevObject*                                  makeIndirectReference(void);                                        //!< Make an object referencing the dag node of this object
-        void                                        printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
-        void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
-        void                                        replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
-        void                                        setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
+        RevBayesCore::TypedDagNode<valueType>*          getDagNode(void) const;                                             //!< Get the DAG node
+        const valueType&                                getValue(void) const;                                               //!< Get the internal value
+        bool                                            hasDagNode(void) const;                                             //!< Do we have a DAG node?
+        bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
+        void                                            makeCompositeValue();                                               //!< Convert the container to a composite value
+        void                                            makeConstantValue();                                                //!< Convert the container to a constant variable
+        void                                            makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Convert to deterministic object with a userdefined Rev function
+        void                                            printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        void                                            printValue(std::ostream& o) const;                                  //!< Print value for user
+        void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
+        void                                            setDagNode(RevBayesCore::DagNode *newNode);                         //!< Set or replace the internal dag node (and keep me)
+        
+        void                                            setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
         
         // Member object functions you may want to override
-        virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
-        virtual const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods (const)
+        virtual RevPtr<Variable>                        executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        virtual const MethodTable&                      getMethods(void) const;                                                     //!< Get member methods (const)
         
         // Container functions that you have to override
-        virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices) = 0;               //!< Find or create element variable
-        virtual RevPtr<Variable>                    getElement(const std::vector<size_t>& oneOffsetIndices) = 0;                        //!< Get element variable
-        virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths) = 0; //!< Set elements from Rev objects
+        virtual RevPtr<Variable>                        findOrCreateElement(const std::vector<size_t>& oneOffsetIndices) = 0;               //!< Find or create element variable
+        virtual RevPtr<Variable>                        getElement(const std::vector<size_t>& oneOffsetIndices) = 0;                        //!< Get element variable
+        virtual void                                    setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths) = 0; //!< Set elements from Rev objects
 
         // Container functions you should not have to override
-        size_t                                      getDim(void) const;                                                 //!< Get the dimensions
-        RevObject*                                  makeElementLookup(const std::vector< RevPtr<Variable> >& oneOffsetIndices); //!< Get dynamic element variable lookup
-        size_t                                      size(void) const;                                                   //!< Get the number of elements
+        size_t                                          getDim(void) const;                                                 //!< Get the dimensions
+        RevObject*                                      makeElementLookup(const std::vector< RevPtr<Variable> >& oneOffsetIndices); //!< Get dynamic element variable lookup
+        size_t                                          size(void) const;                                                   //!< Get the number of elements
         
         // Container function you have to override
         
@@ -96,9 +99,6 @@ namespace RevLanguage {
         
         // Assignment operator
         ModelContainer&                             operator=(const ModelContainer& x);                             //!< Assignment operator
-        
-        // ModelContainer helper function defined here
-        void                                        setDagNode(RevBayesCore::DagNode *newNode);                     //!< Set or replace the internal dag node (and keep me)
         
         // ModelContainer helper function you have to override
         virtual RevPtr<Variable>                    getElementFromValue(const std::vector<size_t>& oneOffsetIndices) = 0;   //!< Get element from value (and not from container node)
@@ -224,8 +224,8 @@ ModelContainer<rlType, dim, valueType>& ModelContainer<rlType, dim, valueType>::
  * @todo Check that this is safe. Is it not possible to assign to value using this iterator?
  */
 template <typename rlType, size_t dim, typename valueType>
-typename valueType::iterator ModelContainer<rlType, dim, valueType>::begin( void ) {
-    
+typename valueType::iterator ModelContainer<rlType, dim, valueType>::begin( void )
+{
     return dagNode->getValue().begin();
 }
 
@@ -235,8 +235,8 @@ typename valueType::iterator ModelContainer<rlType, dim, valueType>::begin( void
  * assume that the valueType class has a const_iterator.
  */
 template <typename rlType, size_t dim, typename valueType>
-typename valueType::const_iterator ModelContainer<rlType, dim, valueType>::begin( void ) const {
-    
+typename valueType::const_iterator ModelContainer<rlType, dim, valueType>::begin( void ) const
+{
     return dagNode->getValue().begin();
 }
 
@@ -248,8 +248,8 @@ typename valueType::const_iterator ModelContainer<rlType, dim, valueType>::begin
  * @todo Check that this is safe. Is it not possible to assign to value using this iterator?
  */
 template <typename rlType, size_t dim, typename valueType>
-typename valueType::iterator ModelContainer<rlType, dim, valueType>::end( void ) {
-    
+typename valueType::iterator ModelContainer<rlType, dim, valueType>::end( void )
+{
     return dagNode->getValue().end();
 }
 
@@ -259,8 +259,8 @@ typename valueType::iterator ModelContainer<rlType, dim, valueType>::end( void )
  * that the valueType class has a const_iterator.
  */
 template <typename rlType, size_t dim, typename valueType>
-typename valueType::const_iterator ModelContainer<rlType, dim, valueType>::end( void ) const {
-    
+typename valueType::const_iterator ModelContainer<rlType, dim, valueType>::end( void ) const
+{
     return dagNode->getValue().end();
 }
 
@@ -339,7 +339,7 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename rlType, size_t dim, typename valueType>
 const std::string& ModelContainer<rlType, dim, valueType>::getClassType(void)
 {
@@ -484,29 +484,26 @@ void ModelContainer<rlType, dim, valueType>::makeDeterministicValue( UserFunctio
 }
 
 
-/** Make element lookup */
+/**
+ * Make element lookup. This is relevant for the dynamic evaluation context, where
+ * we try to retrieve an element of this object, for instance
+ *
+ *    a := b[i]
+ *
+ * We need to make sure that the element is looked up dynamically based on the
+ * current value of i in this evaluation context.
+ */
 template <typename rlType, size_t dim, typename valueType>
 RevObject* ModelContainer<rlType, dim, valueType>::makeElementLookup( const std::vector< RevPtr<Variable> >& oneOffsetIndices ) {
     
-//    ElementLookupNode<typename rlType::valueType>* newNode = new ElementLookupNode< rlType::valueType >( "", this, oneOffsetIndices );
-    
-//    rlType* newObj = new rlType( newNode );
-    
-    return NULL; // newObj;
-}
+    ElementLookupNode< ModelContainer<rlType, dim, valueType>, rlType >* newNode =
+        new ElementLookupNode< ModelContainer<rlType, dim, valueType>, rlType >( "", this, oneOffsetIndices );
 
-
-/** Make variable lookup */
-template <typename rlType, size_t dim, typename valueType>
-RevObject* ModelContainer<rlType, dim, valueType>::makeIndirectReference(void) {
+    rlType* newObj = new rlType( newNode );
     
-//    IndirectReferenceNode< valueType >* newNode = new IndirectReferenceNode< valueType >( "", this );
+    return newObj;
     
-//    ModelContainer<rlType, dim, valueType>* newObj = this->clone();
-
-//    newObj->setDagNode( newNode );
-
-    return NULL; // newObj;
+    return NULL;
 }
 
 

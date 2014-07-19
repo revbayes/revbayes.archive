@@ -49,7 +49,7 @@ void Move_VectorSingleElementSlide::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Move_VectorSingleElementSlide::getClassType(void) { 
     
     static std::string revType = "Move_VectorSingleElementSlide";

@@ -53,7 +53,7 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Func_expBranchTree::getClassType(void) {
     
     static std::string revType = "Func_expBranchTree";

@@ -154,7 +154,7 @@ RealPos* RealPos::divide(const RevLanguage::RealPos &rhs) const
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& RealPos::getClassType(void) { 
     
     static std::string revType = "RealPos";

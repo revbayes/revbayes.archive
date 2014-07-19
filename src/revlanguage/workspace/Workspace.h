@@ -79,7 +79,7 @@ namespace RevLanguage {
 
         // Workspace functions
         bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution
-        bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = revType)
+        bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
         bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
         bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?

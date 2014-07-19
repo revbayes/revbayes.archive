@@ -36,7 +36,7 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override
         virtual ContinuousDistribution*                 clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassType(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
         
         

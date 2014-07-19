@@ -87,11 +87,11 @@ namespace RevLanguage {
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "DeterministicNode.h"
+#include "IndirectReferenceNode.h"
 #include "MemberFunction.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
-#include "TypedReferenceFunction.h"
 #include "TypedUserFunction.h"
 #include "Variable.h"
 
@@ -489,16 +489,11 @@ void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall*
 template <typename rbType>
 RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirectReference(void)
 {
-    RevBayesLanguage::TypedReferenceFunction< rbType >* f = new RevBayesLanguage::TypedReferenceFunction< rbType >(dagNode);
+    IndirectReferenceNode< RevLanguage::ModelObject<rbType> >* newNode = new IndirectReferenceNode< RevLanguage::ModelObject<rbType> >( "", this->getDagNode() );
     
-    RevBayesCore::DeterministicNode< rbType >* newNode = new RevBayesCore::DeterministicNode< rbType >( "", f );
+    RevLanguage::ModelObject< rbType >* newObj = this->clone();
     
-    RevLanguage::ModelObject<rbType>* newObj = this->clone();
-    
-    // Replace DAG node with deterministic reference and attempt memory management
-    newObj->dagNode->decrementReferenceCount();
-    newObj->dagNode = newNode;
-    newObj->dagNode->incrementReferenceCount();
+    newObj->setDagNode( newNode );
     
     return newObj;
 }

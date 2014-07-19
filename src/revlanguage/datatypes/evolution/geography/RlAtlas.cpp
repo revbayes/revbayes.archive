@@ -56,7 +56,7 @@ RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vect
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& RlAtlas::getClassType(void) {
     
     static std::string revType = "RlAtlas";

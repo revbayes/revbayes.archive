@@ -47,7 +47,7 @@ RevBayesCore::MultivariateNormalDistribution* Dist_mvtnorm::createDistribution( 
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_mvtnorm::getClassType(void) {
     
     static std::string revType = "Dist_mvtnorm";

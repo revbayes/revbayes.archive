@@ -44,7 +44,7 @@ RevBayesCore::OneOverXDistribution* Dist_oneOverX::createDistribution( void ) co
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_oneOverX::getClassType(void) { 
     
     static std::string revType = "Dist_oneOverX";

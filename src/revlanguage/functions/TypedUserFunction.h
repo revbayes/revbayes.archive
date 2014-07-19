@@ -64,6 +64,11 @@ TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
 {
     // Set dirty flag
     this->setDirty( true );
+    
+    // Add parameters for double book-keeping
+    const std::set<const RevBayesCore::DagNode*>& parameters = userFunctionCall->getParameters();
+    for ( std::set<const RevBayesCore::DagNode*>::const_iterator it = parameters.begin(); it != parameters.end(); ++it )
+        this->addParameter( (*it ) );
 }
 
 
@@ -76,6 +81,11 @@ TypedUserFunction<valueType>::TypedUserFunction(const TypedUserFunction<valueTyp
 {
     /* Just set dirty flag. No need to add parameters, it happens automatically. */
     this->setDirty( true );
+
+    // Add parameters for double book-keeping
+    const std::set<const RevBayesCore::DagNode*>& parameters = userFunctionCall->getParameters();
+    for ( std::set<const RevBayesCore::DagNode*>::const_iterator it = parameters.begin(); it != parameters.end(); ++it )
+        this->addParameter( (*it ) );
 }
 
 
@@ -133,6 +143,8 @@ void TypedUserFunction<valueType>::swapParameterInternal(const RevBayesCore::Dag
 {
     // Nothing to do: the user function call only has reference variables to the arguments, so they change
     // automatically when the referenced variable changes
+    
+    // The base class takes care of the parameters that are part of the double book-keeping
 }
 
 

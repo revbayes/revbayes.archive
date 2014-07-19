@@ -46,7 +46,7 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_uniformTimeTree::getClassType(void) {
     
     static std::string revType = "Dist_uniformTimeTree";

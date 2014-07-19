@@ -31,8 +31,7 @@ UserFunctionCall::UserFunctionCall( UserFunction* fxn   ) :
         // Note: We can add also temporary variable arguments as references because we
         // currently store them as arguments of the Rev function in UserFunctionArgs
         // as long as the UserFunctionCall exists.
-        RevPtr<Variable> theVar = RevPtr<Variable>( it->getVariable() );
-        functionFrame->addVariable( it->getLabel(), theVar );
+        functionFrame->addReference( it->getLabel(), it->getVariable() );
     }
 }
 
@@ -98,7 +97,14 @@ RevPtr<Variable> UserFunctionCall::execute( void ) {
 }
 
 
-/** Get class name of object */
+/** Get argument rules */
+const ArgumentRules& UserFunctionCall::getArgumentRules(void) const {
+    
+    return userFunction->getArgumentRules();
+}
+
+
+/** Get Rev type of object */
 const std::string& UserFunctionCall::getClassType(void) {
     
     static std::string revType = "UserFunctionCall";
@@ -125,24 +131,18 @@ const TypeSpec& UserFunctionCall::getTypeSpec( void ) const {
 }
 
 
-/** Get argument rules */
-const ArgumentRules& UserFunctionCall::getArgumentRules(void) const {
-    
-    return userFunction->getArgumentRules();
-}
-
-
 /** Get the parameters from the function frame */
-std::vector<const RevBayesCore::DagNode*> UserFunctionCall::getParameters(void) const {
+std::set<const RevBayesCore::DagNode*> UserFunctionCall::getParameters(void) const {
     
     const std::map<std::string, RevPtr<Variable> >& varTable = functionFrame->getVariableTable();
     
-    std::vector<const RevBayesCore::DagNode*> params;
+    std::set<const RevBayesCore::DagNode*> params;
+
     std::map<std::string, RevPtr<Variable> >::const_iterator it;
     for ( it = varTable.begin(); it != varTable.end(); it++ )
     {
         if ( it->second->getRevObject().hasDagNode() )
-            params.push_back( it->second->getRevObject().getDagNode() );
+            params.insert( it->second->getRevObject().getDagNode() );
     }
     
     return params;

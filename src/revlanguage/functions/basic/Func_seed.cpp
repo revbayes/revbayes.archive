@@ -65,7 +65,7 @@ const ArgumentRules& Func_seed::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_seed::getClassType(void) { 
     
     static std::string revType = "Func_seed";

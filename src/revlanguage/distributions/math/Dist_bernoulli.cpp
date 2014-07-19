@@ -45,7 +45,7 @@ RevBayesCore::BernoulliDistribution* Dist_bernoulli::createDistribution( void ) 
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_bernoulli::getClassType(void) { 
     
     static std::string revType = "Dist_bernoulli";

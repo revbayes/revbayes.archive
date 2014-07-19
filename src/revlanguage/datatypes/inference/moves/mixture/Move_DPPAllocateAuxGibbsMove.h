@@ -30,7 +30,7 @@ namespace RevLanguage {
         // Basic utility functions
         virtual Move_DPPAllocateAuxGibbsMove*                        clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
-        static const std::string&                   getClassType(void);                                                                             //!< Get class name
+        static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                                     //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
@@ -93,7 +93,7 @@ void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <class valType>
 const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void) { 
     

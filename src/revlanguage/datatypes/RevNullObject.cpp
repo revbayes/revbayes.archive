@@ -55,7 +55,7 @@ bool RevNullObject::operator==(const RevObject& obj) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& RevNullObject::getClassType(void) { 
     
     static std::string revType = "NULL";

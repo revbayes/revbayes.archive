@@ -51,8 +51,8 @@ namespace RevBayesCore {
         void                                                redraw(void);
 
         // Parent DAG nodes management functions
-        std::set<const DagNode*>                            getParents(void) const;                                                     //!< Get the set of parents
-        void                                                swapParent(const DagNode *oldParent, const DagNode *newParent);             //!< Exchange the parent (function parameter)
+        virtual std::set<const DagNode*>                    getParents(void) const;                                                     //!< Get the set of parents
+        virtual void                                        swapParent(const DagNode *oldParent, const DagNode *newParent);             //!< Exchange the parent (function parameter)
         
     protected:
         void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
@@ -309,11 +309,11 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Deterministic DAG node" << std::endl;
+    o << "_refCount     = " << this->getReferenceCount() << std::endl;
 
     o << "_function     = <" << function << ">" << std::endl;
 
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = " << getValue() << std::endl;
     
     o << "_parents      = ";
     this->printParents(o, 16, 70);

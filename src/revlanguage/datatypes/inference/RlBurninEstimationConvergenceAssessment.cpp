@@ -223,7 +223,7 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& BurninEstimationConvergenceAssessment::getClassType(void) {
     
     static std::string revType = "BurninEstimationConvergenceAssessment";

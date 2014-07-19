@@ -56,7 +56,7 @@ Probability* Dist_beta::createRandomVariable(void) const {
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_beta::getClassType(void) { 
     
     static std::string revType = "Dist_beta";

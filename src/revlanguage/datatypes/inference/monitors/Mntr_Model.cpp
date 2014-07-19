@@ -57,7 +57,7 @@ void Mntr_Model::constructInternalObject( void )
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Mntr_Model::getClassType(void) 
 { 
     
