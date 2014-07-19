@@ -17,38 +17,23 @@ data[1] <- D[1]
 D <- readCharacterData("data/conifer_rbcL.nex")
 data_rbcL <- D[1]
 
-ns <- data_rbcL.nchar()
-n_sites_rbcL <- ns[1]
+# partition for 1st codon position
+data[2] <- data_rbcL
+data[2].setCodonPartition(1)
 
-vec_1pos <- seq(1,n_sites_rbcL,3)
-vec_2pos <- seq(2,n_sites_rbcL,3)
-vec_3pos <- seq(3,n_sites_rbcL,3)
+# partition for 2nd codon position
+data[3] <- data_rbcL
+data[3].setCodonPartition(2)
 
-data[2] <- data_rbcL  # 1st position
-data[3] <- data_rbcL  # 2nd position
-data[4] <- data_rbcL  # 3rd position
-
-for(i in vec_1pos){
-   data[3].excludeCharacter(i)
-   data[4].excludeCharacter(i)
-}
-for(i in vec_2pos){
-   data[2].excludeCharacter(i)
-   data[4].excludeCharacter(i)
-}
-for(i in vec_3pos){
-   data[2].excludeCharacter(i)
-   data[3].excludeCharacter(i)
-}
-
-ns <- data[1].nchar()
-n_sites[1] <- ns[1]
-n_sites[2] <- vec_1pos.size()
-n_sites[3] <- vec_2pos.size()
-n_sites[4] <- vec_3pos.size()
+# partition for 3rd codon position
+data[4] <- data_rbcL
+data[4].setCodonPartition(3)
 
 n_parts <- data.size()
 
+# Get the size of each partition
+for (i in 1:n_parts)
+    n_sites[i] <- data[i].nchar(1)
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data[1].ntaxa()

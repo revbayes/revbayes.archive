@@ -185,23 +185,56 @@ RevObject* AbstractCharacterData::executeMethod(std::string const &name, const s
     }
     else if (name == "nchar") 
     {
-        
-        Vector<Natural> *numChar = new Vector<Natural>();
-        for (size_t i=0; i<this->dagNode->getValue().getNumberOfTaxa(); i++)
+        // no arguments, return vector of number of chars per taxon
+        if ( args.size() == 0 )
         {
-            
-            if ( this->dagNode->getValue().isTaxonExcluded(i) == false )
+            Vector<Natural> *numChar = new Vector<Natural>();
+            for (size_t i=0; i<this->dagNode->getValue().getNumberOfTaxa(); i++)
             {
                 
-                if (this->dagNode->getValue().isHomologyEstablished() == true)
-                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
-                else
-                    numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
+                if ( this->dagNode->getValue().isTaxonExcluded(i) == false )
+                {
+                    
+                    if (this->dagNode->getValue().isHomologyEstablished() == true)
+                        numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
+                    else
+                        numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
+                    
+                }
+            }
+            return numChar;
+        }
+        else
+        {
+            const RevObject& argument = args[0].getVariable()->getRevObject();
+        
+            if ( argument.isTypeSpec( Natural::getClassTypeSpec() ) )
+            {
+                Natural *numChar = NULL;
+                const Natural& n = static_cast<const Natural&>( argument );
+                size_t i = n.getValue() - 1; // index offset
+                
+                size_t numTaxa = this->dagNode->getValue().getNumberOfTaxa();
+                if (i >= numTaxa)
+                {
+                    std::cout << "Warning: Returned value for taxon_index=1 since taxon_index > num_taxa (" << n.getValue() << " > " << numTaxa << ").\n";
+                    i = 0;
+                }
+
+                if ( this->dagNode->getValue().isTaxonExcluded(i) == false )
+                {
+                    
+                    if (this->dagNode->getValue().isHomologyEstablished() == true)
+                        numChar = new Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() );
+                    else
+                        numChar = new Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) );
+                    
+                }
+                return numChar;
                 
             }
-            
         }
-        return numChar;
+        
     }
     else if (name == "ntaxa") 
     {
@@ -359,6 +392,7 @@ const TypeSpec& AbstractCharacterData::getTypeSpec(void) const {
 void AbstractCharacterData::initMethods(void) {
     
     ArgumentRules* ncharArgRules               = new ArgumentRules();
+    ArgumentRules* ncharArgRules2              = new ArgumentRules();
     ArgumentRules* namesArgRules               = new ArgumentRules();
     ArgumentRules* ntaxaArgRules               = new ArgumentRules();
     ArgumentRules* chartypeArgRules            = new ArgumentRules();    
@@ -383,17 +417,20 @@ void AbstractCharacterData::initMethods(void) {
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
     
-        
-    excludecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
-    excludecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
-    includecharArgRules->push_back(        new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
-    includecharArgRules2->push_back(       new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
-    setCodonPartitionArgRules->push_back(  new ArgumentRule(     "", true, Natural::getClassTypeSpec()       ) );
-    setCodonPartitionArgRules2->push_back( new ArgumentRule(     "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+
+    ncharArgRules2->push_back(             new ArgumentRule("taxon_index", true, Natural::getClassTypeSpec()     ) );
+    excludecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()       ) );
+    excludecharArgRules2->push_back(       new ArgumentRule(      "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+    includecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()       ) );
+    includecharArgRules2->push_back(       new ArgumentRule(      "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
+    setCodonPartitionArgRules->push_back(  new ArgumentRule(      "", true, Natural::getClassTypeSpec()       ) );
+    setCodonPartitionArgRules2->push_back( new ArgumentRule(      "", true, TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ) ) );
 
     
-    methods.addFunction("names",               new MemberProcedure(TypeSpec(Vector<RlString>::getClassTypeSpec(), new TypeSpec( RlString::getClassTypeSpec() ) ),  namesArgRules              ) );
-    methods.addFunction("nchar",               new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(), new TypeSpec( Natural::getClassTypeSpec() ) ), ncharArgRules              ) );
+    methods.addFunction("names",               new MemberProcedure(TypeSpec(Vector<RlString>::getClassTypeSpec(),   new TypeSpec( RlString::getClassTypeSpec() ) ), namesArgRules           ) );
+    methods.addFunction("nchar",               new MemberProcedure(TypeSpec(Vector<Natural>::getClassTypeSpec(),    new TypeSpec( Natural::getClassTypeSpec() ) ),  ncharArgRules           ) );
+    methods.addFunction("nchar",               new MemberProcedure(TypeSpec(Natural::getClassTypeSpec() ),                                                          ncharArgRules2          ) );
+    
     methods.addFunction("ntaxa",               new MemberProcedure(Natural::getClassTypeSpec(),       ntaxaArgRules              ) );
     methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
 //    methods.addFunction("nexcludedtaxa",       new MemberProcedure(Natural::getClassTypeSpec(),       nexcludedtaxaArgRules      ) );
