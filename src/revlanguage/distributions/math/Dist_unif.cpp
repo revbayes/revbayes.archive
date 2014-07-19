@@ -55,7 +55,7 @@ const std::string& Dist_unif::getClassName(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_unif::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }

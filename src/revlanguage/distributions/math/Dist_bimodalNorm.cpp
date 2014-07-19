@@ -81,7 +81,7 @@ const std::string& Dist_bimodalNorm::getClassName(void)
 const TypeSpec& Dist_bimodalNorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
 	return rbClass; 
 }
