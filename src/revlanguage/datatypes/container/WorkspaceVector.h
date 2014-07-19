@@ -1,6 +1,7 @@
 #ifndef WorkspaceVector_H
 #define WorkspaceVector_H
 
+#include "RbVector.h"
 #include "WorkspaceContainer.h"
 
 #include <iostream>
@@ -27,7 +28,7 @@ namespace RevLanguage {
         
     public:
         typedef typename rlType::valueType          elementType;
-        typedef std::vector<elementType*>           vectorRbPtr;
+        typedef RevBayesCore::RbVector<elementType> vectorRbPtr;
         typedef std::vector<rlType*>                vectorRlPtr;
         
                                                     WorkspaceVector(void);                                              //!< Default constructor
@@ -353,7 +354,7 @@ std::vector<rlType*> WorkspaceVector<rlType>::getVectorRlPointer( void ) const
  * @todo This function should probably be removed
  */
 template<typename rlType>
-std::vector<typename rlType::valueType*> WorkspaceVector<rlType>::getVectorRbPointer( void ) const
+RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getVectorRbPointer( void ) const
 {
     vectorRbPtr theVector;
     

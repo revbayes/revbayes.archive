@@ -67,6 +67,9 @@ TestACLNRatesGen::~TestACLNRatesGen() {
 }
 
 bool TestACLNRatesGen::run( void ) {
+
+//    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
+//    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -205,7 +208,7 @@ bool TestACLNRatesGen::run( void ) {
 	std::cout << " death rate: " << deathRate->getValue() << std::endl;
 	
 	/* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1.0, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 1.0, true ) );
 	//	moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
@@ -232,7 +235,7 @@ bool TestACLNRatesGen::run( void ) {
 	DeterministicNode<double> *meanNdRate = new DeterministicNode<double>("MeanNodeRate", new MeanVecContinuousValStatistic(nodeRates) );
 	
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( meanNdRate );
 	monitoredNodes.push_back( treeHeight );
@@ -271,15 +274,6 @@ bool TestACLNRatesGen::run( void ) {
     myMcmc.run(mcmcGenerations);
     
     myMcmc.printOperatorSummary();
-	
-	for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-	}
 	
 	
 	/* clean up */

@@ -18,7 +18,7 @@
 #include "RbException.h"
 #include "Function.h"
 #include "RbUtil.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 
 #include <sstream>
 
@@ -47,8 +47,8 @@ void MethodTable::addFunction( const std::string name, Function *func ) {
 
     FunctionTable::addFunction( name, func );
 
-    if ( func->isTypeSpec( MemberFunction::getClassTypeSpec() ) )
-        static_cast<MemberFunction*>( (Function*)func )->setMethodName( name );
+    if ( func->isTypeSpec( MemberProcedure::getClassTypeSpec() ) )
+        static_cast<MemberProcedure*>( (Function*)func )->setMethodName( name );
     
 //    if ( func->isTypeSpec( DagNodeFunction::getClassTypeSpec() ) )
 //        static_cast<DagNodeFunction*>( (Function*)func )->setMethodName( name );

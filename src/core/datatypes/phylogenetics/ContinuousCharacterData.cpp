@@ -1,6 +1,7 @@
 #include "ContinuousCharacterData.h"
 #include "ContinuousCharacterState.h"
 #include "ContinuousTaxonData.h"
+#include "RbConstants.h"
 #include "RbException.h"
 
 #include <string>
@@ -29,6 +30,69 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
 {
     
     return getTaxonData( i );
+}
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterData &obsd)
+{
+    
+    const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
+    if ( rhs == NULL )
+    {
+        throw RbException("Adding wrong character data type into CharacterData!!!");
+    }
+    
+    
+    return add( *rhs );
+}
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterData &obsd)
+{
+    
+    // check if both have the same number of taxa
+    if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
+    {
+        throw RbException("Cannot add two character data objects with different number of taxa!");
+    }
+    
+    std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
+    for (size_t i=0; i<sequenceNames.size(); i++ )
+    {
+        const std::string &n = sequenceNames[i];
+        ContinuousTaxonData& taxon = getTaxonData( n );
+        
+        size_t idx = obsd.getIndexOfTaxon( n );
+        if ( idx != RbConstants::Size_t::inf)
+        {
+            used[idx] = true;
+            taxon.add( obsd.getTaxonData( n ) );
+        }
+        else
+        {
+            throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
+        }
+    }
+    
+    for (size_t i=0; i<used.size(); i++)
+    {
+        if ( used[i] == false )
+        {
+            throw RbException("Cannot add two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
+        }
+    }
+    
+    return *this;
 }
 
 
@@ -93,6 +157,21 @@ ContinuousCharacterData* ContinuousCharacterData::clone( void ) const
 {
     
     return new ContinuousCharacterData(*this);
+}
+
+
+/**
+ * Exclude all characters.
+ * We don't actually delete the characters but mark them for exclusion.
+ */
+void ContinuousCharacterData::excludeAllCharacters(void)
+{
+    
+    for (size_t i = 0; i < getTaxonData( 0 ).size(); ++i)
+    {
+        deletedCharacters.insert( i );
+    }
+    
 }
 
 
@@ -236,6 +315,27 @@ const bool ContinuousCharacterData::getHomologyEstablished(void) const
 
     return homologyEstablished;
 }
+
+
+/**
+ * Get the index of the taxon with name 'n'.
+ *
+ * \par[in]     The name.
+ * \return      The index.
+ *
+ */
+size_t ContinuousCharacterData::getIndexOfTaxon(const std::string &n) const
+{
+    long pos = find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
+    
+    if ( pos == sequenceNames.size() )
+    {
+        return RbConstants::Size_t::inf;
+    }
+    
+    return size_t( pos );
+}
+
 
 /** 
  * Get the number of characters in taxon data object. 
@@ -456,6 +556,29 @@ const std::string& ContinuousCharacterData::getTaxonNameWithIndex( size_t idx ) 
 {
     
     return sequenceNames[idx];
+}
+
+
+/**
+ * Include a character.
+ * Since we didn't actually deleted the character but marked it for exclusion
+ * we can now simply remove the flag.
+ *
+ * \param[in]    i    The position of the character that will be included.
+ */
+void ContinuousCharacterData::includeCharacter(size_t i)
+{
+    
+    if (i >= getTaxonData( 0 ).size() )
+    {
+        std::stringstream o;
+        o << "Only " << getNumberOfCharacters() << " characters in matrix";
+        throw RbException( o.str() );
+    }
+    
+    
+    deletedCharacters.erase( i );
+    
 }
 
 

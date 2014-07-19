@@ -148,6 +148,22 @@ void Tree::clearBranchParameters() {
 
 }
 
+
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "rootAge" )
+    {
+        rv = getRoot().getAge();
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
 std::vector<std::string> Tree::getTipNames() const {
 
     return topology->getTipNames();

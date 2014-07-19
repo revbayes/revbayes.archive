@@ -114,13 +114,17 @@ void SimplexSingleElementScale::swapNode(DagNode *oldN, DagNode *newN) {
 }
 
 
-void SimplexSingleElementScale::tune( void ) {
+void SimplexSingleElementScale::tune( void )
+{
+
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.234 ) {
+    if ( rate > 0.234 )
+    {
         alpha /= (1.0 + ((rate-0.234)/0.766) );
     }
-    else {
+    else
+    {
         alpha *= (2.0 - rate/0.234 );
     }
 }

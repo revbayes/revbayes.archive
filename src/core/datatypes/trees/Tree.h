@@ -23,6 +23,7 @@
 #define Tree_H
 
 #include "Cloneable.h"
+#include "MemberObject.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -33,7 +34,7 @@ namespace RevBayesCore {
     class Topology;
     class TopologyNode;
 
-    class Tree : public Cloneable {
+    class Tree : public Cloneable, public MemberObject<double> {
     
     public:       
         virtual                                            ~Tree(void);                                                                                                        //!< Destructor
@@ -55,29 +56,30 @@ namespace RevBayesCore {
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                addNodeParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                clearBranchParameters(void);
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         std::vector<std::string>                            getTipNames() const;
-        TopologyNode&                                       getNode(size_t idx);                                                    //!< Get the node at index
-        const TopologyNode&                                 getNode(size_t idx) const;                                              //!< Get the node at index
-        std::vector<TopologyNode*>                          getNodes(void) const;                                                   //!< Get a pointer to the nodes in the Tree
+        TopologyNode&                                       getNode(size_t idx);                                                            //!< Get the node at index
+        const TopologyNode&                                 getNode(size_t idx) const;                                                      //!< Get the node at index
+        std::vector<TopologyNode*>                          getNodes(void) const;                                                           //!< Get a pointer to the nodes in the Tree
 //        TopologyNode&                                       getNodeByIndex(size_t idx);
 //        const TopologyNode&                                 getNodeByIndex(size_t idx) const;
 //        std::vector<TopologyNode*>                          getNodesByIndex(void) const;
-        size_t                                              getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the Tree
-        size_t                                              getNumberOfNodes(void) const;                                           //!< Get the number of nodes in the Tree
-        size_t                                              getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the Tree
-        const TopologyNode&                                 getInteriorNode(size_t indx) const;                                     //!< Get a pointer to interior node i
-        const std::string&                                  getNewickRepresentation() const;                                        //!< Get the newick representation of this Tree
-        TopologyNode&                                       getRoot(void);                                                          //!< Get a pointer to the root node of the Tree
-        const TopologyNode&                                 getRoot(void) const;                                                    //!< Get a pointer to the root node of the Tree
-        TopologyNode&                                       getTipNode(size_t indx);                                                //!< Get a pointer to tip node i
-        const TopologyNode&                                 getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
+        size_t                                              getNumberOfInteriorNodes(void) const;                                           //!< Get the number of nodes in the Tree
+        size_t                                              getNumberOfNodes(void) const;                                                   //!< Get the number of nodes in the Tree
+        size_t                                              getNumberOfTips(void) const;                                                    //!< Get the number of tip nodes in the Tree
+        const TopologyNode&                                 getInteriorNode(size_t indx) const;                                             //!< Get a pointer to interior node i
+        const std::string&                                  getNewickRepresentation() const;                                                //!< Get the newick representation of this Tree
+        TopologyNode&                                       getRoot(void);                                                                  //!< Get a pointer to the root node of the Tree
+        const TopologyNode&                                 getRoot(void) const;                                                            //!< Get a pointer to the root node of the Tree
+        TopologyNode&                                       getTipNode(size_t indx);                                                        //!< Get a pointer to tip node i
+        const TopologyNode&                                 getTipNode(size_t indx) const;                                                  //!< Get a pointer to tip node i
         double                                              getTmrca(const TopologyNode &n);
-        TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                      //!< Get the change-event handler for this tree
-        const Topology&                                     getTopology(void) const;                                                //!< Get the topology of this tree
-        bool                                                hasSameTopology( const Tree &t ) const;                                 //!< Has this tree the same topology?
-        bool                                                hasSameTopology( const Topology &t ) const;                             //!< Has this tree the same topology?
-        bool                                                isBinary(void) const;                                                   //!< Is the Tree rooted
-        bool                                                isRooted(void) const;                                                   //!< Is the Tree rooted
+        TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                          //!< Get the change-event handler for this tree
+        const Topology&                                     getTopology(void) const;                                                        //!< Get the topology of this tree
+        bool                                                hasSameTopology( const Tree &t ) const;                                         //!< Has this tree the same topology?
+        bool                                                hasSameTopology( const Topology &t ) const;                                     //!< Has this tree the same topology?
+        bool                                                isBinary(void) const;                                                           //!< Is the Tree rooted
+        bool                                                isRooted(void) const;                                                           //!< Is the Tree rooted
 //        void                                                setRooted(bool tf);                                                     //!< Set the rootedness of the Tree
 //        void                                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the Tree from it
         void                                                setTopology(const Topology *t, bool owns);

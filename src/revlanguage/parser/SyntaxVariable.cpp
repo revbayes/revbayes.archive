@@ -414,7 +414,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
                 args.push_back( Argument( indexVar ) );
                 
                 // get the member function with name "[]"
-                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
+                MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
                 theMemberFunction->processArguments( args );
                 // We need to clone because otherwise we overwrite all methods for this object
                 
@@ -528,7 +528,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
                 args.push_back( Argument( indexVar ) );
                 
                 // get the member function with name "[]"
-                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
+                MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
                 theMemberFunction->processArguments( args );
                 // We need to clone because otherwise we overwrite all methods for this object
                 
@@ -649,7 +649,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
                 args.push_back( Argument( indexVar ) );
                 
                 // get the member function with name "[]"
-                MemberFunction* theMemberFunction = static_cast<MemberFunction*>( mt.getFunction( "[]", args ).clone() );
+                MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
                 theMemberFunction->processArguments( args );
                 // We need to clone because otherwise we overwrite all methods for this object
                 

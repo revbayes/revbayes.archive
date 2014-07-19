@@ -289,7 +289,7 @@ bool TestAdmixtureGraph::run(void) {
     std::cout << "Adding moves\n";
         
     // moves vector
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
 
     // model parameters
     if (updateParameters)
@@ -391,7 +391,7 @@ bool TestAdmixtureGraph::run(void) {
     
     // MONITORS
     std::cout << "Adding monitors\n";
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     
     // parameter monitor
     std::vector<DagNode*> monitoredNodes;

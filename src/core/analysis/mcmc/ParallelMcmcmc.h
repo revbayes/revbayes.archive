@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class ParallelMcmcmc : Cloneable {
         
     public:
-        ParallelMcmcmc(const Model& m, const std::vector<Move*> &moves, const std::vector<Monitor*> &mons, std::string sT="random", size_t nc=4, size_t np=4, size_t si=1000, double dt=0.1, double st=1.0, double sh=1.0);
+        ParallelMcmcmc(const Model& m, const RbVector<Move> &moves, const RbVector<Monitor> &mons, std::string sT="random", size_t nc=4, size_t np=4, size_t si=1000, double dt=0.1, double st=1.0, double sh=1.0);
         ParallelMcmcmc(const ParallelMcmcmc &m);
         virtual                                            ~ParallelMcmcmc(void);                                                          //!< Virtual destructor
         

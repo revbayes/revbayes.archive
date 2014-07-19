@@ -9,8 +9,7 @@
 #include "RlRateMap.h"
 
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
-#include "ModelVector.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
@@ -84,11 +83,11 @@ const MethodTable& RateMap::getMethods(void) const {
         
         // add method for call "x.nChars()" as a function
         ArgumentRules* nCharsArgRules = new ArgumentRules();
-        methods.addFunction("nChars",  new MemberFunction( Natural::getClassTypeSpec(), nCharsArgRules) );
+        methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
         
         // add method for call "x.nStates()" as a function
         ArgumentRules* nStatesArgRules = new ArgumentRules();
-        methods.addFunction("nStates",  new MemberFunction( Natural::getClassTypeSpec(), nStatesArgRules) );
+        methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::RateMap>::getMethods() );

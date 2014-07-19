@@ -71,6 +71,8 @@ namespace RevBayesCore {
         void                                                        keep(void);
         virtual void                                                keepAffected(void);                                                             //!< Keep value of affected nodes
         virtual void                                                reInitialized(void);                                                            //!< The DAG was re-initialized so maybe you want to reset some stuff
+        virtual void                                                reInitializeAffected(void);                                                     //!< The DAG was re-initialized so maybe you want to reset some stuff
+        virtual void                                                reInitializeMe(void);                                                           //!< The DAG was re-initialized so maybe you want to reset some stuff
         void                                                        removeChild(DagNode *child) const;
         void                                                        replace(DagNode *n);                                                            //!< Replace this node with node p.
         void                                                        restore(void);
@@ -100,7 +102,6 @@ namespace RevBayesCore {
         
         // members
         mutable std::set<DagNode*>                                  children;                                                                       //!< The children in the model graph of this node
-        double                                                      heat;                                                                           //!< The heat that will be applied to the likelihood function
         std::string                                                 name;
         std::set<size_t>                                            touchedElements;
         DagNodeTypes                                                type;

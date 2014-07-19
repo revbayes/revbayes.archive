@@ -38,8 +38,11 @@ namespace RevBayesCore {
         void                                            clear(void);
         
         // CharacterData functions
+        ContinuousCharacterData&                        add(const ContinuousCharacterData &d);                                      //!< Addition operator used for example in '+=' statements
+        ContinuousCharacterData&                        add(const AbstractCharacterData &d);                                        //!< Addition operator used for example in '+=' statements
         void                                            addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                            addTaxonData(const ContinuousTaxonData &obs);                               //!< Add Continuous taxon data
+        void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         void                                            excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                            excludeTaxon(std::string& s);                                               //!< Exclude taxon
@@ -48,6 +51,7 @@ namespace RevBayesCore {
         const std::string&                              getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                              getFilePath(void) const;                                                    //!< Returns the name of the file path the data came from
         const bool                                      getHomologyEstablished(void) const;                                         //!< Returns whether the homology of the characters has been established
+        size_t                                          getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfCharacters(size_t idx) const;                                    //!< Number of characters for a specific taxon
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
@@ -59,6 +63,7 @@ namespace RevBayesCore {
         const ContinuousTaxonData&                      getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
         const std::vector<std::string>&                 getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                              getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
+        void                                            includeCharacter(size_t i);                                                 //!< Include character
         bool                                            isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                            isHomologyEstablished(void) const;                                          //!< Returns whether the homology of the characters has been established
         bool                                            isTaxonExcluded(size_t i) const;                                            //!< Is the taxon excluded

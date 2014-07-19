@@ -11,7 +11,6 @@ using namespace RevBayesCore;
  */
 DagNode::DagNode( const std::string &n ) :
         children(),
-        heat( 1.0 ),
         name( n ), 
         touchedElements(),
         refCount( 0 )
@@ -30,7 +29,6 @@ DagNode::DagNode( const std::string &n ) :
  */
 DagNode::DagNode( const DagNode &n ) : 
         children(),
-        heat( n.heat ),
         name( n.name ),  
         touchedElements( n.touchedElements ),
         refCount( 0 )
@@ -91,7 +89,6 @@ DagNode& DagNode::operator=(const DagNode &d)
 {
     if ( &d != this )
     {
-        heat = d.heat;
         name = d.name;  
         touchedElements = d.touchedElements;
     }
@@ -425,7 +422,34 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen ) con
 /**
  * By default we do not need to do anything when re-initializiating.
  */
-void DagNode::reInitialized( void ) {
+void DagNode::reInitialized( void )
+{
+    
+    reInitializeMe();
+    reInitializeAffected();
+    
+}
+
+
+/**
+ * By default we do not need to do anything when re-initializiating.
+ */
+void DagNode::reInitializeAffected( void )
+{
+    
+    // next, reInitialize all my children
+    for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    {
+        (*i)->reInitializeMe();
+    }
+
+}
+
+
+/**
+ * By default we do not need to do anything when re-initializiating.
+ */
+void DagNode::reInitializeMe( void ) {
     // nothing to do
 }
 
@@ -482,11 +506,14 @@ void DagNode::restoreAffected(void) {
     
     // next, restore all my children
     for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    {
         (*i)->restoreMe( this );
+    }
+    
 }
 
 
-void DagNode::setName(std::string const &n) 
+void DagNode::setName(std::string const &n)
 {
 
     name = n;

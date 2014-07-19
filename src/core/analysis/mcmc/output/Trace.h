@@ -25,7 +25,11 @@ namespace RevBayesCore {
     public:
     
         Trace(void);
-    
+        
+        bool                        operator==(const Trace &t) const                { return this == &t; }
+        bool                        operator!=(const Trace &t) const                { return !this->operator==( t ); }
+        bool                        operator<(const Trace &t) const                 { return this < &t; }
+        
         // overloaded functions from RbObject
         Trace*                      clone(void) const;                                              //!< Clone object
     

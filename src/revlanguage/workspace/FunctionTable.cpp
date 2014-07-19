@@ -187,6 +187,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
     size_t hits = count(name);
     if (hits == 0)
     {
+        
         if (parentTable != NULL) 
         {
             // \TODO: We shouldn't allow const casts!!!
@@ -194,7 +195,10 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
             return pt->findFunction(name, args);
         }
         else
+        {
             throw RbException("No function named '"+ name + "'");
+        }
+        
     }
     retVal = equal_range(name);
     if (hits == 1) {
@@ -210,7 +214,9 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 {
                     msg << ",";
                 }
-                msg << " " << it->getVariable()->getRevObject().getTypeSpec().getType() << " \"" << it->getLabel() << "\"";
+                std::string type = "NULL";
+                if (it->getVariable() != NULL) type = it->getVariable()->getRevObject().getType();
+                msg << " " << type << " \"" << it->getLabel() << "\"";
             }
             msg << " ). Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );

@@ -37,12 +37,12 @@ namespace RevBayesCore {
     class PrecisionMatrixMove : public SimpleMove {
         
     public:
-        PrecisionMatrixMove(StochasticNode<PrecisionMatrix >* n, size_t l, bool t, double w);                         //!< Constructor
+        PrecisionMatrixMove(StochasticNode<PrecisionMatrix >* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        PrecisionMatrixMove*                     clone(void) const;                                                                  //!< Clone this object.
-        const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
-        void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
+        PrecisionMatrixMove*                    clone(void) const;                                                                  //!< Clone this object.
+        const std::string&                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
+        void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
     protected:
         
@@ -55,10 +55,10 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<PrecisionMatrix >*   variable;
-        
-        size_t                                  lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
- 		PrecisionMatrix                         storedValue;                                                                        //!< The stored value of the last modified element.
+        StochasticNode<PrecisionMatrix >*       variable;
+            
+        double                                  lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
+ 	PrecisionMatrix                         storedValue;                                                                        //!< The stored value of the last modified element.
         
     };
     

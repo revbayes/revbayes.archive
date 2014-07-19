@@ -19,7 +19,7 @@
 using namespace RevBayesCore;
 
 
-PrecisionMatrixMove::PrecisionMatrixMove(StochasticNode<PrecisionMatrix > *v, size_t l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+PrecisionMatrixMove::PrecisionMatrixMove(StochasticNode<PrecisionMatrix > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
     
 }
 
@@ -44,23 +44,28 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    size_t df = lambda;
-    
     PrecisionMatrix& mymat = variable->getValue();
-    
-    PrecisionMatrix newmat = RbStatistics::Wishart::rv(mymat,df,*rng);
-
     storedValue = mymat;
+    mymat.touch();
     
-    mymat = newmat;
+    size_t dim = mymat.getDim();
+    size_t indexa = size_t( rng->uniform01() * dim );
+    size_t indexb = size_t( rng->uniform01() * dim );
+
+    double u = rng->uniform01();
+    double m = lambda * (u - 0.5);
+    mymat[indexa][indexb] += m;
+    mymat[indexb][indexa] = mymat[indexa][indexb];
     
-    double lnHastingsratio = 0;
-    
-    return lnHastingsratio;
+    mymat.update();
+        
+    return 0;   
 }
 
 void PrecisionMatrixMove::acceptSimpleMove()   {
+
     variable->clearTouchedElementIndices();
+    
 }
 
 void PrecisionMatrixMove::printParameterSummary(std::ostream &o) const {
@@ -69,8 +74,9 @@ void PrecisionMatrixMove::printParameterSummary(std::ostream &o) const {
 
 
 void PrecisionMatrixMove::rejectSimpleMove( void ) {
-    
+ 
     variable->getValue() = storedValue;
+    variable->getValue().touch();
     variable->clearTouchedElementIndices();
 }
 
@@ -79,7 +85,6 @@ void PrecisionMatrixMove::swapNode(DagNode *oldN, DagNode *newN) {
     
     SimpleMove::swapNode(oldN, newN);
     variable = static_cast<StochasticNode<PrecisionMatrix >* >( newN );
-    
 }
 
 

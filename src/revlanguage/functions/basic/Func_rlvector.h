@@ -81,7 +81,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rlvector<valType>::
     }
     
     WorkspaceVector<valType> *theVector = new WorkspaceVector<valType>( params );
-        
+
     return new Variable( theVector );
 }
 

@@ -16,7 +16,7 @@
  * $Id$
  */
 
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "ModelVector.h"
 #include "RbException.h"
@@ -218,14 +218,14 @@ const MethodTable& RevObject::getMethods(void) const
         ArgumentRules* getArgRules = new ArgumentRules();
         
         // add the 'members()' method
-        methods.addFunction("members", new MemberFunction(RlUtils::Void, getMembersArgRules) );
+        methods.addFunction("members", new MemberProcedure(RlUtils::Void, getMembersArgRules) );
         
         // add the 'members()' method
-        methods.addFunction("methods", new MemberFunction(RlUtils::Void, getMethodsArgRules) );
+        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
         
         // add the 'memberNames()' method
         getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
-        methods.addFunction("get", new MemberFunction(RevObject::getClassTypeSpec(), getArgRules) );
+        methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
         
         methodsSet = true;
     }   

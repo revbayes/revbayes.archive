@@ -268,7 +268,7 @@ const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const
     if ( methodsSet == false )
     {
         ArgumentRules* runArgRules = new ArgumentRules();
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         std::vector<RlString> options;
         options.push_back( RlString("ESS") );
@@ -276,7 +276,7 @@ const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const
         
         ArgumentRules* burninMethodArgRules = new ArgumentRules();
         burninMethodArgRules->push_back( new OptionRule("method", options ) );
-        methods.addFunction("setBurninMethod", new MemberFunction( RlUtils::Void, burninMethodArgRules) );
+        methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

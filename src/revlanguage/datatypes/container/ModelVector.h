@@ -2,6 +2,7 @@
 #define ModelVector_H
 
 #include "ModelContainer.h"
+#include "Real.h"
 
 #include <iostream>
 #include <vector>
@@ -78,7 +79,6 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RevPtr.h"

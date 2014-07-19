@@ -41,7 +41,8 @@ void PowerPosterior::constructInternalObject( void ) {
     
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
+    const WorkspaceVector<Move>&                rlmvs   = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() );
+    RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getVectorRbPointer();
     const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
@@ -51,9 +52,11 @@ void PowerPosterior::constructInternalObject( void ) {
     {
         beta = static_cast<const ModelVector<RealPos> &>( powers->getRevObject() ).getValue();
     }
-    else if( cats->getRevObject() != RevNullObject::getInstance() ){
+    else if( cats->getRevObject() != RevNullObject::getInstance() )
+    {
         int k = static_cast<const Natural &>( cats->getRevObject() ).getValue();
-        for (int i = k; i >= 0; --i) {
+        for (int i = k; i >= 0; --i)
+        {
             double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
             beta.push_back( b );
         }
@@ -61,7 +64,8 @@ void PowerPosterior::constructInternalObject( void ) {
     else
     {
         int k     = 100;
-        for (int i = k; i >= 0; --i) {
+        for (int i = k; i >= 0; --i)
+        {
             double b = RevBayesCore::RbStatistics::Beta::quantile(0.3,1.0,i / double(k));
             beta.push_back( b );
         }
@@ -143,12 +147,12 @@ const MethodTable& PowerPosterior::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
+        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         
         // necessary call for proper inheritance

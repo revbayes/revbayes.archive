@@ -37,13 +37,9 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         
-//         size_t                                              getDim() const;
-        
         int                                                 getDF() const {return df->getValue();}
         
-        // double                                              getLogDet() const;
         
-        void                                                drawNormalSample(std::vector<double>& v);
         
         // Parameter management functions
         std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
@@ -51,8 +47,6 @@ namespace RevBayesCore {
         
     private:
 
-        // resample itself based on a sufficient statistic (empirical Precision, or scatter matrix)
-        // void                                             GibbsResample(const PrecisionMatrix& empcov);
         // members
         
         const TypedDagNode<PrecisionMatrix>*                omega0;

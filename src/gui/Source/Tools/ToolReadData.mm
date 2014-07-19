@@ -12,8 +12,8 @@
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
-#include "WorkspaceVector.h"
 #include "Workspace.h"
+#include "WorkspaceVector.h"
 
 #import "AnalysisView.h"
 #import "InOutlet.h"
@@ -367,15 +367,14 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::WorkspaceVector<RevLanguage::RevObject> *dnc = dynamic_cast<const RevLanguage::WorkspaceVector<RevLanguage::RevObject> *>( &dv );
+    const RevLanguage::WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const RevLanguage::WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
 
     if ( dnc != NULL )
         {
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
-            const RevLanguage::RevObject& theDagNode = (*dnc)[i];
-            const RevLanguage::AbstractCharacterData *rlan = dynamic_cast<const RevLanguage::AbstractCharacterData *>( &(theDagNode) );
+            const RevLanguage::AbstractCharacterData *rlan = &(*dnc)[i];
             RbData* newMatrix = NULL;
             
             // DNA

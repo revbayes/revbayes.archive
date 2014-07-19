@@ -55,7 +55,7 @@ const std::string& Dist_positiveUnif::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_positiveUnif::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

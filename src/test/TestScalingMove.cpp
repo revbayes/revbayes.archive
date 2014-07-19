@@ -33,11 +33,11 @@ bool TestScalingMove::run( void ) {
     StochasticNode<double> *x = new StochasticNode<double>( "x", new ExponentialDistribution(a) );
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(x, 1.0), 1, true ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     monitors.push_back( new FileMonitor( x, 1, "ScalingMoveTest.log", "\t" ) );
     
     /* instantiate the model */
@@ -51,14 +51,6 @@ bool TestScalingMove::run( void ) {
     /* clean up */
     delete x;
     delete a;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     return true;
 }

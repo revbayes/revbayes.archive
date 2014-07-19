@@ -34,7 +34,6 @@ namespace RevBayesCore {
         
     public:
         GtrRateMatrixFunction(const TypedDagNode<std::vector<double> > *er, const TypedDagNode<std::vector<double> > *bf);
-        GtrRateMatrixFunction(const GtrRateMatrixFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~GtrRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
