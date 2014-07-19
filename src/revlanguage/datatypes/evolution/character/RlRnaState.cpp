@@ -51,7 +51,7 @@ RevObject* RnaState::convertTo(const TypeSpec& type) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& RnaState::getClassType(void) { 
     
     static std::string revType = "RNA";

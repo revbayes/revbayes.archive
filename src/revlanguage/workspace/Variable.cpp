@@ -70,6 +70,7 @@ Variable::Variable(const Variable &v) :
 
 Variable::~Variable( void )
 {
+    std::cerr << "Deleting variable '" << name << "'" << std::endl;
     if ( !isReferenceVariable && revObject != NULL )
         delete revObject;
 }

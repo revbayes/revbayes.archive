@@ -103,7 +103,7 @@ const MemberRules& Taxon::getMemberRules(void) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Taxon::getClassType(void) { 
     
     static std::string revType = "Taxon";

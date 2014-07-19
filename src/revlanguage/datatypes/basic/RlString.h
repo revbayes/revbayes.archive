@@ -25,7 +25,7 @@ namespace RevLanguage {
 
             // Basic utility functions
             RlString*                       clone(void) const;                                      //!< Copy
-            static const std::string&       getClassType(void);                                     //!< Get class name
+            static const std::string&       getClassType(void);                                     //!< Get Rev type
             static const TypeSpec&          getClassTypeSpec(void);                                 //!< Get class type spec
             const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
             void                            printValue(std::ostream& o) const;                      //!< Print value (for user)

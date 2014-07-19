@@ -69,7 +69,7 @@ DagNode::~DagNode( void )
         std::ostringstream o;
         o << "DAG node has " << children.size() << " remaining children!" << std::endl;
         o << "Remaining children are: " << std::endl;
-        printChildren( o, 0, 80 );
+        printChildren( o, 0, 70 );
         o << std::endl;
         throw RbException( o );
     }
@@ -80,30 +80,23 @@ DagNode::~DagNode( void )
  * Assignment operator. Note that parent management is delegated to
  * derived classes that actually have parents, so their assignment
  * operators need to deal with parent replacement at assignment.
+ *
+ * Note that children do not need to replace or remove this node
+ * as their parent, because we remain alive and their parent
+ * pointer will continue to be relevant.
  */
 DagNode& DagNode::operator=(const DagNode &d)
 {
-    
     if ( &d != this )
     {
-        // As far as I can tell, it would be a bug if we tried to change a
-        // DAG node with children through assignment because the putative
-        // call to removeParent on all the children would delete us unless
-        // we were saved by some other object referencing us, which we should
-        // not count on. Use the swapParent functionality instead. -- Fredrik
-        if ( refCount != 0 || children.size() > 0 )
-        {
-            throw RbException( "Replacing DAG Node with persisting references to it through assignment (a bug)." );
-        }
-
         heat = d.heat;
         name = d.name;  
         touchedElements = d.touchedElements;
-            
     }
     
     return *this;
 }
+
 
 void DagNode::addChild(DagNode *child) const {
 
@@ -367,7 +360,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) co
             o << std::endl << pad;
             currentLength = pad.size();
         }
-        o << s;
+        o << s.str();
         currentLength += s.str().size();
         s.str("");
     }

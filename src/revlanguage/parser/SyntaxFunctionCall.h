@@ -83,6 +83,7 @@ namespace RevLanguage {
         const std::string&                  getFunctionName(void) const { return functionName; }                        //!< Get function name
         RevPtr<Variable>                    evaluateContent(Environment& env);                                          //!< Get semantic value (static)
         RevPtr<Variable>                    evaluateDynamicContent(Environment& env);                                   //!< Get semantic value (dynamic)
+        void                                removeBaseVariable(void) { baseVariable = NULL; }                           //!< Remove base variable
         void                                setBaseVariable(SyntaxVariable* var) { baseVariable = var; }                //!< Set base variable
         bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
  

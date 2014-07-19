@@ -96,9 +96,14 @@ SyntaxVariable::SyntaxVariable(const SyntaxVariable& x) :
     else
         expression = NULL;
 
-    index = new std::list<SyntaxElement*>();
-    for ( std::list<SyntaxElement*>::const_iterator it = x.index->begin(); it != x.index->end(); ++it )
-        index->push_back( (*it)->clone() );
+    if ( x.index != NULL )
+    {
+        index = new std::list<SyntaxElement*>();
+        for ( std::list<SyntaxElement*>::const_iterator it = x.index->begin(); it != x.index->end(); ++it )
+            index->push_back( (*it)->clone() );
+    }
+    else
+        index = NULL;
 
     if ( x.baseVariable != NULL )
         baseVariable = x.baseVariable->clone();
@@ -116,9 +121,12 @@ SyntaxVariable::~SyntaxVariable()
     if ( expression != NULL )
         delete expression;
     
-    for ( std::list<SyntaxElement*>::iterator it = index->begin(); it != index->end(); ++it )
-        delete *it;
-    delete index;
+    if ( index != NULL )
+    {
+        for ( std::list<SyntaxElement*>::iterator it = index->begin(); it != index->end(); ++it )
+            delete *it;
+        delete index;
+    }
 
     if ( baseVariable != NULL )
         delete baseVariable;
@@ -134,16 +142,20 @@ SyntaxVariable& SyntaxVariable::operator=( const SyntaxVariable& x )
 
         if ( functionCall != NULL )
             delete functionCall;
-        
+
         if ( expression != NULL )
             delete expression;
         
+        if ( index != NULL )
+        {
+            for ( std::list<SyntaxElement*>::iterator it = index->begin(); it != index->end(); ++it )
+                delete *it;
+            delete index;
+            index = NULL;
+        }
+        
         if ( baseVariable != NULL )
             delete baseVariable;
-        
-        for ( std::list<SyntaxElement*>::iterator it = index->begin(); it != index->end(); ++it )
-            delete *it;
-        delete index;
 
         identifier   = x.identifier;
 
@@ -157,9 +169,14 @@ SyntaxVariable& SyntaxVariable::operator=( const SyntaxVariable& x )
         else
             expression = NULL;
         
-        index = new std::list<SyntaxElement*>();
-        for ( std::list<SyntaxElement*>::const_iterator it = x.index->begin(); it != x.index->end(); ++it )
-            index->push_back( (*it)->clone() );
+        if ( x.index != NULL )
+        {
+            index = new std::list<SyntaxElement*>();
+            for ( std::list<SyntaxElement*>::const_iterator it = x.index->begin(); it != x.index->end(); ++it )
+                index->push_back( (*it)->clone() );
+        }
+        else
+            index = NULL;
 
         if ( x.baseVariable != NULL )
             baseVariable = x.baseVariable->clone();
@@ -352,6 +369,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
             // Get the return variable of the function call
             functionCall->setBaseVariable( baseVariable );
             theVar = functionCall->evaluateContent( env );
+            functionCall->removeBaseVariable();   // Otherwise double deletion...
         }
         else
         {
@@ -468,6 +486,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
             // Get the return variable of the function call
             functionCall->setBaseVariable( baseVariable );
             theVar = functionCall->evaluateContent( env );
+            functionCall->removeBaseVariable();     // Otherwise double deletion...
         }
         else
         {
@@ -577,6 +596,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
             // Get the return variable of the function call
             functionCall->setBaseVariable( baseVariable );
             theVar = functionCall->evaluateDynamicContent( env );
+            functionCall->removeBaseVariable();     // Otherwise double deletion
         }
         else
         {

@@ -40,7 +40,7 @@ void Model::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Model::getClassType(void) { 
     
     static std::string revType = "Model";
@@ -100,7 +100,14 @@ void Model::printValue(std::ostream &o) const {
             o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
         else
             o << "<" << (*it) << "> :" << std::endl;
-        (*it)->printStructureInfo(o);
+        
+        o << "_value        = ";
+        std::ostringstream o1;
+        (*it)->printValue( o1, ", " );
+        o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+
+        (*it)->printStructureInfo( o );
+
         o << std::endl;
     }
 }
@@ -108,7 +115,7 @@ void Model::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 void Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
-    
+
     if ( name == "" || name == "x") {
         sources.insert( var );
     }

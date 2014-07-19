@@ -60,7 +60,7 @@ Dist_bimodalNorm* Dist_bimodalNorm::clone( void ) const
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */

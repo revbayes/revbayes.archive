@@ -95,7 +95,7 @@ RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const st
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& PowerPosterior::getClassType(void) { 
     
     static std::string revType = "PowerPosterior";

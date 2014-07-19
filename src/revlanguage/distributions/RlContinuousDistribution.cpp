@@ -41,7 +41,7 @@ Real* ContinuousDistribution::createRandomVariable(void) const {
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& ContinuousDistribution::getClassType(void) { 
     
     static std::string revType = "ContinuousDistribution";

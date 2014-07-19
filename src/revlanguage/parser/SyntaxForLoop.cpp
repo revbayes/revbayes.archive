@@ -113,16 +113,6 @@ void SyntaxForLoop::getNextLoopState( void )
 
 
 /**
- * Have we already reached the end of the loop? We return true
- * if we have reached the end.
- */
-bool SyntaxForLoop::isFinished( void ) const
-{
-    return nextOneoffsetElementIndex > stateSpace->size();
-}
-
-
-/**
  * Initialize loop state. Here we evaluate the in-expression and
  * make sure it is a container with at least one dimension. We will
  * use the first dimension of the container to get the values for
@@ -151,6 +141,16 @@ void SyntaxForLoop::initializeLoop( Environment& env )
     
     // Initialize nextValue
     nextOneoffsetElementIndex = 1;
+}
+
+
+/**
+ * Have we already reached the end of the loop? We return true
+ * if we have reached the end.
+ */
+bool SyntaxForLoop::isFinished( void ) const
+{
+    return nextOneoffsetElementIndex > stateSpace->size();
 }
 
 

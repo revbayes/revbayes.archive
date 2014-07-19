@@ -235,7 +235,7 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_readCharacterData::getClassType(void) { 
     
     static std::string revType = "Func_readCharacterData";

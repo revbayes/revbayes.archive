@@ -78,7 +78,7 @@ const ArgumentRules& Func_range::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_range::getClassType(void) { 
     
     static std::string revType = "Func_range";

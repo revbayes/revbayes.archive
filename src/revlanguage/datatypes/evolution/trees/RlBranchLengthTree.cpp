@@ -84,7 +84,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& BranchLengthTree::getClassType(void) { 
     
     static std::string revType = "BranchLengthTree";

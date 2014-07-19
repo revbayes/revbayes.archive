@@ -51,7 +51,7 @@ RevObject* StandardState::convertTo(const TypeSpec& type) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& StandardState::getClassType(void) { 
     
     static std::string revType = "Standard";

@@ -55,7 +55,7 @@ RevPtr<Variable> RlGeographyRateModifier::executeMethod(std::string const &name,
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& RlGeographyRateModifier::getClassType(void) {
     
     static std::string revType = "RlGeographyRateModifier";

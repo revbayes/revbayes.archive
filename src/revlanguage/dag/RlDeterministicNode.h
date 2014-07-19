@@ -46,7 +46,7 @@ namespace RevLanguage {
     protected:
 
     private:
-        Function*                           rlFunction;                                                                             //!< Rev function
+        Function*                           rlFunction;                                                         //!< Rev function
     };
     
 }
@@ -64,7 +64,7 @@ template<class valueType>
 RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n )
     : RevBayesCore::DeterministicNode<valueType>( n ), rlFunction( n.rlFunction->clone() ) {
 
-    touchMe( this );    // NB: This for safety; not needed if we trust all involved copy constructors
+    RevBayesCore::DagNode::touch();    // NB: This for safety; not needed if we trust all involved copy constructors
 }
 
 
@@ -119,6 +119,7 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
 {
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Deterministic DAG node" << std::endl;
+    o << "_refCount     = " << this->getReferenceCount() << std::endl;
 
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 

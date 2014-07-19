@@ -98,6 +98,32 @@ void Environment::addNullVariable( const std::string& name )
 }
 
 
+/** Add reference to variable to frame. */
+void Environment::addReference( const std::string& name, const RevPtr<Variable>& theVar )
+{
+    
+    /* Throw an error if the name string is empty. */
+    if ( name == "" )
+        throw RbException("Invalid attempt to add unnamed reference variable to frame.");
+    
+    /* Throw an error if the variable exists. Note that we cannot use the function
+     existsVariable because that function looks recursively in parent frames, which
+     would make it impossible to hide global variables. */
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
+    
+    /* Insert new reference variable in variable table */
+    RevPtr<Variable> theRef = new Variable( theVar );
+    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theRef ) );
+    theRef->setName( name );
+    
+#ifdef DEBUG_WORKSPACE
+    printf("Inserted \"%s\" in frame\n", name.c_str());
+#endif
+    
+}
+
+
 /** Add variable to frame. */
 void Environment::addVariable( const std::string& name, const RevPtr<Variable>& theVar )
 {
@@ -149,8 +175,14 @@ Environment* Environment::clone() const
 void Environment::clear(void)
 {
     // Empty the variable table. It is as easy as this because we use smart pointers...
+    for ( VariableTable::iterator it = variableTable.begin(); it != variableTable.end(); ++it )
+    {
+        std::cerr << "varName : '" << (it)->second->getName() << "'" << std::endl;
+        std::cerr << "refCount: " << (it)->second->getReferenceCount() << std::endl;
+        it->second->getRevObject().printStructure( std::cerr );
+    }
     variableTable.clear();
-    
+
     // Empty the function table.
     functionTable.clear();
 }

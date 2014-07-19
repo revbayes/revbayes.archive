@@ -53,7 +53,7 @@ Container::Container( const MemberRules& memberRules ) :
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Container::getClassType( void )
 {
     static std::string revType = "Container";

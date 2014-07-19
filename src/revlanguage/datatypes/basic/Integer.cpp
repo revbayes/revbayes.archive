@@ -191,7 +191,7 @@ Real* Integer::divide(const Integer &rhs) const
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Integer::getClassType(void) { 
     
     static std::string revType = "Integer";

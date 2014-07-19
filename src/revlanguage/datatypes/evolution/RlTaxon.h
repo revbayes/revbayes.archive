@@ -41,7 +41,7 @@ namespace RevLanguage {
         // Basic utility functions
         Taxon*                              clone(void) const;                                                                      //!< Clone object
         void                                constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
-        static const std::string&           getClassType(void);                                                                     //!< Get class name
+        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
         const MemberRules&                  getMemberRules(void) const;                                                             //!< Get member rules (const)
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object

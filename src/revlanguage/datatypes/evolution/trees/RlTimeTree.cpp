@@ -97,7 +97,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& TimeTree::getClassType(void) { 
     
     static std::string revType = "TimeTree";

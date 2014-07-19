@@ -76,7 +76,7 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */

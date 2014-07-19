@@ -41,7 +41,7 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override
         virtual ModelVector<rlType>*                clone(void) const;                                          //!< Clone object
-        static const std::string&                   getClassType(void);                                         //!< Get class name
+        static const std::string&                   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get the object type spec of the instance
 
@@ -55,6 +55,7 @@ namespace RevLanguage {
         // Container functions implemented here. Override findOrCreateElement and getElement to protect from assignment
         virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
         virtual RevPtr<Variable>                    getElement(const std::vector<size_t>& oneOffsetIndices);                        //!< Get element variable
+        RevObject*                                  makeIndirectReference(void);                                //!< Make an object referencing the dag node of this object
         void                                        setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
 
         // ModelVector functions: override if you do not want to support these in-place algorithms
@@ -282,7 +283,7 @@ RevPtr<Variable> ModelVector<rlType>::findOrCreateElement( const std::vector<siz
 
 
 /**
- * Get class name of object. This is the Rev object element type followed by
+ * Get Rev type of object. This is the Rev object element type followed by
  * a single set of square brackets. This provides a nice and convenient way
  * of specifying generic types of vectors for all Rev object types.
  */
@@ -436,6 +437,28 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
     }
     
     return Container::isConvertibleTo( type );
+}
+
+
+/**
+ * Make indirect reference. This is relevant when we try to make an indirect reference
+ * to the object in a dynamic evaluation context. These are statements of the type
+ *
+ *    a := b
+ *
+ * where this function is called if we are variable b.
+ */
+template <typename rlType>
+RevObject* ModelVector<rlType>::makeIndirectReference(void) {
+    
+    IndirectReferenceNode< ModelVector<rlType> >* newNode =
+        new IndirectReferenceNode< ModelVector<rlType> >( "", this->getDagNode() );
+    
+    ModelVector<rlType>* newObj = this->clone();
+    
+    newObj->setDagNode( newNode );
+    
+    return newObj;
 }
 
 

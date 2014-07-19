@@ -58,7 +58,7 @@ const ArgumentRules& Func__mod::getArgumentRules( void ) const
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func__mod::getClassType(void)
 {
     

@@ -112,7 +112,7 @@ RevPtr<Variable> Simplex::getElement(const std::vector<size_t> oneOffsetIndices)
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Simplex::getClassType(void) { 
     
     static std::string revType = "Simplex";

@@ -41,7 +41,7 @@ void Move_DPPScaleCatValsMove::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Move_DPPScaleCatValsMove::getClassType(void) { 
     
     static std::string revType = "Move_DPPScaleCatValsMove";

@@ -64,7 +64,7 @@ const ArgumentRules& Func_help::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_help::getClassType(void) {
     
     static std::string revType = "Func_help";

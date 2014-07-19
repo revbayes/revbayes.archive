@@ -60,7 +60,7 @@ const ArgumentRules& Func__unot::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func__unot::getClassType(void) { 
     
     static std::string revType = "Func__unot";

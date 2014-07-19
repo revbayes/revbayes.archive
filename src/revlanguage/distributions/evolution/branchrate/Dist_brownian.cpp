@@ -42,7 +42,7 @@ RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) co
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_brownian::getClassType(void) {
     
     static std::string revType = "Dist_brownian";

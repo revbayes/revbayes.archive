@@ -62,7 +62,7 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func__and::getClassType(void) { 
     
     static std::string revType = "Func__and";

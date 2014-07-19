@@ -39,7 +39,7 @@ namespace RevLanguage {
         // Basic utility functions
         virtual TreeTrace*                          clone(void) const;                                                          //!< Clone object
         void                                        constructInternalObject(void);                                              //!< We construct the a new internal MCMC object.
-        static const std::string&                   getClassType(void);                                                         //!< Get class name
+        static const std::string&                   getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
         const MemberRules&                          getMemberRules(void) const;                                                 //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
@@ -114,7 +114,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::TreeTrace<treeType>::exe
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename treeType>
 const std::string& RevLanguage::TreeTrace<treeType>::getClassType(void) { 
     

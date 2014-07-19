@@ -114,7 +114,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_readTreeTrace::getClassType(void) { 
     
     static std::string revType = "Func_readTreeTrace";

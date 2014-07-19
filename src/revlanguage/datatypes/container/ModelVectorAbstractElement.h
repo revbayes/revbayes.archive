@@ -25,8 +25,8 @@ namespace RevLanguage {
         
     public:
         
-        typedef typename rlType::valueType              elementType;
-        typedef typename std::vector<elementType>       valueType;
+        typedef typename rlType::valueType                                      elementType;
+        typedef typename RevBayesCore::RbVector<typename rlType::valueType>     valueType;
         
                                                         ModelVectorAbstractElement(void);                                          //!< Default constructor
                                                         ModelVectorAbstractElement(const valueType& v);                            //!< Constructor from vector of values
@@ -34,11 +34,12 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override
         virtual ModelVectorAbstractElement<rlType>*     clone(void) const;                                                          //!< Clone object
-        static const std::string&                       getClassType(void);                                                         //!< Get class name
+        static const std::string&                       getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                     //!< Get class type spec
         virtual const TypeSpec&                         getTypeSpec(void) const;                                                    //!< Get the object type spec of the instance
         
-        // Container function
+        // Container functions
+        RevObject*                                      makeIndirectReference(void);                                                //!< Make an object referencing the dag node of this object
         void                                            setElements(std::vector<RevObject*> elems, const std::vector<size_t> lengths);  //!< Set elements from Rev objects
         
     protected:
@@ -72,7 +73,7 @@ using namespace RevLanguage;
  */
 template <typename rlType>
 ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( void ) :
-    ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >()
+    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >()
 {
 }
 
@@ -83,7 +84,7 @@ ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( void ) :
  */
 template <typename rlType>
 ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( const valueType &v ) :
-    ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >( v )
+    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( v )
 {
 }
 
@@ -94,7 +95,7 @@ ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( const valueType 
  */
 template <typename rlType>
 ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( RevBayesCore::TypedDagNode<valueType> *n ) :
-    ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >( rlType::getClassTypeSpec(), n )
+    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( rlType::getClassTypeSpec(), n )
 {
 }
 
@@ -108,7 +109,7 @@ ModelVectorAbstractElement<rlType>* ModelVectorAbstractElement<rlType>::clone() 
 
 
 /**
- * Get class name of object. This is the Rev object element type followed by
+ * Get Rev type of object. This is the Rev object element type followed by
  * a single set of square brackets. This provides a nice and convenient way
  * of specifying generic types of vectors for all Rev object types.
  */
@@ -171,6 +172,28 @@ const RevLanguage::TypeSpec& ModelVectorAbstractElement<rlType>::getTypeSpec(voi
     //    return typeSpec;
     
     return getClassTypeSpec();  // This should do the trick; there should be a separate version of the function for each template type
+}
+
+
+/**
+ * Make indirect reference. This is relevant when we try to make an indirect reference
+ * to the object in a dynamic evaluation context. These are statements of the type
+ *
+ *    a := b
+ *
+ * where this function is called if we are variable b.
+ */
+template <typename rlType>
+RevObject* ModelVectorAbstractElement<rlType>::makeIndirectReference(void) {
+    
+    IndirectReferenceNode< ModelVectorAbstractElement<rlType> >* newNode =
+    new IndirectReferenceNode< ModelVectorAbstractElement<rlType> >( "", this->getDagNode() );
+    
+    ModelVectorAbstractElement<rlType>* newObj = this->clone();
+    
+    newObj->setDagNode( newNode );
+    
+    return newObj;
 }
 
 

@@ -97,7 +97,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */

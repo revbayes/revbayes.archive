@@ -70,7 +70,7 @@ RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) cons
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& Dist_wishart::getClassType(void) {
     
     static std::string revType = "Dist_wishart";

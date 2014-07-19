@@ -39,7 +39,7 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override
         virtual TypedFunction<valueType>*               clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassType(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
         
         
@@ -88,7 +88,7 @@ valueType* RevLanguage::TypedFunction<valueType>::execute(void) {
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <typename valueType>
 const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void) { 
     

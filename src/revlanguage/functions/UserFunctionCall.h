@@ -25,14 +25,14 @@ namespace RevLanguage {
         
         // Basic utility functions
         UserFunctionCall*                           clone(void) const;                                                          //!< Clone the object
-        static const std::string&                   getClassType(void);                                                         //!< Get class name
+        static const std::string&                   getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions
         virtual RevPtr<Variable>                    execute(void);                                                              //!< Execute function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
-        std::vector<const RevBayesCore::DagNode*>   getParameters(void) const;                                                  //!< Get parameters
+        std::set<const RevBayesCore::DagNode*>      getParameters(void) const;                                                  //!< Get parameters
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
         
     protected:

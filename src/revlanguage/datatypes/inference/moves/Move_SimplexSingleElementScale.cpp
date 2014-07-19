@@ -50,7 +50,7 @@ void Move_SimplexSingleElementScale::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Move_SimplexSingleElementScale::getClassType(void) {
     
     static std::string revType = "Move_SimplexSingleElementScale";

@@ -82,7 +82,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */

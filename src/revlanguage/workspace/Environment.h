@@ -50,6 +50,7 @@ namespace RevLanguage {
         // Regular functions
         bool                                addFunction(const std::string& name, Function* func);                               //!< Add function
         void                                addNullVariable(const std::string& name);                                           //!< Add variable with null object
+        void                                addReference(const std::string& name, const RevPtr<Variable>& var);                 //!< Add reference to variable
         void                                addVariable(const std::string& name, const RevPtr<Variable>& var);                  //!< Add variable
         void                                addVariable(const std::string& name, RevObject* object);                            //!< Add variable from object
         void                                clear(void);                                                                        //!< Clear the environment (variables and functions)

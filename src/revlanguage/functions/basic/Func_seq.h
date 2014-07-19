@@ -37,7 +37,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_seq*                   clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
@@ -116,7 +116,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename valType>
 const std::string& RevLanguage::Func_seq<valType>::getClassType(void) {
     

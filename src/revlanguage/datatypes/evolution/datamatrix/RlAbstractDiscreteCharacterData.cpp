@@ -34,7 +34,7 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::clone() const {
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 const std::string& AbstractDiscreteCharacterData::getClassType(void) { 
     
     static std::string revType = "AbstractDiscreteCharacterData";

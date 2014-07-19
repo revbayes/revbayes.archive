@@ -97,7 +97,7 @@ RlString* RevLanguage::RlString::clone() const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& RlString::getClassType(void) { 
     
     static std::string revType = "String";

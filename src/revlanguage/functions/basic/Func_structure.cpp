@@ -29,6 +29,15 @@ RevPtr<Variable> Func_structure::execute( void ) {
 
     o << std::endl;
     o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    if ( args[0].getVariable()->isControlVar() )
+    {
+        o << "_varType      = control" << std::endl;
+    }
+    else if ( args[0].getVariable()->isReferenceVar() )
+    {
+        o << "_varType      = reference" << std::endl;
+        o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    }
 
     args[0].getVariable()->getRevObject().printStructure( o );
     o << std::endl;
@@ -56,7 +65,7 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 const std::string& Func_structure::getClassType(void) { 
     
     static std::string revType = "Func_type";
