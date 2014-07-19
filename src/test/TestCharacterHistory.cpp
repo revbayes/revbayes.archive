@@ -119,7 +119,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 100;
+    mcmcGenerations *= 10;
 //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
 
@@ -139,7 +139,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool simulate                   = false;
     bool useClock                   = !true;
     bool forbidExtinction           = true;
-    bool useCladogenesis            = !true;
+    bool useCladogenesis            = true;
     bool useDistances               = !true;
     bool useAdjacency               = !true;
     bool useAvailable               = !true;
@@ -149,8 +149,8 @@ bool TestCharacterHistory::run_exp(void) {
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
-//    fn = "psychotria.nex";
-    fn = "16tip_20areas.nex";
+    fn = "psychotria.nex";
+//    fn = "16tip_20areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -164,8 +164,8 @@ bool TestCharacterHistory::run_exp(void) {
 
     // geo by epochs
     std::string afn="";
-    afn = "malesia_static.atlas.txt";
-//    afn = "hawaii_static.atlas.txt";
+//    afn = "malesia_static.atlas.txt";
+    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
@@ -259,14 +259,14 @@ bool TestCharacterHistory::run_exp(void) {
         charactermodel->clamp( data[0] );
     
     // initialize mapping
-    charactermodel->redraw();
+//    charactermodel->redraw();
     
     
-//    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
+    std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
-//    GLOBAL_RNG->setSeed(old_seed);
-//    glr_nonConst[0]->redraw();
-//    glr_nonConst[1]->redraw();
+    GLOBAL_RNG->setSeed(old_seed);
+    glr_nonConst[0]->redraw();
+    glr_nonConst[1]->redraw();
 
     std::cout << "seed " << old_seed[0] << " " << old_seed[1] << "\n";
     
@@ -290,15 +290,16 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new SlidingMove(dp, 0.3, false, 2.0 ));
     }
     
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2.0));
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2.0));
+//    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2.0));
+//    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2.0));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 2.0, !true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 1.0, !true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 1.0, !true ) );
 //        moves.push_back( new SlidingMove( glr_nonConst[i], 0.1, false, 2.0 ));
     }
 
+//            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[0], 0.1), 1.0, !true ) );
     
     bool useChMoves = true;
     bool useMhMoves = !true;
@@ -366,8 +367,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_nonConst[0] );
     monitoredNodes.insert( glr_nonConst[1] );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 1, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 1, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 100, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
@@ -614,7 +615,8 @@ bool TestCharacterHistory::run_dollo(void) {
     //////////
     std::cout << "Instantiating mcmc\n";
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );
-    myMcmc.run(mcmcGenerations*20);
+//    myMcmc.run(mcmcGenerations);
+        myMcmc.run(100);
     myMcmc.printOperatorSummary();
     
     

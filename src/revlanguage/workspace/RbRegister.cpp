@@ -245,7 +245,6 @@
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
-#include "Func_discretizedGammaRates.h"
 
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
@@ -324,7 +323,6 @@
 #include "Func_floor.h"
 #include "Func_ln.h"
 #include "Func_log.h"
-#include "Func_mean.h"
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
@@ -338,7 +336,10 @@
 /* These are functions related to statistical distributions */
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
+#include "Func_mean.h"
+#include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
+
 
 
 /** Initialize global workspace */
@@ -752,7 +753,6 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
-        addFunction( "discretizeGamma",             new Func_discretizedGammaRates()    );
         
         // nonstandard names (for backward compatibility)
         addFunction( "expbranchtree",               new Func_expBranchTree()            );
@@ -980,6 +980,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
 
+        // return a distcretized (by quantile) and normalized vector from a continuous distribution
+        addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
+        addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<RealPos>()    );
         
         ///////////////////////////////////////////////////////////////////////////
         /* Add distribution functions (using help classes in folder "functions") */

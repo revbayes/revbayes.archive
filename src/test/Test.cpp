@@ -94,7 +94,7 @@ bool Test::performTests(int argc, const char * argv[]) {
 		//        TestDPPRelClock testDPPRC = TestDPPRelClock("data/Primates.nex", "data/primates.tree", 100);
         TestDPPRelClock testDPPRC = TestDPPRelClock("data/test_data_clock_gtr.nex", "data/true_calib_clk.tre", 100000);
 		
-		testDPPRC.run();
+//		testDPPRC.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -206,7 +206,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* The normal model test */
     try {
         TestNormalModel testNormal = TestNormalModel(10000);
-//        testNormal.run();
+        testNormal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
