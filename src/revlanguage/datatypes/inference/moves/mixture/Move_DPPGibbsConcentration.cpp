@@ -11,7 +11,6 @@
 #include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;

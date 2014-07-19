@@ -31,7 +31,7 @@ namespace RevLanguage {
 }
 
 #include "RlDeterministicNode.h"
-#include "Vector.h"
+#include "ModelVector.h"
 #include "VectorIndexOperator.h"
 #include "TypedDagNode.h"
 

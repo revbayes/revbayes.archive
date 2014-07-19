@@ -5,7 +5,6 @@
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
