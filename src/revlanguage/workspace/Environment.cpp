@@ -174,13 +174,32 @@ Environment* Environment::clone() const
  */
 void Environment::clear(void)
 {
-    // Empty the variable table. It is as easy as this because we use smart pointers...
-    for ( VariableTable::iterator it = variableTable.begin(); it != variableTable.end(); ++it )
+#if defined ( DEBUG_MEMORY )
+    if ( variableTable.size() > 0 )
     {
-        std::cerr << "varName : '" << (it)->second->getName() << "'" << std::endl;
-        std::cerr << "refCount: " << (it)->second->getReferenceCount() << std::endl;
-        it->second->getRevObject().printStructure( std::cerr );
+        std::cerr << std::endl;
+        std::cerr << "Variables to delete:" << std::endl;
+        for ( VariableTable::iterator it = variableTable.begin(); it != variableTable.end(); ++it )
+        {
+            std::cerr << "variable: '" << (it)->second->getName() << "' <" << (it)->second << ">" << std::endl;
+            std::cerr << "refCount: " << (it)->second->getReferenceCount() << std::endl;
+        }
+        std::cerr << std::endl;
     }
+
+    if ( functionTable.size() > 0 )
+    {
+        std::cerr << std::endl;
+        std::cerr << "Functions to delete:" << std::endl;
+        for ( FunctionTable::iterator it = functionTable.begin(); it != functionTable.end(); ++it )
+        {
+            std::cerr << "function: '" << (it)->second->getName() << "' <" << (it)->second << ">" << std::endl;
+        }
+        std::cerr << std::endl;
+    }
+#endif
+
+    // Empty the variable table. It is as easy as this because we use smart pointers...
     variableTable.clear();
 
     // Empty the function table.

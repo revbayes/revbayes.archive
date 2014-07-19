@@ -49,6 +49,10 @@ Function::Function(const Function &x) : RevObject( x ),
 /** Destructor. We need to free the arguments here. */
 Function::~Function(void) {
     
+#if defined ( DEBUG_MEMORY )
+    std::cerr << " Deleting function '" << name << "' <" << this << ">" << std::endl;
+#endif
+
     // we don't own the enclosing environment -> we don't delete it.
 }
 

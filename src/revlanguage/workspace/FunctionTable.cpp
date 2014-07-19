@@ -14,7 +14,7 @@
 using namespace RevLanguage;
 
 /** Basic constructor, empty table with or without parent */
-FunctionTable::FunctionTable(FunctionTable* parent) : table(), parentTable(parent) {
+FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string, Function*>(), parentTable(parent) {
 
 }
 
@@ -22,9 +22,9 @@ FunctionTable::FunctionTable(FunctionTable* parent) : table(), parentTable(paren
 /** Copy constructor */
 FunctionTable::FunctionTable(const FunctionTable& x) {
     
-    for (std::multimap<std::string, Function *>::const_iterator i=x.table.begin(); i!=x.table.end(); i++)
+    for (std::multimap<std::string, Function *>::const_iterator i=x.begin(); i!=x.end(); i++)
     {
-        table.insert(std::pair<std::string, Function *>( (*i).first, ( (*i).second->clone() )));
+        insert(std::pair<std::string, Function *>( (*i).first, ( (*i).second->clone() )));
     }
     parentTable = x.parentTable;
 }
@@ -44,9 +44,9 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
     {
 
         clear();
-        for (std::multimap<std::string, Function *>::const_iterator i=x.table.begin(); i!=x.table.end(); i++) 
+        for (std::multimap<std::string, Function *>::const_iterator i=x.begin(); i!=x.end(); i++)
         {
-            table.insert(std::pair<std::string, Function *>((*i).first, ( (*i).second->clone() ) ) );
+            insert(std::pair<std::string, Function *>((*i).first, ( (*i).second->clone() ) ) );
         }
         
         parentTable = x.parentTable;
@@ -61,7 +61,7 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
 
-    retVal = table.equal_range(name);
+    retVal = equal_range(name);
     for (std::multimap<std::string, Function *>::iterator i=retVal.first; i!=retVal.second; i++) 
     {
         if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) 
@@ -76,7 +76,7 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
             throw RbException(msg.str());
         }
     }
-    table.insert(std::pair<std::string, Function* >(name, func));
+    insert(std::pair<std::string, Function* >(name, func));
 
     /* Name the function so that it is aware of what it is called */
     func->setName( name );
@@ -86,10 +86,10 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
 /** Clear table */
 void FunctionTable::clear(void) {
     
-    for ( std::multimap<std::string, Function *>::const_iterator i = table.begin(); i != table.end(); i++ )
+    for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
         delete( i->second );
 
-    table.clear();
+    std::multimap<std::string, Function*>::clear();
     
 }
 
@@ -106,8 +106,8 @@ void FunctionTable::eraseFunction(const std::string& name) {
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
 
-    retVal = table.equal_range(name);
-    table.erase(retVal.first, retVal.second);
+    retVal = equal_range(name);
+    erase(retVal.first, retVal.second);
     
 }
 
@@ -127,10 +127,10 @@ RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const s
 
 bool FunctionTable::existsFunction(std::string const &name) const {
     
-    const std::map<std::string, Function *>::const_iterator& it = table.find( name );
+    const std::map<std::string, Function *>::const_iterator& it = find( name );
     
     // if this table doesn't contain the function, then we ask the parent table
-    if ( it == table.end() ) 
+    if ( it == end() )
     {
         if ( parentTable != NULL ) 
         {
@@ -157,8 +157,8 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
     std::vector<Function *>  theFunctions;
 
-    size_t count = table.count(name);
-    if (count == 0) 
+    size_t hits = count(name);
+    if (hits == 0)
     {
         if (parentTable != NULL)
             return parentTable->findFunctions( name );
@@ -168,7 +168,7 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
     std::pair<std::multimap<std::string, Function *>::const_iterator,
               std::multimap<std::string, Function *>::const_iterator> retVal;
-    retVal = table.equal_range( name );
+    retVal = equal_range( name );
 
     std::multimap<std::string, Function *>::const_iterator it;
     for ( it=retVal.first; it!=retVal.second; it++ )
@@ -184,8 +184,8 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
     
-    size_t count = table.count(name);
-    if (count == 0) 
+    size_t hits = count(name);
+    if (hits == 0)
     {
         if (parentTable != NULL) 
         {
@@ -196,8 +196,8 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         else
             throw RbException("No function named '"+ name + "'");
     }
-    retVal = table.equal_range(name);
-    if (count == 1) {
+    retVal = equal_range(name);
+    if (hits == 1) {
         if (retVal.first->second->checkArguments(args,NULL) == false) 
         {
             
@@ -339,7 +339,7 @@ Function& FunctionTable::getFunction(const std::string& name, const std::vector<
 /** Get a copy of the function table, including either the functions in the frame or in the entire environment */
 std::multimap<std::string, Function*> FunctionTable::getTableCopy(bool env) const
 {
-    std::multimap<std::string, Function*> tableCopy = table;
+    std::multimap<std::string, Function*> tableCopy = *this;
 
     // TODO: Do not insert hidden (overridden) functions from parent table
     if (env == true && parentTable != NULL)
