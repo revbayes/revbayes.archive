@@ -9,43 +9,50 @@
 #include "SingleRandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbIterator.h"
 
 using namespace RevBayesCore;
 
-SingleRandomMoveSchedule::SingleRandomMoveSchedule(const std::vector<Move*> &s) : MoveSchedule( s ) {
+SingleRandomMoveSchedule::SingleRandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ) {
     
     sumOfWeights = 0.0;
-    for (std::vector<Move*>::const_iterator it = moves.begin(); it != moves.end(); ++it) {
-        sumOfWeights+= (*it)->getUpdateWeight();
-        weights.push_back( (*it)->getUpdateWeight() );
+    for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
+    {
+        sumOfWeights+= it->getUpdateWeight();
+        weights.push_back( it->getUpdateWeight() );
     }
 }
 
 
-SingleRandomMoveSchedule::~SingleRandomMoveSchedule() {
+SingleRandomMoveSchedule::~SingleRandomMoveSchedule()
+{
     // we own nothing
 }
 
 
-SingleRandomMoveSchedule* SingleRandomMoveSchedule::clone( void ) const {
+SingleRandomMoveSchedule* SingleRandomMoveSchedule::clone( void ) const
+{
+
     return new SingleRandomMoveSchedule(*this);
 }
 
-double SingleRandomMoveSchedule::getNumberMovesPerIteration( void ) const {
+double SingleRandomMoveSchedule::getNumberMovesPerIteration( void ) const
+{
     return 1.0;
 }
 
 
-Move* SingleRandomMoveSchedule::nextMove( unsigned long gen ) {
+Move& SingleRandomMoveSchedule::nextMove( unsigned long gen ) {
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
     double u = sumOfWeights * rng->uniform01();
     
     size_t index = 0;
-    while ( weights[index] < u || !moves[index]->isActive( gen ) ) {
+    while ( weights[index] < u || !(*moves)[index].isActive( gen ) )
+    {
         u -= weights[index];
         ++index;
     }
     
-    return moves[index];
+    return (*moves)[index];
 }

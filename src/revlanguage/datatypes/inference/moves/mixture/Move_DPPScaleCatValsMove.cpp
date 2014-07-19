@@ -62,21 +62,21 @@ const TypeSpec& Move_DPPScaleCatValsMove::getClassTypeSpec(void) {
 /** Return member rules (no members) */
 const MemberRules& Move_DPPScaleCatValsMove::getMemberRules(void) const {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules dppMove;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        
+        dppMove.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
+
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return dppMove;
 }
 
 /** Get type spec */

@@ -12,7 +12,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
-#include "ModelVector.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
@@ -24,6 +23,7 @@
 #include "RealSymmetricMatrix.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -54,20 +54,20 @@ void Move_PrecisionMatrixSimple::constructInternalObject( void ) {
 }
 
 
-/** Get Rev type of object */
+/** Get class name of object */
 const std::string& Move_PrecisionMatrixSimple::getClassType(void) {
     
-    static std::string revType = "Move_VectorSingleElement";
+    static std::string revClassType = "Move_VectorSingleElement";
     
-	return revType;
+	return revClassType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_PrecisionMatrixSimple::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return revClassTypeSpec;
 }
 
 
@@ -79,7 +79,7 @@ const MemberRules& Move_PrecisionMatrixSimple::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<Real>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, RealSymmetricMatrix::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         

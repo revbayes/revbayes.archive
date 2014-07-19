@@ -70,8 +70,6 @@ namespace RevBayesCore {
         DeterministicNode<valueType>*       dagNode;                                                                    //!< The deterministic node holding this function. This is needed for delegated calls to the DAG, such as getAffected(), addTouchedElementIndex()...
         valueType*                          value;
     
-    private:
-        mutable bool                        dirty;
     };
     
     // Global functions using the class
@@ -87,8 +85,7 @@ namespace RevBayesCore {
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function(),
     dagNode( NULL ), 
-    value( v ), 
-    dirty( true )
+    value( v )
 {
     
 }
@@ -96,22 +93,27 @@ RevBayesCore::TypedFunction<valueType>::TypedFunction(valueType *v) : Function()
 template <class valueType>
 RevBayesCore::TypedFunction<valueType>::TypedFunction(const TypedFunction &f) : Function(f), 
     dagNode( NULL ), 
-    value( NULL ),
-    dirty( true )
+    value( NULL )
 {
+    
     if ( f.value != NULL )
+    {
         value = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.value );
+    }
+    
 }
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>::~TypedFunction( void ) {
+RevBayesCore::TypedFunction<valueType>::~TypedFunction( void )
+{
     
     delete value;
 }
 
 
 template <class valueType>
-RevBayesCore::TypedFunction<valueType>& RevBayesCore::TypedFunction<valueType>::operator=(const TypedFunction &f) {
+RevBayesCore::TypedFunction<valueType>& RevBayesCore::TypedFunction<valueType>::operator=(const TypedFunction &f)
+{
     
     if ( this != &f ) 
     {
@@ -134,7 +136,7 @@ template <class valueType>
 const valueType& RevBayesCore::TypedFunction<valueType>::getValue(void) const 
 {
     
-    if (dirty) 
+    if ( dirty ) 
     {
         const_cast<TypedFunction<valueType>* >( this )->update();
         this->dirty = false;
@@ -160,6 +162,7 @@ valueType& RevBayesCore::TypedFunction<valueType>::getValue(void)
 template <class valueType>
 bool RevBayesCore::TypedFunction<valueType>::isDirty(void) const
 {
+    
     return dirty;
 }
 
@@ -169,20 +172,25 @@ void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicN
 {
     
     dagNode = n;
+    
 }
 
 
 template <class valueType>
 void RevBayesCore::TypedFunction<valueType>::setDirty(bool flag)
 {
+    
     dirty = flag;
+
 }
 
 
 template <class valueType>
-void RevBayesCore::TypedFunction<valueType>::touch( RevBayesCore::DagNode* toucher ) {
+void RevBayesCore::TypedFunction<valueType>::touch( RevBayesCore::DagNode* toucher )
+{
     
     this->setDirty( true );
+
 }
 
 

@@ -15,22 +15,25 @@
 #include "PrecisionMatrix.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
+#include "MultivariatePhyloProcess.h"
 
 namespace RevBayesCore {
     
-    class MultivariateBrownianPhyloProcess : public TypedDistribution<MatrixReal> {
+    class MultivariateBrownianPhyloProcess : public TypedDistribution<MultivariatePhyloProcess> {
         
     public:
         // constructor(s)
-        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* inomega, const TypedDagNode< std::vector<double> >* inrootval);
+        MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<PrecisionMatrix>* insigma);
         MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &from);
         
         // public member functions
         MultivariateBrownianPhyloProcess*                       clone(void) const;
         
         double                                                  computeLnProbability(void);
+        size_t                                                  getDim() const {return sigma->getValue().getDim();}
         void                                                    redrawValue(void);
-        size_t                                                  getDim() {return omega->getValue().getDim();}
+        
+        const TypedDagNode< TimeTree >*                         getTimeTree() const {return tau;}
         
         // Parameter management functions
         std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
@@ -44,8 +47,7 @@ namespace RevBayesCore {
         
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< PrecisionMatrix >*                  omega;
-        const TypedDagNode< std::vector<double> >*              rootVal;
+        const TypedDagNode< PrecisionMatrix >*                  sigma;
         
     };
     

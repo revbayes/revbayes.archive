@@ -18,7 +18,7 @@
 #ifndef Func__add_H
 #define Func__add_H
 
-#include "Function.h"
+#include "TypedFunction.h"
 
 #include <map>
 #include <string>
@@ -26,21 +26,21 @@
 namespace RevLanguage {
 
 template <typename firstValType, typename secondValType, typename retType>
-class Func__add :  public Function {
+class Func__add :  public TypedFunction<retType> {
     
 public:
     Func__add( void );
     
     // Basic utility functions
-    Func__add*                                      clone(void) const;                                                              //!< Clone the object
-    static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-    static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-    const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+    Func__add*                                                      clone(void) const;                              //!< Clone the object
+    static const std::string&                                       getClassType(void);                             //!< Get class name
+    static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+    const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
 
-    // Function functions you have to override
-    RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-    const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-    const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+    // Implementations of pure virtual functions of the base class(es)
+    RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a random variable from this distribution
+    const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
+    const TypeSpec&                                                 getReturnType(void) const;                      //!< Get type of return value
 
 private:
         
@@ -55,42 +55,42 @@ private:
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__add<firstValType, secondValType, retType>::Func__add( void ) : Function( ) {
+RevLanguage::Func__add<firstValType, secondValType, retType>::Func__add( void ) : TypedFunction<retType>( )
+{
     
 }
 
 
 /** Clone object */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__add<firstValType, secondValType, retType>* RevLanguage::Func__add<firstValType, secondValType, retType>::clone( void ) const {
+RevLanguage::Func__add<firstValType, secondValType, retType>* RevLanguage::Func__add<firstValType, secondValType, retType>::clone( void ) const
+{
     
     return new Func__add( *this );
 }
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__add<firstValType, secondValType, retType>::execute() {
-
+RevBayesCore::TypedFunction<typename retType::valueType>* RevLanguage::Func__add<firstValType, secondValType, retType>::createFunction( void ) const
+{
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BinaryAddition<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinaryAddition<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
     
-    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
-    
-    retType* value = new retType( detNode );
-    
-    return new Variable( value );
+    return func;
 }
 
 
 /* Get argument rules */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::Func__add<firstValType, secondValType, retType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func__add<firstValType, secondValType, retType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "first", true, firstValType::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "second", true, secondValType::getClassTypeSpec() ) );
@@ -102,8 +102,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__add<firstValType, secondVal
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassType(void) { 
-    
+const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassType(void)
+{
     static std::string revType = "Func__add<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
 	return revType; 
@@ -111,9 +111,10 @@ const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>:
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( Func__add<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -121,7 +122,8 @@ const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType,
 
 /* Get return type */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getReturnType( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
     
@@ -130,7 +132,8 @@ const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType,
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -77,7 +77,7 @@ const std::string& Dist_norm::getClassType(void)
 const TypeSpec& Dist_norm::getClassTypeSpec(void)
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

@@ -55,7 +55,7 @@ const std::string& Dist_offsetExponential::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_offsetExponential::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

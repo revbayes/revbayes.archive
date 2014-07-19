@@ -54,7 +54,6 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
-#include "MemberFunction.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RevPtr.h"

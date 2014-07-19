@@ -37,8 +37,7 @@ namespace RevLanguage {
 
 
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
-#include "ModelVector.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 
@@ -116,7 +115,7 @@ const RevLanguage::MethodTable& RevLanguage::DiscreteTaxonData<rlType>::getMetho
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( rlType::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
         
         
         // necessary call for proper inheritance

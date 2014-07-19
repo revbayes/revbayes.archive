@@ -33,10 +33,11 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om  = static_cast<const RealSymmetricMatrix&>( omega->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* sig  = static_cast<const RealSymmetricMatrix&>( sigma->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
     
-    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
+//    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
+    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, sig );
     
     return process;
 
@@ -71,8 +72,8 @@ const MemberRules& Dist_mvtBrownian::getMemberRules(void) const {
     if ( !rulesSet )
     {
         dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "omega", true, RealSymmetricMatrix::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "rootval", true, ModelVector<Real>::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "sigma", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+//        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -105,22 +106,23 @@ const TypeSpec& Dist_mvtBrownian::getTypeSpec( void ) const {
 
      o << ",";
      
-     o << "omega=";
-     if ( omega != NULL ) {
-         o << omega->getName();
+     o << "sigma=";
+     if ( sigma != NULL ) {
+         o << sigma->getName();
      } else {
          o << "?";
      }
 
      o << ",";
      
+     /*
      o << "rootval=";
      if ( rootval != NULL ) {
          o << rootval->getName();
      } else {
          o << "?";
      }
-
+     */
      o << ")";
 }
 
@@ -133,16 +135,49 @@ void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const Rev
     {
         tree = var;
     }
-    else if ( name == "omega" )
+    else if ( name == "sigma" )
     {
-        omega = var;
+        sigma = var;
     }
+    /*
     else if ( name == "rootval" )
     {
         rootval = var;
     }
+    */
     else {
         Distribution::setConstMemberVariable(name, var);
     }
 }
 
+/*
+RevLanguage::RevObject* Dist_mvtBrownian::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+    
+    if (name == "test") {        
+        this->dagNode->getValue().test();
+        return new Real( 0.0 );
+    }
+    
+    return ModelObject<RevBayesCore::MultivariateBrownianPhyloProcess>::executeMethod( name, args );
+}
+
+
+const RevLanguage::MethodTable& Dist_mvtBrownian::getMethods(void) const {
+    
+    static MethodTable    methods                     = MethodTable();
+    static bool           methodsSet                  = false;
+    
+    if ( methodsSet == false ) {
+        
+        ArgumentRules* testArgRules = new ArgumentRules();
+        methods.addFunction("test", new MemberProcedure(Real::getClassTypeSpec(),       testArgRules              ) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &RevObject::getMethods() );
+        methodsSet = true;
+    }
+    
+    
+    return methods;
+}
+*/

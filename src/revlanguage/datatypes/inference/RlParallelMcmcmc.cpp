@@ -57,8 +57,8 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     
     // now allocate a new MCMC object
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const std::vector<RevBayesCore::Move *>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
-    const std::vector<RevBayesCore::Monitor *>& mntr    = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() ).getVectorRbPointer();
+    const RevBayesCore::RbVector<RevBayesCore::Move>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
+    const RevBayesCore::RbVector<RevBayesCore::Monitor>& mntr    = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() ).getVectorRbPointer();
     const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     const int                                   nc      = static_cast<const Natural&>( numChains->getRevObject() ).getValue();
     const int                                   np      = static_cast<const Natural&>( numProcessors->getRevObject() ).getValue();
@@ -162,15 +162,15 @@ const MethodTable& ParallelMcmcmc::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
+        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-        methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
+        methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

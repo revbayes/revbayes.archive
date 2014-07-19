@@ -128,7 +128,7 @@ bool TestGtrModelFixedTree::run( void ) {
     std::cout << "Observed log-L:\t\t" << charactermodel->getLnProbability() << std::endl;
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 1, true ) );
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 5.0 ) );
     moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 5.0 ) );
@@ -140,7 +140,7 @@ bool TestGtrModelFixedTree::run( void ) {
     moves.push_back( new RootTimeSlide( tree, 1.0, true, 5.0 ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( div );
     monitors.push_back( new FileMonitor( monitoredNodes, 1, "TestGtrModelFixedTree.log", "\t" ) );
@@ -170,14 +170,6 @@ bool TestGtrModelFixedTree::run( void ) {
 //    delete a;
 //    delete b;
 //    delete c;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     return true;
 }

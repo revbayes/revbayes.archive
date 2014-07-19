@@ -204,12 +204,6 @@ void RevLanguage::Parser::getline(char* buf, size_t maxsize) {
         buf[i] = '\0';
     }
 
-//#	if defined (DEBUG_PARSER)
-//    if (foundEOF == true)
-//        printf("Parser gave flex EOF\n");
-//    else
-//        printf("Parser gave flex line(s):\n %s", buf);
-//#	endif
 }
 
 

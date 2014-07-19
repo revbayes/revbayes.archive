@@ -11,12 +11,11 @@ namespace RevBayesCore {
     class RateMatrix_Blosum62 : public RateMatrix_Empirical {
         
     public:
-        RateMatrix_Blosum62(void);                                                                                                //!< Construct rate matrix with n states
-        RateMatrix_Blosum62(const RateMatrix_Blosum62& m);                                                                                  //!< Copy constructor
-        virtual                            ~RateMatrix_Blosum62(void);                                                               //!< Destructor
+        RateMatrix_Blosum62(void);                                                                                                  //!< Construct rate matrix with n states
+        virtual                            ~RateMatrix_Blosum62(void);                                                              //!< Destructor
         
         // RateMatrix functions
-        RateMatrix_Blosum62*                   clone(void) const;
+        RateMatrix_Blosum62*                clone(void) const;
         
     private:
         

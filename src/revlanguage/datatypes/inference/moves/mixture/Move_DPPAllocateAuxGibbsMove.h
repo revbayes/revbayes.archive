@@ -104,7 +104,7 @@ const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void) {
 
 /** Get class type spec describing type of object */
 template <class valType>
-const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) { 
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -117,26 +117,26 @@ const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) {
 template <class valType>
 const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getMemberRules(void) const {
     
-    static MemberRules scalingMoveMemberRules;
+    static MemberRules dppMove;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<valType>::getClassTypeSpec() ) );
-        scalingMoveMemberRules.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
+        dppMove.push_back( new ArgumentRule( "x", false, ModelVector<valType>::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "numAux", true, Integer::getClassTypeSpec() , new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
-        scalingMoveMemberRules.insert( scalingMoveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
         
         rulesSet = true;
     }
     
-    return scalingMoveMemberRules;
+    return dppMove;
 }
 
 /** Get type spec */
 template <class valType>
-const TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

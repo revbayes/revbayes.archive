@@ -58,7 +58,7 @@ namespace RevBayesCore {
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
         void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
-        virtual void                                        reInitialized(void);                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
+        virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
         virtual void                                        setValue(const valueType &val, bool touch=true);                            //!< Set the value of this node
         void                                                setIgnoreRedraw(bool tf=true);
@@ -267,7 +267,8 @@ const RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<v
 
 
 template<class valueType>
-double RevBayesCore::StochasticNode<valueType>::getLnProbability( void ) {
+double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
+{
     
     if ( needsProbabilityRecalculation ) 
     {
@@ -279,12 +280,13 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void ) {
         needsProbabilityRecalculation = false;
     }
     
-    return this->heat*lnProb;
+    return lnProb;
 }
 
 
 template<class valueType>
-double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void ) {
+double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
+{
     
     return getLnProbability() - storedLnProb;
 }
@@ -302,7 +304,8 @@ std::set<const RevBayesCore::DagNode*> RevBayesCore::StochasticNode<valueType>::
 
 
 template<class valueType>
-valueType& RevBayesCore::StochasticNode<valueType>::getValue( void ) {
+valueType& RevBayesCore::StochasticNode<valueType>::getValue( void )
+{
     
     return distribution->getValue();
 }
@@ -399,7 +402,8 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void ) {
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::reInitialized( void ) {
+void RevBayesCore::StochasticNode<valueType>::reInitializeMe( void )
+{
     
     distribution->reInitialized();
         
@@ -497,9 +501,11 @@ void RevBayesCore::StochasticNode<valueType>::swapParent( const RevBayesCore::Da
 
 /** touch this node for recalculation */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher ) {
+void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
+{
     
-    if (!this->touched) {
+    if (!this->touched)
+    {
         
         storedLnProb = lnProb;
         

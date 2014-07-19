@@ -13,13 +13,14 @@
 
 
 #include "MultivariateBrownianPhyloProcess.h"
+#include "RlMultivariatePhyloProcess.h"
 #include "RlTypedDistribution.h"
 #include "RealMatrix.h"
 #include "Real.h"
 
 namespace RevLanguage {
 
-    class Dist_mvtBrownian :  public TypedDistribution< RealMatrix  > {
+    class Dist_mvtBrownian :  public TypedDistribution< MultivariatePhyloProcess  > {
         
     public:
         Dist_mvtBrownian( void ) {};
@@ -33,6 +34,11 @@ namespace RevLanguage {
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
+        /*
+        // Member method inits
+        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
+        RevObject*                      executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        */
         
         // Distribution functions you have to override
         RevBayesCore::MultivariateBrownianPhyloProcess* createDistribution(void) const;
@@ -45,8 +51,8 @@ namespace RevLanguage {
     private:
         
         RevPtr<const Variable>                          tree;
-        RevPtr<const Variable>                          omega;
-        RevPtr<const Variable>                          rootval;
+        RevPtr<const Variable>                          sigma;
+ //       RevPtr<const Variable>                          rootval;
         
     };
     

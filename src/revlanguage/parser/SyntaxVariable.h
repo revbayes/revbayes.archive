@@ -37,15 +37,16 @@ class SyntaxFunctionCall;
      *
      * The variable class uses three different functions to evaluate its content.
      * If the variable is part of a left-hand side expression, it is evaluated
-     * using
-     *
+     * using evaluateLHSContent(). If it is part of a dynamic rhs expression,
+     * it is evaluated using evaluateDynamicContent(), and if it is in a static
+     * rhs expression, it is evaluated using evaluateContent().
      */
     class SyntaxVariable : public SyntaxElement {
 
     public:
         SyntaxVariable(const std::string &n, std::list<SyntaxElement*>* indx);                                                      //!< Global variable
         SyntaxVariable(SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);                                               //!< Global function call variable expression
-        SyntaxVariable(SyntaxElement* expr, std::list<SyntaxElement*>* indx);                                                       //!< Global variable expression
+        SyntaxVariable(SyntaxElement* expr, std::list<SyntaxElement*>* indx);                                                       //!< Global (...)[..]... variable expression
         SyntaxVariable(SyntaxVariable* baseVar, const std::string &n, std::list<SyntaxElement*>* indx);                             //!< Member variable
         SyntaxVariable(SyntaxVariable* baseVar, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx);                      //!< Member function call variable expression
         SyntaxVariable(const SyntaxVariable& x);                                                                                    //!< Copy constructor

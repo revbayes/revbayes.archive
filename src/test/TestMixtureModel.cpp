@@ -89,7 +89,7 @@ bool TestMixtureModel::run( void ) {
     }
     
     /* add the moves */
-    std::vector<Move*> moves;
+    RbVector<Move> moves;
     moves.push_back( new SlidingMove( mu1, 1.0, false, 1.0 ) );
     moves.push_back( new SlidingMove( mu2, 1.0, false, 1.0 ) );
     moves.push_back( new SlidingMove( mu3, 1.0, false, 1.0 ) );
@@ -104,7 +104,7 @@ bool TestMixtureModel::run( void ) {
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(sigma, 1.0), 1, true ) );
     
     /* add the monitors */
-    std::vector<Monitor*> monitors;
+    RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert( rates );
     monitoredNodes.insert( sigma );
@@ -146,14 +146,6 @@ bool TestMixtureModel::run( void ) {
     delete mu8;
     delete mu9;
     delete mu10;
-    for (std::vector<Move*>::iterator it = moves.begin(); it != moves.end(); ++it) {
-        const Move *theMove = *it;
-        delete theMove;
-    }
-    for (std::vector<Monitor*>::iterator it = monitors.begin(); it != monitors.end(); ++it) {
-        const Monitor *theMonitor = *it;
-        delete theMonitor;
-    }
     
     return true;
 }

@@ -115,7 +115,7 @@ namespace RevLanguage {
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "ContainerNode.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "RbException.h"
 #include "RlUtils.h"
@@ -374,17 +374,17 @@ const MethodTable& ModelContainer<rlType, dim, valueType>::getMethods(void) cons
         // Stochastic variable member functions
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberFunction( RlUtils::Void, clampArgRules) );
+        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
         
         ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberFunction( RlUtils::Void, redrawArgRules) );
+        methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
         
         ArgumentRules* setValueArgRules = new ArgumentRules();
         setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberFunction( RlUtils::Void, setValueArgRules) );
+        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
         
         ArgumentRules* unclampArgRules = new ArgumentRules();
-        methods.addFunction("unclamp", new MemberFunction( RlUtils::Void, unclampArgRules) );
+        methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
 
         // Necessary call for proper inheritance
         methods.setParentTable( &Container::getMethods() );

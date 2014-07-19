@@ -1,0 +1,124 @@
+# Test file for mcmc on gtr model with primates dataset
+
+# read the data
+# the readCharacter function returns a vector of matrices. We just take the first one
+nucDataArray <- readCharacterData("data/nucmamshort.nex")
+mitDataArray <- readCharacterData("data/nucmamshort2.nex")
+nucData <- nucDataArray[1]
+mitData <- mitDataArray[1]
+
+# get some useful variables from the data
+taxaCount <- nucData.ntaxa()
+names <- nucData.names()
+
+nucNSitesArray <- nucData.nchar()
+nucNSites <- nucNSitesArray[1]
+
+mitNSitesArray <- mitData.nchar()
+mitNSites <- mitNSitesArray[1]
+
+tau ~ uniformTimeTree( originTime = 2.0, taxonNames = names)
+
+# work under fixed topology
+# set tau equal to externally given tree
+treeArray <- readTrees("data/chronoplac.tree")
+fixedTree <- treeArray[1]
+tau.clamp(fixedTree)
+
+index <- 1
+
+# moves on the tree: only relative dates
+moves[index] <- mSubtreeScale(tau, weight=5.0)
+index <- index + 1
+moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+index <- index + 1
+
+# substition models
+# constant hypernodes
+bf <- v(1,1,1,1)
+e <- v(1,1,1,1,1,1)
+
+# nuclear partition
+nucpi ~ dirichlet(bf)
+nucer ~ dirichlet(e)
+
+# moves on the substitution process parameters
+moves[index] <- mSimplexElementScale(nucpi, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+moves[index] <- mSimplexElementScale(nucer, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+
+# rate matrix
+nucQ := gtr(nucer,nucpi)
+
+# mitochondrial partition
+mitpi ~ dirichlet(bf)
+miter ~ dirichlet(e)
+
+# moves on the substitution process parameters
+moves[index] <- mSimplexElementScale(mitpi, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+moves[index] <- mSimplexElementScale(miter, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+
+# rate matrix
+mitQ := gtr(miter,mitpi)
+
+# covariance matrix (2x2)
+# of parameters kappa * I2 and 1 degrees of freedom
+kappa ~ exponential(1.0)
+df <- 4
+dim <- 2
+sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
+
+# moves on kappa and precision matrix
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=10.0)
+index <- index + 1
+moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=10.0)
+index <- index + 1
+
+rootval[1] <- 0
+rootval[2] <- 0
+
+# bivariate Brownian process
+br ~ mvtBrownian(tau,sigma=sigma)
+
+# moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
+index <- index + 1
+
+"exp rates"
+# rate variation along the tree
+# first component of the Brownian process: nuclear rate variation
+nucRate := expbranchtree(tree=tau,process=br,offset=rootval[1],1)
+
+# second component of the Brownian process: mitochondrial rate variation
+mitRate := expbranchtree(tree=tau,process=br,offset=rootval[2],2)
+
+"subs"
+# the sequence evolution models
+nucSeq ~ substModel(tree=tau, Q=nucQ, branchRates=nucRate, nSites=nucNSites, type="DNA")
+mitSeq ~ substModel(tree=tau, Q=mitQ, branchRates=mitRate, nSites=mitNSites, type="RNA")
+
+# attach the data
+nucSeq.clamp(nucData)
+mitSeq.clamp(mitData)
+
+"model"
+mymodel <- model(nucpi)
+
+monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
+monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, br)
+monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
+monitors[4] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")
+ 
+"mcmc"
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.run(100000)
+
+

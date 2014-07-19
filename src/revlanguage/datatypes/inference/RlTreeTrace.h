@@ -59,7 +59,7 @@ namespace RevLanguage {
 
 
 #include "ArgumentRules.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "Natural.h"
 #include "RlUtils.h"
@@ -164,7 +164,7 @@ const RevLanguage::MethodTable& RevLanguage::TreeTrace<treeType>::getMethods(voi
         
         ArgumentRules* summarizeArgRules = new ArgumentRules();
         summarizeArgRules->push_back( new ArgumentRule("burnin", true, Natural::getClassTypeSpec(), new Natural(0)) );
-        methods.addFunction("summarize", new MemberFunction( RlUtils::Void, summarizeArgRules) );
+        methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

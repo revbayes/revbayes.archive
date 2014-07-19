@@ -142,10 +142,10 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
     }
     
     WorkspaceVector<Trace> *rv = new WorkspaceVector<Trace>();
-    for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it) {
-        Trace *t = new Trace( *it );
-        t->computeStatistics();
-        rv->push_back( t );
+    for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it)
+    {
+        it->computeStatistics();
+        rv->push_back( new Trace( *it ) );
     }
     
     // return the vector of traces
@@ -216,11 +216,10 @@ const TypeSpec& Func_readTrace::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readTrace::getReturnType( void ) const {
-    
+const TypeSpec& Func_readTrace::getReturnType( void ) const
+{
     static TypeSpec returnTypeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
     return returnTypeSpec;
 }
-
 
 
