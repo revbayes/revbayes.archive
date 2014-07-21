@@ -10,7 +10,7 @@
 ################################################################################
 
 ### Load data file and uniform partition model
-source("data/uniform_partition_model.Rev")
+source("RevBayes_scripts/uniform_partition_model.Rev")
 
 monitors[1] <- modelmonitor(filename="conifer_uniform.log",printgen=100, separator = "	")
 monitors[2] <- filemonitor(filename="conifer_uniform.trees",printgen=100, separator = "	", phylogeny)
@@ -20,7 +20,7 @@ monitors[4] <- filemonitor(filename="conifer_uniform_fm.log",printgen=100, separ
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 ##mymcmc.burnin(generations=10000,tuningInterval=1000)
-mymcmc.run(generations=100000)
+mymcmc.run(generations=100)
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
