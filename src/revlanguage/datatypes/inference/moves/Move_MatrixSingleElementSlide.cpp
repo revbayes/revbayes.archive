@@ -11,15 +11,16 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
-
+#include "MatrixReal.h"
+#include "MatrixRealSingleElementSlidingMove.h"
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RealMatrix.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "MatrixRealSingleElementSlidingMove.h"
 
 
 using namespace RevLanguage;
