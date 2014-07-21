@@ -130,9 +130,9 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::cout << old_seed[0] << " " << old_seed[1] << "\n";
     std::vector<unsigned> seed;
-    seed.push_back(1+0); seed.push_back(1);
+    seed.push_back(1+1); seed.push_back(1);
 //    old_seed = seed;
-    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
 
@@ -166,8 +166,8 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "malesia_static.atlas.txt";
-    afn = "hawaii_static.atlas.txt";
-//    afn = "hawaii_dynamic.atlas.txt";
+//    afn = "hawaii_static.atlas.txt";
+    afn = "hawaii_dynamic.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -368,8 +368,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_nonConst[0] );
     monitoredNodes.insert( glr_nonConst[1] );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 100, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
-    monitors.push_back(new ScreenMonitor(monitoredNodes, 100, "\t" ) );
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
