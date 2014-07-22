@@ -148,6 +148,13 @@ std::set<const DagNode*> BranchRateJumpProcess::getParameters( void ) const
     parameters.insert( lambda );
     parameters.insert( instantaneousJumpProbability );
     
+    // add the parameters of the distribution
+    const std::set<const DagNode*>& pars = valueDistribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        parameters.insert( *it );
+    }
+    
     parameters.erase( NULL );
     return parameters;
 }
@@ -177,6 +184,8 @@ void BranchRateJumpProcess::swapParameter(const DagNode *oldP, const DagNode *ne
     {
         instantaneousJumpProbability = static_cast< const TypedDagNode<double> * >( newP );
     }
+    
+    valueDistribution->swapParameter(oldP,newP);
     
 }
 
