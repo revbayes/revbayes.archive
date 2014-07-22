@@ -50,45 +50,27 @@ for (i in 1:n_parts){
 
   er_prior[i] <- v(1,1,1,1,1,1)
   er[i] ~ dnDirichlet(er_prior[i])
-<<<<<<< HEAD
-  moves[mv_idx+1] <- mvSimplexElementScale(er[i], alpha=10.0, tune=true, weight=3.0)
-
-  sf_prior[i] <- v(1,1,1,1)
-  sf[i] ~ dnDirichlet(sf_prior[i])
-  moves[mv_idx+1] <- mvSimplexElementScale(sf[i], alpha=10.0, tune=true, weight=2.0) 
-=======
   moves[mi++] <- mvSimplexElementScale(er[i], alpha=10.0, tune=true, weight=3.0)
 
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
   moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10.0, tune=true, weight=2.0) 
->>>>>>> 2c3d67dd56f0b10f0c490b78f628f8adf2f55473
 
   Q[i] := gtr(er[i],sf[i])
 
   shape_prior[i] <- 0.05
   shape[i] ~ dnExponential( shape_prior[i] )
-<<<<<<< HEAD
-  norm_gamma_rates[i] := fnNormalizedQuantile( dnGamma(shape[i], shape[i]) , 4 )
-
-  # add moves for the stationary frequencies, exchangeability rates and the shape parameter
-  moves[mv_idx+1] <- mvScale(shape[i], lambda=1.0, tune=true, weight=2.0)
-
-=======
   norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
   moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
->>>>>>> 2c3d67dd56f0b10f0c490b78f628f8adf2f55473
+
 }
 
 # Specify a uniform topology prior
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-<<<<<<< HEAD
-moves[mv_idx+1] <- mvNNI(topology, weight=10.0)
-=======
 moves[mi++] <- mvNNI(topology, weight=10.0)
->>>>>>> 2c3d67dd56f0b10f0c490b78f628f8adf2f55473
+
 
 #### Specify a prior and moves on the branch lengths #### 
 # create a random variable for each branch length using a for loop
@@ -97,11 +79,7 @@ for (i in 1:n_branches) {
   br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-<<<<<<< HEAD
-  moves[mv_idx+1] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
-=======
   moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
->>>>>>> 2c3d67dd56f0b10f0c490b78f628f8adf2f55473
 }
 
 nb <- n_branches * 1.0
