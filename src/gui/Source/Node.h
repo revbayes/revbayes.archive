@@ -34,15 +34,14 @@
 @property (nonatomic)        int       depthFromTip;
 @property (nonatomic)        NSPoint   viewCoordinates;
 @property (nonatomic)        int       state;
+@property (nonatomic,weak)   Node*     ancestor;
 
 - (void)addDescendant:(Node*)des;
 - (void)addDescendantAtLeftMostPosition:(Node*)des;
 - (int)numberOfDescendants;
-- (Node*)ancestor;
 - (Node*)descendantIndexed:(size_t)idx;
 - (void)print;
 - (void)removeDescendant:(Node*)des;
 - (void)removeAllDescendants;
-- (void)setAncestor:(Node*)anc;
 
 @end

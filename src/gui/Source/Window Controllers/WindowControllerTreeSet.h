@@ -5,17 +5,17 @@
 
 @interface WindowControllerTreeSet : NSWindowController <NSTabViewDelegate> {
 
-	IBOutlet NSTabView*             treeSourceTab;
-    IBOutlet NSButton*              okButton;
-    IBOutlet NSButton*              cancelButton;
-    IBOutlet NSButton*              exportButton;
-    IBOutlet NSButton*              helpButton;
-    IBOutlet NSPopUpButton*         numberOfInletsSelector;
-    ToolTreeSet*                    myTool;
-    int                             numberOfInlets;
+	IBOutlet NSTabView*       treeSourceTab;
+    IBOutlet NSButton*        okButton;
+    IBOutlet NSButton*        cancelButton;
+    IBOutlet NSButton*        exportButton;
+    IBOutlet NSButton*        helpButton;
+    IBOutlet NSPopUpButton*   numberOfInletsSelector;
+    ToolTreeSet*              myTool;
+    int                       numberOfInlets;
 }
 
-@property (readwrite) int numberOfInlets;
+@property (nonatomic) int numberOfInlets;
 
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)changeTreeSource:(id)sender;

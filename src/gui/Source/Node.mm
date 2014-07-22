@@ -5,6 +5,7 @@
 
 @implementation Node
 
+@synthesize ancestor;
 @synthesize flag;
 @synthesize index;
 @synthesize isLeaf;
@@ -32,11 +33,6 @@
 - (int)numberOfDescendants {
 
     return (int)[descendants count];
-}
-
-- (Node*)ancestor {
-
-    return ancestor;
 }
 
 - (Node*)descendantIndexed:(size_t)idx {
@@ -149,11 +145,6 @@
 - (void)removeAllDescendants {
 
     [descendants removeAllObjects];
-}
-
-- (void)setAncestor:(Node*)anc {
-
-    ancestor = anc;
 }
 
 @end

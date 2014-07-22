@@ -145,7 +145,7 @@
 	while ( (element = [enumerator nextObject]) )
 		{
 		if ( [element touchOnRevival] == YES )
-			[element updateForChangeInState];
+			[element updateForChangeInUpstreamState];
 		}
 }
 
