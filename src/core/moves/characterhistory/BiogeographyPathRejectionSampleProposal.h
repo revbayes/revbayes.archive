@@ -237,10 +237,12 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     BranchHistory* bh = &p.getHistory(*(this->node));
     
     // reject sample path history
+    bool failed = false;
     std::vector<CharacterEvent*> parentVector = bh->getParentCharacters();
     std::vector<CharacterEvent*> childVector =  bh->getChildCharacters();
     for (std::set<size_t>::iterator it = this->siteIndexSet.begin(); it != this->siteIndexSet.end(); it++)
     {
+        int attempts = 0;
         std::set<CharacterEvent*> tmpHistory;
         unsigned int currState = parentVector[*it]->getState();
         unsigned int endState = childVector[*it]->getState();
@@ -251,7 +253,6 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
          
             // proceed with rejection sampling
             currState = parentVector[*it]->getState();
-            
             double t = 0.0;
 
             double currAge = startAge;
@@ -305,16 +306,21 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
                     }
                 }
                 
-                if (t >= 1.0 && currState != endState)
+                if (attempts > 100)
+                    failed = true;
+                
+                if (t >= 1.0 && currState != endState && !failed)
                 {
                     for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
                         delete *it_h;
+                    attempts++;
                 }
 
             }
             while(t < 1.0);
+            
         }
-        while (currState != endState);
+        while (currState != endState && failed == false);
 
         
         for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
@@ -326,14 +332,12 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     // assign values back to model for likelihood
     bh->updateHistory(this->proposedHistory, this->siteIndexSet);
     
-//    bh->print();
-    
-    // return hastings ratio
-    this->proposedLnProb = computeLnProposal( *(this->node), *bh);
-    
-//    std::cout << this->node->getAge() + this->node->getBranchLength() << " " << this->node->getAge() << "\n";
-//    std::cout << " " << this->storedLnProb << " " << this->proposedLnProb << "\n";
-    
+    // auto-reject if too many failed rejections samplings
+    if (!failed)
+        this->proposedLnProb = RbConstants::Double::neginf;
+    // otherwise, proceed with MH
+    else
+        this->proposedLnProb = computeLnProposal( *(this->node), *bh);
     
     return this->storedLnProb - this->proposedLnProb;
 }

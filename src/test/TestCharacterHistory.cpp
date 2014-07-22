@@ -66,6 +66,11 @@
 #include "UniformBranchLengthTreeDistribution.h"
 #include "DistanceDependentDispersalFunction.h"
 
+// bd test
+#include "RootTimeSlide.h"
+#include "OriginTimeSlide.h"
+#include "NodeTimeSlideUniform.h"
+
 using namespace RevBayesCore;
 
 
@@ -139,6 +144,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool usingAmbiguousCharacters   = !true;
     bool simulate                   = false;
     bool useClock                   = !true;
+    bool useBdProcess               = !true;
     bool forbidExtinction           = true;
     bool useCladogenesis            = true;
     bool useDistances               = true;
@@ -183,12 +189,27 @@ bool TestCharacterHistory::run_exp(void) {
     
     // tree
     std::vector<std::string> names = data[0]->getTaxonNames();
-    ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge() ) );
-//    ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(1.0));
-//    ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
-//    ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
-    StochasticNode<TimeTree>* tau = new StochasticNode<TimeTree>("tau", new UniformTimeTreeDistribution(origin, names));
-//    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    double rootAge = trees[0]->getRoot().getAge();
+
+    ConstantNode<double> *meanOT    = new ConstantNode<double>("meanOT", new double(rootAge*1.5));
+    ConstantNode<double> *stdOT     = new ConstantNode<double>("stdOT", new double(10.0));
+    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
+    origin->setValue(rootAge);
+    StochasticNode<TimeTree> *tau = NULL;
+
+    if (useBdProcess)
+    {
+        ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(1.0));
+        ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
+        ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
+    
+        tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+        
+    }
+    else
+    {
+        tau = new StochasticNode<TimeTree>("tau", new UniformTimeTreeDistribution(origin, names));
+    }
     tau->setValue( trees[0] );
     
     
@@ -278,6 +299,11 @@ bool TestCharacterHistory::run_exp(void) {
     std::cout << "Adding moves\n";
     RbVector<Move> moves;
 //    TopologyNode* nd = NULL; // &tau->getValue().getNode(60); 
+    
+	moves.push_back( new RootTimeSlide( tau, 50.0, true, 5.0 ) );
+	moves.push_back( new OriginTimeSlide( origin, tau, 50.0, true, 5.0 ) );
+	moves.push_back( new NodeTimeSlideUniform( tau, numNodes*2 ) );
+
     
     if (useClock)
     {
@@ -373,7 +399,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
     monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
-
+    
+    monitors.push_back(new FileMonitor(tau, 10, filepath + "rb" + ss.str() + ".trees.txt", "\t"));
     
     //////////
     // model
