@@ -18,7 +18,7 @@ monitors[3] <- screenmonitor(printgen=10, separator = "  ", shape, tree_length)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-#mymcmc.burnin(generations=10000,tuningInterval=1000)
+mymcmc.burnin(generations=10000,tuningInterval=1000)
 mymcmc.run(generations=30000)
 
 # Now, we will analyze the tree output.
