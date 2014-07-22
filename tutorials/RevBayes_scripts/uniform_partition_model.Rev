@@ -48,10 +48,10 @@ Q := gtr(er,sf)
 
 shape_prior <- 0.05
 shape ~ dnExponential( shape_prior )
-norm_gamma_rates := fnNormalizedQuantile( dnGamma(shape, shape) , 4 )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
 
 # add moves for the stationary frequencies, exchangeability rates and the shape parameter
-moves[mi++] <- mvScale(shape, lambda=1.0, tune=true, weight=2.0)
+moves[mi++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 
 
 
@@ -73,6 +73,8 @@ for (i in 1:n_branches) {
   moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
 
+nb <- n_branches * 1.0
+tree_length := mean(br_lens) * nb
 
 # Build the tree by combining the topology with the branch length.
 phylogeny := treeAssembly(topology, br_lens)
