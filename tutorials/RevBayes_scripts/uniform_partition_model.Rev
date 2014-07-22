@@ -14,8 +14,8 @@
 
 ### Read in sequence data for both genes
 
-data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
-data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+data_atpB <- readCharacterData("/Users/mlandis/Documents/code/revbayes-code/examples/data/conifer_atpB.nex")[1]
+data_rbcL <- readCharacterData("/Users/mlandis/Documents/code/revbayes-code/examples/data/conifer_rbcL.nex")[1]
 
 ### Create concatenated data matrix
 data <- data_atpB + data_rbcL
@@ -31,12 +31,12 @@ mi <- 0
 #### specify the GTR+G substitution model applied uniformly to all sites ###
 er_prior <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(er_prior)
-moves[mi+1] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
+moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 
 
 sf_prior <- v(1,1,1,1) 
 sf ~ dnDirichlet(sf_prior)
-moves[mi+1] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
+moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=2.0)
 
 
 #### create a deterministic variable for the rate matrix ####
@@ -57,7 +57,7 @@ moves[mi++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mi+1] <- mvNNI(topology, weight=10.0)
+moves[mi++] <- mvNNI(topology, weight=10.0)
 
 
 #### Specify a prior and moves on the branch lengths #### 
@@ -67,7 +67,7 @@ for (i in 1:n_branches) {
   br_lens[i] ~ dnExponential(1.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-  moves[mi+1] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
+  moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
 
 nb <- n_branches * 1.0
