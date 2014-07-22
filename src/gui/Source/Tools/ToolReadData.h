@@ -21,16 +21,16 @@
     WindowControllerReadData*          controlWindow;
 }
 
-@property (readwrite,retain) NSString* fileName;
-@property (readwrite,retain) NSString* pathName;
-@property (readwrite)        int       dataAlignment;
-@property (readwrite)        int       dataFormat;
-@property (readwrite)        int       dataInterleaved;
-@property (readwrite)        int       dataType;
-@property (readwrite)        int       dataTypeSimulated;
-@property (readwrite)        int       numberOfCharacters;
-@property (readwrite)        int       numberOfTaxa;
-@property (readwrite)        int       matrixType;
+@property (nonatomic,strong) NSString* fileName;
+@property (nonatomic,strong) NSString* pathName;
+@property (nonatomic)        int       dataAlignment;
+@property (nonatomic)        int       dataFormat;
+@property (nonatomic)        int       dataInterleaved;
+@property (nonatomic)        int       dataType;
+@property (nonatomic)        int       dataTypeSimulated;
+@property (nonatomic)        int       numberOfCharacters;
+@property (nonatomic)        int       numberOfTaxa;
+@property (nonatomic)        int       matrixType;
 
 - (void)addBlankDataMatrix;
 - (void)closeControlPanel;
