@@ -52,7 +52,7 @@ bool TypeSpec::operator==( const TypeSpec& x ) const
  */
 bool TypeSpec::operator!=( const TypeSpec& x ) const
 {
-    return type == x.type;
+    return type != x.type;
 }
 
 
