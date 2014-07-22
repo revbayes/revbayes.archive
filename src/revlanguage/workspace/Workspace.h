@@ -85,6 +85,7 @@ namespace RevLanguage {
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
         bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
+        const TypeTable&        getTypeTable(void) const;                                                   //!< Get the type table
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
         RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
         Container*              makeNewEmptyContainer(const std::string& elemType, size_t dim) const;       //!< Make an empty container of specified element type and dim
