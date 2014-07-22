@@ -135,6 +135,9 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     // reset the lnProb and set it to log( alpha^K )
 	
 //	return 0.0;
+    
+    // we should update the restaurant vector before we do the computations. (Sebastian)
+    createRestaurantVectors();
 	
 	int nt = numTables;
 	//int ne = numElements;
@@ -216,8 +219,11 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 			}
 		}		
 	}
-	createRestaurantVectors();
-	return rv ;
+    
+    // the value might not be set so we cannot update the restaurant vectors ... (Sebastian)
+//	createRestaurantVectors();
+	
+    return rv ;
 }
 
 
@@ -239,6 +245,13 @@ std::set<const RevBayesCore::DagNode*> RevBayesCore::DirichletProcessPriorDistri
 //    parameters.insert( baseDistribution );
     parameters.insert( concentration );
     
+    // add the parameters of the distribution
+    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        parameters.insert( *it );
+    }
+    
     parameters.erase( NULL );
     return parameters;
 }
@@ -253,6 +266,10 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameter(c
 //    }
     if (oldP == concentration){
         concentration = static_cast<const TypedDagNode< double > *>( newP );
+    }
+    else
+    {
+        baseDistribution->swapParameter(oldP,newP);
     }
     
 }
