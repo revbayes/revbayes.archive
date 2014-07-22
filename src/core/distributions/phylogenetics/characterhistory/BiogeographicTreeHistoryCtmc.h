@@ -410,7 +410,7 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
 template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeValue( void )
 {
-    if (this->dagNode->isClamped())
+//    if (this->dagNode->isClamped())
     {
         std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
         for (size_t i = 0; i < nodes.size(); i++)
@@ -514,7 +514,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-//        this->histories[i]->print();
+        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();
@@ -621,7 +621,8 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
             double g1 = nodeTpMatrix[1][desS1];
             
             unsigned int s = 0;
-            if (u < g1 / (g0 + g1))
+//            if (u < g1 / (g0 + g1))
+            
                 s = 1;
             
 //            std::cout << s;
