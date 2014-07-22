@@ -10,11 +10,11 @@
 ################################################################################
 
 ### Load data file and uniform partition model
-source("RevBayes_scripts/genecodon_partition_model.Rev")
+source("RevBayes_scripts/twogene_partition_model.Rev")
 
-monitors[1] <- modelmonitor(filename="output/conifer_genecodon.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="output/conifer_genecodon.trees",printgen=10, separator = "	", phylogeny)
-monitors[3] <- screenmonitor(printgen=10, separator = "  ", shape[1], shape[2], shape[3], shape[4], tree_length)
+monitors[1] <- modelmonitor(filename="output/conifer_twogene.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="output/conifer_twogene.trees",printgen=10, separator = "	", phylogeny)
+monitors[3] <- screenmonitor(printgen=10, separator = "  ", shape[1], shape[2], tree_length)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
@@ -30,3 +30,4 @@ treetrace.summarize()
 mapTree(treetrace,"output/conifer_uniform.tree")
 
 q()
+
