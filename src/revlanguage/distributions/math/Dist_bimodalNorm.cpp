@@ -48,7 +48,7 @@ RevBayesCore::BimodalNormalDistribution* Dist_bimodalNorm::createDistribution( v
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the process. 
  */
@@ -60,16 +60,16 @@ Dist_bimodalNorm* Dist_bimodalNorm::clone( void ) const
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_bimodalNorm::getClassName(void) 
+const std::string& Dist_bimodalNorm::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_bimodalNorm";
+    static std::string revType = "Dist_bimodalNorm";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -81,9 +81,9 @@ const std::string& Dist_bimodalNorm::getClassName(void)
 const TypeSpec& Dist_bimodalNorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

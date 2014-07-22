@@ -37,7 +37,7 @@ Func_license* Func_license::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_license::execute( void ) {
+RevPtr<Variable> Func_license::execute( void ) {
     
     
     RBOUT( "\n" );
@@ -64,20 +64,20 @@ const ArgumentRules& Func_license::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_license::getClassName(void) {
+/** Get Rev type of object */
+const std::string& Func_license::getClassType(void) {
     
-    static std::string rbClassName = "Func_license";
+    static std::string revType = "Func_license";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_license::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

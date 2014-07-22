@@ -37,7 +37,7 @@ Func_contributors* Func_contributors::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_contributors::execute( void ) {
+RevPtr<Variable> Func_contributors::execute( void ) {
     
     
     RBOUT( "\n" );
@@ -64,20 +64,20 @@ const ArgumentRules& Func_contributors::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_contributors::getClassName(void) {
+/** Get Rev type of object */
+const std::string& Func_contributors::getClassType(void) {
     
-    static std::string rbClassName = "Func_contributors";
+    static std::string revType = "Func_contributors";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_contributors::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

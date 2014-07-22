@@ -18,11 +18,11 @@
 
 #include "MemberProcedure.h"
 #include "MethodTable.h"
+#include "ModelVector.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RevObject.h"
 #include "RlUtils.h"
-#include "Vector.h"
 #include "RlString.h"
 #include "TypeSpec.h"
 #include "Workspace.h"
@@ -76,7 +76,7 @@ void RevObject::constructInternalObject( void ) {
 /** Convert to type and dim. The caller manages the returned object. */
 RevObject* RevObject::convertTo(const TypeSpec& typeSpec) const {
         
-    throw RbException("Failed conversion from " + getTypeSpec() + " to " + typeSpec);
+    throw RbException("Failed conversion from type '" + getType() + "' to type '" + typeSpec.getType() + "'" );
     
     return NULL;
 }
@@ -112,7 +112,7 @@ RevObject* RevObject::divide(const RevObject &rhs) const
 /** 
  * Execute simple method. 
  */
-RevObject* RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RevObject::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "get") 
     {
@@ -149,22 +149,35 @@ RevObject* RevObject::executeMethod(std::string const &name, const std::vector<A
 }
 
 
-/** Get class vector describing type of object */
-const std::string& RevObject::getClassName(void)
+/**
+ * Find or create an element variable of a container. Default implementation throws
+ * an error. Override in container objects.
+ */
+RevPtr<Variable> RevObject::findOrCreateElement( const std::vector<size_t>& indices )
 {
-    
-    static std::string rbClassName = "RevObject";
-	return rbClassName; 
+    throw RbException( "Object of type '" + getType() + "' does not have any elements" );
 }
 
 
 /** Get class vector describing type of object */
+const std::string& RevObject::getClassType(void)
+{
+    
+    static std::string revType = "RevObject";
+	return revType; 
+}
+
+
+/**
+ * Get class vector describing type of object. We are
+ * the base class of all other classes, so parent is NULL.
+ */
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), NULL );
 	
-    return rbClass; 
+    return revTypeSpec; 
 }
 
 
@@ -180,11 +193,9 @@ const MemberRules& RevObject::getMemberRules(void) const
 
 
 /** Get a member variable */
-RevObject* RevObject::getMember(const std::string& name) const
+RevPtr<Variable> RevObject::getMember(const std::string& name) const
 {
-
     throw RbException("No Member named '" + name + "' available.");
-
 }
 
 
@@ -245,6 +256,23 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 }
 
 
+/**
+ * Get the number of dimensions. We use 0 for scalars, 1 for vectors,
+ * 2 for matrices, etc.
+ */
+size_t RevObject::getDim( void ) const
+{
+    return 0;
+}
+
+
+/** Get a constant element value. Default implementation throws an error */
+RevPtr<Variable> RevObject::getElement( const std::vector<size_t>& indices )
+{
+    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
+}
+
+
 /** Does this object have a member called "name" */
 bool RevObject::hasMember(std::string const &name) const
 {
@@ -270,6 +298,16 @@ void RevObject::increment( void )
     
     throw RbException("Cannot increment a value of type '" + this->getType() + "'.");
     
+}
+
+
+/**
+ * The default implementation is that the object is not an abstract type object.
+ * Only abstract type objects need to override this.
+ */
+bool RevObject::isAbstract( void ) const
+{
+    return false;
 }
 
 
@@ -315,11 +353,10 @@ void RevObject::makeConstantValue( void )
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
-RevObject* RevObject::makeDagReference(void)
+RevObject* RevObject::makeIndirectReference(void)
 {
-    
     std::ostringstream msg;
-    msg << "The type '" << getClassName() << "' not supported in indirect reference assignments (yet)";
+    msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
     throw RbException( msg );
 }
 
@@ -330,8 +367,15 @@ RevObject* RevObject::makeDagReference(void)
 void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
 {
     std::ostringstream msg;
-    msg << "The type '" << getClassName() << "' not supported in deterministic nodes (yet)";
+    msg << "The type '" << getClassType() << "' not supported in deterministic nodes (yet)";
     throw RbException( msg );
+}
+
+
+/** Get a deterministic lookup of an element. Default implementation throws an error */
+RevObject* RevObject::makeElementLookup( const std::vector< RevPtr<Variable> >& indices )
+{
+    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
 }
 
 
@@ -357,11 +401,14 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
  */
 void RevObject::printStructure( std::ostream &o ) const
 {
+    o << "_RevType      = " << getType() << std::endl;
+    o << "_RevTypeSpec  = " << getTypeSpec() << std::endl;
+    o << "_value        = ";
     
-    o << "No structural information available for an object of type '" << getType() << "'" << std::endl;
-    
+    std::ostringstream o1;
+    printValue( o1 );
+    o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 }
-
 
 
 /**
@@ -426,26 +473,11 @@ void RevObject::setMemberVariable(const std::string& name, const RevPtr<Variable
 
 
 /** 
- * Setting the name of the internal variable. The default implementation does nothing because we don't have a DAG node as our internal variable.
- * Note, RevLanguage types which can be used as types in the DAG should override this method.
+ * Setting the name of the internal variable. The default implementation does nothing.
+ * Note: Rev types that can be used as types in the DAG should override this method.
  */
 void RevObject::setName(std::string const &n)
 {
-    // do nothing
-}
-
-
-/**
- * Setting the value node, potentially replacing the existing value node. The default implementation
- * throws an error because we do not have a value node.
- */
-void RevObject::setDagNode(RevBayesCore::DagNode* newVal)
-{
-    
-    if ( this->hasDagNode() )
-        throw RbException( "Replacing or setting of the internal value node of this type of object not supported yet (lazy developers...)");
-    else
-        throw RbException( "This language object does not have an internal value node that can be replaced or set");
 }
 
 

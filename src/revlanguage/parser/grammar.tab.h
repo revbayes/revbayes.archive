@@ -56,31 +56,38 @@
      NEXT = 272,
      BREAK = 273,
      RETURN = 274,
-     ARROW_ASSIGN = 275,
-     TILDE_ASSIGN = 276,
-     EQUATION_ASSIGN = 277,
-     ADDITION_ASSIGN = 278,
-     SUBTRACTION_ASSIGN = 279,
-     MULTIPLICATION_ASSIGN = 280,
-     DIVISION_ASSIGN = 281,
-     DECREMENT = 282,
-     INCREMENT = 283,
-     EQUAL = 284,
-     AND = 285,
-     OR = 286,
-     AND2 = 287,
-     OR2 = 288,
-     GT = 289,
-     GE = 290,
-     LT = 291,
-     LE = 292,
-     EQ = 293,
-     NE = 294,
-     END_OF_INPUT = 295,
-     UNOT = 296,
-     UPLUS = 297,
-     UMINUS = 298,
-     UAND = 299
+     MOD_CONST = 275,
+     MOD_DYNAMIC = 276,
+     MOD_STOCHASTIC = 277,
+     MOD_DETERMINISTIC = 278,
+     MOD_MUTABLE = 279,
+     ARROW_ASSIGN = 280,
+     TILDE_ASSIGN = 281,
+     EQUATION_ASSIGN = 282,
+     CONTROL_ASSIGN = 283,
+     REFERENCE_ASSIGN = 284,
+     ADDITION_ASSIGN = 285,
+     SUBTRACTION_ASSIGN = 286,
+     MULTIPLICATION_ASSIGN = 287,
+     DIVISION_ASSIGN = 288,
+     DECREMENT = 289,
+     INCREMENT = 290,
+     EQUAL = 291,
+     AND = 292,
+     OR = 293,
+     AND2 = 294,
+     OR2 = 295,
+     GT = 296,
+     GE = 297,
+     LT = 298,
+     LE = 299,
+     EQ = 300,
+     NE = 301,
+     END_OF_INPUT = 302,
+     UNOT = 303,
+     UPLUS = 304,
+     UMINUS = 305,
+     UAND = 306
    };
 #endif
 /* Tokens.  */
@@ -101,38 +108,45 @@
 #define NEXT 272
 #define BREAK 273
 #define RETURN 274
-#define ARROW_ASSIGN 275
-#define TILDE_ASSIGN 276
-#define EQUATION_ASSIGN 277
-#define ADDITION_ASSIGN 278
-#define SUBTRACTION_ASSIGN 279
-#define MULTIPLICATION_ASSIGN 280
-#define DIVISION_ASSIGN 281
-#define DECREMENT 282
-#define INCREMENT 283
-#define EQUAL 284
-#define AND 285
-#define OR 286
-#define AND2 287
-#define OR2 288
-#define GT 289
-#define GE 290
-#define LT 291
-#define LE 292
-#define EQ 293
-#define NE 294
-#define END_OF_INPUT 295
-#define UNOT 296
-#define UPLUS 297
-#define UMINUS 298
-#define UAND 299
+#define MOD_CONST 275
+#define MOD_DYNAMIC 276
+#define MOD_STOCHASTIC 277
+#define MOD_DETERMINISTIC 278
+#define MOD_MUTABLE 279
+#define ARROW_ASSIGN 280
+#define TILDE_ASSIGN 281
+#define EQUATION_ASSIGN 282
+#define CONTROL_ASSIGN 283
+#define REFERENCE_ASSIGN 284
+#define ADDITION_ASSIGN 285
+#define SUBTRACTION_ASSIGN 286
+#define MULTIPLICATION_ASSIGN 287
+#define DIVISION_ASSIGN 288
+#define DECREMENT 289
+#define INCREMENT 290
+#define EQUAL 291
+#define AND 292
+#define OR 293
+#define AND2 294
+#define OR2 295
+#define GT 296
+#define GE 297
+#define LT 298
+#define LE 299
+#define EQ 300
+#define NE 301
+#define END_OF_INPUT 302
+#define UNOT 303
+#define UPLUS 304
+#define UMINUS 305
+#define UAND 306
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 79 "./grammar.y"
+#line 78 "./grammar.y"
 {
     char*                                           c_string;
     std::string*                                    string;
@@ -149,7 +163,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 153 "./grammar.tab.h"
+#line 167 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

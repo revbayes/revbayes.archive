@@ -1,10 +1,10 @@
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "RlTaxon.h"
 #include "TimeAndDate.h"
 #include "RbUtil.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -69,7 +69,7 @@ void Taxon::constructInternalObject( void )
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
 //    if (name == "nnodes") {
 //        size_t n = this->value->getValue().getNumberOfNodes();
@@ -77,7 +77,7 @@ RevLanguage::RevObject* Taxon::executeMethod(std::string const &name, const std:
 //    }
 //    else if (name == "names") {
 //        const std::vector<std::string>& n = this->value->getValue().getNames();
-//        return new Vector<RlString>( n );
+//        return new ModelVector<RlString>( n );
 //    } 
     
     return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args );
@@ -103,20 +103,20 @@ const MemberRules& Taxon::getMemberRules(void) const {
 }
 
 
-/** Get class name of object */
-const std::string& Taxon::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Taxon::getClassType(void) { 
     
-    static std::string rbClassName = "Taxon";
+    static std::string revType = "Taxon";
     
-    return rbClassName; 
+    return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Taxon::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-    return rbClass; 
+    return revTypeSpec; 
 }
 
 
@@ -132,7 +132,7 @@ const RevLanguage::MethodTable& Taxon::getMethods(void) const {
 //        methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
 //        
 //        ArgumentRules* namesArgRules = new ArgumentRules();
-//        methods.addFunction("names", new MemberProcedure(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+//        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

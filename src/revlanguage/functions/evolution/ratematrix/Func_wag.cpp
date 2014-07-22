@@ -31,13 +31,12 @@ Func_wag* Func_wag::clone( void ) const {
 }
 
 
-RevObject* Func_wag::execute() {
-    
+RevPtr<Variable> Func_wag::execute() {
     
     RevBayesCore::RateMatrix_Wag *rmj = new RevBayesCore::RateMatrix_Wag();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -50,19 +49,19 @@ const ArgumentRules& Func_wag::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_wag::getClassName(void) { 
+const std::string& Func_wag::getClassType(void) { 
     
-    static std::string rbClassName = "Func_wag";
+    static std::string revType = "Func_wag";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_wag::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

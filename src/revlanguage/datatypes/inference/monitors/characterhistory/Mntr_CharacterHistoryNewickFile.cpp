@@ -5,6 +5,7 @@
 //#include "TreeCharacterHistoryNhxMonitor.h"
 #include "TreeCharacterHistoryNodeMonitor.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
+#include "ModelVector.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RevObject.h"
@@ -15,7 +16,6 @@
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -44,7 +44,7 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode<std::vector<double> > *> n;
     for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
-        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const Vector<Real> & >((*i)->getRevObject()).getDagNode();
+        RevBayesCore::TypedDagNode<std::vector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
         n.insert( node );
     }
     
@@ -75,19 +75,19 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Mntr_CharacterHistoryNewickFile::getClassName(void) {
+const std::string& Mntr_CharacterHistoryNewickFile::getClassType(void) {
     
-    static std::string rbClassName = "Mntr_CharacterHistoryNewickFile";
+    static std::string revClassType = "Mntr_CharacterHistoryNewickFile";
     
-	return rbClassName;
+	return revClassType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_CharacterHistoryNewickFile::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revClassTypeSpec;
 }
 
 
@@ -111,14 +111,14 @@ const MemberRules& Mntr_CharacterHistoryNewickFile::getMemberRules(void) const {
 //        Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("events", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
-        Vector<RlString> options_style;
+        std::vector<RlString> options_style;
         //        options.push_back( RlString("std") );
         options_style.push_back( RlString("events") );
         options_style.push_back( RlString("counts") );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new OptionRule( "style", new RlString("events"), options_style ) );
 
         
-        Vector<RlString> options;
+        std::vector<RlString> options;
 //        options.push_back( RlString("std") );
         options.push_back( RlString("biogeo") );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );

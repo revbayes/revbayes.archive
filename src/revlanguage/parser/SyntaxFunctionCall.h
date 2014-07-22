@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxFunctionCall, which is
- * used to hold function calls in the syntax tree.
- *
- * @brief Declaration of SyntaxFunctionCall
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxFunctionCall_H
 #define SyntaxFunctionCall_H
 
@@ -24,43 +9,88 @@
 #include <list>
 
 
-/**
- * This is the class used to hold function calls in the syntax tree.
- *
- * We store the arguments, function name, and variable of which the
- * function is a member, if any.
- *
- */
-
 namespace RevLanguage {
 
-class SyntaxFunctionCall : public SyntaxElement {
+    /**
+     * @brief Function call syntax element
+     *
+     * This syntax element is used to hold function calls. We store the arguments,
+     * function name, and (if applicable) the variable of which the function is a member.
+     * 
+     * Function calls are expressions of the type
+     *
+     *    foo( x )
+     *
+     * or
+     *
+     *    a.foo( x )
+     *
+     * as might be expected. Note that expressions like 'f(x)[1]' are parsed out as
+     * variable elements and not function calls. In such cases, however, the variable
+     * syntax element will contain a function call syntax element holding the call 'f(x)'.
+     * If the function is a member function, as in 'a.foo( x )', then 'a' is referred to
+     * as the base variable, stored in baseVariable. If there is no base variable, 
+     * baseVariable is set to NULL.
+     *
+     * The function call will (potentially) behave differently depending on whether
+     * or not it occurs in a dynamic expression. Recall that dynamic expressions are
+     * stochastic and deterministic expression on the right-hand side of stochastic
+     * and deterministic assignments.
+     *
+     * If a function call occurs in a static (constant) expression, it will be evaluated
+     * once, and the return type is a constant or composite variable. If the call occurs
+     * in a dynamic expression, then the call results in the creation of a deterministic
+     * variable of the return type, the value of which will change dynamically if the
+     * arguments passed in are changed, or if one reassigns to the variables in those
+     * expressions.
+     *
+     * The dynamic and static evaluation of function calls are performed using the 
+     * functions evaluateDynamicContent() and evaluateContent(), respectively.
+     *
+     * Function arguments can be specified to be 'const', 'dynamic' or 'mutable'. By default,
+     * arguments are 'dynamic', which means that they are evaluated as dynamic expressions
+     * if the function call itself is part of a dynamic expression. A 'const' argument is
+     * always evaluated as a constant (static) expression regardless of whether the function
+     * call occurs in a dynamic or a static expression.
+     *
+     * Neither 'const' nor 'dynamic' arguments can be modified by the function. A 'mutable'
+     * argument, however, is evaluated as a dynamic expression and the resulting variable
+     * can be modified by the function. Functions taking 'mutable' arguments cannot be used
+     * in DAGs because they potentially create hard-to-detect loops in the DAG structure
+     * if they use their power to change the arguments passed in.
+     *
+     * The argument matching rules in Rev are similar to those in R, but the fact that Rev
+     * is a typed language presents some additional complexity. See RevLanguage::Function
+     * for more detailed explanation of the argument matching in Rev.
+     */
+    class SyntaxFunctionCall : public SyntaxElement {
 
     public:
-        SyntaxFunctionCall(const std::string &n, std::list<SyntaxLabeledExpr*>* args);                                                  //!< Standard function
-        SyntaxFunctionCall(SyntaxVariable*  var, const std::string &n, std::list<SyntaxLabeledExpr*>* args);                            //!< Member function
-        SyntaxFunctionCall(const SyntaxFunctionCall& x);                                                                                //!< Copy constructor
+        SyntaxFunctionCall(const std::string &n, std::list<SyntaxLabeledExpr*>* args);                                  //!< Standard function
+        SyntaxFunctionCall(SyntaxVariable*  var, const std::string &n, std::list<SyntaxLabeledExpr*>* args);            //!< Member function
+        SyntaxFunctionCall(const SyntaxFunctionCall& x);                                                                //!< Copy constructor
 	    
-        virtual                            ~SyntaxFunctionCall();                                                                       //!< Destructor
+        virtual                            ~SyntaxFunctionCall();                                                       //!< Destructor
 
         // Assignment operator
-        SyntaxFunctionCall&                 operator=(const SyntaxFunctionCall& x);                                                     //!< Assignment operator
+        SyntaxFunctionCall&                 operator=(const SyntaxFunctionCall& x);                                     //!< Assignment operator
 
         // Basic utility functions
-        SyntaxFunctionCall*                 clone() const;                                                                              //!< Clone object
-        void                                printValue(std::ostream& o) const;                                                          //!< Print info about object
+        SyntaxFunctionCall*                 clone() const;                                                              //!< Clone object
+        void                                printValue(std::ostream& o) const;                                          //!< Print info about object
 
         // Regular functions
-        const std::string&                  getFunctionName(void) const { return functionName; }                                        //!< Get function name
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                                          //!< Get semantic value
-        void                                setBaseVariable(SyntaxVariable* var) { variable = var; }                                    //!< Set base variable
-        bool                                isConstExpression(void) const;
-        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);                   //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        const std::string&                  getFunctionName(void) const { return functionName; }                        //!< Get function name
+        RevPtr<Variable>                    evaluateContent(Environment& env);                                          //!< Get semantic value (static)
+        RevPtr<Variable>                    evaluateDynamicContent(Environment& env);                                   //!< Get semantic value (dynamic)
+        void                                removeBaseVariable(void) { baseVariable = NULL; }                           //!< Remove base variable
+        void                                setBaseVariable(SyntaxVariable* var) { baseVariable = var; }                //!< Set base variable
+        bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
  
     protected:
-        std::list<SyntaxLabeledExpr*>*      arguments;                                                                                  //!< The arguments passed to the function
-        std::string                         functionName;                                                                               //!< The name of the function
-        SyntaxVariable*                     variable;                                                                                   //!< Variable holding member function
+        std::list<SyntaxLabeledExpr*>*      arguments;                                                                  //!< The arguments passed to the function
+        std::string                         functionName;                                                               //!< The name of the function
+        SyntaxVariable*                     baseVariable;                                                               //!< Variable holding member function
     
 };
     

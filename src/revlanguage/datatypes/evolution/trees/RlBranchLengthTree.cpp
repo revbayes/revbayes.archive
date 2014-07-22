@@ -17,13 +17,13 @@
  */
 
 
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RlBranchLengthTree.h"
 #include "RbUtil.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -65,39 +65,39 @@ BranchLengthTree* BranchLengthTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* BranchLengthTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> BranchLengthTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") {
         size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new Natural( n );
+        return new Variable( new Natural( n ) );
     }
     else if (name == "height") {
         const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new RealPos( r.getBranchLength() );
+        return new Variable( new RealPos( r.getBranchLength() ) );
     } 
     else if (name == "names") {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Vector<RlString>( n );
+        return new Variable( new ModelVector<RlString>( n ) );
     } 
     
     return ModelObject<RevBayesCore::BranchLengthTree>::executeMethod( name, args );
 }
 
 
-/** Get class name of object */
-const std::string& BranchLengthTree::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& BranchLengthTree::getClassType(void) { 
     
-    static std::string rbClassName = "BranchLengthTree";
+    static std::string revType = "BranchLengthTree";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& BranchLengthTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -116,7 +116,7 @@ const RevLanguage::MethodTable& BranchLengthTree::getMethods(void) const {
         methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),       heightArgRules              ) );
         
         ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberProcedure(Vector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules       ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

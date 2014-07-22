@@ -42,7 +42,7 @@ Func_quit* Func_quit::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_quit::execute( void ) {
+RevPtr<Variable> Func_quit::execute( void ) {
     
     throw RbException( RbException::QUIT );
     
@@ -59,20 +59,20 @@ const ArgumentRules& Func_quit::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_quit::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_quit::getClassType(void) { 
     
-    static std::string rbClassName = "Func_quit";
+    static std::string revType = "Func_quit";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_quit::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

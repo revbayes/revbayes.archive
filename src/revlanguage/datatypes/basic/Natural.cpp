@@ -28,7 +28,7 @@ Natural::Natural( RevBayesCore::TypedDagNode<int> *v ) : Integer( v ) {
 Natural::Natural( int x ) : Integer( x ) {
 
     if ( x < 0 )
-        throw RbException( "Negative value for " + getClassName() );
+        throw RbException( "Negative value for " + getClassType() );
 }
 
 
@@ -42,7 +42,7 @@ Natural::Natural( unsigned int x ) : Integer( x ) {
 Natural::Natural( unsigned long x) : Integer( int(x) ) {
 
     if ( x > INT_MAX )
-        throw RbException( "Value out of range for " + getClassName() );
+        throw RbException( "Value out of range for " + getClassType() );
 
 }
 
@@ -187,20 +187,20 @@ RealPos* Natural::divide(const RevLanguage::RealPos &rhs) const
 }
 
 
-/** Get class name of object */
-const std::string& Natural::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Natural::getClassType(void) { 
     
-    static std::string rbClassName = "Natural";
+    static std::string revType = "Natural";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Natural::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Integer::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

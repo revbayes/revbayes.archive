@@ -191,20 +191,20 @@ Real* Integer::divide(const Integer &rhs) const
 }
 
 
-/** Get class name of object */
-const std::string& Integer::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Integer::getClassType(void) { 
     
-    static std::string rbClassName = "Integer";
+    static std::string revType = "Integer";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Integer::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

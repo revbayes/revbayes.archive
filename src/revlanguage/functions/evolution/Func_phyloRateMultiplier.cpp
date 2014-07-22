@@ -1,9 +1,9 @@
 #include "Func_phyloRateMultiplier.h"
+#include "ModelVector.h"
 #include "RateMultiplierPhyloFunction.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "RlTimeTree.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -21,19 +21,19 @@ Func_phyloRateMultiplier* Func_phyloRateMultiplier::clone( void ) const
 }
 
 
-RevObject* Func_phyloRateMultiplier::execute() 
+RevPtr<Variable> Func_phyloRateMultiplier::execute()
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tree = static_cast<const TimeTree &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< std::vector<double> >* rates = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* baseRate = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::RateMultiplierPhyloFunction* f = new RevBayesCore::RateMultiplierPhyloFunction( tree, rates, baseRate );
     
     DeterministicNode< std::vector<double> > *detNode = new DeterministicNode< std::vector<double> >("", f, this->clone());
     
-    Vector<RealPos>* value = new Vector<RealPos>( detNode );
+    ModelVector<RealPos>* value = new ModelVector<RealPos>( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -48,7 +48,7 @@ const ArgumentRules& Func_phyloRateMultiplier::getArgumentRules( void ) const
         
         
         argumentRules.push_back( new ArgumentRule( "tree",      true, TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "rates",     true, Vector<RealPos>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "rates",     true, ModelVector<RealPos>::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "baseRate",  true, RealPos::getClassTypeSpec(), new RealPos(1.0) ) );
         
         rulesSet = true;
@@ -58,26 +58,26 @@ const ArgumentRules& Func_phyloRateMultiplier::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_phyloRateMultiplier::getClassName(void) { 
+const std::string& Func_phyloRateMultiplier::getClassType(void) { 
     
-    static std::string rbClassName = "Func_phyloRateMultiplier";
+    static std::string revType = "Func_phyloRateMultiplier";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_phyloRateMultiplier::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
 /* Get return type */
 const TypeSpec& Func_phyloRateMultiplier::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<RealPos>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
     
     return returnTypeSpec;
 }

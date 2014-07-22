@@ -13,7 +13,6 @@
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -38,38 +37,38 @@ RateMap* RateMap::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
    
     if (name == "nChars")
     {
         int n = (int)this->dagNode->getValue().getNumberOfCharacters();
-        return new Natural(n);
+        return new Variable( new Natural(n) );
     }
     else if (name == "nStates")
     {
         int n = (int)this->dagNode->getValue().getNumberOfStates();
-        return new Natural(n);
+        return new Variable( new Natural(n) );
     }
 
     return ModelObject<RevBayesCore::RateMap>::executeMethod( name, args );
 }
 
 
-/* Get class name of object */
-const std::string& RateMap::getClassName(void) {
+/* Get Rev type of object */
+const std::string& RateMap::getClassType(void) {
     
-    static std::string rbClassName = "RateMap";
+    static std::string revType = "RateMap";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateMap::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

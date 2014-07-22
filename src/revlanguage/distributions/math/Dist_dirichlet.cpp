@@ -11,11 +11,11 @@
 #include "ArgumentRules.h"
 #include "DirichletDistribution.h"
 #include "Dist_dirichlet.h"
+#include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlSimplex.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -38,7 +38,7 @@ Dist_dirichlet* Dist_dirichlet::clone( void ) const {
 RevBayesCore::DirichletDistribution* Dist_dirichlet::createDistribution( void ) const {
 
     // get the parameters
-    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const Vector<RealPos> &>( alpha->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* a = static_cast<const ModelVector<RealPos> &>( alpha->getRevObject() ).getDagNode();
     RevBayesCore::DirichletDistribution* d              = new RevBayesCore::DirichletDistribution( a );
     
     return d;
@@ -46,20 +46,20 @@ RevBayesCore::DirichletDistribution* Dist_dirichlet::createDistribution( void ) 
 
 
 
-/* Get class name of object */
-const std::string& Dist_dirichlet::getClassName(void) { 
+/* Get Rev type of object */
+const std::string& Dist_dirichlet::getClassType(void) { 
     
-    static std::string rbClassName = "Dist_dirichlet";
+    static std::string revType = "Dist_dirichlet";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -72,7 +72,7 @@ const MemberRules& Dist_dirichlet::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "alpha", true, Vector<RealPos>::getClassTypeSpec() ) );
+        distExpMemberRules.push_back( new ArgumentRule( "alpha", true, ModelVector<RealPos>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

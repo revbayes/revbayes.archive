@@ -11,6 +11,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_mvtBrownian.h"
+#include "ModelVector.h"
 #include "MultivariateBrownianPhyloProcess.h"
 #include "PrecisionMatrix.h"
 #include "Real.h"
@@ -18,7 +19,6 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -34,7 +34,7 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* sig  = static_cast<const RealSymmetricMatrix&>( sigma->getRevObject() ).getDagNode();
-//    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const Vector<Real>&>( rootval->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<std::vector<double> >* r  = static_cast<const ModelVector<Real>&>( rootval->getRevObject() ).getDagNode();
     
 //    RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, om, r );
     RevBayesCore::MultivariateBrownianPhyloProcess* process    = new RevBayesCore::MultivariateBrownianPhyloProcess( tau, sig );
@@ -45,20 +45,20 @@ RevBayesCore::MultivariateBrownianPhyloProcess* Dist_mvtBrownian::createDistribu
 
 
 
-/* Get class name of object */
-const std::string& Dist_mvtBrownian::getClassName(void) {
+/* Get Rev type of object */
+const std::string& Dist_mvtBrownian::getClassType(void) {
     
-    static std::string rbClassName = "Dist_multivariateBrownian";
+    static std::string revType = "Dist_multivariateBrownian";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_mvtBrownian::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -150,34 +150,4 @@ void Dist_mvtBrownian::setConstMemberVariable(const std::string& name, const Rev
     }
 }
 
-/*
-RevLanguage::RevObject* Dist_mvtBrownian::executeMethod(std::string const &name, const std::vector<Argument> &args) {
-    
-    if (name == "test") {        
-        this->dagNode->getValue().test();
-        return new Real( 0.0 );
-    }
-    
-    return ModelObject<RevBayesCore::MultivariateBrownianPhyloProcess>::executeMethod( name, args );
-}
 
-
-const RevLanguage::MethodTable& Dist_mvtBrownian::getMethods(void) const {
-    
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        ArgumentRules* testArgRules = new ArgumentRules();
-        methods.addFunction("test", new MemberFunction(Real::getClassTypeSpec(),       testArgRules              ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-        methodsSet = true;
-    }
-    
-    
-    return methods;
-}
-*/

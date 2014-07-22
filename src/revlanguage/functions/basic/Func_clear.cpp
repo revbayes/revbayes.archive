@@ -44,18 +44,18 @@ Func_clear* Func_clear::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_clear::execute( void ) {
+RevPtr<Variable> Func_clear::execute( void ) {
     
     // we clear the entire workspace if there were no arguments
     if ( args.size() == 0 )
     {
         Workspace::userWorkspace().clear();
     }
-    else 
+    else
     {
         for (size_t i = 0; i < args.size(); ++i) 
         {
-            Workspace::userWorkspace().remove( args[i].getVariable() );
+            Workspace::userWorkspace().eraseVariable( args[i].getVariable() );
         }
     }
     
@@ -79,20 +79,20 @@ const ArgumentRules& Func_clear::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_clear::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_clear::getClassType(void) { 
     
-    static std::string rbClassName = "Func_clear";
+    static std::string revType = "Func_clear";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_clear::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

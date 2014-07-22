@@ -24,64 +24,73 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
+#include "RevPtr.h"
 #include "TypeSpec.h"
+#include "Variable.h"
 #include "VectorIndexOperator.h"
 
 #include <algorithm>
 
 using namespace RevLanguage;
 
-/** Set type of elements */
-Container::Container(const TypeSpec& elemType) : RevObject(), elementType(elemType) {
-    
-}
 
-/** Set type of elements */
-Container::Container(const TypeSpec& elemType, const MemberRules& memberRules) : RevObject(memberRules), elementType(elemType) {
-    
-}
-
-
-/** Assignment operator; make sure we get independent elements */
-Container& Container::operator=( const Container& x ) {
-    
-    if ( this != &x ) {
-        
-        if (elementType != x.elementType) {
-            throw RbException("Cannot assign a vector to another vector of different type.");
-        }
-    }
-    
-    return ( *this );
+/**
+ * Default constructor. Construct empty container.
+ */
+Container::Container( void ) :
+    RevObject()
+{
 }
 
 
-/** Convert this object into another type. */
-RevObject* Container::convertTo(const TypeSpec& typeSpec) const {
-    
-    return RevObject::convertTo( typeSpec );
+/**
+ * Construct empty container and set member rules for derived
+ * objects that have member variables.
+ */
+Container::Container( const MemberRules& memberRules ) :
+    RevObject( memberRules )
+{
 }
 
 
-/** Get class name of object */
-const std::string& Container::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Container::getClassType( void )
+{
+    static std::string revType = "Container";
     
-    static std::string rbClassName = "Container";
-    
-	return rbClassName; 
+	return revType; 
 }
+
 
 /** Get class type spec describing type of object */
-const TypeSpec& Container::getClassTypeSpec(void) { 
+const TypeSpec& Container::getClassTypeSpec(void)
+{
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
-    
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
+/**
+ * Get an element using a simple index. We simply defer this to the generic getElement function
+ * by providing a one-element vector of indices.
+ */
+RevPtr<Variable> Container::getElement( const size_t oneOffsetIndex )
+{
+    std::vector<size_t> oneOffsetIndices;
+    
+    oneOffsetIndices.push_back( oneOffsetIndex );
+    
+    return getElement( oneOffsetIndices );
+}
 
-/* Get method specifications */
+
+/**
+ * Get method specifications for container. Here we provide the "size" method.
+ * Note that also the subscript operator method is supported by executeMethod.
+ *
+ * @todo Expose the subscript operator method
+ */
 const MethodTable& Container::getMethods(void) const {
     
     static MethodTable methods = MethodTable();
@@ -101,45 +110,21 @@ const MethodTable& Container::getMethods(void) const {
 
 
 /* Map calls to member methods */
-RevObject* Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Container::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "size") 
     {
-        
-        return new Natural( size() );
+        return new Variable( new Natural( size() ) );
     } 
-    else if ( name == "[]") 
-    {
-        // get the member with give index
-        const Natural &index = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
 
-        if (size() < (size_t)(index.getValue()) || index.getValue() < 1 )
-        {
-            throw RbException("Index out of bounds in []");
-        }
-        
-        RevObject* element = getElement( size_t(index.getValue()) - 1);
-        return element;
-        
-    } 
-    
     return RevObject::executeMethod( name, args );
 }
 
 
-
-
-/** Is convertible to type? */
-bool Container::isConvertibleTo(const TypeSpec& typeSpec) const {
-    
-    return RevObject::isConvertibleTo( typeSpec );
+/** Print structure of a container */
+void Container::printStructure( std::ostream& o ) const
+{
+    RevObject::printStructure( o );
+    o << "_size         = " << size() << std::endl;
 }
 
-
-void Container::printStructure(std::ostream& o) const {
-
-    o << "_objectType   = Container" << std::endl;
-    o << "_value        = ";
-    printValue( o );
-    o << std::endl;
-}

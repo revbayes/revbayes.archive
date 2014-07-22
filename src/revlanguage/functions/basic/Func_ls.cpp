@@ -45,7 +45,7 @@ Func_ls* Func_ls::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_ls::execute( void ) {
+RevPtr<Variable> Func_ls::execute( void ) {
     
     bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
     
@@ -86,20 +86,20 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_ls::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_ls::getClassType(void) { 
     
-    static std::string rbClassName = "Func_ls";
+    static std::string revType = "Func_ls";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_ls::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

@@ -37,7 +37,7 @@ Func_help* Func_help::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_help::execute( void ) {
+RevPtr<Variable> Func_help::execute( void ) {
     
     
     RBOUT( "\n" );
@@ -64,20 +64,20 @@ const ArgumentRules& Func_help::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_help::getClassName(void) {
+/** Get Rev type of object */
+const std::string& Func_help::getClassType(void) {
     
-    static std::string rbClassName = "Func_help";
+    static std::string revType = "Func_help";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_help::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

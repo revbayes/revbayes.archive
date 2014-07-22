@@ -1,3 +1,4 @@
+#include "ModelVEctor.h"
 #include "Natural.h"
 #include "RbUtil.h"
 #include "RlTimeTree.h"
@@ -7,7 +8,6 @@
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -49,22 +49,22 @@ TimeTree* TimeTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") 
     {
         size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new Natural( n );
+        return new Variable( new Natural( n ) );
     }
     else if (name == "height") 
     {
         const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new RealPos( r.getTime() );
+        return new Variable( new RealPos( r.getTime() ) );
     } 
     else if (name == "names") 
     {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Vector<RlString>( n );
+        return new Variable( new ModelVector<RlString>( n ) );
     } 
     else if (name == "rescale")
     {
@@ -79,20 +79,20 @@ RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const s
 }
 
 
-/** Get class name of object */
-const std::string& TimeTree::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& TimeTree::getClassType(void) { 
     
-    static std::string rbClassName = "TimeTree";
+    static std::string revType = "TimeTree";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& TimeTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -113,15 +113,12 @@ const RevLanguage::MethodTable& TimeTree::getMethods(void) const
         methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),          heightArgRules   ) );
 
         ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberProcedure(Vector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
+        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
 
         ArgumentRules* rescaleArgRules = new ArgumentRules();
         rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
         methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
         
-        ArgumentRules* rootAgeArgRules = new ArgumentRules();
-        methods.addFunction("rootAge", new MemberFunction<TimeTree,RealPos>( this, rootAgeArgRules   ) );
-
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::TimeTree>::getMethods() );
         methodsSet = true;

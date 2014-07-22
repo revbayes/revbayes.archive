@@ -35,26 +35,31 @@ using namespace RevLanguage;
 UserFunction::UserFunction( const ArgumentRules*        argRules,
                             const TypeSpec&             retType ,
                             std::list<SyntaxElement*>*  stmts   )   :
-    Function(), argumentRules(argRules), returnType(retType), code(stmts) {
-
+    Function(),
+    argumentRules(argRules),
+    returnType(retType),
+    code(stmts)
+{
 }
 
 
 /** Copy constructor */
 UserFunction::UserFunction(const UserFunction &x) :
-    Function(x), argumentRules( new ArgumentRules(*x.argumentRules) ), returnType( x.returnType ), code( NULL ) {
-    
+    Function(x), argumentRules( new ArgumentRules(*x.argumentRules) ), returnType( x.returnType ), code( NULL )
+{
     // create a new list for the code
     code = new std::list<SyntaxElement*>();
-    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++) {
+    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+    {
         SyntaxElement* element = (*i)->clone();
         code->push_back(element);
     }
 }
 
 
-UserFunction& UserFunction::operator=(const UserFunction &f) {
-    
+/** Assignment operator. Deal with argument rules and code. */
+UserFunction& UserFunction::operator=(const UserFunction &f)
+{
     if ( this != &f ) {
         // call the base class assignment operator
         Function::operator=(f);
@@ -62,14 +67,16 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
         delete argumentRules;
         argumentRules = new ArgumentRules(*f.argumentRules);
         
-        for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++) {
+        for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++)
+        {
             SyntaxElement* theSyntaxElement = *it;
             delete theSyntaxElement;
         }
         code->clear();
         
         // create a new list for the code
-        for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++) {
+        for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++)
+        {
             SyntaxElement* element = (*i)->clone();
             code->push_back(element);
         }
@@ -80,35 +87,35 @@ UserFunction& UserFunction::operator=(const UserFunction &f) {
 
 
 /** Destructor */
-UserFunction::~UserFunction() {
-    
+UserFunction::~UserFunction()
+{
     delete argumentRules;
     
-    for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++) {
+    for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++)
+    {
         SyntaxElement* theSyntaxElement = *it;
         delete theSyntaxElement;
     }
     
     delete code;
-    
 }
 
 
 /** Clone the object */
-UserFunction* UserFunction::clone(void) const {
-    
+UserFunction* UserFunction::clone(void) const
+{
     return new UserFunction(*this);
 }
 
 
 /** Execute function. Here we create a deterministic node if applicable, otherwise we just execute the code */
-RevObject* UserFunction::execute( void )
+RevPtr<Variable> UserFunction::execute( void )
 {
     
     // If the return type object has a DAG node inside it, we return an appropriate model/container/factor object
     // with a deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
-    RevObject* retVal = Workspace::userWorkspace().getNewTypeObject( returnType.getType() );
+    RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( returnType.getType() );
 
     if ( retVal->hasDagNode() )
     {
@@ -117,48 +124,49 @@ RevObject* UserFunction::execute( void )
         UserFunctionArgs* args = new UserFunctionArgs( this );
         
         retVal->makeDeterministicValue( call, args );
+
+        return new Variable( retVal );
     }
     else
     {
-        // "Flat" call: Execute and return a constant value
-        delete retVal;
+        // "Flat" call: Simply execute and return the variable
+        delete retVal;  // We don't need this
+
         UserFunctionCall fxnCall( this );
-        retVal = fxnCall.execute();
-        retVal->makeConstantValue();        // A flat call always returns a constant value
+
+        return fxnCall.execute();
     }
-    
-    return retVal;
 }
 
+
+/** Get Rev type of object */
+const std::string& UserFunction::getClassType(void)
+{
+    static std::string revType = "UserFunction";
     
-/** Get class name of object */
-const std::string& UserFunction::getClassName(void) { 
-    
-    static std::string rbClassName = "UserFunction";
-    
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get a reference to the code for execution outside of this class */
-const std::list<SyntaxElement*>& UserFunction::getCode(void) const {
-    
+const std::list<SyntaxElement*>& UserFunction::getCode(void) const
+{
     return *code;
 }
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& UserFunction::getClassTypeSpec(void) { 
+const TypeSpec& UserFunction::getClassTypeSpec(void)
+{
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
-    
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
 /** Get type spec */
-const TypeSpec& UserFunction::getTypeSpec( void ) const {
-    
+const TypeSpec& UserFunction::getTypeSpec( void ) const
+{
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
@@ -166,15 +174,15 @@ const TypeSpec& UserFunction::getTypeSpec( void ) const {
 
 
 /** Get argument rules */
-const ArgumentRules& UserFunction::getArgumentRules(void) const {
-    
+const ArgumentRules& UserFunction::getArgumentRules(void) const
+{
     return *argumentRules;
 }
 
 
 /** Get return type */
-const TypeSpec& UserFunction::getReturnType(void) const {
-    
+const TypeSpec& UserFunction::getReturnType(void) const
+{
     return returnType;
 }
 

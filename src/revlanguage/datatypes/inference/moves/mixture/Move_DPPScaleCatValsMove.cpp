@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "DPPScaleCatValsMove.h"
+#include "ModelVector.h"
 #include "Move_DPPScaleCatValsMove.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -10,7 +11,6 @@
 #include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -34,27 +34,27 @@ void Move_DPPScaleCatValsMove::constructInternalObject( void ) {
     // now allocate a new vector-scale move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<RealPos> &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< std::vector<double> > *sn = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     
     value = new RevBayesCore::DPPScaleCatValsMove(sn, l, w);
 }
 
 
-/** Get class name of object */
-const std::string& Move_DPPScaleCatValsMove::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Move_DPPScaleCatValsMove::getClassType(void) { 
     
-    static std::string rbClassName = "Move_DPPScaleCatValsMove";
+    static std::string revType = "Move_DPPScaleCatValsMove";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_DPPScaleCatValsMove::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -66,9 +66,9 @@ const MemberRules& Move_DPPScaleCatValsMove::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        dppMove.push_back( new ArgumentRule( "x", false, Vector<RealPos>::getClassTypeSpec() ) );
+        dppMove.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
         dppMove.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
-        
+
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();
         dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 

@@ -41,15 +41,6 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
     rho( r ),
     rhoTimes( rt )
 {
-    addParameter( lambda );
-    addParameter( lambdaTimes );
-    addParameter( mu );
-    addParameter( muTimes );
-    addParameter( psi );
-    addParameter( psiTimes );
-    addParameter( rho );
-    addParameter( rhoTimes );
-    
     simulateTree();
 }
 
@@ -58,7 +49,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 PiecewiseConstantFossilizedBirthDeathProcess* PiecewiseConstantFossilizedBirthDeathProcess::clone( void ) const
 {
@@ -435,6 +426,25 @@ int PiecewiseConstantFossilizedBirthDeathProcess::survivors(double t) const
     }
     
     return survivors;
+}
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> PiecewiseConstantFossilizedBirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
+    
+    parameters.insert( lambdaTimes );
+    parameters.insert( muTimes );
+    parameters.insert( psiTimes );
+    parameters.insert( rhoTimes );
+    parameters.insert( lambda );
+    parameters.insert( mu );
+    parameters.insert( psi );
+    parameters.insert( rho );
+    
+    parameters.erase( NULL );
+    return parameters;
 }
 
 

@@ -28,7 +28,7 @@ Move_RandomGeometricWalk::Move_RandomGeometricWalk() : Move()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Move_RandomGeometricWalk* Move_RandomGeometricWalk::clone(void) const 
 {
@@ -66,16 +66,16 @@ void Move_RandomGeometricWalk::constructInternalObject( void )
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Move_RandomGeometricWalk::getClassName(void) 
+const std::string& Move_RandomGeometricWalk::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Move_RandomGeometricWalk";
+    static std::string revType = "Move_RandomGeometricWalk";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -87,9 +87,9 @@ const std::string& Move_RandomGeometricWalk::getClassName(void)
 const TypeSpec& Move_RandomGeometricWalk::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

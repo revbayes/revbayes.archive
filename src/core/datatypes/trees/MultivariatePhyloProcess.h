@@ -12,6 +12,7 @@
 #include "MatrixReal.h"
 #include "MemberObject.h"
 #include "TimeTree.h"
+#include "ContinuousCharacterData.h"
 
 #include <vector>
 #include <string>
@@ -43,23 +44,25 @@ namespace RevBayesCore {
         void                                        recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
 
         void                                        printBranchContrasts(std::ostream& os) const;
+
+        bool                                        isClamped(size_t index, size_t k) const;
+        void                                        clampAt(const ContinuousCharacterData* data, size_t k, size_t l);
+        void                                        recursiveClampAt(const TopologyNode& from, const ContinuousCharacterData* data, size_t k, size_t l);
         
     protected:
-        // void                                        resizeElementVectors(size_t n);
+
         void                                        recursiveGetBranchContrasts(const TopologyNode& from, std::vector<std::vector<double> >& c, int& n) const;
 
     private:
 
         const TimeTree*                     tree;
+        std::vector<std::vector<bool> >     clampVector;
 
     };
 
     std::ostream&                       operator<<(std::ostream& o, const MultivariatePhyloProcess& x);                                         //!< Overloaded output operator
 
 }
-
-// Global functions using the class
-// std::ostream&                       operator<<(std::ostream& o, const RevBayesCore::MultivariatePhyloProcess& x);                                         //!< Overloaded output operator
 
 #endif	/* MULTIVARIATEPHYLOPROCESS_H */
 

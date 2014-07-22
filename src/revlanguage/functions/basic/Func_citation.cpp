@@ -37,7 +37,7 @@ Func_citation* Func_citation::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_citation::execute( void ) {
+RevPtr<Variable> Func_citation::execute( void ) {
     
     
     RBOUT( "\n" );
@@ -64,20 +64,20 @@ const ArgumentRules& Func_citation::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_citation::getClassName(void) {
+/** Get Rev type of object */
+const std::string& Func_citation::getClassType(void) {
     
-    static std::string rbClassName = "Func_citation";
+    static std::string revType = "Func_citation";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_citation::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

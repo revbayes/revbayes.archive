@@ -26,11 +26,12 @@ namespace StringUtilities {
     std::string                 getFileContentsAsString(std::string& s);                                            //!< Convert the file contents to a RlString
     std::string                 getStringWithDeletedLastPathComponent(const std::string& s);                                            //!< Convert the file contents to a RlString
     std::string                 getLastPathComponent(const std::string& s);                                         //!< Find the last component of a file path
-    void                        stringSplit(std::string str, std::string delim, std::vector<std::string>& results); //!< Split a RlString into pieces
-    void                        toLower(std::string& str);                                                          //!< Convert RlString's characters to lower case
+    void                        stringSplit(std::string str, std::string delim, std::vector<std::string>& results); //!< Split a string into pieces
+    void                        toLower(std::string& str);                                                          //!< Convert string's characters to lower case
     bool                        isNumber(std::string& s);                                                           //!< Checks if a RlString is a number
+    std::string                 oneLiner(const std::string& input, size_t maxLen);                                  //!< Get a one-liner of specified length
 }
-    
+
 // TODO: Is there a better way for these global operators than duplicating the code for each namespace? (Sebastian)
 namespace RevLanguage {
 

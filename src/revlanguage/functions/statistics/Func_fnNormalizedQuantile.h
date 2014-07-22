@@ -29,7 +29,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_fnNormalizedQuantile*             clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get class name
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
@@ -37,7 +37,7 @@ namespace RevLanguage {
         const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
-        RevObject*                  execute(void);                                              //!< Execute function
+        RevPtr<Variable>            execute(void);                                              //!< Execute function
         
     };
     
@@ -46,6 +46,7 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
+#include "ModelVector.h"
 #include "NormalizeVectorFunction.h"
 #include "RbUtil.h"
 #include "Real.h"
@@ -54,7 +55,6 @@ namespace RevLanguage {
 #include "TypedDagNode.h"
 #include "QuantileFunction.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 #include "GammaDistribution.h"
 #include "VectorFunction.h"
 #include "TypedDistribution.h"
@@ -79,7 +79,7 @@ Func_fnNormalizedQuantile<valType>* Func_fnNormalizedQuantile<valType>::clone( v
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevObject* Func_fnNormalizedQuantile<valType>::execute( void ) {
+RevPtr<Variable> Func_fnNormalizedQuantile<valType>::execute( void ) {
     
     const ContinuousDistribution& rlDistribution    = static_cast<const ContinuousDistribution &>( args[0].getVariable()->getRevObject() );
     RevBayesCore::ContinuousDistribution* dist     = static_cast<RevBayesCore::ContinuousDistribution* >( rlDistribution.createDistribution() );    
@@ -99,9 +99,9 @@ RevObject* Func_fnNormalizedQuantile<valType>::execute( void ) {
     
     DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
     
-    Vector<valType> *theNormalizedVector = new Vector<valType>( detNode );
+    ModelVector<valType> *theNormalizedVector = new ModelVector<valType>( detNode );
     
-    return theNormalizedVector;
+    return new Variable( theNormalizedVector );
 }
 
 
@@ -125,11 +125,11 @@ const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void 
 
 /** Get class name of object */
 template <typename valType>
-const std::string& Func_fnNormalizedQuantile<valType>::getClassName(void) { 
+const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void) {
     
-    static std::string rbClassName = "Func_fnNormalizedQuantile";
+    static std::string revClassType = "Func_fnNormalizedQuantile";
     
-	return rbClassName; 
+	return revClassType;
 }
 
 
@@ -137,9 +137,9 @@ const std::string& Func_fnNormalizedQuantile<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revClassType = TypeSpec( Func_fnNormalizedQuantile<valType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassType;
 }
 
 
@@ -157,7 +157,7 @@ const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getTypeSpec( vo
 template <typename valType>
 const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getReturnType( void ) const {
     
-    return Vector<valType>::getClassTypeSpec();
+    return ModelVector<valType>::getClassTypeSpec();
 }
 
 

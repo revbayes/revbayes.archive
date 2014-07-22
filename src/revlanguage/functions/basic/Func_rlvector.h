@@ -32,7 +32,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_rlvector*              clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevObject*                  execute(void);                                              //!< Execute function
+        RevPtr<Variable>            execute(void);                                              //!< Execute function
         
     };
     
@@ -53,8 +53,7 @@ namespace RevLanguage {
 #include "RbUtil.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
-#include "VectorRbPointer.h"
+#include "WorkspaceVector.h"
 
 
 
@@ -71,18 +70,19 @@ RevLanguage::Func_rlvector<valType>* RevLanguage::Func_rlvector<valType>::clone(
 }
 
 
-/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
+/** Execute function: assemble a workspace vector */
 template <typename valType>
-RevLanguage::RevObject* RevLanguage::Func_rlvector<valType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_rlvector<valType>::execute( void ) {
     
-    VectorRbPointer<valType> *theVector = new VectorRbPointer<valType>();
-    for ( size_t i = 0; i < args.size(); i++ )
-    {
+    std::vector<valType*> params;
+    for ( size_t i = 0; i < args.size(); i++ ) {
         const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
-        theVector->push_back( val.clone() );
+        params.push_back( val.clone() );
     }
-        
-    return theVector;
+    
+    WorkspaceVector<valType> *theVector = new WorkspaceVector<valType>( params );
+
+    return new Variable( theVector );
 }
 
 
@@ -104,13 +104,13 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_rlvector<valType>::getArgume
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename valType>
-const std::string& RevLanguage::Func_rlvector<valType>::getClassName(void) { 
+const std::string& RevLanguage::Func_rlvector<valType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_vector<" + valType::getClassTypeSpec() + ">";
+    static std::string revType = "Func_vector<" + valType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -118,9 +118,9 @@ const std::string& RevLanguage::Func_rlvector<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rlvector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -138,7 +138,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_rlvector<valType>::getTypeSpec( v
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rlvector<valType>::getReturnType( void ) const {
     
-    return VectorRbPointer<valType>::getClassTypeSpec();
+    return WorkspaceVector<valType>::getClassTypeSpec();
 }
 
 

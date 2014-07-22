@@ -2,6 +2,7 @@
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readTrees.h"
+#include "ModelVector.h"
 #include "NclReader.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -13,7 +14,6 @@
 #include "StringUtilities.h"
 #include "TimeTree.h"
 #include "RlUserInterface.h"
-#include "Vector.h"
 
 #include <map>
 #include <set>
@@ -30,7 +30,7 @@ Func_readTrees* Func_readTrees::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readTrees::execute( void ) {
+RevPtr<Variable> Func_readTrees::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -39,14 +39,14 @@ RevObject* Func_readTrees::execute( void ) {
     RevBayesCore::NclReader& reader = RevBayesCore::NclReader::getInstance();
     reader.clearWarnings();
     
-    Vector<TimeTree> *trees = new Vector<TimeTree>();
+    ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
     std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );
     for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
     {
         trees->push_back( TimeTree(*t) );
     }
     
-    return trees;
+    return new Variable( trees );
 }
 
 
@@ -86,20 +86,20 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_readTrees::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_readTrees::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readTrees";
+    static std::string revType = "Func_readTrees";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTrees::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */
@@ -114,7 +114,7 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTrees::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<TimeTree>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<TimeTree>::getClassTypeSpec();
     return returnTypeSpec;
 }
 

@@ -97,7 +97,7 @@ DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevObject* DistributionFunctionCdf::execute( void ) {
+RevPtr<Variable> DistributionFunctionCdf::execute( void ) {
     
     RevBayesCore::ContinuousDistribution *d = NULL;
     
@@ -143,7 +143,7 @@ RevObject* DistributionFunctionCdf::execute( void ) {
     
     Probability* value = new Probability( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -154,20 +154,20 @@ const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const {
 }
 
 
-/** Get class name of object */
-const std::string& DistributionFunctionCdf::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& DistributionFunctionCdf::getClassType(void) { 
     
-    static std::string rbClassName = "DistributionFunctionCdf";
+    static std::string revType = "DistributionFunctionCdf";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

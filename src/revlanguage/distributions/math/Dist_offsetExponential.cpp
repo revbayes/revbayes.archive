@@ -44,20 +44,20 @@ RevBayesCore::ExponentialDistribution* Dist_offsetExponential::createDistributio
 
 
 
-/* Get class name of object */
-const std::string& Dist_offsetExponential::getClassName(void) { 
+/* Get Rev type of object */
+const std::string& Dist_offsetExponential::getClassType(void) { 
     
-    static std::string rbClassName = "Dist_offsetExponential";
+    static std::string revType = "Dist_offsetExponential";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_offsetExponential::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

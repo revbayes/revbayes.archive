@@ -12,8 +12,8 @@
 using namespace RevLanguage;
 
 /** Constructor of empty variable with specified type. */
-Variable::Variable(const TypeSpec& ts) : 
-    name(""),
+Variable::Variable( const TypeSpec& ts, const std::string& n ) :
+    name( n ),
     refCount( 0 ),
     revObject( NULL ),
     revObjectTypeSpec( ts ),
@@ -37,7 +37,7 @@ Variable::Variable(RevObject *v, const std::string &n) :
 
 
 /** Constructor of reference variable (no type restrictions). */
-Variable::Variable(const RevPtr<const Variable>& refVar, const std::string &n) :
+Variable::Variable(const RevPtr<Variable>& refVar, const std::string &n) :
     name( n ),
     refCount( 0 ),
     revObject( NULL ),
@@ -70,8 +70,11 @@ Variable::Variable(const Variable &v) :
 
 Variable::~Variable( void )
 {
+#if defined ( DEBUG_MEMORY )
+    std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
     if ( !isReferenceVariable && revObject != NULL )
         delete revObject;
+#endif
 }
 
 
@@ -150,7 +153,12 @@ RevObject& Variable::getRevObject(void) const
 }
 
 
-/** Get the required type specs for values stored inside this variable */
+/**
+ * Get the required type specs for values stored inside this variable.
+ * We return our own type specification even if we reference another
+ * variable. By reassignment, we receive the new value, so it is
+ * more important what our type spec is.
+ */
 const TypeSpec& Variable::getRevObjectTypeSpec(void) const
 {
     return revObjectTypeSpec;
@@ -167,7 +175,10 @@ void Variable::incrementReferenceCount( void ) const
 /** Return the internal flag signalling whether the variable is currently a control variable */
 bool Variable::isControlVar(void) const
 {
-    return isControlVariable;
+    if ( isReferenceVariable )
+        return referencedVariable->isControlVar();
+    else
+        return isControlVariable;
 }
 
 
@@ -179,7 +190,7 @@ bool Variable::isReferenceVar(void) const
 
 
 /** Make this variable a reference to another variable. Make sure we delete any object we held before. */
-void Variable::makeReference(const RevPtr<const Variable>& refVar)
+void Variable::makeReference(const RevPtr<Variable>& refVar)
 {
     if ( !isReferenceVariable )
     {
@@ -205,10 +216,13 @@ void Variable::printValue(std::ostream& o) const
 }
 
 
-/** Replace Rev object and update the DAG in the process. */
+/**
+ * Replace Rev object and update the DAG in the process.
+ * This is a private function so we can assume that the
+ * caller knows not to call this function if the variable
+ * is in the reference variable state.
+ */
 void Variable::replaceRevObject( RevObject *newObj ) {
-    
-    assert ( isReferenceVariable == false );
     
     if (revObject != NULL)
     {
@@ -226,11 +240,12 @@ void Variable::replaceRevObject( RevObject *newObj ) {
 }
 
 
-/** Check whether this variable is a control variable. Throw an error if the variable
- *  is a reference variable. If so, you need to set the Rev object first, and then set
- *  the control variable flag.
+/**
+ * Check whether this variable is a control variable. Throw an error if the variable
+ * is a reference variable. If so, you need to set the Rev object first, and then set
+ * the control variable flag.
  */
-void Variable::setControlVar(bool flag)
+void Variable::setControlVarState(bool flag)
 {
     if ( isReferenceVariable )
         throw "A reference variable cannot be made a control variable";
@@ -243,6 +258,8 @@ void Variable::setControlVar(bool flag)
 void Variable::setName(std::string const &n) {
     
     name = n;
+    if ( revObject != NULL )
+        revObject->setName( n );
 }
 
 
@@ -264,8 +281,9 @@ void Variable::setRevObject( RevObject *newValue )
 }
 
 
-/** We set here the required value type spec. An error is thrown if the
- *  current Rev object of the variable, if any, is not of the specified type.
+/**
+ * We set here the required value type spec. An error is thrown if the
+ * current Rev object of the variable, if any, is not of the specified type.
  */
 void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
     

@@ -29,25 +29,25 @@ namespace RevLanguage {
     class WorkspaceObject : public RevObject {
         
     public:
-        virtual                            ~WorkspaceObject(void);                                                  //!< Virtual destructor
+        virtual                            ~WorkspaceObject(void);                              //!< Virtual destructor
         
-        WorkspaceObject&                    operator=(const WorkspaceObject& x);                                    //!< Assignment operator
+        WorkspaceObject&                    operator=(const WorkspaceObject& x);                //!< Assignment operator
         
         // the value type definition
         typedef rbType valueType;
         
         // Basic utility functions you have to override (also getClassTypeSpec()!)
-        virtual WorkspaceObject*            clone(void) const = 0;                                                  //!< Clone object
-        virtual void                        constructInternalObject(void) = 0;                                      //!< We construct the a new internal object.
-        static const std::string&           getClassName(void);                                                     //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                 //!< Get class type spec
-        virtual const TypeSpec&             getTypeSpec(void) const = 0;                                            //!< Get the type spec of the instance
-        virtual void                        printValue(std::ostream& o) const = 0;                                  //!< Print value for user
+        virtual WorkspaceObject*            clone(void) const = 0;                              //!< Clone object
+        virtual void                        constructInternalObject(void) = 0;                  //!< We construct the a new internal object.
+        static const std::string&           getClassType(void);                                 //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                             //!< Get class type spec
+        virtual const TypeSpec&             getTypeSpec(void) const = 0;                        //!< Get the type spec of the instance
+        virtual void                        printValue(std::ostream& o) const = 0;              //!< Print value for user
 
                 
-        // getters and setters
-        const rbType&                       getValue(void) const;
-        void                                setValue(const rbType& x);
+        // Getters and setters
+        rbType&                             getValue(void) const;                               //!< Get value
+        void                                setValue(const rbType& x);                          //!< Set value
         
     protected:
         WorkspaceObject(void);
@@ -56,7 +56,6 @@ namespace RevLanguage {
         
         rbType*                             value;
     };
-    
 }
 
 
@@ -114,7 +113,7 @@ RevLanguage::WorkspaceObject<rbType>& RevLanguage::WorkspaceObject<rbType>::oper
 
 
 template <typename rbType>
-const std::string& RevLanguage::WorkspaceObject<rbType>::getClassName(void) { 
+const std::string& RevLanguage::WorkspaceObject<rbType>::getClassType(void) { 
     
     static std::string className = "Control variable";
     
@@ -126,15 +125,22 @@ const std::string& RevLanguage::WorkspaceObject<rbType>::getClassName(void) {
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::WorkspaceObject<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
+/**
+ * This function allows you to access the internal value of the 
+ * workspace object. Because we do not need to guard our value
+ * against inappropriate modification, unlike model objects, we
+ * give out a non-const reference to it allowing the caller to
+ * modify the object.
+ */
 template <typename rbType>
-const rbType& RevLanguage::WorkspaceObject<rbType>::getValue( void ) const {
-    
+rbType& RevLanguage::WorkspaceObject<rbType>::getValue( void ) const
+{
     return *value;
 }
 

@@ -7,13 +7,13 @@
 //
 
 #include "ArgumentRule.h"
+#include "ModelVector.h"
 #include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlAtlas.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
 #include "TimeAtlas.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -38,7 +38,7 @@ RlAtlas* RlAtlas::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RlAtlas::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     
 //    if (name == "nAreas")
@@ -56,20 +56,20 @@ RevObject* RlAtlas::executeMethod(std::string const &name, const std::vector<Arg
 }
 
 
-/* Get class name of object */
-const std::string& RlAtlas::getClassName(void) {
+/* Get Rev type of object */
+const std::string& RlAtlas::getClassType(void) {
     
-    static std::string rbClassName = "RlAtlas";
+    static std::string revType = "RlAtlas";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RlAtlas::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -85,7 +85,7 @@ const MethodTable& RlAtlas::getMethods(void) const {
         //        // add method for call "x[]" as a function
         //        ArgumentRules* squareBracketArgRules = new ArgumentRules();
         //        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        //        methods.addFunction("[]",  new MemberProcedure( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+        //        methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
         //
         //        // add method for call "x[]" as a function
         //        ArgumentRules* sizeArgRules = new ArgumentRules();

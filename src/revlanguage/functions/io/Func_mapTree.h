@@ -31,12 +31,12 @@ namespace RevLanguage {
     public:
         // Basic utility functions
         Func_mapTree*                   clone(void) const;                                                      //!< Clone the object
-        static const std::string&       getClassName(void);                                                     //!< Get class name
+        static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
         
         // Regular functions
-        RevObject*                      execute(void);                                                          //!< Execute function
+        RevPtr<Variable>                execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
         
@@ -51,6 +51,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "BranchLengthTree.h"
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "NexusWriter.h"
 #include "RbException.h"
 #include "RevNullObject.h"
@@ -63,7 +64,6 @@ namespace RevLanguage {
 #include "TreeSummary.h"
 #include "TreeTrace.h"
 #include "UserInterface.h"
-#include "Vector.h"
 
 #include <map>
 #include <set>
@@ -80,7 +80,7 @@ RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone(
 
 /** Execute function */
 template <typename treeType>
-RevLanguage::RevObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_mapTree<treeType>::execute( void ) {
     
     
     const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
@@ -104,7 +104,7 @@ RevLanguage::RevObject* RevLanguage::Func_mapTree<treeType>::execute( void ) {
         
     }
     
-    return new treeType( tree );
+    return new Variable( new treeType( tree ) );
 }
 
 
@@ -126,22 +126,22 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename treeType>
-const std::string& RevLanguage::Func_mapTree<treeType>::getClassName(void) { 
+const std::string& RevLanguage::Func_mapTree<treeType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_mapTree<" + treeType::getClassName() + ">";
+    static std::string revType = "Func_mapTree<" + treeType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <typename treeType>
 const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

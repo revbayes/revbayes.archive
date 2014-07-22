@@ -1,8 +1,6 @@
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "VariableSlot.h"
 #include "SyntaxIncrement.h"
 #include "Workspace.h"
 
@@ -12,127 +10,115 @@
 
 using namespace RevLanguage;
 
-/** 
- * Construct from expression. 
+
+/**
+ * Construct from variable expression.
  *
- * \param[in]   e           The expression on the right hand side.
+ * \param[in]   v   The variable expression
  */
-SyntaxIncrement::SyntaxIncrement(SyntaxVariable* v) : SyntaxElement(), 
-    variable( v ) 
+SyntaxIncrement::SyntaxIncrement( SyntaxVariable* v ) :
+    SyntaxElement(),
+    variable( v )
 {
-    
-}
-
-
-/** 
- * Deep copy constructor.
- */
-SyntaxIncrement::SyntaxIncrement(const SyntaxIncrement& x) : SyntaxElement(x) 
-{
-    
-    if ( x.variable != NULL )
-    {
-        variable   = x.variable->clone();
-    }
-    else
-    {
-        variable = NULL;
-    }
-    
-}
-
-
-/** 
- * Destructor deletes operands 
- */
-SyntaxIncrement::~SyntaxIncrement() 
-{
-    
-    delete variable;
-    
-}
-
-
-/** 
- * Assignment operator performing a deep assignment.
- */
-SyntaxIncrement& SyntaxIncrement::operator=(const SyntaxIncrement& x) 
-{
-    
-    if ( this != &x ) 
-    {
-        
-        delete variable;
-        
-        variable = x.variable->clone();
-    }
-    
-    return (*this);
 }
 
 
 /**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
- *
- * \return A new copy of the model. 
+ * Deep copy constructor. It really should not be possible for the
+ * parser to return a NULL variable statement, so we do not have
+ * to check for a NULL pointer.
  */
-SyntaxIncrement* SyntaxIncrement::clone () const 
+SyntaxIncrement::SyntaxIncrement( const SyntaxIncrement& x ) :
+    SyntaxElement(x)
 {
-    
-    return new SyntaxIncrement(*this);
+    variable   = x.variable->clone();
 }
 
 
-/** 
- * Evaluate the content of this syntax element.
- * This will perform an addition assignment operation.
+/**
+ * Destructor deletes operands
  */
-RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env ) 
+SyntaxIncrement::~SyntaxIncrement()
 {
+    delete variable;
+}
+
+
+/**
+ * Assignment operator performing deep assignment.
+ */
+SyntaxIncrement& SyntaxIncrement::operator=( const SyntaxIncrement& x )
+{
+    if ( this != &x )
+    {
+        SyntaxElement::operator=( x );
+        
+        delete variable;
+        variable = x.variable->clone();
+    }
     
+    return ( *this );
+}
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objects.
+ * That is, a.clone() will create a clone of type 'b' if the 'a' instance is of derived type 'b'.
+ *
+ * \return A new copy of myself
+ */
+SyntaxIncrement* SyntaxIncrement::clone () const
+{
+    return new SyntaxIncrement( *this );
+}
+
+
+/**
+ * Evaluate the content of this syntax element. This will perform
+ * an increment assignment operation.
+ */
+RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
+{
 #ifdef DEBUG_PARSER
-    printf( "Evaluating increment expression\n" );
+    printf( "Evaluating increment assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    RevPtr<Variable> theVariable = variable->createVariable( env );
-    
+    // Get variable. We use standard evaluation because the variable is
+    // implicitly on both sides (lhs and rhs) of this type of statement
+    RevPtr<Variable> theVariable = variable->evaluateContent( env );
     if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
+        throw RbException( "Invalid NULL variable returned by variable expression in increment assignment" );
     
+    // Make sure that the variable is constant
+    if ( !theVariable->getRevObject().isConstant() )
+        throw RbException( "Invalid increment assignment to dynamic variable" );
+    
+    // Get a non-const reference to the lhs value object
     RevObject& lhs_value = theVariable->getRevObject();
+    
+    // Increment the lhs value. This will not change the control variable status.
     lhs_value.increment();
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
-    return theVariable;
+    // No further assignment with this type of statement
+    return NULL;
 }
 
 
 
-/** 
- * Print info about the syntax element 
+/**
+ * Print info about the syntax element
  */
-void SyntaxIncrement::printValue(std::ostream& o) const 
+void SyntaxIncrement::printValue(std::ostream& o) const
 {
-    
     o << "SyntaxIncrement:" << std::endl;
     o << "variable      = ";
     variable->printValue(o);
     o << std::endl;
     o << "expression    = '++'" << std::endl;
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxIncrement::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    variable->replaceVariableWithConstant(name, c);
 }
 
 

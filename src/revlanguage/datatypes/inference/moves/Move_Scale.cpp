@@ -28,7 +28,7 @@ Move_Scale::Move_Scale() : Move()
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the move. 
  */
@@ -71,16 +71,16 @@ void Move_Scale::constructInternalObject( void )
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Move_Scale::getClassName(void) 
+const std::string& Move_Scale::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Move_Scale";
+    static std::string revType = "Move_Scale";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -92,9 +92,9 @@ const std::string& Move_Scale::getClassName(void)
 const TypeSpec& Move_Scale::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

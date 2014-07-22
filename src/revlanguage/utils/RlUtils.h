@@ -17,6 +17,7 @@
 #ifndef RlUtil_H
 #define RlUtil_H
 
+#include "RevNullObject.h"
 #include "RevObject.h"
 
 #include <string>
@@ -25,8 +26,10 @@ namespace RevLanguage {
     
     namespace RlUtils {
 
-        // Empty return type
-        const std::string Void                                   = "void";
+        // Empty return type spec
+        static const TypeSpec& Void    = TypeSpec( "void", NULL );
+
+//        const std::string Void                                   = "void";
 
         class RlTypeConverter {
             public:

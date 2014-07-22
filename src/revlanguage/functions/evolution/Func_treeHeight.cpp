@@ -7,6 +7,7 @@
 //
 
 #include "Func_treeHeight.h"
+#include "ModelVector.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
 #include "RealPos.h"
@@ -14,7 +15,6 @@
 #include "Topology.h"
 #include "TreeHeightStatistic.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -31,7 +31,7 @@ Func_treeHeight* Func_treeHeight::clone( void ) const {
 }
 
 
-RevObject* Func_treeHeight::execute() {
+RevPtr<Variable> Func_treeHeight::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeHeightStatistic* f = new RevBayesCore::TreeHeightStatistic( tau );
@@ -40,7 +40,7 @@ RevObject* Func_treeHeight::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -62,19 +62,19 @@ const ArgumentRules& Func_treeHeight::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_treeHeight::getClassName(void) { 
+const std::string& Func_treeHeight::getClassType(void) { 
     
-    static std::string rbClassName = "Func_treeHeight";
+    static std::string revType = "Func_treeHeight";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_treeHeight::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

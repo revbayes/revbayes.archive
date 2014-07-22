@@ -31,13 +31,13 @@ Func_dayhoff* Func_dayhoff::clone( void ) const {
 }
 
 
-RevObject* Func_dayhoff::execute() {
+RevPtr<Variable> Func_dayhoff::execute() {
     
     
     RevBayesCore::RateMatrix_Dayhoff *rmj = new RevBayesCore::RateMatrix_Dayhoff();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -50,19 +50,19 @@ const ArgumentRules& Func_dayhoff::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_dayhoff::getClassName(void) { 
+const std::string& Func_dayhoff::getClassType(void) { 
     
-    static std::string rbClassName = "Func_dayhoff";
+    static std::string revType = "Func_dayhoff";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_dayhoff::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

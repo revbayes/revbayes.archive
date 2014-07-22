@@ -26,8 +26,6 @@ using namespace RevBayesCore;
 MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MultivariatePhyloProcess >( new MultivariatePhyloProcess(&intau->getValue(), insigma->getValue().getDim())),
     tau( intau ),
     sigma( insigma ) {
-    this->addParameter( tau );
-    this->addParameter( sigma );
     
     simulate();
 }
@@ -153,9 +151,24 @@ void MultivariateBrownianPhyloProcess::recursiveSimulate(const TopologyNode& fro
 }
 
 
-void MultivariateBrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> MultivariateBrownianPhyloProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
-    if ( oldP == tau ) {
+    parameters.insert( tau );
+    parameters.insert( sigma );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if ( oldP == tau )
+    {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
     }
     

@@ -28,7 +28,7 @@ Func_exp* Func_exp::clone( void ) const {
 }
 
 
-RevObject* Func_exp::execute() {
+RevPtr<Variable> Func_exp::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::ExponentialFunction* f = new RevBayesCore::ExponentialFunction( arg );
@@ -37,7 +37,7 @@ RevObject* Func_exp::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -58,19 +58,19 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_exp::getClassName(void) { 
+const std::string& Func_exp::getClassType(void) { 
     
-    static std::string rbClassName = "Func_exp";
+    static std::string revType = "Func_exp";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_exp::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
