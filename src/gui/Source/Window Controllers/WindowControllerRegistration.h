@@ -3,15 +3,15 @@
 
 @interface WindowControllerRegistration : NSWindowController {
 
-    IBOutlet NSPopUpButton*  countrySelector;
-	IBOutlet NSButton*       registerNowButton;
-	IBOutlet NSButton*       registerLaterButton;
-	IBOutlet NSTextField*    firstNameField;
-	IBOutlet NSTextField*    lastNameField;
-	IBOutlet NSTextField*    emailAddressField;
-	IBOutlet NSTextField*    institutionField;
-	NSArray*                 countryList;
-    BOOL                     hasRegistered;
+    IBOutlet NSPopUpButton*   countrySelector;
+	IBOutlet NSButton*        registerNowButton;
+	IBOutlet NSButton*        registerLaterButton;
+	IBOutlet NSTextField*     firstNameField;
+	IBOutlet NSTextField*     lastNameField;
+	IBOutlet NSTextField*     emailAddressField;
+	IBOutlet NSTextField*     institutionField;
+	NSArray*                  countryList;
+    BOOL                      hasRegistered;
 }
 
 - (void)openWindow;
