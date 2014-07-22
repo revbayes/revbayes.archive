@@ -7,13 +7,13 @@
 
 @interface PartitionConstant : NSObject <NSCoding> {
         
-        Value*                   value;
-        TaxonBipartition*        partition;
-        Parm*                    constantParm;
+        Value*                                 value;
+        TaxonBipartition*                      partition;
+        Parm*                                  constantParm;
     }
     
-@property (retain) TaxonBipartition* partition;
-@property (retain) Parm* constantParm;
+@property (nonatomic,strong) TaxonBipartition* partition;
+@property (nonatomic,strong) Parm*             constantParm;
 
 - (PartitionConstant*)clone;
 - (id)initWithParm:(Parm*)p;
