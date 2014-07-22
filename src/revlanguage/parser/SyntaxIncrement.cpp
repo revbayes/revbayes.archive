@@ -104,7 +104,7 @@ RevPtr<Variable> SyntaxIncrement::evaluateContent( Environment& env )
 #endif
     
     // No further assignment with this type of statement
-    return NULL;
+    return theVariable;
 }
 
 

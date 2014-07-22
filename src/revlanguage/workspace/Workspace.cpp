@@ -186,6 +186,14 @@ bool Workspace::existsType( const std::string& name ) const {
 }
 
 
+
+const TypeTable& Workspace::getTypeTable( void ) const
+{
+    
+    return typeTable;
+}
+
+
 /**
  * Use the template object in the type table to make a default instance of
  * a specified Rev type. Throw an error if the type is abstract.
