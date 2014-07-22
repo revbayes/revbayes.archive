@@ -15,6 +15,7 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
+#include "RealMatrix.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
