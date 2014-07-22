@@ -5,22 +5,22 @@
 
 @interface WindowControllerModelBrowser : NSWindowController {
 
-    WindowControllerModel*        modelWindowPtr;
-    NSMutableArray*               curatedModels;
-    NSMutableArray*               userModels;
-	IBOutlet NSArrayController*   curatedModelController;
-	IBOutlet NSArrayController*   userModelController;
-    IBOutlet NSButton*            okButton;
-    IBOutlet NSButton*            removeUserModelButton;
-    IBOutlet NSTabView*           tabView;
-    BOOL                          userSelectedCuratedModel;
-    BOOL                          userDidCancel;
+    WindowControllerModel*                   modelWindowPtr;
+    NSMutableArray*                          curatedModels;
+    NSMutableArray*                          userModels;
+	IBOutlet NSArrayController*              curatedModelController;
+	IBOutlet NSArrayController*              userModelController;
+    IBOutlet NSButton*                       okButton;
+    IBOutlet NSButton*                       removeUserModelButton;
+    IBOutlet NSTabView*                      tabView;
+    BOOL                                     userSelectedCuratedModel;
+    BOOL                                     userDidCancel;
 }
 
-@property (readwrite,retain) NSMutableArray* curatedModels;
-@property (readwrite) BOOL userSelectedCuratedModel;
-@property (readwrite) BOOL userDidCancel;
-@property (readwrite,retain) NSMutableArray* userModels;
+@property (nonatomic,strong) NSMutableArray* curatedModels;
+@property (nonatomic)        BOOL            userSelectedCuratedModel;
+@property (nonatomic)        BOOL            userDidCancel;
+@property (nonatomic,strong) NSMutableArray* userModels;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
