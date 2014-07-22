@@ -10,6 +10,7 @@
 #include "Ellipsis.h"
 #include "Func_discretizeGamma.h"
 #include "NormalizeVectorFunction.h"
+#include "ModelVector.h"
 #include "RbUtil.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
@@ -35,7 +36,7 @@ Func_discretizeGamma* Func_discretizeGamma::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevObject* Func_discretizeGamma::execute( void ) {
+RevPtr<Variable> Func_discretizeGamma::execute( void ) {
     
     RevBayesCore::TypedDagNode<double>* shape = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* rate = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -46,9 +47,9 @@ RevObject* Func_discretizeGamma::execute( void ) {
     
     DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
     
-    Vector<RealPos> *discGammaVector = new Vector<RealPos>( detNode );
+    ModelVector<RealPos> *discGammaVector = new ModelVector<RealPos>( detNode );
     
-    return discGammaVector;
+    return new Variable( discGammaVector );
 }
 
 
@@ -101,5 +102,5 @@ const TypeSpec& Func_discretizeGamma::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_discretizeGamma::getReturnType( void ) const {
     
-    return Vector<RealPos>::getClassTypeSpec();
+    return ModelVector<RealPos>::getClassTypeSpec();
 }
