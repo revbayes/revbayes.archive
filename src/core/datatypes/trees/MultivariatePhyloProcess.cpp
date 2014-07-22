@@ -64,6 +64,7 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
     
+    /*
     if ( n == "mean" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
@@ -74,7 +75,6 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
         rv = getStdev(k->getValue());        
     }
-    /*
     else if ( n == "clampAt" )
     {
         const TypedDagNode< ContinuousCharacterData >* data = static_cast<const TypedDagNode<ContinuousCharacterData> *>( args[0] );
@@ -83,11 +83,11 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         // clampAt(&data->getValue(), k->getValue(), l->getValue());   
         rv = 0;
     }
-    */
     else
     {
-        throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
     }
+    */
+    throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
     
 }
 
