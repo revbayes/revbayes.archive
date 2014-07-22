@@ -6,25 +6,25 @@
 
 @interface RbData : NSObject <NSCoding> {
 
-	NSMutableArray*      data;
-    int                  dataType;
-    BOOL                 isHomologyEstablished;
-    NSString*            alignmentMethod;
-	NSString*            name;
-	int                  numCharacters;
-	int                  numTaxa;
-	NSMutableArray*      taxonNames;
-	NSMutableSet*        excludedTaxa;
-	NSMutableSet*        excludedCharacters;
-    RbData*              copiedFrom;
+	NSMutableArray*                    data;
+    int                                dataType;
+    BOOL                               isHomologyEstablished;
+    NSString*                          alignmentMethod;
+	NSString*                          name;
+	int                                numCharacters;
+	int                                numTaxa;
+	NSMutableArray*                    taxonNames;
+	NSMutableSet*                      excludedTaxa;
+	NSMutableSet*                      excludedCharacters;
+    RbData*                            copiedFrom;
 }
 
-@property (readwrite)        int       dataType;
-@property (readwrite)        BOOL      isHomologyEstablished;
-@property (readwrite,retain) NSString* name;
-@property (readwrite,retain) NSString* alignmentMethod;
-@property (readwrite)        int       numCharacters;
-@property (readwrite)        int       numTaxa;
+@property (nonatomic)        int       dataType;
+@property (nonatomic)        BOOL      isHomologyEstablished;
+@property (nonatomic,strong) NSString* name;
+@property (nonatomic,strong) NSString* alignmentMethod;
+@property (nonatomic)        int       numCharacters;
+@property (nonatomic)        int       numTaxa;
 
 - (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;

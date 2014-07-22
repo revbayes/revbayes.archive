@@ -10,13 +10,13 @@
 
 @interface TaxonBipartition : NSObject <NSCoding> {
 
-    int                     partitionType;
-    NSString*               partitionName;
-    NSMutableArray*         taxaInPartition;
+    int                                partitionType;
+    NSString*                          partitionName;
+    NSMutableArray*                    taxaInPartition;
 }
 
-@property (readwrite) int partitionType;
-@property (readwrite,retain) NSString* partitionName;
+@property (nonatomic)        int       partitionType;
+@property (nonatomic,strong) NSString* partitionName;
 
 - (void)addNameToPartitionSet:(NSString*)nme;
 - (TaxonBipartition*)clone;

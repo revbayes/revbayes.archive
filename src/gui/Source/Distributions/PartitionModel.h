@@ -7,13 +7,13 @@
 
 @interface PartitionModel : NSObject <NSCoding> {
     
-    DistributionGui*         distribution;
-    TaxonBipartition*        partition;
-    Parm*                    randomVariable;
+    DistributionGui*                           distribution;
+    TaxonBipartition*                          partition;
+    Parm*                                      randomVariable;
 }
 
-@property (retain) TaxonBipartition* partition;
-@property (retain) Parm* randomVariable;
+@property (nonatomic,strong) TaxonBipartition* partition;
+@property (nonatomic,strong) Parm*             randomVariable;
 
 - (DistributionGui*)distribution;
 - (id)initWithParm:(Parm*)p;
