@@ -26,3 +26,4 @@ ss.marginal()
 ps <- pathSampler(file="output/pow_posterior_genecodon.out", powerColumnName="power", likelihoodColumnName="likelihood")
 ps.marginal() 
 
+q()
