@@ -40,36 +40,36 @@ void PathSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> PathSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "marginal")
     {
         
         double ml = value->marginalLikelihood();
         
-        return new Real( ml );
+        return new Variable( new Real( ml ) );
     }
     
     return RevObject::executeMethod( name, args );
 }
 
 
-/** Get class name of object */
-const std::string& PathSampler::getClassName(void)
+/** Get Rev type of object */
+const std::string& PathSampler::getClassType(void)
 {
     
-    static std::string rbClassName = "PathSampler";
+    static std::string revType = "PathSampler";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& PathSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

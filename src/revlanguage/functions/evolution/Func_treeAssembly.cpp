@@ -7,6 +7,7 @@
 //
 
 #include "Func_treeAssembly.h"
+#include "ModelVector.h"
 #include "RateMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -16,7 +17,6 @@
 #include "Topology.h"
 #include "TreeAssemblyFunction.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -33,17 +33,17 @@ Func_treeAssembly* Func_treeAssembly::clone( void ) const {
 }
 
 
-RevObject* Func_treeAssembly::execute() {
+RevPtr<Variable> Func_treeAssembly::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::Topology>* tau = static_cast<const Topology&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const Vector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* brlens = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TreeAssemblyFunction* f = new RevBayesCore::TreeAssemblyFunction( tau, brlens );
 
     DeterministicNode<RevBayesCore::BranchLengthTree> *detNode = new DeterministicNode<RevBayesCore::BranchLengthTree>("", f, this->clone());
     
     BranchLengthTree* value = new BranchLengthTree( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -56,7 +56,7 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "topology", true, Topology::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "brlens", true, Vector<RealPos>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "brlens", true, ModelVector<RealPos>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -65,19 +65,19 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_treeAssembly::getClassName(void) { 
+const std::string& Func_treeAssembly::getClassType(void) { 
     
-    static std::string rbClassName = "Func_treeAssembly";
+    static std::string revType = "Func_treeAssembly";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_treeAssembly::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

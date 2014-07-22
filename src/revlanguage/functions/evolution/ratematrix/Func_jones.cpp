@@ -31,13 +31,13 @@ Func_jones* Func_jones::clone( void ) const {
 }
 
 
-RevObject* Func_jones::execute() {
+RevPtr<Variable> Func_jones::execute() {
     
 
     RevBayesCore::RateMatrix_Jones *rmj = new RevBayesCore::RateMatrix_Jones();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -50,19 +50,19 @@ const ArgumentRules& Func_jones::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_jones::getClassName(void) { 
+const std::string& Func_jones::getClassType(void) { 
     
-    static std::string rbClassName = "Func_jones";
+    static std::string revType = "Func_jones";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_jones::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

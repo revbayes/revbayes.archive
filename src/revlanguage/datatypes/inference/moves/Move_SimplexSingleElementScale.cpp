@@ -50,20 +50,20 @@ void Move_SimplexSingleElementScale::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
-const std::string& Move_SimplexSingleElementScale::getClassName(void) {
+/** Get Rev type of object */
+const std::string& Move_SimplexSingleElementScale::getClassType(void) {
     
-    static std::string rbClassName = "Move_Move_SimplexMove_SingleElementScale";
+    static std::string revType = "Move_SimplexSingleElementScale";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_SimplexSingleElementScale::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

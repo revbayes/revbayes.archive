@@ -2,11 +2,11 @@
 #include "ArgumentRules.h"
 #include "BranchRateJumpProcess.h"
 #include "Dist_branchRateJumpProcess.h"
+#include "ModelVector.h"
 #include "Probability.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_branchRateJumpProcess::Dist_branchRateJumpProcess( void ) : TypedDistribution< Vector<RealPos> >(),
+Dist_branchRateJumpProcess::Dist_branchRateJumpProcess( void ) : TypedDistribution< ModelVector<RealPos> >(),
     valueDistribution( NULL ),
     tree( NULL ),
     lambda( NULL ),
@@ -60,7 +60,7 @@ RevBayesCore::BranchRateJumpProcess* Dist_branchRateJumpProcess::createDistribut
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the process. 
  */
@@ -71,16 +71,16 @@ Dist_branchRateJumpProcess* Dist_branchRateJumpProcess::clone( void ) const
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_branchRateJumpProcess::getClassName(void) 
+const std::string& Dist_branchRateJumpProcess::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_branchRateJumpProcess";
+    static std::string revType = "Dist_branchRateJumpProcess";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -92,9 +92,9 @@ const std::string& Dist_branchRateJumpProcess::getClassName(void)
 const TypeSpec& Dist_branchRateJumpProcess::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution< Vector<RealPos> >::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<RealPos> >::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -174,7 +174,7 @@ void Dist_branchRateJumpProcess::setConstMemberVariable(const std::string& name,
     }
     else 
     {
-        TypedDistribution< Vector< RealPos > >::setConstMemberVariable(name, var);
+        TypedDistribution< ModelVector< RealPos > >::setConstMemberVariable(name, var);
     }
     
 }

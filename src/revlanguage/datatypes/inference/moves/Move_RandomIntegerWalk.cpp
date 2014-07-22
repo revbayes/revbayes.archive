@@ -26,7 +26,7 @@ Move_RandomIntegerWalk::Move_RandomIntegerWalk() : Move()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Move_RandomIntegerWalk* Move_RandomIntegerWalk::clone(void) const 
 {
@@ -62,16 +62,16 @@ void Move_RandomIntegerWalk::constructInternalObject( void )
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Move_RandomIntegerWalk::getClassName(void) 
+const std::string& Move_RandomIntegerWalk::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Move_RandomIntegerWalk";
+    static std::string revType = "Move_RandomIntegerWalk";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -83,9 +83,9 @@ const std::string& Move_RandomIntegerWalk::getClassName(void)
 const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

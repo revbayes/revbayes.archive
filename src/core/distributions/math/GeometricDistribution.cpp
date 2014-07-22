@@ -6,11 +6,7 @@ using namespace RevBayesCore;
 
 GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 1 ) ), p( q ) 
 {
-    // add the parameters to the parents set
-    addParameter( p );
-    
     *value = RbStatistics::Geometric::rv(p->getValue(), *GLOBAL_RNG);
-    
 }
 
 
@@ -43,7 +39,20 @@ void GeometricDistribution::redrawValue( void )
 }
 
 
-void GeometricDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> GeometricDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( p );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void GeometricDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == p) 

@@ -23,13 +23,13 @@ namespace RevLanguage {
         
         // Basic utility functions
         DiscreteTaxonData*                  clone(void) const;                                                                                  //!< Clone object
-        static const std::string&           getClassName(void);                                                                                 //!< Get class name
+        static const std::string&           getClassType(void);                                                                                 //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
                 
     };
     
@@ -40,7 +40,6 @@ namespace RevLanguage {
 #include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
-#include "Vector.h"
 
 
 template <class rlCharType>
@@ -64,7 +63,7 @@ RevLanguage::DiscreteTaxonData<charType>* RevLanguage::DiscreteTaxonData<charTyp
 
 /* Map calls to member methods */
 template <typename charType>
-RevLanguage::RevObject* RevLanguage::DiscreteTaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteTaxonData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if ( name == "[]") 
     {
@@ -77,29 +76,29 @@ RevLanguage::RevObject* RevLanguage::DiscreteTaxonData<charType>::executeMethod(
         }
             
         RevObject* element = new charType( this->dagNode->getValue().getElement( size_t(index.getValue()) - 1) );
-        return element;
+        return new Variable( element );
     } 
     
     return ModelObject<RevBayesCore::DiscreteTaxonData<typename charType::valueType> >::executeMethod( name, args );
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <typename rlType>
-const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassName(void) { 
+const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassType(void) { 
     
-    static std::string rbClassName = "DiscreteTaxonData";
+    static std::string revType = "DiscreteTaxonData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

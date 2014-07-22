@@ -36,8 +36,6 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
 
 {
     
-    addParameter( origin );
-    
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
     // but since the probability of the divergence times contains the factor (n-1)! we simply store
@@ -431,6 +429,17 @@ void AbstractBirthDeathProcess::simulateTree( void )
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> AbstractBirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( origin );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
 
 /**
  * Swap the parameters held by this distribution.
@@ -439,7 +448,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void AbstractBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void AbstractBirthDeathProcess::swapParameter( const DagNode *oldP, const DagNode *newP )
 {
     
     if ( oldP == origin ) 

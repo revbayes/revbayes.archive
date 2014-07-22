@@ -66,7 +66,10 @@ Tree::~Tree(void)
     else
     {
         // remove the tree for each node
-        topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
+        // TODO: Why are we doing this? Apparently we need at least to check that
+        // there are some nodes to delete because the topology can be empty. -- Fredrik
+        if ( topology->getNumberOfNodes() > 0 )
+            topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
     }
     
 }

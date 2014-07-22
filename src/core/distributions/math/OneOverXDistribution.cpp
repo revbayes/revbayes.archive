@@ -8,9 +8,6 @@
 using namespace RevBayesCore;
 
 OneOverXDistribution::OneOverXDistribution(const TypedDagNode<double> *mi, const TypedDagNode<double> *ma) : ContinuousDistribution( new double( 1.0 ) ), min( mi ), max( ma ) {
-    // add the parameters to the parents set
-    addParameter( min );
-    addParameter( max );
     
     double u = GLOBAL_RNG->uniform01();
     double ln_a = log( min->getValue() );
@@ -19,7 +16,6 @@ OneOverXDistribution::OneOverXDistribution(const TypedDagNode<double> *mi, const
 
 
 OneOverXDistribution::OneOverXDistribution(const OneOverXDistribution &n) : ContinuousDistribution( n ), min( n.min ), max( n.max ) {
-    // parameters are automatically copied
 }
 
 
@@ -88,6 +84,20 @@ void OneOverXDistribution::redrawValue( void )
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> OneOverXDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( min );
+    parameters.insert( max );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void OneOverXDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
 

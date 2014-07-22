@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxLabeledExpr, which is
- * used to hold labeled expressions that represent arguments to
- * functions in the syntax tree.
- *
- * @brief Declaration of SyntaxLabeledExpr
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxLabeledExpr_H
 #define SyntaxLabeledExpr_H
 
@@ -24,7 +8,27 @@
 
 namespace RevLanguage {
 
-class SyntaxLabeledExpr : public SyntaxElement {
+    /**
+     * @brief Labeled expression syntax element
+     *
+     * This syntax element class holds labeled expressions, used
+     * in passing arguments to function calls. The member variables
+     * are the label and the expression.
+     *
+     * Labeled expressions occur in function calls like
+     *
+     *    foo( x = 0.2 )
+     *
+     * where they correspond to the 'x = 0.2' part. The label may
+     * be missing, as it is in the function call
+     *
+     *    foo( 0.2 )
+     *
+     * This element just stores the label and expression, and gives
+     * them out when the function call syntax element needs them in
+     * constructing the function call.s
+     */
+    class SyntaxLabeledExpr : public SyntaxElement {
 
     public:
         SyntaxLabeledExpr(const std::string &lbl, SyntaxElement* expr);                                             //!< Constructor
@@ -36,7 +40,7 @@ class SyntaxLabeledExpr : public SyntaxElement {
         SyntaxLabeledExpr&          operator=(const SyntaxLabeledExpr& x);                                          //!< Assignment operator
 
         // Basic utility functions
-        SyntaxLabeledExpr*          clone() const;                                                                  //!< Clone object
+        SyntaxLabeledExpr*          clone(void) const;                                                              //!< Clone object
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
@@ -45,13 +49,12 @@ class SyntaxLabeledExpr : public SyntaxElement {
         const std::string&          getLabel() const { return label; }                                              //!< Return label
         RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
         bool                        isConstExpression(void) const;                                                  //!< Is the expression constant?
-        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                 label;                                                                          //!< The label of the argument
         SyntaxElement*              expression;                                                                     //!< The expression for the argument value
     
-};
+    };
     
 }
 

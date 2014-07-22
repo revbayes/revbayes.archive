@@ -1,11 +1,7 @@
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxAdditionAssignment.h"
-#include "Workspace.h"
 
 #include <iostream>
 #include <list>
@@ -13,52 +9,30 @@
 
 using namespace RevLanguage;
 
+
 /** 
- * Construct from variable and expression. 
- * Here only the object is instanciated and the variables set.
+ * Construct from lhs and rhs expressions.
+ * Here only the object is instantiated and the variables set.
  *
- * \param[in]   var         The left hand side variable.
- * \param[in]   expr        The expression on the right hand side.
+ * \param[in]   lhsExpr     The left-hand side expression.
+ * \param[in]   rhsExpr     The right-hand side expression.
  */
-SyntaxAdditionAssignment::SyntaxAdditionAssignment(SyntaxVariable* var, SyntaxElement* expr) : SyntaxElement(), 
-    variable(var), 
-    functionCall(NULL), 
-    expression(expr) 
+SyntaxAdditionAssignment::SyntaxAdditionAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
+    SyntaxElement(),
+    lhsExpression( lhsExpr ),
+    rhsExpression( rhsExpr )
 {
-    
 }
 
 
-
-/** 
- * Construct from function call and expression. 
- * Here only the object is instanciated and the variables set.
- *
- * \param[in]   fxnCall     The function call returning the left hand side variable.
- * \param[in]   expr        The expression on the right hand side.
- */
-SyntaxAdditionAssignment::SyntaxAdditionAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(),
-    variable(NULL), 
-    functionCall(fxnCall), 
-    expression(expr) 
-{
-
-}
-
-
-/** 
+/**
  * Deep copy constructor.
  */
-SyntaxAdditionAssignment::SyntaxAdditionAssignment(const SyntaxAdditionAssignment& x) : SyntaxElement(x) 
+SyntaxAdditionAssignment::SyntaxAdditionAssignment( const SyntaxAdditionAssignment& x ) :
+    SyntaxElement(x)
 {
-    
-    if ( x.variable != NULL )
-        variable   = x.variable->clone();
-    
-    if ( x.functionCall != NULL )
-        functionCall = x.functionCall->clone();
-    
-    expression = x.expression->clone();
+    lhsExpression = x.lhsExpression->clone();
+    rhsExpression = x.rhsExpression->clone();
 }
 
 
@@ -67,93 +41,93 @@ SyntaxAdditionAssignment::SyntaxAdditionAssignment(const SyntaxAdditionAssignmen
  */
 SyntaxAdditionAssignment::~SyntaxAdditionAssignment() 
 {
-    
-    delete variable;
-    delete functionCall;
-    delete expression;
-    
+    delete lhsExpression;
+    delete rhsExpression;
 }
 
 
 /** 
- * Assignment operator performing a deep assignment.
+ * Assignment operator performing deep assignment.
  */
-SyntaxAdditionAssignment& SyntaxAdditionAssignment::operator=(const SyntaxAdditionAssignment& x) 
+SyntaxAdditionAssignment& SyntaxAdditionAssignment::operator=( const SyntaxAdditionAssignment& x )
 {
-    
-    if ( this != &x ) 
+    if ( this != &x )
     {
+        SyntaxElement::operator=( x );
         
-        delete functionCall;
-        delete variable;
-        delete expression;
+        delete lhsExpression;
+        delete rhsExpression;
         
-        functionCall = NULL;
-        variable = NULL;
-        
-        if ( x.variable != NULL )
-            variable   = x.variable->clone();
-        
-        if ( x.functionCall != NULL )
-            functionCall = x.functionCall->clone();
-        
-        expression = x.expression->clone();
+        lhsExpression = x.lhsExpression->clone();
+        rhsExpression = x.rhsExpression->clone();
     }
     
-    return (*this);
+    return ( *this );
 }
 
 
 /**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * The clone function is a convenience function to create proper copies of inherited objects.
+ * That is, a.clone() will create a clone of type 'b' if the 'a' instance is of derived type 'b'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself
  */
 SyntaxAdditionAssignment* SyntaxAdditionAssignment::clone () const 
 {
-    
-    return new SyntaxAdditionAssignment(*this);
+    return new SyntaxAdditionAssignment( *this );
 }
 
 
 /** 
- * Evaluate the content of this syntax element.
- * This will perform an addition assignment operation.
+ * Evaluate the content of this syntax element. This will perform an
+ * addition assignment operation.
  */
 RevPtr<Variable> SyntaxAdditionAssignment::evaluateContent( Environment& env ) 
 {
-    
 #ifdef DEBUG_PARSER
-    printf( "Evaluating addition assign expression\n" );
+    printf( "Evaluating addition assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    RevPtr<Variable> theVariable = variable->createVariable( env );
-    
+    // Get variable from lhs. We use standard evaluation because the variable is
+    // implicitly on both sides (lhs and rhs) of this type of statement
+    RevPtr<Variable> theVariable = lhsExpression->evaluateContent( env );
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in addition assignment" );
-      
+    
+    // Make sure that the variable is constant
+    if ( !theVariable->getRevObject().isConstant() )
+        throw RbException( "Invalid addition assignment to dynamic variable" );
+    
+    // Record whether it is a control variable
+    bool isControlVar = theVariable->isControlVar();
+    
+    // Get a reference to the lhs value object
     const RevObject& lhs_value = theVariable->getRevObject();
     
-    
-    // Calculate the value of the rhs expression
-    const RevPtr<Variable>& rhs = expression->evaluateContent( env );
+    // Evaluate the rhs expression
+    const RevPtr<Variable>& rhs = rhsExpression->evaluateContent( env );
     if ( rhs == NULL )
         throw RbException( "Invalid NULL variable returned by rhs expression in addition assignment" );
     
-    // fill the slot with the new variable
+    // Get a reference to the rhs value object
     const RevObject& rhs_value = rhs->getRevObject();
     
+    // Generate result of the multiplication
     RevObject *newValue = lhs_value.add( rhs_value );
     
-    // set the value of the variable
+    // Fill the slot with the new variable
     theVariable->setRevObject( newValue );
-    
+
+    // Reset it as control variable, if it was a control variable before the assignment.
+    // When we fill the slot, the control variable property is reset to false by default.
+    if ( isControlVar )
+        theVariable->setControlVarState( true );
+
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
+    // Return the variable for further assignment
     return theVariable;
 }
 
@@ -170,30 +144,18 @@ bool SyntaxAdditionAssignment::isAssignment( void ) const
 }
 
 
-
 /** 
  * Print info about the syntax element 
  */
 void SyntaxAdditionAssignment::printValue(std::ostream& o) const 
 {
-    
     o << "SyntaxAdditionAssignment:" << std::endl;
-    o << "variable      = ";
-    variable->printValue(o);
+    o << "lhsExpression = ";
+    lhsExpression->printValue(o);
     o << std::endl;
-    o << "expression    = ";
-    expression->printValue(o);
+    o << "rhsExpression = ";
+    rhsExpression->printValue(o);
     o << std::endl;
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxAdditionAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
 }
 
 

@@ -66,7 +66,7 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevObject* ConstructorFunction::execute( void ) {
+RevPtr<Variable> ConstructorFunction::execute( void ) {
     
     RevObject* copyObject = templateObject->clone();
     
@@ -82,7 +82,7 @@ RevObject* ConstructorFunction::execute( void ) {
     // now call the constructor for the internal object
     copyObject->constructInternalObject();
     
-    return copyObject;
+    return new Variable( copyObject );
 }
 
 
@@ -93,20 +93,20 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const {
 }
 
 
-/** Get class name of object */
-const std::string& ConstructorFunction::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& ConstructorFunction::getClassType(void) { 
     
-    static std::string rbClassName = "ConstructorFunction";
+    static std::string revType = "ConstructorFunction";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& ConstructorFunction::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

@@ -44,7 +44,10 @@ namespace RevBayesCore {
         void                                                setRateMap(const TypedDagNode< RbVector< RateMap > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
+        
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         
@@ -108,13 +111,7 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc
     branchHeterogeneousClockRates               = false;
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
-    
-    // add the parameters to the parents list
-    this->addParameter( homogeneousClockRate );
-    this->addParameter( homogeneousRateMatrix );
-    if (false)
-        this->addParameter( homogeneousRateMap );
-    
+
     this->redrawValue();
     
 }
@@ -122,7 +119,6 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc
 
 template<class charType, class treeType>
 RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::GeneralTreeHistoryCtmc(const GeneralTreeHistoryCtmc &d) : AbstractTreeHistoryCtmc<charType, treeType>( d ) {
-    // parameters are automatically copied
     // initialize with default parameters
     homogeneousClockRate        = d.homogeneousClockRate;
     heterogeneousClockRates     = d.heterogeneousClockRates;
@@ -651,19 +647,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setRootFrequencie
     
     // remove the old parameter first
     if ( rootFrequencies != NULL )
-    {
-        this->removeParameter( rootFrequencies );
         rootFrequencies = NULL;
-    }
     
     if ( f != NULL )
     {
         // set the value
         //        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
-        
-        // add the parameter
-        this->addParameter( rootFrequencies );
     }
     else
     {
@@ -683,10 +673,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
     
     // remove the old parameter first
     if ( siteRates != NULL )
-    {
-        this->removeParameter( siteRates );
         siteRates = NULL;
-    }
     
     if ( r != NULL )
     {
@@ -706,9 +693,6 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
         
     }
     
-    // add the parameter
-    this->addParameter( siteRates );
-    
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
@@ -716,6 +700,26 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::setSiteRates(cons
     }
 }
 
+
+/** Get the parameters of the distribution */
+template<class charType, class treeType>
+std::set<const RevBayesCore::DagNode*> RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractTreeHistoryCtmc<charType, treeType>::getParameters();
+    
+    parameters.insert( homogeneousClockRate );
+    parameters.insert( heterogeneousClockRates );
+    parameters.insert( homogeneousRateMatrix );
+    parameters.insert( heterogeneousRateMatrices );
+    parameters.insert( rootFrequencies );
+    parameters.insert( siteRates );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 template<class charType, class treeType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     

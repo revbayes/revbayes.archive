@@ -33,10 +33,10 @@ namespace RevLanguage {
 
         // pure virtual functions
         virtual AbstractMemberFunction*     clone(void) const = 0;                                                      //!< Clone the object
-        virtual RevObject*                  execute(void) = 0;                                                          //!< Execute function
+        virtual RevPtr<Variable>            execute(void) = 0;                                                          //!< Execute function
 
         // Basic utility functions
-        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const std::string&           getClassType(void);                                                         //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
     

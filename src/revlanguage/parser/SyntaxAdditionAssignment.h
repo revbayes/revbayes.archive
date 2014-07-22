@@ -13,42 +13,47 @@ namespace RevLanguage {
     /**
      * @brief Addition assignment operator ('a += b')
      *
-     * The addition assignment operator adds the value of the right hand side variable
-     * to the value of the left hand side variable.
+     * The addition assignment operator adds the value of the right-hand side variable
+     * to the value of the left-hand side variable.
      *
-     * Note that the left hand side variable must be constant and that this function
-     * is a constant expression and thus evaluated immidiately. The reason is that otherwise
-     * we would obtain a loop in the DAG, namely that 'a' is a parent of itself.
+     * Note that the left-hand side variable must be either a constant variable or a 
+     * control variable, and that the addition assignment is interpreted as a constant
+     * assignment or a control variable assignment depending on the original type of the
+     * left-hand side variable. Thus, if the left-hand side variable is a constant, the
+     * addition assignment statement 'a += b' is equivalent to the statement:
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-02-18, version 1.0
+     *    a <- a + b
      *
+     * while if the left-hand side variable is a control variable, the addition assignment
+     * is equivalent to
+     *
+     *    a <<- a + b
+     *
+     * Note that an addition assignment could not be a deterministic assignment, because
+     * then it would be rejected as creating loops in the DAG, i.e., 'a' would be a parent
+     * of itself.
      */
     class SyntaxAdditionAssignment : public SyntaxElement {
         
     public:
-        SyntaxAdditionAssignment(SyntaxVariable* var, SyntaxElement* expr);                                                     //!< Constructor with lhs = variable
-        SyntaxAdditionAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr);                                             //!< Constructor with lhs = function call
-        SyntaxAdditionAssignment(const SyntaxAdditionAssignment& x);                                                            //!< Copy constructor
-	    virtual                             ~SyntaxAdditionAssignment();                                                        //!< Destructor
+        SyntaxAdditionAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                           //!< Standard constructor
+        SyntaxAdditionAssignment(const SyntaxAdditionAssignment& x);                                        //!< Copy constructor
+	    virtual                             ~SyntaxAdditionAssignment();                                    //!< Destructor
         
         // Assignment operator
-        SyntaxAdditionAssignment&           operator=(const SyntaxAdditionAssignment& x);                                       //!< Assignment operator
+        SyntaxAdditionAssignment&           operator=(const SyntaxAdditionAssignment& x);                   //!< Assignment operator
         
         // Basic utility functions
-        SyntaxAdditionAssignment*           clone() const;                                                                      //!< Clone object
-        bool                                isAssignment(void) const;                                                           //!< Is this syntax element an assignment?
-        void                                printValue(std::ostream& o) const;                                                  //!< Print info about object
+        SyntaxAdditionAssignment*           clone() const;                                                  //!< Clone object
+        bool                                isAssignment(void) const;                                       //!< Is this syntax element an assignment?
+        void                                printValue(std::ostream& o) const;                              //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                                  //!< Get semantic value
-        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);           //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        RevPtr<Variable>                    evaluateContent(Environment& env);                              //!< Get semantic value
         
     protected:
-        SyntaxVariable*                     variable;                                                                           //!< A lhs variable
-        SyntaxFunctionCall*                 functionCall;                                                                       //!< A lhs function call
-        SyntaxElement*                      expression;                                                                         //!< The rhs expression
+        SyntaxElement*                      lhsExpression;                                                  //!< The lhs expression
+        SyntaxElement*                      rhsExpression;                                                  //!< The rhs expression
         
     };
     

@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxForLoop, which is
- * used to hold expressions for the loop in a for statement.
- *
- * @brief Declaration of SyntaxForLoop
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxForLoop_H
 #define SyntaxForLoop_H
 
@@ -24,6 +9,34 @@
 
 namespace RevLanguage {
 
+    /**
+     * @brief For loop syntax element
+     *
+     * This syntax element is used to hold for loops, more specifically
+     * the definition of the loop, that is the part
+     *
+     *    for ( i in 1:10 )
+     *
+     * The entire loop construct is held by the statement syntax element.
+     *
+     * Here, we store the loop variable name and the in-expression. We also
+     * help the statement syntax element execute the for loop by providing
+     * functions that initialize the loop, finalize the loop, get the next
+     * loop state, and test whether the loop has finished.
+     *
+     * When the loop is initialized, we put the loop variable in the
+     * execution environment as a control variable, to make sure that it
+     * is not included in DAGs if it appears in dynamic expressions. We
+     * then assign values to it from the variable resulting from execution
+     * of the in-expression. This variable needs to be a container with at
+     * least one dimension (a vector), and we get consecutive slices out of
+     * it from its first dimension. For a vector, this simply means that the
+     * loop variable takes on each of the values of the vector in turn.
+     *
+     * Like in R, loops do not open up new local environment. All statements
+     * in the for loop are executed in the outer environment, and the loop
+     * variable remains there after the loop finishes, as in R.
+     */
     class SyntaxForLoop : public SyntaxElement {
 
     public:
@@ -40,20 +53,20 @@ namespace RevLanguage {
         void                        printValue(std::ostream& o) const;                                              //!< Print info about object
 
         // Regular functions
-        RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
+        RevPtr<Variable>            evaluateContent(Environment& env);                                              //!< Get semantic value
         void                        finalizeLoop(void);                                                             //!< Finalize loop
         const std::string&          getIndexVarName(void) const;                                                    //!< Get the name of the index variable
-        RevObject*                  getNextLoopState(void);                                                         //!< Get next state of loop
+        void                        getNextLoopState(void);                                                         //!< Get next state of loop
         bool                        isFinished() const;                                                             //!< Have we iterated over the whole loop?
         void                        initializeLoop(Environment& env);                                               //!< Initialize loop
-        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         std::string                 varName;                                                                        //!< The name of the loop variable
         SyntaxElement*              inExpression;                                                                   //!< The in expression (a vector of values)
         Container*                  stateSpace;                                                                     //!< Vector result of 'in' expression
-        int                         nextElement;                                                                    //!< Next element in vector
-    
+        size_t                      nextOneoffsetElementIndex;                                                      //!< Next element in vector
+        RevPtr<Variable>            loopVariable;                                                                   //!< Smart pointer to the loop variable in the environment
+
     };
     
 }

@@ -48,7 +48,7 @@ Move_NodeCharacterHistoryRejectionSample::Move_NodeCharacterHistoryRejectionSamp
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the move.
  */
@@ -99,16 +99,16 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
 
 
 /**
- * Get class name of object
+ * Get Rev type of object
  *
  * \return The class' name.
  */
-const std::string& Move_NodeCharacterHistoryRejectionSample::getClassName(void)
+const std::string& Move_NodeCharacterHistoryRejectionSample::getClassType(void)
 {
     
-    static std::string rbClassName = "Move_NodeCharacterHistoryRejectionSample";
+    static std::string revType = "Move_NodeCharacterHistoryRejectionSample";
     
-	return rbClassName;
+	return revType;
 }
 
 
@@ -120,9 +120,9 @@ const std::string& Move_NodeCharacterHistoryRejectionSample::getClassName(void)
 const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -149,7 +149,7 @@ const MemberRules& Move_NodeCharacterHistoryRejectionSample::getMemberRules(void
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", true, Probability::getClassTypeSpec() , new Probability(1.0) ) );
 //        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("std") );
         options.push_back( RlString("biogeo") );
         nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options ) );

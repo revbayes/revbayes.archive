@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxVariableDecl, which is
- * used to hold assignment expressions in the syntax tree. These
- * can be left-arrow, equation or tilde assignments.
- *
- * @brief Declaration of SyntaxVariableDecl
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxVariableDecl_H
 #define SyntaxVariableDecl_H
 
@@ -26,32 +10,59 @@
 
 namespace RevLanguage {
 
-class SyntaxVariableDecl : public SyntaxElement {
+    /**
+     * @brief Variable declarations
+     *
+     * This syntax element class deals with variable declarations.
+     * They are used to define the type of variables in the workspace,
+     * and the lengths (size) and dimensions of generic containers. For
+     * instance,
+     * 
+     * Real[8] x
+     *
+     * would declare and create a generic vector of Real numbers of
+     * length 8, containing default Real elements.
+     *
+     * Similar expressions are used to define types of variables in
+     * function definitions and class definitions. Such expressions are
+     * handled by SyntaxFormal. The principal difference between a
+     * formal and a variable declaration is that the former do no
+     * support lengths specifications, whereas variable declarations
+     * do.
+     *
+     * Note that it is possible to leave out the the lengths specification.
+     * For instance,
+     *
+     * Real[] x
+     *
+     * would specify a generic vector of Real numbers, which will be
+     * initialized as an empty vector. This is perhaps going to be the
+     * typical usage of variable declarations.
+     */
+    class SyntaxVariableDecl : public SyntaxElement {
     
     public:
-        SyntaxVariableDecl(const std::string &typeName, std::list<SyntaxElement*>* lengths, const std::string &referenceChar,const std::string &varName);   //!< Basic constructor
-        SyntaxVariableDecl(const SyntaxVariableDecl& x);                                                                                                    //!< Copy constructor
+        SyntaxVariableDecl(const std::string &typeName, std::list<SyntaxElement*>* lengths, const std::string &varName);    //!< Basic constructor
+        SyntaxVariableDecl(const SyntaxVariableDecl& x);                                                                    //!< Copy constructor
         
-        virtual                    ~SyntaxVariableDecl();                                                                                                   //!< Destructor
+        virtual                    ~SyntaxVariableDecl();                                                                   //!< Virtual destructor
         
         // Assignment operator
-        SyntaxVariableDecl&         operator=(const SyntaxVariableDecl& x);                                                                                 //!< Assignment operator
+        SyntaxVariableDecl&         operator=(const SyntaxVariableDecl& x);                 //!< Assignment operator
         
         // Basic utility functions
-        SyntaxVariableDecl*         clone() const;                                                                                                          //!< Clone object
-        void                        printValue(std::ostream& o) const;                                                                                      //!< Print info about object
+        SyntaxVariableDecl*         clone() const;                                          //!< Clone object
+        void                        printValue(std::ostream& o) const;                      //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env);                                                                                      //!< Get semantic value
-        void                        replaceVariableWithConstant(const std::string& name, const RevObject& c);                                               //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        RevPtr<Variable>            evaluateContent(Environment& env);                      //!< Get semantic value
         
     protected:
-        std::string                 elementTypeName;                                                                //!< Element type of the variable
-        std::list<SyntaxElement*>*  lengthExpr;                                                                     //!< Lengths in different dimensions
-        std::string                 referenceSymbol;                                                                //!< Is reference? ("&" or "")
-        std::string                 variableName;                                                                   //!< Variable name
+        std::string                 elementTypeName;                                        //!< Element type of the variable
+        std::list<SyntaxElement*>*  lengthExpr;                                             //!< Lengths in different dimensions
+        std::string                 variableName;                                           //!< Variable name
     
-};
+    };
     
 }
 

@@ -23,9 +23,6 @@ kappa(NULL),
 df(indf),
 dim(0)  {
     
-    addParameter(sigma0);
-    addParameter(df);
-
     redrawValue();
 }
 
@@ -36,10 +33,6 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
     df(indf),
     dim(indim)    {
     
-        addParameter(dim);
-        addParameter(kappa);
-        addParameter(df);
-        
         redrawValue();
 }
 
@@ -53,15 +46,7 @@ InverseWishartDistribution::InverseWishartDistribution(const InverseWishartDistr
         if (sigma0) {
             std::cerr << "sigma0??\n";
             exit(1);
-            addParameter( sigma0 );
         }
-        if (kappa)  {
-            addParameter(kappa);
-        }
-        if (dim)    {
-            addParameter(dim);
-        }
-        addParameter(df);
 
         redrawValue();
 }
@@ -70,6 +55,22 @@ InverseWishartDistribution* InverseWishartDistribution::clone(void) const   {
 
     return new InverseWishartDistribution(*this);
 }
+
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> InverseWishartDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( kappa );
+    parameters.insert( dim );
+    parameters.insert( df );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
 
 void InverseWishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     if (oldP == sigma0) {

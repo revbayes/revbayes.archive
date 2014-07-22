@@ -33,12 +33,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func_ceil*                                     clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                                      execute(void);                                                                  //!< Execute function
+        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -69,7 +69,7 @@ RevLanguage::Func_ceil<valType, retType>* RevLanguage::Func_ceil<valType, retTyp
 
 
 template <typename valType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func_ceil<valType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_ceil<valType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const valType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::CeilFunction* f = new RevBayesCore::CeilFunction( arg );
@@ -78,7 +78,7 @@ RevLanguage::RevObject* RevLanguage::Func_ceil<valType, retType>::execute() {
     
     retType* value = new retType( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -102,20 +102,20 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ceil<valType, retType>::getA
 
 
 template <typename valType, typename retType>
-const std::string& RevLanguage::Func_ceil<valType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func_ceil<valType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_ceil";
+    static std::string revType = "Func_ceil";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( valType::getClassTypeSpec() ), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( valType::getClassTypeSpec() ), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

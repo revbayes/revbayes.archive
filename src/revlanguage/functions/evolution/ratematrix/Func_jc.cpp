@@ -32,7 +32,7 @@ Func_jc* Func_jc::clone( void ) const {
 }
 
 
-RevObject* Func_jc::execute() {
+RevPtr<Variable> Func_jc::execute() {
     
     int ns = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
     RevBayesCore::JcRateMatrixFunction* f = new RevBayesCore::JcRateMatrixFunction( size_t(ns) );
@@ -41,7 +41,7 @@ RevObject* Func_jc::execute() {
     
     RateMatrix* value = new RateMatrix( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -62,19 +62,19 @@ const ArgumentRules& Func_jc::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_jc::getClassName(void) { 
+const std::string& Func_jc::getClassType(void) { 
     
-    static std::string rbClassName = "Func_jc";
+    static std::string revType = "Func_jc";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_jc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

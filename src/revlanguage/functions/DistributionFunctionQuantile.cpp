@@ -104,7 +104,7 @@ DistributionFunctionQuantile* DistributionFunctionQuantile::clone(void) const {
 
 
 /** Execute function: we reset our template object here and give out a copy */
-RevObject* DistributionFunctionQuantile::execute( void ) {
+RevPtr<Variable> DistributionFunctionQuantile::execute( void ) {
     
     Real* value = NULL;
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Probability &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -147,7 +147,7 @@ RevObject* DistributionFunctionQuantile::execute( void ) {
     }
     
     // return the value
-    return value;
+    return new Variable( value );
 }
 
 
@@ -158,20 +158,20 @@ const ArgumentRules& DistributionFunctionQuantile::getArgumentRules(void) const 
 }
 
 
-/** Get class name of object */
-const std::string& DistributionFunctionQuantile::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& DistributionFunctionQuantile::getClassType(void) { 
     
-    static std::string rbClassName = "DistributionFunctionQuantile";
+    static std::string revType = "DistributionFunctionQuantile";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& DistributionFunctionQuantile::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

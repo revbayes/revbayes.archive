@@ -3,15 +3,16 @@
 #include "Clade.h"
 #include "ConstantRateBirthDeathProcess.h"
 #include "Dist_bdp.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -28,7 +29,7 @@ Dist_bdp::Dist_bdp() : BirthDeathProcess()
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the process. 
  */
@@ -68,9 +69,9 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // number of taxa
     int n                                       = static_cast<const Natural &>( numTaxa->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const Vector<Clade> &>( constraints->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     
     // create the internal distribution object
     RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, s, e, r, strategy, cond, size_t(n), names, c);
@@ -80,16 +81,16 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_bdp::getClassName( void ) 
+const std::string& Dist_bdp::getClassType( void ) 
 { 
     
-    static std::string rbClassName = "Dist_bdp";
+    static std::string revType = "Dist_bdp";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -101,9 +102,9 @@ const std::string& Dist_bdp::getClassName( void )
 const TypeSpec& Dist_bdp::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

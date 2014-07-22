@@ -11,7 +11,6 @@
 #include "RlBoolean.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -48,19 +47,19 @@ void Move_DPPGibbsConcentration::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_DPPGibbsConcentration::getClassName(void) { 
+const std::string& Move_DPPGibbsConcentration::getClassType(void) { 
     
-    static std::string rbClassName = "Move_DPPGibbsConcentration";
+    static std::string revClassType = "Move_DPPGibbsConcentration";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 

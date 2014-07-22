@@ -32,7 +32,7 @@ Func_simplex* Func_simplex::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevObject* Func_simplex::execute( void ) {
+RevPtr<Variable> Func_simplex::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<double>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -46,7 +46,7 @@ RevObject* Func_simplex::execute( void ) {
     
     Simplex *theSimplex = new Simplex( detNode );
         
-    return theSimplex;
+    return new Variable( theSimplex );
 }
 
 
@@ -67,21 +67,21 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_simplex::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_simplex::getClassType(void) { 
     
-    static std::string rbClassName = "Func_simplex";
+    static std::string revType = "Func_simplex";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_simplex::getClassTypeSpec(void) { 
+const TypeSpec& Func_simplex::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -31,7 +31,7 @@ Func_f81* Func_f81::clone( void ) const {
 }
 
 
-RevObject* Func_f81::execute() {
+RevPtr<Variable> Func_f81::execute() {
     
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::F81RateMatrixFunction* f = new RevBayesCore::F81RateMatrixFunction( bf );
@@ -40,7 +40,7 @@ RevObject* Func_f81::execute() {
     
     RateMatrix* value = new RateMatrix( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -61,19 +61,19 @@ const ArgumentRules& Func_f81::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_f81::getClassName(void) { 
+const std::string& Func_f81::getClassType(void) { 
     
-    static std::string rbClassName = "Func_f81";
+    static std::string revType = "Func_f81";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_f81::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -47,10 +47,10 @@ MemberProcedure* MemberProcedure::clone(void) const
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RevObject* MemberProcedure::execute( void )
+RevPtr<Variable> MemberProcedure::execute( void )
 {
     
-    RevObject *retValue = object->getRevObject().executeMethod( funcName, args );
+    RevPtr<Variable> retValue = object->getRevObject().executeMethod( funcName, args );
     
     try
     {
@@ -72,19 +72,19 @@ RevObject* MemberProcedure::execute( void )
 
 
 /** Get class name of object */
-const std::string& MemberProcedure::getClassName(void) {
+const std::string& MemberProcedure::getClassType(void) {
     
-    static std::string rbClassName = "MemberProcedure";
+    static std::string revClassType = "MemberProcedure";
     
-	return rbClassName;
+	return revClassType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MemberProcedure::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revClassTypeSpec;
 }
 
 /** Get type spec */

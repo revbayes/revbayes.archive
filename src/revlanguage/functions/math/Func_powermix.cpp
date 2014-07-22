@@ -32,7 +32,7 @@ Func_powermix* Func_powermix::clone( void ) const {
 }
 
 
-RevObject* Func_powermix::execute() {
+RevPtr<Variable> Func_powermix::execute() {
     
     std::vector<const RevBayesCore::TypedDagNode< std::vector<double> >* >  params;
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -46,7 +46,7 @@ RevObject* Func_powermix::execute() {
 
     Simplex *theSimplex = new Simplex( detNode );
     
-    return theSimplex;
+    return new Variable( theSimplex );
 }
 
 
@@ -69,19 +69,19 @@ const ArgumentRules& Func_powermix::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_powermix::getClassName(void) {
+const std::string& Func_powermix::getClassType(void) {
     
-    static std::string rbClassName = "Func_powermix";
+    static std::string revType = "Func_powermix";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_powermix::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

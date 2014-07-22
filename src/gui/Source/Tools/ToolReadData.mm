@@ -12,9 +12,8 @@
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
-#include "VariableSlot.h"
-#include "VectorRbPointer.h"
 #include "Workspace.h"
+#include "WorkspaceVector.h"
 
 #import "AnalysisView.h"
 #import "InOutlet.h"
@@ -358,7 +357,7 @@
         }
     
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(variableName);
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
     if ( dv == RevLanguage::RevNullObject::getInstance() )
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
@@ -368,7 +367,7 @@
     
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core
-    const RevLanguage::VectorRbPointer<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const RevLanguage::VectorRbPointer<RevLanguage::AbstractCharacterData> *>( &dv );
+    const RevLanguage::WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const RevLanguage::WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
 
     if ( dnc != NULL )
         {

@@ -52,20 +52,20 @@ RevObject* RealMatrix::convertTo( const TypeSpec& type ) const {
     return RevObject::convertTo( type );
 }
 
-/** Get class name of object */
-const std::string& RealMatrix::getClassName(void) {
+/** Get Rev type of object */
+const std::string& RealMatrix::getClassType(void) {
     
-    static std::string rbClassName = "RealMatrix";
+    static std::string revType = "RealMatrix";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& RealMatrix::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

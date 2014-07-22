@@ -32,7 +32,7 @@ namespace RevLanguage {
     
         // Basic utility functions you have to override
         virtual Distribution*                           clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
        
         // Basit utility functions

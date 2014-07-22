@@ -11,15 +11,14 @@
 #include "RlAminoAcidState.h"
 #include "RlDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
-
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
+#include "WorkspaceVector.h"
 #include "RlUserInterface.h"
-#include "VectorRbPointer.h"
 
 #include <map>
 #include <set>
@@ -36,7 +35,7 @@ Func_readCharacterData* Func_readCharacterData::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readCharacterData::execute( void ) {
+RevPtr<Variable> Func_readCharacterData::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -66,7 +65,7 @@ RevObject* Func_readCharacterData::execute( void ) {
     reader.clearWarnings();
     
     // the return value
-    VectorRbPointer<AbstractCharacterData> *m = new VectorRbPointer<AbstractCharacterData>();
+    WorkspaceVector<AbstractCharacterData> *m = new WorkspaceVector<AbstractCharacterData>();
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
@@ -113,31 +112,31 @@ RevObject* Func_readCharacterData::execute( void ) {
                 if ( dType == "DNA" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-                    DiscreteCharacterData<DnaState> mDNA = DiscreteCharacterData<DnaState>( coreM );
+                    DiscreteCharacterData<DnaState>* mDNA = new DiscreteCharacterData<DnaState>( coreM );
                     m->push_back( mDNA );
                 }
                 else if ( dType == "RNA" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-                    DiscreteCharacterData<RnaState> mRNA = DiscreteCharacterData<RnaState>( coreM );
+                    DiscreteCharacterData<RnaState>* mRNA = new DiscreteCharacterData<RnaState>( coreM );
                     m->push_back( mRNA );
                 }
                 else if ( dType == "Protein" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-                    DiscreteCharacterData<AminoAcidState> mAA = DiscreteCharacterData<AminoAcidState>( coreM );
+                    DiscreteCharacterData<AminoAcidState>* mAA = new DiscreteCharacterData<AminoAcidState>( coreM );
                     m->push_back( mAA );
                 }
                 else if ( dType == "Continuous" )
                 {
                     RevBayesCore::ContinuousCharacterData *coreM = static_cast<RevBayesCore::ContinuousCharacterData *>( *it );
-                    AbstractCharacterData mCC = AbstractCharacterData (coreM );
+                    AbstractCharacterData* mCC = new AbstractCharacterData (coreM );
                     m->push_back( mCC );
                 }
                 else if ( dType == "Standard" )
                 {
                     RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::DiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-                    DiscreteCharacterData<StandardState> mSS = DiscreteCharacterData<StandardState>( coreM );
+                    DiscreteCharacterData<StandardState>* mSS = new DiscreteCharacterData<StandardState>( coreM );
                     m->push_back( mSS );
                 }
                 else
@@ -215,7 +214,7 @@ RevObject* Func_readCharacterData::execute( void ) {
         }
     }
     
-    return m;
+    return new Variable( m );
 }
 
 
@@ -255,20 +254,20 @@ const ArgumentRules& Func_readCharacterData::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_readCharacterData::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_readCharacterData::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readCharacterData";
+    static std::string revType = "Func_readCharacterData";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */
@@ -283,10 +282,7 @@ const TypeSpec& Func_readCharacterData::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readCharacterData::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = VectorRbPointer<AbstractCharacterData>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = WorkspaceVector<AbstractCharacterData>::getClassTypeSpec();
     return returnTypeSpec;
 }
-
-
-
 

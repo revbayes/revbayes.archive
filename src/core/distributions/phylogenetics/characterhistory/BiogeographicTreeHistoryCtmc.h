@@ -78,9 +78,12 @@ namespace RevBayesCore {
         const std::vector<double>&                          getEpochs(void) const;
         
         
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                     //!< Implementation of swaping parameters
         virtual void                                        simulate(void);
         const bool                                          useCladogenicEvents(void) const;
+        
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         
@@ -168,7 +171,6 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
 
 template<class charType, class treeType>
 RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const BiogeographicTreeHistoryCtmc &d) : AbstractTreeHistoryCtmc<charType, treeType>( d ) {
-    // parameters are automatically copied
     // initialize with default parameters
 //    homogeneousClockRate        = d.homogeneousClockRate;
 //    heterogeneousClockRates     = d.heterogeneousClockRates;
@@ -950,24 +952,15 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(
     
     // remove the old parameter first
     if ( homogeneousRateMap != NULL )
-    {
-        this->removeParameter( homogeneousRateMap );
         homogeneousRateMap = NULL;
-    }
     else
-    {
-        this->removeParameter( heterogeneousRateMaps );
         heterogeneousRateMaps = NULL;
-    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
     homogeneousRateMap = rm;
     epochs = static_cast<const RateMap_Biogeography&>(rm->getValue()).getEpochs();
 
-    // add the parameter
-    this->addParameter( homogeneousRateMap );
-    
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
     {
@@ -1046,10 +1039,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
     
     // remove the old parameter first
     if ( siteRates != NULL )
-    {
-        this->removeParameter( siteRates );
         siteRates = NULL;
-    }
     
     if ( r != NULL )
     {
@@ -1068,9 +1058,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
         this->resizeLikelihoodVectors();
         
     }
-    
-    // add the parameter
-    this->addParameter( siteRates );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -1308,9 +1295,27 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
     }
 }
 
+
+/** Get the parameters of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+std::set<const RevBayesCore::DagNode*> RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractTreeHistoryCtmc<charType, treeType>::getParameters();
     
+    parameters.insert( homogeneousRateMap );
+    parameters.insert( heterogeneousRateMaps );
+    parameters.insert( rootFrequencies );
+    parameters.insert( siteRates );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
     if (oldP == homogeneousRateMap)
     {
         homogeneousRateMap = static_cast<const TypedDagNode< RateMap >* >( newP );

@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxAssignExpr, which is
- * used to hold assignment expressions in the syntax tree. These
- * can be left-arrow, equation or tilde assignments.
- *
- * @brief Declaration of SyntaxAssignExpr
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-09-07 12:47:31 +0200 (Fri, 07 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: SyntaxAssignExpr.h 1801 2012-09-07 10:47:31Z hoehna $
- */
-
 #ifndef SyntaxDeterministicAssignment_H
 #define SyntaxDeterministicAssignment_H
 
@@ -26,12 +10,44 @@
 
 namespace RevLanguage {
     
+    /**
+     * @brief Deterministic assignments
+     *
+     * This syntax element class handles deterministic assignments,
+     * sometimes called equation assignments. These are assignment
+     * statements of the type:
+     *
+     *    a := foo( x )
+     *
+     * using the colon-equal or equation assignment operator.
+     *
+     * The intention of deterministic assignments is to create
+     * deterministic variables for inclusion in DAGs. These are
+     * typically used for variable conversions, but also for
+     * operations involving the construction of complex objects
+     * from component parts.
+     *
+     * Unlike constant variables, deterministic variables change
+     * their value when variables included in the right-hand side
+     * expression change their value or are reassigned new values.
+     *
+     * For this reason, the right-hand side expression of a deterministic
+     * assignment is referred to as a dynamic expression. Its semantic
+     * value is evaluated using the evaluateDynamicContent() function,
+     * instead of the standard evaluateContent() function.
+     *
+     * Many syntax elements evaluate to the same objects in both contexts,
+     * for instance constants. For other syntax elements, the behavior
+     * changes subtly but with important consequences. This is most
+     * obvious in the variable syntax element but also in the function
+     * call, unary and binary expression elements.
+     */
     class SyntaxDeterministicAssignment : public SyntaxElement {
         
     public:
-        SyntaxDeterministicAssignment(SyntaxVariable* var, SyntaxElement* expr);                                            //!< Constructor with lhs = variable
-        SyntaxDeterministicAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr);                                    //!< Constructor with lhs = function call
+        SyntaxDeterministicAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                                      //!< Basic constructor
         SyntaxDeterministicAssignment(const SyntaxDeterministicAssignment& x);                                              //!< Copy constructor
+
 	    virtual                             ~SyntaxDeterministicAssignment();                                               //!< Destructor
         
         // Assignment operator
@@ -44,12 +60,10 @@ namespace RevLanguage {
         
         // Regular functions
         RevPtr<Variable>                    evaluateContent(Environment& env);                                              //!< Get semantic value
-        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
         
     protected:
-        SyntaxVariable*                     variable;                                                                       //!< A lhs variable (or NULL)
-        SyntaxFunctionCall*                 functionCall;                                                                   //!< A lhs function call (or NULL)
-        SyntaxElement*                      expression;                                                                     //!< The rhs expression
+        SyntaxElement*                      lhsExpression;                                                                  //!< A lhs variable (or NULL)
+        SyntaxElement*                      rhsExpression;                                                                  //!< The rhs expression
         
     };
     

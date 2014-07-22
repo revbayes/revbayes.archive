@@ -40,36 +40,36 @@ void SteppingStoneSampler::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> SteppingStoneSampler::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "marginal")
     {
         
         double ml = value->marginalLikelihood();
         
-        return new Real( ml );
+        return new Variable( new Real( ml ) );
     }
     
     return RevObject::executeMethod( name, args );
 }
 
 
-/** Get class name of object */
-const std::string& SteppingStoneSampler::getClassName(void)
+/** Get Rev type of object */
+const std::string& SteppingStoneSampler::getClassType(void)
 {
     
-    static std::string rbClassName = "SteppingStoneSampler";
+    static std::string revType = "SteppingStoneSampler";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::SteppingStoneSampler>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

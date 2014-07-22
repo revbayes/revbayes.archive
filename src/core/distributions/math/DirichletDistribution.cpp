@@ -5,15 +5,12 @@
 using namespace RevBayesCore;
 
 DirichletDistribution::DirichletDistribution(const TypedDagNode< std::vector<double> > *a) : TypedDistribution< std::vector<double> >( new std::vector<double>() ), alpha( a ) {
-    // add the lambda parameter as a parent
-    addParameter( a );
     
     *value = RbStatistics::Dirichlet::rv(alpha->getValue(), *GLOBAL_RNG);
 }
 
 
 DirichletDistribution::DirichletDistribution(const DirichletDistribution &n) : TypedDistribution<std::vector<double> >( n ), alpha( n.alpha ) {
-    // parameters are automatically copied
 }
 
 
@@ -38,6 +35,19 @@ void DirichletDistribution::redrawValue( void ) {
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> DirichletDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( alpha );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void DirichletDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     if (oldP == alpha) {
         alpha = static_cast<const TypedDagNode<std::vector<double> >* >( newP );

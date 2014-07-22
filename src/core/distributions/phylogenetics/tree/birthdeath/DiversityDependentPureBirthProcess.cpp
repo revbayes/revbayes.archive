@@ -24,12 +24,7 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const Typ
         initialSpeciation( s ), 
         capacity( k ) 
 {
-    
-    addParameter( initialSpeciation );
-    addParameter( capacity );
-    
     simulateTree();
-    
 }
 
 
@@ -37,7 +32,7 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const Typ
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 DiversityDependentPureBirthProcess* DiversityDependentPureBirthProcess::clone( void ) const
 {
@@ -152,6 +147,19 @@ std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n
     return times;
 }
 
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> DiversityDependentPureBirthProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
+    
+    parameters.insert( initialSpeciation );
+    parameters.insert( capacity );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
 /**

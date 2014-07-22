@@ -24,7 +24,7 @@ Dist_poisson::Dist_poisson() : TypedDistribution<Natural>()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Dist_poisson* Dist_poisson::clone( void ) const 
 {
@@ -55,16 +55,16 @@ RevBayesCore::PoissonDistribution* Dist_poisson::createDistribution( void ) cons
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_poisson::getClassName(void) 
+const std::string& Dist_poisson::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_poisson";
+    static std::string revType = "Dist_poisson";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -76,9 +76,9 @@ const std::string& Dist_poisson::getClassName(void)
 const TypeSpec& Dist_poisson::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Natural>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

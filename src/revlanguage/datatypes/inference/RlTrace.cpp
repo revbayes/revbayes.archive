@@ -49,7 +49,7 @@ void Trace::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Trace::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "summarize") {
         
@@ -65,20 +65,20 @@ RevObject* Trace::executeMethod(std::string const &name, const std::vector<Argum
 }
 
 
-/** Get class name of object */
-const std::string& Trace::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Trace::getClassType(void) { 
     
-    static std::string rbClassName = "Trace";
+    static std::string revType = "Trace";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Trace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -91,8 +91,8 @@ const MemberRules& Trace::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         //        modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        //        modelMemberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
-        //        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        //        modelMemberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
+        //        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

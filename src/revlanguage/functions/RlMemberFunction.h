@@ -15,12 +15,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         MemberFunction*                     clone(void) const;                                                          //!< Clone the object
-        static const std::string&           getClassName(void);                                                         //!< Get class name
+        static const std::string&           getClassType(void);                                                         //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // pure virtual functions
-        RevObject*                          execute(void);                                                              //!< Execute function
+        RevPtr<Variable>                    execute(void);                                                              //!< Execute function
         
     private:
         
@@ -52,7 +52,7 @@ RevLanguage::MemberFunction<memberObjectType, retType>* RevLanguage::MemberFunct
 
 
 template <typename memberObjectType, typename retType>
-RevLanguage::RevObject* RevLanguage::MemberFunction<memberObjectType, retType>::execute( void )
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::MemberFunction<memberObjectType, retType>::execute( void )
 {
     
 //    RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -75,17 +75,17 @@ RevLanguage::RevObject* RevLanguage::MemberFunction<memberObjectType, retType>::
     RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType> *func = new RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType>(name, o, argNodes);
     RevBayesCore::TypedDagNode<typename retType::valueType>* d  = new RevBayesCore::DeterministicNode<typename retType::valueType>("", func);
     
-    return new retType(d);
+    return new Variable( new retType(d) );
 }
 
 
 template <typename memberObjectType, typename retType>
-const std::string& RevLanguage::MemberFunction<memberObjectType, retType>::getClassName(void)
+const std::string& RevLanguage::MemberFunction<memberObjectType, retType>::getClassType(void)
 {
     
-    static std::string rbClassName = "MemberFunction<" + memberObjectType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string revClassType = "MemberFunction<" + memberObjectType::getClassType() + "," + retType::getClassType() + ">";
     
-	return rbClassName;
+	return revClassType;
 }
 
 /* Get class type spec describing type of object */
@@ -93,9 +93,9 @@ template <typename memberObjectType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::MemberFunction<memberObjectType, retType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revClassTypeSpec;
 }
 
 

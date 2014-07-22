@@ -32,11 +32,6 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
     timeSinceLastSample( tLastSample )
 {
     
-    addParameter( lambda );
-    addParameter( mu );
-    addParameter( psi );
-    addParameter( rho );
-    
     simulateTree();
     
 }
@@ -46,7 +41,7 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 ConstantRateSerialSampledBirthDeathProcess* ConstantRateSerialSampledBirthDeathProcess::clone( void ) const 
 {
@@ -211,6 +206,21 @@ std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(
     return times;
 }
 
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> ConstantRateSerialSampledBirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
+    
+    parameters.insert( lambda );
+    parameters.insert( mu );
+    parameters.insert( psi );
+    parameters.insert( rho );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
 /**

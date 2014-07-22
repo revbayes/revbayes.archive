@@ -28,7 +28,7 @@ Func_power* Func_power::clone( void ) const {
 }
 
 
-RevObject* Func_power::execute() {
+RevPtr<Variable> Func_power::execute() {
     
     RevBayesCore::TypedDagNode<double>* b = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* e = static_cast<const Real &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -38,7 +38,7 @@ RevObject* Func_power::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -60,19 +60,19 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_power::getClassName(void) { 
+const std::string& Func_power::getClassType(void) { 
     
-    static std::string rbClassName = "Func_power";
+    static std::string revType = "Func_power";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_power::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

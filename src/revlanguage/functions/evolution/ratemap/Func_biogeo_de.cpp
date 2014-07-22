@@ -9,15 +9,17 @@
 #include "BiogeographyRateMapFunction.h"
 #include "Func_biogeo_de.h"
 #include "GeographyRateModifier.h"
+#include "ModelVector.h"
+#include "Natural.h"
 #include "RateMap_Biogeography.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "RlGeographyRateModifier.h"
 #include "RlRateMap.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -34,13 +36,13 @@ Func_biogeo_de* Func_biogeo_de::clone( void ) const {
 }
 
 
-RevObject* Func_biogeo_de::execute() {
+RevPtr<Variable> Func_biogeo_de::execute() {
     
-    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const Vector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier>* grm = static_cast<const RlGeographyRateModifier&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
     bool fe = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
-//    RevBayesCore::TypedDagNode<std::vector<double> >* r = static_cast<const Vector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<std::vector<double> >* r = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::BiogeographyRateMapFunction* f = new RevBayesCore::BiogeographyRateMapFunction(nc,fe); //(nc, true);
     f->setGainLossRates(glr);
@@ -50,7 +52,7 @@ RevObject* Func_biogeo_de::execute() {
     
     RateMap* value = new RateMap( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -62,7 +64,7 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "gainLossRates", true, Vector<RealPos>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "gainLossRates", true, ModelVector<RealPos>::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "geoRateMod", true, RlGeographyRateModifier::getClassTypeSpec() ));
         argumentRules.push_back( new ArgumentRule( "numAreas", true, Natural::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
@@ -74,19 +76,19 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_biogeo_de::getClassName(void) {
+const std::string& Func_biogeo_de::getClassType(void) {
     
-    static std::string rbClassName = "Func_biogeo_de";
+    static std::string revType = "Func_biogeo_de";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_biogeo_de::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

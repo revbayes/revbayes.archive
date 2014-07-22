@@ -1,3 +1,4 @@
+#include "RbException.h"
 #include "UserFunctionArgs.h"
 
 #include <sstream>
@@ -50,27 +51,27 @@ UserFunctionArgs* UserFunctionArgs::clone(void) const {
 
 
 /** Execute function: this function should not be called */
-RevObject* UserFunctionArgs::execute( void ) {
+RevPtr<Variable> UserFunctionArgs::execute( void ) {
     
-    throw ("Unexpected call to UserFunctionArgs");
+    throw RbException( "Unexpected call to UserFunctionArgs" );
 }
 
 
-/** Get class name of object */
-const std::string& UserFunctionArgs::getClassName(void) {
+/** Get Rev type of object */
+const std::string& UserFunctionArgs::getClassType(void) {
     
-    static std::string rbClassName = "UserFunctionArgs";
+    static std::string revType = "UserFunctionArgs";
     
-	return rbClassName;
+	return revType;
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& UserFunctionArgs::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

@@ -46,9 +46,6 @@ namespace RevBayesCore {
         virtual bool                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         
-        // virtual (you need to overwrite this method if you have additional parameters)
-        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);         //!< Implementation of swaping paramoms
-        
         // non-virtual
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
@@ -69,6 +66,10 @@ namespace RevBayesCore {
         
         virtual void                                                        simulate(void);
 
+        // Parameter management functions. You need to override both if you have additional parameters
+        virtual std::set<const DagNode*>                                    getParameters(void) const;                                          //!< Return parameters
+        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        
         
     protected:
         // helper method for this and derived classes
@@ -143,9 +144,9 @@ treatAmbiguousAsGaps( true ),
 tipsInitialized( false )
 {
     
-    // add the parameters to the parents list
-    this->addParameter( tau );
+    // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
+    tau->incrementReferenceCount();
     
     // initialize histories
     initializeHistoriesVector();
@@ -171,21 +172,28 @@ treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
 tipsInitialized( n.tipsInitialized )
 {
-    // parameters are automatically copied
+    // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    
+    tau->incrementReferenceCount();
 }
 
 
+/**
+ * Destructor. Because we added ourselves as a reference to tau when we added a listener to its
+ * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
+ * when we die. All other parameters are handled by others.
+ */
 template<class charType, class treeType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::~AbstractTreeHistoryCtmc( void ) {
-    // We don't delete the paramoms, because they might be used somewhere else too. The model needs to do that!
+    // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
     // remove myself from the tree listeners
     if ( tau != NULL )
     {
         // TODO: this needs to be implemented (Sebastian)
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
+        if ( tau->decrementReferenceCount() == 0 )
+            delete tau;
     }
 }
 
@@ -527,6 +535,25 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate( const 
 }
 
 
+/** Get the parameters of the distribution */
+template<class charType, class treeType>
+std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( tau );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/**
+ * Swap a parameter of the distribution. We receive this call just before being replaced by a variable,
+ * in which case the variable deletes the old parameter. We also receive this call during the cloning of
+ * a DAG. Also in that case it is safe to leave the memory management of the tau parameter to others,
+ * namely to the destructor of the original distribution owning the old parameter.
+ */
 template<class charType, class treeType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
@@ -534,8 +561,10 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(co
     if (oldP == tau)
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
+        tau->decrementReferenceCount();
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
+        tau->incrementReferenceCount();
     }
     
 }

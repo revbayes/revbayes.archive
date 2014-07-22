@@ -41,14 +41,14 @@ namespace RevLanguage {
         // Basic utility functions
         Taxon*                              clone(void) const;                                                                      //!< Clone object
         void                                constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
-        static const std::string&           getClassName(void);                                                                     //!< Get class name
+        static const std::string&           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
         const MemberRules&                  getMemberRules(void) const;                                                             //!< Get member rules (const)
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                                                 //!< Get methods
-        RevObject*                          executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);              //!< Override to map member methods to internal functions
         
     protected:
         void                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable

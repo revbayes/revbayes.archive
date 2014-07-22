@@ -9,13 +9,13 @@
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_normalize.h"
+#include "ModelVector.h"
 #include "NormalizeVectorFunction.h"
 #include "RbUtil.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -32,17 +32,17 @@ Func_normalize* Func_normalize::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevObject* Func_normalize::execute( void ) {
+RevPtr<Variable> Func_normalize::execute( void ) {
     
-    const RevBayesCore::TypedDagNode< std::vector<double> > *params = static_cast< Vector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
+    const RevBayesCore::TypedDagNode< std::vector<double> > *params = static_cast< ModelVector<RealPos> & >( args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::NormalizeVectorFunction *func = new RevBayesCore::NormalizeVectorFunction( params );
     
     DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
 
-    Vector<RealPos> *theNormalizedVector = new Vector<RealPos>( detNode );
+    ModelVector<RealPos> *theNormalizedVector = new ModelVector<RealPos>( detNode );
     
-    return theNormalizedVector;
+    return new Variable( theNormalizedVector );
 }
 
 
@@ -54,7 +54,7 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", true, Vector<RealPos>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x", true, ModelVector<RealPos>::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -62,21 +62,21 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_normalize::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_normalize::getClassType(void) { 
     
-    static std::string rbClassName = "Func_normalize";
+    static std::string revType = "Func_normalize";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_normalize::getClassTypeSpec(void) { 
+const TypeSpec& Func_normalize::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -92,5 +92,5 @@ const TypeSpec& Func_normalize::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_normalize::getReturnType( void ) const {
     
-    return Vector<RealPos>::getClassTypeSpec();
+    return ModelVector<RealPos>::getClassTypeSpec();
 }

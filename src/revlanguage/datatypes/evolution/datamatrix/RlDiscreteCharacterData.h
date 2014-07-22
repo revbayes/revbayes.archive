@@ -38,13 +38,13 @@ namespace RevLanguage {
     
         // Basic utility functions
         DiscreteCharacterData*              clone(void) const;                                                                                  //!< Clone object
-        static const std::string&           getClassName(void);                                                                                 //!< Get class name
+        static const std::string&           getClassType(void);                                                                                 //!< Get class name
         static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
          
         // Member method inits
         const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevObject*                   executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
             
     };
     
@@ -57,7 +57,6 @@ namespace RevLanguage {
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 
 template <class rlCharType>
@@ -88,7 +87,7 @@ RevLanguage::DiscreteCharacterData<charType>* RevLanguage::DiscreteCharacterData
 
 /* Map calls to member methods */
 template <typename charType>
-RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<charType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") 
     {
@@ -102,7 +101,7 @@ RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMet
             
         const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
     
-        return new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) );
+        return new Variable( new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) ) );
     }
     
     return AbstractCharacterData::executeMethod( name, args );
@@ -111,20 +110,20 @@ RevLanguage::RevObject* RevLanguage::DiscreteCharacterData<charType>::executeMet
 
 /* Get class name of object */
 template <typename rlType>
-const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassName(void) { 
+const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void) { 
     
-    static std::string rbClassName = "DiscreteCharacterData";
+    static std::string revClassType = "DiscreteCharacterData";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 

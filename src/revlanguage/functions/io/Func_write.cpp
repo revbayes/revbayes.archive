@@ -38,7 +38,7 @@ Func_write* Func_write::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_write::execute( void ) {
+RevPtr<Variable> Func_write::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
@@ -113,20 +113,20 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_write::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_write::getClassType(void) { 
     
-    static std::string rbClassName = "Func_write";
+    static std::string revType = "Func_write";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_write::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

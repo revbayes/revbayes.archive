@@ -1,5 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "ModelVector.h"
 #include "Move_RateAgeBetaShift.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -8,7 +9,6 @@
 #include "RlTimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 #include "VectorFunction.h"
 
 
@@ -36,7 +36,7 @@ void Move_RateAgeBetaShift::constructInternalObject( void ) {
     bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const Vector<RealPos> &>( rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmpRates = static_cast<const ModelVector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode<std::vector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode<std::vector<double> > *>( tmpRates );
     const std::vector<const RevBayesCore::TypedDagNode<double>* >& pars = static_cast< const RevBayesCore::VectorFunction<double> &>( dnode->getFunction() ).getParams();
@@ -50,20 +50,20 @@ void Move_RateAgeBetaShift::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
-const std::string& Move_RateAgeBetaShift::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Move_RateAgeBetaShift::getClassType(void) { 
     
-    static std::string rbClassName = "Move_Move_RateAgeBetaShift";
+    static std::string revType = "Move_Move_RateAgeBetaShift";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -76,7 +76,7 @@ const MemberRules& Move_RateAgeBetaShift::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         nniMemberRules.push_back( new ArgumentRule( "tree", false, TimeTree::getClassTypeSpec() ) );
-        nniMemberRules.push_back( new ArgumentRule( "rates", false, Vector<RealPos>::getClassTypeSpec() ) );
+        nniMemberRules.push_back( new ArgumentRule( "rates", false, ModelVector<RealPos>::getClassTypeSpec() ) );
         nniMemberRules.push_back( new ArgumentRule( "delta", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
         nniMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         

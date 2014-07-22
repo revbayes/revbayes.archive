@@ -32,7 +32,7 @@ namespace RevLanguage {
     
         // Basic utility functions
         Func_vector*                clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassName(void);                                         //!< Get class name
+        static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
     
@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
     
     
-        RevObject*                  execute(void);                                              //!< Execute function
+        RevPtr<Variable>            execute(void);                                              //!< Execute function
     
     };
     
@@ -50,11 +50,11 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
+#include "ModelVector.h"
 #include "RbUtil.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 #include "VectorFunction.h"
 
 
@@ -74,7 +74,7 @@ RevLanguage::Func_vector<valType>* RevLanguage::Func_vector<valType>::clone( voi
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
 template <typename valType>
-RevLanguage::RevObject* RevLanguage::Func_vector<valType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_vector<valType>::execute( void ) {
     
     std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
     for ( size_t i = 0; i < args.size(); i++ ) {
@@ -86,9 +86,9 @@ RevLanguage::RevObject* RevLanguage::Func_vector<valType>::execute( void ) {
 
     DeterministicNode<std::vector<typename valType::valueType> > *detNode = new DeterministicNode<std::vector<typename valType::valueType> >("", func, this->clone());
     
-    Vector<valType> *theVector = new Vector<valType>( detNode );
+    ModelVector<valType> *theVector = new ModelVector<valType>( detNode );
     
-    return theVector;
+    return new Variable( theVector );
 }
 
 
@@ -110,13 +110,13 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_vector<valType>::getArgument
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <typename valType>
-const std::string& RevLanguage::Func_vector<valType>::getClassName(void) { 
+const std::string& RevLanguage::Func_vector<valType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func_vector<" + valType::getClassTypeSpec() + ">";
+    static std::string revType = "Func_vector<" + valType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -124,9 +124,9 @@ const std::string& RevLanguage::Func_vector<valType>::getClassName(void) {
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_vector<valType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -144,7 +144,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_vector<valType>::getTypeSpec( voi
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_vector<valType>::getReturnType( void ) const {
     
-    return Vector<valType>::getClassTypeSpec();
+    return ModelVector<valType>::getClassTypeSpec();
 }
 
 

@@ -20,7 +20,7 @@ AbstractMemberFunction::AbstractMemberFunction(const TypeSpec retType, ArgumentR
 
 
 /** Execute function: call the object's internal implementation through executeOperation */
-RevObject* AbstractMemberFunction::execute( void ) 
+RevPtr<Variable> AbstractMemberFunction::execute( void )
 {
 //    
 //    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -37,19 +37,19 @@ RevObject* AbstractMemberFunction::execute( void )
 
 
 /** Get class name of object */
-const std::string& AbstractMemberFunction::getClassName(void) { 
+const std::string& AbstractMemberFunction::getClassType(void) { 
     
-    static std::string rbClassName = "AbstractMemberFunction";
+    static std::string revClassType = "AbstractMemberFunction";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& AbstractMemberFunction::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 /** Get type spec */

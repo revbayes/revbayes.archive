@@ -12,11 +12,11 @@
 #include "ArgumentRules.h"
 #include "BrownianPhyloProcess.h"
 #include "Dist_brownian.h"
+#include "ModelVector.h"
 #include "Real.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -42,20 +42,20 @@ RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) co
 
 
 
-/* Get class name of object */
-const std::string& Dist_brownian::getClassName(void) {
+/* Get Rev type of object */
+const std::string& Dist_brownian::getClassType(void) {
     
-    static std::string rbClassName = "Dist_brownian";
+    static std::string revType = "Dist_brownian";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_brownian::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

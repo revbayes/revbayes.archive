@@ -31,7 +31,7 @@ Func_hky* Func_hky::clone( void ) const {
 }
 
 
-RevObject* Func_hky::execute() {
+RevPtr<Variable> Func_hky::execute() {
     
     RevBayesCore::TypedDagNode< double >* ka = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<std::vector<double> >* bf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -41,7 +41,7 @@ RevObject* Func_hky::execute() {
     
     RateMatrix* value = new RateMatrix( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -63,19 +63,19 @@ const ArgumentRules& Func_hky::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_hky::getClassName(void) { 
+const std::string& Func_hky::getClassType(void) { 
     
-    static std::string rbClassName = "Func_hky";
+    static std::string revType = "Func_hky";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_hky::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

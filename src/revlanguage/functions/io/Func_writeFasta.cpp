@@ -16,7 +16,7 @@ using namespace RevLanguage;
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Func_writeFasta* Func_writeFasta::clone( void ) const 
 {
@@ -33,7 +33,7 @@ Func_writeFasta* Func_writeFasta::clone( void ) const
  *
  * \return NULL because the output is going into a file
  */
-RevObject* Func_writeFasta::execute( void ) 
+RevPtr<Variable> Func_writeFasta::execute( void ) 
 {
     
     // get the information from the arguments for reading the file
@@ -74,16 +74,16 @@ const ArgumentRules& Func_writeFasta::getArgumentRules( void ) const
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Func_writeFasta::getClassName(void) 
+const std::string& Func_writeFasta::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Func_writeFasta";
+    static std::string revType = "Func_writeFasta";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -95,9 +95,9 @@ const std::string& Func_writeFasta::getClassName(void)
 const TypeSpec& Func_writeFasta::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

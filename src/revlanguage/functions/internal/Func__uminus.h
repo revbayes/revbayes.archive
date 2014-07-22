@@ -32,12 +32,12 @@ public:
     
     // Basic utility functions
     Func__uminus*                                    clone(void) const;                                                              //!< Clone the object
-    static const std::string&                       getClassName(void);                                                             //!< Get class name
+    static const std::string&                       getClassType(void);                                                             //!< Get Rev type
     static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
     const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
     
     // Function functions you have to override
-    RevObject*                                      execute(void);                                                                  //!< Execute function
+    RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
     const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
     
@@ -67,7 +67,7 @@ RevLanguage::Func__uminus<firstValType, retType>* RevLanguage::Func__uminus<firs
 
 
 template <typename firstValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func__uminus<firstValType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__uminus<firstValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::UnaryMinus<typename firstValType::valueType> *func = new RevBayesCore::UnaryMinus<typename firstValType::valueType>(firstArg);
@@ -76,7 +76,7 @@ RevLanguage::RevObject* RevLanguage::Func__uminus<firstValType, retType>::execut
     
     retType* value = new retType( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -98,20 +98,20 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__uminus<firstValType, retTyp
 
 
 template <typename firstValType, typename retType>
-const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__uminus<" + firstValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string revType = "Func__uminus<" + firstValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -49,20 +49,18 @@ namespace RevBayesCore {
         
         // public member functions
         void                                                        addChild(DagNode *child) const;                                                 //!< Add a new child node
-        void                                                        addParent(const DagNode *p);                                                    //!< Add a parent node
         void                                                        addTouchedElementIndex(size_t i);                                               //!< Add the index of an element that has been touch (usually for vector-like values)
         void                                                        clearTouchedElementIndices(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;         //!< Clone the DAG which is downstream to this node (all children)
         void                                                        collectDownstreamGraph(std::set<DagNode*> &nodes);                              //!< Collect all nodes downstream from this node (incl the node)
         size_t                                                      decrementReferenceCount(void) const;                                            //!< Decrement the reference count for reference counting in smart pointers
         void                                                        getAffectedNodes(std::set<DagNode *>& affected);                                //!< get affected nodes
-        //    DagNode*                                            getChild(size_t index);                                                         //!< Get the child at the index
+        //    DagNode*                                            getChild(size_t index);                                                           //!< Get the child at the index
         const std::set<DagNode*>&                                   getChildren(void) const;                                                        //!< Get the set of parents
         std::string                                                 getDagNodeType(void) const;
         DagNode*                                                    getFirstChild(void) const;                                                      //!< Get the first child from a our set
         const std::string&                                          getName(void) const;                                                            //!< Get the of the node
         size_t                                                      getNumberOfChildren(void) const;                                                //!< Get the number of children for this node
-        const std::set<const DagNode*>&                             getParents(void) const;                                                         //!< Get the set of parents
         size_t                                                      getReferenceCount(void) const;                                                  //!< Get the reference count for reference counting in smart pointers
         const std::set<size_t>&                                     getTouchedElementIndices(void) const;                                           //!< Get the indices of the touches elements. If the set is empty, then all elements might have changed.
         void                                                        incrementReferenceCount(void) const;                                            //!< Increment the reference count for reference counting in smart pointers
@@ -76,15 +74,17 @@ namespace RevBayesCore {
         virtual void                                                reInitializeAffected(void);                                                     //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeMe(void);                                                           //!< The DAG was re-initialized so maybe you want to reset some stuff
         void                                                        removeChild(DagNode *child) const;
-        void                                                        removeParent(const DagNode *p);                                                 //!< Remove a parent
         void                                                        replace(DagNode *n);                                                            //!< Replace this node with node p.
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                          //!< Restore value of affected nodes recursively
-        void                                                        setName(const std::string &n);                                                  //!< Set the name of this variable for identification purposes.
-        void                                                        swapParent(const DagNode *oldP, const DagNode *newP);                           //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
+        virtual void                                                setName(const std::string &n);                                                  //!< Set the name of this variable for identification purposes.
         void                                                        touch(void);
         virtual void                                                touchAffected(void);                                                            //!< Touch affected nodes (flag for recalculation)
-  
+
+        // Parent management functions that nodes with parents need to override. Here we just return an empty set or throw an error.
+        virtual std::set<const DagNode*>                            getParents(void) const;                                                         //!< Get the set of parents (empty set here)
+        virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                           //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list
+        
     protected:
                                                                     DagNode(const std::string &n);                                                  //!< Constructor
                                                                     DagNode(const DagNode &n);                                                      //!< Constructor
@@ -94,17 +94,15 @@ namespace RevBayesCore {
         virtual void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter) = 0;              //!< get affected nodes
         virtual void                                                keepMe(DagNode* affecter) = 0;                                                  //!< Keep value of myself
         virtual void                                                restoreMe(DagNode *restorer) = 0;                                               //!< Restore value of this nodes
-        virtual void                                                swapParameter(const DagNode *oldP, const DagNode *newP) = 0;                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
         virtual void                                                touchMe(DagNode *toucher) = 0;                                                  //!< Touch myself (flag for recalculation)
     
         // helper functions
-        void                                                        printChildren(std::ostream& o) const;                                           //!< Print children DAG nodes
-        void                                                        printParents(std::ostream& o) const;                                            //!< Print children DAG nodes
+        void                                                        printChildren(std::ostream& o, size_t indent, size_t lineLen) const;            //!< Print children DAG nodes
+        void                                                        printParents(std::ostream& o, size_t indent, size_t lineLen) const;             //!< Print children DAG nodes
         
         // members
         mutable std::set<DagNode*>                                  children;                                                                       //!< The children in the model graph of this node
         std::string                                                 name;
-        std::set<const DagNode*>                                    parents;                                                                        //!< The parents in the DAG of this node
         std::set<size_t>                                            touchedElements;
         DagNodeTypes                                                type;
 

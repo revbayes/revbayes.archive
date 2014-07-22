@@ -33,16 +33,16 @@ namespace RevLanguage {
         DistributionFunctionRv(const DistributionFunctionRv& obj);                                                                    //!< Copy constructor
         
         // overloaded operators
-        DistributionFunctionRv&                operator=(const DistributionFunctionRv& c);
+        DistributionFunctionRv&                 operator=(const DistributionFunctionRv& c);
         
         // Basic utility functions
-        DistributionFunctionRv*                clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassName(void);                                                             //!< Get class name
+        DistributionFunctionRv*                 clone(void) const;                                                              //!< Clone the object
+        static const std::string&               getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -111,7 +111,7 @@ RevLanguage::DistributionFunctionRv<valueType>* RevLanguage::DistributionFunctio
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RevObject* RevLanguage::DistributionFunctionRv<valueType>::execute( void ) {
+RevLanguage::RevPtr<Variable> RevLanguage::DistributionFunctionRv<valueType>::execute( void ) {
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
@@ -127,14 +127,14 @@ RevLanguage::RevObject* RevLanguage::DistributionFunctionRv<valueType>::execute(
     
     
     int n = static_cast<const Natural &>( this->args[0].getVariable()->getRevObject() ).getValue();
-    Vector<valueType> *values = new Vector<valueType>();
+    ModelVector<valueType> *values = new ModelVector<valueType>();
     for (int i = 0;  i < n; ++i) {
         valueType* value = copyObject->createRandomVariable();
         value->makeConstantValue();
         values->push_back( *value );
         delete value;
     }
-    return values;
+    return new Variable( values );
 }
 
 
@@ -146,22 +146,22 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionRv<valueType>
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassName(void) { 
+const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassType(void) { 
     
-    static std::string rbClassName = "DistributionFunctionRv";
+    static std::string revType = "DistributionFunctionRv";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */
