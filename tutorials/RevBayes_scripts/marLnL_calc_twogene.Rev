@@ -15,8 +15,8 @@ source("RevBayes_scripts/twogene_partition_model.Rev")
 
 ### Compute power posterior distributions
 pow_p <- powerPosterior(mymodel, moves, "output/pow_posterior_twogene.out", cats=50) 
-pow_p.burnin(generations=1000,tuningInterval=100)
-pow_p.run(generations=100)  
+pow_p.burnin(generations=10000,tuningInterval=1000)
+pow_p.run(generations=1000)  
 
 ### Use stepping-stone sampling to calculate marginal likelihoods
 ss <- steppingStoneSampler(file="output/pow_posterior_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood")
