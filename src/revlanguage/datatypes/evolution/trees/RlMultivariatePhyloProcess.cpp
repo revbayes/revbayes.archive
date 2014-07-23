@@ -9,13 +9,13 @@
 
 #include "Natural.h"
 #include "RbUtil.h"
-#include "MemberFunction.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
+#include "RlAbstractCharacterData.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "RlAbstractCharacterData.h"
 
 #include <sstream>
 
@@ -108,11 +108,11 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
         
         ArgumentRules* meanArgRules = new ArgumentRules();
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberProcedure( Real::getClassTypeSpec(), meanArgRules ) );
+        methods.addFunction("mean", new MemberFunction<MultivariatePhyloProcess,Real>( this, meanArgRules ) );
         
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberProcedure(  RealPos::getClassTypeSpec(), stdevArgRules ) );
+        methods.addFunction("stdev", new MemberFunction<MultivariatePhyloProcess,RealPos>(  this, stdevArgRules ) );
         
         ArgumentRules* rootArgRules = new ArgumentRules();
         rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
