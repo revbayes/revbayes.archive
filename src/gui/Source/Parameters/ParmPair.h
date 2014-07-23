@@ -5,11 +5,11 @@
 
 @interface ParmPair : NSObject {
 
-    Parm*        parentParm;
-    Parm*        childParm;
+    Parm*                           parentParm;
+    Parm*                           childParm;
 }
 
-@property (readwrite,retain) Parm* parentParm;
-@property (readwrite,retain) Parm* childParm;
+@property (nonatomic,strong) Parm*  parentParm;
+@property (nonatomic,strong) Parm*  childParm;
 
 @end

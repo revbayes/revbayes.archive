@@ -16,6 +16,7 @@
 #include "Natural.h"
 #include "RbException.h"
 #include "Real.h"
+#include "RealMatrix.h"
 #include "RealPos.h"
 #include "RealMatrix.h"
 #include "RevObject.h"

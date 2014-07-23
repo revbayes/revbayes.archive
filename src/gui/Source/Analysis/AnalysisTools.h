@@ -12,7 +12,7 @@
 	NSMutableAttributedString*            notebookContents;
 }
 
-@property (readonly,retain) NSMutableArray* tools;
+@property (nonatomic,strong) NSMutableArray* tools;
 
 - (NSString*)analysisName;
 - (void)scaleToolsByScale:(float)s andFactor:(float)f;
