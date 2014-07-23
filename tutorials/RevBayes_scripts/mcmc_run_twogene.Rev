@@ -10,17 +10,16 @@
 ################################################################################
 
 ### Load data file and uniform partition model
-source("RevBayes_scripts/uniform_partition_model.Rev")
+source("RevBayes_scripts/twogene_partition_model.Rev")
 
-monitors[1] <- modelmonitor(filename="output/conifer_uniform.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="output/conifer_uniform.trees",printgen=10, separator = "	", phylogeny)
-monitors[3] <- screenmonitor(printgen=10, separator = "  ", shape, tree_length)
+monitors[1] <- modelmonitor(filename="output/conifer_twogene.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="output/conifer_twogene.trees",printgen=10, separator = "	", phylogeny)
+monitors[3] <- screenmonitor(printgen=10, separator = "  ", shape[1], shape[2], tree_length)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=10000,tuningInterval=1000)
 mymcmc.run(generations=30000)
-
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace

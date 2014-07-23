@@ -9,13 +9,13 @@
 
 #include "Natural.h"
 #include "RbUtil.h"
-#include "MemberFunction.h"
 #include "MemberProcedure.h"
 #include "ModelVector.h"
+#include "RlAbstractCharacterData.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "RlAbstractCharacterData.h"
 
 #include <sstream>
 
@@ -61,9 +61,19 @@ RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::strin
     
     if (name == "rootVal") {        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getRootVal(k->getValue());
+        double rootval = this->dagNode->getValue().getRootVal(k->getValue());
+        return new Variable( new Real( rootval ) );
+    }
+    else if (name == "mean") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double mean = this->dagNode->getValue().getMean(k->getValue());
         return new Variable( new Real( mean ) );
     }
+    else if (name == "stdev") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double stdev = this->dagNode->getValue().getStdev(k->getValue());
+        return new Variable( new Real( stdev ) );
+    }    
     else if ( name == "clampAt" )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
@@ -108,11 +118,11 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
         
         ArgumentRules* meanArgRules = new ArgumentRules();
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberProcedure( Real::getClassTypeSpec(), meanArgRules ) );
+        methods.addFunction("mean", new MemberFunction<MultivariatePhyloProcess,Real>( this, meanArgRules ) );
         
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberProcedure(  RealPos::getClassTypeSpec(), stdevArgRules ) );
+        methods.addFunction("stdev", new MemberFunction<MultivariatePhyloProcess,RealPos>(  this, stdevArgRules ) );
         
         ArgumentRules* rootArgRules = new ArgumentRules();
         rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));

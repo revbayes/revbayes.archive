@@ -167,8 +167,6 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
     // Clear the arguments in the function
     theFunction.clear();
     
-    // Return the return value of the function after making it constant
-    theReturnValue->getRevObject().makeConstantValue();
     return theReturnValue;
 }
 
