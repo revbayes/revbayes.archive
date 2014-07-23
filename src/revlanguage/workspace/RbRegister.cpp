@@ -132,6 +132,7 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 #include "Move_MultivariatePhyloProcessTranslation.h"
 #include "Move_MultivariatePhyloProcessSliding.h"
+#include "Move_BrownianInverseWishartSliding.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -511,6 +512,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
         addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariatePhyloProcessTranslation() );
         addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariatePhyloProcessSliding() );
+        addTypeWithConstructor("mvBrownianInverseWishartSliding",    new Move_BrownianInverseWishartSliding() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );

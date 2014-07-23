@@ -127,7 +127,7 @@ void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const 
 
 void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
 
-    std::vector<std::vector<double> > c(getDim(), std::vector<double>(getDim(),0) );
+    PrecisionMatrix c(getDim());
         
     for (size_t i=0; i<getDim(); i++)   {
         for (size_t j=0; j<getDim(); j++)   {
@@ -157,7 +157,23 @@ void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
     }    
 }
 
-void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& from, std::vector<std::vector<double> >& c, int& n)  const   {
+PrecisionMatrix MultivariatePhyloProcess::getBranchContrasts(int& n) const  {
+
+    PrecisionMatrix c(getDim());
+        
+    for (size_t i=0; i<getDim(); i++)   {
+        for (size_t j=0; j<getDim(); j++)   {
+            c[i][j] = 0;
+        }
+    }
+
+    n = 0;
+    recursiveGetBranchContrasts(getTimeTree()->getRoot(),c,n);
+
+    return c;
+}
+
+void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& from, PrecisionMatrix& c, int& n)  const   {
 
     if (! from.isRoot())    {
 
