@@ -14,14 +14,10 @@ out_fp          <- "/Users/mlandis/data/bayarea/output/"
 params_fn       <- "psychotria.params.txt"
 num_events_fn   <- "psychotria.num_events.txt"
 tree_events_fn  <- "psychotria.tree_events.txt"
+trees_fn        <- "psychotria.trees"
 nhx_fn          <- "psychotria.nhx.txt"
 
-# MCMC settings
-nGens           <- 10000
-fBurn           <- 0.2
-
-# analysis constants
-
+# analysis data
 vdata_range     <- readCharacterData(in_fp + data_fn)
 vdata_ets       <- readCharacterData(in_fp + ets_fn)
 vdata_its       <- readCharacterData(in_fp + its_fn)
@@ -32,10 +28,15 @@ data_range		<- vdata_range[1]
 data_ets		<- vdata_ets[1]
 data_its		<- vdata_its[1]
 
+# analysis constants
 names        <- tree.names()
 num_tips     <- names.size()
 num_nodes    <- tree.nnodes()
 num_branches <- num_nodes - 1
+
+# MCMC settings
+nGens           <- 10000
+nBurn           <- 1000
 
 #######
 # tree
@@ -44,7 +45,6 @@ num_branches <- num_nodes - 1
 # Birth-Death process priors
 diversification 	~ dnExponential(0.1)
 turnover 			~ dnExponential(0.1)
-#org 				~ dnUnif(0,100.0)
 org					<- tree.height()
 
 # tree from birth-death process
@@ -62,24 +62,23 @@ for (i in 1:num_branches) {
 ############
 
 # per-area gain loss rates
-#for (i in 1:2) glr[i] ~ dnExponential(10.0)
-
+for (i in 1:2) glr[i] ~ dnExponential(10.0)
 
 # dp is the distance-dependence power parameter
-#dp          ~ exponential(10.0)
-#grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
+dp          ~ exponential(10.0)
+grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
 
 # Q_like is used to compute likelihoods
-#Q_like      := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+Q_like      := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
 
 # Q_samp is used to sample character histories
-#Q_samp      := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=false)
+Q_samp      := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=false)
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
-#S_range     ~  dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+S_range     ~  dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
 
 # attach observation to M
-#S_range.clamp(data_range)
+S_range.clamp(data_range)
 
 ##########
 # ITS
@@ -122,13 +121,12 @@ S_ets.clamp(data_ets)
 mvi<-0
 
 # data augmentation moves
-#moves[mvi++] <- mvNodeCHRS(ctmc=S_range, qmap=Q_like, tree=tau, lambda=0.2, type="biogeo", weight=num_nodes*1.0)
-#moves[mvi++] <- mvPathCHRS(ctmc=S_range, qmap=Q_like, tree=tau, lambda=0.2, type="biogeo", weight=num_nodes*2.0)
+moves[mvi++] <- mvNodeCHRS(ctmc=S_range, qmap=Q_samp, tree=tau, lambda=0.2, type="biogeo", weight=(num_nodes*1.0))
+moves[mvi++] <- mvPathCHRS(ctmc=S_range, qmap=Q_samp, tree=tau, lambda=0.2, type="biogeo", weight=(num_nodes*2.0))
 
 # tree moves
 moves[mvi++] <- mvScale(diversification,lambda=1.0,tune=true,weight=1.0)
 moves[mvi++] <- mvScale(turnover,lambda=1.0,tune=true,weight=1.0)
-moves[mvi++] <- mvSlide(org,delta=1.0,tune=true,weight=1.0)
 moves[mvi++] <- mvNodeTimeSlideUniform(tau, weight=10.0)
 
 # branch moves
@@ -136,8 +134,8 @@ for (i in 1:num_branches)
   moves[mvi++] <- mvScale(branch_rates[i],lambda=1.0,tune=true,weight=1.0) 
 
 # DEC moves
-#for (i in 1:2) moves[mvi++] <- mvScale(x=glr[i], lambda=1.0, tune=false, weight=2.0)
-#moves[mvi++] <- mvScale(x=dp, 	  lambda=1.0, tune=false, weight=2.0)
+for (i in 1:2) moves[mvi++] <- mvScale(x=glr[i], lambda=1.0, tune=false, weight=2.0)
+moves[mvi++] <- mvScale(x=dp, lambda=1.0, tune=false, weight=2.0)
 
 # ITS moves
 moves[mvi++] <- mvSimplexElementScale(pi_its, alpha=10.0, tune=true, weight=4.0)
@@ -156,21 +154,27 @@ moves[mvi++] <- mvSimplexElementScale(er_ets, alpha=10.0, tune=true, weight=6.0)
 mni<-0
 
 # standard monitors
-#monitors[mni++] <- screenmonitor(printgen=1, separator=" ", er_ets, er_its)
+monitors[mni++] <- screenmonitor(printgen=10, separator=" ", er_ets, er_its)
 monitors[mni++] <- modelmonitor(filename=out_fp+params_fn, printgen=10, separator=" ")
+monitors[mni++] <- filemonitor(filename=out_fp+trees_fn,printgen=10, separator = "	", tau)
 
 # character history monitors
-#monitors[mni++] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=S_range, tree=tau, printgen=100, separator=" ", style="events")
-#monitors[mni++] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=S_range, tree=tau, printgen=100, separator=" ", style="counts")
-#monitors[mni++] <- mnCharHistoryNhx(filename="psychotria.nhx.txt", ctmc=S_range, tree=tau, atlas=atlas, samplegen=100, maxgen=nGens, burnin=0.25, separator=" ")
+monitors[mni++] <- mnCharHistoryNewick(filename=out_fp+"psychotria.events.txt", ctmc=S_range, tree=tau, printgen=100, separator=" ", style="events")
+monitors[mni++] <- mnCharHistoryNewick(filename=out_fp+"psychotria.counts.txt", ctmc=S_range, tree=tau, printgen=100, separator=" ", style="counts")
+monitors[mni++] <- mnCharHistoryNhx(filename=out_fp+"psychotria.nhx.txt", ctmc=S_range, tree=tau, atlas=atlas, samplegen=100, maxgen=nGens, burnin=0.0, separator=" ")
 
 ########
 # MCMC #
 ########
 
-#my_model <- model(tau,S_range)
-my_model <- model(tau)
+my_model <- model(tau,S_range)
 my_mcmc <- mcmc(my_model, monitors, moves)
-my_mcmc.burnin(generations=nGens*fBurn, tuningInterval=100)
+my_mcmc.burnin(generations=nBurn, tuningInterval=10)
 my_mcmc.run(generations=nGens)
+
+treetrace <- readTreeTrace(out_fp+trees_fn)
+treetrace.summarize()
+
+
+mapTree(treetrace,"dpp_rclock_test_MAP.tre")
 
