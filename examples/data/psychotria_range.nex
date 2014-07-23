@@ -1,0 +1,31 @@
+#NEXUS
+
+begin data;
+	dimensions ntax=19 nchar=4;
+	format datatype=standard symbols = "01";
+	matrix
+		P_fauriei2					0100
+        P_grandiflora_Kal2			1000
+        P_greenwelliae07 			1000
+        P_greenwelliae907			1000
+        P_hathewayi_1				0100
+	  	P_hawaiiensis_Makaopuhi		0001
+	  	P_hawaiiensis_WaikamoiL1	0010
+	  	P_hexandra_K1				1000
+	  	P_hexandra_M				1000
+	  	P_hexandra_Oahu				0100
+	  	P_hobdyi_Kuia 				1000
+	  	P_kaduana_HawaiiLoa 		0100
+	  	P_kaduana_PuuKukuiAS 		0010
+	  	P_mariniana_Kokee2 			1000
+	  	P_mariniana_MauiNui 		0010
+	  	P_mariniana_Oahu 			0100
+	  	P_mauiensis_Eke 			0010
+	  	P_mauiensis_PepeAS 			0010
+	  	P_wawraeDL7428 				1000	
+	;
+end;
+
+Begin trees;
+	TREE tree1 = ((((((((P_hawaiiensis_WaikamoiL1:1.0853,P_mauiensis_Eke:1.0853)N2:0.7964,(P_fauriei2:1.3826,P_hathewayi_1:1.3826)N5:0.4991)N6:0.1986,(P_kaduana_PuuKukuiAS:1.9803,P_mauiensis_PepeAS:1.9803)N9:0.1)N10:0.3762,P_kaduana_HawaiiLoa:2.4565)N12:0.3398,(P_greenwelliae07:1.2715,P_greenwelliae907:1.2715)N15:1.5248)N16:1.8984,((((P_mariniana_MauiNui:2.241,P_hawaiiensis_Makaopuhi:2.241)N19:0.8236,P_mariniana_Oahu:3.0646)N21:0.2893,P_mariniana_Kokee2:3.3539)N23:0.5171,P_wawraeDL7428:3.871)N25:0.8237)N26:0.8255,(P_grandiflora_Kal2:2.7864,P_hobdyi_Kuia:2.7864)N29:2.7338)N30:0.3229,((P_hexandra_K1:2.6568,P_hexandra_M:2.6568)N33:0.5204,P_hexandra_Oahu:3.1772)N35:2.6659)N36;
+End;

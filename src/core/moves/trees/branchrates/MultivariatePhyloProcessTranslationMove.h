@@ -62,7 +62,7 @@ namespace RevBayesCore {
         StochasticNode<MultivariatePhyloProcess>*   variable;
 
         double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
-        MultivariatePhyloProcess&                   storedValue;                                                                        //!< The stored value of the last modified element.
+        MultivariatePhyloProcess                    storedValue;                                                                        //!< The stored value of the last modified element.
         
     };
     

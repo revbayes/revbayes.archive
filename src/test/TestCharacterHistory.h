@@ -17,6 +17,10 @@
 
 namespace RevBayesCore {
     
+    template<class T>
+    class TreeTrace;
+    
+    class BranchLengthTree;
     class Tree;
     class AbstractCharacterData;
     
@@ -30,6 +34,8 @@ namespace RevBayesCore {
         bool                                    run(void);
         bool                                    run_exp(void);
         bool                                    run_dollo(void);
+        bool                                    run_mol(void);
+        TreeTrace<BranchLengthTree>             readTreeTrace(const std::string &fname);
         
     private:
         void tokenizeArgv(void);
