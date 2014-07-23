@@ -39,6 +39,8 @@ namespace RevLanguage {
         RevPtr<const Variable>                      process;
         RevPtr<const Variable>                      sigma;
         RevPtr<const Variable>                      kappa;
+        RevPtr<const Variable>                      df;
+
         RevPtr<const Variable>                      lambda;
         RevPtr<const Variable>                      tuning;
         
