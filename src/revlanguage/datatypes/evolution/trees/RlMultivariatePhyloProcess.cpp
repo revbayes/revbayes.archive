@@ -61,9 +61,19 @@ RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::strin
     
     if (name == "rootVal") {        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getRootVal(k->getValue());
+        double rootval = this->dagNode->getValue().getRootVal(k->getValue());
+        return new Variable( new Real( rootval ) );
+    }
+    else if (name == "mean") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double mean = this->dagNode->getValue().getMean(k->getValue());
         return new Variable( new Real( mean ) );
     }
+    else if (name == "stdev") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double stdev = this->dagNode->getValue().getStdev(k->getValue());
+        return new Variable( new Real( stdev ) );
+    }    
     else if ( name == "clampAt" )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
