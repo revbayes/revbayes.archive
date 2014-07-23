@@ -514,7 +514,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-        this->histories[i]->print();
+//        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();
