@@ -8,28 +8,28 @@
 
 @interface WindowControllerTreeViewer : NSWindowController {
 
-    IBOutlet NSButton*              leftTree;
-    IBOutlet NSButton*              rightTree;
-    IBOutlet NSTextField*           treeStepLabel;
-    IBOutlet NSTextField*           treeCounter;
-    IBOutlet NSButton*              closeButton;
-    IBOutlet TreeSetView*           treeView;
-    IBOutlet NSTextField*           fontLabel;
-    IBOutlet NSTextField*           fontEntry;
-    IBOutlet NSTextField*           treeInfo;
-    IBOutlet NSPopUpButton*         outgroupList;
-    IBOutlet NSTextField*           outgroupLabel;
-    IBOutlet NSStepper*             fontStepper;
-    IBOutlet NSButton*              drawMonophyleticTreeCheck;
-    ToolTreeSet*                    myTool;
-    int                             selectedTree;
-    float                           fontSize;
-    BOOL                            drawMonophyleticWrOutgroup;
+    IBOutlet NSButton*        leftTree;
+    IBOutlet NSButton*        rightTree;
+    IBOutlet NSTextField*     treeStepLabel;
+    IBOutlet NSTextField*     treeCounter;
+    IBOutlet NSButton*        closeButton;
+    IBOutlet TreeSetView*     treeView;
+    IBOutlet NSTextField*     fontLabel;
+    IBOutlet NSTextField*     fontEntry;
+    IBOutlet NSTextField*     treeInfo;
+    IBOutlet NSPopUpButton*   outgroupList;
+    IBOutlet NSTextField*     outgroupLabel;
+    IBOutlet NSStepper*       fontStepper;
+    IBOutlet NSButton*        drawMonophyleticTreeCheck;
+    ToolTreeSet*              myTool;
+    int                       selectedTree;
+    float                     fontSize;
+    BOOL                      drawMonophyleticWrOutgroup;
 }
 
-@property (readwrite) int   selectedTree;
-@property (readwrite) float fontSize;
-@property (readwrite) BOOL  drawMonophyleticWrOutgroup;
+@property (nonatomic) int   selectedTree;
+@property (nonatomic) float fontSize;
+@property (nonatomic) BOOL  drawMonophyleticWrOutgroup;
 
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)changedDrawMonophyleticTreeCheck:(id)sender;

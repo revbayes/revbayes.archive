@@ -27,9 +27,9 @@
     IBOutlet NSBox*           clampDivider;
 }
 
-@property (readwrite) int rootednessType;
-@property (readwrite) int treeSizeSource;
-@property (readwrite) int originalRootednessType;
+@property (nonatomic) int rootednessType;
+@property (nonatomic) int treeSizeSource;
+@property (nonatomic) int originalRootednessType;
 
 - (IBAction)addBipartitionAction:(id)sender;
 - (void)addUserBipartition:(TaxonBipartition*)bp;

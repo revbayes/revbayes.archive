@@ -14,6 +14,9 @@
     BOOL                    connectedToServer;
 }
 
+@property (nonatomic,strong) NSString* nickname;
+@property (nonatomic,strong) NSString* serverHostname;
+
 - (void)checkForNewModels;
 - (BOOL)checkForNewVersion;
 - (BOOL)connectToServer;
@@ -23,9 +26,7 @@
 - (void)getCuratedModelNames;
 - (void)getListOfClientsModels;
 - (void)getListOfModelsToDownload;
-- (void)setNickname:(NSString*)s;
 - (float)getMostRecentProgramVersionNumber;
-- (void)setServerHostname:(NSString*)s;
 - (void)submitModelWithInfo:(NSArray*)modelInfo andData:data;
 - (void)submitRegistrationInfo:(NSArray*)userInfo;
 - (BOOL)subscribe;

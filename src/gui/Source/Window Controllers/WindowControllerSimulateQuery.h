@@ -8,38 +8,38 @@
 
 @interface WindowControllerSimulateQuery : NSWindowController <NSCoding> {
 
-    IBOutlet NSButton*              cancelButton;
-    IBOutlet NSButton*              okButton;
-    IBOutlet NSButton*              helpButton;
-    IBOutlet NSPopUpButton*         treeGenSelector;
-    IBOutlet NSMatrix*              treeType;
-    IBOutlet NSTextField*           numTaxaLabelField;
-    IBOutlet NSTextField*           numTaxaField;
-    IBOutlet NSTextField*           parm1Field;
-    IBOutlet NSTextField*           parm2Field;
-    IBOutlet NSTextField*           parm3Field;
-    IBOutlet NSTextField*           parm1LabelField;
-    IBOutlet NSTextField*           parm2LabelField;
-    IBOutlet NSTextField*           parm3LabelField;
-    IBOutlet NSButton*              newickFinderButton;
+    IBOutlet NSButton*        cancelButton;
+    IBOutlet NSButton*        okButton;
+    IBOutlet NSButton*        helpButton;
+    IBOutlet NSPopUpButton*   treeGenSelector;
+    IBOutlet NSMatrix*        treeType;
+    IBOutlet NSTextField*     numTaxaLabelField;
+    IBOutlet NSTextField*     numTaxaField;
+    IBOutlet NSTextField*     parm1Field;
+    IBOutlet NSTextField*     parm2Field;
+    IBOutlet NSTextField*     parm3Field;
+    IBOutlet NSTextField*     parm1LabelField;
+    IBOutlet NSTextField*     parm2LabelField;
+    IBOutlet NSTextField*     parm3LabelField;
+    IBOutlet NSButton*        newickFinderButton;
     
-    ToolSimulate*                   myTool;
-    int                             numTaxa;
-    double                          lambda;
-    double                          mu;
-    double                          theta;
-    int                             whichTreeSourceMethod;
-    int                             whichTreeGenerationMethod;
-    BOOL                            closedWithCancel;
+    ToolSimulate*             myTool;
+    int                       numTaxa;
+    double                    lambda;
+    double                    mu;
+    double                    theta;
+    int                       whichTreeSourceMethod;
+    int                       whichTreeGenerationMethod;
+    BOOL                      closedWithCancel;
 }
 
-@property (readwrite) int    numTaxa;
-@property (readwrite) double lambda;
-@property (readwrite) double mu;
-@property (readwrite) double theta;
-@property (readwrite) int    whichTreeSourceMethod;
-@property (readwrite) int    whichTreeGenerationMethod;
-@property (readwrite) BOOL   closedWithCancel;
+@property (nonatomic) int    numTaxa;
+@property (nonatomic) double lambda;
+@property (nonatomic) double mu;
+@property (nonatomic) double theta;
+@property (nonatomic) int    whichTreeSourceMethod;
+@property (nonatomic) int    whichTreeGenerationMethod;
+@property (nonatomic) BOOL   closedWithCancel;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)changeTreeSourceMethod:(id)sender;

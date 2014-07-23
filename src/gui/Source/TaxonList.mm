@@ -4,6 +4,8 @@
 
 @implementation TaxonList
 
+@synthesize taxonName;
+
 -(id)init {
 
      if ( (self = [super init]) ) 
@@ -16,20 +18,6 @@
 - (NSString*)modelName { 
 
 	return taxonName; 
-}
-
-- (void)setTaxonName:(NSString*)aName {
-
-    if (aName != taxonName) 
-		{
-        [taxonName autorelease];
-        taxonName = [aName retain];
-		}
-}
-
-- (NSString*)taxonName {
-
-    return taxonName;
 }
 
 @end

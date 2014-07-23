@@ -11,8 +11,8 @@
     int                            startingNumberOfInlets;
 }
 
-@property (readwrite) int numberOfInlets;
-@property (readwrite) int startingNumberOfInlets;
+@property (nonatomic) int          numberOfInlets;
+@property (nonatomic) int          startingNumberOfInlets;
 
 - (void)closeControlPanel;
 - (void)setInletsAndOutlets;

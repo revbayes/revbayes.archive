@@ -5,10 +5,9 @@
 
 @interface WindowControllerParsimony : NSWindowController {
 
-    IBOutlet NSPopUpButton*       tieBreakerSelector;
-    IBOutlet NSSegmentedControl*  bioNjSelector;
-    
-    ToolParsimony*                myTool;
+    IBOutlet NSPopUpButton*        tieBreakerSelector;
+    IBOutlet NSSegmentedControl*   bioNjSelector;
+    ToolParsimony*                 myTool;
 }
 
 - (IBAction)cancelButtonAction:(id)sender;
