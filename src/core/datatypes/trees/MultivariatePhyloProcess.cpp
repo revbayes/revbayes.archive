@@ -70,22 +70,6 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
         rv = getMean(k->getValue());
     }
-    else if ( n == "stdev" )
-    {
-        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
-        rv = getStdev(k->getValue());        
-    }
-    else if ( n == "clampAt" )
-    {
-        const TypedDagNode< ContinuousCharacterData >* data = static_cast<const TypedDagNode<ContinuousCharacterData> *>( args[0] );
-        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[1] );
-        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[2] );
-        // clampAt(&data->getValue(), k->getValue(), l->getValue());   
-        rv = 0;
-    }
-    else
-    {
-    }
     */
     throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
     
@@ -113,9 +97,10 @@ void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const 
 
         std::string taxon = data->getTaxonNameWithIndex(index);
         
-        std::cerr << index << '\t' << taxon << '\t' << data->getCharacter(index,l).getMean() << '\t' << data->getCharacter(index,l).getVariance() << '\n';
+        std::cerr << index << '\t' << taxon << '\t';
+        std::cerr << data->getCharacter(index,l).getMean() << '\t' << data->getCharacter(index,l).getVariance() << '\n';
         
-        if (data->getCharacter(index,l).getVariance() == 0) {
+        if (data->getCharacter(index,l).getMean() != -1000) {
            (*this)[index][k] = data->getCharacter(index,l).getMean();
             clampVector[index][k] = true;
         }
