@@ -23,7 +23,7 @@ begin data;
 	  	P_mauiensis_Eke 			0010
 	  	P_mauiensis_PepeAS 			0010
 	  	P_wawraeDL7428 				1000	
-		;
+	;
 end;
 
 Begin trees;
