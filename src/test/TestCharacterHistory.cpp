@@ -174,7 +174,7 @@ bool TestCharacterHistory::run_exp(void) {
     // binary characters
     std::string fn = "";
     //    fn = "vireya.nex";
-    fn = "psychotria.nex";
+    fn = "psychotria_range.nex";
     //    fn = "16tip_20areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
@@ -507,7 +507,7 @@ bool TestCharacterHistory::run_mol(void) {
     // binary characters
     std::string fn = "";
     //    fn = "vireya.nex";
-    fn = "psychotria.nex";
+    fn = "psychotria_range.nex";
     //    fn = "16tip_20areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
