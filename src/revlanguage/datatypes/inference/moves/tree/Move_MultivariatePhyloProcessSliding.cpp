@@ -45,14 +45,6 @@ void Move_MultivariatePhyloProcessSliding::constructInternalObject( void ) {
     RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( tmp );
     value = new RevBayesCore::MultivariatePhyloProcessSlidingMove(p, l, t, w);
 
-    // now allocate a new sliding move
-    /*
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::NodeTimeSlideUniform(t, w);
-    */
-    
 }
 
 
