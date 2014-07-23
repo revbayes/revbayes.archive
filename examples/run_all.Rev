@@ -1,9 +1,9 @@
-source("RevLanguageBasicsTutorial.Rev")
+source("basics.Rev")
 clear()
 # source("clock_GTR.Rev")
 # clear()
-source("non-Clock_JC.Rev")
+source("noclock_JC.Rev")
 clear()
-source("normaltest.Rev")
+source("normal.Rev")
 clear()
 

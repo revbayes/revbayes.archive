@@ -396,8 +396,10 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 
 
 /**
- * Printing of the structural information for this element.
- * Since this is the default implementation we simply print nothing.
+ * Print the structural information for this object. Here we print the
+ * type and type spec, as well as the value. Objects that have more
+ * complex structure need to override this function, best by calling
+ * it first and then provide the additional information.
  */
 void RevObject::printStructure( std::ostream &o ) const
 {
