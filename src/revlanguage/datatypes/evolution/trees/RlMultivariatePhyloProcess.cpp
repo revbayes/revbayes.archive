@@ -59,6 +59,7 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 /* Map calls to member methods */
 RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
+    /*
     if (name == "rootVal") {        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
         double rootval = this->dagNode->getValue().getRootVal(k->getValue());
@@ -74,7 +75,8 @@ RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::strin
         double stdev = this->dagNode->getValue().getStdev(k->getValue());
         return new Variable( new Real( stdev ) );
     }    
-    else if ( name == "clampAt" )
+    */
+    if ( name == "clampAt" )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();

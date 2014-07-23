@@ -90,6 +90,8 @@ rootval[2] <- 0
 br ~ mvtBrownian(tau,sigma=sigma)
 
 mean1 := br.mean(1)
+"mean"
+mean1
 
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 

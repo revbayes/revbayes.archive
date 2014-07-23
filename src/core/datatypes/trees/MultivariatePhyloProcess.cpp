@@ -64,15 +64,24 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
     
-    /*
     if ( n == "mean" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
         rv = getMean(k->getValue());
     }
-    */
-    throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
-    
+    else if ( n == "stdev" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getStdev(k->getValue());
+    }
+    else if ( n == "rootVal" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getRootVal(k->getValue());
+    }
+    else    {
+        throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
+    }
 }
 
 bool MultivariatePhyloProcess::isClamped(size_t index, size_t k) const   {
