@@ -245,7 +245,11 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 }
 
 
-/** This function prints help info about a function if it sees a function call */
+/**
+ * This function prints help info about a function if it sees a function call.
+ *
+ * Note: The caller needs to delete the syntax tree (the syntax function call).
+ */
 int RevLanguage::Parser::help(const SyntaxFunctionCall& root) const {
 
     std::ostringstream msg;
