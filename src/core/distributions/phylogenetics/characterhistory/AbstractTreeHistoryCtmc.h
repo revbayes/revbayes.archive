@@ -423,33 +423,9 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(Abstrac
     
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
-
     this->dagNode->redraw();
-    
-//    StochasticNode<AbstractCharacterData>* n = this->getStochasticNode();
-//    n->touch();
-//    this->getStochasticNode()->touch();
-//    n->touch();
-//
-//    n->redraw();
-//
-//    n->touch();
-//    
-//    n->getLnProbability();
-//    
-//    n->touch();
-//    
-//    n->getLnProbability();
-//    
-//    n->keep();
-//    
-//    n->touch();
-////
-//    n->touch();
-    
-//    n->getLnProbability();
-//    n->touch();
-//    std::cout << getStochasticNode()->getLnProbability() << "\n";
+    this->dagNode->getLnProbability();
+
 }
 
 

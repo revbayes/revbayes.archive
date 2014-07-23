@@ -25,7 +25,7 @@
     IBOutlet NSPanel*                  parameterPalette;
 }
 
-@property (readwrite) BOOL showParmNames;
+@property (nonatomic) BOOL             showParmNames;
 
 - (IBAction)changeInlets:(id)sender;
 - (void)drawerClosed;

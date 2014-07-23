@@ -58,10 +58,7 @@
 
 - (void)setValue:(int)x {
 
-    NSNumber* tempNumber = [NSNumber numberWithInt:x];
-    [value release];
-    value = tempNumber;
-    [value retain];
+    value = [NSNumber numberWithInt:x];
 }
 
 - (NSString*)stringRepresentation {
