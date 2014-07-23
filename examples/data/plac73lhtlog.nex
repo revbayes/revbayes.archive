@@ -2,7 +2,7 @@
 
 Begin data;
 	Dimensions ntax=73 nchar=3;
-	Format datatype=Continuous missing=-1000;
+	Format datatype=Continuous;
 	Matrix
 
 Bos	6.47	13.52	3.21

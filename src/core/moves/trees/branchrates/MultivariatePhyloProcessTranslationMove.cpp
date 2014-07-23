@@ -68,7 +68,9 @@ void MultivariatePhyloProcessTranslationMove::recursiveTranslate(const TopologyN
 
     MatrixReal& value = variable->getValue();
     size_t index = from.getIndex();
-    value[index][component] += slide;
+    if (! variable->getValue().isClamped(index,component))   {
+        value[index][component] += slide;
+    }
     
     // propagate forward
     size_t numChildren = from.getNumberOfChildren();
