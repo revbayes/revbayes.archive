@@ -541,16 +541,19 @@ bool TestCharacterHistory::run_mol(void) {
     // tree model
     ///////////////
     
+    double rootAge = trees[0]->getRoot().getAge();
+    
     //   Constant nodes
 	ConstantNode<double> *dLambda = new ConstantNode<double>("div_rate", new double(1.0 / 5.0));		// Exponential rate for prior on div
 	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
 	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
-	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(trees[0]->getRoot().getAge()*1.5));
-	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(trees[0]->getRoot().getAge()*1.0));
+//	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(rootAge*1.5));
+//	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(rootAge*1.0));
 	
 	//   Stochastic nodes
-    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
+//    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
+    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double(rootAge));
 	
 	//   Stochastic nodes
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
@@ -572,8 +575,8 @@ bool TestCharacterHistory::run_mol(void) {
     tau->setValue( trees[0] );
         
     // branch rates
-    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(4.0) );
-    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(8.0) );
+    ConstantNode<double> *a      = new ConstantNode<double>("a", new double(2.0) );
+    ConstantNode<double> *b      = new ConstantNode<double>("b", new double(2.0) );
     
 	std::vector<const TypedDagNode<double> *> brates;
 	std::vector< StochasticNode<double> *> bratesNotConst;
@@ -787,8 +790,8 @@ bool TestCharacterHistory::run_mol(void) {
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(turn, 1.0), 2, true ) );
 	moves.push_back( new SubtreeScale( tau, 5.0 ) );
-	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
-	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
+//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+//	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
 	for( size_t i=0; i<numBranches; i++) {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(bratesNotConst[i], log(2.0)), 2, true ) );
