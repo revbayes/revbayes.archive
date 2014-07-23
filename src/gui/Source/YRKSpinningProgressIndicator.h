@@ -28,14 +28,14 @@
     double      _maxValue;
 }
 
-@property (nonatomic,strong)                             NSColor* color;
-@property (nonatomic,strong)                             NSColor* backgroundColor;
-@property (nonatomic,weak)                               BOOL     drawsBackground;
-@property (nonatomic,weak,getter=isDisplayedWhenStopped) BOOL     displayedWhenStopped;
-@property (nonatomic,weak)                               BOOL     usesThreadedAnimation;
-@property (nonatomic,weak,getter=isIndeterminate)        BOOL     indeterminate;
-@property (nonatomic,weak)                               double   doubleValue;
-@property (nonatomic,weak)                               double   maxValue;
+@property (atomic,strong)                        NSColor* color;
+@property (atomic,strong)                        NSColor* backgroundColor;
+@property (atomic)                               BOOL     drawsBackground;
+@property (atomic,getter=isDisplayedWhenStopped) BOOL     displayedWhenStopped;
+@property (atomic)                               BOOL     usesThreadedAnimation;
+@property (atomic,getter=isIndeterminate)        BOOL     indeterminate;
+@property (atomic)                               double   doubleValue;
+@property (atomic)                               double   maxValue;
 
 - (void)stopAnimation:(id)sender;
 - (void)startAnimation:(id)sender;
