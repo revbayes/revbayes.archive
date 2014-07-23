@@ -34,12 +34,17 @@ namespace RevLanguage {
      * the processCommand function before the call to yyparse.
      * 
      * The call to yyparse generates an error code if there is a syntax error
-     * in the command buffer. For each complete and syntactically correct statement
-     * found in the buffer, the bison code generates a call to the execute or help
-     * function of the parser. The execute function executes the syntax tree
-     * corresponding to the statement, while the help function gets appropriate help
-     * information if the statement is a help request. This behavior is defined in
-     * the grammar.y file.
+     * in the command buffer. The destructors in the bison-generated code should
+     * deal with the deletion of the syntax element subtrees that have been created
+     * up to the point when the error was encountered.
+     * 
+     * For each complete and syntactically correct statement found in the buffer, the
+     * bison code generates a call to the execute or help functin of the parser once
+     * the syntax element tree is complete. The execute function executes the syntax
+     * tree corresponding to the statement, while the help function gets appropriate help
+     * information if the tree corresponds to a single statement that is a help request.
+     * This behavior is defined in the grammar.y file. Once the syntax tree has been
+     * evaluated, it is deleted by the execute or the help function in the parser.
      *
      * Note that there can be nested calls to the parser, for instance
      * if the 'source' function starts parsing a file as part of the
