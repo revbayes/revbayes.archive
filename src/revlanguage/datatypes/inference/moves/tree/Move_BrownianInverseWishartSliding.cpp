@@ -17,6 +17,7 @@
 #include "RealSymmetricMatrix.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+#include "Natural.h"
 
 
 using namespace RevLanguage;
@@ -41,18 +42,21 @@ void Move_BrownianInverseWishartSliding::constructInternalObject( void ) {
     RevBayesCore::TypedDagNode<RevBayesCore::MultivariatePhyloProcess> *proc = static_cast<const MultivariatePhyloProcess &>( process->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> *sig = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double> *kap = static_cast<const RealPos &>( kappa->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<int> *deg = static_cast<const Natural &>( df->getRevObject() ).getDagNode();
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     bool t = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( proc );
     RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix> *s = static_cast<RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix> *>( sig );
     RevBayesCore::StochasticNode<double> *k = static_cast<RevBayesCore::StochasticNode<double> *>( kap );
+    RevBayesCore::StochasticNode<int> *d = static_cast<RevBayesCore::StochasticNode<int> *>( deg );
 
     std::vector<RevBayesCore::DagNode*> n;
     
     n.push_back(p);
     n.push_back(s);
     n.push_back(k);
+    n.push_back(d);
     
  //       rates.push_back(const_cast<RevBayesCore::StochasticNode<double>*> (static_cast<const RevBayesCore::StochasticNode<double>*> (pars[i])));
    
@@ -90,6 +94,7 @@ const MemberRules& Move_BrownianInverseWishartSliding::getMemberRules(void) cons
         nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariatePhyloProcess::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "sigma", false, RealSymmetricMatrix::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "kappa", false, RealPos::getClassTypeSpec() ) );        
+        nniMemberRules.push_back( new ArgumentRule( "df", false, Natural::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
         nniMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
 
@@ -135,6 +140,12 @@ void Move_BrownianInverseWishartSliding::printValue(std::ostream &o) const {
     else {
         o << "?";
     }
+    if (df != NULL) {
+        o << df->getName();
+    }
+    else {
+        o << "?";
+    }
     if (lambda != NULL) {
         o << lambda->getName();
     }
@@ -162,6 +173,9 @@ void Move_BrownianInverseWishartSliding::setConstMemberVariable(const std::strin
     }
     else if ( name == "kappa" ) {
         kappa = var;
+    }
+    else if ( name == "df" ) {
+        df = var;
     }
     else if ( name == "lambda" ) {
         lambda = var;

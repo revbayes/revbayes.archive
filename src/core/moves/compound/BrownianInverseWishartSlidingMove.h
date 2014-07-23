@@ -19,7 +19,7 @@
 
 #include "MultivariateBrownianPhyloProcess.h"
 #include "InverseWishartDistribution.h"
-
+#include "TimeTree.h"
 
 
 namespace RevBayesCore {
@@ -41,12 +41,14 @@ namespace RevBayesCore {
         void                                    rejectCompoundMove(void);
         void                                    tune(void);
         
+        void                                    recursiveTranslate(const TopologyNode& from, int component, double slide); 
     private:
         
         // member variables
         StochasticNode<MultivariatePhyloProcess>*           process;
         StochasticNode<PrecisionMatrix>*                    sigma;                         
         StochasticNode<double>*                             kappa;                         
+        StochasticNode<int>*                                df;                         
 
         double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
 

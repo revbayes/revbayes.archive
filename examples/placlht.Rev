@@ -52,7 +52,7 @@ index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
 
-moves[index] <- mvBrownianInverseWishartSliding(process=br,sigma=sigma, kappa=kappa, lambda=1,tune=true,weight=100) 
+moves[index] <- mvBrownianInverseWishartSliding(process=br,sigma=sigma, kappa=kappa, df=df, lambda=1,tune=true,weight=100) 
 index <- index + 1
 
 br.clampAt(contData,1,1)
