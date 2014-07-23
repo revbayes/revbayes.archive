@@ -10,6 +10,7 @@
 
 
 #include "MatrixReal.h"
+#include "PrecisionMatrix.h"
 #include "MemberObject.h"
 #include "TimeTree.h"
 #include "ContinuousCharacterData.h"
@@ -46,6 +47,7 @@ namespace RevBayesCore {
         void                                        recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
 
         void                                        printBranchContrasts(std::ostream& os) const;
+        PrecisionMatrix                             getBranchContrasts(int& nnode) const ;
 
         bool                                        isClamped(size_t index, size_t k) const;
         void                                        clampAt(const ContinuousCharacterData* data, size_t k, size_t l);
@@ -53,7 +55,7 @@ namespace RevBayesCore {
         
     protected:
 
-        void                                        recursiveGetBranchContrasts(const TopologyNode& from, std::vector<std::vector<double> >& c, int& n) const;
+        void                                        recursiveGetBranchContrasts(const TopologyNode& from, PrecisionMatrix& c, int& n) const;
 
     private:
 
