@@ -54,7 +54,9 @@ double MultivariatePhyloProcessSlidingMove::performSimpleMove( void ) {
     double u = rng->uniform01();
     double slidingFactor = lambda * ( u - 0.5 );
 
-    v[node][component] += slidingFactor;
+    if (! variable->getValue().isClamped(node,component))   {
+        v[node][component] += slidingFactor;
+    }
     double lnHastingsratio = 0;
     
     return lnHastingsratio;

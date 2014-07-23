@@ -69,6 +69,11 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
         rv = getMean(k->getValue());
     }
+    else if ( n == "tipMean" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        rv = getMeanOverTips(k->getValue());
+    }
     else if ( n == "stdev" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
@@ -90,10 +95,7 @@ bool MultivariatePhyloProcess::isClamped(size_t index, size_t k) const   {
 
 void MultivariatePhyloProcess::clampAt(const ContinuousCharacterData* data, size_t k, size_t l) {
 
-    std::cerr << "clamp\n";
-    std::cerr << k << '\t' << l << '\n';
     recursiveClampAt(getTimeTree()->getRoot(),data,k-1,l-1);
-    std::cerr << "clamp ok\n";
 }
 
 
@@ -103,19 +105,16 @@ void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const 
         
         // get taxon index
         size_t index = from.getIndex();
-
-        std::string taxon = data->getTaxonNameWithIndex(index);
+        std::string taxon = tree->getTipNames()[index];
+        size_t dataindex = data->getIndexOfTaxon(taxon);
         
-        std::cerr << index << '\t' << taxon << '\t';
-        std::cerr << data->getCharacter(index,l).getMean() << '\t' << data->getCharacter(index,l).getVariance() << '\n';
-        
-        if (data->getCharacter(index,l).getMean() != -1000) {
-           (*this)[index][k] = data->getCharacter(index,l).getMean();
+        if (data->getCharacter(dataindex,l).getMean() != -1000) {
+           (*this)[index][k] = data->getCharacter(dataindex,l).getMean();
             clampVector[index][k] = true;
         }
-    }
-    else    {
-        std::cerr << ".";
+        else    {
+            std::cerr << "taxon : " << taxon << " is missing for trait " << l+1 << '\n';
+        }
     }
 
     // propagate forward
@@ -200,6 +199,18 @@ double MultivariatePhyloProcess::getMean(int k) const {
     return e1;
 }
 
+double MultivariatePhyloProcess::getMeanOverTips(int k) const {
+    
+    int n = 0;
+    double e1 = 0;
+    double e2 = 0;
+    recursiveGetStatsOverTips(k, getTimeTree()->getRoot(), e1, e2, n);
+    e1 /= n;
+    e2 /= n;
+    e2 -= e1 * e1;
+    return e1;
+}
+
 double MultivariatePhyloProcess::getStdev(int k) const {
     
     int n = 0;
@@ -225,6 +236,24 @@ void MultivariatePhyloProcess::recursiveGetStats(int k, const TopologyNode& from
     size_t numChildren = from.getNumberOfChildren();
     for (size_t i = 0; i < numChildren; ++i) {
         recursiveGetStats(k,from.getChild(i),e1,e2,n);
+    }
+    
+}
+
+
+void MultivariatePhyloProcess::recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
+
+    if(from.isTip())   {
+        double tmp = (*this)[from.getIndex()][k];
+
+        n++;
+        e1 += tmp;
+        e2 += tmp * tmp;
+    }
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveGetStatsOverTips(k,from.getChild(i),e1,e2,n);
     }
     
 }

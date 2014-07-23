@@ -40,8 +40,10 @@ namespace RevBayesCore {
         // MultivariatePhyloProcess functions
         double                                      getRootVal(int k) const;
         double                                      getMean(int k) const;
+        double                                      getMeanOverTips(int k) const;
         double                                      getStdev(int k) const;
         void                                        recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
+        void                                        recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
 
         void                                        printBranchContrasts(std::ostream& os) const;
 

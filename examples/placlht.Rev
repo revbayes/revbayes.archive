@@ -19,7 +19,7 @@ treeArray <- readTrees("data/chronoplac73.tree")
 fixedTree <- treeArray[1]
 tau.clamp(fixedTree)
 
-contDataArray <- readCharacterData("data/plac73lht.nex")
+contDataArray <- readCharacterData("data/plac73lhtlog.nex")
 contData <- contDataArray[1]
 contData
 
@@ -30,8 +30,6 @@ kappa ~ exponential(1.0)
 df <- 4
 dim <- 3
 sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
-
-sigma
 
 index <- 1
 
@@ -59,10 +57,14 @@ br.clampAt(contData,1,1)
 br.clampAt(contData,2,2)
 br.clampAt(contData,3,3)
 
+mean1 := br.mean(1)
+tipmean1 := br.tipMean(1)
+
 "model"
 
 mymodel <- model(kappa)
 
+#monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, mean1, tipmean1)
 monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
 monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, br)
 monitors[3] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")

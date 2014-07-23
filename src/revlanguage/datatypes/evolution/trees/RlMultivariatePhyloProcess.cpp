@@ -122,6 +122,10 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
         methods.addFunction("mean", new MemberFunction<MultivariatePhyloProcess,Real>( this, meanArgRules ) );
         
+        ArgumentRules* tipmeanArgRules = new ArgumentRules();
+        tipmeanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+        methods.addFunction("tipMean", new MemberFunction<MultivariatePhyloProcess,Real>( this, tipmeanArgRules ) );
+        
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
         methods.addFunction("stdev", new MemberFunction<MultivariatePhyloProcess,RealPos>(  this, stdevArgRules ) );
