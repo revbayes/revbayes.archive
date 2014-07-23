@@ -88,7 +88,10 @@ seq ~ substModel(tree=tau, Q=Q, branchRates=branchRate, nSites=nSites, type="DNA
 # attach the data
 seq.clamp(data)
 
+"clamp"
 br.clampAt(contData,1,1)
+"mean"
+br.mean(1)
 
 "model"
 mymodel <- model(pi)
