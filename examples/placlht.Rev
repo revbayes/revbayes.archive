@@ -36,10 +36,10 @@ index <- 1
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
-index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
-index <- index + 1
+#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
+#index <- index + 1
+#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
+#index <- index + 1
 
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
@@ -47,11 +47,11 @@ br ~ mvtBrownian(tau,sigma=sigma)
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=1) 
 index <- index + 1
 
 # conjugate move
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=10) 
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
 index <- index + 1
 
 br.clampAt(contData,1,1)

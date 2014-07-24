@@ -51,6 +51,7 @@ namespace RevBayesCore {
         
         double                                  performSimpleMove(void);                                                            //!< Perform move
         void                                    recursiveTranslate(const TopologyNode& from, int component, double slide);
+        void                                    recursiveTouch(const TopologyNode& from);
         void                                    printParameterSummary(std::ostream &o) const;
         void                                    rejectSimpleMove(void);
         void                                    acceptSimpleMove(void);

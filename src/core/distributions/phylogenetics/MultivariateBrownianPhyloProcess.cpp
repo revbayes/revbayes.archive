@@ -25,13 +25,22 @@ using namespace RevBayesCore;
 // constructor(s)
 MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MultivariatePhyloProcess >( new MultivariatePhyloProcess(&intau->getValue(), insigma->getValue().getDim())),
     tau( intau ),
-    sigma( insigma ) {
+    sigma( insigma ),
+    dirtyNodes(intau->getValue().getNumberOfNodes(),true),
+    nodeLogProbs(intau->getValue().getNumberOfNodes(),0)
+{
     
     simulate();
 }
 
 
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariatePhyloProcess>( n ), tau( n.tau ), sigma( n.sigma ) /*, rootVal( n.rootVal )*/ {
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariatePhyloProcess>( n ), 
+    tau( n.tau ),
+    sigma( n.sigma ),
+    /*, rootVal( n.rootVal )*/ 
+    dirtyNodes(n.tau->getValue().getNumberOfNodes(),true),
+    nodeLogProbs(n.tau->getValue().getNumberOfNodes(),0)
+{
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -67,33 +76,32 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
     
     if (! from.isRoot()) {
         
-        // x ~ normal(x_up, sigma^2 * branchLength)
+//        if (1)  {
+        if (dirtyNodes[index])  {
 
-        size_t upindex = from.getParent().getIndex();
-        std::vector<double> upval = (*value)[upindex];
+            // x ~ normal(x_up, sigma^2 * branchLength)
 
-        // if root is clapmed at 0 and offset is used instead
-        /*
-        if (from.getParent().isRoot())  {
-            for (size_t j=0; j<getDim(); j++)   {
-                upval[j] = 0;
+            size_t upindex = from.getParent().getIndex();
+            std::vector<double> upval = (*value)[upindex];
+
+            const MatrixReal& om = sigma->getValue().getInverse();
+
+            double s2 = 0;
+            for (size_t i = 0; i < getDim(); i++) {
+                double tmp = 0;
+                for (size_t j = 0; j < getDim(); j++) {
+                    tmp += om[i][j] * (val[j] - upval[j]);
+                }
+                s2 += (val[i] - upval[i]) * tmp;
             }
+
+            double logprob = 0;
+            logprob -= 0.5 * s2 / from.getBranchLength();
+            logprob -= 0.5 * (sigma->getValue().getLogDet() + sigma->getValue().getDim() * log(from.getBranchLength()));
+            nodeLogProbs[index] = logprob;
+            dirtyNodes[index] = false;
         }
-        */
-        
-        const MatrixReal& om = sigma->getValue().getInverse();
-        
-        double s2 = 0;
-        for (size_t i=0; i<getDim(); i++)   {
-            double tmp = 0;
-            for (size_t j=0; j<getDim(); j++)   {
-                tmp += om[i][j] * (val[j] - upval[j]);
-            }
-            s2 += (val[i] - upval[i]) * tmp;
-        }
-        
-        lnProb -= 0.5 * s2 / from.getBranchLength();
-        lnProb -= 0.5 * (sigma->getValue().getLogDet() + sigma->getValue().getDim() * log(from.getBranchLength()));
+        lnProb += nodeLogProbs[index];
     }
     
     // propagate forward
@@ -109,8 +117,23 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 
 void MultivariateBrownianPhyloProcess::redrawValue(void) {
     simulate();
+    corruptAll();
 }
 
+void MultivariateBrownianPhyloProcess::corruptAll() {
+    recursiveCorruptNodes(tau->getValue().getRoot());
+}
+
+void MultivariateBrownianPhyloProcess::recursiveCorruptNodes(const TopologyNode& from)    {
+    
+    dirtyNodes[from.getIndex()] = true;
+    // propagate forward
+    size_t numChildren = from.getNumberOfChildren();
+    
+    for (size_t i = 0; i < numChildren; ++i) {
+        recursiveCorruptNodes(from.getChild(i));
+    }    
+}
 
 void MultivariateBrownianPhyloProcess::simulate() {
     
@@ -176,6 +199,94 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     
     if ( oldP == sigma ) {
         sigma = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
+    }
+}
+
+
+void MultivariateBrownianPhyloProcess::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+    if ( affecter == sigma )    {
+        //this->dagNode->getAffectedNodes( affected );
+        corruptAll();
+    }
+    else    {
+        std::cerr << "affected by sth else\n";
+        exit(1);
+    }
+}
+
+void MultivariateBrownianPhyloProcess::touchSpecialization( DagNode *toucher ) {
+    // if the root rate has changed, then we need to change the corresponding value in our vector and downpass the touch
+    if ( toucher == sigma ) {
+        
+        corruptAll();
+        // delegate a touch to our children
+        this->dagNode->touchAffected();
+    }
+    else    {
+        
+        const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
+        
+        // maybe all of them have been touched or the flags haven't been set properly
+        if ( indices.size() == 0 ) 
+        {
+            // just delegate the call
+            // ???
+        } 
+        else 
+        {
+            // flag recomputation only for the nodes
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
+            {
+                dirtyNodes[*it] = true;
+            } 
+        }
+    }
+}
+
+
+void MultivariateBrownianPhyloProcess::keepSpecialization( DagNode* affecter ) {
+    // only do this when the toucher was the root rate
+    /*
+    if ( affecter == sigma ) {
+        
+        corruptAll();
+        this->dagNode->keepAffected();
+    }
+    else {
+//        std::cerr << "keep spec by sth else\n";
+//        exit(1);
+    }
+    */
+}
+
+
+void MultivariateBrownianPhyloProcess::restoreSpecialization( DagNode *restorer ) {
+    // only do this when the toucher was our parameters
+    if ( restorer == sigma ) {
+        
+        corruptAll();
+        // delegate a restore to our children
+        // this->dagNode->restoreAffected();
+    }
+    else {
+//        std::cerr << "restore spec by sth else\n";
+//        exit(1);
+        const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
+        
+        // maybe all of them have been touched or the flags haven't been set properly
+        if ( indices.size() == 0 ) 
+        {
+            // just delegate the call
+            // ???
+        } 
+        else 
+        {
+            // flag recomputation only for the nodes
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
+            {
+                dirtyNodes[*it] = true;
+            } 
+        }
     }
 }
 
