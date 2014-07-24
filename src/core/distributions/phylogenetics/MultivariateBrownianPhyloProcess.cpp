@@ -162,7 +162,6 @@ std::set<const DagNode*> MultivariateBrownianPhyloProcess::getParameters( void )
     parameters.insert( tau );
     parameters.insert( sigma );
     
-    parameters.erase( NULL );
     return parameters;
 }
 
