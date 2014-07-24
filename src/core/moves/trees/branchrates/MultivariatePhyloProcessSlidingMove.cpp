@@ -61,7 +61,14 @@ double MultivariatePhyloProcessSlidingMove::performSimpleMove( void ) {
     }
         
     variable->addTouchedElementIndex(nodeindex);
-
+    const TimeTree* tau = variable->getValue().getTimeTree();
+    const TopologyNode& from = tau->getNode(nodeindex);
+    if (! from.isTip()) {
+        size_t numChildren = from.getNumberOfChildren();
+        for (size_t i = 0; i < numChildren; ++i) {
+            variable->addTouchedElementIndex(from.getChild(i).getIndex());
+        }
+    }
     double lnHastingsratio = 0;
     
     return lnHastingsratio;
@@ -80,8 +87,15 @@ void MultivariatePhyloProcessSlidingMove::rejectSimpleMove( void ) {
     
     MatrixReal& v = variable->getValue();
     v[nodeindex][compindex] = storedValue;
-    variable->clearTouchedElementIndices();
-    
+    variable->addTouchedElementIndex(nodeindex);
+    const TimeTree* tau = variable->getValue().getTimeTree();
+    const TopologyNode& from = tau->getNode(nodeindex);
+    if (! from.isTip()) {
+        size_t numChildren = from.getNumberOfChildren();
+        for (size_t i = 0; i < numChildren; ++i) {
+            variable->addTouchedElementIndex(from.getChild(i).getIndex());
+        }
+    }    
 }
 
 void MultivariatePhyloProcessSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
