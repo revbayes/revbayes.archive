@@ -1,5 +1,5 @@
 /* 
- * File:   Move_BrownianInverseWishartSliding.h
+ * File:   Move_ConjugateInverseWishartBrownian.h
  * Author: nl
  *
  * Created on 23 juillet 2014, 17:44
@@ -8,7 +8,7 @@
 #ifndef MOVE_BROWNIANINVERSEWISHARTSLIDING_H
 #define	MOVE_BROWNIANINVERSEWISHARTSLIDING_H
 
-#include "BrownianInverseWishartSlidingMove.h"
+#include "ConjugateInverseWishartBrownianMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -17,14 +17,14 @@
 
 namespace RevLanguage {
     
-    class Move_BrownianInverseWishartSliding : public Move {
+    class Move_ConjugateInverseWishartBrownian : public Move {
         
     public:
         
-        Move_BrownianInverseWishartSliding(void);                                                                                         //!< Default constructor
+        Move_ConjugateInverseWishartBrownian(void);                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual Move_BrownianInverseWishartSliding*               clone(void) const;                                                      //!< Clone object
+        virtual Move_ConjugateInverseWishartBrownian*               clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -41,8 +41,8 @@ namespace RevLanguage {
         RevPtr<const Variable>                      kappa;
         RevPtr<const Variable>                      df;
 
-        RevPtr<const Variable>                      lambda;
-        RevPtr<const Variable>                      tuning;
+//         RevPtr<const Variable>                      lambda;
+//         RevPtr<const Variable>                      tuning;
         
     };
     

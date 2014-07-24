@@ -60,10 +60,7 @@ double MultivariatePhyloProcessSlidingMove::performSimpleMove( void ) {
         v[nodeindex][compindex] += slidingFactor;
     }
         
-    // size_t nnode = v.getNumberOfColumns();
-    
     variable->addTouchedElementIndex(nodeindex);
-    // * nnode + compindex);
 
     double lnHastingsratio = 0;
     
