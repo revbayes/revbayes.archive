@@ -49,6 +49,7 @@ namespace RevBayesCore {
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< PrecisionMatrix >*                  sigma;
         
+        // double bklnProb;
     };
     
 }

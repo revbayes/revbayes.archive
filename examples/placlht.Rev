@@ -23,25 +23,23 @@ contDataArray <- readCharacterData("data/plac73lhtlog.nex")
 contData <- contDataArray[1]
 contData
 
-
 # covariance matrix (3x3)
-# of parameters kappa * I3 and 4 degrees of freedom
+# of parameters kappa * I3 and 5 degrees of freedom
 kappa ~ exponential(1.0)
-df <- 4
+df <- 5
 dim <- 3
 sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
 
-index <- 1
 
 # moves on kappa and precision matrix
+index <- 1
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
-#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
-#index <- index + 1
-#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
-#index <- index + 1
 
-rootval <- 0
+moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
+index <- index + 1
+moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
+index <- index + 1
 
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
@@ -52,25 +50,20 @@ index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
 
-moves[index] <- mvBrownianInverseWishartSliding(process=br,sigma=sigma, kappa=kappa, df=df, lambda=1.0,tune=true,weight=10) 
+# conjugate move
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=10) 
 index <- index + 1
 
 br.clampAt(contData,1,1)
 br.clampAt(contData,2,2)
 br.clampAt(contData,3,3)
 
-mean1 := br.mean(1)
-tipmean1 := br.tipMean(1)
-
-"model"
-
 mymodel <- model(kappa)
 
 monitors[1] <- screenmonitor(printgen=100, separator = "	", sigma, br)
-monitors[2] <- filemonitor(filename="brown4.prec",printgen=100, separator = "	", sigma, br)
-monitors[3] <- modelmonitor(filename="brown4.log",printgen=100, separator = "	")
+monitors[2] <- filemonitor(filename="brown.prec",printgen=100, separator = "	", sigma, br)
+monitors[3] <- modelmonitor(filename="brown.log",printgen=100, separator = "	")
  
-"mcmc"
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 mymcmc.run(10000000)

@@ -52,6 +52,9 @@ double MultivariateBrownianPhyloProcess::computeLnProbability(void) {
         lnProb = RbConstants::Double::neginf;
     }
 
+    // std::cerr << "brownian log prob  :" << lnProb - bklnProb << '\n';
+    // bklnProb = lnProb;
+    
     return lnProb;
 }
 

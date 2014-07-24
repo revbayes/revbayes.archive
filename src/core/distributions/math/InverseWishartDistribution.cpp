@@ -63,6 +63,7 @@ std::set<const DagNode*> InverseWishartDistribution::getParameters( void ) const
 {
     std::set<const DagNode*> parameters;
     
+    parameters.insert( sigma0 );
     parameters.insert( kappa );
     parameters.insert( dim );
     parameters.insert( df );
@@ -101,6 +102,8 @@ double InverseWishartDistribution::computeLnProbability(void)  {
         ret = RbStatistics::InverseWishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
     }
 
+//    std::cerr << "inv wish lnprob : " << ret - bklnProb << '\n';
+//    bklnProb = ret;
     return ret;
 }
 
