@@ -42,10 +42,12 @@ nBurn           <- 1000
 # tree
 ##########
 
+root_age            <- tree.height()
+
 # Birth-Death process priors
 diversification 	~ dnExponential(0.1)
 turnover 			~ dnExponential(0.1)
-org					<- tree.height()
+org					<- root_age
 
 # tree from birth-death process
 tau 				~ cBDP(origin=org, diversification, turnover, nTaxa=num_tips, names=names)
@@ -53,7 +55,7 @@ tau 				~ cBDP(origin=org, diversification, turnover, nTaxa=num_tips, names=name
 tau.setValue(tree)
 
 for (i in 1:num_branches) {
-    branch_rates[i] ~ dnExponential(1.0)
+    branch_rates[i] ~ dnGamma(2.0, 2.0*root_age)
 }
 
 
