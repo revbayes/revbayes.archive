@@ -20,7 +20,7 @@
     int*                          toolPaletteOffset;
 }
 
-@property (readwrite) int whichToolSelected;
+@property (nonatomic) int         whichToolSelected;
 
 - (void)initializeToolVector;
 - (void)scaleFactorChanged:(NSNotification*)notification;

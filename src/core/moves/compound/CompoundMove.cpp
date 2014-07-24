@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-CompoundMove::CompoundMove(std::vector<DagNode*> n, double w, bool t) : MoveOld( n, w, t ), theNodes( n ) {
+CompoundMove::CompoundMove(std::vector<DagNode*> n, double w, bool t) : MoveOld( n, w, t ) {
     
     changed = false;
 
@@ -51,7 +51,7 @@ double CompoundMove::performMove( double &probRatio ) {
     }
     
     std::set<DagNode* > affectedNodes;
-    for (std::vector<DagNode*>::iterator it = theNodes.begin(); it != theNodes.end(); it++)
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
         // touch each node
         (*it)->touch();
@@ -66,6 +66,15 @@ double CompoundMove::performMove( double &probRatio ) {
             // should contain unique nodes, since it is a set
             (*it)->getAffectedNodes(affectedNodes);
         }
+    }
+    
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+//        if ( nodes.find(oldN) == nodes.end() ) {
+//            throw RbException("Cannot replace DAG node in this move because the move doesn't hold this DAG node.");
+//        }
+        
+        affectedNodes.erase( *it );
     }
     
     if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
@@ -96,7 +105,7 @@ void CompoundMove::rejectMove( void ) {
     rejectCompoundMove();
     
     // touch the node
-    for (std::vector<DagNode*>::iterator it = theNodes.begin(); it != theNodes.end(); it++)
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
         (*it)->touch();
 }
 
@@ -105,10 +114,11 @@ void CompoundMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     MoveOld::swapNode(oldN, newN);
     
-    for (std::vector<DagNode*>::iterator it = theNodes.begin(); it != theNodes.end(); it++)
-    {
-        // MJL 070413: need to statically type newN before assignment when oldN's type is unknown... figure out later
-        if (*it == oldN)
-            *it = newN;
-    }
+    // Sebastian (2014-07-24): The base class should take care of this!
+//    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+//    {
+//        // MJL 070413: need to statically type newN before assignment when oldN's type is unknown... figure out later
+//        if (*it == oldN)
+//            *it = newN;
+//    }
 }

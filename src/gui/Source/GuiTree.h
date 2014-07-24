@@ -16,6 +16,7 @@
 
 @property (nonatomic)        BOOL       initializedDownPass;
 @property (nonatomic,strong) NSString*  info;
+@property (nonatomic,weak)   Node*      root;
 
 - (void)addTaxonToRandomBranch;
 - (void)buildRandomTreeWithSize:(int)n;
@@ -37,6 +38,5 @@
 - (void)setAllFlagsTo:(BOOL)tf;
 - (void)setXCoordinates;
 - (void)setNodesToArray:(NSMutableArray*)n;
-- (void)setRoot:(Node*)r;
 
 @end

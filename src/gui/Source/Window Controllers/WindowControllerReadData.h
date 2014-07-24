@@ -7,35 +7,35 @@ class CharacterData;
 
 @interface WindowControllerReadData : NSWindowController <NSTabViewDelegate> {
 
-    ToolReadData*                      myTool;
-	NSString*                          fileName;
-	NSString*                          pathName;
+    ToolReadData*                  myTool;
+	NSString*                      fileName;
+	NSString*                      pathName;
     
-	IBOutlet NSTabView*                matrixTypeTab;
-	IBOutlet NSButton*                 okButton;
-	IBOutlet NSPopUpButton*            dataTypeButton1;
-	IBOutlet NSPopUpButton*            dataFormatButton;
-	IBOutlet NSPopUpButton*            dataAlignmentButton;
-    IBOutlet NSPopUpButton*            fileFormatDeterminationMethod;
-	IBOutlet NSSegmentedControl*       interleavedFormatButton;
-    IBOutlet NSTextField*              dataFormatField;
-	IBOutlet NSTextField*              dataTypeField;
-	IBOutlet NSTextField*              dataAlignmentField;
-	IBOutlet NSTextField*              interleavedFormatField;
+	IBOutlet NSTabView*            matrixTypeTab;
+	IBOutlet NSButton*             okButton;
+	IBOutlet NSPopUpButton*        dataTypeButton1;
+	IBOutlet NSPopUpButton*        dataFormatButton;
+	IBOutlet NSPopUpButton*        dataAlignmentButton;
+    IBOutlet NSPopUpButton*        fileFormatDeterminationMethod;
+	IBOutlet NSSegmentedControl*   interleavedFormatButton;
+    IBOutlet NSTextField*          dataFormatField;
+	IBOutlet NSTextField*          dataTypeField;
+	IBOutlet NSTextField*          dataAlignmentField;
+	IBOutlet NSTextField*          interleavedFormatField;
 	
-	IBOutlet NSPopUpButton*            dataTypeButton2;
-	IBOutlet NSTextField*              numberOfTaxaField;
-	IBOutlet NSTextField*              numberOfCharactersField;
+	IBOutlet NSPopUpButton*        dataTypeButton2;
+	IBOutlet NSTextField*          numberOfTaxaField;
+	IBOutlet NSTextField*          numberOfCharactersField;
 		
-    int                                dataAlignment;
-    int                                dataFormat;
-	int                                dataType;
-	int                                dataTypeSimulated;
-	int                                dataInterleaved;
-	int                                numberOfTaxa;
-	int                                numberOfCharacters;
-    int                                numberOfStates;
-    BOOL                               isDataFormatAutomaticallyDetermined;
+    int                            dataAlignment;
+    int                            dataFormat;
+	int                            dataType;
+	int                            dataTypeSimulated;
+	int                            dataInterleaved;
+	int                            numberOfTaxa;
+	int                            numberOfCharacters;
+    int                            numberOfStates;
+    BOOL                           isDataFormatAutomaticallyDetermined;
 }
 
 @property (nonatomic)        int       dataAlignment;

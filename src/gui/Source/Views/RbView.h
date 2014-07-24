@@ -50,9 +50,9 @@ extern NSString* const ToolDataPboardType;
 
 }
 
-@property (readwrite) float scaleFactor;
-@property (readwrite) int scaleIdx;
-@property (readwrite) BOOL snapToGrid;
+@property (nonatomic) float       scaleFactor;
+@property (nonatomic) int         scaleIdx;
+@property (nonatomic) BOOL        snapToGrid;
 
 - (BOOL)acceptsFirstResponder;
 - (void)addTrackingForItem:(RbItem*)itm;

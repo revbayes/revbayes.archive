@@ -5,6 +5,9 @@
 
 @implementation ServerComm
 
+@synthesize nickname;
+@synthesize serverHostname;
+
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)app {
 
 	if (proxy)
@@ -349,25 +352,6 @@
         modelsToTransfer  = nil;
 		}
 	return self;
-}
-
-- (bycopy NSString*)nickname {
-
-	return nickname;
-}
-
-- (void)setNickname:(NSString*)s {
-
-	[s retain];
-	[nickname release];
-	nickname = s;
-}
-
-- (void)setServerHostname:(NSString*)s {
-
-	[s retain];
-	[serverHostname release];
-	serverHostname = s;
 }
 
 - (void)submitModelWithInfo:(NSArray*)modelInfo andData:data {

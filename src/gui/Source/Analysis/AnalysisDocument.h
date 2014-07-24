@@ -9,26 +9,26 @@
 
 @interface AnalysisDocument : NSDocument {
 
-    IBOutlet NSButton*                    helpButton;            // a pointer to the help button
-    IBOutlet NSButton*                    executeButton;
-	IBOutlet AnalysisView*                analysisViewPtr;       // a pointer to the view for the window
-	IBOutlet NSScrollView*                toolScrollView;        // a pointer to the scroll view containing the tools
-    IBOutlet NSPopUpButton*               analysisActionButton;
-	NSMutableArray*                       tools;                 // an array holding the pointers to the tools
-	IBOutlet NSArrayController*           analysesController;
-    AnalysisTools*                        selectedAnalysis;
-    NSMutableArray*                       analyses;
-	IBOutlet NSSplitView*                 splitView;
-	AnalysisSplitViewDelegate*            splitViewDelegate;
-	BOOL                                  snapToGrid;
-	BOOL                                  showGrid;
-	NSTimer*                              rbTimer;
-	BOOL                                  isRbTimerActive;
-    BOOL                                  goodAnalysis;
+    IBOutlet NSButton*                               helpButton;            // a pointer to the help button
+    IBOutlet NSButton*                               executeButton;
+	IBOutlet AnalysisView*                           analysisViewPtr;       // a pointer to the view for the window
+	IBOutlet NSScrollView*                           toolScrollView;        // a pointer to the scroll view containing the tools
+    IBOutlet NSPopUpButton*                          analysisActionButton;
+	NSMutableArray*                                  tools;                 // an array holding the pointers to the tools
+	IBOutlet NSArrayController*                      analysesController;
+    AnalysisTools*                                   selectedAnalysis;
+    NSMutableArray*                                  analyses;
+	IBOutlet NSSplitView*                            splitView;
+	AnalysisSplitViewDelegate*                       splitViewDelegate;
+	BOOL                                             snapToGrid;
+	BOOL                                             showGrid;
+	NSTimer*                                         rbTimer;
+	BOOL                                             isRbTimerActive;
+    BOOL                                             goodAnalysis;
 }
 
-@property (readonly)  AnalysisView* analysisViewPtr;
-@property (readwrite) BOOL          isRbTimerActive;
+@property (nonatomic,strong,readonly)  AnalysisView* analysisViewPtr;
+@property (nonatomic)                  BOOL          isRbTimerActive;
 
 - (IBAction)addAnalysis:(id)sender;
 - (void)analysisError:(Tool*)badTool;

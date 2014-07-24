@@ -26,19 +26,19 @@
     int                             sequenceLength;
 }
 
-@property (readwrite) double treeLength;
-@property (readwrite) double alpha;
-@property (readwrite) double rAC;
-@property (readwrite) double rAG;
-@property (readwrite) double rAT;
-@property (readwrite) double rCG;
-@property (readwrite) double rCT;
-@property (readwrite) double rGT;
-@property (readwrite) double piA;
-@property (readwrite) double piC;
-@property (readwrite) double piG;
-@property (readwrite) double piT;
-@property (readwrite) int    sequenceLength;
+@property (nonatomic) double        treeLength;
+@property (nonatomic) double        alpha;
+@property (nonatomic) double        rAC;
+@property (nonatomic) double        rAG;
+@property (nonatomic) double        rAT;
+@property (nonatomic) double        rCG;
+@property (nonatomic) double        rCT;
+@property (nonatomic) double        rGT;
+@property (nonatomic) double        piA;
+@property (nonatomic) double        piC;
+@property (nonatomic) double        piG;
+@property (nonatomic) double        piT;
+@property (nonatomic) int           sequenceLength;
 
 - (char)charState:(int)x;
 - (void)closeControlPanel;

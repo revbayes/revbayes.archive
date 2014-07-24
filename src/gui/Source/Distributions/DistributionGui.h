@@ -6,16 +6,16 @@
 
 @interface DistributionGui : NSObject <NSCoding> {
 
-	NSString*                distributionName;
-	NSString*                distributionDescription;
-	int                      distributionType;
-    int                      distributionDomain;
-    BOOL                     appliesExclusivelyToNodesOfUnrootedTrees;
-    BOOL                     appliesExclusivelyToBranchesOfUnrootedTrees;
-    BOOL                     appliesExclusivelyToNodesOfRootedTrees;
-    BOOL                     appliesExclusivelyToBranchsOfRootedTrees;
-	NSMutableArray*          parameters;
-	Parm*                    myParm;
+	NSString*                          distributionName;
+	NSString*                          distributionDescription;
+	int                                distributionType;
+    int                                distributionDomain;
+    BOOL                               appliesExclusivelyToNodesOfUnrootedTrees;
+    BOOL                               appliesExclusivelyToBranchesOfUnrootedTrees;
+    BOOL                               appliesExclusivelyToNodesOfRootedTrees;
+    BOOL                               appliesExclusivelyToBranchsOfRootedTrees;
+	NSMutableArray*                    parameters;
+	Parm*                              myParm;
 }
 
 @property (nonatomic,strong) NSString* distributionName;

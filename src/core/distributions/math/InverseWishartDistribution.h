@@ -51,6 +51,8 @@ namespace RevBayesCore {
         const TypedDagNode<int>*                            df;
         const TypedDagNode<int>*                            dim;
         
+        // double bklnProb;
+        
     };
     
 }
