@@ -20,16 +20,15 @@
 #include "InverseWishartDistribution.h"
 #include "TimeTree.h"
 
-#include "SimpleMove.h"
+#include "CompoundMove.h"
 
 namespace RevBayesCore {
     
     
-    class ConjugateInverseWishartBrownianMove : public SimpleMove {
+    class ConjugateInverseWishartBrownianMove : public CompoundMove {
         
     public:
         ConjugateInverseWishartBrownianMove(StochasticNode<PrecisionMatrix>* s, StochasticNode<MultivariatePhyloProcess>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                         //!< Constructor
-        ConjugateInverseWishartBrownianMove(ConjugateInverseWishartBrownianMove* from);
         
         // Basic utility functions
         ConjugateInverseWishartBrownianMove*         clone(void) const;                                                                  //!< Clone this object.
@@ -38,10 +37,10 @@ namespace RevBayesCore {
         
     protected:
         
-        double                                  performSimpleMove(void);                                                            //!< Perform move
+        double                                  performCompoundMove(void);                                                            //!< Perform move
         void                                    printParameterSummary(std::ostream &o) const;
-        void                                    rejectSimpleMove(void);
-        void                                    acceptSimpleMove(void);
+        void                                    rejectCompoundMove(void);
+        void                                    acceptCompoundMove(void);
         
     private:
         

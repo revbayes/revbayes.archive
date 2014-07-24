@@ -19,20 +19,17 @@
 
 using namespace RevBayesCore;
 
-ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<PrecisionMatrix>* s, StochasticNode<MultivariatePhyloProcess>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : SimpleMove(s,w,false)    {
+ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<PrecisionMatrix>* s, StochasticNode<MultivariatePhyloProcess>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
 
     process = p;
     sigma = s;
     kappa = k;
     df = d;
-}
-
-ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(ConjugateInverseWishartBrownianMove* from) : SimpleMove(from->sigma, from->weight, false) {
-
-    process = from->process;
-    sigma = from->sigma;
-    kappa = from->kappa;
-    df = from->df;    
+    
+    nodes.insert( process );
+    nodes.insert( sigma );
+    nodes.insert( kappa );
+    nodes.insert( df );
 }
 
 ConjugateInverseWishartBrownianMove* ConjugateInverseWishartBrownianMove::clone( void ) const {
@@ -48,7 +45,7 @@ const std::string& ConjugateInverseWishartBrownianMove::getMoveName( void ) cons
 }
 
 
-double ConjugateInverseWishartBrownianMove::performSimpleMove( void ) {
+double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
        
     // std::cerr << "perform move\n";
     // Get random number generator    
@@ -69,12 +66,10 @@ double ConjugateInverseWishartBrownianMove::performSimpleMove( void ) {
 
     // calculate old posterior for sigma based on current process
     double logs1 = RbStatistics::InverseWishart::lnPdf(A,nnode + df->getValue(),sigma->getValue());
-        
-    sigma->getValue().touch();
 
     // resample sigma based on new sufficient statistics
-    sigma->getValue() = RbStatistics::InverseWishart::rv(A,nnode + df->getValue(),*rng);
-
+    sigma->setValue( RbStatistics::InverseWishart::rv(A,nnode + df->getValue(),*rng) );
+    
     sigma->getValue().update();
 
     // calculate posterior for sigma based on current process
@@ -87,7 +82,7 @@ double ConjugateInverseWishartBrownianMove::performSimpleMove( void ) {
 
 }
 
-void ConjugateInverseWishartBrownianMove::acceptSimpleMove()   {
+void ConjugateInverseWishartBrownianMove::acceptCompoundMove()   {
 //    std::cerr << "move accepted\n";
 }
 
@@ -96,10 +91,10 @@ void ConjugateInverseWishartBrownianMove::printParameterSummary(std::ostream &o)
 }
 
 
-void ConjugateInverseWishartBrownianMove::rejectSimpleMove( void ) {
+void ConjugateInverseWishartBrownianMove::rejectCompoundMove( void ) {
 
     std::cerr << "move rejected??\n";
-    exit(1);
+//    exit(1);
     sigma->getValue() = bksigma;
     sigma->getValue().touch();
     sigma->getValue().update();
@@ -108,7 +103,7 @@ void ConjugateInverseWishartBrownianMove::rejectSimpleMove( void ) {
 void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
-    SimpleMove::swapNode(oldN, newN);
+    CompoundMove::swapNode(oldN, newN);
     if (oldN == sigma)
         sigma = static_cast<StochasticNode<PrecisionMatrix>*> (newN);
     if (oldN == process)

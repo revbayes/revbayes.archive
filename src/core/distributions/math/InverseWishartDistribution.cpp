@@ -112,10 +112,10 @@ void InverseWishartDistribution::redrawValue(void)  {
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     if (sigma0) {
-        getValue() = RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng);
+        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng) );
     }
     else    {
-        getValue() = RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);        
+        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng) );
     }
 
     /*
