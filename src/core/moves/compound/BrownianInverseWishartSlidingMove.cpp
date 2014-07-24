@@ -67,22 +67,11 @@ double BrownianInverseWishartSlidingMove::performCompoundMove( void ) {
 
     // calculate old posterior for sigma based on current process
     double logs1 = RbStatistics::InverseWishart::lnPdf(A,nnode + df->getValue(),sigma->getValue());
+    
     MatrixReal& v = process->getValue();
 
-    if (rng->uniform01() > 0.5) {
+    if (lambda > 0) {
 
-        // const TypedDagNode< TimeTree >* tau = variable->getValue().getTree();
-        const TimeTree* tau = process->getValue().getTimeTree();
-
-        // choose an index
-        size_t component = size_t(rng->uniform01() * v.getNumberOfColumns());
-
-        double u = rng->uniform01();
-        double slidingFactor = lambda * 0.2 * (u - 0.5);
-        recursiveTranslate(tau->getRoot(), component, slidingFactor);
-       
-    }
-    else    {
         // move process
         size_t component = size_t(rng->uniform01() * v.getNumberOfColumns());
         size_t node = size_t(rng->uniform01() * v.getNumberOfRows());
@@ -144,7 +133,8 @@ void BrownianInverseWishartSlidingMove::printParameterSummary(std::ostream &o) c
 
 
 void BrownianInverseWishartSlidingMove::rejectCompoundMove( void ) {
-    	
+
+    // std::cerr << "reject\n";
     process->getValue() = bkprocess;
     sigma->getValue().touch();
     sigma->getValue() = bksigma;

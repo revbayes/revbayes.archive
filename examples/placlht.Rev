@@ -36,10 +36,10 @@ index <- 1
 # moves on kappa and precision matrix
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=10.0)
-index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=10.0)
-index <- index + 1
+#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
+#index <- index + 1
+#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
+#index <- index + 1
 
 rootval <- 0
 
@@ -52,7 +52,7 @@ index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
 
-moves[index] <- mvBrownianInverseWishartSliding(process=br,sigma=sigma, kappa=kappa, df=df, lambda=1,tune=true,weight=100) 
+moves[index] <- mvBrownianInverseWishartSliding(process=br,sigma=sigma, kappa=kappa, df=df, lambda=1.0,tune=true,weight=10) 
 index <- index + 1
 
 br.clampAt(contData,1,1)
@@ -67,8 +67,8 @@ tipmean1 := br.tipMean(1)
 mymodel <- model(kappa)
 
 monitors[1] <- screenmonitor(printgen=100, separator = "	", sigma, br)
-monitors[2] <- filemonitor(filename="brown.prec",printgen=100, separator = "	", sigma, br)
-monitors[3] <- modelmonitor(filename="brown.log",printgen=100, separator = "	")
+monitors[2] <- filemonitor(filename="brown4.prec",printgen=100, separator = "	", sigma, br)
+monitors[3] <- modelmonitor(filename="brown4.log",printgen=100, separator = "	")
  
 "mcmc"
 mymcmc <- mcmc(mymodel, monitors, moves)
