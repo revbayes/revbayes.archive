@@ -134,7 +134,11 @@ for (i in 1:num_branches)
   moves[mvi++] <- mvScale(branch_rates[i],lambda=1.0,tune=true,weight=1.0) 
 
 # DEC moves
-for (i in 1:2) moves[mvi++] <- mvScale(x=glr[i], lambda=1.0, tune=false, weight=2.0)
+for (i in 1:2)
+{
+	moves[mvi++] <- mvScale(x=glr[i], lambda=0.1, tune=false, weight=2.0)
+	moves[mvi++] <- mvScale(x=glr[i], lambda=0.5, tune=false, weight=1.0)
+}
 moves[mvi++] <- mvScale(x=dp, lambda=1.0, tune=false, weight=2.0)
 
 # ITS moves
