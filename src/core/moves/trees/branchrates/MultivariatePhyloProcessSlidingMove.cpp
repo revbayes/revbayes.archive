@@ -20,7 +20,7 @@
 using namespace RevBayesCore;
 
 
-MultivariatePhyloProcessSlidingMove::MultivariatePhyloProcessSlidingMove(StochasticNode<MultivariatePhyloProcess> *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+MultivariatePhyloProcessSlidingMove::MultivariatePhyloProcessSlidingMove(StochasticNode<MultivariatePhyloProcess> *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
     
 }
 
@@ -42,21 +42,29 @@ const std::string& MultivariatePhyloProcessSlidingMove::getMoveName( void ) cons
 
 double MultivariatePhyloProcessSlidingMove::performSimpleMove( void ) {
         
-    storedValue = variable->getValue();
+    // storedValue = variable->getValue();
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     MatrixReal& v = variable->getValue();
-    size_t component = size_t( rng->uniform01() * v.getNumberOfColumns() );
-    size_t node = size_t( rng->uniform01() * v.getNumberOfRows() );
+    compindex = size_t( rng->uniform01() * v.getNumberOfColumns() );
+    nodeindex = size_t( rng->uniform01() * v.getNumberOfRows() );
+    
+    storedValue = v[nodeindex][compindex];
     
     double u = rng->uniform01();
     double slidingFactor = lambda * ( u - 0.5 );
 
-    if (! variable->getValue().isClamped(node,component))   {
-        v[node][component] += slidingFactor;
+    if (! variable->getValue().isClamped(nodeindex,compindex))   {
+        v[nodeindex][compindex] += slidingFactor;
     }
+        
+    // size_t nnode = v.getNumberOfColumns();
+    
+    variable->addTouchedElementIndex(nodeindex);
+    // * nnode + compindex);
+
     double lnHastingsratio = 0;
     
     return lnHastingsratio;
@@ -73,7 +81,8 @@ void MultivariatePhyloProcessSlidingMove::printParameterSummary(std::ostream &o)
 
 void MultivariatePhyloProcessSlidingMove::rejectSimpleMove( void ) {
     
-    variable->getValue() = storedValue;
+    MatrixReal& v = variable->getValue();
+    v[nodeindex][compindex] = storedValue;
     variable->clearTouchedElementIndices();
     
 }
