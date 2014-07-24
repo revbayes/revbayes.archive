@@ -101,7 +101,7 @@ void PrecisionMatrix::drawNormalSamplePrecision(std::vector<double>& v)  const {
     // draw the normal variate in eigen basis
     std::vector<double> w(getDim());
     for (size_t i=0; i<getDim(); i++)  {
-        w[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(eigen[i]), *rng);
+       w[i] = RbStatistics::Normal::rv(0, 1.0 / sqrt(eigen[i]), *rng);
     }
     
     // get the eigenvector

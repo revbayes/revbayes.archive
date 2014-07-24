@@ -7,7 +7,6 @@
 	NSString*        taxonName;
 }
 
-- (NSString*)taxonName;
-- (void)setTaxonName:(NSString*)aName;
+@property (nonatomic,strong) NSString* taxonName;
 
 @end

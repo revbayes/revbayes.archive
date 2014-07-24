@@ -6,14 +6,14 @@
 
 @interface WindowControllerCombiner : NSWindowController {
 
-    IBOutlet NSPopUpButton*       numberOfInletsPopUpButton;
-	IBOutlet NSButton*            okButton;
-	IBOutlet NSButton*            cancelButton;
-	int                           numberOfInlets;
-    ToolCombiner*                 myTool;
+    IBOutlet NSPopUpButton*  numberOfInletsPopUpButton;
+	IBOutlet NSButton*       okButton;
+	IBOutlet NSButton*       cancelButton;
+	int                      numberOfInlets;
+    ToolCombiner*            myTool;
 }
 
-@property (readwrite) int numberOfInlets;
+@property (nonatomic) int    numberOfInlets;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (id)initWithTool:(ToolCombiner*)t;
