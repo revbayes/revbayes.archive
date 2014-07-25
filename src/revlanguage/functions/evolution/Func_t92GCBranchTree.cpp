@@ -8,9 +8,10 @@
 #include "T92GCBranchTree.h"
 #include "Func_t92GCBranchTree.h"
 
-#include "ModelVector.h"
+#include "ModelVectorAbstractElement.h"
 #include "Probability.h"
 #include "RealPos.h"
+#include "RbVector.h"
 #include "RlTimeTree.h"
 #include "RlRateMatrix.h"
 
@@ -94,16 +95,13 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
 
     RevBayesCore::T92GCBranchTree* result = new RevBayesCore::T92GCBranchTree( tau, gcprocess, rootgc, kappa );
 
-    /*
-    DeterministicNode<std::vector<RevBayesCore::RateMatrix_HKY> >* dag = new DeterministicNode<std::vector<RevBayesCore::RateMatrix_HKY> >("", result, this->clone());
-
-    DeterministicNode<std::vector<RevBayesCore::RateMatrix> >* dag2 = 0;
+    DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
     
-    ModelVector<RateMatrix>* wrappedresult = new ModelVector<RateMatrix>(dag2);
+//    ModelVectorAbstractElement<RateMatrix>* wrappedresult = new ModelVectorAbstractElement<RateMatrix>( dag );
+//    
+//    return new Variable( wrappedresult );
     
-    return new Variable( wrappedresult );
-    */
-    
+    return NULL;
 }
 
 

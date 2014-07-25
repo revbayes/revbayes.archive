@@ -7,6 +7,7 @@
 //
 
 #include "ExponentialBranchTree.h"
+#include "DeterministicNode.h"
 
 
 using namespace RevBayesCore;
@@ -116,7 +117,7 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
     }
 }
 
-/*
+
 void ExponentialBranchTree::corruptAll() {
     recursiveCorruptAll(tau->getValue().getRoot());
 }
@@ -176,5 +177,5 @@ void ExponentialBranchTree::restore(DagNode *restorer)    {
     dagNode->clearTouchedElementIndices();    
 }
 
-*/
+
 
