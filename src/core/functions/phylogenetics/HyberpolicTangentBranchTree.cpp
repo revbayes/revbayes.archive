@@ -1,19 +1,18 @@
-//
-//  ExponentialBranchTree.cpp
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-24.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
+/* 
+ * File:   HyberpolicTangentBranchTree.cpp
+ * Author: nl
+ * 
+ * Created on 25 juillet 2014, 19:52
+ */
 
-#include "ExponentialBranchTree.h"
+#include "HyberpolicTangentBranchTree.h"
 
 
 using namespace RevBayesCore;
 
 
 // constructor(s)
-ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
+HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
 
     TypedFunction< std::vector< double > >( new std::vector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
     tau(t), process(p), offset(o), traitindex(i) {
@@ -29,7 +28,7 @@ ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, 
     update();
 }
 
-ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n):
+HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const HyperbolicTangentBranchTree &n):
 
     TypedFunction< std::vector< double > >( n ), 
         tau(n.tau), process( n.process ), offset( n.offset ), traitindex( n.traitindex) {
@@ -37,12 +36,12 @@ ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n):
 }
 
 
-ExponentialBranchTree* ExponentialBranchTree::clone(void) const {
-    return new ExponentialBranchTree( *this );
+HyperbolicTangentBranchTree* HyperbolicTangentBranchTree::clone(void) const {
+    return new HyperbolicTangentBranchTree( *this );
 }
 
 
-void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void HyperbolicTangentBranchTree::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
@@ -61,18 +60,18 @@ void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const Dag
     }
 }
 
-void ExponentialBranchTree::update(void)    {
+void HyperbolicTangentBranchTree::update(void)    {
     
     // get the root
     const TopologyNode& root = process->getValue().getTimeTree()->getRoot();
     recursiveUpdate(root);
 }
 
-int ExponentialBranchTree::getTraitIndex()  {
+int HyperbolicTangentBranchTree::getTraitIndex()  {
     return traitindex->getValue() - 1;
 }
 
-void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)    {
+void HyperbolicTangentBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)    {
 
     size_t index = from.getIndex();
 
@@ -83,9 +82,9 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
 
         if (getTraitIndex() >= 0)    {
             
-            double x1 = process->getValue()[index][getTraitIndex()] + offset->getValue();
-            double x2 = process->getValue()[upindex][getTraitIndex()] + offset->getValue();
-            double y = 0.5 * (exp(x1) + exp(x2));
+            double x1 = exp(process->getValue()[index][getTraitIndex()] + offset->getValue());
+            double x2 = exp(process->getValue()[upindex][getTraitIndex()] + offset->getValue());
+            double y = 0.5 * (x1 + x2);
         
             // we store this val here
             (*value)[index] = y;
@@ -117,11 +116,11 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
 }
 
 /*
-void ExponentialBranchTree::corruptAll() {
+void HyperbolicTangentBranchTree::corruptAll() {
     recursiveCorruptAll(tau->getValue().getRoot());
 }
 
-void ExponentialBranchTree::recursiveCorruptAll(const TopologyNode& from)    {
+void HyperbolicTangentBranchTree::recursiveCorruptAll(const TopologyNode& from)    {
     
     dagNode->addTouchedElementIndex(from.getIndex());
     for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
@@ -129,7 +128,7 @@ void ExponentialBranchTree::recursiveCorruptAll(const TopologyNode& from)    {
     }    
 }
 
-void ExponentialBranchTree::flagNodes() {
+void HyperbolicTangentBranchTree::flagNodes() {
 
     // the value at some of the nodes has changed
     // flag them as well as their immediate children
@@ -147,7 +146,7 @@ void ExponentialBranchTree::flagNodes() {
     }
 }
 
-void ExponentialBranchTree::touch(DagNode *toucher)    {
+void HyperbolicTangentBranchTree::touch(DagNode *toucher)    {
 
     if (toucher == process) {
         flagNodes();
@@ -162,7 +161,7 @@ void ExponentialBranchTree::touch(DagNode *toucher)    {
 }
 
 
-void ExponentialBranchTree::restore(DagNode *restorer)    {
+void HyperbolicTangentBranchTree::restore(DagNode *restorer)    {
 
     if (restorer == process) {
         flagNodes();

@@ -22,10 +22,10 @@ tau.clamp(fixedTree)
 index <- 1
 
 # moves on the tree: only relative dates
-moves[index] <- mSubtreeScale(tau, weight=5.0)
-index <- index + 1
-moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
-index <- index + 1
+#moves[index] <- mSubtreeScale(tau, weight=5.0)
+#index <- index + 1
+#moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+#index <- index + 1
 
 contDataArray <- readCharacterData("data/plac73lhtlog.nex")
 contData <- contDataArray[1]
@@ -41,27 +41,23 @@ sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
 # moves on kappa and precision matrix
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
-index <- index + 1
-moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
-index <- index + 1
 
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
-
-br 
 
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
-moves[index] <- mvBrownianInverseWishartSliding(process=br,sigma=sigma, kappa=kappa, df=df, lambda=0.1,tune=true,weight=10) 
+
+# conjugate move
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
 index <- index + 1
 
-br.clampAt(contData,1,1)
-br.clampAt(contData,2,2)
-br.clampAt(contData,3,3)
+br.clampAt(contData,2,1)
+br.clampAt(contData,3,2)
+br.clampAt(contData,4,3)
 
 # substition models
 # constant hypernodes
@@ -84,8 +80,7 @@ Q := gtr(er,pi)
 "exp rates"
 # rate variation along the tree
 rootval <- 0
-#rate := expbranchtree(tree=tau,process=br,offset=rootval,4)
-rate ~ exponential(1.0)
+rate := expbranchtree(tree=tau,process=br,offset=rootval,1)
 
 "subs"
 # the sequence evolution models
@@ -98,8 +93,8 @@ seq.clamp(data)
 mymodel <- model(kappa)
 
 monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
-monitors[2] <- filemonitor(filename="placcoevol1.prec",printgen=10, separator = "	", sigma, br)
-monitors[3] <- modelmonitor(filename="placcoevol1.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="placcoevol2.prec",printgen=10, separator = "	", sigma, br)
+monitors[3] <- modelmonitor(filename="placcoevol2.log",printgen=10, separator = "	")
  
 "mcmc"
 mymcmc <- mcmc(mymodel, monitors, moves)
