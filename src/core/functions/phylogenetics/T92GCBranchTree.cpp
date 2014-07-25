@@ -14,7 +14,7 @@ using namespace RevBayesCore;
 // constructor(s)
 T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector<double> > *g, const TypedDagNode< double>* r, const TypedDagNode<double>* k): 
 
-    TypedFunction< std::vector<RateMatrix_HKY> >( new std::vector< RateMatrix_HKY >(t->getValue().getNumberOfNodes()) ),
+    TypedFunction< RbVector<RateMatrix> >( new RbVector< RateMatrix >(t->getValue().getNumberOfNodes()) ),
     tau(t), gctree(g), rootgc(r), kappa(k) {
     
     this->addParameter( tau );
@@ -26,7 +26,7 @@ T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedD
 
 T92GCBranchTree::T92GCBranchTree(const T92GCBranchTree &n):
 
-    TypedFunction< std::vector< RateMatrix_HKY > >( n ), 
+    TypedFunction< RbVector< RateMatrix > >( n ),
         tau(n.tau), gctree( n.gctree ), rootgc( n.rootgc ), kappa( n.kappa) {
     
 }
@@ -73,7 +73,7 @@ void T92GCBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)   
         gc = gctree->getValue()[index];
     }
 
-    RateMatrix_HKY& matrix = (*value)[index];
+    RateMatrix_HKY& matrix = static_cast<RateMatrix_HKY&>( (*value)[index] );
     std::vector<double> v(4);
     v[0] = v[3] = 0.5 * (1 - gc);
     v[1] = v[2] = 0.5 * gc;
