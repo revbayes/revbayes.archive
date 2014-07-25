@@ -1,13 +1,12 @@
-//
-//  ExponentialBranchTree.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-24.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
+/* 
+ * File:   HyberpolicTangentBranchTree.h
+ * Author: nl
+ *
+ * Created on 25 juillet 2014, 19:52
+ */
 
-#ifndef __revbayes__ExponentialBranchTree__
-#define __revbayes__ExponentialBranchTree__
+#ifndef HYBERPOLICTANGENTBRANCHTREE_H
+#define	HYBERPOLICTANGENTBRANCHTREE_H
 
 #include <iostream>
 
@@ -22,15 +21,15 @@
 
 namespace RevBayesCore {
     
-    class ExponentialBranchTree : public TypedFunction< std::vector<double> > {
+    class HyperbolicTangentBranchTree : public TypedFunction< std::vector<double> > {
         
     public:
-        ExponentialBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
-        ExponentialBranchTree(const ExponentialBranchTree &n);                                                                              //!< Copy constructor
-        virtual                                            ~ExponentialBranchTree(void) {}                                                         //!< Virtual destructor
+        HyperbolicTangentBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
+        HyperbolicTangentBranchTree(const HyperbolicTangentBranchTree &n);                                                                              //!< Copy constructor
+        virtual                                            ~HyperbolicTangentBranchTree(void) {}                                                         //!< Virtual destructor
         
         // public member functions
-        ExponentialBranchTree*         clone(void) const;                                                                        //!< Create an independent clone
+        HyperbolicTangentBranchTree*         clone(void) const;                                                                        //!< Create an independent clone
         void                                                update(void);
         
         int                                                 getTraitIndex();
@@ -62,4 +61,5 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__revbayes__ExponentialBranchTree__) */
+#endif	/* HYBERPOLICTANGENTBRANCHTREE_H */
+

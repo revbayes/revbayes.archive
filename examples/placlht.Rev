@@ -36,11 +36,6 @@ index <- 1
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
-#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=1.0, tune=false, weight=1)
-#index <- index + 1
-#moves[index] <- mvPrecisionMatrixSimple(sigma, lambda=0.1, tune=false, weight=1)
-#index <- index + 1
-
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
 
