@@ -39,10 +39,19 @@ namespace RevBayesCore {
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Implementation of swaping parameters
         
         void                                                recursiveUpdate(const TopologyNode& n);
-        
- //        void                                                touch(DagNode* toucher);
 
+        /*
+        void                                                touch(DagNode *toucher);
+        void                                                restore(DagNode *restorer);
+        */
+        
     private:
+
+        /*
+        void                                                flagNodes();
+        void                                                corruptAll();
+        void                                                recursiveCorruptAll(const TopologyNode& n);
+        */
         
         // members
         const TypedDagNode< TimeTree >*                     tau;

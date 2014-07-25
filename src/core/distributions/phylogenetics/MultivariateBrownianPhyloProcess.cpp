@@ -120,21 +120,6 @@ void MultivariateBrownianPhyloProcess::redrawValue(void) {
     corruptAll();
 }
 
-void MultivariateBrownianPhyloProcess::corruptAll() {
-    recursiveCorruptNodes(tau->getValue().getRoot());
-}
-
-void MultivariateBrownianPhyloProcess::recursiveCorruptNodes(const TopologyNode& from)    {
-    
-    dirtyNodes[from.getIndex()] = true;
-    // propagate forward
-    size_t numChildren = from.getNumberOfChildren();
-    
-    for (size_t i = 0; i < numChildren; ++i) {
-        recursiveCorruptNodes(from.getChild(i));
-    }    
-}
-
 void MultivariateBrownianPhyloProcess::simulate() {
     
     recursiveSimulate(tau->getValue().getRoot());
@@ -202,108 +187,73 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     }
 }
 
+void MultivariateBrownianPhyloProcess::corruptAll() {
+    recursiveCorruptAll(tau->getValue().getRoot());
+}
 
-void MultivariateBrownianPhyloProcess::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
-    if ( affecter == sigma )    {
-        //this->dagNode->getAffectedNodes( affected );
-        corruptAll();
-    }
-    else if (affecter == tau)   {
-        std::cerr << "affected by tree\n";
-        this->dagNode->getAffectedNodes( affected );
-        exit(1);
-    }
-    else    {
-        std::cerr << "affected by sth else\n";
-        exit(1);
+void MultivariateBrownianPhyloProcess::recursiveCorruptAll(const TopologyNode& from)    {
+    
+    dirtyNodes[from.getIndex()] = true;
+    for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
+        recursiveCorruptAll(from.getChild(i));
+    }    
+}
+
+void MultivariateBrownianPhyloProcess::flagNodes() {
+
+    // the value at some of the nodes has changed
+    // flag them as well as their immediate children
+    // only those nodes will recompute their probability
+
+    const std::set<size_t> &indices = dagNode->getTouchedElementIndices();
+
+    // flag recomputation only for the nodes
+    for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
+        dirtyNodes[*it] = true;
+        const TimeTree& tau = getTimeTree()->getValue();
+        const TopologyNode& from = tau.getNode(*it);
+        for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
+            dirtyNodes[from.getChild(i).getIndex()] = true;
+        }
     }
 }
 
 void MultivariateBrownianPhyloProcess::touchSpecialization( DagNode *toucher ) {
     
-    std::cerr << "touch\n";
-    // if the root rate has changed, then we need to change the corresponding value in our vector and downpass the touch
     if ( toucher == sigma ) {
-
-        std::cerr << "sigma\n";
+        // should recompute the probability of all nodes
         corruptAll();
-        // delegate a touch to our children
-        this->dagNode->touchAffected();
     }
     else if (toucher == tau)    {
-        
-        std::cerr << "tau\n";
+        // if only branch lengths have changed, something could be done here
+        // but for the moment, recompute the probability of all nodes
+        corruptAll();        
     } 
     else {
-        
-        std::cerr << "sth else\n";
-        
-        if (toucher == this)    {
-            std::cerr << "this\n";
-        }
-        const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
-        
-        // maybe all of them have been touched or the flags haven't been set properly
-        if ( indices.size() == 0 ) 
-        {
-            // just delegate the call
-            // ???
-        } 
-        else 
-        {
-            // flag recomputation only for the nodes
-            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
-            {
-                dirtyNodes[*it] = true;
-            } 
-        }
+        // the value at some of the nodes has changed
+        // flag them as well as their immediate children
+        flagNodes();
     }
+    dagNode->clearTouchedElementIndices();    
 }
 
 
 void MultivariateBrownianPhyloProcess::keepSpecialization( DagNode* affecter ) {
-    // only do this when the toucher was the root rate
-    /*
-    if ( affecter == sigma ) {
-        
-        corruptAll();
-        this->dagNode->keepAffected();
-    }
-    else {
-//        std::cerr << "keep spec by sth else\n";
-//        exit(1);
-    }
-    */
 }
 
 
 void MultivariateBrownianPhyloProcess::restoreSpecialization( DagNode *restorer ) {
-    // only do this when the toucher was our parameters
     if ( restorer == sigma ) {
-        
         corruptAll();
-        // delegate a restore to our children
-        // this->dagNode->restoreAffected();
     }
+    else if (restorer == tau)    {
+        // if only branch lengths have changed, something could be done here
+        // but leave it for the moment
+        corruptAll();        
+    } 
     else {
-//        std::cerr << "restore spec by sth else\n";
-//        exit(1);
-        const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
-        
-        // maybe all of them have been touched or the flags haven't been set properly
-        if ( indices.size() == 0 ) 
-        {
-            // just delegate the call
-            // ???
-        } 
-        else 
-        {
-            // flag recomputation only for the nodes
-            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) 
-            {
-                dirtyNodes[*it] = true;
-            } 
-        }
+        flagNodes();
     }
+    dagNode->clearTouchedElementIndices();    
 }
 
