@@ -67,6 +67,8 @@ double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
     // calculate old posterior for sigma based on current process
     double logs1 = RbStatistics::InverseWishart::lnPdf(A,nnode + df->getValue(),sigma->getValue());
 
+    sigma->getValue().touch();
+
     // resample sigma based on new sufficient statistics
     sigma->setValue( RbStatistics::InverseWishart::rv(A,nnode + df->getValue(),*rng) );
     
@@ -74,8 +76,7 @@ double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
 
     // calculate posterior for sigma based on current process
     double logs2 = RbStatistics::InverseWishart::lnPdf(A,nnode + df->getValue(),sigma->getValue());
-
-//    std::cerr << logs1 - logs2 << '\n';
+    
     // log hastings ratio
     // should cancel out the ratio of probabilities of the finak and initial configuration
     return logs1 - logs2;
@@ -83,7 +84,6 @@ double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
 }
 
 void ConjugateInverseWishartBrownianMove::acceptCompoundMove()   {
-//    std::cerr << "move accepted\n";
 }
 
 void ConjugateInverseWishartBrownianMove::printParameterSummary(std::ostream &o) const {
@@ -93,8 +93,8 @@ void ConjugateInverseWishartBrownianMove::printParameterSummary(std::ostream &o)
 
 void ConjugateInverseWishartBrownianMove::rejectCompoundMove( void ) {
 
-    std::cerr << "move rejected??\n";
-//    exit(1);
+    std::cerr << "in ConjugateInverseWishartBrownianMove: move should not be rejected??\n";
+    exit(1);
     sigma->getValue() = bksigma;
     sigma->getValue().touch();
     sigma->getValue().update();
@@ -109,8 +109,8 @@ void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN)
     if (oldN == process)
         process = static_cast<StochasticNode<MultivariatePhyloProcess>*> (newN);
     if (oldN == kappa)
-        kappa = static_cast<StochasticNode<double>*> (newN);
+        kappa = static_cast<TypedDagNode<double>*> (newN);
     if (oldN == df)
-        df = static_cast<StochasticNode<int>*> (newN);    
+        df = static_cast<TypedDagNode<int>*> (newN);    
 }
 
