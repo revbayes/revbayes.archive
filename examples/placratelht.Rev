@@ -93,8 +93,8 @@ seq.clamp(data)
 mymodel <- model(kappa)
 
 monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
-monitors[2] <- filemonitor(filename="placcoevol2.prec",printgen=10, separator = "	", sigma, br)
-monitors[3] <- modelmonitor(filename="placcoevol2.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="placcoevol.prec",printgen=10, separator = "	", sigma, br)
+monitors[3] <- modelmonitor(filename="placcoevol.log",printgen=10, separator = "	")
  
 "mcmc"
 mymcmc <- mcmc(mymodel, monitors, moves)

@@ -241,6 +241,7 @@
 #include "Func_clade.h"
 #include "Func_expBranchTree.h"
 #include "Func_tanhBranchTree.h"
+#include "Func_t92GCBranchTree.h"
 #include "Func_phyloRateMultiplier.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
@@ -768,14 +769,15 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "clade",                       new Func_clade()                    );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
         addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
+        addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
         
         // nonstandard names (for backward compatibility)
-        addFunction( "expbranchtree",               new Func_expBranchTree()            );
         addFunction( "rateMultiplierPhyloFunction", new Func_phyloRateMultiplier()      );
+        addFunction( "expbranchtree",               new Func_expBranchTree()            );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "blosum62", new Func_blosum62());
