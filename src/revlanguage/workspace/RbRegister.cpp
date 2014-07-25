@@ -240,6 +240,7 @@
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_clade.h"
 #include "Func_expBranchTree.h"
+#include "Func_tanhBranchTree.h"
 #include "Func_phyloRateMultiplier.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
@@ -253,6 +254,7 @@
 #include "Func_f81.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_t92.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_mtRev.h"
@@ -765,6 +767,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "clade",                       new Func_clade()                    );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
+        addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
@@ -781,6 +784,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "f81",      new Func_f81()     );
         addFunction( "gtr",      new Func_gtr()     );
         addFunction( "hky",      new Func_hky()     );
+        addFunction( "t92",      new Func_t92()     );
         addFunction( "jc",       new Func_jc()      );
         addFunction( "jones",    new Func_jones()   );
         addFunction( "mtMam",    new Func_mtMam()   );
