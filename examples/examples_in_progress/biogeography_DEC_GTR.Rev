@@ -42,10 +42,12 @@ nBurn           <- 1000
 # tree
 ##########
 
+root_age            <- tree.height()
+
 # Birth-Death process priors
 diversification 	~ dnExponential(0.1)
 turnover 			~ dnExponential(0.1)
-org					<- tree.height()
+org					<- root_age
 
 # tree from birth-death process
 tau 				~ cBDP(origin=org, diversification, turnover, nTaxa=num_tips, names=names)
@@ -53,7 +55,7 @@ tau 				~ cBDP(origin=org, diversification, turnover, nTaxa=num_tips, names=name
 tau.setValue(tree)
 
 for (i in 1:num_branches) {
-    branch_rates[i] ~ dnExponential(1.0)
+    branch_rates[i] ~ dnGamma(2.0, 2.0*root_age)
 }
 
 
@@ -134,7 +136,11 @@ for (i in 1:num_branches)
   moves[mvi++] <- mvScale(branch_rates[i],lambda=1.0,tune=true,weight=1.0) 
 
 # DEC moves
-for (i in 1:2) moves[mvi++] <- mvScale(x=glr[i], lambda=1.0, tune=false, weight=2.0)
+for (i in 1:2)
+{
+	moves[mvi++] <- mvScale(x=glr[i], lambda=0.1, tune=false, weight=2.0)
+	moves[mvi++] <- mvScale(x=glr[i], lambda=0.5, tune=false, weight=1.0)
+}
 moves[mvi++] <- mvScale(x=dp, lambda=1.0, tune=false, weight=2.0)
 
 # ITS moves
