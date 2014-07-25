@@ -208,6 +208,11 @@ void MultivariateBrownianPhyloProcess::getAffected(std::set<DagNode *> &affected
         //this->dagNode->getAffectedNodes( affected );
         corruptAll();
     }
+    else if (affecter == tau)   {
+        std::cerr << "affected by tree\n";
+        this->dagNode->getAffectedNodes( affected );
+        exit(1);
+    }
     else    {
         std::cerr << "affected by sth else\n";
         exit(1);
@@ -215,15 +220,27 @@ void MultivariateBrownianPhyloProcess::getAffected(std::set<DagNode *> &affected
 }
 
 void MultivariateBrownianPhyloProcess::touchSpecialization( DagNode *toucher ) {
+    
+    std::cerr << "touch\n";
     // if the root rate has changed, then we need to change the corresponding value in our vector and downpass the touch
     if ( toucher == sigma ) {
-        
+
+        std::cerr << "sigma\n";
         corruptAll();
         // delegate a touch to our children
         this->dagNode->touchAffected();
     }
-    else    {
+    else if (toucher == tau)    {
         
+        std::cerr << "tau\n";
+    } 
+    else {
+        
+        std::cerr << "sth else\n";
+        
+        if (toucher == this)    {
+            std::cerr << "this\n";
+        }
         const std::set<size_t> &indices = this->dagNode->getTouchedElementIndices();
         
         // maybe all of them have been touched or the flags haven't been set properly
