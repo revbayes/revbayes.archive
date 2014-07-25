@@ -475,7 +475,7 @@ bool TestCharacterHistory::run_mol(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 10;
+    mcmcGenerations *= 1;
     //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
     
