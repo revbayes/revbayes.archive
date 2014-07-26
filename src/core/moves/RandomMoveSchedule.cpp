@@ -59,9 +59,11 @@ Move& RandomMoveSchedule::nextMove( unsigned long gen ) {
         }
         ++index;
     }
-    
-    if (index >= moves->size())
-        index = moves->size() - 1;
+
+    // reverted by Nicolas, July 26 2014
+    // until I better understand what this means...
+    //if (index >= moves->size())
+      //  index = moves->size() - 1;
     
     return (*moves)[index];
 }

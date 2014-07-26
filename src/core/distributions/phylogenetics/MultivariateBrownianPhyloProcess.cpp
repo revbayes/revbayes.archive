@@ -76,8 +76,8 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
     
     if (! from.isRoot()) {
         
-//        if (1)  {
-        if (dirtyNodes[index])  {
+        if (1)  {
+//        if (dirtyNodes[index])  {
 
             // x ~ normal(x_up, sigma^2 * branchLength)
 

@@ -147,9 +147,10 @@ void ExponentialBranchTree::flagNodes() {
         }
     }
 }
-
+/*
 void ExponentialBranchTree::touch(DagNode *toucher)    {
 
+    
     if (toucher == process) {
         flagNodes();
     }
@@ -159,12 +160,14 @@ void ExponentialBranchTree::touch(DagNode *toucher)    {
     else    {
         corruptAll();
     }
-    dagNode->clearTouchedElementIndices();    
+//    dagNode->clearTouchedElementIndices();    
+     
 }
 
 
 void ExponentialBranchTree::restore(DagNode *restorer)    {
 
+    
     if (restorer == process) {
         flagNodes();
     }
@@ -174,8 +177,9 @@ void ExponentialBranchTree::restore(DagNode *restorer)    {
     else    {
         corruptAll();
     }
-    dagNode->clearTouchedElementIndices();    
+//    dagNode->clearTouchedElementIndices();    
+     
 }
-
+*/
 
 
