@@ -48,8 +48,10 @@ index <- index + 1
 # conjugate move
 #moves[index] <- mvCovarianceMatrixSimple(x=sigma, lambda=1.0, tune=true, weight=10) 
 #index <- index + 1
-#moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
+#moves[index] <- mvCovarianceMatrixSimple(x=sigma, lambda=0.1, tune=true, weight=10) 
 #index <- index + 1
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
+index <- index + 1
 
 br.clampAt(contData,1,1)
 br.clampAt(contData,2,2)
