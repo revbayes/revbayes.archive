@@ -8,6 +8,7 @@
 
 #include "ExponentialBranchTree.h"
 #include "DeterministicNode.h"
+#include <cstdlib>
 
 
 using namespace RevBayesCore;

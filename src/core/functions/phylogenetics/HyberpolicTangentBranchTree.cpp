@@ -6,6 +6,7 @@
  */
 
 #include "HyberpolicTangentBranchTree.h"
+#include <cstdlib>
 
 
 using namespace RevBayesCore;
