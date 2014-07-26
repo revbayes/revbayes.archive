@@ -1,11 +1,11 @@
 /* 
- * File:   Move_MultivariatePhyloProcessSliding.cpp
+ * File:   Move_MultivariateRealNodeValTreeSliding.cpp
  * Author: nl
  * 
  * Created on 16 juillet 2014, 23:22
  */
 
-#include "Move_MultivariatePhyloProcessSliding.h"
+#include "Move_MultivariateRealNodeValTreeSliding.h"
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
@@ -14,50 +14,50 @@
 #include "RlBoolean.h"
 #include "RevObject.h"
 #include "RlTimeTree.h"
-#include "RlMultivariatePhyloProcess.h"
+#include "RlMultivariateRealNodeValTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_MultivariatePhyloProcessSliding::Move_MultivariatePhyloProcessSliding() : Move() {
+Move_MultivariateRealNodeValTreeSliding::Move_MultivariateRealNodeValTreeSliding() : Move() {
     
 }
 
 
 /** Clone object */
-Move_MultivariatePhyloProcessSliding* Move_MultivariatePhyloProcessSliding::clone(void) const {
+Move_MultivariateRealNodeValTreeSliding* Move_MultivariateRealNodeValTreeSliding::clone(void) const {
     
-	return new Move_MultivariatePhyloProcessSliding(*this);
+	return new Move_MultivariateRealNodeValTreeSliding(*this);
 }
 
 
-void Move_MultivariatePhyloProcessSliding::constructInternalObject( void ) {
+void Move_MultivariateRealNodeValTreeSliding::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::MultivariatePhyloProcess> *tmp = static_cast<const MultivariatePhyloProcess &>( process->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *tmp = static_cast<const MultivariateRealNodeValTree &>( process->getRevObject() ).getDagNode();
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     bool t = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( tmp );
-    value = new RevBayesCore::MultivariatePhyloProcessSlidingMove(p, l, t, w);
+    RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *>( tmp );
+    value = new RevBayesCore::MultivariateRealNodeContainerSlidingMove(p, l, t, w);
 
 }
 
 
 /** Get class name of object */
-const std::string& Move_MultivariatePhyloProcessSliding::getClassType(void) { 
+const std::string& Move_MultivariateRealNodeValTreeSliding::getClassType(void) { 
     
-    static std::string revClassType = "Move_MultivariatePhyloProcessSliding";
+    static std::string revClassType = "Move_MultivariateRealNodeValTreeSliding";
     
 	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_MultivariatePhyloProcessSliding::getClassTypeSpec(void) { 
+const TypeSpec& Move_MultivariateRealNodeValTreeSliding::getClassTypeSpec(void) { 
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -67,13 +67,13 @@ const TypeSpec& Move_MultivariatePhyloProcessSliding::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_MultivariatePhyloProcessSliding::getMemberRules(void) const {
+const MemberRules& Move_MultivariateRealNodeValTreeSliding::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariatePhyloProcess::getClassTypeSpec() ) );        
+        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariateRealNodeValTree::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
         nniMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
 
@@ -88,7 +88,7 @@ const MemberRules& Move_MultivariatePhyloProcessSliding::getMemberRules(void) co
 }
 
 /** Get type spec */
-const TypeSpec& Move_MultivariatePhyloProcessSliding::getTypeSpec( void ) const {
+const TypeSpec& Move_MultivariateRealNodeValTreeSliding::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -98,9 +98,9 @@ const TypeSpec& Move_MultivariatePhyloProcessSliding::getTypeSpec( void ) const 
 
 
 /** Get type spec */
-void Move_MultivariatePhyloProcessSliding::printValue(std::ostream &o) const {
+void Move_MultivariateRealNodeValTreeSliding::printValue(std::ostream &o) const {
     
-    o << "Move_MultivariatePhyloProcessSliding(";
+    o << "Move_MultivariateRealNodeValTreeSliding(";
     if (process != NULL) {
         o << process->getName();
     }
@@ -124,7 +124,7 @@ void Move_MultivariatePhyloProcessSliding::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_MultivariatePhyloProcessSliding::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_MultivariateRealNodeValTreeSliding::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "process" ) {
         process = var;

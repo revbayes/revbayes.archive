@@ -17,18 +17,18 @@
 #include <vector>
 
 #include "ModelObject.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 
 
 namespace RevLanguage {
     
-    class RealSymmetricMatrix : public ModelObject<RevBayesCore::PrecisionMatrix>  {
+    class RealSymmetricMatrix : public ModelObject<RevBayesCore::MatrixRealSymmetric>  {
         
     public:
         
         RealSymmetricMatrix(void);
-        RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> *mat);                                                            //!< Construct from DAG node
+        RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> *mat);                                                            //!< Construct from DAG node
         RealSymmetricMatrix(const RealSymmetricMatrix& from);                                                                                    //!< Copy constructor
         
         

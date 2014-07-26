@@ -1,11 +1,11 @@
 /* 
- * File:   Move_MultivariatePhyloProcessTranslation.cpp
+ * File:   Move_MultivariateRealNodeValTreeTranslation.cpp
  * Author: nl
  * 
  * Created on 16 juillet 2014, 19:46
  */
 
-#include "Move_MultivariatePhyloProcessTranslation.h"
+#include "Move_MultivariateRealNodeValTreeTranslation.h"
 
 
 #include "ArgumentRule.h"
@@ -15,36 +15,36 @@
 #include "RlBoolean.h"
 #include "RevObject.h"
 #include "RlTimeTree.h"
-#include "RlMultivariatePhyloProcess.h"
+#include "RlMultivariateRealNodeValTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
 
 using namespace RevLanguage;
 
-Move_MultivariatePhyloProcessTranslation::Move_MultivariatePhyloProcessTranslation() : Move() {
+Move_MultivariateRealNodeValTreeTranslation::Move_MultivariateRealNodeValTreeTranslation() : Move() {
     
 }
 
 
 /** Clone object */
-Move_MultivariatePhyloProcessTranslation* Move_MultivariatePhyloProcessTranslation::clone(void) const {
+Move_MultivariateRealNodeValTreeTranslation* Move_MultivariateRealNodeValTreeTranslation::clone(void) const {
     
-	return new Move_MultivariatePhyloProcessTranslation(*this);
+	return new Move_MultivariateRealNodeValTreeTranslation(*this);
 }
 
 
-void Move_MultivariatePhyloProcessTranslation::constructInternalObject( void ) {
+void Move_MultivariateRealNodeValTreeTranslation::constructInternalObject( void ) {
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::MultivariatePhyloProcess> *tmp = static_cast<const MultivariatePhyloProcess &>( process->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *tmp = static_cast<const MultivariateRealNodeValTree &>( process->getRevObject() ).getDagNode();
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     bool t = static_cast<const RlBoolean &>( tuning->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( tmp );
-    value = new RevBayesCore::MultivariatePhyloProcessTranslationMove(p, l, t, w);
+    RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *>( tmp );
+    value = new RevBayesCore::MultivariateRealNodeContainerTranslationMove(p, l, t, w);
 
     // now allocate a new sliding move
     /*
@@ -58,15 +58,15 @@ void Move_MultivariatePhyloProcessTranslation::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_MultivariatePhyloProcessTranslation::getClassType(void) { 
+const std::string& Move_MultivariateRealNodeValTreeTranslation::getClassType(void) { 
     
-    static std::string revClassType = "Move_MultivariatePhyloProcessTranslation";
+    static std::string revClassType = "Move_MultivariateRealNodeValTreeTranslation";
     
 	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_MultivariatePhyloProcessTranslation::getClassTypeSpec(void) { 
+const TypeSpec& Move_MultivariateRealNodeValTreeTranslation::getClassTypeSpec(void) { 
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -76,13 +76,13 @@ const TypeSpec& Move_MultivariatePhyloProcessTranslation::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_MultivariatePhyloProcessTranslation::getMemberRules(void) const {
+const MemberRules& Move_MultivariateRealNodeValTreeTranslation::getMemberRules(void) const {
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariatePhyloProcess::getClassTypeSpec() ) );        
+        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariateRealNodeValTree::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec(), new RealPos( 1.0 ) ) );
         nniMemberRules.push_back( new ArgumentRule( "tune", true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
 
@@ -97,7 +97,7 @@ const MemberRules& Move_MultivariatePhyloProcessTranslation::getMemberRules(void
 }
 
 /** Get type spec */
-const TypeSpec& Move_MultivariatePhyloProcessTranslation::getTypeSpec( void ) const {
+const TypeSpec& Move_MultivariateRealNodeValTreeTranslation::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -107,9 +107,9 @@ const TypeSpec& Move_MultivariatePhyloProcessTranslation::getTypeSpec( void ) co
 
 
 /** Get type spec */
-void Move_MultivariatePhyloProcessTranslation::printValue(std::ostream &o) const {
+void Move_MultivariateRealNodeValTreeTranslation::printValue(std::ostream &o) const {
     
-    o << "Move_MultivariatePhyloProcessTranslation(";
+    o << "Move_MultivariateRealNodeValTreeTranslation(";
     if (process != NULL) {
         o << process->getName();
     }
@@ -133,7 +133,7 @@ void Move_MultivariatePhyloProcessTranslation::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_MultivariatePhyloProcessTranslation::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_MultivariateRealNodeValTreeTranslation::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "process" ) {
         process = var;

@@ -29,7 +29,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::InverseWishart::pdf(const PrecisionMatrix &sigma0, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::InverseWishart::pdf(const MatrixRealSymmetric &sigma0, size_t df, const MatrixRealSymmetric &z) {
 	
     return exp(lnPdf(sigma0,df,z));
 }
@@ -47,7 +47,7 @@ double RbStatistics::InverseWishart::pdf(const PrecisionMatrix &sigma0, size_t d
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::InverseWishart::lnPdf(const PrecisionMatrix &sigma0, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::InverseWishart::lnPdf(const MatrixRealSymmetric &sigma0, size_t df, const MatrixRealSymmetric &z) {
     
     sigma0.update();
     z.update();
@@ -88,13 +88,13 @@ double RbStatistics::InverseWishart::lnPdf(const PrecisionMatrix &sigma0, size_t
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-PrecisionMatrix RbStatistics::InverseWishart::rv(const PrecisionMatrix &sigma0, size_t df, RandomNumberGenerator& rng) {
+MatrixRealSymmetric RbStatistics::InverseWishart::rv(const MatrixRealSymmetric &sigma0, size_t df, RandomNumberGenerator& rng) {
 
     sigma0.update();
     
     size_t dim = sigma0.getDim();
         
-    PrecisionMatrix z(dim);
+    MatrixRealSymmetric z(dim);
     std::vector<double> tmp(dim);
     
     for (size_t k=0; k<df; k++)   {
@@ -121,7 +121,7 @@ PrecisionMatrix RbStatistics::InverseWishart::rv(const PrecisionMatrix &sigma0, 
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::InverseWishart::pdf(double kappa, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::InverseWishart::pdf(double kappa, size_t df, const MatrixRealSymmetric &z) {
 	
     return exp(lnPdf(kappa,df,z));
 }
@@ -143,7 +143,7 @@ double RbStatistics::InverseWishart::pdf(double kappa, size_t df, const Precisio
 // this log density is only up to a normalization factor that *does* depend on df
 // df is therefore assumed to be constant throughout
 
-double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const PrecisionMatrix &z) {
+double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const MatrixRealSymmetric &z) {
 
     
     z.update();
@@ -180,9 +180,9 @@ double RbStatistics::InverseWishart::lnPdf(double kappa, size_t df, const Precis
  * \return Returns a vector containing the InverseWishart random variable.
  * \throws Does not throw an error.
  */
-PrecisionMatrix RbStatistics::InverseWishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng) {
+MatrixRealSymmetric RbStatistics::InverseWishart::rv(double kappa, size_t dim, size_t df, RandomNumberGenerator& rng) {
         
-    PrecisionMatrix z(dim);
+    MatrixRealSymmetric z(dim);
     std::vector<double> tmp(dim);
 
     double sk = 1.0 / sqrt(kappa);

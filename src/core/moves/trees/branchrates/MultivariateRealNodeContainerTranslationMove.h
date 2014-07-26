@@ -1,5 +1,5 @@
 /* 
- * File:   MultivariatePhyloProcessTranslationMove.h
+ * File:   MultivariateRealNodeContainerTranslationMove.h
  * Author: nl
  *
  * Created on 16 juillet 2014, 19:32
@@ -13,7 +13,7 @@
 #include "StochasticNode.h"
 
 #include "MatrixReal.h"
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 #include <ostream>
 #include <string>
 
@@ -37,13 +37,13 @@ namespace RevBayesCore {
      * @copyright GPL version 3
      *
      */
-    class MultivariatePhyloProcessTranslationMove : public SimpleMove {
+    class MultivariateRealNodeContainerTranslationMove : public SimpleMove {
         
     public:
-        MultivariatePhyloProcessTranslationMove(StochasticNode<MultivariatePhyloProcess>* n, double l, bool t, double w);                         //!< Constructor
+        MultivariateRealNodeContainerTranslationMove(StochasticNode<MultivariateRealNodeContainer>* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        MultivariatePhyloProcessTranslationMove*         clone(void) const;                                                                  //!< Clone this object.
+        MultivariateRealNodeContainerTranslationMove*         clone(void) const;                                                                  //!< Clone this object.
         const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
@@ -60,10 +60,10 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<MultivariatePhyloProcess>*   variable;
+        StochasticNode<MultivariateRealNodeContainer>*   variable;
 
         double                                      lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
-        MultivariatePhyloProcess                    storedValue;                                                                        //!< The stored value of the last modified element.
+        MultivariateRealNodeContainer                    storedValue;                                                                        //!< The stored value of the last modified element.
         
     };
     

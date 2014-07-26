@@ -1,11 +1,11 @@
 /* 
- * File:   MultivariatePhyloProcessTranslationMove.cpp
+ * File:   MultivariateRealNodeContainerTranslationMove.cpp
  * Author: nl
  * 
  * Created on 16 juillet 2014, 19:32
  */
 
-#include "MultivariatePhyloProcessTranslationMove.h"
+#include "MultivariateRealNodeContainerTranslationMove.h"
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -20,27 +20,27 @@
 using namespace RevBayesCore;
 
 
-MultivariatePhyloProcessTranslationMove::MultivariatePhyloProcessTranslationMove(StochasticNode<MultivariatePhyloProcess> *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+MultivariateRealNodeContainerTranslationMove::MultivariateRealNodeContainerTranslationMove(StochasticNode<MultivariateRealNodeContainer> *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
     
 }
 
 
 /** Clone object */
-MultivariatePhyloProcessTranslationMove* MultivariatePhyloProcessTranslationMove::clone( void ) const {
+MultivariateRealNodeContainerTranslationMove* MultivariateRealNodeContainerTranslationMove::clone( void ) const {
     
-    return new MultivariatePhyloProcessTranslationMove( *this );
+    return new MultivariateRealNodeContainerTranslationMove( *this );
 }
 
 
 
-const std::string& MultivariatePhyloProcessTranslationMove::getMoveName( void ) const {
-    static std::string name = "MultivariatePhyloProcessTranslationMove";
+const std::string& MultivariateRealNodeContainerTranslationMove::getMoveName( void ) const {
+    static std::string name = "MultivariateRealNodeContainerTranslationMove";
     
     return name;
 }
 
 
-double MultivariatePhyloProcessTranslationMove::performSimpleMove( void ) {
+double MultivariateRealNodeContainerTranslationMove::performSimpleMove( void ) {
         
     storedValue = variable->getValue();
     
@@ -63,7 +63,7 @@ double MultivariatePhyloProcessTranslationMove::performSimpleMove( void ) {
     return lnHastingsratio;
 }
 
-void MultivariatePhyloProcessTranslationMove::recursiveTranslate(const TopologyNode& from, int component, double slide)   {
+void MultivariateRealNodeContainerTranslationMove::recursiveTranslate(const TopologyNode& from, int component, double slide)   {
 
 
     MatrixReal& value = variable->getValue();
@@ -83,7 +83,7 @@ void MultivariatePhyloProcessTranslationMove::recursiveTranslate(const TopologyN
     
 }
 
-void MultivariatePhyloProcessTranslationMove::recursiveTouch(const TopologyNode& from)  {
+void MultivariateRealNodeContainerTranslationMove::recursiveTouch(const TopologyNode& from)  {
     
     variable->addTouchedElementIndex(from.getIndex());
 
@@ -96,31 +96,31 @@ void MultivariatePhyloProcessTranslationMove::recursiveTouch(const TopologyNode&
     
 }
 
-void MultivariatePhyloProcessTranslationMove::acceptSimpleMove()   {
+void MultivariateRealNodeContainerTranslationMove::acceptSimpleMove()   {
     variable->clearTouchedElementIndices();
 }
 
-void MultivariatePhyloProcessTranslationMove::printParameterSummary(std::ostream &o) const {
+void MultivariateRealNodeContainerTranslationMove::printParameterSummary(std::ostream &o) const {
     o << "lambda = " << lambda;
 }
 
 
-void MultivariatePhyloProcessTranslationMove::rejectSimpleMove( void ) {
+void MultivariateRealNodeContainerTranslationMove::rejectSimpleMove( void ) {
     
     variable->getValue() = storedValue;
     recursiveTouch(variable->getValue().getTimeTree()->getRoot());
 }
 
-void MultivariatePhyloProcessTranslationMove::swapNode(DagNode *oldN, DagNode *newN) {
+void MultivariateRealNodeContainerTranslationMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<MultivariatePhyloProcess>* >( newN );
+    variable = static_cast<StochasticNode<MultivariateRealNodeContainer>* >( newN );
     
 }
 
 
-void MultivariatePhyloProcessTranslationMove::tune( void ) {
+void MultivariateRealNodeContainerTranslationMove::tune( void ) {
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) {

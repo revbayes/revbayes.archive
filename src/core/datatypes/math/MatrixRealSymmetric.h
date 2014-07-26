@@ -1,13 +1,13 @@
 //
-//  PrecisionMatrix.h
+//  MatrixRealSymmetric.h
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-26.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#ifndef __revbayes__PrecisionMatrix__
-#define __revbayes__PrecisionMatrix__
+#ifndef __revbayes__MatrixRealSymmetric__
+#define __revbayes__MatrixRealSymmetric__
 
 #include <iostream>
 
@@ -18,15 +18,15 @@ namespace RevBayesCore {
     
     class EigenSystem;
     
-    class PrecisionMatrix : public MatrixReal {
+    class MatrixRealSymmetric : public MatrixReal {
         
     public:
-                                            PrecisionMatrix(void);                                              //!< Default constructor required by revlanguae use
-                                            PrecisionMatrix(size_t n);                                          //!< Construct rate matrix with n states
-                                            PrecisionMatrix(const PrecisionMatrix& m);                          //!< Copy constructor
-                                            PrecisionMatrix(const MatrixReal& m);                          //!< Copy constructor
+                                            MatrixRealSymmetric(void);                                              //!< Default constructor required by revlanguae use
+                                            MatrixRealSymmetric(size_t n);                                          //!< Construct rate matrix with n states
+                                            MatrixRealSymmetric(const MatrixRealSymmetric& m);                          //!< Copy constructor
+                                            MatrixRealSymmetric(const MatrixReal& m);                          //!< Copy constructor
         
-        virtual                            ~PrecisionMatrix(void) {}                                            //!< Destructor
+        virtual                            ~MatrixRealSymmetric(void) {}                                            //!< Destructor
                 
         // public methods
         // could not make them constant
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         
         
         
-        virtual PrecisionMatrix*            clone(void) const;
+        virtual MatrixRealSymmetric*            clone(void) const;
         
         void                                updateMatrix(void);
         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
@@ -66,8 +66,8 @@ namespace RevBayesCore {
         
     };
     
-    std::ostream&                       operator<<(std::ostream& o, const PrecisionMatrix& x);                                           //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const MatrixRealSymmetric& x);                                           //!< Overloaded output operator
   
 }
 
-#endif /* defined(__revbayes__PrecisionMatrix__) */
+#endif /* defined(__revbayes__MatrixRealSymmetric__) */
