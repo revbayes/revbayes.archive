@@ -16,8 +16,8 @@
 
 using namespace RevBayesCore;
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<PrecisionMatrix> *insigma0, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(insigma0->getValue().getDim())),
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf)  :
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(insigma0->getValue().getDim())),
 sigma0(insigma0),
 kappa(NULL),
 df(indf),
@@ -27,7 +27,7 @@ dim(0)  {
 }
 
 InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(indim->getValue()) )),
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( size_t(indim->getValue()) )),
     sigma0(NULL),
     kappa(inkappa),
     df(indf),
@@ -37,7 +37,7 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
 }
 
 InverseWishartDistribution::InverseWishartDistribution(const InverseWishartDistribution& from) :
-    TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getValue().getDim())),
+    TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(from.getValue().getDim())),
     sigma0(from.sigma0),
     kappa(from.kappa),
     df(from.df),
@@ -77,7 +77,7 @@ void InverseWishartDistribution::swapParameter(const DagNode *oldP, const DagNod
     if (oldP == sigma0) {
             std::cerr << "sigma0??\n";
             exit(1);
-        sigma0 = static_cast<const TypedDagNode<PrecisionMatrix>* >( newP );
+        sigma0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
     }
     if (oldP == kappa)  {
         kappa = static_cast<const TypedDagNode<double>* >(newP);

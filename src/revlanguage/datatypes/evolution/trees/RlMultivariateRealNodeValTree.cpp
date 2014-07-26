@@ -1,11 +1,11 @@
 /* 
- * File:   RlMultivariatePhyloProcess.cpp
+ * File:   RlMultivariateRealNodeValTree.cpp
  * Author: nl
  * 
  * Created on 16 juillet 2014, 19:54
  */
 
-#include "RlMultivariatePhyloProcess.h"
+#include "RlMultivariateRealNodeValTree.h"
 
 #include "Natural.h"
 #include "RbUtil.h"
@@ -22,42 +22,42 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-MultivariatePhyloProcess::MultivariatePhyloProcess(void) : ModelObject<RevBayesCore::MultivariatePhyloProcess>() {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(void) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>() {
     
 }
 
 /** Construct from bool */
-MultivariatePhyloProcess::MultivariatePhyloProcess(RevBayesCore::MultivariatePhyloProcess *t) : ModelObject<RevBayesCore::MultivariatePhyloProcess>( t ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::MultivariateRealNodeContainer *t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( t ) {
     
 }
 
 /** Construct from bool */
-MultivariatePhyloProcess::MultivariatePhyloProcess(const RevBayesCore::MultivariatePhyloProcess &t) : ModelObject<RevBayesCore::MultivariatePhyloProcess>( new RevBayesCore::MultivariatePhyloProcess( t ) ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(const RevBayesCore::MultivariateRealNodeContainer &t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( new RevBayesCore::MultivariateRealNodeContainer( t ) ) {
     
 }
 
 /** Construct from bool */
-MultivariatePhyloProcess::MultivariatePhyloProcess(RevBayesCore::TypedDagNode<RevBayesCore::MultivariatePhyloProcess> *n) : ModelObject<RevBayesCore::MultivariatePhyloProcess>( n ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *n) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( n ) {
     
 }
 
 
 
 /** Construct from bool */
-MultivariatePhyloProcess::MultivariatePhyloProcess(const MultivariatePhyloProcess &t) : ModelObject<RevBayesCore::MultivariatePhyloProcess>( t ) {
+MultivariateRealNodeValTree::MultivariateRealNodeValTree(const MultivariateRealNodeValTree &t) : ModelObject<RevBayesCore::MultivariateRealNodeContainer>( t ) {
     
 }
 
 
 /** Clone object */
-MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
+MultivariateRealNodeValTree* MultivariateRealNodeValTree::clone(void) const {
     
-	return new MultivariatePhyloProcess(*this);
+	return new MultivariateRealNodeValTree(*this);
 }
 
 
 /* Map calls to member methods */
-RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     /*
     if (name == "rootVal") {        
@@ -88,20 +88,20 @@ RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::strin
         return new Variable( new Real( 0 ) );
     }
 
-    return ModelObject<RevBayesCore::MultivariatePhyloProcess>::executeMethod( name, args );
+    return ModelObject<RevBayesCore::MultivariateRealNodeContainer>::executeMethod( name, args );
 }
 
 
 /** Get class name of object */
-const std::string& MultivariatePhyloProcess::getClassType(void) { 
+const std::string& MultivariateRealNodeValTree::getClassType(void) { 
     
-    static std::string revClassType = "MultivariatePhyloProcess";
+    static std::string revClassType = "MultivariateRealNodeValTree";
     
 	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& MultivariatePhyloProcess::getClassTypeSpec(void) { 
+const TypeSpec& MultivariateRealNodeValTree::getClassTypeSpec(void) { 
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -110,7 +110,7 @@ const TypeSpec& MultivariatePhyloProcess::getClassTypeSpec(void) {
 
 
 /* Get method specifications */
-const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const {
+const RevLanguage::MethodTable& MultivariateRealNodeValTree::getMethods(void) const {
     
     static MethodTable    methods                     = MethodTable();
     static bool           methodsSet                  = false;
@@ -120,15 +120,15 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
         
         ArgumentRules* meanArgRules = new ArgumentRules();
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberFunction<MultivariatePhyloProcess,Real>( this, meanArgRules ) );
+        methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, meanArgRules ) );
         
         ArgumentRules* tipmeanArgRules = new ArgumentRules();
         tipmeanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("tipMean", new MemberFunction<MultivariatePhyloProcess,Real>( this, tipmeanArgRules ) );
+        methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, tipmeanArgRules ) );
         
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberFunction<MultivariatePhyloProcess,RealPos>(  this, stdevArgRules ) );
+        methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, stdevArgRules ) );
         
         ArgumentRules* rootArgRules = new ArgumentRules();
         rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
@@ -138,10 +138,10 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
         clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
         clampArgRules->push_back(new ArgumentRule("processIndex", false, Natural::getClassTypeSpec()));
         clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
-        methods.addFunction("clampAt", new MemberProcedure(MultivariatePhyloProcess::getClassTypeSpec(), clampArgRules ) );
+        methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::MultivariatePhyloProcess>::getMethods() );
+        methods.setParentTable( &ModelObject<RevBayesCore::MultivariateRealNodeContainer>::getMethods() );
         methodsSet = true;
     }
     
@@ -151,7 +151,7 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
 
 
 /** Get type spec */
-const TypeSpec& MultivariatePhyloProcess::getTypeSpec( void ) const {
+const TypeSpec& MultivariateRealNodeValTree::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -160,7 +160,7 @@ const TypeSpec& MultivariatePhyloProcess::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void MultivariatePhyloProcess::printValue(std::ostream &o) const {
+void MultivariateRealNodeValTree::printValue(std::ostream &o) const {
 
     long previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

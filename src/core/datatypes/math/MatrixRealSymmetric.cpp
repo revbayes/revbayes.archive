@@ -1,12 +1,12 @@
 //
-//  PrecisionMatrix.cpp
+//  MatrixRealSymmetric.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-26.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 
 #include "EigenSystem.h"
 #include "RandomNumberFactory.h"
@@ -19,34 +19,34 @@
 
 using namespace RevBayesCore;
 
-PrecisionMatrix::PrecisionMatrix(void) : MatrixReal(1,1,0.0), eigensystem(this), eigenflag(false), inverse(1,1,0.0) {
+MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal(1,1,0.0), eigensystem(this), eigenflag(false), inverse(1,1,0.0) {
 }
 
-PrecisionMatrix::PrecisionMatrix(size_t n) : MatrixReal(n,n,0), eigensystem(this), eigenflag(false), inverse(n,n,0) {
+MatrixRealSymmetric::MatrixRealSymmetric(size_t n) : MatrixReal(n,n,0), eigensystem(this), eigenflag(false), inverse(n,n,0) {
 }
 
-PrecisionMatrix::PrecisionMatrix(const PrecisionMatrix& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.inverse) {
+MatrixRealSymmetric::MatrixRealSymmetric(const MatrixRealSymmetric& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.inverse) {
 }
 
-PrecisionMatrix::PrecisionMatrix(const MatrixReal& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.getNumberOfColumns(), from.getNumberOfColumns(), 0) {
+MatrixRealSymmetric::MatrixRealSymmetric(const MatrixReal& from) : MatrixReal(from), eigensystem(this), eigenflag(false), inverse(from.getNumberOfColumns(), from.getNumberOfColumns(), 0) {
     if (getNumberOfRows() != getNumberOfColumns())    {
-        std::cerr << "error in PrecisionMatrix: copy constructor from a non-square matrix\n";
+        std::cerr << "error in MatrixRealSymmetric: copy constructor from a non-square matrix\n";
         throw(NULL);
     }
 }
 
 
-PrecisionMatrix*  PrecisionMatrix::clone(void) const    {
-        return new PrecisionMatrix(*this);
+MatrixRealSymmetric*  MatrixRealSymmetric::clone(void) const    {
+        return new MatrixRealSymmetric(*this);
 }
 
 
-size_t PrecisionMatrix::getDim() const  {
+size_t MatrixRealSymmetric::getDim() const  {
     
     return getNumberOfColumns();
 }
 
-double PrecisionMatrix::getLogDet()  const {
+double MatrixRealSymmetric::getLogDet()  const {
     
     update();
     
@@ -57,7 +57,7 @@ double PrecisionMatrix::getLogDet()  const {
         tot += log(eigenval[i]);
     }
     if (std::isnan(tot))    {
-        std::cerr << "in PrecisionMatrix::getLogDet(): nan\n";
+        std::cerr << "in MatrixRealSymmetric::getLogDet(): nan\n";
         std::cerr << "eigen values:\n";
         for (size_t i=0; i<getDim(); i++)   {
             std::cerr << eigenval[i] << '\n';
@@ -67,14 +67,14 @@ double PrecisionMatrix::getLogDet()  const {
     return tot;
 }
 
-const MatrixReal& PrecisionMatrix::getInverse() const   {
+const MatrixReal& MatrixRealSymmetric::getInverse() const   {
     
     update();
     return inverse;
     
 }
 
-bool PrecisionMatrix::isPositive()  const {
+bool MatrixRealSymmetric::isPositive()  const {
     
     update();
     
@@ -88,7 +88,7 @@ bool PrecisionMatrix::isPositive()  const {
     return pos;
 }
 
-void PrecisionMatrix::drawNormalSamplePrecision(std::vector<double>& v)  const {
+void MatrixRealSymmetric::drawNormalSamplePrecision(std::vector<double>& v)  const {
     
     update();
     
@@ -118,7 +118,7 @@ void PrecisionMatrix::drawNormalSamplePrecision(std::vector<double>& v)  const {
     
 }
 
-void PrecisionMatrix::drawNormalSampleCovariance(std::vector<double>& v)  const {
+void MatrixRealSymmetric::drawNormalSampleCovariance(std::vector<double>& v)  const {
     
     update();
     
@@ -148,11 +148,11 @@ void PrecisionMatrix::drawNormalSampleCovariance(std::vector<double>& v)  const 
     
 }
 
-void PrecisionMatrix::touch(void)   {
+void MatrixRealSymmetric::touch(void)   {
     eigenflag = false;
 }
 
-void PrecisionMatrix::update()  const {
+void MatrixRealSymmetric::update()  const {
 
     // just for debugging (checking that eigen systm is indeed updated when it says it is))
     /*
@@ -217,7 +217,7 @@ void PrecisionMatrix::update()  const {
         
         catch(...)  {
             
-            std::cerr << "in PrecisionMatrix: eigen update failed\n";
+            std::cerr << "in MatrixRealSymmetric: eigen update failed\n";
             std::cerr << *this << '\n';
             throw(NULL);
         }
@@ -226,7 +226,7 @@ void PrecisionMatrix::update()  const {
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const PrecisionMatrix& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetric& x) {
     
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

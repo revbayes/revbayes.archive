@@ -12,17 +12,17 @@
 #include <iostream>
 
 #include "TypedDistribution.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class InverseWishartDistribution : public TypedDistribution<PrecisionMatrix>   {
+    class InverseWishartDistribution : public TypedDistribution<MatrixRealSymmetric>   {
         
     public:
         
         // inverse InverseWishart distribution of parameter sigma0 et df degrees of freedom
-        InverseWishartDistribution(const TypedDagNode<PrecisionMatrix> *insigma0, const TypedDagNode<int>* indf);
+        InverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf);
         InverseWishartDistribution(const InverseWishartDistribution& from);
         // specialized version: inverse InverseWishart of parameter sigma0=kappa*I and df degrees of freedom
         InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
@@ -46,7 +46,7 @@ namespace RevBayesCore {
 
         // members
         
-        const TypedDagNode<PrecisionMatrix>*                sigma0;
+        const TypedDagNode<MatrixRealSymmetric>*                sigma0;
         const TypedDagNode<double>*                         kappa;
         const TypedDagNode<int>*                            df;
         const TypedDagNode<int>*                            dim;

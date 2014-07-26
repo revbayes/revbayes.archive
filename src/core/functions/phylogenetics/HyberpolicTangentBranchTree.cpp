@@ -12,7 +12,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
+HyperbolicTangentBranchTree::HyperbolicTangentBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
 
     TypedFunction< std::vector< double > >( new std::vector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
     tau(t), process(p), offset(o), traitindex(i) {
@@ -48,7 +48,7 @@ void HyperbolicTangentBranchTree::swapParameterInternal(const DagNode *oldP, con
     }
 
     if ( oldP == process ) {
-        process = static_cast< const TypedDagNode<MultivariatePhyloProcess> * >( newP );
+        process = static_cast< const TypedDagNode<MultivariateRealNodeContainer> * >( newP );
     }
 
     if (oldP == offset) {

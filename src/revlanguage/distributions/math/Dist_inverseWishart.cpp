@@ -34,7 +34,7 @@ Dist_inverseWishart* Dist_inverseWishart::clone( void ) const {
 RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* sg = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sg = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     /*
     if (sigma != NULL)  {

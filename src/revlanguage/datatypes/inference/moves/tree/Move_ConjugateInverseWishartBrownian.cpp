@@ -13,7 +13,7 @@
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RevObject.h"
-#include "RlMultivariatePhyloProcess.h"
+#include "RlMultivariateRealNodeValTree.h"
 #include "RealSymmetricMatrix.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -39,13 +39,13 @@ void Move_ConjugateInverseWishartBrownian::constructInternalObject( void ) {
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> *sig = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::MultivariatePhyloProcess> *proc = static_cast<const MultivariatePhyloProcess &>( process->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> *sig = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::MultivariateRealNodeContainer> *proc = static_cast<const MultivariateRealNodeValTree &>( process->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double> *kap = static_cast<const RealPos &>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int> *deg = static_cast<const Natural &>( df->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix> *s = static_cast<RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix> *>( sig );
-    RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( proc );
+    RevBayesCore::StochasticNode<RevBayesCore::MatrixRealSymmetric> *s = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixRealSymmetric> *>( sig );
+    RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariateRealNodeContainer> *>( proc );
     RevBayesCore::StochasticNode<double> *k = static_cast<RevBayesCore::StochasticNode<double> *>( kap );
     RevBayesCore::StochasticNode<int> *d = static_cast<RevBayesCore::StochasticNode<int> *>( deg );
        
@@ -78,7 +78,7 @@ const MemberRules& Move_ConjugateInverseWishartBrownian::getMemberRules(void) co
     
     if ( !rulesSet ) {
         nniMemberRules.push_back( new ArgumentRule( "sigma", false, RealSymmetricMatrix::getClassTypeSpec() ) );        
-        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariatePhyloProcess::getClassTypeSpec() ) );        
+        nniMemberRules.push_back( new ArgumentRule( "process", false, MultivariateRealNodeValTree::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "kappa", false, RealPos::getClassTypeSpec() ) );        
         nniMemberRules.push_back( new ArgumentRule( "df", false, Natural::getClassTypeSpec() ) );        
 
