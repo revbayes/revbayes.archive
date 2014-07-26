@@ -15,7 +15,7 @@
 #include "TypedFunction.h"
 #include "TimeTree.h"
 #include "MatrixReal.h"
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 #include "RbVector.h"
 #include <vector>
 

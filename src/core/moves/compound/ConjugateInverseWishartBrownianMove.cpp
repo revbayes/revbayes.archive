@@ -19,7 +19,7 @@
 
 using namespace RevBayesCore;
 
-ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<PrecisionMatrix>* s, StochasticNode<MultivariatePhyloProcess>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
+ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
 
     process = p;
     sigma = s;
@@ -57,7 +57,7 @@ double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
 
     // calculate sufficient statistics based on current process
     int nnode = 0;
-    PrecisionMatrix A = process->getValue().getBranchContrasts(nnode);    
+    MatrixRealSymmetric A = process->getValue().getBranchContrasts(nnode);    
     for (size_t i=0; i<dim; i++)    {
         A[i][i] += kappa->getValue();
     }
@@ -105,9 +105,9 @@ void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN)
     
     CompoundMove::swapNode(oldN, newN);
     if (oldN == sigma)
-        sigma = static_cast<StochasticNode<PrecisionMatrix>*> (newN);
+        sigma = static_cast<StochasticNode<MatrixRealSymmetric>*> (newN);
     if (oldN == process)
-        process = static_cast<StochasticNode<MultivariatePhyloProcess>*> (newN);
+        process = static_cast<StochasticNode<MultivariateRealNodeContainer>*> (newN);
     if (oldN == kappa)
         kappa = static_cast<TypedDagNode<double>*> (newN);
     if (oldN == df)

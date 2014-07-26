@@ -1,5 +1,5 @@
 /* 
- * File:   MultivariatePhyloProcessSlidingMove.h
+ * File:   MultivariateRealNodeContainerSlidingMove.h
  * Author: nl
  *
  * Created on 16 juillet 2014, 23:19
@@ -12,7 +12,7 @@
 #include "StochasticNode.h"
 
 #include "MatrixReal.h"
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 #include <ostream>
 #include <string>
 
@@ -20,13 +20,13 @@
 namespace RevBayesCore {
     
 
-    class MultivariatePhyloProcessSlidingMove : public SimpleMove {
+    class MultivariateRealNodeContainerSlidingMove : public SimpleMove {
         
     public:
-        MultivariatePhyloProcessSlidingMove(StochasticNode<MultivariatePhyloProcess>* n, double l, bool t, double w);                         //!< Constructor
+        MultivariateRealNodeContainerSlidingMove(StochasticNode<MultivariateRealNodeContainer>* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        MultivariatePhyloProcessSlidingMove*         clone(void) const;                                                                  //!< Clone this object.
+        MultivariateRealNodeContainerSlidingMove*         clone(void) const;                                                                  //!< Clone this object.
         const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
@@ -41,7 +41,7 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<MultivariatePhyloProcess>*   variable;
+        StochasticNode<MultivariateRealNodeContainer>*   variable;
 
         double                                      lambda;                 
         double                                      storedValue;

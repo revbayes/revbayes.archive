@@ -1,5 +1,5 @@
 /* 
- * File:   MultivariatePhyloProcess.h
+ * File:   MultivariateRealNodeContainer.h
  * Author: nl
  *
  * Created on 16 juillet 2014, 20:17
@@ -10,7 +10,7 @@
 
 
 #include "MatrixReal.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "MemberObject.h"
 #include "TimeTree.h"
 #include "ContinuousCharacterData.h"
@@ -20,25 +20,25 @@
 
 namespace RevBayesCore {
     
-    class MultivariatePhyloProcess : public MatrixReal, public MemberObject<double> {
+    class MultivariateRealNodeContainer : public MatrixReal, public MemberObject<double> {
     
     public:
-        MultivariatePhyloProcess(void);                                                                                                                 //!< Default constructor
-        MultivariatePhyloProcess(const TimeTree* intree, size_t indim);                                                                                             //!< Default constructor
-        MultivariatePhyloProcess(const MultivariatePhyloProcess& t);                                                                                    //!< Copy constructor
-        virtual                                    ~MultivariatePhyloProcess(void);                                                                                                        //!< Destructor
+        MultivariateRealNodeContainer(void);                                                                                                                 //!< Default constructor
+        MultivariateRealNodeContainer(const TimeTree* intree, size_t indim);                                                                                             //!< Default constructor
+        MultivariateRealNodeContainer(const MultivariateRealNodeContainer& t);                                                                                    //!< Copy constructor
+        virtual                                    ~MultivariateRealNodeContainer(void);                                                                                                        //!< Destructor
     
-        MultivariatePhyloProcess&                   operator=(const MultivariatePhyloProcess& t);
+        MultivariateRealNodeContainer&                   operator=(const MultivariateRealNodeContainer& t);
     
         // Basic utility functions
-        MultivariatePhyloProcess*                   clone(void) const;                                                                                  //!< Clone object
+        MultivariateRealNodeContainer*                   clone(void) const;                                                                                  //!< Clone object
     
         void                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         const TimeTree*                             getTimeTree() const {return tree;}
         size_t                                      getDim() const {return getNumberOfColumns();}
         
 
-        // MultivariatePhyloProcess functions
+        // MultivariateRealNodeContainer functions
         double                                      getRootVal(int k) const;
         double                                      getMean(int k) const;
         double                                      getMeanOverTips(int k) const;
@@ -47,7 +47,7 @@ namespace RevBayesCore {
         void                                        recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
 
         void                                        printBranchContrasts(std::ostream& os) const;
-        PrecisionMatrix                             getBranchContrasts(int& nnode) const ;
+        MatrixRealSymmetric                             getBranchContrasts(int& nnode) const ;
 
         bool                                        isClamped(size_t index, size_t k) const;
         void                                        clampAt(const ContinuousCharacterData* data, size_t k, size_t l);
@@ -55,7 +55,7 @@ namespace RevBayesCore {
         
     protected:
 
-        void                                        recursiveGetBranchContrasts(const TopologyNode& from, PrecisionMatrix& c, int& n) const;
+        void                                        recursiveGetBranchContrasts(const TopologyNode& from, MatrixRealSymmetric& c, int& n) const;
 
     private:
 
@@ -64,7 +64,7 @@ namespace RevBayesCore {
 
     };
 
-    std::ostream&                       operator<<(std::ostream& o, const MultivariatePhyloProcess& x);                                         //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const MultivariateRealNodeContainer& x);                                         //!< Overloaded output operator
 
 }
 

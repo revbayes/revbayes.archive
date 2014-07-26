@@ -1,11 +1,11 @@
 /* 
- * File:   MultivariatePhyloProcess.cpp
+ * File:   MultivariateRealNodeContainer.cpp
  * Author: nl
  * 
  * Created on 16 juillet 2014, 20:17
  */
 
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 
 #include "RbException.h"
 #include "RbOptions.h"
@@ -18,32 +18,32 @@
 using namespace RevBayesCore;
 
 // Declarations
-std::ostream& operator<<(std::ostream& o, const MultivariatePhyloProcess& x);
+std::ostream& operator<<(std::ostream& o, const MultivariateRealNodeContainer& x);
 
 
 /* Default constructor */
-MultivariatePhyloProcess::MultivariatePhyloProcess(void) : MatrixReal() {
+MultivariateRealNodeContainer::MultivariateRealNodeContainer(void) : MatrixReal() {
     
 }
 
 /* constructor based on a timetree and a dimension for the process */
-MultivariatePhyloProcess::MultivariatePhyloProcess(const TimeTree* intree, size_t indim) : MatrixReal(intree->getNumberOfNodes(), indim, 0.0), tree(intree), clampVector(intree->getNumberOfNodes(),std::vector<bool>(indim,false))  {
+MultivariateRealNodeContainer::MultivariateRealNodeContainer(const TimeTree* intree, size_t indim) : MatrixReal(intree->getNumberOfNodes(), indim, 0.0), tree(intree), clampVector(intree->getNumberOfNodes(),std::vector<bool>(indim,false))  {
     
 }
 
 
 /* Copy constructor */
-MultivariatePhyloProcess::MultivariatePhyloProcess(const MultivariatePhyloProcess& p) : MatrixReal(p), tree(p.getTimeTree()), clampVector(p.clampVector) {
+MultivariateRealNodeContainer::MultivariateRealNodeContainer(const MultivariateRealNodeContainer& p) : MatrixReal(p), tree(p.getTimeTree()), clampVector(p.clampVector) {
     
 }
 
 
 /* Destructor */
-MultivariatePhyloProcess::~MultivariatePhyloProcess(void) {
+MultivariateRealNodeContainer::~MultivariateRealNodeContainer(void) {
 }
 
 
-MultivariatePhyloProcess& MultivariatePhyloProcess::operator=(const MultivariatePhyloProcess &p) {
+MultivariateRealNodeContainer& MultivariateRealNodeContainer::operator=(const MultivariateRealNodeContainer &p) {
     
     if (this != &p) {
         MatrixReal::operator=(p);
@@ -56,13 +56,13 @@ MultivariatePhyloProcess& MultivariatePhyloProcess::operator=(const Multivariate
 
 
 /* Clone function */
-MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
+MultivariateRealNodeContainer* MultivariateRealNodeContainer::clone(void) const {
     
-    return new MultivariatePhyloProcess(*this);
+    return new MultivariateRealNodeContainer(*this);
 }
 
 
-void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+void MultivariateRealNodeContainer::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
     
     if ( n == "mean" )
@@ -86,21 +86,21 @@ void MultivariatePhyloProcess::executeMethod(const std::string &n, const std::ve
         rv = getRootVal(k->getValue());
     }
     else    {
-        throw RbException("A MultivariatePhyloProcess object does not have a member method called '" + n + "'.");
+        throw RbException("A MultivariateRealNodeContainer object does not have a member method called '" + n + "'.");
     }
 }
 
-bool MultivariatePhyloProcess::isClamped(size_t index, size_t k) const   {
+bool MultivariateRealNodeContainer::isClamped(size_t index, size_t k) const   {
     return clampVector[index][k];
 }
 
-void MultivariatePhyloProcess::clampAt(const ContinuousCharacterData* data, size_t k, size_t l) {
+void MultivariateRealNodeContainer::clampAt(const ContinuousCharacterData* data, size_t k, size_t l) {
 
     recursiveClampAt(getTimeTree()->getRoot(),data,k-1,l-1);
 }
 
 
-void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const ContinuousCharacterData* data, size_t k, size_t l) {
+void MultivariateRealNodeContainer::recursiveClampAt(const TopologyNode& from, const ContinuousCharacterData* data, size_t k, size_t l) {
  
     if (from.isTip())   {
         
@@ -126,9 +126,9 @@ void MultivariatePhyloProcess::recursiveClampAt(const TopologyNode& from, const 
 }
 
 
-void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
+void MultivariateRealNodeContainer::printBranchContrasts(std::ostream& os) const  {
 
-    PrecisionMatrix c(getDim());
+    MatrixRealSymmetric c(getDim());
         
     for (size_t i=0; i<getDim(); i++)   {
         for (size_t j=0; j<getDim(); j++)   {
@@ -158,9 +158,9 @@ void MultivariatePhyloProcess::printBranchContrasts(std::ostream& os) const  {
     }    
 }
 
-PrecisionMatrix MultivariatePhyloProcess::getBranchContrasts(int& n) const  {
+MatrixRealSymmetric MultivariateRealNodeContainer::getBranchContrasts(int& n) const  {
 
-    PrecisionMatrix c(getDim());
+    MatrixRealSymmetric c(getDim());
         
     for (size_t i=0; i<getDim(); i++)   {
         for (size_t j=0; j<getDim(); j++)   {
@@ -174,7 +174,7 @@ PrecisionMatrix MultivariatePhyloProcess::getBranchContrasts(int& n) const  {
     return c;
 }
 
-void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& from, PrecisionMatrix& c, int& n)  const   {
+void MultivariateRealNodeContainer::recursiveGetBranchContrasts(const TopologyNode& from, MatrixRealSymmetric& c, int& n)  const   {
 
     if (! from.isRoot())    {
 
@@ -199,12 +199,12 @@ void MultivariatePhyloProcess::recursiveGetBranchContrasts(const TopologyNode& f
     }    
 }
 
-double MultivariatePhyloProcess::getRootVal(int k) const {
+double MultivariateRealNodeContainer::getRootVal(int k) const {
     
         return (*this)[getTimeTree()->getRoot().getIndex()][k];
 }
 
-double MultivariatePhyloProcess::getMean(int k) const {
+double MultivariateRealNodeContainer::getMean(int k) const {
     
     int n = 0;
     double e1 = 0;
@@ -216,7 +216,7 @@ double MultivariatePhyloProcess::getMean(int k) const {
     return e1;
 }
 
-double MultivariatePhyloProcess::getMeanOverTips(int k) const {
+double MultivariateRealNodeContainer::getMeanOverTips(int k) const {
     
     int n = 0;
     double e1 = 0;
@@ -228,7 +228,7 @@ double MultivariatePhyloProcess::getMeanOverTips(int k) const {
     return e1;
 }
 
-double MultivariatePhyloProcess::getStdev(int k) const {
+double MultivariateRealNodeContainer::getStdev(int k) const {
     
     int n = 0;
     double e1 = 0;
@@ -241,7 +241,7 @@ double MultivariatePhyloProcess::getStdev(int k) const {
 }
 
 
-void MultivariatePhyloProcess::recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
+void MultivariateRealNodeContainer::recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
 
     double tmp = (*this)[from.getIndex()][k];
 
@@ -258,7 +258,7 @@ void MultivariatePhyloProcess::recursiveGetStats(int k, const TopologyNode& from
 }
 
 
-void MultivariatePhyloProcess::recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
+void MultivariateRealNodeContainer::recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const {
 
     if(from.isTip())   {
         double tmp = (*this)[from.getIndex()][k];
@@ -276,7 +276,7 @@ void MultivariatePhyloProcess::recursiveGetStatsOverTips(int k, const TopologyNo
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& os, const MultivariatePhyloProcess& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& os, const MultivariateRealNodeContainer& x) {
 
     os << std::fixed;
     os << std::setprecision(4);

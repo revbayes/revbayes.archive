@@ -25,17 +25,17 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(1) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(1) ) {
 }
 
 
 /* Construct from double */
-RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> * mat ) : ModelObject<RevBayesCore::PrecisionMatrix>( mat ) {
+RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> * mat ) : ModelObject<RevBayesCore::MatrixRealSymmetric>( mat ) {
 }
 
 
 /* Copy Construct */
-RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : ModelObject<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(from.getValue().getDim()) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(from.getValue().getDim()) ) {
     
 }
 

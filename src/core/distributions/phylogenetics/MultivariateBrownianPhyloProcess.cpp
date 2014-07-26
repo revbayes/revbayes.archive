@@ -23,7 +23,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< PrecisionMatrix >* insigma) : TypedDistribution< MultivariatePhyloProcess >( new MultivariatePhyloProcess(&intau->getValue(), insigma->getValue().getDim())),
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< MatrixRealSymmetric >* insigma) : TypedDistribution< MultivariateRealNodeContainer >( new MultivariateRealNodeContainer(&intau->getValue(), insigma->getValue().getDim())),
     tau( intau ),
     sigma( insigma ),
     dirtyNodes(intau->getValue().getNumberOfNodes(),true),
@@ -34,7 +34,7 @@ MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const TypedDa
 }
 
 
-MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariatePhyloProcess>( n ), 
+MultivariateBrownianPhyloProcess::MultivariateBrownianPhyloProcess(const MultivariateBrownianPhyloProcess &n): TypedDistribution< MultivariateRealNodeContainer>( n ), 
     tau( n.tau ),
     sigma( n.sigma ),
     /*, rootVal( n.rootVal )*/ 
@@ -183,7 +183,7 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     }
     
     if ( oldP == sigma ) {
-        sigma = static_cast< const TypedDagNode<PrecisionMatrix> * >( newP );
+        sigma = static_cast< const TypedDagNode<MatrixRealSymmetric> * >( newP );
     }
 }
 

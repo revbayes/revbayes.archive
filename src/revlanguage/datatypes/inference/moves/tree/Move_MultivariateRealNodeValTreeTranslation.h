@@ -1,5 +1,5 @@
 /* 
- * File:   Move_MultivariatePhyloProcessTranslation.h
+ * File:   Move_MultivariateRealNodeValTreeTranslation.h
  * Author: nl
  *
  * Created on 16 juillet 2014, 19:46
@@ -8,7 +8,7 @@
 #ifndef MOVE_MULTIVARIATEBROWNIANTRANSLATION_H
 #define	MOVE_MULTIVARIATEBROWNIANTRANSLATION_H
 
-#include "MultivariatePhyloProcessTranslationMove.h"
+#include "MultivariateRealNodeContainerTranslationMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -17,14 +17,14 @@
 
 namespace RevLanguage {
     
-    class Move_MultivariatePhyloProcessTranslation : public Move {
+    class Move_MultivariateRealNodeValTreeTranslation : public Move {
         
     public:
         
-        Move_MultivariatePhyloProcessTranslation(void);                                                                                         //!< Default constructor
+        Move_MultivariateRealNodeValTreeTranslation(void);                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual Move_MultivariatePhyloProcessTranslation*               clone(void) const;                                                      //!< Clone object
+        virtual Move_MultivariateRealNodeValTreeTranslation*               clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

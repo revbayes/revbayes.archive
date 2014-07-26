@@ -1,5 +1,5 @@
 /* 
- * File:   Move_MultivariatePhyloProcessSliding.h
+ * File:   Move_MultivariateRealNodeValTreeSliding.h
  * Author: nl
  *
  * Created on 16 juillet 2014, 23:22
@@ -8,7 +8,7 @@
 #ifndef MOVE_MULTIVARIATEPHYLOPROCESSSLIDING_H
 #define	MOVE_MULTIVARIATEPHYLOPROCESSSLIDING_H
 
-#include "MultivariatePhyloProcessSlidingMove.h"
+#include "MultivariateRealNodeContainerSlidingMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -17,14 +17,14 @@
 
 namespace RevLanguage {
     
-    class Move_MultivariatePhyloProcessSliding : public Move {
+    class Move_MultivariateRealNodeValTreeSliding : public Move {
         
     public:
         
-        Move_MultivariatePhyloProcessSliding(void);                                                                                         //!< Default constructor
+        Move_MultivariateRealNodeValTreeSliding(void);                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual Move_MultivariatePhyloProcessSliding*               clone(void) const;                                                      //!< Clone object
+        virtual Move_MultivariateRealNodeValTreeSliding*               clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec

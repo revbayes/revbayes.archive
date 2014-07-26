@@ -115,8 +115,8 @@
 #include "Move_MatrixSingleElementSlide.h"
 
 
-///* Moves on precision matrices */
-#include "Move_PrecisionMatrixSimple.h"
+///* Moves on covariance matrices */
+#include "Move_RealSymmetricMatrixSimple.h"
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
@@ -130,8 +130,8 @@
 
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
-#include "Move_MultivariatePhyloProcessTranslation.h"
-#include "Move_MultivariatePhyloProcessSliding.h"
+#include "Move_MultivariateRealNodeValTreeTranslation.h"
+#include "Move_MultivariateRealNodeValTreeSliding.h"
 #include "Move_ConjugateInverseWishartBrownian.h"
 #include "Move_RealNodeValTreeSliding.h"
 
@@ -474,7 +474,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvPrecisionMatrixSimple",       new Move_PrecisionMatrixSimple() );
+        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
+        addTypeWithConstructor("mvCovarianceMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
@@ -515,10 +516,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
 
         /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
-        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariatePhyloProcessTranslation() );
-        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariatePhyloProcessSliding() );
+        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );
+        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariateRealNodeValTreeSliding() );
+        addTypeWithConstructor("mvMultivariateRealNodeValTreeTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );
+        addTypeWithConstructor("mvMultivariateRealNodeValTreeSliding",    new Move_MultivariateRealNodeValTreeSliding() );
         addTypeWithConstructor("mvConjugateInverseWishartBrownian",    new Move_ConjugateInverseWishartBrownian() );
         addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
+        addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );

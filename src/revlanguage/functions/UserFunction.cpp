@@ -8,7 +8,7 @@
 #include "DnaState.h"
 #include "Ellipsis.h"
 #include "MatrixReal.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbUtil.h"
