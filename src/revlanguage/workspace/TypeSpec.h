@@ -1,64 +1,82 @@
-/**
- * @file
- * This file contains the declaration of TypeSpec, which is
- * used to hold type specifications.
- *
- * @brief Declaration of TypeSpec
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2010-09-06, version 1.0
- *
- * $Id$
- */
-
-#ifndef TypeSpec_H 
+#ifndef TypeSpec_H
 #define TypeSpec_H
 
 #include <string>
 
+
 namespace RevLanguage {
 
-class TypeSpec {
+    /**
+     * @brief TypeSpec: holding type specifications
+     *
+     * A type specification is a vector of strings describing
+     * the inheritance for a Rev type. For instance, the Rev
+     * type "Natural" has the type specification:
+     *
+     * [ "RevObject", "Integer", "Natural" ]
+     *
+     * and the type "Simplex" has the type specification:
+     *
+     * [ "RevObject", "Container", "ModelContainer", "Real[]", "Simplex" ]
+     *
+     * The TypeSpec class is simply a way of organizing the type
+     * specifications, and providing some related type checking
+     * functionality.
+     *
+     * The Rev type specification is inspired by the "class" attribute
+     * in R. The type specification can be accessed using the "class"
+     * function in Rev, while the type can be accessed using the "type"
+     * function.
+     *
+     * We do not need independent copies of the parent or the element
+     * type spec pointers because of the way type specifications are used
+     * in Rev. Rev types and their type specifications are guaranteed to
+     * be created in a top-down manner, and remain in place throughout the
+     * duration of the run because of the use of the static type spec
+     * functions in all Rev classes.
+     *
+     * We give out pointers to parentTypeSpec and elementTypeSpec here
+     * without any checking because this is performance-critical code.
+     * We assume that the caller uses the class appropriately.
+     */
+    class TypeSpec {
     
     public:
-                                    TypeSpec(const std::string& objType);                                                           //!< Complete constructor (no parent)
-                                    TypeSpec(const TypeSpec& base, TypeSpec* elemType);                                             //!< Complete constructor with element type (for Vectors)
-                                    TypeSpec(const std::string& objType, TypeSpec* p, TypeSpec* elemType = NULL);                   //!< Complete constructor (with parent)
-                                    TypeSpec(const TypeSpec& ts);                                                                   //!< Copy Constructor
-        virtual                    ~TypeSpec(void);                                                                                 //!< Destructor
-                
+                                    TypeSpec(const std::string& objType, const TypeSpec* par);                              //!< Standard constructor
+                                    TypeSpec(const std::string& objType, const TypeSpec* par, const TypeSpec* elemType);    //!< Constructor for container object
+        
                                     // Operators
-        TypeSpec&                   operator=(const TypeSpec& x);                                                                   //!< Assignment operator
-        bool                        operator==(const TypeSpec& x) const;                                                            //!< Equals operator
-        bool                        operator!=(const TypeSpec& x) const { return !operator==(x); }                                  //!< Not equals operator
-                                    operator std::string(void) const;                                                               //!< Type conversion to RlString
+        bool                        operator==(const TypeSpec& x) const;                                            //!< Equals operator
+        bool                        operator!=(const TypeSpec& x) const;                                            //!< Not equals operator
 
                                     // Regular functions
-        const std::string&          getBaseType(void) const { return baseType; }                                                    //!< Get the element type
-        const TypeSpec&             getElementType(void) const { return *elementType; }                                             //!< Get the element type
-        const TypeSpec*             getParentType(void) const { return parent; }
-        const std::string&          getType(void) const { return type; }                                                            //!< Get object type
-        bool                        isDerivedOf(const TypeSpec& x) const;                                                           //!< Test whether the type represented by this object is of the same or derived type of the argument
-        void                        setElementType(TypeSpec* et);                                                                   //!< Set the element type of this type spec
-        const std::string&          toString(void) const;                                                                           //!< Express as a RlString
+        const size_t                getDim(void) const;                                                             //!< Get object dimensions
+        const size_t                getTotalDim(void) const;                                                        //!< Get object + element dimensions
+        const std::string&          getElementType(void) const;                                                     //!< Get element type, if container
+        const TypeSpec*             getElementTypeSpec(void) const;                                                 //!< Get element type spec, if container
+        const std::string&          getParentType(void) const;                                                      //!< Get parent type
+        const TypeSpec*             getParentTypeSpec(void) const;                                                  //!< Get parent type spec
+        const std::string&          getType(void) const;                                                            //!< Get object type
+        bool                        isDerivedOf(const TypeSpec& x) const;                                           //!< Test whether the type is the same or derived from x
+//        ModelVector<RlString>*      makeRevClass(void) const;                                                       //!< Make Rev representation of class vector
+//        RlString*                   makeRevType(void) const;                                                        //!< Make Rev representation of type string
 
     private:
+                                    // Helper functions
+        size_t                      getDimFromClass(void) const;                                                    //!< Get object dimensions using type spec hierarchy
+        const TypeSpec*             getElementTypeSpecFromClass(void) const;                                        //!< Make element type spec, if container, using type spec hierarchy
+
                                     // Member variables
-        std::string                 baseType;                                                                                       //!< The base type of the object or objects
-        std::string                 type;                                                                                           //!< The full type including base and element types
-        TypeSpec*                   elementType;                                                                                    //!< The type of the elements if this is a container
-        TypeSpec*                   parent;
+        size_t                      dim;                                                                            //!< The dimension of the type
+        const TypeSpec*             element;                                                                        //!< Pointer to element type spec, if any
+        const TypeSpec*             parent;                                                                         //!< Pointer to the parent type
+        std::string                 type;                                                                           //!< The type
+    };
 
-};
-
-                                    // Global functions using the class
-        std::ostream&               operator<<(std::ostream& o, const TypeSpec& x);                                                 //!< Overloaded output operator
-        std::string                 operator+(const std::string& o, const TypeSpec& x);                                             //!< Concatenation to std::string
+    // Global functions using the class
+    std::ostream&                   operator<<(std::ostream& o, const TypeSpec& x);                                 //!< Overloaded output operator
 
 }
+
 
 #endif

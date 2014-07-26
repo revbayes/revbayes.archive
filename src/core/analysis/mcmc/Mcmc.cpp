@@ -94,20 +94,11 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
         
 #ifdef DEBUG_MCMC
         double lnProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            lnProb += (*it)->getLnProbability();
-        }
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            (*it)->touch();
-        }
-        double touchedLnProb = 0.0;
         double lnLikelihoodProb = 0.0;
         double lnPriorProb = 0.0;
         for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
         {
-            touchedLnProb += (*it)->getLnProbability();
+            lnProb += (*it)->getLnProbability();
             if ( (*it)->isClamped() )
             {
                 lnLikelihoodProb += (*it)->getLnProbability();
@@ -117,11 +108,54 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
                 lnPriorProb += (*it)->getLnProbability();
             }
         }
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->touch();
+        }
+        double touchedLnProb = 0.0;
+        double touchedLnLikelihoodProb = 0.0;
+        double touchedLnPriorProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            touchedLnProb += (*it)->getLnProbability();
+            if ( (*it)->isClamped() )
+            {
+                touchedLnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                touchedLnPriorProb += (*it)->getLnProbability();
+            }
+        }
+        
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            (*it)->keep();
+            (*it)->touch();
+        }
+        double touchedAgainLnProb = 0.0;
+        double touchedAgainLnLikelihoodProb = 0.0;
+        double touchedAgainLnPriorProb = 0.0;
+        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
+        {
+            touchedAgainLnProb += (*it)->getLnProbability();
+            if ( (*it)->isClamped() )
+            {
+                touchedAgainLnLikelihoodProb += (*it)->getLnProbability();
+            }
+            else
+            {
+                touchedAgainLnPriorProb += (*it)->getLnProbability();
+            }
+        }
         
         if ( fabs(lnProb - touchedLnProb) > 1E-8 )
         {
+            std::cout << lnPriorProb << "\t\t-\t\t" << touchedLnPriorProb << "\t\t-\t\t" << touchedAgainLnPriorProb << std::endl;
+            std::cout << lnLikelihoodProb << "\t\t-\t\t" << touchedLnLikelihoodProb << "\t\t-\t\t" << touchedAgainLnLikelihoodProb << std::endl;
+            std::cout << lnProb << "\t\t-\t\t" << touchedLnProb << "\t\t-\t\t" << touchedAgainLnProb << std::endl;
             std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
-            throw RbException("Error in MCMC probability computation.");
+//            throw RbException("Error in MCMC probability computation.");
         }
 #endif
         

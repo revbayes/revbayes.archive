@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxAssignExpr, which is
- * used to hold assignment expressions in the syntax tree. These
- * can be left-arrow, equation or tilde assignments.
- *
- * @brief Declaration of SyntaxAssignExpr
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-09-07 12:47:31 +0200 (Fri, 07 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: SyntaxAssignExpr.h 1801 2012-09-07 10:47:31Z hoehna $
- */
-
 #ifndef SyntaxStochasticAssignment_H
 #define SyntaxStochasticAssignment_H
 
@@ -26,30 +10,48 @@
 
 namespace RevLanguage {
     
+    /**
+     * @brief Stochastic assignment
+     *
+     * Objects of this class are used to hold tilde or stochastic
+     * assignment statements. The member variables are the lhs
+     * (left-hand side) and rhs (righ-hand side) expressions.
+     *
+     * A stochastic assignment or tilde assignment is a statement
+     * of the type
+     *
+     *    a ~ norm( 0.0, 1.0 )
+     *
+     * and uses a tilde assignment operator.
+     *
+     * The rhs expression is evaluated as a dynamic expression.
+     * The resulting variable is checked for its type, to make sure
+     * that it is a distribution. A random variable is then drawn
+     * from the distribution, and it is inserted into the variable
+     * resulting from evaluation of the left-hand side expression.
+     */
     class SyntaxStochasticAssignment : public SyntaxElement {
         
     public:
-        SyntaxStochasticAssignment(SyntaxVariable* var, SyntaxElement* expr);                                               //!< Constructor with lhs = variable
-        SyntaxStochasticAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr);                                       //!< Constructor with lhs = function call
-        SyntaxStochasticAssignment(const SyntaxStochasticAssignment& x);                                                    //!< Copy constructor
-	    virtual                             ~SyntaxStochasticAssignment();                                                  //!< Destructor
+        SyntaxStochasticAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                                 //!< Basic constructor
+        SyntaxStochasticAssignment(const SyntaxStochasticAssignment& x);                                            //!< Copy constructor
+        
+	    virtual                        ~SyntaxStochasticAssignment();                                               //!< Destructor
         
         // Assignment operator
-        SyntaxStochasticAssignment&         operator=(const SyntaxStochasticAssignment& x);                                 //!< Assignment operator
+        SyntaxStochasticAssignment&     operator=(const SyntaxStochasticAssignment& x);                             //!< Assignment operator
         
         // Basic utility functions
-        SyntaxStochasticAssignment*         clone() const;                                                                  //!< Clone object
-        bool                                isAssignment(void) const;
-        void                                printValue(std::ostream& o) const;                                              //!< Print info about object
+        SyntaxStochasticAssignment*     clone() const;                                                              //!< Clone object
+        bool                            isAssignment(void) const;                                                   //!< Is this an assignment statement?
+        void                            printValue(std::ostream& o) const;                                          //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                              //!< Get semantic value
-        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
+        RevPtr<Variable>                evaluateContent(Environment& env);                                          //!< Get semantic value
         
     protected:
-        SyntaxVariable*                     variable;                                                                       //!< A lhs variable (or NULL)
-        SyntaxFunctionCall*                 functionCall;                                                                   //!< A lhs function call (or NULL)
-        SyntaxElement*                      expression;                                                                     //!< The rhs expression
+        SyntaxElement*                  lhsExpression;                                                              //!< The lhs expression
+        SyntaxElement*                  rhsExpression;                                                              //!< The rhs expression
         
     };
     

@@ -39,7 +39,6 @@ namespace RevBayesCore {
         double                                      computeLnProbability(void);
         void                                        redrawValue(void);
         void                                        setValue(ContinuousCharacterData* v);
-        void                                        swapParameter(const DagNode *oldP, const DagNode *newP);
         void                                        keepSpecialization(DagNode* affecter);
         void                                        restoreSpecialization(DagNode* restorer);
         void                                        touchSpecialization(DagNode* toucher);
@@ -47,6 +46,10 @@ namespace RevBayesCore {
         std::vector<std::vector<double> >           getResiduals(void) const;
         double                                      getResiduals(int i, int j) const;
  		
+        // Parameter management functions
+        std::set<const DagNode*>                    getParameters(void) const;                                          //!< Return parameters
+        void                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        
     private:
         
         double                                      computeLnProbComposite(void);

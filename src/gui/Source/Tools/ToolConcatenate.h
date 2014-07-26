@@ -16,9 +16,9 @@
     int                            mergeMethod;
 }
 
-@property (readwrite) BOOL useMinimalSet;
-@property (readwrite) BOOL matchUsingNames;
-@property (readwrite) int  mergeMethod;
+@property (nonatomic) BOOL         useMinimalSet;
+@property (nonatomic) BOOL         matchUsingNames;
+@property (nonatomic) int          mergeMethod;
 
 - (void)assembleNames:(NSMutableArray*)names usingMethod:(int)overlapMethod fromMatrices:(NSMutableArray*)alignedData;
 - (void)closeControlPanel;

@@ -33,12 +33,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func__sub*                                       clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                                      execute(void);                                                                  //!< Execute function
+        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -68,7 +68,7 @@ RevLanguage::Func__sub<firstValType, secondValType, retType>* RevLanguage::Func_
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func__sub<firstValType, secondValType, retType>::execute() {
+RevLanguage::RevPtr<Variable> RevLanguage::Func__sub<firstValType, secondValType, retType>::execute() {
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
@@ -78,7 +78,7 @@ RevLanguage::RevObject* RevLanguage::Func__sub<firstValType, secondValType, retT
     
     retType* value = new retType( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -101,20 +101,20 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__sub<firstValType, secondVal
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const std::string& RevLanguage::Func__sub<firstValType, secondValType, retType>::getClassName(void) { 
+const std::string& RevLanguage::Func__sub<firstValType, secondValType, retType>::getClassType(void) { 
     
-    static std::string rbClassName = "Func__sub<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string revType = "Func__sub<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__sub<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

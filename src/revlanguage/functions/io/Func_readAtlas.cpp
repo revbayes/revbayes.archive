@@ -2,6 +2,7 @@
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readAtlas.h"
+#include "ModelVector.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
@@ -13,7 +14,6 @@
 #include "StringUtilities.h"
 #include "TimeAtlas.h"
 #include "TimeAtlasDataReader.h"
-#include "Vector.h"
 
 #include <map>
 #include <set>
@@ -30,7 +30,7 @@ Func_readAtlas* Func_readAtlas::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readAtlas::execute( void ) {
+RevPtr<Variable> Func_readAtlas::execute( void ) {
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -38,7 +38,7 @@ RevObject* Func_readAtlas::execute( void ) {
     RevBayesCore::TimeAtlasDataReader* tadr = new RevBayesCore::TimeAtlasDataReader(fn.getValue());
     RevBayesCore::TimeAtlas* atlas = new RevBayesCore::TimeAtlas(tadr);
 
-    return new RlAtlas(atlas);
+    return new Variable( new RlAtlas(atlas) );
 }
 
 
@@ -78,20 +78,20 @@ const ArgumentRules& Func_readAtlas::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_readAtlas::getClassName(void) {
+/** Get Rev type of object */
+const std::string& Func_readAtlas::getClassType(void) {
     
-    static std::string rbClassName = "Func_readAtlas";
+    static std::string revType = "Func_readAtlas";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readAtlas::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 /** Get type spec */

@@ -6,8 +6,6 @@
 using namespace RevBayesCore;
 
 BernoulliDistribution::BernoulliDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), p( q ) {
-    // add the lambda parameter as a parent
-    addParameter( p );
     
     double u = GLOBAL_RNG->uniform01();
     
@@ -16,7 +14,6 @@ BernoulliDistribution::BernoulliDistribution(const TypedDagNode<double> *q) : Ty
 
 
 BernoulliDistribution::BernoulliDistribution(const BernoulliDistribution &d) : TypedDistribution<int>( d ), p( d.p ) {
-    // parameters are automatically copied
 }
 
 
@@ -47,6 +44,19 @@ void BernoulliDistribution::redrawValue( void ) {
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BernoulliDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( p );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void BernoulliDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == p) 

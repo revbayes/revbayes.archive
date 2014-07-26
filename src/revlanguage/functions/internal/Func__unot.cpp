@@ -30,7 +30,7 @@ Func__unot* Func__unot::clone( void ) const {
 
 
 /** Execute function: We rely on getValue unot overloaded push_back to provide functionality */
-RevObject* Func__unot::execute( void ) {
+RevPtr<Variable> Func__unot::execute( void ) {
     
     const RevBayesCore::TypedDagNode<bool>* val = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
@@ -40,8 +40,7 @@ RevObject* Func__unot::execute( void ) {
     
     RlBoolean *theBool = new RlBoolean( detNode );
     
-    return theBool;
-    
+    return new Variable( theBool );
 }
 
 
@@ -61,21 +60,21 @@ const ArgumentRules& Func__unot::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func__unot::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func__unot::getClassType(void) { 
     
-    static std::string rbClassName = "Func__unot";
+    static std::string revType = "Func__unot";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func__unot::getClassTypeSpec(void) { 
+const TypeSpec& Func__unot::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -1,31 +1,13 @@
-/**
- * @file
- * This file contains the implementation of RlBoolean, which is
- * a RevBayes wrapper around a regular bool.
- *
- * @brief Implementation of RlBoolean
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-09-04 20:14:58 +0200 (Tue, 04 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: RlBoolean.cpp 1793 2012-09-04 18:14:58Z hoehna $
- */
-
-
+#include "ModelVEctor.h"
 #include "Natural.h"
-#include "RlTimeTree.h"
 #include "RbUtil.h"
+#include "RlTimeTree.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -67,22 +49,22 @@ TimeTree* TimeTree::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "nnodes") 
     {
         size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new Natural( n );
+        return new Variable( new Natural( n ) );
     }
     else if (name == "height") 
     {
         const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new RealPos( r.getTime() );
+        return new Variable( new RealPos( r.getTime() ) );
     } 
     else if (name == "names") 
     {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new Vector<RlString>( n );
+        return new Variable( new ModelVector<RlString>( n ) );
     } 
     else if (name == "rescale")
     {
@@ -97,20 +79,20 @@ RevLanguage::RevObject* TimeTree::executeMethod(std::string const &name, const s
 }
 
 
-/** Get class name of object */
-const std::string& TimeTree::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& TimeTree::getClassType(void) { 
     
-    static std::string rbClassName = "TimeTree";
+    static std::string revType = "TimeTree";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& TimeTree::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -125,18 +107,18 @@ const RevLanguage::MethodTable& TimeTree::getMethods(void) const
     {
         
         ArgumentRules* nnodesArgRules = new ArgumentRules();
-        methods.addFunction("nnodes", new MemberFunction(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
+        methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
 
         ArgumentRules* heightArgRules = new ArgumentRules();
-        methods.addFunction("height", new MemberFunction(Natural::getClassTypeSpec(),          heightArgRules   ) );
+        methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),          heightArgRules   ) );
 
         ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberFunction(Vector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
+        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
 
         ArgumentRules* rescaleArgRules = new ArgumentRules();
         rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
-        methods.addFunction("rescale", new MemberFunction(RlUtils::Void,                       rescaleArgRules  ) );
-
+        methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
+        
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::TimeTree>::getMethods() );
         methodsSet = true;

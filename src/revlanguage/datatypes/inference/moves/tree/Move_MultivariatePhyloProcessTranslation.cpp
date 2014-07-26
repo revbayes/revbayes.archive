@@ -58,19 +58,19 @@ void Move_MultivariatePhyloProcessTranslation::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_MultivariatePhyloProcessTranslation::getClassName(void) { 
+const std::string& Move_MultivariatePhyloProcessTranslation::getClassType(void) { 
     
-    static std::string rbClassName = "Move_MultivariatePhyloProcessTranslation";
+    static std::string revClassType = "Move_MultivariatePhyloProcessTranslation";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_MultivariatePhyloProcessTranslation::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 

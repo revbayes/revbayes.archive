@@ -36,18 +36,18 @@ namespace RevBayesCore {
         
     public:
         TreeAssemblyFunction(const TypedDagNode<Topology> *t, const TypedDagNode<std::vector<double> > *b);
-        TreeAssemblyFunction(const TreeAssemblyFunction &n);                                                                              //!< Copy constructor
-        virtual                                            ~TreeAssemblyFunction(void);                                                    //!< Virtual destructor
+        virtual                                            ~TreeAssemblyFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
-        TreeAssemblyFunction*                               clone(void) const;                                                              //!< Create an independent clone
+        TreeAssemblyFunction*                               clone(void) const;                                                                  //!< Create an independent clone
         void                                                keep(DagNode* affecter);
         void                                                restore(DagNode *restorer);   
+        void                                                reInitialized(void);                                                                //!< The arguments have been re-initialized
         void                                                touch(DagNode *toucher );
         void                                                update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                    //!< Implementation of swaping parameters
         
     private:
         

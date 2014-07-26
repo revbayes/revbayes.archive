@@ -9,16 +9,17 @@
 #include "DistanceDependentDispersalFunction.h"
 #include "Func_biogeo_grm.h"
 #include "GeographyRateModifier.h"
+#include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlAtlas.h"
+#include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "RlGeographyRateModifier.h"
 #include "RlRateMap.h"
 #include "RlSimplex.h"
 #include "TimeAtlas.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -35,7 +36,7 @@ Func_biogeo_grm* Func_biogeo_grm::clone( void ) const {
 }
 
 
-RevObject* Func_biogeo_grm::execute() {
+RevPtr<Variable> Func_biogeo_grm::execute() {
     
     const RevBayesCore::TimeAtlas* atlas = &( static_cast<const RlAtlas&>( this->args[0].getVariable()->getRevObject() ).getValue() );
     
@@ -50,7 +51,7 @@ RevObject* Func_biogeo_grm::execute() {
     
     RlGeographyRateModifier* value = new RlGeographyRateModifier( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -75,19 +76,19 @@ const ArgumentRules& Func_biogeo_grm::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_biogeo_grm::getClassName(void) {
+const std::string& Func_biogeo_grm::getClassType(void) {
     
-    static std::string rbClassName = "Func_biogeo_grm";
+    static std::string revType = "Func_biogeo_grm";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_biogeo_grm::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

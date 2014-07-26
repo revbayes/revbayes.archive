@@ -13,22 +13,22 @@
 
 
 #include "WhiteNoisePhyloProcess.h"
+#include "ModelVector.h"
 #include "RlTypedDistribution.h"
 #include "RlSimplex.h"
 #include "RealPos.h"
-#include "Vector.h"
 
 namespace RevLanguage {
 
-    class Dist_whiteNoise :  public TypedDistribution< Vector<RealPos>  > {
+    class Dist_whiteNoise :  public TypedDistribution< ModelVector<RealPos>  > {
         
     public:
         Dist_whiteNoise( void );
         virtual ~Dist_whiteNoise();
         
         // Basic utility functions
-        Dist_whiteNoise*                         clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        Dist_whiteNoise*                                clone(void) const;                                                              //!< Clone the object
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)

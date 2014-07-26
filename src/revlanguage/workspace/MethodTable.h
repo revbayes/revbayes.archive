@@ -45,7 +45,7 @@ namespace RevLanguage {
             return new MethodTable(*this);
         } //!< Clone object
 
-        // MethodTable function (we just set the name of MemberFunction objects here)
+        // MethodTable function (we just set the name of MemberProcedure objects here)
         void addFunction(const std::string name, Function *func); //!< Add function; set name if appropriate
 
     };

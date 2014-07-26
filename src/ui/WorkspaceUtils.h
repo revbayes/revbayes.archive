@@ -6,7 +6,7 @@
 #include "RevObject.h"
 #include "RevPtr.h"
 
-#include "VariableSlot.h"
+#include "Variable.h"
 #include "RlFunction.h"
 #include "ArgumentRules.h"
 #include "MethodTable.h"
@@ -23,7 +23,7 @@ typedef std::vector<std::string> StringVector;
 typedef std::vector<RevLanguage::Function *> FunctionVector;
 typedef std::vector<RevLanguage::Argument> ArgumentVector;
 typedef std::multimap<std::string, RevLanguage::Function*> FunctionMap;
-typedef std::map<std::string, RevLanguage::VariableSlot* > VariableTable;
+typedef std::map<std::string, RevLanguage::RevPtr<RevLanguage::Variable> > VariableTable;
 typedef std::map<std::string, RevLanguage::RevObject*> TypeTable;
 
 class WorkspaceUtils {
@@ -163,7 +163,7 @@ public:
             return sv;
         }
 
-        RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().getNewTypeObject(name);
+        RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().makeNewDefaultObject(name);
         RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (type->getMethods());
 
         std::multimap<std::string, RevLanguage::Function*> printTable = methods.getTableCopy(false);

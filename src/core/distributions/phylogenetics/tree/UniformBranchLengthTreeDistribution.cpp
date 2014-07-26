@@ -26,8 +26,6 @@ UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const T
     taxonNames( taxaNames )
 {
     
-    addParameter(maxBranchLength);
-    
     numTaxa = taxonNames.size();
     
     simulateTree();
@@ -40,7 +38,6 @@ UniformBranchLengthTreeDistribution::UniformBranchLengthTreeDistribution(const U
     numTaxa( x.numTaxa ),
     taxonNames( x.taxonNames )
 {
-    // parameters are automatically copied
 }
 
 
@@ -171,8 +168,23 @@ void UniformBranchLengthTreeDistribution::simulateTree( void ) {
 }
 
 
-void UniformBranchLengthTreeDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == maxBranchLength) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> UniformBranchLengthTreeDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( maxBranchLength );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void UniformBranchLengthTreeDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if (oldP == maxBranchLength)
+    {
         maxBranchLength = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

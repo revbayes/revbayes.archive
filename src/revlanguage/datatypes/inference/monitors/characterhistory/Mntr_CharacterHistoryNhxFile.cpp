@@ -5,6 +5,7 @@
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 #include "OptionRule.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RevObject.h"
 #include "RlAbstractCharacterData.h"
@@ -16,7 +17,6 @@
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -68,19 +68,19 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Mntr_CharacterHistoryNhxFile::getClassName(void) {
+const std::string& Mntr_CharacterHistoryNhxFile::getClassType(void) {
     
-    static std::string rbClassName = "Mntr_CharacterHistoryNhxFile";
+    static std::string revClassType = "Mntr_CharacterHistoryNhxFile";
     
-	return rbClassName;
+	return revClassType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_CharacterHistoryNhxFile::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revClassTypeSpec;
 }
 
 
@@ -104,7 +104,7 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getMemberRules(void) const {
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
-        Vector<RlString> options;
+        std::vector<RlString> options;
 //        options.push_back( RlString("std") );
         options.push_back( RlString("biogeo") );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );

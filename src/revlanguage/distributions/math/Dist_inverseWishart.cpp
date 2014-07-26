@@ -70,19 +70,19 @@ RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistributio
 
 
 /* Get class name of object */
-const std::string& Dist_inverseWishart::getClassName(void) {
+const std::string& Dist_inverseWishart::getClassType(void) {
     
-    static std::string rbClassName = "Dist_inverseWishart";
+    static std::string revClassType = "Dist_inverseWishart";
     
-	return rbClassName;
+	return revClassType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revClassTypeSpec;
 }
 
 

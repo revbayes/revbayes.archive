@@ -23,7 +23,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         AbstractDiscreteCharacterData*                          clone(void) const;                                                                          //!< Clone object
-        static const std::string&                               getClassName(void);                                                                         //!< Get class name
+        static const std::string&                               getClassType(void);                                                                         //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                     //!< Get class type spec
         const TypeSpec&                                         getTypeSpec(void) const;                                                                    //!< Get language type of the object
         

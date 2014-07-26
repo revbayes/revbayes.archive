@@ -45,20 +45,20 @@ void Move_NNINonclock::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
-const std::string& Move_NNINonclock::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Move_NNINonclock::getClassType(void) { 
     
-    static std::string rbClassName = "Move_NNI";
+    static std::string revType = "Move_NNI";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_NNINonclock::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

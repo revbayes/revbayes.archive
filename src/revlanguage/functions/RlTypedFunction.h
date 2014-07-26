@@ -25,30 +25,29 @@
 #include "RlFunction.h"
 #include "TypedFunction.h"
 
-#if 0
 namespace RevLanguage {
     
     template <typename valueType>
     class TypedFunction : public Function {
         
     public:
-        virtual                                         ~TypedFunction(void);                                                                  //!< Destructor
-        TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                //!< Copy constuctor
+        virtual                                         ~TypedFunction(void);                                                               //!< Destructor
+        TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                        //!< Copy constuctor
         
-        virtual valueType*                              execute(void);                                                   //!< Create a random variable from this distribution        
+        virtual RevPtr<Variable>                        execute(void);                                                                      //!< Create a random variable from this distribution
         
         // Basic utility functions you have to override
         virtual TypedFunction<valueType>*               clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
         
         
         // Class-specific functions you have to override
-        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                                                 //!< Create a random variable from this distribution
+        virtual RevBayesCore::TypedFunction<typename valueType::valueType>*     createFunction(void) const = 0;                             //!< Create a random variable from this distribution
         
         
     protected:
-        TypedFunction<valueType>(void);                                                                                                 //!< Basic constructor
+        TypedFunction<valueType>(void);                                                                                                     //!< Basic constructor
         
     };
     
@@ -78,35 +77,34 @@ RevLanguage::TypedFunction<valueType>::~TypedFunction() {
 
 
 template <typename valueType>
-valueType* RevLanguage::TypedFunction<valueType>::execute(void) { 
+RevPtr<Variable> RevLanguage::TypedFunction<valueType>::execute(void) {
     
     RevBayesCore::TypedFunction<typename valueType::valueType>* d = createFunction();
     RevBayesCore::TypedDagNode<typename valueType::valueType>* rv  = new RevBayesCore::DeterministicNode<typename valueType::valueType>("", d);
     
-    return new valueType(rv);
+    return new Variable( new valueType(rv) );
 }
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <typename valueType>
-const std::string& RevLanguage::TypedFunction<valueType>::getClassName(void) { 
+const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void) { 
     
-    static std::string rbClassName = "Function<"+ valueType::getClassName() +">";
+    static std::string revType = "Function<"+ valueType::getClassType() +">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 template <typename valueType>
 const RevLanguage::TypeSpec& RevLanguage::TypedFunction<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 #endif
 
-#endif
 

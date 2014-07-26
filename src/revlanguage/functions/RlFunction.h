@@ -9,6 +9,8 @@
 #include "ArgumentRules.h"
 #include "Environment.h"
 #include "RevPtr.h"
+#include "TypeSpec.h"
+
 
 namespace RevLanguage {
 
@@ -29,10 +31,6 @@ namespace RevLanguage {
      * The processing of labeled argument values is done in the function
      * processArguments, which will throw an error if the provided
      * arguments do not match.
-     *
-     * \author RevBayes Core Development Team
-     * \copyright GPL version 3
-     *
      */
     class Function : public RevObject {
     public:
@@ -41,7 +39,7 @@ namespace RevLanguage {
 
         // Basic utility functions you have to override
         virtual Function*                               clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
 
         // Basic utility functions you may want to override
@@ -56,7 +54,7 @@ namespace RevLanguage {
         void                                            setName(const std::string& nm);                                                     //!< Name the function
     
         // Functions you have to override
-        virtual RevObject*                              execute(void) = 0;                                                                  //!< Execute function
+        virtual RevPtr<Variable>                        execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
@@ -67,7 +65,7 @@ namespace RevLanguage {
 
 
         // Function functions you should not override
-        void                                            clear(void);                                                                        //!< Clear argument Environment "args"
+        void                                            clear(void);                                                                        //!< Clear argument frame "args"
         const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
         std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
         void                                            setArgument(const std::string& name, Argument& arg, bool c);                        //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()

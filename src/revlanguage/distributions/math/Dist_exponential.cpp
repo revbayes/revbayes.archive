@@ -24,7 +24,7 @@ Dist_exponential::Dist_exponential() : PositiveContinuousDistribution()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Dist_exponential* Dist_exponential::clone( void ) const 
 {
@@ -56,16 +56,16 @@ RevBayesCore::ExponentialDistribution* Dist_exponential::createDistribution( voi
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_exponential::getClassName(void) 
+const std::string& Dist_exponential::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_exponential";
+    static std::string revType = "Dist_exponential";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -77,9 +77,9 @@ const std::string& Dist_exponential::getClassName(void)
 const TypeSpec& Dist_exponential::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

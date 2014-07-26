@@ -1,11 +1,7 @@
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxMultiplicationAssignment.h"
-#include "Workspace.h"
 
 #include <iostream>
 #include <list>
@@ -13,147 +9,125 @@
 
 using namespace RevLanguage;
 
-/** 
- * Construct from variable and expression. 
- * Here only the object is instanciated and the variables set.
+
+/**
+ * Construct from lhs and rhs expressions.
+ * Here only the object is instantiated and the variables set.
  *
- * \param[in]   var         The left hand side variable.
- * \param[in]   expr        The expression on the right hand side.
+ * \param[in]   lhsExpr     The left-hand side expression.
+ * \param[in]   rhsExpr     The right-hand side expression.
  */
-SyntaxMultiplicationAssignment::SyntaxMultiplicationAssignment(SyntaxVariable* var, SyntaxElement* expr) : SyntaxElement(), 
-variable(var), 
-functionCall(NULL), 
-expression(expr) 
+SyntaxMultiplicationAssignment::SyntaxMultiplicationAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
+SyntaxElement(),
+lhsExpression( lhsExpr ),
+rhsExpression( rhsExpr )
 {
-    
-}
-
-
-
-/** 
- * Construct from function call and expression. 
- * Here only the object is instanciated and the variables set.
- *
- * \param[in]   fxnCall     The function call returning the left hand side variable.
- * \param[in]   expr        The expression on the right hand side.
- */
-SyntaxMultiplicationAssignment::SyntaxMultiplicationAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(),
-variable(NULL), 
-functionCall(fxnCall), 
-expression(expr) 
-{
-    
-}
-
-
-/** 
- * Deep copy constructor.
- */
-SyntaxMultiplicationAssignment::SyntaxMultiplicationAssignment(const SyntaxMultiplicationAssignment& x) : SyntaxElement(x) 
-{
-    
-    if ( x.variable != NULL )
-        variable   = x.variable->clone();
-    
-    if ( x.functionCall != NULL )
-        functionCall = x.functionCall->clone();
-    
-    expression = x.expression->clone();
-}
-
-
-/** 
- * Destructor deletes operands 
- */
-SyntaxMultiplicationAssignment::~SyntaxMultiplicationAssignment() 
-{
-    
-    delete variable;
-    delete functionCall;
-    delete expression;
-    
-}
-
-
-/** 
- * Assignment operator performing a deep assignment.
- */
-SyntaxMultiplicationAssignment& SyntaxMultiplicationAssignment::operator=(const SyntaxMultiplicationAssignment& x) 
-{
-    
-    if ( this != &x ) 
-    {
-        
-        delete functionCall;
-        delete variable;
-        delete expression;
-        
-        functionCall = NULL;
-        variable = NULL;
-        
-        if ( x.variable != NULL )
-            variable   = x.variable->clone();
-        
-        if ( x.functionCall != NULL )
-            functionCall = x.functionCall->clone();
-        
-        expression = x.expression->clone();
-    }
-    
-    return (*this);
 }
 
 
 /**
- * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
- *
- * \return A new copy of the model. 
+ * Deep copy constructor.
  */
-SyntaxMultiplicationAssignment* SyntaxMultiplicationAssignment::clone () const 
+SyntaxMultiplicationAssignment::SyntaxMultiplicationAssignment( const SyntaxMultiplicationAssignment& x ) :
+SyntaxElement(x)
 {
-    
-    return new SyntaxMultiplicationAssignment(*this);
+    lhsExpression = x.lhsExpression->clone();
+    rhsExpression = x.rhsExpression->clone();
 }
 
 
-/** 
- * Evaluate the content of this syntax element.
- * This will perform an Multiplication assignment operation.
+/**
+ * Destructor deletes operands
  */
-RevPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& env ) 
+SyntaxMultiplicationAssignment::~SyntaxMultiplicationAssignment()
 {
+    delete lhsExpression;
+    delete rhsExpression;
+}
+
+
+/**
+ * Assignment operator performing deep assignment.
+ */
+SyntaxMultiplicationAssignment& SyntaxMultiplicationAssignment::operator=( const SyntaxMultiplicationAssignment& x )
+{
+    if ( this != &x )
+    {
+        SyntaxElement::operator=( x );
+        
+        delete lhsExpression;
+        delete rhsExpression;
+        
+        lhsExpression = x.lhsExpression->clone();
+        rhsExpression = x.rhsExpression->clone();
+    }
     
+    return ( *this );
+}
+
+
+/**
+ * The clone function is a convenience function to create proper copies of inherited objects.
+ * That is, a.clone() will create a clone of type 'b' if the 'a' instance is of derived type 'b'.
+ *
+ * \return A new copy of myself
+ */
+SyntaxMultiplicationAssignment* SyntaxMultiplicationAssignment::clone () const
+{
+    return new SyntaxMultiplicationAssignment( *this );
+}
+
+
+/**
+ * Evaluate the content of this syntax element. This will perform
+ * a multiplication assignment operation.
+ */
+RevPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& env )
+{
 #ifdef DEBUG_PARSER
-    printf( "Evaluating multiplication assign expression\n" );
+    printf( "Evaluating multiplication assignment\n" );
 #endif
     
-    // Get variable info from lhs
-    RevPtr<Variable> theVariable = variable->createVariable( env );
-    
+    // Get variable from lhs. We use standard evaluation because the variable is
+    // implicitly on both sides (lhs and rhs) of this type of statement
+    RevPtr<Variable> theVariable = lhsExpression->evaluateContent( env );
     if ( theVariable == NULL )
         throw RbException( "Invalid NULL variable returned by lhs expression in multiplication assignment" );
     
+    // Make sure that the variable is constant
+    if ( !theVariable->getRevObject().isConstant() )
+        throw RbException( "Invalid multiplication assignment to dynamic variable" );
+    
+    // Record whether it is a control variable
+    bool isControlVar = theVariable->isControlVar();
+    
+    // Get a reference to the lhs value object
     const RevObject& lhs_value = theVariable->getRevObject();
     
-    
-    // Calculate the value of the rhs expression
-    const RevPtr<Variable>& rhs = expression->evaluateContent( env );
+    // Evaluate the rhs expression
+    const RevPtr<Variable>& rhs = rhsExpression->evaluateContent( env );
     if ( rhs == NULL )
         throw RbException( "Invalid NULL variable returned by rhs expression in multiplication assignment" );
     
-    // fill the slot with the new variable
+    // Get a reference to the rhs value object
     const RevObject& rhs_value = rhs->getRevObject();
     
+    // Generate result of the multiplication
     RevObject *newValue = lhs_value.multiply( rhs_value );
     
-    // set the value of the variable
+    // Fill the slot with the new variable
     theVariable->setRevObject( newValue );
+    
+    // Reset it as control variable, if it was a control variable before the assignment.
+    // When we fill the slot, the control variable property is reset to false by default.
+    if ( isControlVar )
+        theVariable->setControlVarState( true );
     
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
+    // Return the variable for further assignment
     return theVariable;
 }
 
@@ -164,36 +138,24 @@ RevPtr<Variable> SyntaxMultiplicationAssignment::evaluateContent( Environment& e
  *
  * \return     TRUE.
  */
-bool SyntaxMultiplicationAssignment::isAssignment( void ) const 
+bool SyntaxMultiplicationAssignment::isAssignment( void ) const
 {
     return true;
 }
 
 
-
-/** 
- * Print info about the syntax element 
- */
-void SyntaxMultiplicationAssignment::printValue(std::ostream& o) const 
-{
-    
-    o << "SyntaxMultiplicationAssignment:" << std::endl;
-    o << "variable      = ";
-    variable->printValue(o);
-    o << std::endl;
-    o << "expression    = ";
-    expression->printValue(o);
-    o << std::endl;
-}
-
-
 /**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
+ * Print info about the syntax element
  */
-void SyntaxMultiplicationAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
+void SyntaxMultiplicationAssignment::printValue(std::ostream& o) const
+{
+    o << "SyntaxMultiplicationAssignment:" << std::endl;
+    o << "lhsExpression = ";
+    lhsExpression->printValue(o);
+    o << std::endl;
+    o << "rhsExpression = ";
+    rhsExpression->printValue(o);
+    o << std::endl;
 }
 
 

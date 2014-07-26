@@ -32,11 +32,14 @@ namespace RevBayesCore {
         virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
         
                 
-        // public member functions you may want to overwrite
+        // public member functions you may want to override
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
-        virtual void                                        swapParameter(const DagNode *oldP, const DagNode *newP);                                            //!< Implementation of swaping parameters
         virtual void                                        redrawValue(void);                                              //!< Draw a new random value from the distribution
 
+        // Parameter management functions. You need to override both if you have additional parameters
+        virtual std::set<const DagNode*>                    getParameters(void) const;                                      //!< Return parameters
+        virtual void                                        swapParameter(const DagNode *oldP, const DagNode *newP);        //!< Swap a parameter
+        
     protected:  
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                                         //!< Compute the log-transformed probability of the current value.

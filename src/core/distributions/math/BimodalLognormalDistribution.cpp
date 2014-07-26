@@ -24,13 +24,6 @@ BimodalLognormalDistribution::BimodalLognormalDistribution(const TypedDagNode<do
     stDev2( s2 ),
     p( p )
 {
-    // add the parameters to the parents list
-    addParameter( mean1 );
-    addParameter( mean2 );
-    addParameter( stDev1 );
-    addParameter( stDev2 );
-    addParameter( p );
-    
     double u = GLOBAL_RNG->uniform01();
     if ( u < p->getValue() ) 
     {
@@ -56,7 +49,7 @@ double BimodalLognormalDistribution::cdf( void ) const
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the process. 
  */
@@ -127,6 +120,22 @@ void BimodalLognormalDistribution::redrawValue( void )
     {
         *value = RbStatistics::Lognormal::rv(mean2->getValue(), stDev2->getValue(), *GLOBAL_RNG);
     }
+}
+
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BimodalLognormalDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( mean1 );
+    parameters.insert( mean2 );
+    parameters.insert( stDev1 );
+    parameters.insert( stDev2 );
+    parameters.insert( p );
+    
+    parameters.erase( NULL );
+    return parameters;
 }
 
 

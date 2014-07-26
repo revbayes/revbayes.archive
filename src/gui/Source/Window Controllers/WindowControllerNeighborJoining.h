@@ -5,10 +5,10 @@
 
 @interface WindowControllerNeighborJoining : NSWindowController {
 
-    IBOutlet NSPopUpButton*       tieBreakerSelector;
-    IBOutlet NSSegmentedControl*  bioNjSelector;
+    IBOutlet NSPopUpButton*        tieBreakerSelector;
+    IBOutlet NSSegmentedControl*   bioNjSelector;
     
-    ToolNeighborJoining*          myTool;
+    ToolNeighborJoining*           myTool;
 }
 
 - (IBAction)cancelButtonAction:(id)sender;

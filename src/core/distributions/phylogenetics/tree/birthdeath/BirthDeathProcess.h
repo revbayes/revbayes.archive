@@ -36,8 +36,9 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         void                                                redrawValue(void);                                                                                  //!< Redraw a new value under the current parameters.
         
-        // public member functions you may want to overwrite
-        virtual void                                        swapParameter(const DagNode *oldP, const DagNode *newP);                                            //!< Implementation of swaping parameters
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         // pure virtual helper functions

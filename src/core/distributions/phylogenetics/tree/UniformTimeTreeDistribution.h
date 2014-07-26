@@ -34,7 +34,10 @@ namespace RevBayesCore {
         UniformTimeTreeDistribution*                        clone(void) const;                                          //!< Create an independent clone
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);    //!< Swap distribution parameters
+        
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
 

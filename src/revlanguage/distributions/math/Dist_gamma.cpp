@@ -44,20 +44,20 @@ RevBayesCore::GammaDistribution* Dist_gamma::createDistribution( void ) const {
 
 
 
-/* Get class name of object */
-const std::string& Dist_gamma::getClassName(void) { 
+/* Get Rev type of object */
+const std::string& Dist_gamma::getClassType(void) { 
     
-    static std::string rbClassName = "Dist_gamma";
+    static std::string revType = "Dist_gamma";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_gamma::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

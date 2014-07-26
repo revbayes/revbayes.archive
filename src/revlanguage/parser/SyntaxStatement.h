@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of SyntaxStatement, which is
- * used to hold control and loop statements in the syntax tree.
- *
- * @brief Declaration of SyntaxStatement
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef SyntaxStatement_H
 #define SyntaxStatement_H
 
@@ -23,7 +8,13 @@
 
 namespace RevLanguage {
     
-class SyntaxStatement : public SyntaxElement {
+    /**
+     * @brief Statement syntax element
+     *
+     * This syntax element is used to store and execute statements
+     * like control structures, for loops, if-else statements etc.
+     */
+    class SyntaxStatement : public SyntaxElement {
 
     public:
         // Statement types
@@ -53,7 +44,6 @@ class SyntaxStatement : public SyntaxElement {
 
         // Regular functions
         RevPtr<Variable>                            evaluateContent(Environment& env);                                              //!< Get semantic value
-        void                                        replaceVariableWithConstant(const std::string& name, const RevObject& c);       //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
 
     protected:
         bool                                        isTrue(SyntaxElement* expression, Environment& env) const;                      //!< Does expression evaluate to true?
@@ -63,7 +53,7 @@ class SyntaxStatement : public SyntaxElement {
         std::list<SyntaxElement*>*                  statements1;                                                                    //!< First set of statements
         std::list<SyntaxElement*>*                  statements2;                                                                    //!< Second set of statements
     
-};
+    };
 
 }
 

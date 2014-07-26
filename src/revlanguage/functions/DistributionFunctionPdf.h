@@ -37,12 +37,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         DistributionFunctionPdf*                clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassName(void);                                                             //!< Get class name
+        static const std::string&               getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -114,7 +114,7 @@ RevLanguage::DistributionFunctionPdf<valueType>* RevLanguage::DistributionFuncti
 
 /** Execute function: we reset our template object here and give out a copy */
 template <class valueType>
-RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DistributionFunctionPdf<valueType>::execute( void ) {
     
     TypedDistribution<valueType>* copyObject = templateObject->clone();
     
@@ -135,7 +135,7 @@ RevLanguage::RevObject* RevLanguage::DistributionFunctionPdf<valueType>::execute
     
     Real* value = new Real( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -147,22 +147,22 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionPdf<valueType
 }
 
 
-/** Get class name of object */
+/** Get Rev type of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassName(void) { 
+const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassType(void) { 
     
-    static std::string rbClassName = "DistributionFunctionPdf";
+    static std::string revType = "DistributionFunctionPdf";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

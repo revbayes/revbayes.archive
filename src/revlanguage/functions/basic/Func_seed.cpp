@@ -33,7 +33,7 @@ Func_seed* Func_seed::clone( void ) const {
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevObject* Func_seed::execute( void ) {
+RevPtr<Variable> Func_seed::execute( void ) {
     
     std::vector<unsigned int> s;
     const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );
@@ -65,21 +65,21 @@ const ArgumentRules& Func_seed::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_seed::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_seed::getClassType(void) { 
     
-    static std::string rbClassName = "Func_seed";
+    static std::string revType = "Func_seed";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_seed::getClassTypeSpec(void) { 
+const TypeSpec& Func_seed::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

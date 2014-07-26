@@ -18,7 +18,7 @@
     NSMutableArray*                     bestTrees;
 }
 
-@property (readwrite) int numTreesVisited;
+@property (nonatomic) int               numTreesVisited;
 
 - (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(GuiTree*)t;
 - (void)closeControlPanel;

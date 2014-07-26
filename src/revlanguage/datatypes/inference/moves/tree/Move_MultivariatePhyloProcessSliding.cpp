@@ -45,31 +45,23 @@ void Move_MultivariatePhyloProcessSliding::constructInternalObject( void ) {
     RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *p = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MultivariatePhyloProcess> *>( tmp );
     value = new RevBayesCore::MultivariatePhyloProcessSlidingMove(p, l, t, w);
 
-    // now allocate a new sliding move
-    /*
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::NodeTimeSlideUniform(t, w);
-    */
-    
 }
 
 
 /** Get class name of object */
-const std::string& Move_MultivariatePhyloProcessSliding::getClassName(void) { 
+const std::string& Move_MultivariatePhyloProcessSliding::getClassType(void) { 
     
-    static std::string rbClassName = "Move_MultivariatePhyloProcessSliding";
+    static std::string revClassType = "Move_MultivariatePhyloProcessSliding";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_MultivariatePhyloProcessSliding::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 

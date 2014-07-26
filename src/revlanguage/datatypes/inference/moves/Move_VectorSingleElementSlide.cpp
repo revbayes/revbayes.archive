@@ -10,6 +10,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "ModelVector.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -18,7 +19,6 @@
 #include "RevObject.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 #include "VectorSingleElementSlidingMove.h"
 
 
@@ -42,27 +42,27 @@ void Move_VectorSingleElementSlide::constructInternalObject( void ) {
     // now allocate a new sliding move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const Vector<Real> &>( v->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* tmp = static_cast<const ModelVector<Real> &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<std::vector<double> > *n = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::VectorSingleElementSlidingMove(n, l, t, w);
 }
 
 
-/** Get class name of object */
-const std::string& Move_VectorSingleElementSlide::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Move_VectorSingleElementSlide::getClassType(void) { 
     
-    static std::string rbClassName = "Move_VectorSingleElementSlide";
+    static std::string revType = "Move_VectorSingleElementSlide";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_VectorSingleElementSlide::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -74,7 +74,7 @@ const MemberRules& Move_VectorSingleElementSlide::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<Real>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<Real>::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "lambda", true, RealPos::getClassTypeSpec() , new Real(1.0) ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         

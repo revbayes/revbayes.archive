@@ -28,7 +28,7 @@ Func_sqrt* Func_sqrt::clone( void ) const {
 }
 
 
-RevObject* Func_sqrt::execute() {
+RevPtr<Variable> Func_sqrt::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const Real &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SqrtFunction* f = new RevBayesCore::SqrtFunction( arg );
@@ -37,7 +37,7 @@ RevObject* Func_sqrt::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -58,19 +58,19 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_sqrt::getClassName(void) { 
+const std::string& Func_sqrt::getClassType(void) { 
     
-    static std::string rbClassName = "Func_sqrt";
+    static std::string revType = "Func_sqrt";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_sqrt::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

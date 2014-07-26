@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Dist_uniformTopology.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -8,7 +9,6 @@
 #include "RlTopology.h"
 #include "StochasticNode.h"
 #include "UniformTopologyDistribution.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -27,7 +27,7 @@ Dist_uniformTopology::Dist_uniformTopology() : TypedDistribution<Topology>()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Dist_uniformTopology* Dist_uniformTopology::clone( void ) const 
 {
@@ -50,7 +50,7 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 {
     // get the parameters
     int n = static_cast<const Natural &>( numTaxa->getRevObject() ).getDagNode()->getValue();
-    const std::vector<std::string> &names = static_cast<const Vector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
     
     return d;
@@ -58,16 +58,16 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_uniformTopology::getClassName(void) 
+const std::string& Dist_uniformTopology::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_uniformTopology";
+    static std::string revType = "Dist_uniformTopology";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -79,9 +79,9 @@ const std::string& Dist_uniformTopology::getClassName(void)
 const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -103,7 +103,7 @@ const MemberRules& Dist_uniformTopology::getMemberRules(void) const
     if ( !rulesSet ) 
     {
         distUniformTopologyMemberRules.push_back( new ArgumentRule( "nTaxa"  , true, Natural::getClassTypeSpec() ) );
-        distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , true, Vector<RlString>::getClassTypeSpec() ) );
+        distUniformTopologyMemberRules.push_back( new ArgumentRule( "names"  , true, ModelVector<RlString>::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

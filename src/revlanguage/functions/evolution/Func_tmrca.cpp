@@ -8,6 +8,7 @@
 
 #include "Clade.h"
 #include "Func_tmrca.h"
+#include "ModelVector.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RateMatrix.h"
@@ -16,7 +17,6 @@
 #include "TmrcaStatistic.h"
 #include "Topology.h"
 #include "TypedDagNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -33,7 +33,7 @@ Func_tmrca* Func_tmrca::clone( void ) const {
 }
 
 
-RevObject* Func_tmrca::execute() {
+RevPtr<Variable> Func_tmrca::execute() {
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
@@ -43,7 +43,7 @@ RevObject* Func_tmrca::execute() {
     
     RealPos* value = new RealPos( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -65,19 +65,19 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_tmrca::getClassName(void) { 
+const std::string& Func_tmrca::getClassType(void) { 
     
-    static std::string rbClassName = "Func_tmrca";
+    static std::string revType = "Func_tmrca";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_tmrca::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

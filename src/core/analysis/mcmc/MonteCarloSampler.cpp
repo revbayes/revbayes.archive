@@ -207,7 +207,7 @@ void MonteCarloSampler::getOrderedStochasticNodes(const DagNode* dagNode,  std::
     else //if the node is stochastic or deterministic
     {
         // First I have to visit my parents
-        const std::set<const DagNode *>& parents = dagNode->getParents() ;
+        std::set<const DagNode *> parents = dagNode->getParents() ;
         std::set<const DagNode *>::const_iterator it;
         for ( it=parents.begin() ; it != parents.end(); it++ )
         {
@@ -314,6 +314,7 @@ void MonteCarloSampler::initializeChain( void ) {
                 if ( !(*i)->isClamped() && (*i)->isStochastic() )
                 {
                     (*i)->redraw();
+                    (*i)->reInitialized();
                     
                 }
                 else if ( (*i)->isClamped() )

@@ -28,7 +28,10 @@ namespace RevBayesCore {
         void                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                    //!< Implementation of swaping parameters
+        
+        // Parameter management functions. You need to override both if you have additional parameters
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         
@@ -99,10 +102,6 @@ RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::Nuc
     branchHeterogeneousSubstitutionMatrices     = false;
     rateVariationAcrossSites                    = false;
     
-    // add the parameters to the parents list
-    this->addParameter( homogeneousClockRate );
-    this->addParameter( homogeneousRateMatrix );
-    
     this->redrawValue();
     
 }
@@ -110,7 +109,6 @@ RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::Nuc
 
 template<class charType, class treeType>
 RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::NucleotideBranchHeterogeneousCharEvoModel(const NucleotideBranchHeterogeneousCharEvoModel &d) : AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>( d ) {
-    // parameters are automatically copied
     // initialize with default parameters
     homogeneousClockRate        = d.homogeneousClockRate;
     heterogeneousClockRates     = d.heterogeneousClockRates;
@@ -724,22 +722,13 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL ) 
-    {
-        this->removeParameter( homogeneousClockRate );
         homogeneousClockRate = NULL;
-    }
     else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousClockRates );
         heterogeneousClockRates = NULL;
-    }
     
     // set the value
     branchHeterogeneousClockRates = false;
     homogeneousClockRate = r;
-    
-    // add the parameter
-    this->addParameter( homogeneousClockRate );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
@@ -756,22 +745,13 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL ) 
-    {
-        this->removeParameter( homogeneousClockRate );
         homogeneousClockRate = NULL;
-    }
     else // heterogeneousClockRate != NULL
-    {
-        this->removeParameter( heterogeneousClockRates );
         heterogeneousClockRates = NULL;
-    }
     
     // set the value
     branchHeterogeneousClockRates = true;
     heterogeneousClockRates = r;
-    
-    // add the parameter
-    this->addParameter( heterogeneousClockRates );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
@@ -787,22 +767,13 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL ) 
-    {
-        this->removeParameter( homogeneousRateMatrix );
         homogeneousRateMatrix = NULL;
-    }
     else // heterogeneousRateMatrix != NULL
-    {
-        this->removeParameter( heterogeneousRateMatrices );
         heterogeneousRateMatrices = NULL;
-    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
     homogeneousRateMatrix = rm;
-    
-    // add the parameter
-    this->addParameter( homogeneousRateMatrix );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
@@ -818,22 +789,13 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL ) 
-    {
-        this->removeParameter( homogeneousRateMatrix );
         homogeneousRateMatrix = NULL;
-    }
     else // heterogeneousRateMatrix != NULL
-    {
-        this->removeParameter( heterogeneousRateMatrices );
         heterogeneousRateMatrices = NULL;
-    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = true;
     heterogeneousRateMatrices = rm;
-    
-    // add the parameter
-    this->addParameter( heterogeneousRateMatrices );
     
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
@@ -849,19 +811,13 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     
     // remove the old parameter first
     if ( rootFrequencies != NULL ) 
-    {
-        this->removeParameter( rootFrequencies );
         rootFrequencies = NULL;
-    }
     
     if ( f != NULL )
     {
         // set the value
         //        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
-        
-        // add the parameter
-        this->addParameter( rootFrequencies );
     }
     else
     {
@@ -881,10 +837,7 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     
     // remove the old parameter first
     if ( siteRates != NULL ) 
-    {
-        this->removeParameter( siteRates );
         siteRates = NULL;
-    }
     
     if ( r != NULL ) 
     {
@@ -904,9 +857,6 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
         
     }
     
-    // add the parameter
-    this->addParameter( siteRates );
-    
     // redraw the current value
     if ( this->dagNode == NULL || !this->dagNode->isClamped() ) 
     {
@@ -915,8 +865,25 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
 }
 
 
+/** Get the parameters of the distribution */
+template<class charType, class treeType>
+std::set<const RevBayesCore::DagNode*> RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters = AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::getParameters();
+    
+    parameters.insert( homogeneousClockRate );
+    parameters.insert( heterogeneousClockRates );
+    parameters.insert( homogeneousRateMatrix );
+    parameters.insert( heterogeneousRateMatrices );
+    parameters.insert( rootFrequencies );
+    parameters.insert( siteRates );
+
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
+/** Swap a parameter of the distribution */
 template<class charType, class treeType>
 void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     

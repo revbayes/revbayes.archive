@@ -31,7 +31,7 @@ namespace RevLanguage {
         const MemberRules&                                  getMemberRules(void) const;                                                         //!< Get member rules (const)
         
         // Basic utility functions
-        static const std::string&                           getClassName(void);                                                                 //!< Get class name
+        static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         
         

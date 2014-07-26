@@ -9,11 +9,12 @@
 #include "RlRateMatrix.h"
 
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
+#include "ModelVector.h"
 #include "Natural.h"
+#include "Real.h"
+#include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -38,7 +39,7 @@ RateMatrix* RateMatrix::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RateMatrix::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "[]") {
         // get the member with give index
@@ -53,31 +54,31 @@ RevObject* RateMatrix::executeMethod(std::string const &name, const std::vector<
         for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
             elementVector.push_back( element[i] );
         }
-        return new Vector<Real>( elementVector );
+        return new Variable( new ModelVector<Real>( elementVector ) );
     }
     else if (name == "size") {
         int n = (int)this->dagNode->getValue().getNumberOfStates();
-        return new Natural(n);
+        return new Variable( new Natural(n) );
     }
     
     return ModelObject<RevBayesCore::RateMatrix>::executeMethod( name, args );
 }
 
 
-/* Get class name of object */
-const std::string& RateMatrix::getClassName(void) { 
+/* Get Rev type of object */
+const std::string& RateMatrix::getClassType(void) { 
     
-    static std::string rbClassName = "RateMatrix";
+    static std::string revType = "RateMatrix";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RateMatrix::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -93,12 +94,12 @@ const MethodTable& RateMatrix::getMethods(void) const {
         // add method for call "x[]" as a function
         ArgumentRules* squareBracketArgRules = new ArgumentRules();
         squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+        methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
         
         
         // add method for call "x[]" as a function
         ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+        methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::RateMatrix>::getMethods() );

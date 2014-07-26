@@ -36,7 +36,7 @@
     ToolMatrixFilter*             myTool;
 }
 
-@property (readwrite) int numberOfOutlets;
+@property (nonatomic) int         numberOfOutlets;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)changeCharMatrix:(id)sender;

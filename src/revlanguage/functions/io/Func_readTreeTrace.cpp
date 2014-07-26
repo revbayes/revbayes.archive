@@ -3,6 +3,7 @@
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readTreeTrace.h"
+#include "ModelVector.h"
 #include "NclReader.h"
 #include "NewickConverter.h"
 #include "OptionRule.h"
@@ -17,7 +18,6 @@
 #include "TreeTrace.h"
 #include "TreeUtilities.h"
 #include "UserInterface.h"
-#include "Vector.h"
 
 #include <map>
 #include <set>
@@ -34,7 +34,7 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readTreeTrace::execute( void ) {
+RevPtr<Variable> Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
@@ -70,7 +70,7 @@ RevObject* Func_readTreeTrace::execute( void ) {
         throw RbException("Unknown tree type to read.");
     }
     
-    return rv;
+    return new Variable( rv );
 }
 
 
@@ -103,7 +103,7 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
     
     if (!rulesSet) {
         argumentRules.push_back( new ArgumentRule( "file", true, RlString::getClassTypeSpec() ) );
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("clock") );
         options.push_back( RlString("non-clock") );
         argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options ) );
@@ -114,20 +114,20 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_readTreeTrace::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_readTreeTrace::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readTreeTrace";
+    static std::string revType = "Func_readTreeTrace";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTreeTrace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

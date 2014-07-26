@@ -6,8 +6,6 @@
 using namespace RevBayesCore;
 
 PoissonDistribution::PoissonDistribution(const TypedDagNode<double> *l) : TypedDistribution<int>( new int( 1 ) ), lambda( l ) {
-    // add the parameters to the parents set
-    addParameter( lambda );
     
     *value = RbStatistics::Poisson::rv(lambda->getValue(), *GLOBAL_RNG);
 }
@@ -33,8 +31,23 @@ void PoissonDistribution::redrawValue( void ) {
 }
 
 
-void PoissonDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == lambda) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> PoissonDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( lambda );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void PoissonDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
+    if (oldP == lambda)
+    {
         lambda = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

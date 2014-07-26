@@ -20,7 +20,6 @@
 #include "Integer.h"
 #include "RbUtil.h"
 #include "RlString.h"
-#include "Vector.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -29,7 +28,8 @@
 using namespace RevLanguage;
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, const Vector<RlString> &optVals ) : ArgumentRule( argName, true, RlString::getClassTypeSpec() ), options( optVals ) {
+OptionRule::OptionRule( const std::string& argName, const std::vector<RlString>& optVals ) :
+    ArgumentRule( argName, true, RlString::getClassTypeSpec() ), options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
@@ -37,15 +37,17 @@ OptionRule::OptionRule( const std::string& argName, const Vector<RlString> &optV
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RlString *defVal, const Vector<RlString> &optVals ) : ArgumentRule( argName, true, RlString::getClassTypeSpec(), defVal ), options( optVals ) {
+OptionRule::OptionRule(const std::string& argName, RlString* defVal, const std::vector<RlString>& optVals ) :
+    ArgumentRule( argName, true, RlString::getClassTypeSpec(), defVal ),
+    options( optVals ) {
 
     if ( !areOptionsUnique( optVals ) )
         throw RbException( "Options are not unique" );
 }
 
 
-/** Help function to test whether a vector of RlString contains unique RlString values */
-bool OptionRule::areOptionsUnique( const Vector<RlString>& optVals ) const {
+/** Help function to test whether a std::vector of RlString contains unique RlString values */
+bool OptionRule::areOptionsUnique( const std::vector<RlString>& optVals ) const {
 
     for ( size_t i = 0; i < optVals.size(); i++ )
         for ( size_t j = i + 1; j < optVals.size(); j++ )
@@ -63,13 +65,12 @@ void OptionRule::printValue(std::ostream& o) const {
     ArgumentRule::printValue(o);
 
     o << " = ";
-    for (Vector<RlString>::const_iterator it = options.begin(); it != options.end(); ++it) {
+    for (std::vector<RlString>::const_iterator it = options.begin(); it != options.end(); ++it) {
         if ( it != options.begin() ) {
             o << "|";
         }
-        o << *it;
+        (*it).printValue( o );
     }
     o << std::endl;
 }
-
 
