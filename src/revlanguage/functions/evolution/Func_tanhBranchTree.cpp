@@ -12,7 +12,7 @@
 #include "MatrixReal.h"
 #include "ModelVector.h"
 #include "RealPos.h"
-#include "RlMultivariatePhyloProcess.h"
+#include "RlMultivariateRealNodeValTree.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -45,7 +45,7 @@ const ArgumentRules& Func_tanhBranchTree::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariatePhyloProcess::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
         
@@ -97,7 +97,7 @@ RevPtr<Variable> Func_tanhBranchTree::execute() {
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode< RevBayesCore::MultivariatePhyloProcess >* process = static_cast<const MultivariatePhyloProcess &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::MultivariateRealNodeContainer >* process = static_cast<const MultivariateRealNodeValTree &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::TypedDagNode< double >* offset = static_cast<const Real &>( args[2].getVariable()->getRevObject() ).getDagNode();
 

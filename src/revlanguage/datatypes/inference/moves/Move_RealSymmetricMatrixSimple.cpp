@@ -1,12 +1,12 @@
 //
-//  Move_PrecisionMatrixSimple.cpp
+//  Move_RealSymmetricMatrixSimple.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
 //  Copyright (c) 2014 revbayes team. All rights reserved.
 //
 
-#include "Move_PrecisionMatrixSimple.h"
+#include "Move_RealSymmetricMatrixSimple.h"
 
 
 #include "ArgumentRule.h"
@@ -18,8 +18,8 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
-#include "PrecisionMatrix.h"
-#include "PrecisionMatrixSimpleMove.h"
+#include "MatrixRealSymmetric.h"
+#include "MatrixRealSymmetricSimpleMove.h"
 #include "RealSymmetricMatrix.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -27,34 +27,34 @@
 
 using namespace RevLanguage;
 
-Move_PrecisionMatrixSimple::Move_PrecisionMatrixSimple() : Move() {
+Move_RealSymmetricMatrixSimple::Move_RealSymmetricMatrixSimple() : Move() {
     
 }
 
 /** Clone object */
-Move_PrecisionMatrixSimple* Move_PrecisionMatrixSimple::clone(void) const {
+Move_RealSymmetricMatrixSimple* Move_RealSymmetricMatrixSimple::clone(void) const {
     
-	return new Move_PrecisionMatrixSimple(*this);
+	return new Move_RealSymmetricMatrixSimple(*this);
 }
 
 
-void Move_PrecisionMatrixSimple::constructInternalObject( void ) {
+void Move_RealSymmetricMatrixSimple::constructInternalObject( void ) {
     // we free the memory first
     delete value;
   
     // now allocate a new wishart simple move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::PrecisionMatrix > *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* tmp = static_cast<const RealSymmetricMatrix &>( mat->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::MatrixRealSymmetric > *matrix = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixRealSymmetric > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    value = new RevBayesCore::PrecisionMatrixMove(matrix, l, t, w);
+    value = new RevBayesCore::MatrixRealSymmetricMove(matrix, l, t, w);
         
 }
 
 
 /** Get class name of object */
-const std::string& Move_PrecisionMatrixSimple::getClassType(void) {
+const std::string& Move_RealSymmetricMatrixSimple::getClassType(void) {
     
     static std::string revClassType = "Move_VectorSingleElement";
     
@@ -62,7 +62,7 @@ const std::string& Move_PrecisionMatrixSimple::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_PrecisionMatrixSimple::getClassTypeSpec(void) {
+const TypeSpec& Move_RealSymmetricMatrixSimple::getClassTypeSpec(void) {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -72,7 +72,7 @@ const TypeSpec& Move_PrecisionMatrixSimple::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_PrecisionMatrixSimple::getMemberRules(void) const {
+const MemberRules& Move_RealSymmetricMatrixSimple::getMemberRules(void) const {
     
     static MemberRules scalingMoveMemberRules;
     static bool rulesSet = false;
@@ -93,7 +93,7 @@ const MemberRules& Move_PrecisionMatrixSimple::getMemberRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_PrecisionMatrixSimple::getTypeSpec( void ) const {
+const TypeSpec& Move_RealSymmetricMatrixSimple::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -102,9 +102,9 @@ const TypeSpec& Move_PrecisionMatrixSimple::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_PrecisionMatrixSimple::printValue(std::ostream &o) const {
+void Move_RealSymmetricMatrixSimple::printValue(std::ostream &o) const {
     
-    o << "Move_PrecisionMatrixSimple(";
+    o << "Move_RealSymmetricMatrixSimple(";
     if (mat != NULL) {
         o << mat->getName();
     }
@@ -116,7 +116,7 @@ void Move_PrecisionMatrixSimple::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_PrecisionMatrixSimple::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Move_RealSymmetricMatrixSimple::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "x" ) {
         mat = var;

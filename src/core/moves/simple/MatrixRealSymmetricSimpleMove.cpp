@@ -1,5 +1,5 @@
 //
-//  PrecisionMatrixSimpleMove.cpp
+//  MatrixRealSymmetricSimpleMove.cpp
 //  revbayes
 //
 //  Created by Nicolas Lartillot on 2014-03-28.
@@ -8,7 +8,7 @@
 
 
 
-#include "PrecisionMatrixSimpleMove.h"
+#include "MatrixRealSymmetricSimpleMove.h"
 #include "DistributionWishart.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -19,32 +19,32 @@
 using namespace RevBayesCore;
 
 
-PrecisionMatrixMove::PrecisionMatrixMove(StochasticNode<PrecisionMatrix > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
+MatrixRealSymmetricMove::MatrixRealSymmetricMove(StochasticNode<MatrixRealSymmetric > *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ), storedValue(v->getValue()) {
     
 }
 
 
 /** Clone object */
-PrecisionMatrixMove* PrecisionMatrixMove::clone( void ) const {
+MatrixRealSymmetricMove* MatrixRealSymmetricMove::clone( void ) const {
     
-    return new PrecisionMatrixMove( *this );
+    return new MatrixRealSymmetricMove( *this );
 }
 
 
 
-const std::string& PrecisionMatrixMove::getMoveName( void ) const {
-    static std::string name = "PrecisionMatrixMove";
+const std::string& MatrixRealSymmetricMove::getMoveName( void ) const {
+    static std::string name = "MatrixRealSymmetricMove";
     
     return name;
 }
 
 
-double PrecisionMatrixMove::performSimpleMove( void ) {
+double MatrixRealSymmetricMove::performSimpleMove( void ) {
     
     // Get random number generator
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    PrecisionMatrix& mymat = variable->getValue();
+    MatrixRealSymmetric& mymat = variable->getValue();
     storedValue = mymat;
     mymat.touch();
     
@@ -62,33 +62,33 @@ double PrecisionMatrixMove::performSimpleMove( void ) {
     return 0;   
 }
 
-void PrecisionMatrixMove::acceptSimpleMove()   {
+void MatrixRealSymmetricMove::acceptSimpleMove()   {
 
     variable->clearTouchedElementIndices();
     
 }
 
-void PrecisionMatrixMove::printParameterSummary(std::ostream &o) const {
+void MatrixRealSymmetricMove::printParameterSummary(std::ostream &o) const {
     o << "lambda = " << lambda;
 }
 
 
-void PrecisionMatrixMove::rejectSimpleMove( void ) {
+void MatrixRealSymmetricMove::rejectSimpleMove( void ) {
  
     variable->getValue() = storedValue;
     variable->getValue().touch();
     variable->clearTouchedElementIndices();
 }
 
-void PrecisionMatrixMove::swapNode(DagNode *oldN, DagNode *newN) {
+void MatrixRealSymmetricMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<PrecisionMatrix >* >( newN );
+    variable = static_cast<StochasticNode<MatrixRealSymmetric >* >( newN );
 }
 
 
-void PrecisionMatrixMove::tune( void ) {
+void MatrixRealSymmetricMove::tune( void ) {
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) {

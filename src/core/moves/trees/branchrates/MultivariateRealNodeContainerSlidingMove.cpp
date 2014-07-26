@@ -1,11 +1,11 @@
 /* 
- * File:   MultivariatePhyloProcessSlidingMove.cpp
+ * File:   MultivariateRealNodeContainerSlidingMove.cpp
  * Author: nl
  * 
  * Created on 16 juillet 2014, 23:19
  */
 
-#include "MultivariatePhyloProcessSlidingMove.h"
+#include "MultivariateRealNodeContainerSlidingMove.h"
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -20,27 +20,27 @@
 using namespace RevBayesCore;
 
 
-MultivariatePhyloProcessSlidingMove::MultivariatePhyloProcessSlidingMove(StochasticNode<MultivariatePhyloProcess> *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
+MultivariateRealNodeContainerSlidingMove::MultivariateRealNodeContainerSlidingMove(StochasticNode<MultivariateRealNodeContainer> *v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
     
 }
 
 
 /** Clone object */
-MultivariatePhyloProcessSlidingMove* MultivariatePhyloProcessSlidingMove::clone( void ) const {
+MultivariateRealNodeContainerSlidingMove* MultivariateRealNodeContainerSlidingMove::clone( void ) const {
     
-    return new MultivariatePhyloProcessSlidingMove( *this );
+    return new MultivariateRealNodeContainerSlidingMove( *this );
 }
 
 
 
-const std::string& MultivariatePhyloProcessSlidingMove::getMoveName( void ) const {
-    static std::string name = "MultivariatePhyloProcessSlidingMove";
+const std::string& MultivariateRealNodeContainerSlidingMove::getMoveName( void ) const {
+    static std::string name = "MultivariateRealNodeContainerSlidingMove";
     
     return name;
 }
 
 
-double MultivariatePhyloProcessSlidingMove::performSimpleMove( void ) {
+double MultivariateRealNodeContainerSlidingMove::performSimpleMove( void ) {
         
     // storedValue = variable->getValue();
     
@@ -66,32 +66,32 @@ double MultivariatePhyloProcessSlidingMove::performSimpleMove( void ) {
     return lnHastingsratio;
 }
 
-void MultivariatePhyloProcessSlidingMove::acceptSimpleMove()   {
+void MultivariateRealNodeContainerSlidingMove::acceptSimpleMove()   {
     variable->clearTouchedElementIndices();
 }
 
-void MultivariatePhyloProcessSlidingMove::printParameterSummary(std::ostream &o) const {
+void MultivariateRealNodeContainerSlidingMove::printParameterSummary(std::ostream &o) const {
     o << "lambda = " << lambda;
 }
 
 
-void MultivariatePhyloProcessSlidingMove::rejectSimpleMove( void ) {
+void MultivariateRealNodeContainerSlidingMove::rejectSimpleMove( void ) {
     
     MatrixReal& v = variable->getValue();
     v[nodeindex][compindex] = storedValue;
     variable->addTouchedElementIndex(nodeindex);
 }
 
-void MultivariatePhyloProcessSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
+void MultivariateRealNodeContainerSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode<MultivariatePhyloProcess>* >( newN );
+    variable = static_cast<StochasticNode<MultivariateRealNodeContainer>* >( newN );
     
 }
 
 
-void MultivariatePhyloProcessSlidingMove::tune( void ) {
+void MultivariateRealNodeContainerSlidingMove::tune( void ) {
     double rate = numAccepted / double(numTried);
     
     if ( rate > 0.44 ) {
