@@ -2,6 +2,7 @@
 # ----------------------------------------------
 !projects/cmake/README.txt
 !projects/cmake/regenerate.sh
+!projects/cmake/build*
 
 # Blacklist
 # ----------------------------------------------
