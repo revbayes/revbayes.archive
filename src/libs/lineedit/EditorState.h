@@ -7,11 +7,15 @@
 
 #include "lineeditUtils.h"
 
+#include <boost/assign/std/vector.hpp>
+
+using namespace boost::assign; // bring 'operator+=()' into scope
+
 
 typedef std::vector<std::string> StringVector;
 
 enum StateType {
-    ST_IDLE, ST_DEF_STRING, ST_DEF_LIST, ST_ASSIGNING, ST_ACCESSING_MEMBER, ST_DEF_ARGUMENT
+    ST_IDLE, ST_DEF_STRING, ST_DEF_LIST, ST_GENERIC_OPERATOR, ST_ACCESSING_MEMBER, ST_DEF_ARGUMENT
 };
 
 class EditorState {
@@ -26,6 +30,10 @@ public:
 
     StateType getType() {
         return type;
+    }
+    
+    std::string getTrigger(){
+        return trigger;
     }
 
     /**
@@ -71,10 +79,12 @@ protected:
 
     StringVector completions;
     std::string hookChars; /** any of these triggers this state **/
+    StringVector hookStrings; 
     char hookChar; // actual trigger
     std::string releaseChars; /** release for this state **/
     std::string subject; /** for example the function name **/
     std::string description;
+    std::string trigger;
     StateType type;
 };
 
@@ -163,22 +173,24 @@ public:
     }
 };
 
-class StateAssigning : public EditorState {
+class StateDefiningArgument : public EditorState {
 public:
 
-    StateAssigning() : EditorState() {
-        hookChars = "=";
-        releaseChars = "any (non alpha) command releases this state";
-        description = "StateAssigning";
-        type = ST_ASSIGNING;
+    StateDefiningArgument() : EditorState() {
+        hookChars = ",";
+        releaseChars = " "; // note: this is negated
+        description = "StateDefiningArgument";
+        type = ST_DEF_ARGUMENT;
     }
 
     virtual bool tryHook(std::string cmd, StateType type) {
         if (type == this->type // cannot nest this state
                 || type == ST_DEF_STRING // don't trigger if in middle of a string
+                || type != ST_DEF_LIST// don't trigger unless defining a list
                 ) {
             return false;
         }
+
         if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
             return true;
         }
@@ -189,16 +201,102 @@ public:
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
-        return true;
+        if (!LineEditUtils().lastCharContains(cmd, releaseChars)) { 
+            return true;
+        }
+        return false;
     }
 };
+
+class StateGenericOperator : public EditorState {
+public:
+
+    StateGenericOperator() : EditorState() {
+        // important: assign in descending order from longest to shortest strings
+        hookStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=";
+        //releaseChars = " ";
+        description = "StateAssigning";
+        type = ST_GENERIC_OPERATOR;
+    }
+    
+    StateGenericOperator(std::string trigger){
+        this->trigger = trigger;
+        StateGenericOperator();
+    }
+
+    virtual bool tryHook(std::string cmd, StateType type) {
+        if (type == this->type // cannot nest this state
+                || type == ST_DEF_STRING // don't trigger if in middle of a string
+                || type == ST_DEF_LIST// don't trigger if defining a list
+                ) {
+            return false;
+        }
+        LineEditUtils::FindLastInfo f = LineEditUtils().findLastOf(hookStrings, cmd, 0);
+        if(f.needle != ""){
+            trigger = f.needle;
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual bool tryRelease(std::string cmd, StateType type) {
+        if (type != this->type) { // cannot release unless current state is same type
+            return false;
+        }
+        // same sequences that triggers also releases
+        LineEditUtils::FindLastInfo f = LineEditUtils().findLastOf(hookStrings, cmd, 0);
+        if(f.needle != ""){
+            trigger = f.needle;
+            return true;
+        }
+//        if (LineEditUtils().lastCharContains(cmd, releaseChars)) { 
+//            return true;
+//        }
+    }
+};
+
+//class StateAssigningReference : public EditorState {
+//public:
+//
+//    StateAssigningReference() : EditorState() {
+//        hookChars = "";
+//        releaseChars = "any, non space character releases this state";
+//        description = "StateAssigningReference";
+//        type = ST_DEF_ARGUMENT;
+//    }
+//
+//    virtual bool tryHook(std::string cmd, StateType type) {
+//        if (type == this->type // cannot nest this state
+//                || type == ST_DEF_STRING // don't trigger if in middle of a string
+//                || type == ST_DEF_LIST// don't trigger if defining a list
+//                ) {
+//            return false;
+//        }
+//
+//        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    virtual bool tryRelease(std::string cmd, StateType type) {
+//        if (type != this->type) { // cannot release unless current state is same type
+//            return false;
+//        }
+//        if (LineEditUtils().lastCharContains(cmd, " ")) { // space shouldn't release this state
+//            return false;
+//        }
+//        return true;
+//    }
+//};
 
 class StateAccessingMember : public EditorState {
 public:
 
     StateAccessingMember() : EditorState() {
         hookChars = ".";
-        releaseChars = "any (non alpha) command releases this state";
+        releaseChars = " "; // space releases this state
         description = "StateAccessingMember";
         type = ST_ACCESSING_MEMBER;
     }
@@ -220,37 +318,8 @@ public:
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
-        return true;
-    }
-};
-
-class StateDefiningArgument : public EditorState {
-public:
-
-    StateDefiningArgument() : EditorState() {
-        hookChars = ",";
-        releaseChars = "any (non alpha) command releases this state";
-        description = "StateDefiningArgument";
-        type = ST_DEF_ARGUMENT;
-    }
-
-    virtual bool tryHook(std::string cmd, StateType type) {
-        if (type == this->type // cannot nest this state
-                || type == ST_DEF_STRING // don't trigger if in middle of a string
-                || type != ST_DEF_LIST// don't trigger unless about defining a list
-                ) {
-            return false;
-        }
-
-        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
+        if (LineEditUtils().lastCharContains(cmd, releaseChars)) { // space should release this state
             return true;
-        }
-        return false;
-    }
-
-    virtual bool tryRelease(std::string cmd, StateType type) {
-        if (type != this->type) { // cannot release unless current state is same type
-            return false;
         }
         return true;
     }
