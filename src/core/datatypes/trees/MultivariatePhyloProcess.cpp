@@ -48,6 +48,7 @@ MultivariatePhyloProcess& MultivariatePhyloProcess::operator=(const Multivariate
     if (this != &p) {
         MatrixReal::operator=(p);
         tree = p.getTimeTree();
+        clampVector = p.clampVector;
     }
     
     return *this;
