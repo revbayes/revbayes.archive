@@ -37,7 +37,6 @@ namespace RevBayesCore {
         int													getNumberOfCategories(void) const;
         int													getNumberOfElements(void) const;
         void                                                redrawValue(void);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
 		
 		std::vector<valueType>								getTableParameters(void);
 		std::vector<int>									getElementAllocationVec(void);
@@ -46,6 +45,10 @@ namespace RevBayesCore {
 		double												getConcentrationParam(void);
 		TypedDistribution<valueType>*						getBaseDistribution(void);
 
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        
     private:
         // helper methods
         void                                                computeDenominator(void);
@@ -79,13 +82,6 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
 																							  int n) :
 																							  TypedDistribution< std::vector<valueType> >( new std::vector<valueType>() ), baseDistribution( g ), concentration( cp ),
 																							  numElements( n ), numTables( 0 ), denominator( 0.0 ), concentrationHasChanged( true ) {
-    
-    this->addParameter( concentration );
-//    this->addParameter( baseDistribution );
-    const std::set<const DagNode*>& p = baseDistribution->getParameters();
-	for (std::set<const DagNode*>::const_iterator it = p.begin(); it != p.end(); ++it) {
-		this->addParameter( *it );
-	}
     
 	delete this->value;
 
@@ -139,6 +135,9 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
     // reset the lnProb and set it to log( alpha^K )
 	
 //	return 0.0;
+    
+    // we should update the restaurant vector before we do the computations. (Sebastian)
+    createRestaurantVectors();
 	
 	int nt = numTables;
 	//int ne = numElements;
@@ -220,8 +219,11 @@ std::vector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueTyp
 			}
 		}		
 	}
-	createRestaurantVectors();
-	return rv ;
+    
+    // the value might not be set so we cannot update the restaurant vectors ... (Sebastian)
+//	createRestaurantVectors();
+	
+    return rv ;
 }
 
 
@@ -234,6 +236,28 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::redrawValue( vo
 
 
 
+/** Get the parameters of the distribution */
+template<class valueType>
+std::set<const RevBayesCore::DagNode*> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getParameters( void ) const
+{
+    std::set<const RevBayesCore::DagNode*> parameters;
+    
+//    parameters.insert( baseDistribution );
+    parameters.insert( concentration );
+    
+    // add the parameters of the distribution
+    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    {
+        parameters.insert( *it );
+    }
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 template <class valueType>
 void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
@@ -242,6 +266,10 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameter(c
 //    }
     if (oldP == concentration){
         concentration = static_cast<const TypedDagNode< double > *>( newP );
+    }
+    else
+    {
+        baseDistribution->swapParameter(oldP,newP);
     }
     
 }

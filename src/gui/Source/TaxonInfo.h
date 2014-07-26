@@ -8,9 +8,7 @@
 	NSString*        taxonData;
 }
 
-- (NSString*)taxonName;
-- (void)setTaxonName:(NSString*)aName;
-- (NSString*)taxonData;
-- (void)setTaxonData:(NSString*)aData;
+@property (nonatomic,strong) NSString* taxonData;
+@property (nonatomic,strong) NSString* taxonName;
 
 @end

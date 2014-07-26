@@ -23,7 +23,7 @@ Func__mod* Func__mod::clone( void ) const
 
 
 /** Execute function: We rely on getValue or overloaded push_back to provide functionality */
-RevObject* Func__mod::execute( void ) {
+RevPtr<Variable> Func__mod::execute( void ) {
     
     const RevBayesCore::TypedDagNode<int>* leftVal = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::TypedDagNode<int>* rightVal = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getDagNode();
@@ -34,7 +34,7 @@ RevObject* Func__mod::execute( void ) {
 
     Natural *theBool = new Natural( detNode );
     
-    return theBool;
+    return new Variable( theBool );
     
 }
 
@@ -58,23 +58,23 @@ const ArgumentRules& Func__mod::getArgumentRules( void ) const
 }
 
 
-/** Get class name of object */
-const std::string& Func__mod::getClassName(void)
+/** Get Rev type of object */
+const std::string& Func__mod::getClassType(void)
 {
     
-    static std::string rbClassName = "Func__mod";
+    static std::string revType = "Func__mod";
     
-	return rbClassName;
+	return revType;
 }
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func__mod::getClassTypeSpec(void)
+const TypeSpec& Func__mod::getClassTypeSpec(void)
 {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 

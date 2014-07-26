@@ -1,11 +1,10 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -35,19 +34,19 @@ AbstractDiscreteCharacterData* AbstractDiscreteCharacterData::clone() const {
 
 
 /* Get class name of object */
-const std::string& AbstractDiscreteCharacterData::getClassName(void) { 
+const std::string& AbstractDiscreteCharacterData::getClassType(void) {
     
-    static std::string rbClassName = "AbstractDiscreteCharacterData";
+    static std::string revClassType = "AbstractDiscreteCharacterData";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& AbstractDiscreteCharacterData::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 

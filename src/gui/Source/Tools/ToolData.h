@@ -6,6 +6,7 @@
 @class WindowControllerCharacterMatrix;
 
 namespace RevBayesCore {
+
     class AbstractCharacterData;
 }
 
@@ -18,9 +19,9 @@ namespace RevBayesCore {
     size_t                             numUnaligned;
 }
 
-@property (readwrite,retain) NSString* dataWorkspaceName;
-@property (readwrite)        size_t    numAligned;
-@property (readwrite)        size_t    numUnaligned;
+@property (nonatomic,strong) NSString* dataWorkspaceName;
+@property (nonatomic)        size_t    numAligned;
+@property (nonatomic)        size_t    numUnaligned;
 
 - (void)addMatrix:(RbData*)m;
 - (NSMutableArray*)dataMatrices;

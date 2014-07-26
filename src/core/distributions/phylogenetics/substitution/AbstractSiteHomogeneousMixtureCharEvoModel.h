@@ -16,7 +16,7 @@
 namespace RevBayesCore {
     
     /**
-     * @brief Declaration of the character state evolution along a tree class.
+     * @brief Homogeneous distribution of character state evolution along a tree class (PhyloCTMC).
      *
      * This file contains the distribution class for a character state evolving along a tree.
      * This abstract base class can be derived for any character evolution model with homogeneous mixture sites. A
@@ -26,13 +26,36 @@ namespace RevBayesCore {
      *
      * The pruning algorithm is implemented in this base class and calles some few pure virtual methods. 
      * The important functions you have to override are:
+     * - computeRootLikelihood(size_t root, size_t l, size_t r, size_t m)
+     * - computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r)
+     * - computeTipLikelihood(const TopologyNode &node, size_t nIdx)
      * - getRootFrequencies()
      * - updateTransitionProbabilities()
      *
-     * The data is stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
+     *
+     * The data are stored for convenience in this class in a matrix (std::vector<std::vector< unsigned > >) and can
      * be compressed.
      *
-     * The current implementation assumes that all mixture categories have the same a priori probability.
+     * The partial likelihoods are stored in a c-style array called partialLikelihoods. The dimension are
+     * partialLikelihoods[active][nodeIndex][siteRateIndex][siteIndex][charIndex], however, since this is a one-dimensional c-style array,
+     * you have to access the partialLikelihoods via 
+     * partialLikelihoods[active*numNodes*numSiteRates*numPatterns*numChars + 
+     *                    nodeIndex*numSiteRates*numPatterns*numChars + 
+     *                    siteRateIndex*numPatterns*numChars +
+     *                    siteIndex*numChars +
+     *                    charIndex]
+     * Since this is a bit complex, we have some offset variables for convenience:
+     * activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
+     * nodeOffset                  =  numSiteRates*numPatterns*numChars;
+     * mixtureOffset               =  numPatterns*numChars;
+     * siteOffset                  =  numChars;
+     * This gives the more convenient access via
+     * partialLikelihoods[active*activeLikelihoodOffset + nodeIndex*nodeOffset + siteRateIndex*mixtureOffset + siteIndex*siteOffset + charIndex]
+     *
+     * Our implementation of the partial likelihoods mean that we can store the partial likelihood of a node, but not for site rates.
+     * We also use twice as much memory because we store the partial likelihood along each branch and not only for each internal node.
+     * This gives us a speed improvement during MCMC proposal in the order of a factor 2.
+     *
      *
      *
      * @copyright Copyright 2009-
@@ -51,16 +74,17 @@ namespace RevBayesCore {
         // public member functions
         // pure virtual
         virtual AbstractSiteHomogeneousMixtureCharEvoModel*                 clone(void) const = 0;                                                                      //!< Create an independent clone
-        
-        // virtual (you need to overwrite this method if you have additional parameters)
-        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping paramoms
-        
+    
         // non-virtual
         double                                                              computeLnProbability(void);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
         void                                                                setValue(AbstractCharacterData *v);                                                   //!< Set the current value, e.g. attach an observation (clamp)
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
+        
+        // Parameter management functions. You need to override both if you have additional parameters
+        virtual std::set<const DagNode*>                                    getParameters(void) const;                                          //!< Return parameters
+        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     protected:
         // helper method for this and derived classes
@@ -138,10 +162,11 @@ namespace RevBayesCore {
 
 #include <cmath>
 
-#define USE_SCALING
+//#define USE_SCALING
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) : TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ), 
+RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const TypedDagNode<treeType> *t, size_t nChars, size_t nMix, bool c, size_t nSites) :
+    TypedDistribution< AbstractCharacterData >(  new DiscreteCharacterData<charType>() ),
     numNodes( t->getValue().getNumberOfNodes() ),
     numSites( nSites ),
     numChars( nChars ),
@@ -163,10 +188,9 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     treatAmbiguousAsGaps( true )
 {
     
-    // add the parameters to the parents list
-    this->addParameter( tau );
+    // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    
+    tau->incrementReferenceCount();
     
     activeLikelihoodOffset      =  numNodes*numSiteRates*numPatterns*numChars;
     nodeOffset                  =  numSiteRates*numPatterns*numChars;
@@ -177,7 +201,8 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 
 
 template<class charType, class treeType>
-RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n) : TypedDistribution< AbstractCharacterData >( n ), 
+RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::AbstractSiteHomogeneousMixtureCharEvoModel(const AbstractSiteHomogeneousMixtureCharEvoModel &n) :
+    TypedDistribution< AbstractCharacterData >( n ),
     numNodes( n.numNodes ),
     numSites( n.numSites ),
     numChars( n.numChars ),
@@ -198,9 +223,10 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     treatUnknownAsGap( n.treatUnknownAsGap ),
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps )
 {
-    // parameters are automatically copied
-    
+
+    // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
+    tau->incrementReferenceCount();
     
     // copy the partial likelihoods
     memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*numPatterns*numChars*sizeof(double));
@@ -213,14 +239,21 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
 }
 
 
+/**
+ * Destructor. Because we added ourselves as a reference to tau when we added a listener to its
+ * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
+ * when we die. All other parameters are handled by others.
+ */
 template<class charType, class treeType>
 RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~AbstractSiteHomogeneousMixtureCharEvoModel( void ) {
-    // We don't delete the paramoms, because they might be used somewhere else too. The model needs to do that!
+    // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
     // remove myself from the tree listeners
     if ( tau != NULL ) 
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
+        if ( tau->decrementReferenceCount() == 0 )
+            delete tau;
     }
     
     // free the partial likelihoods
@@ -458,7 +491,7 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
         
         
         // start by filling the likelihood vector for the children of the root
-        if ( root.getNumberOfChildren() == 2 )
+        if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
         {
             const TopologyNode &left = root.getChild(0);
             size_t leftIndex = left.getIndex();
@@ -470,7 +503,7 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
             // compute the likelihood of the root
             computeRootLikelihood( rootIndex, leftIndex, rightIndex );
         }
-        else if ( root.getNumberOfChildren() == 3 )
+        else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
         {
             const TopologyNode &left = root.getChild(0);
             size_t leftIndex = left.getIndex();
@@ -484,6 +517,10 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
             
             // compute the likelihood of the root
             computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
+        }
+        else
+        {
+            throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
         }
         
         
@@ -543,7 +580,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n )
+{
     
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
@@ -552,7 +590,11 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::keepSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::keepSpecialization( DagNode* affecter )
+{
+    
+    // test
+    this->computeLnProbability();
     
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
@@ -601,7 +643,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::redrawValue( void ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::redrawValue( void )
+{
     
     // delete the old value first
     delete this->value;
@@ -670,7 +713,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::reInitialized( void ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::reInitialized( void )
+{
     
     // we need to recompress because the tree may have changed
     compress();
@@ -737,7 +781,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::resizeLikelihoodVectors( void ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::resizeLikelihoodVectors( void )
+{
     
     // we resize the partial likelihood vectors to the new dimensions
     delete [] partialLikelihoods;
@@ -754,7 +799,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::restoreSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::restoreSpecialization( DagNode* affecter )
+{
     
     // reset the flags
     for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it) 
@@ -767,7 +813,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     {
         // we have to restore, that means if we have changed the active likelihood vector
         // then we need to revert this change
-        if ( changedNodes[index] ) 
+        if ( changedNodes[index] == true )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
         }
@@ -780,7 +826,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setValue(AbstractCharacterData *v) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setValue(AbstractCharacterData *v)
+{
     
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
@@ -790,7 +837,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
+{
     
     // get the children of the node
     const std::vector<TopologyNode*>& children = node.getChildren();
@@ -863,23 +911,44 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 }
 
 
+/** Get the parameters of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
     
+    parameters.insert( tau );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/**
+ * Swap a parameter of the distribution. We receive this call just before being replaced by a variable,
+ * in which case the variable deletes the old parameter. We also receive this call during the cloning of
+ * a DAG. Also in that case it is safe to leave the memory management of the tau parameter to others,
+ * namely to the destructor of the original distribution owning the old parameter.
+ */
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
     // we only have the topology here as the parameter
     if (oldP == tau) 
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
+        tau->decrementReferenceCount();
         tau = static_cast<const TypedDagNode<treeType>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
+        tau->incrementReferenceCount();
         numNodes = tau->getValue().getNumberOfNodes();
     }
-    
 }
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter )
+{
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter != tau ) 
@@ -892,7 +961,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // flip the active likelihood pointers
         for (size_t index = 0; index < changedNodes.size(); ++index) 
         {
-            if ( !changedNodes[index] ) 
+            if ( changedNodes[index] == false )
             {
                 activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
                 changedNodes[index] = true;

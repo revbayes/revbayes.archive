@@ -37,7 +37,7 @@ Probability::Probability( void ) : RealPos( 1.0 ) {
 Probability::Probability( double x ) : RealPos( x ) {
     
     if ( x < 0.0 || x > 1.0)
-        throw RbException( "Creation of " + getClassName() + " with value x=" + x + " outside standard probabilities (0,1)");
+        throw RbException( "Creation of " + getClassType() + " with value x=" + x + " outside standard probabilities (0,1)");
 }
 
 
@@ -54,20 +54,20 @@ Probability* Probability::clone( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Probability::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Probability::getClassType(void) { 
     
-    static std::string rbClassName = "Probability";
+    static std::string revType = "Probability";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Probability::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RealPos::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RealPos::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

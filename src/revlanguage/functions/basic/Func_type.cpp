@@ -44,11 +44,11 @@ Func_type* Func_type::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_type::execute( void ) {
+RevPtr<Variable> Func_type::execute( void ) {
     
     RlString* type = new RlString( args[0].getVariable()->getRevObject().getType() );
     
-    return type;
+    return new Variable( type );
 }
 
 
@@ -68,20 +68,20 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_type::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_type::getClassType(void) { 
     
-    static std::string rbClassName = "Func_type";
+    static std::string revType = "Func_type";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_type::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

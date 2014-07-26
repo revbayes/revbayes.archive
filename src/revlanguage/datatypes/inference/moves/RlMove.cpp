@@ -2,12 +2,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "Move.h"
 #include "RevObject.h"
 #include "RbException.h"
+#include "RealPos.h"
 #include "RlMove.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -22,20 +23,20 @@ Move::Move(const Move &m) : WorkspaceObject<RevBayesCore::Move>( m ) {
 }
 
 
-/** Get class name of object */
-const std::string& Move::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Move::getClassType(void) { 
     
-    static std::string rbClassName = "Move";
+    static std::string revType = "Move";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Move>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Move>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -2,6 +2,7 @@
 #include "ArgumentRules.h"
 #include "Clade.h"
 #include "Dist_constPopMultispCoal.h"
+#include "ModelVector.h"
 #include "MultispeciesCoalescent.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -13,7 +14,6 @@
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -62,7 +62,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 
     // taxons
     std::map <std::string, std::string> g2s;
-    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> > *t = static_cast<const Vector<Taxon> &>( taxons->getRevObject() ).getDagNode(); 
+    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> > *t = static_cast<const ModelVector<Taxon> &>( taxons->getRevObject() ).getDagNode(); 
     for (size_t i = 0 ; i < t->getValue().size(); ++i)  {
         g2s[t->getValue()[i].getName()] = g2s[t->getValue()[i].getSpeciesName()];
     }
@@ -72,9 +72,9 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 
     // the effective population size
     RevBayesCore::TypedDagNode<std::vector<double> >* RbNes;
-    if ( Ne->getRevObjectTypeSpec().isDerivedOf( Vector<RealPos>::getClassTypeSpec() ) )
+    if ( Ne->getRevObjectTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
-            RbNes = static_cast<const Vector<RealPos> &>( Ne->getRevObject() ).getDagNode();
+            RbNes = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
             d->setNes(RbNes);
 
         }
@@ -84,7 +84,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
             RevBayesCore::TypedDagNode< double >* RbNe = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
             d->setNe(RbNe);
         }
-    //RevBayesCore::TypedDagNode<std::vector< double> >* RbNe       = static_cast<const Vector<RealPos> &>( Ne->getRevObject() ).getDagNode();
+    //RevBayesCore::TypedDagNode<std::vector< double> >* RbNe       = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
     
     return d;
 }
@@ -92,16 +92,16 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Dist_constPopMultispCoal::getClassName(void) 
+const std::string& Dist_constPopMultispCoal::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Dist_constPopMultispCoal";
+    static std::string revType = "Dist_constPopMultispCoal";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -113,9 +113,9 @@ const std::string& Dist_constPopMultispCoal::getClassName(void)
 const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -142,9 +142,9 @@ const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const
         distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "speciesTree", true, TimeTree::getClassTypeSpec() ) );
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
-        branchNeTypes.push_back( Vector<RealPos>::getClassTypeSpec() );
+        branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "branchNes"    , true, branchNeTypes ) );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxons"  , true, Vector<Taxon>::getClassTypeSpec() ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxons"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

@@ -49,19 +49,19 @@ void Move_OriginTimeSlide::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_OriginTimeSlide::getClassName(void) { 
+const std::string& Move_OriginTimeSlide::getClassType(void) { 
     
-    static std::string rbClassName = "Move_OriginTimeSlide";
+    static std::string revClassType = "Move_OriginTimeSlide";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Move_OriginTimeSlide::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 

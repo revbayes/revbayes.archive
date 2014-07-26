@@ -23,12 +23,22 @@ Func_structure* Func_structure::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_structure::execute( void ) {
+RevPtr<Variable> Func_structure::execute( void ) {
     
     std::ostringstream o;
 
     o << std::endl;
-    o << "_valueType    = " << args[0].getVariable()->getRevObject().getType() << std::endl;
+    o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    if ( args[0].getVariable()->isControlVar() )
+    {
+        o << "_varType      = control" << std::endl;
+    }
+    else if ( args[0].getVariable()->isReferenceVar() )
+    {
+        o << "_varType      = reference" << std::endl;
+        o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    }
+
     args[0].getVariable()->getRevObject().printStructure( o );
     o << std::endl;
 
@@ -55,20 +65,20 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_structure::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_structure::getClassType(void) { 
     
-    static std::string rbClassName = "Func_type";
+    static std::string revType = "Func_type";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_structure::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */

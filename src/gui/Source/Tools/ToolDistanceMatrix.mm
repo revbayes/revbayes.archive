@@ -155,7 +155,7 @@
         }
 
     // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getValue(distName);
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(distName);
     if ( RevLanguage::RevNullObject::getInstance() == dv )
         {
         //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];

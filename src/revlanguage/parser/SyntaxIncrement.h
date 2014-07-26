@@ -13,19 +13,29 @@ namespace RevLanguage {
     /**
      * @brief Increment operator ('a++' and '++a')
      *
-     * The increment operator adds one to the value of the variable.
-     * Currently we do not distinguish between post- and pre- increments.
+     * The increment operator subtracts one from the value of the variable.
+     * We do not distinguish between post- and pre-increments, as increment
+     * statements cannot occur inside the specification of a for loop.
+     * Instead, we use the R-like in-expression syntax for for loops.
      *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2014-02-18, version 1.0
+     * Note that we respect the control variable status of the variable.
+     * In other words, the increment statement 'a++' or '++a' would be
+     * equivalent to
      *
+     *    a <- a + 1
+     *
+     * if 'a' were a constant variable, and to
+     *
+     *    a <<- a + 1
+     *
+     * if 'a' were a control variable.
      */
     class SyntaxIncrement : public SyntaxElement {
         
     public:
-        SyntaxIncrement(SyntaxVariable* v);                                                                                     //!< Constructor with lhs = variable
+        SyntaxIncrement(SyntaxVariable* v);                                                                                     //!< Basic constructor
         SyntaxIncrement(const SyntaxIncrement& x);                                                                              //!< Copy constructor
+        
 	    virtual                            ~SyntaxIncrement();                                                                  //!< Destructor
         
         // Assignment operator
@@ -37,7 +47,6 @@ namespace RevLanguage {
         
         // Regular functions
         RevPtr<Variable>                    evaluateContent(Environment& env);                                                  //!< Get semantic value
-        void                                replaceVariableWithConstant(const std::string& name, const RevObject& c);           //!< Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
         
     protected:
         SyntaxVariable*                     variable;                                                                           //!< The variable expression
@@ -47,4 +56,6 @@ namespace RevLanguage {
 }
 
 #endif
+
+
 

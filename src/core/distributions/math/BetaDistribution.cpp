@@ -5,9 +5,6 @@
 using namespace RevBayesCore;
 
 BetaDistribution::BetaDistribution(const TypedDagNode<double> *a, const TypedDagNode<double> *b) : ContinuousDistribution( new double( 0.5 ) ), alpha( a ), beta( b ) {
-    // add the parameters to the parents set
-    addParameter( alpha );
-    addParameter( beta );
     
     *value = RbStatistics::Beta::rv(alpha->getValue(), beta->getValue(), *GLOBAL_RNG);
 }
@@ -53,11 +50,28 @@ void BetaDistribution::redrawValue( void ) {
 }
 
 
-void BetaDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == alpha) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BetaDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( alpha );
+    parameters.insert( beta );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void BetaDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if (oldP == alpha)
+    {
         alpha = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if (oldP == beta) {
+    if (oldP == beta)
+    {
         beta = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

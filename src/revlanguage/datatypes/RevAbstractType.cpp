@@ -5,16 +5,24 @@
 
 using namespace RevLanguage;
 
-RevAbstractType::RevAbstractType( const TypeSpec& t) : RevObject(), myTypeSpec( t )
+
+/** Constructor from type specification */
+RevAbstractType::RevAbstractType( const TypeSpec& t) :
+    RevObject(),
+    myTypeSpec( t )
 {
 }
 
 
-RevAbstractType::RevAbstractType(const RevAbstractType& x) : RevObject( x ), myTypeSpec( x.myTypeSpec )
+/** Copy constructor (really not needed) */
+RevAbstractType::RevAbstractType(const RevAbstractType& x) :
+    RevObject( x ),
+    myTypeSpec( x.myTypeSpec )
 {
 }
 
 
+/** Generate type-safe clone */
 RevAbstractType* RevAbstractType::clone(void) const
 {
     return new RevAbstractType(*this);
@@ -22,17 +30,25 @@ RevAbstractType* RevAbstractType::clone(void) const
 
 
 /** Get type spec */
-const RevLanguage::TypeSpec& RevAbstractType::getTypeSpec( void ) const {
+const TypeSpec& RevAbstractType::getTypeSpec( void ) const {
     
     return myTypeSpec;
 }
 
 
+/**
+ * We represent an abstract type, so return true.
+ */
+bool RevAbstractType::isAbstract( void ) const
+{
+    return true;
+}
+
 
 /** Print the value (report an abstract type and then the type) */
 void RevAbstractType::printValue(std::ostream &o) const {
     
-    o << "<abstract object of type: " << myTypeSpec.getType();
+    o << "<abstract object of type '" << myTypeSpec.getType() << "'";
 }
 
 

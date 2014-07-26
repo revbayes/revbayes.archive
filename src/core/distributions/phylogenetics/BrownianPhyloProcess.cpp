@@ -16,19 +16,16 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-BrownianPhyloProcess::BrownianPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ),
+BrownianPhyloProcess::BrownianPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* d): TypedDistribution< RealNodeContainer >(new RealNodeContainer(&t->getValue())),
         tau( t ), 
         sigma( s ), 
-        rootVal( rv ) {
-    this->addParameter( tau );
-    this->addParameter( sigma );
-    this->addParameter( rootVal );
+        drift( d ) {
     
     simulate();
 }
 
 
-BrownianPhyloProcess::BrownianPhyloProcess(const BrownianPhyloProcess &n): TypedDistribution< std::vector< double > >( n ), tau( n.tau ), sigma( n.sigma ), rootVal( n.rootVal ) {
+BrownianPhyloProcess::BrownianPhyloProcess(const BrownianPhyloProcess &n): TypedDistribution< RealNodeContainer >( n ), tau( n.tau ), sigma( n.sigma ), drift( n.drift ) {
     // nothing to do here since the parameters are copied automatically
     
 }
@@ -42,8 +39,8 @@ BrownianPhyloProcess* BrownianPhyloProcess::clone(void) const {
 
 double BrownianPhyloProcess::computeLnProbability(void) {
     
-    return recursiveLnProb(tau->getValue().getRoot());
-    
+    double ret = recursiveLnProb(tau->getValue().getRoot());
+    return ret;
 }
 
 
@@ -58,9 +55,9 @@ double BrownianPhyloProcess::recursiveLnProb( const TopologyNode& from ) {
         // x ~ normal(x_up, sigma^2 * branchLength)
         
         size_t upindex = from.getParent().getIndex();
-        double upval = (*value)[upindex];
-        double standDev = sigma->getValue() * from.getBranchLength();
-        lnProb += log( RbStatistics::Normal::lnPdf(val, standDev, upval) );
+        double standDev = sigma->getValue() * sqrt(from.getBranchLength());
+        double mean = (*value)[upindex] + drift->getValue() * from.getBranchLength();
+        lnProb += RbStatistics::Normal::lnPdf(val, standDev, mean);
     }
     
     // propagate forward
@@ -76,7 +73,6 @@ double BrownianPhyloProcess::recursiveLnProb( const TopologyNode& from ) {
 
 void BrownianPhyloProcess::redrawValue(void) {
     simulate();
-    std::cerr << "Brownian:\t\t" << *value << std::endl;
 }
 
 
@@ -95,12 +91,12 @@ void BrownianPhyloProcess::recursiveSimulate(const TopologyNode& from)  {
         // x ~ normal(x_up, sigma^2 * branchLength)
         
         size_t upindex = from.getParent().getIndex();
-        double upval = (*value)[upindex];
-        double standDev = sigma->getValue() * from.getBranchLength();
+        double standDev = sigma->getValue() * sqrt(from.getBranchLength());
+        double mean = (*value)[upindex] + drift->getValue() * from.getBranchLength();
 
         // simulate the new Val
         RandomNumberGenerator* rng = GLOBAL_RNG;
-        (*value)[index] = RbStatistics::Normal::rv( upval, standDev, *rng);
+        (*value)[index] = RbStatistics::Normal::rv( mean, standDev, *rng);
      
     }
     
@@ -113,6 +109,21 @@ void BrownianPhyloProcess::recursiveSimulate(const TopologyNode& from)  {
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BrownianPhyloProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( tau );
+    parameters.insert( sigma );
+    parameters.insert( drift );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void BrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {
@@ -123,55 +134,7 @@ void BrownianPhyloProcess::swapParameter(const DagNode *oldP, const DagNode *new
         sigma = static_cast< const TypedDagNode<double> * >( newP );
     }
     
-    if ( oldP == rootVal ) {
-        rootVal = static_cast< const TypedDagNode< double > * >( newP );
+    if ( oldP == drift ) {
+        drift = static_cast< const TypedDagNode< double > * >( newP );
     }
 }
-
-/*
- void BrownianPhyloProcess::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
- // only delegate when the toucher was the root val
- if ( affecter == rootVal )
- this->dagNode->getAffectedNodes( affected );
- }
- 
- 
- void BrownianPhyloProcess::keepSpecialization( DagNode* affecter ) {
- // only do this when the toucher was the root val
- if ( affecter == rootVal )
- this->dagNode->keepAffected();
- }
- */
-
-
-/*
- void BrownianPhyloProcess::restoreSpecialization( DagNode *restorer ) {
- // only do this when the toucher was our parameters
- if ( restorer == rootVal ) {
- // get the index of the root
- size_t rootIndex = tau->getValue().getRoot().getIndex();
- (*value)[rootIndex] = rootVal->getValue();
- 
- // delegate a restore to our children
- this->dagNode->restoreAffected();
- }
- }
- */
-
-/*
-void BrownianPhyloProcess::touchSpecialization( DagNode *toucher ) {
-    // if the root val has changed, then we need to change the corresponding value in our vector and downpass the touch
-    if ( rootVal == toucher ) {
-        
-        // get the index of the root
-        size_t rootIndex = tau->getValue().getRoot().getIndex();
-        (*value)[rootIndex] = rootVal->getValue();
-        
-        // we notify our DAG node which element has changed
-        dagNode->addTouchedElementIndex( rootIndex );
-        
-        // delegate a touch to our children
-        this->dagNode->touchAffected();
-    }
-}
-*/

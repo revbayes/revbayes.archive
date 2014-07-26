@@ -16,12 +16,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         Func__rladd*                                    clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get class name
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevObject*                                      execute(void);                                                                  //!< Execute function
+        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
@@ -49,7 +49,7 @@ RevLanguage::Func__rladd<firstValType, secondValType, retType>* RevLanguage::Fun
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevObject* RevLanguage::Func__rladd<firstValType, secondValType, retType>::execute() {
+RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__rladd<firstValType, secondValType, retType>::execute() {
     
     const firstValType& firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() );
     const secondValType& secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() );
@@ -57,7 +57,7 @@ RevLanguage::RevObject* RevLanguage::Func__rladd<firstValType, secondValType, re
     retType* value = firstArg.clone();
     value->add( secondArg );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -80,20 +80,20 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__rladd<firstValType, secondV
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const std::string& RevLanguage::Func__rladd<firstValType, secondValType, retType>::getClassName(void) {
+const std::string& RevLanguage::Func__rladd<firstValType, secondValType, retType>::getClassType(void) {
     
-    static std::string rbClassName = "Func__rladd<" + firstValType::getClassName() + "," + secondValType::getClassName() + "," + retType::getClassName() + ">";
+    static std::string revClassType = "Func__rladd<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
-	return rbClassName;
+	return revClassType;
 }
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__rladd<firstValType, secondValType, retType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revClassTypeSpec;
 }
 
 

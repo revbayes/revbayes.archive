@@ -35,11 +35,11 @@
     WindowControllerDistanceViewer*    distanceViewer;
 }
 
-@property (readwrite) int    distanceType;
-@property (readwrite) BOOL   gammaRateVariation;
-@property (readwrite) int    baseFreqTreatment;
-@property (readwrite) double proportionInvariableSites;
-@property (readwrite) double gammaShape;
+@property (nonatomic) int              distanceType;
+@property (nonatomic) BOOL             gammaRateVariation;
+@property (nonatomic) int              baseFreqTreatment;
+@property (nonatomic) double           proportionInvariableSites;
+@property (nonatomic) double           gammaShape;
 
 - (void)calculateDistances;
 - (void)closeControlPanel;

@@ -31,8 +31,6 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(
         taxonNames( taxaNames )
 {
     
-    addParameter( originTime );
-    
     numTaxa = taxonNames.size();
     
     simulateTree();
@@ -46,7 +44,6 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(const UniformTimeTreeDi
         numTaxa( x.numTaxa ),
         taxonNames( x.taxonNames )
 {
-    // parameters are automatically copied
 }
 
 
@@ -248,8 +245,23 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
 }
 
 
-void UniformTimeTreeDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == originTime) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> UniformTimeTreeDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( originTime );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void UniformTimeTreeDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if (oldP == originTime)
+    {
         originTime = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

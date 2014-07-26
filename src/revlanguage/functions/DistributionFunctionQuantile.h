@@ -38,12 +38,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         DistributionFunctionQuantile*           clone(void) const;                                                              //!< Clone the object
-        static const std::string&               getClassName(void);                                                             //!< Get class name
+        static const std::string&               getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
-        RevObject*                              execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+        RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
         const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
         

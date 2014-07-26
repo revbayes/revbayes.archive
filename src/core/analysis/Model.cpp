@@ -10,7 +10,7 @@ using namespace RevBayesCore;
  * Constructor from a single DAG node.
  * The model graph is extracted by obtaining all DAG nodes connected to the provide source node.
  * The entire model graph is copied and a map between the pointers to the original DAG nodes and
- * the copied DAG nodes is created for convinience access.
+ * the copied DAG nodes is created for convenient access.
  *
  * \param[in]    source    The DAG node from which the model graph is extracted.
  */
@@ -27,7 +27,7 @@ Model::Model(const DagNode *source)
  * Constructor from a set of DAG nodes.
  * The model graph is extracted by obtaining all DAG nodes that are connected to either of the provide source nodes.
  * The entire model graph is copied and a map between the pointers to the original DAG nodes and
- * the copied DAG nodes is created for convinience access.
+ * the copied DAG nodes is created for convenient access.
  *
  * \param[in]    sources    The set of DAG nodes from which the model graph is extracted.
  */
@@ -193,14 +193,14 @@ void Model::addSourceNode(const DagNode *sourceNode)
         // get the copied node
         DagNode* theNewNode = (*i).second;
         
-        // increment the iterator;
-        ++i;
-        
         // increment the reference count to the new node
         theNewNode->incrementReferenceCount();
             
         // insert in direct access vector
         nodes.push_back( theNewNode );
+
+        // increment the iterator;
+        ++i;
     }
     
 }
@@ -209,7 +209,7 @@ void Model::addSourceNode(const DagNode *sourceNode)
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
  *
- * \return A new copy of the model. 
+ * \return A new copy of myself 
  */
 Model* Model::clone( void ) const 
 {

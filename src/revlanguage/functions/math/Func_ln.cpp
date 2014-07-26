@@ -28,7 +28,7 @@ Func_ln* Func_ln::clone( void ) const {
 }
 
 
-RevObject* Func_ln::execute() {
+RevPtr<Variable> Func_ln::execute() {
     
     RevBayesCore::TypedDagNode<double>* arg = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::LnFunction* f = new RevBayesCore::LnFunction( arg );
@@ -37,7 +37,7 @@ RevObject* Func_ln::execute() {
     
     Real* value = new Real( detNode );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -58,19 +58,19 @@ const ArgumentRules& Func_ln::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_ln::getClassName(void) { 
+const std::string& Func_ln::getClassType(void) { 
     
-    static std::string rbClassName = "Func_ln";
+    static std::string revType = "Func_ln";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_ln::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -14,9 +14,6 @@
 using namespace RevBayesCore;
 
 InverseGammaDistribution::InverseGammaDistribution(const TypedDagNode<double> *sh, const TypedDagNode<double> *r) : ContinuousDistribution( new double( 1.0 ) ), shape( sh ), scale( r ) {
-    // add the parameters to the parents set
-    addParameter( shape );
-    addParameter( scale );
     
     *value = RbStatistics::InverseGamma::rv(shape->getValue(), scale->getValue(), *GLOBAL_RNG);
 }
@@ -62,11 +59,28 @@ void InverseGammaDistribution::redrawValue( void ) {
 }
 
 
-void InverseGammaDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
-    if (oldP == shape) {
+/** Get the parameters of the distribution */
+std::set<const DagNode*> InverseGammaDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( shape );
+    parameters.insert( scale );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
+void InverseGammaDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+{
+    if (oldP == shape)
+    {
         shape = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if (oldP == scale) {
+    if (oldP == scale)
+    {
         scale = static_cast<const TypedDagNode<double>* >( newP );
     }
 }

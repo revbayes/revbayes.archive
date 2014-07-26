@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BranchRateJumpProcess.h"
+#include "ModelVector.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -8,7 +9,6 @@
 #include "SwitchRateJumpMove.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -26,7 +26,7 @@ Move_SwitchRateJump::Move_SwitchRateJump() : Move()
 
 /**
  * The clone function is a convenience function to create proper copies of inherited objected.
- * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
  * \return A new copy of the move. 
  */
@@ -54,7 +54,7 @@ void Move_SwitchRateJump::constructInternalObject( void )
     
     // now allocate a new sliding move
     double w                                                    = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const Vector<RealPos> &>( v->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< std::vector<double> > *tmp      = static_cast<const ModelVector<RealPos> &>( v->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< std::vector<double> > *n      = static_cast<RevBayesCore::StochasticNode<std::vector<double> > *>( tmp );
     
     // just to make sure also test that the stochastic node has the correct distribution
@@ -71,16 +71,16 @@ void Move_SwitchRateJump::constructInternalObject( void )
 
 
 /**
- * Get class name of object 
+ * Get Rev type of object 
  *
  * \return The class' name.
  */
-const std::string& Move_SwitchRateJump::getClassName(void) 
+const std::string& Move_SwitchRateJump::getClassType(void) 
 { 
     
-    static std::string rbClassName = "Move_SwitchRateJump";
+    static std::string revType = "Move_SwitchRateJump";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -92,9 +92,9 @@ const std::string& Move_SwitchRateJump::getClassName(void)
 const TypeSpec& Move_SwitchRateJump::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -115,7 +115,7 @@ const MemberRules& Move_SwitchRateJump::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Vector<RealPos>::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, ModelVector<RealPos>::getClassTypeSpec() ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getMemberRules();

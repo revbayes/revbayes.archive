@@ -11,8 +11,6 @@
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 
-#include "RealMatrix.h"
-
 #include <ostream>
 #include <string>
 

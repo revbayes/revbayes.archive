@@ -3,19 +3,22 @@
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
 #include "DistributionBeta.h"
-#include "PowerPosteriorMcmc.h"
+#include "ModelVector.h"
 #include "Model.h"
+#include "Natural.h"
+#include "PowerPosteriorMcmc.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "Real.h"
+#include "RealPos.h"
 #include "RevNullObject.h"
-#include "RlPowerPosterior.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
+#include "RlPowerPosterior.h"
+#include "RlString.h"
 #include "TypeSpec.h"
-#include "VectorRbPointer.h"
-#include "Vector.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -38,8 +41,8 @@ void PowerPosterior::constructInternalObject( void ) {
     
     // now allocate a new sliding move
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const VectorRbPointer<Move>&                rlmvs   = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() );
-    RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getValue();
+    const WorkspaceVector<Move>&                rlmvs   = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() );
+    RevBayesCore::RbVector<RevBayesCore::Move>  mvs     = rlmvs.getVectorRbPointer();
     const std::string&                          fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
 
     value = new RevBayesCore::PowerPosteriorMcmc(mdl, mvs, fn);
@@ -47,7 +50,7 @@ void PowerPosterior::constructInternalObject( void ) {
     std::vector<double> beta;
     if ( powers->getRevObject() != RevNullObject::getInstance() )
     {
-        beta = static_cast<const Vector<RealPos> &>( powers->getRevObject() ).getValue();
+        beta = static_cast<const ModelVector<RealPos> &>( powers->getRevObject() ).getValue();
     }
     else if( cats->getRevObject() != RevNullObject::getInstance() )
     {
@@ -74,7 +77,7 @@ void PowerPosterior::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> PowerPosterior::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") {
         // get the member with give index
@@ -96,20 +99,20 @@ RevObject* PowerPosterior::executeMethod(std::string const &name, const std::vec
 }
 
 
-/** Get class name of object */
-const std::string& PowerPosterior::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& PowerPosterior::getClassType(void) { 
     
-    static std::string rbClassName = "PowerPosterior";
+    static std::string revType = "PowerPosterior";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& PowerPosterior::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::PowerPosteriorMcmc>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -123,9 +126,9 @@ const MemberRules& PowerPosterior::getMemberRules(void) const {
     if ( !rulesSet )
     {
         modelMemberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
         modelMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        modelMemberRules.push_back( new ArgumentRule("powers", true, Vector<RealPos>::getClassTypeSpec(), NULL ) );
+        modelMemberRules.push_back( new ArgumentRule("powers", true, ModelVector<RealPos>::getClassTypeSpec(), NULL ) );
         modelMemberRules.push_back( new ArgumentRule("cats", true, Natural::getClassTypeSpec(), NULL ) );
         
         rulesSet = true;
@@ -144,12 +147,12 @@ const MethodTable& PowerPosterior::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
+        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         
         // necessary call for proper inheritance

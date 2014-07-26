@@ -31,13 +31,13 @@ Func_rtRev* Func_rtRev::clone( void ) const {
 }
 
 
-RevObject* Func_rtRev::execute() {
+RevPtr<Variable> Func_rtRev::execute() {
     
     
     RevBayesCore::RateMatrix_RtRev *rmj = new RevBayesCore::RateMatrix_RtRev();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -50,19 +50,19 @@ const ArgumentRules& Func_rtRev::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_rtRev::getClassName(void) { 
+const std::string& Func_rtRev::getClassType(void) { 
     
-    static std::string rbClassName = "Func_rtRev";
+    static std::string revType = "Func_rtRev";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_rtRev::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

@@ -7,6 +7,7 @@
 //
 
 #include "ExponentialBranchTree.h"
+#include "DeterministicNode.h"
 
 
 using namespace RevBayesCore;
@@ -29,24 +30,6 @@ ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, 
     update();
 }
 
-// constructor(s)
-/*
-ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t,  const TypedDagNode< MatrixReal >* m, const TypedDagNode<double>* o, const TypedDagNode< int >* i): TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ), tau(t),
-mvtnodeval(m), offset(o), traitindex(i) {
-    this->addParameter( tau );
-    if (mvtnodeval != NULL) {
-         this->addParameter( mvtnodeval );   
-    }    
-    if (offset != NULL) {
-         this->addParameter( offset );   
-    }    
-    if (traitindex != NULL) {
-        this->addParameter(traitindex) ;
-    }
-    update();
-}
-*/
-
 ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n):
 
     TypedFunction< std::vector< double > >( n ), 
@@ -62,6 +45,10 @@ ExponentialBranchTree* ExponentialBranchTree::clone(void) const {
 
 void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
+    if ( oldP == tau ) {
+        tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+    }
+
     if ( oldP == process ) {
         process = static_cast< const TypedDagNode<MultivariatePhyloProcess> * >( newP );
     }
@@ -99,9 +86,6 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
             
             double x1 = process->getValue()[index][getTraitIndex()] + offset->getValue();
             double x2 = process->getValue()[upindex][getTraitIndex()] + offset->getValue();
-            if (from.getParent().isRoot())  {
-                x2 = offset->getValue();
-            }
             double y = 0.5 * (exp(x1) + exp(x2));
         
             // we store this val here
@@ -132,4 +116,70 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
         recursiveUpdate(child);
     }
 }
+
+
+void ExponentialBranchTree::corruptAll() {
+    recursiveCorruptAll(tau->getValue().getRoot());
+}
+
+void ExponentialBranchTree::recursiveCorruptAll(const TopologyNode& from)    {
+    
+    dagNode->addTouchedElementIndex(from.getIndex());
+    for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
+        recursiveCorruptAll(from.getChild(i));
+    }    
+}
+
+void ExponentialBranchTree::flagNodes() {
+
+    // the value at some of the nodes has changed
+    // flag them as well as their immediate children
+    // only those nodes will recompute their probability
+
+    const std::set<size_t> &indices = dagNode->getTouchedElementIndices();
+
+    // flag recomputation only for the nodes
+    for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
+        dagNode->addTouchedElementIndex(*it);
+        const TopologyNode& from = tau->getValue().getNode(*it);
+        for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
+            dagNode->addTouchedElementIndex(from.getChild(i).getIndex());
+        }
+    }
+}
+/*
+void ExponentialBranchTree::touch(DagNode *toucher)    {
+
+    
+    if (toucher == process) {
+        flagNodes();
+    }
+    else if (toucher == tau)    {
+        // nothing to do here! these are rates...
+    } 
+    else    {
+        corruptAll();
+    }
+//    dagNode->clearTouchedElementIndices();    
+     
+}
+
+
+void ExponentialBranchTree::restore(DagNode *restorer)    {
+
+    
+    if (restorer == process) {
+        flagNodes();
+    }
+    else if (restorer == tau)    {
+        // nothing to do here! these are rates...
+    } 
+    else    {
+        corruptAll();
+    }
+//    dagNode->clearTouchedElementIndices();    
+     
+}
+*/
+
 

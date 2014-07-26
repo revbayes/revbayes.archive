@@ -7,9 +7,9 @@
 
 @interface WindowControllerNoteBook : NSWindowController {
 
-    IBOutlet NotebookView*     textView;
-    NSMutableAttributedString* mString;
-	AnalysisTools*             myAnalysis;
+    IBOutlet NotebookView*       textView;
+    NSMutableAttributedString*   mString;
+	AnalysisTools*               myAnalysis;
 }
 
 - (id)initWithAnalysis:(AnalysisTools*)a;

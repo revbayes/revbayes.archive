@@ -8,11 +8,11 @@
 
 #include "RlGeographyRateModifier.h"
 #include "ArgumentRule.h"
-#include "MemberFunction.h"
+#include "ModelVector.h"
+#include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
 #include "RlTaxonData.h"
-#include "Vector.h"
 
 using namespace RevLanguage;
 
@@ -37,7 +37,7 @@ RlGeographyRateModifier* RlGeographyRateModifier::clone() const {
 
 
 /* Map calls to member methods */
-RevObject* RlGeographyRateModifier::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> RlGeographyRateModifier::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     
 //    if (name == "getNumberOfCharacters")
@@ -55,20 +55,20 @@ RevObject* RlGeographyRateModifier::executeMethod(std::string const &name, const
 }
 
 
-/* Get class name of object */
-const std::string& RlGeographyRateModifier::getClassName(void) {
+/* Get Rev type of object */
+const std::string& RlGeographyRateModifier::getClassType(void) {
     
-    static std::string rbClassName = "RlGeographyRateModifier";
+    static std::string revType = "RlGeographyRateModifier";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& RlGeographyRateModifier::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -84,11 +84,11 @@ const MethodTable& RlGeographyRateModifier::getMethods(void) const {
 //        // add method for call "x[]" as a function
 //        ArgumentRules* squareBracketArgRules = new ArgumentRules();
 //        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-//        methods.addFunction("[]",  new MemberFunction( Vector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
+//        methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
 //        
 //        // add method for call "x[]" as a function
 //        ArgumentRules* sizeArgRules = new ArgumentRules();
-//        methods.addFunction("size",  new MemberFunction( Natural::getClassTypeSpec(), sizeArgRules) );
+//        methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::GeographyRateModifier>::getMethods() );

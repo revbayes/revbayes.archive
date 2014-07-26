@@ -2,12 +2,13 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "Ellipsis.h"
 #include "Model.h"
+#include "ModelVector.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RlModel.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <vector>
 
@@ -39,20 +40,20 @@ void Model::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
-const std::string& Model::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Model::getClassType(void) { 
     
-    static std::string rbClassName = "Model";
+    static std::string revType = "Model";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Model::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -99,7 +100,14 @@ void Model::printValue(std::ostream &o) const {
             o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
         else
             o << "<" << (*it) << "> :" << std::endl;
-        (*it)->printStructureInfo(o);
+        
+        o << "_value        = ";
+        std::ostringstream o1;
+        (*it)->printValue( o1, ", " );
+        o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+
+        (*it)->printStructureInfo( o );
+
         o << std::endl;
     }
 }
@@ -107,7 +115,7 @@ void Model::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 void Model::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
-    
+
     if ( name == "" || name == "x") {
         sources.insert( var );
     }

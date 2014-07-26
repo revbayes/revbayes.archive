@@ -34,13 +34,13 @@
 	IBOutlet NSBox*          msgSeparator;
 }
 
-@property (readwrite) char    indexLetter;
-@property (readwrite) int     indexValue;
-@property (readwrite) NSRect  plateRect;
-@property (readwrite) int     numElements;
-@property (readwrite) NSSize  minPlateSize;
-@property (readwrite) int     indexSource;
-@property (readwrite) NSRange italicsRange;
+@property (nonatomic) char    indexLetter;
+@property (nonatomic) int     indexValue;
+@property (nonatomic) NSRect  plateRect;
+@property (nonatomic) int     numElements;
+@property (nonatomic) NSSize  minPlateSize;
+@property (nonatomic) int     indexSource;
+@property (nonatomic) NSRange italicsRange;
 
 - (IBAction)changeIndexValue:(id)sender;
 - (IBAction)changeIndexSource:(id)sender;

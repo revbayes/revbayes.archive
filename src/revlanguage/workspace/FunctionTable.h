@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of FunctionTable, which is
- * used to hold global functions in the base environment (the
- * global workspace) and the user workspace.
- *
- * @brief Declaration of FunctionTable
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2009-09-09
- * @extends RbObject
- *
- * $Id$
- */
-
 #ifndef FunctionTable_H
 #define FunctionTable_H
 
@@ -29,14 +11,23 @@
 
 namespace RevLanguage {
     
-class Argument;
-class ArgumentRule;
-class Function;
+    class Argument;
+    class ArgumentRule;
+    class Function;
 
-
-class FunctionTable {
-
+    /**
+     * @brief FunctionTable: A multimap from function names to functions
+     *
+     * FunctionTable is used to hold functions in Workspace and Environment (frame)
+     * objects. It holds the functions, which it owns, in a std::multimap, which it
+     * is derived from. Function tables can be nested; each table defers
+     * calls to its parent(s) when the task cannot be solved locally.
+     *
+     */
+    class FunctionTable : public std::multimap<std::string, Function*> {
+        
     public:
+
         FunctionTable(FunctionTable* parent = NULL);                                                                                    //!< Empty table
         FunctionTable(const FunctionTable& x);                                                                                          //!< Copy constructor
         virtual                                 ~FunctionTable();                                                                       //!< Delete functions
@@ -51,7 +42,7 @@ class FunctionTable {
         // FunctionTable functions
         virtual void                            addFunction(const std::string name, Function *func);                                    //!< Add function
         void                                    clear(void);                                                                            //!< Clear table
-        RevObject*                              executeFunction(const std::string&           name,
+        RevPtr<Variable>                        executeFunction(const std::string&           name,
                                                                 const std::vector<Argument>& args);                                     //!< Evaluate function (once)
         bool                                    existsFunction(const std::string &name) const;                                          //!< Does this table contain a function with given name?
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
@@ -67,7 +58,6 @@ class FunctionTable {
                                                              const std::vector<Argument>& args);                                        //!< Find function, process args
     
         // Member variables
-        std::multimap<std::string, Function*>   table;                                                                                  //!< Table of functions
         const FunctionTable*                    parentTable;                                                                            //!< Enclosing table
 
 };

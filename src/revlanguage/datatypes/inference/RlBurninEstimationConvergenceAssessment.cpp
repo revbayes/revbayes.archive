@@ -39,9 +39,9 @@ BurninEstimationConvergenceAssessment* BurninEstimationConvergenceAssessment::cl
 
 
 /* Map calls to member methods */
-RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    RevObject *retObject = NULL;
+    RevPtr<Variable> retVar;
 
     if (name == "run")
     {
@@ -205,7 +205,7 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
 
         RBOUT("\n");
         
-        retObject = new RlBoolean( passed );
+        retVar = new Variable( new RlBoolean( passed ) );
         
     }
     else if (name == "setBurninMethod")
@@ -216,27 +216,27 @@ RevObject* BurninEstimationConvergenceAssessment::executeMethod(std::string cons
     }
     else
     {
-        retObject = RevObject::executeMethod( name, args );
+        retVar = RevObject::executeMethod( name, args );
     }
     
-    return retObject;
+    return retVar;
 }
 
 
-/** Get class name of object */
-const std::string& BurninEstimationConvergenceAssessment::getClassName(void) {
+/** Get Rev type of object */
+const std::string& BurninEstimationConvergenceAssessment::getClassType(void) {
     
-    static std::string rbClassName = "BurninEstimationConvergenceAssessment";
+    static std::string revType = "BurninEstimationConvergenceAssessment";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -268,15 +268,15 @@ const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const
     if ( methodsSet == false )
     {
         ArgumentRules* runArgRules = new ArgumentRules();
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("ESS") );
         options.push_back( RlString("SEM") );
         
         ArgumentRules* burninMethodArgRules = new ArgumentRules();
         burninMethodArgRules->push_back( new OptionRule("method", options ) );
-        methods.addFunction("setBurninMethod", new MemberFunction( RlUtils::Void, burninMethodArgRules) );
+        methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

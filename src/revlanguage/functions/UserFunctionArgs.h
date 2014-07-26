@@ -32,12 +32,12 @@ namespace RevLanguage {
         
         // Basic utility functions
         UserFunctionArgs*                           clone(void) const;                                                          //!< Clone the object
-        static const std::string&                   getClassName(void);                                                         //!< Get class name
+        static const std::string&                   getClassType(void);                                                         //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language type of the object
 
         // Regular functions
-        virtual RevObject*                          execute(void);                                                              //!< Execute function
+        virtual RevPtr<Variable>                    execute(void);                                                              //!< Execute function
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
         

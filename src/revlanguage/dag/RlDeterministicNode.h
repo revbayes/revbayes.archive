@@ -46,7 +46,7 @@ namespace RevLanguage {
     protected:
 
     private:
-        Function*                           rlFunction;                                                                             //!< Rev function
+        Function*                           rlFunction;                                                         //!< Rev function
     };
     
 }
@@ -64,7 +64,7 @@ template<class valueType>
 RevLanguage::DeterministicNode<valueType>::DeterministicNode( const RevLanguage::DeterministicNode<valueType> &n )
     : RevBayesCore::DeterministicNode<valueType>( n ), rlFunction( n.rlFunction->clone() ) {
 
-    touchMe( this );    // NB: This for safety; not needed if we trust all involved copy constructors
+    RevBayesCore::DagNode::touch();    // NB: This for safety; not needed if we trust all involved copy constructors
 }
 
 
@@ -102,14 +102,17 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
     
     this->touched = true;     //!< To be on the safe side; the flag is not used by this class
     
-    if ( !this->isFunctionDirty() )
-    {
+    
+    // We need to touch the function anyways because it might not be filthy enough.
+    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
+//    if ( !this->isFunctionDirty() )
+//    {
         // Essential for lazy evaluation
         this->touchFunction( toucher );
 
         // Dispatch the touch message to downstream nodes
         this->touchAffected();
-    }
+//    }
 }
 
 
@@ -117,21 +120,20 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
 {
+    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Deterministic DAG node" << std::endl;
+    o << "_refCount     = " << this->getReferenceCount() << std::endl;
 
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
     o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_value        = ";
-    RevBayesCore::TypedDagNode<valueType>::printValue(o, ", ");
-    o << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o);
+    this->printParents(o, 16, 70);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o);
+    this->printChildren(o, 16, 70);
 
     o << std::endl;
 }

@@ -21,10 +21,6 @@
  * Some explanation of the directory structure is provided in the comments
  * in this file. Consult these comments if you are uncertain about where
  * to add your objects in the code.
- *
- * (c) Copyright 2009-
- * @license GPL version 3
- *
  */
 
 #include <sstream>
@@ -54,7 +50,9 @@
 #include "RealPos.h"
 
 /* Container types (in folder "datatypes/container") */
-#include "Vector.h"
+#include "ModelVector.h"
+#include "RevObjectVector.h"
+#include "WorkspaceVector.h"
 
 /* Evolution types (in folder "datatypes/evolution") */
 
@@ -134,6 +132,8 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 #include "Move_MultivariatePhyloProcessTranslation.h"
 #include "Move_MultivariatePhyloProcessSliding.h"
+#include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_RealNodeValTreeSliding.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -169,6 +169,7 @@
 
 /* Trait evolution models (in folder "distributions/evolution/tree") */
 #include "Dist_brownian.h"
+#include "Dist_ornsteinUhlenbeck.h"
 #include "Dist_mvtBrownian.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
@@ -241,11 +242,12 @@
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_clade.h"
 #include "Func_expBranchTree.h"
+#include "Func_tanhBranchTree.h"
+#include "Func_t92GCBranchTree.h"
 #include "Func_phyloRateMultiplier.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
 #include "Func_treeAssembly.h"
-#include "Func_discretizedGammaRates.h"
 
 
 /* Rate matrix functions (in folder "functions/evolution/ratematrix") */
@@ -255,6 +257,7 @@
 #include "Func_f81.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_t92.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_mtRev.h"
@@ -324,7 +327,6 @@
 #include "Func_floor.h"
 #include "Func_ln.h"
 #include "Func_log.h"
-#include "Func_mean.h"
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
@@ -336,9 +338,13 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_discretizeGamma.h"
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
+#include "Func_mean.h"
+#include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
+
 
 
 /** Initialize global workspace */
@@ -363,13 +369,28 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RlString()                 );
         
         /* Add container types (in folder "datatypes/container") (alphabetic order) */
-        addType( new Vector<Integer>()          );
-        addType( new Vector<Natural>()          );
-        addType( new Vector<Real>()             );
-        addType( new Vector<RealPos>()          );
-        addType( new Vector<RlBoolean>()        );
-        addType( new Vector<RlString>()         );
-        
+
+        // Note: Only these types of containers can be created implicitly by assignment
+        // or explicitly using the v function or the "[ x1, x2, ... ]" syntax.
+
+        // Model vectors
+        addType( new ModelVector<Integer>()          );
+        addType( new ModelVector<Natural>()          );
+        addType( new ModelVector<Real>()             );
+        addType( new ModelVector<RealPos>()          );
+        addType( new ModelVector<RlBoolean>()        );
+        addType( new ModelVector<RlString>()         );
+
+        // Workspace vectors
+        addType( new WorkspaceVector<Mcmc>()         );
+        addType( new WorkspaceVector<Model>()        );
+        addType( new WorkspaceVector<Monitor>()      );
+        addType( new WorkspaceVector<Move>()         );
+
+        // RevObject vectors
+        addType( new RevObjectVector<Function>()     );
+        addType( new RevObjectVector<Distribution>() );
+        addType( new RevObjectVector<RevObject>()    );
 
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
 
@@ -496,6 +517,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
         addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariatePhyloProcessTranslation() );
         addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariatePhyloProcessSliding() );
+        addTypeWithConstructor("mvConjugateInverseWishartBrownian",    new Move_ConjugateInverseWishartBrownian() );
+        addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -536,8 +559,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
-        addDistribution( "dnBrownian",  new Dist_brownian() );
-        addDistribution( "brownian",    new Dist_brownian() );
+        addDistribution( "dnBrownian",              new Dist_brownian() );
+        addDistribution( "brownian",                new Dist_brownian() );
+        addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
         
         // multivariate brownian motion
         addDistribution( "dnmvtBrownian",  new Dist_mvtBrownian() );
@@ -700,7 +726,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // TAH: these don't seem to work with the moves, probably need to figure this out
 		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
 		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
-		//addDistribution( "dpp",				new Dist_dpp< Vector<RealPos> >() );
+		//addDistribution( "dpp",				new Dist_dpp< ModelVector<RealPos> >() );
         
 
         /* Now we have added all primitive and complex data types and can start type checking */
@@ -748,15 +774,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "clade",                       new Func_clade()                    );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
+        addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
+        addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
-        addFunction( "discretizeGamma",             new Func_discretizedGammaRates()    );
         
         // nonstandard names (for backward compatibility)
-        addFunction( "expbranchtree",               new Func_expBranchTree()            );
         addFunction( "rateMultiplierPhyloFunction", new Func_phyloRateMultiplier()      );
+        addFunction( "expbranchtree",               new Func_expBranchTree()            );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "blosum62", new Func_blosum62());
@@ -765,6 +792,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "f81",      new Func_f81()     );
         addFunction( "gtr",      new Func_gtr()     );
         addFunction( "hky",      new Func_hky()     );
+        addFunction( "t92",      new Func_t92()     );
         addFunction( "jc",       new Func_jc()      );
         addFunction( "jones",    new Func_jones()   );
         addFunction( "mtMam",    new Func_mtMam()   );
@@ -852,10 +880,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_add",      new Func__add< RlString               , RlString              , RlString              >(  )   );
         addFunction( "_add",      new Func__add< RlString               , Real                  , RlString              >(  )   );
         addFunction( "_add",      new Func__add< RlString               , Integer               , RlString              >(  )   );
-        addFunction( "_add",      new Func__add< Vector<Natural>        , Vector<Natural>       , Vector<Natural>       >(  )   );
-        addFunction( "_add",      new Func__add< Vector<Integer>        , Vector<Integer>       , Vector<Integer>       >(  )   );
-        addFunction( "_add",      new Func__add< Vector<RealPos>        , Vector<RealPos>       , Vector<RealPos>       >(  )   );
-        addFunction( "_add",      new Func__add< Vector<Real>           , Vector<Real>          , Vector<Real>          >(  )   );
+        addFunction( "_add",      new Func__add< ModelVector<Natural>   , ModelVector<Natural>  , ModelVector<Natural>       >(  )   );
+        addFunction( "_add",      new Func__add< ModelVector<Integer>   , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
+        addFunction( "_add",      new Func__add< ModelVector<RealPos>   , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
+        addFunction( "_add",      new Func__add< ModelVector<Real>      , ModelVector<Real>     , ModelVector<Real>          >(  )   );
         
         addFunction( "_add",      new Func__rladd< AbstractCharacterData  , AbstractCharacterData , AbstractCharacterData >(  )   );
         
@@ -864,26 +892,26 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_div",      new Func__div< Integer         , Integer           , Real              >(  )  );
         addFunction( "_div",      new Func__div< Real            , Real              , Real              >(  )  );
         addFunction( "_div",      new Func__div< RealPos         , RealPos           , RealPos           >(  )  );
-        addFunction( "_div",      new Func__div< Vector<Natural> , Vector<Natural>   , Vector<RealPos>   >(  )  );
-        addFunction( "_div",      new Func__div< Vector<Integer> , Vector<Integer>   , Vector<Real>      >(  )  );
-        addFunction( "_div",      new Func__div< Vector<RealPos> , Vector<RealPos>   , Vector<RealPos>   >(  )  );
-        addFunction( "_div",      new Func__div< Vector<Real>    , Vector<Real>      , Vector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Natural> , ModelVector<Natural>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Real>      >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<RealPos> , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Real>    , ModelVector<Real>      , ModelVector<RealPos>   >(  )  );
         
         // multiplication
         addFunction( "_mul",      new Func__mult< Natural            , Natural           , Natural           >(  )  );
         addFunction( "_mul",      new Func__mult< Integer            , Integer           , Integer           >(  )  );
         addFunction( "_mul",      new Func__mult< Real               , Real              , Real              >(  )  );
         addFunction( "_mul",      new Func__mult< RealPos            , RealPos           , RealPos           >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<Natural>    , Vector<Natural>   , Vector<Natural>   >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<Integer>    , Vector<Integer>   , Vector<Integer>   >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<RealPos>    , Vector<RealPos>   , Vector<RealPos>   >(  )  );
-        addFunction( "_mul",      new Func__mult< Vector<Real>       , Vector<Real>      , Vector<Real>      >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Natural>    , ModelVector<Natural>   , ModelVector<Natural>   >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Integer>    , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<RealPos>    , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Real>       , ModelVector<Real>      , ModelVector<Real>      >(  )  );
         
         // subtraction
         addFunction( "_sub",      new Func__sub< Integer         , Integer           , Integer           >(  )  );
         addFunction( "_sub",      new Func__sub< Real            , Real              , Real              >(  )  );
-        addFunction( "_sub",      new Func__sub< Vector<Integer> , Vector<Integer>   , Vector<Integer>   >(  )  );
-        addFunction( "_sub",      new Func__sub< Vector<Real>    , Vector<Real>      , Vector<Real>      >(  )  );
+        addFunction( "_sub",      new Func__sub< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
+        addFunction( "_sub",      new Func__sub< ModelVector<Real>    , ModelVector<Real>      , ModelVector<Real>      >(  )  );
         
         // modulo
         addFunction( "_mod",      new Func__mod() );
@@ -979,6 +1007,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
+
+        // return a distcretized (by quantile) and normalized vector from a continuous distribution
+        addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
+        addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<RealPos>()    );
+        
+        // return a discretized gamma distribution (for gamma-dist rates)
+        addFunction( "discretizeGamma",             new Func_discretizeGamma( )   );
 
         
         ///////////////////////////////////////////////////////////////////////////

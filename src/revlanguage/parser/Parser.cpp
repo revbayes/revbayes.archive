@@ -131,6 +131,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 
         // Catch a quit request
         if (rbException.getExceptionType() == RbException::QUIT) {
+            delete( root );
             exit(0);
         }
 
@@ -147,6 +148,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
                 for ( std::vector<Function*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
                     RBOUT( (*i)->callSignature() );
                 }
+                delete( root );
                 return 0;
             }
         }
@@ -159,6 +161,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
         RBOUT( msg.str() );
 
         // Return signal indicating problem
+        delete ( root );
         return 2;
     }
 
@@ -170,6 +173,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
     }
 
     // Return success
+    delete( root );
     return 0;
 }
 
@@ -241,7 +245,11 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 }
 
 
-/** This function prints help info about a function if it sees a function call */
+/**
+ * This function prints help info about a function if it sees a function call.
+ *
+ * Note: The caller needs to delete the syntax tree (the syntax function call).
+ */
 int RevLanguage::Parser::help(const SyntaxFunctionCall& root) const {
 
     std::ostringstream msg;

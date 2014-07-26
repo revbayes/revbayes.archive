@@ -7,17 +7,17 @@
 
 @interface WindowControllerDataEntry : NSWindowController <NSTableViewDataSource> {
 
-	IBOutlet NSButton*                  okButton;
-    IBOutlet NSPopUpButton*             changeDimensionsButton;
-    ToolDataEntry*                      myTool;
-    IBOutlet NSTableView*               tableView;
-    NSMutableArray*                     rowData;
-    int                                 numCharacters;
-    int                                 numTaxa;
+	IBOutlet NSButton*      okButton;
+    IBOutlet NSPopUpButton* changeDimensionsButton;
+    ToolDataEntry*          myTool;
+    IBOutlet NSTableView*   tableView;
+    NSMutableArray*         rowData;
+    int                     numCharacters;
+    int                     numTaxa;
 }
 
-@property (readwrite) int numCharacters;
-@property (readwrite) int numTaxa;
+@property (nonatomic) int   numCharacters;
+@property (nonatomic) int   numTaxa;
 
 - (IBAction)addRow:(id)sender;
 - (IBAction)addColumn:(id)sender;

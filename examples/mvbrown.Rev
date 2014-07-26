@@ -21,12 +21,17 @@ tau ~ uniformTimeTree( originTime = 2.0, taxonNames = names)
 
 # work under fixed topology
 # set tau equal to externally given tree
-treeArray <- readTrees("data/chronoplac2.tree")
+treeArray <- readTrees("data/chronoplac.tree")
 fixedTree <- treeArray[1]
 tau.clamp(fixedTree)
 
-# moves on the tree: only relative dates
+contDataArray <- readCharacterData("data/anolistrait.nex")
+contData <- contDataArray[1]
+contData
+
 index <- 1
+
+# moves on the tree: only relative dates
 moves[index] <- mSubtreeScale(tau, weight=5.0)
 index <- index + 1
 moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
@@ -84,20 +89,15 @@ rootval[2] <- 0
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
 
+mean1 := br.mean(1)
+"mean"
+mean1
+
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
-
-#stats on brownian process
-mean1 := br.mean(1)
-stdev1 := br.stdev(1)
-
-# why can t I call redraw on the brownian process?
-mean1
-br.redraw()
-mean1
 
 "exp rates"
 # rate variation along the tree
@@ -119,9 +119,9 @@ mitSeq.clamp(mitData)
 "model"
 mymodel <- model(nucpi)
 
-# why can t I monitor the summary statistics mean1 and stdev1 ?
-monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, kappa, mean1, stdev1)
-monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, kappa)
+monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, mean1, br)
+#monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
+monitors[2] <- filemonitor(filename="brown.prec",printgen=10, separator = "	", sigma, br)
 monitors[3] <- filemonitor(filename="brown.tree",printgen=10, separator = "	", tau)
 monitors[4] <- modelmonitor(filename="brown.log",printgen=10, separator = "	")
  

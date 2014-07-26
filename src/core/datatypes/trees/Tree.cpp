@@ -66,7 +66,10 @@ Tree::~Tree(void)
     else
     {
         // remove the tree for each node
-        topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
+        // TODO: Why are we doing this? Apparently we need at least to check that
+        // there are some nodes to delete because the topology can be empty. -- Fredrik
+        if ( topology->getNumberOfNodes() > 0 )
+            topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
     }
     
 }
@@ -143,6 +146,22 @@ void Tree::clearBranchParameters() {
     
     getRoot().clearBranchParameters();
 
+}
+
+
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "rootAge" )
+    {
+        rv = getRoot().getAge();
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
 }
 
 std::vector<std::string> Tree::getTipNames() const {

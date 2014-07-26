@@ -15,7 +15,7 @@
 #ifndef RbOptions_H
 #define RbOptions_H
 
-/* The debug switches */
+/* Debug switches */
 /* It is useful to list the switches here but it is preferable to switch
    the defines on in the IDE rather than by uncommenting them here, so
    that accidental commits do not disturb other developers. Beware! */
@@ -28,10 +28,14 @@
 //#define DEBUG_BISON_FLEX
 //#define DEBUG_MCMC      // Define this to debug mcmc computation shortcuts (and perhaps other mcmc code). NB! Slow!
 //#define DEBUG_HELP_SYSTEM
+//#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
+// #define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
+
+//#define TESTING
+
+/* Feature enabling switches */
 #define SSE_ENABLED
 //#define AVX_ENABLED
-//#define TESTING
-//#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
 
 
 /* Test whether we should use linenoise */

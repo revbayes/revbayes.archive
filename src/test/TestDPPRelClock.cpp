@@ -72,8 +72,8 @@ bool TestDPPRelClock::run( void ) {
     seed.push_back(42);
     GLOBAL_RNG->setSeed(seed);
     
-//    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
-//    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
+    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
+    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
 	
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -270,7 +270,7 @@ bool TestDPPRelClock::run( void ) {
 // 	monitoredNodes.push_back( scaleRate );
 // 	monitoredNodes.push_back( branchSubRates );
 
-	std::string logFN = "rb_tt_CLK_pr.log";
+	std::string logFN = "dpp_test/rb_tt_CLK_rn_1.log";
 	monitors.push_back( new FileMonitor( monitoredNodes, 10, logFN, "\t" ) );
 
 //    std::set<DagNode*> monitoredNodes2;

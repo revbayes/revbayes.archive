@@ -18,7 +18,7 @@ namespace RevLanguage {
         
         // Basic utility functions
         Dist_phyloDACTMC*                               clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassName(void);                                                             //!< Get class name
+        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
@@ -52,7 +52,6 @@ namespace RevLanguage {
 #include "RlString.h"
 #include "RateMap.h"
 #include "StandardState.h"
-#include "VectorAbstractElement.h"
 
 
 template <class treeType>
@@ -103,22 +102,22 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
 
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <class treeType>
-const std::string& RevLanguage::Dist_phyloDACTMC<treeType>::getClassName(void) {
+const std::string& RevLanguage::Dist_phyloDACTMC<treeType>::getClassType(void) {
     
-    static std::string rbClassName = "Dist_phyloDACTMC";
+    static std::string revType = "Dist_phyloDACTMC";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 template <class treeType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -140,7 +139,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("biogeo") );
         distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options ) );
         rulesSet = true;

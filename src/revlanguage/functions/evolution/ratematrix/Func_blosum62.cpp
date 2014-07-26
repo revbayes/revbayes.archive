@@ -31,13 +31,13 @@ Func_blosum62* Func_blosum62::clone( void ) const {
 }
 
 
-RevObject* Func_blosum62::execute() {
+RevPtr<Variable> Func_blosum62::execute() {
     
     
     RevBayesCore::RateMatrix_Blosum62 *rmj = new RevBayesCore::RateMatrix_Blosum62();
     RateMatrix* value = new RateMatrix( rmj );
     
-    return value;
+    return new Variable( value );
 }
 
 
@@ -50,19 +50,19 @@ const ArgumentRules& Func_blosum62::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_blosum62::getClassName(void) { 
+const std::string& Func_blosum62::getClassType(void) { 
     
-    static std::string rbClassName = "Func_blosum62";
+    static std::string revType = "Func_blosum62";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_blosum62::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

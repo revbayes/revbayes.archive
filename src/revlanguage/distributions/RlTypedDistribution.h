@@ -37,7 +37,7 @@ namespace RevLanguage {
         
         // Basic utility functions you have to override
         virtual TypedDistribution<valueType>*           clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassName(void);                                                                 //!< Get class name
+        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
         
         
@@ -86,13 +86,13 @@ valueType* RevLanguage::TypedDistribution<valueType>::createRandomVariable(void)
 }
 
 
-/* Get class name of object */
+/* Get Rev type of object */
 template <typename valueType>
-const std::string& RevLanguage::TypedDistribution<valueType>::getClassName(void) { 
+const std::string& RevLanguage::TypedDistribution<valueType>::getClassType(void) { 
     
-    static std::string rbClassName = "Distribution<"+ valueType::getClassName() +">";
+    static std::string revType = "Distribution<"+ valueType::getClassType() +">";
     
-	return rbClassName; 
+	return revType; 
 }
 
 
@@ -100,9 +100,9 @@ const std::string& RevLanguage::TypedDistribution<valueType>::getClassName(void)
 template <typename valueType>
 const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<valueType>::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

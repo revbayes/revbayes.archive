@@ -2,12 +2,12 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "ModelVector.h"
 #include "Monitor.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RlMonitor.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -27,19 +27,19 @@ Monitor::Monitor(const Monitor &m) : WorkspaceObject<RevBayesCore::Monitor>( m )
 }
 
 
-/** Get class name of object */
-const std::string& Monitor::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Monitor::getClassType(void) { 
     
-    static std::string rbClassName = "Monitor";
+    static std::string revType = "Monitor";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Monitor::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Monitor>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Monitor>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 

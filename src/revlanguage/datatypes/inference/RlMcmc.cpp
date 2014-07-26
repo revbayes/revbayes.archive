@@ -4,6 +4,7 @@
 #include "ConstantNode.h"
 #include "Mcmc.h"
 #include "Model.h"
+#include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlMcmc.h"
@@ -12,7 +13,7 @@
 #include "RlMove.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "VectorRbPointer.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -35,8 +36,8 @@ void Mcmc::constructInternalObject( void ) {
     
     // now allocate a new MCMC object
     const RevBayesCore::Model&                              mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const RevBayesCore::RbVector<RevBayesCore::Move>&       mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
-    const RevBayesCore::RbVector<RevBayesCore::Monitor>&    mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::Move>&       mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
+    const RevBayesCore::RbVector<RevBayesCore::Monitor>&    mntr    = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() ).getVectorRbPointer();
     const std::string &                                     sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     value = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     value->setScheduleType( sched );
@@ -44,7 +45,7 @@ void Mcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> Mcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     if (name == "run") 
     {
@@ -74,20 +75,20 @@ RevObject* Mcmc::executeMethod(std::string const &name, const std::vector<Argume
 }
 
 
-/** Get class name of object */
-const std::string& Mcmc::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Mcmc::getClassType(void) { 
     
-    static std::string rbClassName = "MCMC";
+    static std::string revType = "MCMC";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mcmc::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 
@@ -100,10 +101,10 @@ const MemberRules& Mcmc::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         memberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
 
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("sequential") );
         options.push_back( RlString("random") );
         options.push_back( RlString("single") );
@@ -126,15 +127,15 @@ const MethodTable& Mcmc::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
+        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-        methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
+        methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

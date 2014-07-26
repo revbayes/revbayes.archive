@@ -1,25 +1,6 @@
-/**
- * @file
- * This file contains the implementation of SyntaxAssignExpr, which is
- * used to hold binary expressions in the syntax tree.
- *
- * @brief Implementation of SyntaxAssignExpr
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-09-07 12:47:31 +0200 (Fri, 07 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: SyntaxAssignExpr.cpp 1801 2012-09-07 10:47:31Z hoehna $
- */
-
-#include "ArgumentRule.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
-#include "RlDistribution.h"
-#include "SyntaxFunctionCall.h"
-#include "VariableSlot.h"
 #include "SyntaxConstantAssignment.h"
 #include "Workspace.h"
 
@@ -29,159 +10,139 @@
 
 using namespace RevLanguage;
 
-/** Construct from operator type, variable and expression */
-SyntaxConstantAssignment::SyntaxConstantAssignment(SyntaxVariable* var, SyntaxElement* expr) : SyntaxElement(), variable(var), functionCall(NULL), expression(expr) {
-
-}
-
-
-/** Construct from operator type, function call and expression */
-SyntaxConstantAssignment::SyntaxConstantAssignment(SyntaxFunctionCall* fxnCall, SyntaxElement* expr) : SyntaxElement(), variable(NULL), functionCall(fxnCall), expression(expr) {
-
+/** Basic constructor from lef-hand side and right-hand side expressions */
+SyntaxConstantAssignment::SyntaxConstantAssignment( SyntaxElement* lhsExpr, SyntaxElement* rhsExpr ) :
+    SyntaxElement(),
+    lhsExpression( lhsExpr ),
+    rhsExpression( rhsExpr )
+{
 }
 
 
 /** Deep copy constructor */
-SyntaxConstantAssignment::SyntaxConstantAssignment(const SyntaxConstantAssignment& x) : SyntaxElement(x) {
-    
-    if ( x.variable != NULL )
-        variable   = x.variable->clone();
-    
-    if ( x.functionCall != NULL )
-        functionCall = x.functionCall->clone();
-    
-    expression = x.expression->clone();
+SyntaxConstantAssignment::SyntaxConstantAssignment( const SyntaxConstantAssignment& x ) :
+    SyntaxElement( x ),
+    lhsExpression( x.lhsExpression->clone() ),
+    rhsExpression( x.rhsExpression->clone() )
+{
 }
 
 
 /** Destructor deletes operands */
-SyntaxConstantAssignment::~SyntaxConstantAssignment() {
-    
-    delete variable;
-    delete functionCall;
-    delete expression;
-    
+SyntaxConstantAssignment::~SyntaxConstantAssignment( void )
+{
+    delete lhsExpression;
+    delete rhsExpression;
 }
 
 
 /** Assignment operator */
-SyntaxConstantAssignment& SyntaxConstantAssignment::operator=(const SyntaxConstantAssignment& x) {
-    
+SyntaxConstantAssignment& SyntaxConstantAssignment::operator=( const SyntaxConstantAssignment& x )
+{
     if ( this != &x ) {
         
-        functionCall = NULL;
-        variable = NULL;
-        
-        if ( x.variable != NULL )
-            variable   = x.variable;
-        
-        if ( x.functionCall != NULL )
-            functionCall = x.functionCall;
-        
-        expression = x.expression;
+        delete lhsExpression;
+        delete rhsExpression;
+
+        lhsExpression = x.lhsExpression->clone();
+        rhsExpression = x.rhsExpression->clone();
     }
     
     return (*this);
 }
 
 
-/** Clone syntax element */
-SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const {
-    
-    return new SyntaxConstantAssignment(*this);
+/** Type-safe clone of the syntax element */
+SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const
+{
+    return new SyntaxConstantAssignment( *this );
 }
 
 
-/** Get semantic value: insert symbol and return the rhs value of the assignment */
-RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env ) {
-    
+/**
+ * Get semantic value. The semantic value of a constant assignment is the same
+ * independent of grammatical context, so we only need one evaluate function.
+ * We first evaluate the lhs content of the lhs expression. If it is a variable,
+ * and the variable does not exist in the workspace, the variable will be created
+ * and inserted into the workspace (the environment) before being returned as the
+ * content of the lhs expression. Other expressions will typically return temporary
+ * variables that will be lost after the assignment, but it could be used in some
+ * contexts. For instance, it might be used in a chain assignment or in passing a
+ * variable to a function.
+ */
+RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
+{
 #ifdef DEBUG_PARSER
-    printf( "Evaluating assign expression\n" );
+    printf( "Evaluating constant assignment\n" );
 #endif
-    
-    // Get variable info from lhs
-    const RevPtr<Variable>& theSlot = variable->createVariable( env );
-    
+
     // Declare variable storing the return value of the assignment expression
-    RevPtr<Variable> theVariable = NULL;
-        
-#ifdef DEBUG_PARSER
-    printf("Constant assignment\n");
-#endif
-        
-    RevObject *newValue;
-        
-    // Calculate the value of the rhs expression
-    theVariable = expression->evaluateContent( env );
-    if ( theVariable == NULL )
-        throw RbException( "Invalid NULL variable returned by rhs expression in assignment" );
-        
-    // fill the slot with the new variable
+    RevPtr<Variable> theVariable;
+    
+    // Get the rhs expression wrapped and executed into a variable.
+    theVariable = rhsExpression->evaluateContent( env );
+
+    // Get variable slot from lhs
+    RevPtr<Variable> theSlot;
+    theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    
+    // Get a reference to the Rev object value
     const RevObject& value = theVariable->getRevObject();
-        
-    // check if the type is valid. This is necessary for reassignments
-    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) ) {
-        // We are not of a derived type (or the same type)
-        // since this will create a constant node we are allowed to type cast
-        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) ) {
+    
+    // Perform type conversion if needed, otherwise just clone the value object
+    RevObject* newValue;
+    if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) )
+    {
+        // We are not of a derived type (or the same type) so we need to cast
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) )
+        {
             newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
-                
         }
-        else {
+        else
+        {
             std::ostringstream msg;
-            msg << "Cannot reassign variable '" << theSlot->getName() << "' with type " << value.getTypeSpec() << " with value ";
-            value.printValue(msg);
-            msg << " because the variable requires type " << theSlot->getRevObjectTypeSpec() << "." << std::endl;
+            msg << "Cannot assign variable '" << theSlot->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
+            msg << " because the variable requires type '" << theSlot->getRevObjectTypeSpec().getType() << "'" << std::endl;
             throw RbException( msg );
         }
     }
-    else 
+    else
     {
         newValue = value.clone();
-        newValue->makeConstantValue();
-            
+        newValue->makeConstantValue();  // We cannot trust evaluateContent to return a constant variable
     }
-        
-    // set the value of the variable
+
+    // Fill the slot with newValue
     theSlot->setRevObject( newValue );
-        
-    // set the name of the DAG node. This will ensure nicer outputs about the DAG.
-    newValue->setName( theSlot->getName() );
-        
+    
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
-#endif    
+#endif
     
+    // We return the rhs variable itself as the semantic value of the
+    // assignment statement. It can be used in further assignments.
     return theVariable;
 }
 
 
-bool SyntaxConstantAssignment::isAssignment( void ) const {
+/** This is an assignment, return true. */
+bool SyntaxConstantAssignment::isAssignment( void ) const
+{
     return true;
 }
 
 
 
 /** Print info about the syntax element */
-void SyntaxConstantAssignment::printValue(std::ostream& o) const {
-    
+void SyntaxConstantAssignment::printValue( std::ostream& o ) const
+{
     o << "SyntaxConstantAssignment:" << std::endl;
-    o << "variable      = ";
-    variable->printValue(o);
+    o << "lhsExpression = ";
+    lhsExpression->printValue( o );
     o << std::endl;
-    o << "expression    = ";
-    expression->printValue(o);
+    o << "rhsExpression = ";
+    rhsExpression->printValue( o );
     o << std::endl;
-}
-
-
-/**
- * Replace the syntax variable with name by the constant value. Loops have to do that for their index variables.
- * We just delegate that to the element on our right-hand-side and also to the variable itself (lhs).
- */
-void SyntaxConstantAssignment::replaceVariableWithConstant(const std::string& name, const RevObject& c) {
-    expression->replaceVariableWithConstant(name, c);
-    variable->replaceVariableWithConstant(name, c);
 }
 
 

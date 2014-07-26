@@ -2,13 +2,15 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"
+#include "Ellipsis.h"
 #include "FileMonitor.h"
+#include "ModelVector.h"
 #include "Mntr_File.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RevObject.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 
 using namespace RevLanguage;
@@ -49,20 +51,20 @@ void Mntr_File::constructInternalObject( void ) {
 }
 
 
-/** Get class name of object */
-const std::string& Mntr_File::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Mntr_File::getClassType(void) { 
     
-    static std::string rbClassName = "Mntr_File";
+    static std::string revType = "Mntr_File";
     
-	return rbClassName; 
+	return revType; 
     }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_File::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 

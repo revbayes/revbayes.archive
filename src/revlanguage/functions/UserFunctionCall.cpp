@@ -8,6 +8,7 @@
 #include "TypedUserFunction.h"
 #include "TypeSpec.h"
 #include "UserFunctionCall.h"
+#include "Variable.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -16,7 +17,7 @@ using namespace RevLanguage;
 
 
 /** Constructor */
-UserFunctionCall::UserFunctionCall( const UserFunction* fxn   ) :
+UserFunctionCall::UserFunctionCall( UserFunction* fxn   ) :
     Function(), userFunction(fxn)
 {
 
@@ -24,14 +25,13 @@ UserFunctionCall::UserFunctionCall( const UserFunction* fxn   ) :
     functionFrame = new Environment( fxn->getEnvironment() );
         
     // Add the arguments from the user function fxn to our environment
-    const std::vector<Argument>& fxnArgs = fxn->getArguments();
-    for (std::vector<Argument>::const_iterator it = fxnArgs.begin(); it != fxnArgs.end(); ++it)
+    std::vector<Argument>& fxnArgs = fxn->getArguments();
+    for (std::vector<Argument>::iterator it = fxnArgs.begin(); it != fxnArgs.end(); ++it)
     {
         // Note: We can add also temporary variable arguments as references because we
         // currently store them as arguments of the Rev function in UserFunctionArgs
         // as long as the UserFunctionCall exists.
-        RevPtr<const Variable> theVar = it->getVariable();
-        functionFrame->addReferenceVariable( it->getLabel(), theVar );
+        functionFrame->addReference( it->getLabel(), it->getVariable() );
     }
 }
 
@@ -73,7 +73,7 @@ UserFunctionCall* UserFunctionCall::clone(void) const {
 
 
 /** In this function we execute the Rev code for the function (uncompiled syntax tree for now) */
-RevObject* UserFunctionCall::execute( void ) {
+RevPtr<Variable> UserFunctionCall::execute( void ) {
     
     // Clear signals
     Signals::getSignals().clearFlags();
@@ -93,26 +93,32 @@ RevObject* UserFunctionCall::execute( void ) {
     }
 
     // Return the return value
-    return retVar->getRevObject().clone();
-    
+    return retVar;
 }
 
 
-/** Get class name of object */
-const std::string& UserFunctionCall::getClassName(void) {
+/** Get argument rules */
+const ArgumentRules& UserFunctionCall::getArgumentRules(void) const {
     
-    static std::string rbClassName = "UserFunctionCall";
+    return userFunction->getArgumentRules();
+}
+
+
+/** Get Rev type of object */
+const std::string& UserFunctionCall::getClassType(void) {
     
-	return rbClassName;
+    static std::string revType = "UserFunctionCall";
+    
+	return revType;
 }
 
 
 /** Get class type spec describing type of object */
 const TypeSpec& UserFunctionCall::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -125,24 +131,18 @@ const TypeSpec& UserFunctionCall::getTypeSpec( void ) const {
 }
 
 
-/** Get argument rules */
-const ArgumentRules& UserFunctionCall::getArgumentRules(void) const {
-    
-    return userFunction->getArgumentRules();
-}
-
-
 /** Get the parameters from the function frame */
-std::vector<const RevBayesCore::DagNode*> UserFunctionCall::getParameters(void) const {
+std::set<const RevBayesCore::DagNode*> UserFunctionCall::getParameters(void) const {
     
-    const std::map<std::string, VariableSlot* >& varTable = functionFrame->getVariableTable();
+    const std::map<std::string, RevPtr<Variable> >& varTable = functionFrame->getVariableTable();
     
-    std::vector<const RevBayesCore::DagNode*> params;
-    std::map<std::string, VariableSlot*>::const_iterator it;
+    std::set<const RevBayesCore::DagNode*> params;
+
+    std::map<std::string, RevPtr<Variable> >::const_iterator it;
     for ( it = varTable.begin(); it != varTable.end(); it++ )
     {
         if ( it->second->getRevObject().hasDagNode() )
-            params.push_back( it->second->getRevObject().getDagNode() );
+            params.insert( it->second->getRevObject().getDagNode() );
     }
     
     return params;

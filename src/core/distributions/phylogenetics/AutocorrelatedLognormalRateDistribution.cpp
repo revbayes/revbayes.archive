@@ -21,10 +21,6 @@ tau( t ),
 sigma( s ), 
 rootRate( rr ),
 scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
-    this->addParameter( tau );
-    this->addParameter( sigma );
-    this->addParameter( rootRate );
-    this->addParameter( scaleValue );
     
     simulate();
 }
@@ -35,10 +31,6 @@ tau( t ),
 sigma( s ), 
 rootRate( rr ),
 scaleValue( sv ) {
-    this->addParameter( tau );
-    this->addParameter( sigma );
-    this->addParameter( rootRate );
-    this->addParameter( scaleValue );
     
     simulate();
 }
@@ -164,6 +156,22 @@ void AutocorrelatedLognormalRateDistribution::restoreSpecialization( DagNode *re
 }
 
 
+/** Get the parameters of the distribution */
+std::set<const DagNode*> AutocorrelatedLognormalRateDistribution::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( tau );
+    parameters.insert( sigma );
+    parameters.insert( rootRate );
+    parameters.insert( scaleValue );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
+
+
+/** Swap a parameter of the distribution */
 void AutocorrelatedLognormalRateDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     
     if ( oldP == tau ) {

@@ -10,11 +10,11 @@
 #include "Func_expBranchTree.h"
 
 #include "Integer.h"
-#include "RealPos.h"
-#include "RlTimeTree.h"
-#include "Vector.h"
 #include "MatrixReal.h"
+#include "ModelVector.h"
+#include "RealPos.h"
 #include "RlMultivariatePhyloProcess.h"
+#include "RlTimeTree.h"
 
 using namespace RevLanguage;
 
@@ -58,27 +58,27 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
 
 
 
-/* Get class name of object */
-const std::string& Func_expBranchTree::getClassName(void) {
+/* Get Rev type of object */
+const std::string& Func_expBranchTree::getClassType(void) {
     
-    static std::string rbClassName = "Func_expBranchTree";
+    static std::string revType = "Func_expBranchTree";
     
-	return rbClassName;
+	return revType;
 }
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_expBranchTree::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
 /* Get return type */
 const TypeSpec& Func_expBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = Vector<RealPos>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
@@ -93,7 +93,7 @@ const TypeSpec& Func_expBranchTree::getTypeSpec( void ) const {
 }
 
 
-RevObject* Func_expBranchTree::execute() {
+RevPtr<Variable> Func_expBranchTree::execute() {
     
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
@@ -104,14 +104,13 @@ RevObject* Func_expBranchTree::execute() {
 
     RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &>( args[3].getVariable()->getRevObject() ).getDagNode();
 
-//    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, val, mvtval, traitindex );
     RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, process, offset, traitindex );
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
-    Vector<RealPos>* wrappedresult = new Vector<RealPos>(dag);
+    ModelVector<RealPos>* wrappedresult = new ModelVector<RealPos>(dag);
     
-    return wrappedresult;
+    return new Variable( wrappedresult );
 }
 
 

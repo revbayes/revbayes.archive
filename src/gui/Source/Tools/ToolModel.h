@@ -9,19 +9,19 @@
 
 @interface ToolModel : Tool <NSCoding> {
 
-    WindowControllerModel*             controlWindow;         // a pointer to the control window
-    WindowControllerModelBrowser*      modelBrowser;
-	WindowControllerModelSubmission*   modelSubmission;
-	NSMutableArray*                    parms;                 // an array holding the pointers to the parameters
-	NSMutableArray*                    dataMatrices;
-    BOOL                               possibleInlets[4];
-    NSModalSession                     mySession;
-    DistributionListGui*               distributionList;
+    WindowControllerModel*                        controlWindow;         // a pointer to the control window
+    WindowControllerModelBrowser*                 modelBrowser;
+	WindowControllerModelSubmission*              modelSubmission;
+	NSMutableArray*                               parms;                 // an array holding the pointers to the parameters
+	NSMutableArray*                               dataMatrices;
+    BOOL                                          possibleInlets[4];
+    NSModalSession                                mySession;
+    DistributionListGui*                          distributionList;
 }
 
-@property (readwrite,assign) NSMutableArray* dataMatrices;
-@property (retain) DistributionListGui* distributionList;
-@property (readwrite,assign) NSMutableArray* parms;
+@property (nonatomic,strong) NSMutableArray*      dataMatrices;
+@property (nonatomic,strong) DistributionListGui* distributionList;
+@property (nonatomic,strong) NSMutableArray*      parms;
 
 - (NSMutableArray*)allocateParms;
 - (int)calculateNumTaxa;

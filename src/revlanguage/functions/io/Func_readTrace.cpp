@@ -27,7 +27,7 @@
 #include "Trace.h"
 #include "RlTrace.h"
 #include "RlUserInterface.h"
-#include "Vector.h"
+#include "WorkspaceVector.h"
 
 #include <map>
 #include <set>
@@ -44,7 +44,7 @@ Func_readTrace* Func_readTrace::clone( void ) const {
 
 
 /** Execute function */
-RevObject* Func_readTrace::execute( void ) {
+RevPtr<Variable> Func_readTrace::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -141,15 +141,15 @@ RevObject* Func_readTrace::execute( void ) {
         }
     }
     
-    Vector<Trace> *rv = new Vector<Trace>();
+    WorkspaceVector<Trace> *rv = new WorkspaceVector<Trace>();
     for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it)
     {
         it->computeStatistics();
-        rv->push_back( *it );
+        rv->push_back( new Trace( *it ) );
     }
     
     // return the vector of traces
-    return rv;
+    return new Variable( rv );
 }
 
 
@@ -190,20 +190,20 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const {
 }
 
 
-/** Get class name of object */
-const std::string& Func_readTrace::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& Func_readTrace::getClassType(void) { 
     
-    static std::string rbClassName = "Func_readTrace";
+    static std::string revType = "Func_readTrace";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTrace::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */
@@ -218,10 +218,8 @@ const TypeSpec& Func_readTrace::getTypeSpec( void ) const {
 /** Get return type */
 const TypeSpec& Func_readTrace::getReturnType( void ) const
 {
-    
-    static TypeSpec returnTypeSpec = Vector<Trace>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = WorkspaceVector<Trace>::getClassTypeSpec();
     return returnTypeSpec;
 }
-
 
 

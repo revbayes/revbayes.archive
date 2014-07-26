@@ -11,8 +11,10 @@
 #include "ConstantNode.h"
 #include "Mcmc.h"
 #include "Model.h"
+#include "Natural.h"
 #include "OptionRule.h"
 #include "ParallelMcmcmc.h"
+#include "Real.h"
 #include "RevObject.h"
 #include "RbException.h"
 #include "RlMcmc.h"
@@ -22,7 +24,7 @@
 #include "RlParallelMcmcmc.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "VectorRbPointer.h"
+#include "WorkspaceVector.h"
 
 
 using namespace RevLanguage;
@@ -55,8 +57,8 @@ void ParallelMcmcmc::constructInternalObject( void ) {
     
     // now allocate a new MCMC object
     const RevBayesCore::Model&                  mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
-    const RevBayesCore::RbVector<RevBayesCore::Move>&    mvs     = static_cast<const VectorRbPointer<Move> &>( moves->getRevObject() ).getValue();
-    const RevBayesCore::RbVector<RevBayesCore::Monitor>& mntr    = static_cast<const VectorRbPointer<Monitor> &>( monitors->getRevObject() ).getValue();
+    const RevBayesCore::RbVector<RevBayesCore::Move>&    mvs     = static_cast<const WorkspaceVector<Move> &>( moves->getRevObject() ).getVectorRbPointer();
+    const RevBayesCore::RbVector<RevBayesCore::Monitor>& mntr    = static_cast<const WorkspaceVector<Monitor> &>( monitors->getRevObject() ).getVectorRbPointer();
     const std::string &                         sched   = static_cast<const RlString &>( moveSchedule->getRevObject() ).getValue();
     const int                                   nc      = static_cast<const Natural&>( numChains->getRevObject() ).getValue();
     const int                                   np      = static_cast<const Natural&>( numProcessors->getRevObject() ).getValue();
@@ -71,7 +73,7 @@ void ParallelMcmcmc::constructInternalObject( void ) {
 
 
 /* Map calls to member methods */
-RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevPtr<Variable> ParallelMcmcmc::executeMethod(std::string const &name, const std::vector<Argument> &args) {
 
     
     if (name == "run")
@@ -102,20 +104,20 @@ RevObject* ParallelMcmcmc::executeMethod(std::string const &name, const std::vec
 }
 
 
-/** Get class name of object */
-const std::string& ParallelMcmcmc::getClassName(void) {
+/** Get Rev type of object */
+const std::string& ParallelMcmcmc::getClassType(void) {
     
-    static std::string rbClassName = "ParallelMcmcmc";
+    static std::string revType = "ParallelMcmcmc";
     
-	return rbClassName;
+	return revType;
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& ParallelMcmcmc::getClassTypeSpec(void) {
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject<RevBayesCore::Mcmc>::getClassTypeSpec() ) );
     
-	return rbClass;
+	return revTypeSpec;
 }
 
 
@@ -128,8 +130,8 @@ const MemberRules& ParallelMcmcmc::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         memberRules.push_back( new ArgumentRule("model", true, Model::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("monitors", true, VectorRbPointer<Monitor>::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("moves", true, VectorRbPointer<Move>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("monitors", true, WorkspaceVector<Monitor>::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("moves", true, WorkspaceVector<Move>::getClassTypeSpec() ) );
         memberRules.push_back( new ArgumentRule("numChains", true, Natural::getClassTypeSpec(), new Natural(4) ) );
         memberRules.push_back( new ArgumentRule("numProcessors", true, Natural::getClassTypeSpec(), new Natural(4) ) );
         memberRules.push_back( new ArgumentRule("swapInterval", true, Natural::getClassTypeSpec(), new Natural(100)) );
@@ -137,7 +139,7 @@ const MemberRules& ParallelMcmcmc::getMemberRules(void) const {
         memberRules.push_back( new ArgumentRule("sigmaHeat", true, Real::getClassTypeSpec(), new Real(1.0) ) );
         memberRules.push_back( new ArgumentRule("startHeat", true, Real::getClassTypeSpec(), new Real(1.0)) );
         
-        Vector<RlString> options;
+        std::vector<RlString> options;
         options.push_back( RlString("sequential") );
         options.push_back( RlString("random") );
         options.push_back( RlString("single") );
@@ -160,15 +162,15 @@ const MethodTable& ParallelMcmcmc::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("run", new MemberFunction( RlUtils::Void, runArgRules) );
+        methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();
         burninArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
         burninArgRules->push_back( new ArgumentRule("tuningInterval", true, Natural::getClassTypeSpec()) );
-        methods.addFunction("burnin", new MemberFunction( RlUtils::Void, burninArgRules) );
+        methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
         
         ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-        methods.addFunction("operatorSummary", new MemberFunction( RlUtils::Void, operatorSummaryArgRules) );
+        methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );

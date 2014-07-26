@@ -46,7 +46,7 @@ void RevLanguage::Ellipsis::printValue(std::ostream &o) const {
     {
         if ( it != argTypeSpecs.begin() )
             o << "|";
-        o << *it;
+        o << (*it).getType();
     }
     o << " ...";
 }

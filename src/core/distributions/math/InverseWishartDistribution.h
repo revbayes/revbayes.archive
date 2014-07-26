@@ -34,11 +34,13 @@ namespace RevBayesCore {
         InverseWishartDistribution*                                clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);
         
         int                                                 getDF() const {return df->getValue();}
         
-        
+        // Parameter management functions
+        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
+        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+
         
     private:
 
@@ -48,6 +50,8 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         kappa;
         const TypedDagNode<int>*                            df;
         const TypedDagNode<int>*                            dim;
+        
+        // double bklnProb;
         
     };
     

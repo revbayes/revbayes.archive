@@ -27,7 +27,7 @@ using namespace RevLanguage;
 bool UserInterface::ask(std::string msg) {
 
     std::string answer, dummy;
-	RBOUT(msg + "? (yes/no) ");
+    std::cout << RevBayesCore::RbUtils::PAD << (msg + "? (yes/no) ");     // not using RBOUT or output because we do not want a newline
     std::cin >> answer;
     for (size_t i=0; i<answer.size(); i++)
         answer[i] = char( tolower(answer[i])) ;
@@ -37,7 +37,7 @@ bool UserInterface::ask(std::string msg) {
         std::getline(std::cin, dummy);
         std::cout << std::endl;
 		RBOUT("Please answer yes or no.");
-		RBOUT(msg + "? (yes/no) ");
+        std::cout << RevBayesCore::RbUtils::PAD << (msg + "? (yes/no) "); // see above for choice of std::cout
 
         std::cin >> answer;
         for (size_t i=0; i<answer.size(); i++)

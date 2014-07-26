@@ -18,7 +18,7 @@
 #define OptionRule_H
 
 #include "ArgumentRule.h"
-#include "Vector.h"
+#include "ModelVector.h"
 #include "RlString.h"
 
 #include <string>
@@ -28,17 +28,17 @@ namespace RevLanguage {
 class OptionRule : public ArgumentRule {
 
     public:
-                                    OptionRule(const std::string& argName, const Vector<RlString> &optVals);                            //!< Constructor of rule without default value
-                                    OptionRule(const std::string& argName, RlString *defVal, const Vector<RlString>& optVals);          //!< Constructor of rule with default value
+        OptionRule(const std::string& argName, const std::vector<RlString>& optVals);                               //!< Constructor of rule without default value
+        OptionRule(const std::string& argName, RlString* defVal, const std::vector<RlString>& optVals);             //!< Constructor of rule with default value
 
         // Basic utility functions
-        OptionRule*                 clone(void) const { return new OptionRule(*this); }                                                 //!< Clone object
-        void                        printValue(std::ostream& o) const;                                                                  //!< Print value for user
+        OptionRule*                 clone(void) const { return new OptionRule(*this); }                             //!< Clone object
+        void                        printValue(std::ostream& o) const;                                              //!< Print value for user
 
     protected:
-        bool                        areOptionsUnique(const Vector<RlString>& optVals) const;                                            //!< Test if options are unique
+        bool                        areOptionsUnique(const std::vector<RlString>& optVals) const;                   //!< Test if options are unique
 
-        Vector<RlString>            options;                                                                                            //!< Permissible values
+        std::vector<RlString>       options;                                                                        //!< Permissible values
     
 };
 

@@ -39,9 +39,6 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedD
         taxonNames( tn )
 {
     
-    addParameter( origin );
-    addParameter( rho );
-    
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
     // but since the probability of the divergence times contains the factor (n-1)! we simply stor
@@ -434,6 +431,18 @@ void BirthDeathProcess::simulateTree( void ) {
     
 }
 
+
+/** Get the parameters of the distribution */
+std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
+{
+    std::set<const DagNode*> parameters;
+    
+    parameters.insert( rho );
+    parameters.insert( origin );
+    
+    parameters.erase( NULL );
+    return parameters;
+}
 
 
 /**

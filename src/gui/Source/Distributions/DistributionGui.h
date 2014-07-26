@@ -6,27 +6,27 @@
 
 @interface DistributionGui : NSObject <NSCoding> {
 
-	NSString*                distributionName;
-	NSString*                distributionDescription;
-	int                      distributionType;
-    int                      distributionDomain;
-    BOOL                     appliesExclusivelyToNodesOfUnrootedTrees;
-    BOOL                     appliesExclusivelyToBranchesOfUnrootedTrees;
-    BOOL                     appliesExclusivelyToNodesOfRootedTrees;
-    BOOL                     appliesExclusivelyToBranchsOfRootedTrees;
-	NSMutableArray*          parameters;
-	Parm*                    myParm;
+	NSString*                          distributionName;
+	NSString*                          distributionDescription;
+	int                                distributionType;
+    int                                distributionDomain;
+    BOOL                               appliesExclusivelyToNodesOfUnrootedTrees;
+    BOOL                               appliesExclusivelyToBranchesOfUnrootedTrees;
+    BOOL                               appliesExclusivelyToNodesOfRootedTrees;
+    BOOL                               appliesExclusivelyToBranchsOfRootedTrees;
+	NSMutableArray*                    parameters;
+	Parm*                              myParm;
 }
 
-@property (retain) NSString* distributionName;
-@property (retain) NSString* distributionDescription;
-@property (readwrite) int distributionDomain;
-@property (readwrite) int distributionType;
-@property (readwrite,assign) Parm* myParm;
-@property (readwrite) BOOL appliesExclusivelyToNodesOfUnrootedTrees;
-@property (readwrite) BOOL appliesExclusivelyToBranchesOfUnrootedTrees;
-@property (readwrite) BOOL appliesExclusivelyToNodesOfRootedTrees;
-@property (readwrite) BOOL appliesExclusivelyToBranchsOfRootedTrees;
+@property (nonatomic,strong) NSString* distributionName;
+@property (nonatomic,strong) NSString* distributionDescription;
+@property (nonatomic)        int       distributionDomain;
+@property (nonatomic)        int       distributionType;
+@property (nonatomic,strong) Parm*     myParm;
+@property (nonatomic)        BOOL      appliesExclusivelyToNodesOfUnrootedTrees;
+@property (nonatomic)        BOOL      appliesExclusivelyToBranchesOfUnrootedTrees;
+@property (nonatomic)        BOOL      appliesExclusivelyToNodesOfRootedTrees;
+@property (nonatomic)        BOOL      appliesExclusivelyToBranchsOfRootedTrees;
 
 - (DistributionGui*)clone;
 - (Parameter*)getParameterIndexed:(int)idx;

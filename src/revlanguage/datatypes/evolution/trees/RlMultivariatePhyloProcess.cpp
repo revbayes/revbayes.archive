@@ -7,13 +7,15 @@
 
 #include "RlMultivariatePhyloProcess.h"
 
-
 #include "Natural.h"
 #include "RbUtil.h"
+#include "MemberProcedure.h"
+#include "ModelVector.h"
+#include "RlAbstractCharacterData.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include <sstream>
 
@@ -55,44 +57,55 @@ MultivariatePhyloProcess* MultivariatePhyloProcess::clone(void) const {
 
 
 /* Map calls to member methods */
-RevLanguage::RevObject* MultivariatePhyloProcess::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+RevLanguage::RevPtr<Variable> MultivariatePhyloProcess::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    if (name == "mean") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getMean(k->getValue());
-        return new Real( mean );
-    }
-    
-    if (name == "stdev") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getStdev(k->getValue());
-        return new Real( mean );
-    }
-    
+    /*
     if (name == "rootVal") {        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getRootVal(k->getValue());
-        return new Real( mean );
+        double rootval = this->dagNode->getValue().getRootVal(k->getValue());
+        return new Variable( new Real( rootval ) );
     }
-    
+    else if (name == "mean") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double mean = this->dagNode->getValue().getMean(k->getValue());
+        return new Variable( new Real( mean ) );
+    }
+    else if (name == "stdev") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        double stdev = this->dagNode->getValue().getStdev(k->getValue());
+        return new Variable( new Real( stdev ) );
+    }    
+    */
+    if ( name == "clampAt" )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< int >* l = static_cast<const Integer &>( args[2].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::AbstractCharacterData* d = & data->getValue();
+        RevBayesCore::ContinuousCharacterData* c = static_cast<RevBayesCore::ContinuousCharacterData*>(d);
+        
+        this->dagNode->getValue().clampAt(c, k->getValue(), l->getValue());   
+        return new Variable( new Real( 0 ) );
+    }
+
     return ModelObject<RevBayesCore::MultivariatePhyloProcess>::executeMethod( name, args );
 }
 
 
 /** Get class name of object */
-const std::string& MultivariatePhyloProcess::getClassName(void) { 
+const std::string& MultivariatePhyloProcess::getClassType(void) { 
     
-    static std::string rbClassName = "MultivariatePhyloProcess";
+    static std::string revClassType = "MultivariatePhyloProcess";
     
-	return rbClassName; 
+	return revClassType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& MultivariatePhyloProcess::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revClassTypeSpec; 
 }
 
 
@@ -102,22 +115,33 @@ const RevLanguage::MethodTable& MultivariatePhyloProcess::getMethods(void) const
     static MethodTable    methods                     = MethodTable();
     static bool           methodsSet                  = false;
     
-    if ( methodsSet == false ) {
+    if ( methodsSet == false )
+    {
         
         ArgumentRules* meanArgRules = new ArgumentRules();
         meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberFunction(Real::getClassTypeSpec(),       meanArgRules              ) );
+        methods.addFunction("mean", new MemberFunction<MultivariatePhyloProcess,Real>( this, meanArgRules ) );
+        
+        ArgumentRules* tipmeanArgRules = new ArgumentRules();
+        tipmeanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+        methods.addFunction("tipMean", new MemberFunction<MultivariatePhyloProcess,Real>( this, tipmeanArgRules ) );
         
         ArgumentRules* stdevArgRules = new ArgumentRules();
         stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberFunction(Real::getClassTypeSpec(),       stdevArgRules              ) );
+        methods.addFunction("stdev", new MemberFunction<MultivariatePhyloProcess,RealPos>(  this, stdevArgRules ) );
         
         ArgumentRules* rootArgRules = new ArgumentRules();
         rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("rootVal", new MemberFunction(Real::getClassTypeSpec(),       rootArgRules              ) );
+        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), rootArgRules ) );
+        
+        ArgumentRules* clampArgRules = new ArgumentRules();
+        clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
+        clampArgRules->push_back(new ArgumentRule("processIndex", false, Natural::getClassTypeSpec()));
+        clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
+        methods.addFunction("clampAt", new MemberProcedure(MultivariatePhyloProcess::getClassTypeSpec(), clampArgRules ) );
         
         // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+        methods.setParentTable( &ModelObject<RevBayesCore::MultivariatePhyloProcess>::getMethods() );
         methodsSet = true;
     }
     
@@ -133,4 +157,21 @@ const TypeSpec& MultivariatePhyloProcess::getTypeSpec( void ) const {
     
     return typeSpec;
 }
+
+
+/** Print value for user */
+void MultivariatePhyloProcess::printValue(std::ostream &o) const {
+
+    long previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    std::fixed( o );
+    o.precision( 3 );
+    o << dagNode->getValue();
+    
+    o.setf( previousFlags );
+    o.precision( previousPrecision );
+
+}
+
 

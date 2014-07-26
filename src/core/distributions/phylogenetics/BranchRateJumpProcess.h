@@ -38,9 +38,11 @@ namespace RevBayesCore {
         double                                                  computeLnProbability(void);
         TypedDistribution<double>*                              getValueDistribution(void) const;                                                       //!< Get the distribution of the values when a jump occurred.
         void                                                    redrawValue(void);
-        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);                                //!< Implementation of swaping parameters
-                
         
+        // Parameter management functions
+        std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
+        void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+
     private:
         
         // private members

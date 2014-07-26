@@ -32,6 +32,7 @@
 namespace RevLanguage {
 
     class RevObject;
+    class Container;
     class Distribution;
     class RandomNumberGenerator;
     class Function;
@@ -78,16 +79,17 @@ namespace RevLanguage {
 
         // Workspace functions
         bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution
-        bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rbClassName)
+        bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
         bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
         bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
         bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
-        bool                    existsType(const TypeSpec& name) const;                                     //!< Does the type exist in the type table?
+        bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
         const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
-        RevObject*              getNewTypeObject(const std::string& type) const;                            //!< Get a clone of the template type object
-        TypeTable               getTypeTable(void){ return typeTable; }
+        const TypeTable&        getTypeTable(void) const;                                                   //!< Get the type table
         void                    initializeGlobalWorkspace(void);                                            //!< Initialize global workspace
-
+        RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
+        Container*              makeNewEmptyContainer(const std::string& elemType, size_t dim) const;       //!< Make an empty container of specified element type and dim
+        
         static Workspace& globalWorkspace(void) //!< Get global workspace
         {
             static Workspace globalSpace = Workspace();
@@ -110,10 +112,7 @@ namespace RevLanguage {
         Workspace&              operator=(const Workspace& w);                                              //!< Prevent assignment
 
         TypeTable               typeTable;                                                                  //!< Type table
-
-        bool                    typesInitialized;                           //!< Is type table initialized? Before then, we can't perform type checking.
-
-        static const TypeSpec   typeSpec;
+        bool                    typesInitialized;                                                           //!< Are types initialized?
     };
 
 }

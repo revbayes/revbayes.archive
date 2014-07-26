@@ -51,20 +51,20 @@ RevObject* DnaState::convertTo(const TypeSpec& type) const {
 }
 
 
-/** Get class name of object */
-const std::string& DnaState::getClassName(void) { 
+/** Get Rev type of object */
+const std::string& DnaState::getClassType(void) { 
     
-    static std::string rbClassName = "DNA";
+    static std::string revType = "DNA";
     
-	return rbClassName; 
+	return revType; 
 }
 
 /** Get class type spec describing type of object */
 const TypeSpec& DnaState::getClassTypeSpec(void) { 
     
-    static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return rbClass; 
+	return revTypeSpec; 
 }
 
 /** Get type spec */
