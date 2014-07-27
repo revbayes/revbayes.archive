@@ -43,7 +43,7 @@ namespace RevBayesCore {
         //std::vector<AdmixtureNode*> nodesByIndex;
         //std::vector<bool> taxonBipartitionKey;
         size_t numTaxa;
-        size_t numNodes;
+        //        size_t numNodes;
         size_t numSamples;
         size_t numResults;
 
