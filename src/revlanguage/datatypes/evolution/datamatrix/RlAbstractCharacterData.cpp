@@ -38,7 +38,24 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBaye
 
 
 
-AbstractCharacterData& AbstractCharacterData::add(const RevLanguage::AbstractCharacterData &d)
+AbstractCharacterData& AbstractCharacterData::add(const RevObject &d)
+{
+    
+    const AbstractCharacterData* tmp = dynamic_cast<const AbstractCharacterData*>( &d );
+    if ( tmp != NULL )
+    {
+        return add( *tmp );
+    }
+    else
+    {
+        throw RbException("Cannot add an object of type '" + d.getType() + "' to a character data object.");
+    }
+    
+}
+
+
+
+AbstractCharacterData& AbstractCharacterData::add(const AbstractCharacterData &d)
 {
     dagNode->getValue().add( d.getValue() );
     
