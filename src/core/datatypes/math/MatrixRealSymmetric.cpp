@@ -236,7 +236,6 @@ double MatrixRealSymmetric::getCovariance(size_t k, size_t l)  const {
         std::cerr << "index out of range\n";
         throw(0);
     }
-    std::cerr << "cov( " << k+1 << ',' << l+1 << ")\n";
     return (*this)[k][l];
 }
 
@@ -251,7 +250,6 @@ double MatrixRealSymmetric::getPrecision(size_t k, size_t l)  const {
         throw(0);
     }
     update();
-    std::cerr << k << '\t' << l << '\n';
     return inverse[k][l];
 }
 
