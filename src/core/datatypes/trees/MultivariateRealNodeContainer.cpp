@@ -68,22 +68,22 @@ void MultivariateRealNodeContainer::executeMethod(const std::string &n, const st
     if ( n == "mean" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
-        rv = getMean(k->getValue());
+        rv = getMean(k->getValue()-1);
     }
     else if ( n == "tipMean" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
-        rv = getMeanOverTips(k->getValue());
+        rv = getMeanOverTips(k->getValue()-1);
     }
     else if ( n == "stdev" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
-        rv = getStdev(k->getValue());
+        rv = getStdev(k->getValue()-1);
     }
     else if ( n == "rootVal" )
     {
         const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
-        rv = getRootVal(k->getValue());
+        rv = getRootVal(k->getValue()-1);
     }
     else    {
         throw RbException("A MultivariateRealNodeContainer object does not have a member method called '" + n + "'.");
