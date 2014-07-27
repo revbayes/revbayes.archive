@@ -30,6 +30,14 @@ df <- 5
 dim <- 3
 sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
 
+"sigma"
+sigma
+
+"asking for cov(1,2)"
+sigma.covariance(i=1,j=2)
+
+"asking for cov(2,2)"
+sigma.covariance(2,2)
 
 # moves on kappa and precision matrix
 index <- 1
@@ -59,8 +67,8 @@ br.clampAt(contData,3,3)
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=100, separator = "	", sigma, br)
-monitors[2] <- filemonitor(filename="brown.prec",printgen=100, separator = "	", sigma, br)
+monitors[1] <- screenmonitor(printgen=100, separator = "	", sigma)
+monitors[2] <- filemonitor(filename="brown.prec",printgen=100, separator = "	", sigma)
 monitors[3] <- modelmonitor(filename="brown.log",printgen=100, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)

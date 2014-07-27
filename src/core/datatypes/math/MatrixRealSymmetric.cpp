@@ -14,6 +14,7 @@
 #include "RbConstants.h"
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
+#include "TypedDagNode.h"
 
 #include <iomanip>
 
@@ -225,6 +226,54 @@ void MatrixRealSymmetric::update()  const {
     }
 }
 
+double MatrixRealSymmetric::getCovariance(size_t k, size_t l)  const {
+
+    if (k>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    if (l>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    std::cerr << "cov( " << k+1 << ',' << l+1 << ")\n";
+    return (*this)[k][l];
+}
+
+double MatrixRealSymmetric::getPrecision(size_t k, size_t l)  const {
+
+    if (k>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    if (l>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    update();
+    std::cerr << k << '\t' << l << '\n';
+    return inverse[k][l];
+}
+
+void MatrixRealSymmetric::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "covariance" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
+        rv = getCovariance(k->getValue()-1,l->getValue()-1);
+    }
+    else if ( n == "precision" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
+        rv = getPrecision(k->getValue()-1,l->getValue()-1);
+    }
+    else    {
+        throw RbException("A MultivariateRealNodeContainer object does not have a member method called '" + n + "'.");
+    }
+}
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetric& x) {
     
