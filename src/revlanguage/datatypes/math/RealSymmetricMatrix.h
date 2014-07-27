@@ -41,7 +41,10 @@ namespace RevLanguage {
 //        virtual bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
-        
+        // Member method inits
+        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
+//        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+                
     };
 
 }
