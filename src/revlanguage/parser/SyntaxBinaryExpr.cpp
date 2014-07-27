@@ -117,7 +117,10 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env )
     
     // Return the return value of the function after making it constant
     if ( theReturnValue != NULL )
+    {
         theReturnValue->getRevObject().makeConstantValue();
+    }
+    
     return theReturnValue;
 }
 
@@ -151,10 +154,10 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
     // Package the arguments
     std::vector<Argument> args;
     
-    RevPtr<Variable> left = leftOperand->evaluateContent( env );
+    RevPtr<Variable> left = leftOperand->evaluateDynamicContent( env );
     args.push_back( Argument( left, "" ) );
     
-    RevPtr<Variable> right = rightOperand->evaluateContent( env );
+    RevPtr<Variable> right = rightOperand->evaluateDynamicContent( env );
     args.push_back( Argument( right, "" ) );
     
     // Get function and create deterministic DAG node
