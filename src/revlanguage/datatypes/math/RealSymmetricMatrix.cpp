@@ -18,6 +18,7 @@
 #include "RbUtil.h"
 #include "RlString.h"
 #include "TypeSpec.h"
+#include "RlMemberFunction.h"
 
 #include <iomanip>
 #include <sstream>
@@ -75,6 +76,43 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
     
     return typeSpec;
 }
+
+/* Get method specifications */
+const RevLanguage::MethodTable& RealSymmetricMatrix::getMethods(void) const {
+    
+    static MethodTable    methods                     = MethodTable();
+    static bool           methodsSet                  = false;
+    
+    if ( methodsSet == false )
+    {
+        
+        ArgumentRules* covArgRules = new ArgumentRules();
+        covArgRules->push_back(new ArgumentRule("i", false, Natural::getClassTypeSpec()));
+        covArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
+        methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+
+        ArgumentRules* precArgRules = new ArgumentRules();
+        precArgRules->push_back(new ArgumentRule("i", false, Natural::getClassTypeSpec()));
+        precArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
+        methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, precArgRules ) );
+        
+        /*
+        ArgumentRules* clampArgRules = new ArgumentRules();
+        clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
+        clampArgRules->push_back(new ArgumentRule("processIndex", false, Natural::getClassTypeSpec()));
+        clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
+        methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+        */
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &ModelObject<RevBayesCore::MatrixRealSymmetric>::getMethods() );
+        methodsSet = true;
+    }
+    
+    
+    return methods;
+}
+
 
 
 /** Is convertible to type? */
