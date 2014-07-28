@@ -9,11 +9,11 @@
 
 
 #include "ArgumentRule.h"
-#include "ArgumentRules.h"
 #include "BrownianPhyloProcess.h"
 #include "Dist_brownian.h"
 #include "ModelVector.h"
 #include "Real.h"
+#include "RealNodeContainer.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "TimeTree.h"
@@ -32,9 +32,9 @@ RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) co
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<double>* s  = static_cast<const Real&>( sigma->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* r  = static_cast<const Real&>( rootval->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* dr  = static_cast<const Real&>( drift->getRevObject() ).getDagNode();
     
-    RevBayesCore::BrownianPhyloProcess* d    = new RevBayesCore::BrownianPhyloProcess( tau, s, r );
+    RevBayesCore::BrownianPhyloProcess* d    = new RevBayesCore::BrownianPhyloProcess( tau, s, dr );
     
     return d;
 
@@ -70,7 +70,7 @@ const MemberRules& Dist_brownian::getMemberRules(void) const {
     {
         dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
         dist.push_back( new ArgumentRule( "sigma", true, RealPos::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "rootval", true, Real::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "drift", true, Real::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -112,9 +112,9 @@ const TypeSpec& Dist_brownian::getTypeSpec( void ) const {
 
      o << ",";
      
-     o << "rootval=";
-     if ( rootval != NULL ) {
-         o << rootval->getName();
+     o << "drift=";
+     if ( drift != NULL ) {
+         o << drift->getName();
      } else {
          o << "?";
      }
@@ -135,9 +135,9 @@ void Dist_brownian::setConstMemberVariable(const std::string& name, const RevPtr
     {
         sigma = var;
     }
-    else if ( name == "rootval" )
+    else if ( name == "drift" )
     {
-        rootval = var;
+        drift = var;
     }
     else {
         Distribution::setConstMemberVariable(name, var);

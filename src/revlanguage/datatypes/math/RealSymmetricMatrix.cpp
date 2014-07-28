@@ -18,6 +18,7 @@
 #include "RbUtil.h"
 #include "RlString.h"
 #include "TypeSpec.h"
+#include "RlMemberFunction.h"
 
 #include <iomanip>
 #include <sstream>
@@ -25,17 +26,17 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(1) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(void) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(1) ) {
 }
 
 
 /* Construct from double */
-RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> * mat ) : ModelObject<RevBayesCore::PrecisionMatrix>( mat ) {
+RealSymmetricMatrix::RealSymmetricMatrix( RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> * mat ) : ModelObject<RevBayesCore::MatrixRealSymmetric>( mat ) {
 }
 
 
 /* Copy Construct */
-RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : ModelObject<RevBayesCore::PrecisionMatrix>( new RevBayesCore::PrecisionMatrix(from.getValue().getDim()) ) {
+RealSymmetricMatrix::RealSymmetricMatrix(const RealSymmetricMatrix& from) : ModelObject<RevBayesCore::MatrixRealSymmetric>( new RevBayesCore::MatrixRealSymmetric(from.getValue().getDim()) ) {
     
 }
 
@@ -76,14 +77,34 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
     return typeSpec;
 }
 
-
-/** Is convertible to type? */
-/*
-bool RealSymmetricMatrix::isConvertibleTo(const TypeSpec& type) const {
+/* Get method specifications */
+const RevLanguage::MethodTable& RealSymmetricMatrix::getMethods(void) const {
     
-    return RevObject::isConvertibleTo(type);
+    static MethodTable    methods                     = MethodTable();
+    static bool           methodsSet                  = false;
+    
+    if ( methodsSet == false )
+    {
+        
+        ArgumentRules* covArgRules = new ArgumentRules();
+        covArgRules->push_back(new ArgumentRule("i", false, Natural::getClassTypeSpec()));
+        covArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
+        methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+
+        methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+        
+        methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+        
+        methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+        
+        // necessary call for proper inheritance
+        methods.setParentTable( &ModelObject<RevBayesCore::MatrixRealSymmetric>::getMethods() );
+        methodsSet = true;
+    }
+    
+    
+    return methods;
 }
-*/
 
 /** Print value for user */
 void RealSymmetricMatrix::printValue(std::ostream &o) const {

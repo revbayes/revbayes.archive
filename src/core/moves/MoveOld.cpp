@@ -18,7 +18,9 @@ MoveOld::MoveOld( DagNode *n, double w, bool t ) : AbstractOldMove(), weight( w 
 MoveOld::MoveOld( std::vector<DagNode*> n, double w, bool t ) : AbstractOldMove(), weight( w ), numAccepted( 0 ), numTried( 0 ), autoTuning( t ) {
 
     for (std::vector<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
+    {
         nodes.insert( *it );
+    }
 }
 
 

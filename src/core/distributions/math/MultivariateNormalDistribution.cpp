@@ -5,7 +5,7 @@
 
 using namespace RevBayesCore;
 
-MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< std::vector<double> > *inmean, const TypedDagNode<PrecisionMatrix>* inprec) :
+MultivariateNormalDistribution::MultivariateNormalDistribution(const TypedDagNode< std::vector<double> > *inmean, const TypedDagNode<MatrixRealSymmetric>* inprec) :
     TypedDistribution< std::vector<double> >( new std::vector<double>() ), mean( inmean ), precision(inprec) {
     
     redrawValue();
@@ -62,7 +62,7 @@ void MultivariateNormalDistribution::swapParameter(const DagNode *oldP, const Da
     }
     if (oldP == precision)
     {
-        precision = static_cast<const TypedDagNode<PrecisionMatrix >* >( newP );
+        precision = static_cast<const TypedDagNode<MatrixRealSymmetric >* >( newP );
     }
 }
 

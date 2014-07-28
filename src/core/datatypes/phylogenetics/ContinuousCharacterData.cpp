@@ -5,6 +5,7 @@
 #include "RbException.h"
 
 #include <string>
+#include <algorithm>
 
 using namespace RevBayesCore;
 

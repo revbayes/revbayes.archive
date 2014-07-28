@@ -17,7 +17,7 @@
 #include "TypedFunction.h"
 #include "TimeTree.h"
 #include "MatrixReal.h"
-#include "MultivariatePhyloProcess.h"
+#include "MultivariateRealNodeContainer.h"
 #include <vector>
 
 namespace RevBayesCore {
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class ExponentialBranchTree : public TypedFunction< std::vector<double> > {
         
     public:
-        ExponentialBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< MultivariatePhyloProcess > *p, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
+        ExponentialBranchTree(const TypedDagNode<TimeTree> *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int > *i);
         ExponentialBranchTree(const ExponentialBranchTree &n);                                                                              //!< Copy constructor
         virtual                                            ~ExponentialBranchTree(void) {}                                                         //!< Virtual destructor
         
@@ -39,14 +39,23 @@ namespace RevBayesCore {
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                                //!< Implementation of swaping parameters
         
         void                                                recursiveUpdate(const TopologyNode& n);
-        
- //        void                                                touch(DagNode* toucher);
 
+        /*
+        void                                                touch(DagNode *toucher);
+        void                                                restore(DagNode *restorer);
+        */
+        
     private:
+
+        
+        void                                                flagNodes();
+        void                                                corruptAll();
+        void                                                recursiveCorruptAll(const TopologyNode& n);
+        
         
         // members
         const TypedDagNode< TimeTree >*                     tau;
-        const TypedDagNode< MultivariatePhyloProcess >*     process;
+        const TypedDagNode< MultivariateRealNodeContainer >*     process;
         const TypedDagNode< double >*                       offset;
         const TypedDagNode< int >*                          traitindex;
     };

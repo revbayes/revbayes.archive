@@ -2,6 +2,7 @@
 # ----------------------------------------------
 !projects/cmake/README.txt
 !projects/cmake/regenerate.sh
+!projects/cmake/build*
 
 # Blacklist
 # ----------------------------------------------
@@ -50,3 +51,12 @@ tutorials/RB_BayesFactor_Tutorial.log
 tutorials/RB_BayesFactor_Tutorial.out
 tutorials/RB_BayesFactor_Tutorial.pdf
 tutorials/RB_BayesFactor_Tutorial.synctex.gz
+examples/.placratelht.Rev.swp
+examples/bos
+examples/brown3.log
+examples/brown3.prec
+examples/brown4.log
+examples/brown4.prec
+examples/placclock.Rev
+examples/placcoevol1.log
+examples/placcoevol1.prec

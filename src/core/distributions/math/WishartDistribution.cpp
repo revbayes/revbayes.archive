@@ -17,8 +17,8 @@
 
 using namespace RevBayesCore;
 
-WishartDistribution::WishartDistribution(const TypedDagNode<PrecisionMatrix> *inomega0, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(inomega0->getValue().getDim())),
+WishartDistribution::WishartDistribution(const TypedDagNode<MatrixRealSymmetric> *inomega0, const TypedDagNode<int>* indf)  :
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(inomega0->getValue().getDim())),
 omega0(inomega0),
 kappa(NULL),
 df(indf),
@@ -28,7 +28,7 @@ dim(0)  {
 }
 
 WishartDistribution::WishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(indim->getValue()) )),
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( size_t(indim->getValue()) )),
     omega0(NULL),
     kappa(inkappa),
     df(indf),
@@ -38,7 +38,7 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
 }
 
 WishartDistribution::WishartDistribution(const WishartDistribution& from) :
-    TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getValue().getDim())),
+    TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(from.getValue().getDim())),
     omega0(from.omega0),
     kappa(from.kappa),
     df(from.df),
@@ -79,7 +79,7 @@ void WishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP
     {
         std::cerr << "omega0??\n";
         exit(1);
-        omega0 = static_cast<const TypedDagNode<PrecisionMatrix>* >( newP );
+        omega0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
     }
     if (oldP == kappa)
     {

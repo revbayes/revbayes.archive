@@ -1,11 +1,11 @@
 
-# covariance or precision matrix (2x2)
-# of scale matrix = I_2 and 4 degrees of freedom
+k[1] ~ exponential(1)
+k[2] ~ exponential(1)
 
-"create omega"
+s ~ invWishart(k,df=4)
 
-omega ~ wishart(dim=2,kappa=1,df=4)
+s
 
-"omega OK"
+
 
 

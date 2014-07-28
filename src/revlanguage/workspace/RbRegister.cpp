@@ -115,8 +115,8 @@
 #include "Move_MatrixSingleElementSlide.h"
 
 
-///* Moves on precision matrices */
-#include "Move_PrecisionMatrixSimple.h"
+///* Moves on covariance matrices */
+#include "Move_RealSymmetricMatrixSimple.h"
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
@@ -130,9 +130,10 @@
 
 
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
-#include "Move_MultivariatePhyloProcessTranslation.h"
-#include "Move_MultivariatePhyloProcessSliding.h"
-#include "Move_BrownianInverseWishartSliding.h"
+#include "Move_MultivariateRealNodeValTreeTranslation.h"
+#include "Move_MultivariateRealNodeValTreeSliding.h"
+#include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_RealNodeValTreeSliding.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -168,6 +169,7 @@
 
 /* Trait evolution models (in folder "distributions/evolution/tree") */
 #include "Dist_brownian.h"
+#include "Dist_ornsteinUhlenbeck.h"
 #include "Dist_mvtBrownian.h"
 
 /* Tree priors (in folder "distributions/evolution/tree") */
@@ -240,6 +242,8 @@
 /* Functions related to evolution (in folder "functions/evolution") */
 #include "Func_clade.h"
 #include "Func_expBranchTree.h"
+#include "Func_tanhBranchTree.h"
+#include "Func_t92GCBranchTree.h"
 #include "Func_phyloRateMultiplier.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
@@ -253,6 +257,7 @@
 #include "Func_f81.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_t92.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_mtRev.h"
@@ -469,7 +474,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMatrixSingleElementSliding",  new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvPrecisionMatrixSimple",       new Move_PrecisionMatrixSimple() );
+        addTypeWithConstructor("mvSymmetricMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
+        addTypeWithConstructor("mvCovarianceMatrixSimple",       new Move_RealSymmetricMatrixSimple() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
@@ -510,9 +516,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
 
         /* Moves on continuous phylo processes (Brownian, multivariate Brownian, etc) */
-        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariatePhyloProcessTranslation() );
-        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariatePhyloProcessSliding() );
-        addTypeWithConstructor("mvBrownianInverseWishartSliding",    new Move_BrownianInverseWishartSliding() );
+        addTypeWithConstructor("mvMultivariatePhyloProcessTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );
+        addTypeWithConstructor("mvMultivariatePhyloProcessSliding",    new Move_MultivariateRealNodeValTreeSliding() );
+        addTypeWithConstructor("mvMultivariateRealNodeValTreeTranslation",    new Move_MultivariateRealNodeValTreeTranslation() );
+        addTypeWithConstructor("mvMultivariateRealNodeValTreeSliding",    new Move_MultivariateRealNodeValTreeSliding() );
+        addTypeWithConstructor("mvConjugateInverseWishartBrownian",    new Move_ConjugateInverseWishartBrownian() );
+        addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
+        addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -553,8 +563,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* trait evolution (in folder "distributions/evolution/branchrate") */
 
         // brownian motion
-        addDistribution( "dnBrownian",  new Dist_brownian() );
-        addDistribution( "brownian",    new Dist_brownian() );
+        addDistribution( "dnBrownian",              new Dist_brownian() );
+        addDistribution( "brownian",                new Dist_brownian() );
+        addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
+        addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
         
         // multivariate brownian motion
         addDistribution( "dnmvtBrownian",  new Dist_mvtBrownian() );
@@ -765,14 +778,16 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "clade",                       new Func_clade()                    );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
+        addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
+        addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
         addFunction( "treeHeight",                  new Func_treeHeight()               );
         
         // nonstandard names (for backward compatibility)
-        addFunction( "expbranchtree",               new Func_expBranchTree()            );
         addFunction( "rateMultiplierPhyloFunction", new Func_phyloRateMultiplier()      );
+        addFunction( "expbranchtree",               new Func_expBranchTree()            );
 
         /* Rate matrix generator functions (in folder "functions/evolution/ratematrix") */
         addFunction( "blosum62", new Func_blosum62());
@@ -781,6 +796,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "f81",      new Func_f81()     );
         addFunction( "gtr",      new Func_gtr()     );
         addFunction( "hky",      new Func_hky()     );
+        addFunction( "t92",      new Func_t92()     );
         addFunction( "jc",       new Func_jc()      );
         addFunction( "jones",    new Func_jones()   );
         addFunction( "mtMam",    new Func_mtMam()   );

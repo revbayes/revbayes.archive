@@ -16,9 +16,10 @@
 
 using namespace RevBayesCore;
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<PrecisionMatrix> *insigma0, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(insigma0->getValue().getDim())),
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf)  :
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(insigma0->getValue().getDim())),
 sigma0(insigma0),
+kappaVector(NULL),
 kappa(NULL),
 df(indf),
 dim(0)  {
@@ -26,9 +27,21 @@ dim(0)  {
     redrawValue();
 }
 
-InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
-TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(indim->getValue()) )),
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<std::vector<double> > *inkappaVector, const TypedDagNode<int>* indf)  :
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( inkappaVector->getValue().size()) ),
     sigma0(NULL),
+    kappaVector(inkappaVector),
+    kappa(NULL),
+    df(indf),
+    dim(0)    {
+    
+        redrawValue();
+}
+
+InverseWishartDistribution::InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf)  :
+TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric( size_t(indim->getValue()) )),
+    sigma0(NULL),
+    kappaVector(NULL),
     kappa(inkappa),
     df(indf),
     dim(indim)    {
@@ -37,16 +50,12 @@ TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix( size_t(ind
 }
 
 InverseWishartDistribution::InverseWishartDistribution(const InverseWishartDistribution& from) :
-    TypedDistribution<RevBayesCore::PrecisionMatrix>(new PrecisionMatrix(from.getValue().getDim())),
+    TypedDistribution<RevBayesCore::MatrixRealSymmetric>(new MatrixRealSymmetric(from.getValue().getDim())),
     sigma0(from.sigma0),
+    kappaVector(from.kappaVector),
     kappa(from.kappa),
     df(from.df),
     dim(from.dim)   {
-
-        if (sigma0) {
-            std::cerr << "sigma0??\n";
-            exit(1);
-        }
 
         redrawValue();
 }
@@ -63,6 +72,8 @@ std::set<const DagNode*> InverseWishartDistribution::getParameters( void ) const
 {
     std::set<const DagNode*> parameters;
     
+    parameters.insert( sigma0 );
+    parameters.insert( kappaVector );
     parameters.insert( kappa );
     parameters.insert( dim );
     parameters.insert( df );
@@ -71,12 +82,12 @@ std::set<const DagNode*> InverseWishartDistribution::getParameters( void ) const
     return parameters;
 }
 
-
 void InverseWishartDistribution::swapParameter(const DagNode *oldP, const DagNode *newP) {
     if (oldP == sigma0) {
-            std::cerr << "sigma0??\n";
-            exit(1);
-        sigma0 = static_cast<const TypedDagNode<PrecisionMatrix>* >( newP );
+        sigma0 = static_cast<const TypedDagNode<MatrixRealSymmetric>* >( newP );
+    }
+    if (oldP == kappaVector)  {
+        kappaVector = static_cast<const TypedDagNode<std::vector<double> >* >(newP);
     }
     if (oldP == kappa)  {
         kappa = static_cast<const TypedDagNode<double>* >(newP);
@@ -97,10 +108,16 @@ double InverseWishartDistribution::computeLnProbability(void)  {
     if (sigma0) {    
         ret = RbStatistics::InverseWishart::lnPdf(sigma0->getValue(),df->getValue(),getValue());
     }
-    else    {
+    else if (kappaVector)    {
+        ret = RbStatistics::InverseWishart::lnPdf(kappaVector->getValue(),df->getValue(),getValue());        
+    }
+    else if (kappa)  {
         ret = RbStatistics::InverseWishart::lnPdf(kappa->getValue(),df->getValue(),getValue());        
     }
-
+    else    {
+        std::cerr << "error in inverse wishart: no parameter\n";
+        throw(0);
+    }
     return ret;
 }
 
@@ -109,12 +126,18 @@ void InverseWishartDistribution::redrawValue(void)  {
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     if (sigma0) {
-        getValue() = RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng);
+        setValue( RbStatistics::InverseWishart::rv(sigma0->getValue(),df->getValue(), *rng) );
+    }
+    else if (kappaVector)    {
+        setValue( RbStatistics::InverseWishart::rv(kappaVector->getValue(),df->getValue(), *rng) );
+    }
+    else if (kappa)   {
+        setValue( RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng) );
     }
     else    {
-        getValue() = RbStatistics::InverseWishart::rv(kappa->getValue(),getValue().getDim(),df->getValue(), *rng);        
+        std::cerr << "error in inverse wishart: no parameter\n";
+        throw(0);
     }
-
     /*
     for (size_t i=0; i<getValue().getDim(); i++)   {
         for (size_t j=0; j<getValue().getDim(); j++)   {
@@ -122,8 +145,6 @@ void InverseWishartDistribution::redrawValue(void)  {
         }
     }
     */
-    
-    // this will calculate the eigenvalues and eigenvectors
     getValue().update();
 
 
