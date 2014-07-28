@@ -16,6 +16,7 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
+#include "RlString.h"
 
 #include <sstream>
 
@@ -76,7 +77,12 @@ RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::st
         return new Variable( new Real( stdev ) );
     }    
     */
-    if ( name == "clampAt" )
+    if (name == "newick") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        std::string newick = this->dagNode->getValue().getNewick(k->getValue());
+        return new Variable( new RlString( newick ) );
+    }
+    else if ( name == "clampAt" )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
@@ -118,21 +124,18 @@ const RevLanguage::MethodTable& MultivariateRealNodeValTree::getMethods(void) co
     if ( methodsSet == false )
     {
         
-        ArgumentRules* meanArgRules = new ArgumentRules();
-        meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, meanArgRules ) );
+        ArgumentRules* argRules = new ArgumentRules();
+        argRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+
+        methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
         
-        ArgumentRules* tipmeanArgRules = new ArgumentRules();
-        tipmeanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, tipmeanArgRules ) );
+        methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
         
-        ArgumentRules* stdevArgRules = new ArgumentRules();
-        stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, stdevArgRules ) );
+        methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
         
-        ArgumentRules* rootArgRules = new ArgumentRules();
-        rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), rootArgRules ) );
+        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), argRules ) );
+        
+        methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
         
         ArgumentRules* clampArgRules = new ArgumentRules();
         clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
