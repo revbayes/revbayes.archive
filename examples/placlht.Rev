@@ -30,14 +30,16 @@ df <- 5
 dim <- 3
 sigma ~ invWishart(dim=dim,kappa=kappa,df=df)
 
-"sigma"
+
+cov12 := sigma.covariance(1,2)
+var1 := sigma.covariance(1,1)
+prec12 := sigma.precision(1,2)
+cor12 := sigma.correlation(1,2)
+parcor12 := sigma.partialCorrelation(1,2)
+
 sigma
-
-"asking for cov(1,2)"
-sigma.covariance(i=1,j=2)
-
-"asking for cov(2,2)"
-sigma.covariance(2,2)
+cor12
+parcor12
 
 # moves on kappa and precision matrix
 index <- 1
@@ -47,6 +49,13 @@ index <- index + 1
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
 
+br.newick(1)
+
+""
+br
+""
+
+
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
@@ -54,8 +63,6 @@ moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune
 index <- index + 1
 
 # conjugate move
-#moves[index] <- mvCovarianceMatrixSimple(x=sigma, lambda=1.0, tune=true, weight=10) 
-#index <- index + 1
 #moves[index] <- mvCovarianceMatrixSimple(x=sigma, lambda=0.1, tune=true, weight=10) 
 #index <- index + 1
 moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
@@ -67,7 +74,7 @@ br.clampAt(contData,3,3)
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=100, separator = "	", sigma)
+monitors[1] <- screenmonitor(printgen=100, separator = "	", cov12, var1, prec12)
 monitors[2] <- filemonitor(filename="brown.prec",printgen=100, separator = "	", sigma)
 monitors[3] <- modelmonitor(filename="brown.log",printgen=100, separator = "	")
  

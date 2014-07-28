@@ -47,6 +47,12 @@ size_t MatrixRealSymmetric::getDim() const  {
     return getNumberOfColumns();
 }
 
+bool MatrixRealSymmetric::isNull() const  {
+    
+    return ((getDim() == 1) && ((*this)[0][0] == 0));
+}
+
+
 double MatrixRealSymmetric::getLogDet()  const {
     
     update();

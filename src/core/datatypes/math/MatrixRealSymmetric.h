@@ -37,7 +37,8 @@ namespace RevBayesCore {
         double                              getLogDet() const;
         
         size_t                              getDim() const;
-        
+        bool                                isNull() const;
+                
         void                                touch();
         void                                update() const;
         
