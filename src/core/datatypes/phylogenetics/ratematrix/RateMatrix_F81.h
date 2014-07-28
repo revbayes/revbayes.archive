@@ -1,7 +1,8 @@
 /**
  * @file
- * This file contains the declaration of RateMatrix_F81, which is
- * class that holds a rate matrix for a continuous-time Markov model.
+ * This file contains the declaration of RateMatrix_F81, which is a
+ * class that holds a rate matrix for a continuous-time Markov model
+ * with parameters for equilibrium frequencies but fixed exchangeabilities.
  *
  * @brief Declaration of RateMatrix_F81
  *

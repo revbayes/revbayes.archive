@@ -17,18 +17,18 @@
 #include <vector>
 
 #include "ModelObject.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 
 
 namespace RevLanguage {
     
-    class RealSymmetricMatrix : public ModelObject<RevBayesCore::PrecisionMatrix>  {
+    class RealSymmetricMatrix : public ModelObject<RevBayesCore::MatrixRealSymmetric>  {
         
     public:
         
         RealSymmetricMatrix(void);
-        RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix> *mat);                                                            //!< Construct from DAG node
+        RealSymmetricMatrix(RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric> *mat);                                                            //!< Construct from DAG node
         RealSymmetricMatrix(const RealSymmetricMatrix& from);                                                                                    //!< Copy constructor
         
         
@@ -38,10 +38,11 @@ namespace RevLanguage {
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
-//        virtual bool                    isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
         
-        
+        // Member method inits
+        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
+                
     };
 
 }

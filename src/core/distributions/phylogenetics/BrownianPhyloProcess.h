@@ -20,31 +20,24 @@
 #define BrownianPhyloProcess_H
 
 #include "RbVector.h"
+#include "RealNodeContainer.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
-    class BrownianPhyloProcess : public TypedDistribution< std::vector<double> > {
+    class BrownianPhyloProcess : public TypedDistribution< RealNodeContainer > {
         
     public:
         // constructor(s)
-        BrownianPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr);
+        BrownianPhyloProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* d);
         BrownianPhyloProcess(const BrownianPhyloProcess &n);
         
         // public member functions
         BrownianPhyloProcess*                clone(void) const;                                                                      //!< Create an independent clone
         double                                                  computeLnProbability(void);
         void                                                    redrawValue(void);
-        
-        // special handling of state changes
-  /*
-        void                                                    getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
-        void                                                    keepSpecialization(DagNode* affecter);
-        void                                                    restoreSpecialization(DagNode *restorer);
-        void                                                    touchSpecialization(DagNode *toucher);
-   */     
-        
+              
         // Parameter management functions
         std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
         void                                                    swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
@@ -58,7 +51,7 @@ namespace RevBayesCore {
         // private members
         const TypedDagNode< TimeTree >*                         tau;
         const TypedDagNode< double >*                           sigma;
-        const TypedDagNode< double >*                           rootVal;
+        const TypedDagNode< double >*                           drift;
         
     };
     

@@ -1,4 +1,4 @@
-#include "ModelVEctor.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "RbUtil.h"
 #include "RlTimeTree.h"
