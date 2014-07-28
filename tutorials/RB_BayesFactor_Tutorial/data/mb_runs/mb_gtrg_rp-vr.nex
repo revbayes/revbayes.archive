@@ -1,0 +1,87 @@
+#NEXUS
+
+BEGIN mrbayes;
+[***************************************************]
+[Read in the data & specify some preliminaries, etc.]
+[***************************************************]
+	log start filename=mb_gtrg_rp-vr_mb.log.txt;								[log output for analysis to a text file]
+	set autoclose=yes nowarn=yes;											[this is needed to run in batch mode]
+	execute ../conifer_dna.nex;												[read in the data file]
+	outgroup Ginkgo_biloba;													[define the outgroup, Ginkgo_biloba]
+
+[***************************************************]
+[Analysis 1--a uniform (unpartitioned) MCMC analysis]
+[***************************************************]
+	lset nst=6 rates=gamma;													[specify the GTR+G substitution model applied uniformly to all sites]
+	prset revmatpr=dirichlet(1,1,1,1,1,1) 									[specify priors for: exchangeability parameters...]
+	statefreqpr=dirichlet(1,1,1,1) 											[...stationary frequencies...]
+	shapepr=exponential(0.05);		 										[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV]
+	mcmc ngen=300000 printfreq=100 samplefreq=100 							[specify details of the MCMC analysis...]
+	diagnfreq=1000 diagnstat=maxstddev										[...and the diagnostics used to assess MCMC performance]
+	nchains=4 savebrlens=yes 					 							[specify details of the MC^3]
+	filename=mb_gtrg_rp-vr-uniform;
+
+	ss ngen=100000 diagnfreq=1000					 						[specify details of a stepping-stone simulation to estimate the marginal lnL of the uniform model]
+	filename=mb_gtrg_rp-vr-uniform-ss;
+
+
+[*******************************************************************]
+[Analysis 2--a moderately partitioned MCMC analysis (by gene region)]
+[*******************************************************************]
+	charset atpB = 1-1394;													[define character sets]
+	charset rbcL = 1395-2659;
+	partition partition-by-gene = 2: atpB, rbcL;							[define partition scheme for the two gene regions]
+	set partition=partition-by-gene;										[set the partition scheme]
+	lset applyto=(all) nst=6 rates=gamma;									[specify the GTR+G substitution model]
+	prset revmatpr=dirichlet(1,1,1,1,1,1) 									[specify priors for: exchangeability parameters...]
+	statefreqpr=dirichlet(1,1,1,1) 											[...stationary frequencies...]
+	shapepr=exponential(0.05);		 										[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV]
+	unlink revmat=(all)														[specify partitions of the GTR+G substitution model for: exchangeability parameters...]
+	statefreq=(all)															[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV...]
+	shape = (all);															[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV...]
+	prset applyto=(all) ratepr=variable;									[...and allow overall substitution rate to vary across partitions]
+	mcmc ngen=300000 printfreq=100 samplefreq=100							[specify details of the MCMC analysis...]
+	diagnfreq=1000 diagnstat=maxstddev										[...and the diagnostics used to assess MCMC performance]
+	nchains=4 savebrlens=yes filename=mb_gtrg_rp-vr-partn; 					 	[specify details of the Metropolis coupling (MC^3)]
+
+	ss ngen=100000 diagnfreq=1000					 						[specify details of a stepping-stone simulation to estimate the marginal lnL of the moderately partitioned model]
+	filename=mb_gtrg_rp-vr-partn-ss;
+
+[***************************************************************************]
+[Analysis 3--an extremely partitioned MCMC analysis (by codon & gene region)]
+[***************************************************************************]
+	charset rbcL1stpos = 1395-2659\3;										[define character sets for codon positions]
+	charset rbcL2ndpos = 1396-2659\3;
+	charset rbcL3rdpos = 1397-2659\3;
+	partition sat-partition = 4: atpB, rbcL1stpos, rbcL2ndpos, rbcL3rdpos;	[define partition scheme for the two gene regions & codon positions]
+	set partition=sat-partition;											[set the partition scheme]
+	lset applyto=(all) nst=6 rates=gamma;									[specify the GTR+G substitution model]
+	prset revmatpr=dirichlet(1,1,1,1,1,1) 									[specify priors for: exchangeability parameters...]
+	statefreqpr=dirichlet(1,1,1,1) 											[...stationary frequencies...]
+	shapepr=exponential(0.05);		 										[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV]
+	unlink revmat=(all)														[specify partitions of the GTR+G substitution model for: exchangeability parameters...]
+	statefreq=(all)															[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV...]
+	shape = (all);															[...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV...]
+	prset applyto=(all) ratepr=variable;									[...and allow overall substitution rate to vary across partitions]
+	mcmc ngen=300000 printfreq=100 samplefreq=100							[specify details of the MCMC analysis...]
+	diagnfreq=1000 diagnstat=maxstddev										[...and the diagnostics used to assess MCMC performance]
+	nchains=4 savebrlens=yes filename=mb_gtrg_rp-vr-sat-partn;					[specify details of the Metropolis coupling (MC^3)]
+
+	ss ngen=100000 diagnfreq=1000					 						[specify details of a stepping-stone simulation to estimate the marginal lnL of the fully partitioned model]
+	filename=mb_gtrg_rp-vr-sat-partn-ss;
+
+[*****************************************************************************************]
+[Analysis 4--summarize samples of trees and other model parameters from each MCMC analysis]
+[*****************************************************************************************]
+	[ Summarize the parameter files ]
+	sump filename=mb_gtrg_rp-vr-uniform;
+	sump filename=mb_gtrg_rp-vr-partn;
+	sump filename=mb_gtrg_rp-vr-sat-partn;
+	
+	[ Summarize the tree topologies and branch lengths ]
+	sumt filename=mb_gtrg_rp-vr-uniform;
+	sumt filename=mb_gtrg_rp-vr-partn;
+	sumt filename=mb_gtrg_rp-vr-sat-partn;
+
+quit;
+END;
