@@ -11,10 +11,10 @@
     return [[DistributionNegativeBinomialGui alloc] initWithDist:self];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[super dealloc];
-}
+}*/
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -24,8 +24,7 @@
 
 - (id)init {
 
-	[self initWithParm:nil];
-	return self;
+	return [self initWithParm:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)aDecoder {

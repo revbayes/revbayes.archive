@@ -5,6 +5,7 @@
 #import "RbData.h"
 #import "Inlet.h"
 #import "InOutlet.h"
+#import "Outlet.h"
 #import "RevBayes.h"
 #import "ToolAlign.h"
 #import "ToolReadData.h"
@@ -55,7 +56,7 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     if (clustalTask != nil)
         [clustalTask release];
@@ -69,7 +70,7 @@
 	[controlWindow release];
     
 	[super dealloc];
-}
+} */
 
 - (void)decrementTaskCount {
 
@@ -145,7 +146,7 @@
         
     // and make a temporary directory to contain the alignments
     NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
               alnDirectory = [alnDirectory stringByAppendingString:@"/myAlignments"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
@@ -200,12 +201,12 @@
         }
     
     // free the tasks
-	NSEnumerator* taskEnumerator = [taskArray objectEnumerator];
+	/* JPHARC NSEnumerator* taskEnumerator = [taskArray objectEnumerator];
 	id element;
 	while ( (element = [taskEnumerator nextObject]) )
 		{
         [(AlignmentTask*)element release];
-        }
+        } */
         
     // read the alignments ********************************
     
@@ -373,22 +374,22 @@
             
         // resuscitate Clustal variables here before recreating new windowcontroller
         clustalAlign = [aDecoder decodeObjectForKey:@"clustalAlign"];
-            [clustalAlign retain];
+            /* JPHARC [clustalAlign retain]; */
         clustalWordLength = [aDecoder decodeIntForKey:@"clustalWordLength"];
         clustalWindow = [aDecoder decodeIntForKey:@"clustalWindow"];
         clustalScoreType = [aDecoder decodeObjectForKey:@"clustalScoreType"];
-            [clustalScoreType retain];
+            /* JPHARC [clustalScoreType retain]; */
         clustalNumberDiagonals = [aDecoder decodeIntForKey:@"clustalNumberDiagonals"];
         clustalPairGapPenalty = [aDecoder decodeIntForKey:@"clustalPairGapPenalty"];
         clustalMatrix = [aDecoder decodeObjectForKey:@"clustalMatrix"];
-            [clustalMatrix retain];
+            /* JPHARC [clustalMatrix retain]; */
         clustalGapOpenPenalty = [aDecoder decodeFloatForKey:@"clustalGapOpenPenalty"];
         clustalEndGaps = [aDecoder decodeObjectForKey:@"clustalEndGaps"];
-            [clustalEndGaps retain];
+            /* JPHARC [clustalEndGaps retain]; */
         clustalGapExtensionCost = [aDecoder decodeFloatForKey:@"clustalGapExtensionCost"];
         clustalGapSeparationPenalty = [aDecoder decodeIntForKey:@"clustalGapSeparationPenalty"];
         clustalIteration = [aDecoder decodeObjectForKey:@"clustalIteration"];
-            [clustalIteration retain];
+            /* JPHARC [clustalIteration retain]; */
         clustalNumberOfIterations = [aDecoder decodeIntForKey:@"clustalNumberOfIterations"];
             
         // initialize the control window
@@ -457,7 +458,7 @@
         [self taskCompleted];
         }
      
-    [incomingText release];
+    /* JPHARC [incomingText release]; */
 }
 
 - (BOOL)resolveStateOnWindowOK {

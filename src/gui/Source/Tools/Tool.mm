@@ -24,7 +24,7 @@
 	Inlet* il = [[Inlet alloc] initWithTool:self];
 	[il setToolColor:c];
 	[inlets addObject:il];
-    [il release];
+    /* JPHARC [il release]; */
 	[self setInletLocations];
 }
 
@@ -33,7 +33,7 @@
 	Outlet* ol = [[Outlet alloc] initWithTool:self];
 	[ol setToolColor:c];
 	[outlets addObject:ol];
-    [ol release];
+    /* JPHARC [ol release]; */
 	[self setOutletLocations];
 }
 
@@ -63,13 +63,13 @@
 	return [[outlets objectAtIndex:idx] toolColor];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[inlets release];
 	[outlets release];
     [workspaceName release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
@@ -193,9 +193,9 @@
 		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
         isLoop            = [aDecoder decodeBoolForKey:@"isLoop"];
         workspaceName     = [aDecoder decodeObjectForKey:@"workspaceName"];
-        [inlets retain];
+        /* JPHARC [inlets retain];
         [outlets retain];
-        [workspaceName retain];
+        [workspaceName retain]; */
         isDirty           = NO;
 		}
 	return self;
@@ -414,7 +414,7 @@
 - (void)removeFilesFromTemporaryDirectory {
 
     NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSDirectoryEnumerator* en = [fm enumeratorAtPath:temporaryDirectory];    
     NSString* file;
     while ( (file = [en nextObject]) ) 
@@ -559,11 +559,11 @@
     // instantiate the progress indicator and set the views correctly
     NSView* superView = myAnalysisView;
     NSRect frame = NSMakeRect(tRect.origin.x + margine, tRect.origin.y + margine, tRect.size.width - 2.0*margine, tRect.size.height - 2.0*margine);
-    if (progressIndicator != nil)
-        [progressIndicator release];
+    /* JPHARC if (progressIndicator != nil)
+        [progressIndicator release]; */
     progressIndicator = [[YRKSpinningProgressIndicator alloc] initWithFrame:frame];
     [superView addSubview:progressIndicator];
-    [progressIndicator release];
+    /* JPHARC [progressIndicator release]; */
     
     // set properties of the progress indicator and start it up
     [progressIndicator setUsesThreadedAnimation:YES];

@@ -10,11 +10,11 @@
     return [[ValueVectorReal alloc] initWithValue:self];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     // dealloc here
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     

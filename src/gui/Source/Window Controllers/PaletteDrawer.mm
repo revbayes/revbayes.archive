@@ -24,11 +24,11 @@
     [paletteView setNeedsDisplay:YES];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     [myDelegate release];
     [super dealloc];
-}
+} */
 
 - (id)init {
     

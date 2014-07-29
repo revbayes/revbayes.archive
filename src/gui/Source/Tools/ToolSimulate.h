@@ -44,7 +44,7 @@
 - (void)closeControlPanel;
 - (void)closeQueryPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (GuiTree*)exposeTreePtr;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

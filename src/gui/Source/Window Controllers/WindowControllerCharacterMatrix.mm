@@ -115,10 +115,10 @@
 
 - (void)dealloc {
 
-	[dataMatrices release];
-	[taxaMatrices release];
+	/* JPHARC [dataMatrices release];
+	[taxaMatrices release]; */
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	[super dealloc];
+	/* JPHARC [super dealloc]; */
 }
 
 - (void)drawerDidClose:(NSNotification*)notification {
@@ -149,7 +149,7 @@
 	NSRect aRect = NSMakeRect(0.0,0.0,0.0,(cellHeight*nRows));
 	NSMatrix* taxaMatrix = [[NSMatrix alloc] initWithFrame:aRect mode:NSListModeMatrix cellClass:[NSTextFieldCell class] numberOfRows:nRows numberOfColumns:1]; 
 	[taxaMatrices addObject:taxaMatrix];
-    [taxaMatrix release];
+    /* JPHARC [taxaMatrix release]; */
 	[taxaMatrix setIntercellSpacing:NSMakeSize(0.0,0.0)];
 	[taxaMatrix setAllowsEmptySelection:YES];
 	NSArray* allCells = [taxaMatrix cells];
@@ -542,12 +542,12 @@
 	[self setStandardColorsDictKeys:StandardStateLabels forValues:StandardStateColors];
 
 	// release the arrays
-	[AminoAcidStateLabels release];
+	/* JPHARC [AminoAcidStateLabels release];
 	[AminoAcidStateColors release];
 	[NucleotideStateColors release];
 	[NucleotideStateLabels release];
 	[StandardStateLabels release];
-	[StandardStateColors release];
+	[StandardStateColors release]; */
 }
 
 - (NSDictionary*)nucleotideColorsDict {
@@ -557,19 +557,19 @@
 
 - (void)setAminoColorsDictKeys:(NSArray*)keysArray forValues:(NSArray*)valueArray {
 
-	[aminoColorsDict autorelease];
+	/* JPHARC [aminoColorsDict autorelease]; */
 	aminoColorsDict = [[NSDictionary alloc] initWithObjects:valueArray forKeys:keysArray];
 }
 
 - (void)setNucleotideColorsDictKeys:(NSArray*)keysArray forValues:(NSArray*)valueArray {
 
-	[nucleotideColorsDict autorelease];
+	/* JPHARC [nucleotideColorsDict autorelease]; */
 	nucleotideColorsDict = [[NSDictionary alloc] initWithObjects:valueArray forKeys:keysArray];
 }
 
 - (void)setStandardColorsDictKeys:(NSArray*)keysArray forValues:(NSArray*)valueArray {
 
-	[standardColorsDict autorelease];
+	/* JPHARC [standardColorsDict autorelease]; */
 	standardColorsDict = [[NSDictionary alloc] initWithObjects:valueArray forKeys:keysArray];
 }
 

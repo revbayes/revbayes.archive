@@ -20,10 +20,10 @@
     return NO;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     [super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
@@ -106,8 +106,7 @@
 
 - (id)init {
 
-	[self initWithTool:nil];
-	return self;
+	return [self initWithTool:nil];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {

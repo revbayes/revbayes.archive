@@ -9,12 +9,12 @@
     return nil;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     // dealloc here
     [vector release];
 	[super dealloc];
-}
+} */
 
 - (int)dimensions {
 
@@ -42,7 +42,7 @@
     if ( (self = [super init]) ) 
 		{
         vector = [aDecoder decodeObjectForKey:@"vector"];
-        [vector retain];
+        /* JPHARC [vector retain]; */
 		}
 	return self;
 }

@@ -20,13 +20,13 @@
     return nil;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     NSLog(@"distribution with name %@ is dealloced", [self className]);
 	[distributionName release];
 	[parameters release];
 	[super dealloc];
-}
+}*/
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
@@ -49,8 +49,7 @@
 
 - (id)init {
 
-	[self initWithParm:nil];
-	return self;
+	return [self initWithParm:nil];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
@@ -67,9 +66,9 @@
         appliesExclusivelyToBranchesOfUnrootedTrees = [aDecoder decodeBoolForKey:@"appliesExclusivelyToBranchesOfUnrootedTrees"];
         appliesExclusivelyToNodesOfRootedTrees      = [aDecoder decodeBoolForKey:@"appliesExclusivelyToNodesOfRootedTrees"];
         appliesExclusivelyToBranchsOfRootedTrees    = [aDecoder decodeBoolForKey:@"appliesExclusivelyToBranchsOfRootedTrees"];
-		[distributionName retain];
+		/* JPHARC [distributionName retain];
 		[distributionDescription retain];
-		[parameters retain];
+		[parameters retain]; */
 		}
 	return self;
 }

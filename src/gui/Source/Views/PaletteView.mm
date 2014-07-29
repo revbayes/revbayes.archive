@@ -92,12 +92,12 @@
     return self;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     [drawElements release];
     [myTrackingAreas release];
     [super dealloc];
-}
+} */
 
 - (void)drawParameterIndexed:(int)idx andWithAddress:(Parm*)pPtr inRect:(NSRect)r {
     
@@ -392,7 +392,7 @@
                 p.x += r.origin.x - lftShiftAmount;
                 p.y += r.origin.y;
                 [attrString drawAtPoint:p];
-                [attrString release];
+                /* JPHARC [attrString release]; */
                 }
             }
                                     
@@ -459,7 +459,7 @@
 		[[[NSColor darkGrayColor] colorWithAlphaComponent:0.75] set];
 		[NSBezierPath fillRect:tipRect];
 		[attrString drawAtPoint:p];
-		[attrString release];
+		/* JPHARC [attrString release]; */
 		}
     
 }

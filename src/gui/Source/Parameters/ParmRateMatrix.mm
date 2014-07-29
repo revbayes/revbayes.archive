@@ -9,11 +9,11 @@
 
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     NSLog(@"dealloc ParmRateMatrix %@", self);
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 

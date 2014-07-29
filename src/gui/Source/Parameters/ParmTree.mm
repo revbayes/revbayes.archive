@@ -41,7 +41,7 @@
         [psel showControlPanel];
         
         
-        [psel release];
+        /* JPHARC [psel release]; */
         }
 }
 
@@ -94,12 +94,13 @@
     [self refreshWindow];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     NSLog(@"dealloc ParmTree %@", self);
     [bipartitions release];
 	[super dealloc];
-}
+} */
+
 - (BOOL)doesTreeOrderPlate {
 
     for (int i=0; i<[self numChildren]; i++)
@@ -198,7 +199,7 @@
         bipartitions     = [aDecoder decodeObjectForKey:@"bipartitions"];
         unrootedDistType = [aDecoder decodeIntForKey:@"unrootedDistType"];
         rootedDistType   = [aDecoder decodeIntForKey:@"rootedDistType"];
-        [bipartitions retain];
+        /* JPHARC [bipartitions retain]; */
 
 		}
 	return self;

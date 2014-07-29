@@ -45,7 +45,7 @@
     return p;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     [drawingCodes release];
     [drawingPositions release];
@@ -55,7 +55,7 @@
     [drawingItalics release];
     [drawingSuperscripts release];
     [super dealloc];
-}
+} */
 
 - (id)init {
     

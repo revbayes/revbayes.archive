@@ -33,7 +33,7 @@
 
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (NSString*)getEndingRangeForLoop;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

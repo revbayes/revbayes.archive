@@ -13,10 +13,10 @@
     return ([[ValueVectorReal alloc] initWithDimensions:dimensions]);
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
