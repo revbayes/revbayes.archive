@@ -119,7 +119,7 @@
 - (void)closeControlPanel;
 - (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

@@ -20,20 +20,9 @@
 
 - (void)cleanup {
 
-    /* JPHARC if (localModelNames != nil)
-        [localModelNames release];
-    localModelNames = nil;
-    if (curatedModelNames != nil)
-        [curatedModelNames release];
-    curatedModelNames = nil;
-    if (modelsToTransfer != nil)
-        [modelsToTransfer release];
-    modelsToTransfer = nil; */
-   
 	NSConnection* connection = [proxy connectionForProxy];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[connection invalidate];
-	/* JPHARC [proxy release]; */
 	proxy = nil;
     connectedToServer = NO;
 }
@@ -48,11 +37,9 @@
 	NSConnection* connection = [NSConnection connectionWithReceivePort:nil sendPort:sendPort];
 	[connection setRequestTimeout:10.0];
 	[connection setReplyTimeout:10.0];
-	/* JPHARC [sendPort release]; */
 	
 	@try 
 		{
-		/* JPHARC proxy = [[connection rootProxy] retain]; */
 		proxy = [connection rootProxy];
         
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(connectionDown:) name:NSConnectionDidDieNotification object:connection];
@@ -150,8 +137,6 @@
 - (void)curatedModelNames:(in bycopy NSMutableArray*)message {
 
     // get the curated models
-    /* JPHARC if (curatedModelNames != nil)
-        [curatedModelNames release]; */
     curatedModelNames = [[NSMutableArray alloc] initWithArray:message];
     
     // print the list of curated models
@@ -162,11 +147,6 @@
     while ( (element = [modelListEnum nextObject]) )
         NSLog(@" *    Curated model %d: = \"%@\"", i++, element);
 }
-
-/* JPHARC - (void)dealloc {
-
-	[super dealloc];
-} */
 
 - (void)disconnectFromServer {
 
@@ -236,8 +216,6 @@
 - (void)getListOfClientsModels {
 
     // allocate a mutable array that holds the names of the models
-    /* JPHARC if (localModelNames != nil)
-        [localModelNames release]; */
 	localModelNames = [[NSMutableArray alloc] init];
 
     // read the names of the files in the support folder for RevBayes
@@ -268,8 +246,6 @@
 - (void)getListOfModelsToDownload {
 
 	// initialize a list of models that need to be transferred from the remote location
-    /* JPHARC if (modelsToTransfer != nil)
-        [modelsToTransfer release]; */
 	modelsToTransfer = [[NSMutableArray alloc] initWithCapacity:0];
     id element;
     NSEnumerator* modelListEnum = [curatedModelNames objectEnumerator];

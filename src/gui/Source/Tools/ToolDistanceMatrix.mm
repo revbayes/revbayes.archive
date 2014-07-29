@@ -186,7 +186,6 @@
             {
             NSNumber* myNumber = [[NSNumber alloc] initWithDouble:((*dm)[i][j])];
             [distances addObject:myNumber];
-            /* JPHARC [myNumber release]; */
             }
         }
 
@@ -213,13 +212,6 @@
     [NSApp stopModal];
 	[controlWindow close];
 }
-
-/* JPHARC - (void)dealloc {
-
-    [distances release];
-    [controlWindow release];
-	[super dealloc];
-} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
@@ -382,7 +374,6 @@
 		proportionInvariableSites = [aDecoder decodeDoubleForKey:@"proportionInvariableSites"];
 		gammaShape                = [aDecoder decodeDoubleForKey:@"gammaShape"];
         distances                 = [aDecoder decodeObjectForKey:@"distances"];
-        /* JPHARC [distances retain]; */
 
 		// initialize the control window
 		controlWindow = [[WindowControllerDistanceMatrix alloc] initWithTool:self];

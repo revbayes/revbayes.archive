@@ -21,12 +21,6 @@
     [countrySelector selectItemWithTitle:[defaults objectForKey:RB_UserCountryKey]];
 }
 
-/* JPHARC - (void)dealloc {
-
-	[countryList release];
-	[super dealloc];
-} */
-
 - (id)init {
 
 	if ( (self = [super initWithWindowNibName:@"RegistrationPanel"]) )
@@ -93,7 +87,6 @@
 	if ([server connectToServer] == NO)
 		{
 		NSRunAlertPanel(@"Connection Failure", @"Your registration could not be submitted because the RevBayes server could not be reached. Please register at a later time.", @"OK", nil, nil);
-		/* JPHARC [server release]; */
 		return;
 		}
 
@@ -101,7 +94,6 @@
 	NSArray* ui = [NSArray arrayWithObjects:[firstNameField stringValue], [lastNameField stringValue], [emailAddressField stringValue], [institutionField  stringValue], [countrySelector titleOfSelectedItem], nil];
 	[server submitRegistrationInfo:ui];
 	[server disconnectFromServer];
-	/* JPHARC [server release]; */
 
 	// register the user entries to the defaults (again, but this time with hasRegistered = YES)
     hasRegistered = YES;

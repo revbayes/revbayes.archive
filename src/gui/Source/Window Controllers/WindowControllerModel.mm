@@ -54,11 +54,6 @@
     [self updateInletSelector];        
 }
 
-/* JPHARC -(void)dealloc {
-
-	[super dealloc];
-} */
-
 - (void)drawerClosed {
     
     [toggleParameterPaletteButton setTitle:@"Show Parameter Palette"];
@@ -172,8 +167,6 @@
             [attrs setObject:[NSColor blueColor] forKey:NSForegroundColorAttributeName];
         NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:[str objectAtIndex:i] attributes:attrs];
         [(NSButton*)[btn objectAtIndex:i] setAttributedTitle:attrStr];
-        /* JPHARC [attrStr release];
-        [style release]; */
         }
 
 }

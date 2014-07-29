@@ -33,8 +33,6 @@
 		myDist               = [aDecoder decodeObjectForKey:@"myDist"];
         refParm              = [aDecoder decodeObjectForKey:@"refParm"];
 		type                 = [aDecoder decodeIntForKey:@"type"];
-		/* JPHARC [parameterName retain];
-		[parameterDescription retain]; */
 		}
 	return self;
 }

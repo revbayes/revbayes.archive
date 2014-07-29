@@ -26,12 +26,6 @@
 
 @implementation DistributionListGui
 
-/* JPHARC - (void)dealloc {
-    
-    [distributionList release];
-    [super dealloc];
-} */
-
 - (DistributionGui*)getDistributionWithIndex:(size_t)idx {
 
     if ( (idx + 1) > [distributionList count] )
@@ -84,7 +78,6 @@
             {
             DistributionGui* newDist = [d clone];
             [newDist setMyParm:prm];
-            /* JPHARC [newDist autorelease]; */
             return newDist;
             }
         }

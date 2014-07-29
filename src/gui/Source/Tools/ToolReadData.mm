@@ -111,7 +111,6 @@
             [cell setRow:i];
             [cell setColumn:j];
             [td addObservation:cell];
-            /* JPHARC [cell release]; */
             }
         [m addTaxonData:td];
         }
@@ -133,15 +132,6 @@
     [NSApp stopModal];
 	[controlWindow close];
 }
-
-/* JPHARC - (void)dealloc {
-
-	[fileName release];
-	[pathName release];
-	[controlWindow release];
-
-	[super dealloc];
-} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -215,8 +205,6 @@
 		numberOfCharacters = [aDecoder decodeIntForKey:@"numberOfCharacters"];
 		numberOfTaxa       = [aDecoder decodeIntForKey:@"numberOfTaxa"];
 		matrixType         = [aDecoder decodeIntForKey:@"matrixType"];
-        /* JPHARC [fileName retain];
-        [pathName retain]; */
         
 		// initialize the control window
 		controlWindow = [[WindowControllerReadData alloc] initWithTool:self];

@@ -14,7 +14,7 @@
 
 @interface YRKSpinningProgressIndicator ()
 
-- (void)updateFrame:(NSTimer*)timer;
+- (void)updateFrame:(NSTimer *)timer;
 - (void)animateInBackgroundThread;
 - (void)actuallyStartAnimation;
 - (void)actuallyStopAnimation;
@@ -25,25 +25,25 @@
 
 @implementation YRKSpinningProgressIndicator
 
-@synthesize color                 = _foreColor;
-@synthesize backgroundColor       = _backColor;
-@synthesize drawsBackground       = _drawsBackground;
-@synthesize displayedWhenStopped  = _displayedWhenStopped;
+@synthesize color = _foreColor;
+@synthesize backgroundColor = _backColor;
+@synthesize drawsBackground = _drawsBackground;
+@synthesize displayedWhenStopped = _displayedWhenStopped;
 @synthesize usesThreadedAnimation = _usesThreadedAnimation;
-@synthesize indeterminate         = _isIndeterminate;
-@synthesize doubleValue           = _currentValue;
-@synthesize maxValue              = _maxValue;
+@synthesize indeterminate = _isIndeterminate;
+@synthesize doubleValue = _currentValue;
+@synthesize maxValue = _maxValue;
 
 
 #pragma mark Init
 
 - (id)initWithFrame:(NSRect)frame {
 
-    if ( (self = [super initWithFrame:frame]) ) 
+    self = [super initWithFrame:frame];
+    if (self)
         {
         _position = 0;
-        _numFins = NUM_FINS;
-        //_finColors = (NSColor**)calloc(_numFins, sizeof(NSColor*));
+        _numFins = 12;
         
         _isAnimating = NO;
         _isFadingOut = NO;
@@ -64,14 +64,12 @@
 
 - (void) dealloc {
 
-    /*for (int i=0; i<_numFins; i++)
-        {
+    for (int i=0; i<_numFins; i++)
         [_finColors[i] release];
-        }
-    free(_finColors);*/
     [_foreColor release];
     [_backColor release];
-    if (_isAnimating) [self stopAnimation:self];
+    if (_isAnimating)
+        [self stopAnimation:self];
     
     [super dealloc];
 }
@@ -82,12 +80,12 @@
 
     [super viewDidMoveToWindow];
 
-    if ([self window] == nil) 
+    if ([self window] == nil)
         {
         // No window?  View hierarchy may be going away.  Dispose timer to clear circular retain of timer to self to timer.
         [self actuallyStopAnimation];
         }
-    else if (_isAnimating) 
+    else if (_isAnimating)
         {
         [self actuallyStartAnimation];
         }
@@ -104,7 +102,7 @@
         theMaxSize = size.width;
 
     // fill the background, if set
-    if(_drawsBackground) 
+    if(_drawsBackground)
         {
         [_backColor set];
         [NSBezierPath fillRect:[self bounds]];
@@ -116,7 +114,7 @@
     // Move the CTM so 0,0 is at the center of our bounds
     CGContextTranslateCTM(currentContext,[self bounds].size.width/2,[self bounds].size.height/2);
 
-    if (_isIndeterminate) 
+    if (_isIndeterminate)
         {
         NSBezierPath *path = [[NSBezierPath alloc] init];
         CGFloat lineWidth = 0.0859375 * theMaxSize; // should be 2.75 for 32x32
@@ -127,13 +125,13 @@
         [path moveToPoint:NSMakePoint(0,lineStart)];
         [path lineToPoint:NSMakePoint(0,lineEnd)];
 
-        for (int i=0; i<_numFins; i++) 
+        for (int i=0; i<_numFins; i++)
             {
-            if(_isAnimating) 
+            if(_isAnimating)
                 {
                 [_finColors[i] set];
                 }
-            else 
+            else
                 {
                 [[_foreColor colorWithAlphaComponent:kAlphaWhenStopped] set];
                 }
@@ -145,31 +143,36 @@
             }
         [path release];
         }
-    else 
+    else
         {
         CGFloat lineWidth = 1 + (0.01 * theMaxSize);
         CGFloat circleRadius = (theMaxSize - lineWidth) / 2.1;
         NSPoint circleCenter = NSMakePoint(0, 0);
         [_foreColor set];
-        NSBezierPath* path1 = [NSBezierPath bezierPath];
-        [path1 setLineWidth:lineWidth];
-        [path1 appendBezierPathWithOvalInRect:NSMakeRect(-circleRadius, -circleRadius, circleRadius*2, circleRadius*2)];
-        [path1 stroke];
-        NSBezierPath* path2 = [NSBezierPath bezierPath];
-        [path2 appendBezierPathWithArcWithCenter:circleCenter radius:circleRadius startAngle:90 endAngle:90-(360*(_currentValue/_maxValue)) clockwise:YES];
-        [path2 lineToPoint:circleCenter] ;
-        [path2 fill];
+        NSBezierPath *path = [[NSBezierPath alloc] init];
+        [path setLineWidth:lineWidth];
+        [path appendBezierPathWithOvalInRect:NSMakeRect(-circleRadius, -circleRadius, circleRadius*2, circleRadius*2)];
+        [path stroke];
+        [path release];
+        path = [[NSBezierPath alloc] init];
+        [path appendBezierPathWithArcWithCenter:circleCenter radius:circleRadius startAngle:90 endAngle:90-(360*(_currentValue/_maxValue)) clockwise:YES];
+        [path lineToPoint:circleCenter];
+        [path fill];
+        [path release];
         }
 
     [NSGraphicsContext restoreGraphicsState];
 }
 
+
 #pragma mark NSProgressIndicator API
 
 - (void)startAnimation:(id)sender {
 
-    if (!_isIndeterminate) return;
-    if (_isAnimating && !_isFadingOut) return;
+    if (!_isIndeterminate)
+        return;
+    if (_isAnimating && !_isFadingOut)
+        return;
 
     [self actuallyStartAnimation];
 }
@@ -183,24 +186,25 @@
 /// Only the spinning style is implemented
 - (void)setStyle:(NSProgressIndicatorStyle)style {
 
-    if (NSProgressIndicatorSpinningStyle != style) 
+    if (NSProgressIndicatorSpinningStyle != style)
         {
         NSAssert(NO, @"Non-spinning styles not available.");
         }
 }
 
+
 # pragma mark Custom Accessors
 
-- (void)setColor:(NSColor*)value {
+- (void)setColor:(NSColor *)value {
 
-    if (_foreColor != value) 
+    if (_foreColor != value)
         {
         [_foreColor release];
         _foreColor = [value retain];
         
         // generate all the fin colors, with the alpha components
         // they already have
-        for (int i=0; i<_numFins; i++) 
+        for (int i=0; i<_numFins; i++)
             {
             CGFloat alpha = [_finColors[i] alphaComponent];
             [_finColors[i] release];
@@ -211,9 +215,9 @@
         }
 }
 
-- (void)setBackgroundColor:(NSColor*)value {
+- (void)setBackgroundColor:(NSColor *)value {
 
-    if (_backColor != value) 
+    if (_backColor != value)
         {
         [_backColor release];
         _backColor = [value retain];
@@ -223,7 +227,7 @@
 
 - (void)setDrawsBackground:(BOOL)value {
 
-    if (_drawsBackground != value) 
+    if (_drawsBackground != value)
         {
         _drawsBackground = value;
         }
@@ -233,15 +237,14 @@
 - (void)setIndeterminate:(BOOL)isIndeterminate {
 
     _isIndeterminate = isIndeterminate;
-    if (!_isIndeterminate && _isAnimating) 
-        [self stopAnimation:self];
+    if (!_isIndeterminate && _isAnimating) [self stopAnimation:self];
     [self setNeedsDisplay:YES];
 }
 
 - (void)setDoubleValue:(double)doubleValue {
 
     // Automatically put it into determinate mode if it's not already.
-    if (_isIndeterminate) 
+    if (_isIndeterminate)
         {
         [self setIndeterminate:NO];
         }
@@ -257,11 +260,11 @@
 
 - (void)setUsesThreadedAnimation:(BOOL)useThreaded {
 
-    if (_usesThreadedAnimation != useThreaded) 
+    if (_usesThreadedAnimation != useThreaded)
         {
         _usesThreadedAnimation = useThreaded;
         
-        if (_isAnimating) 
+        if (_isAnimating)
             {
             // restart the timer to use the new mode
             [self stopAnimation:self];
@@ -275,35 +278,36 @@
 	_displayedWhenStopped = displayedWhenStopped;
 
 	// Show/hide ourself if necessary
-	if (!_isAnimating) 
+	if (!_isAnimating)
         {
-		if (_displayedWhenStopped && [self isHidden]) 
+		if (_displayedWhenStopped && [self isHidden])
             {
 			[self setHidden:NO];
             }
-		else if (!_displayedWhenStopped && ![self isHidden]) 
+		else if (!_displayedWhenStopped && ![self isHidden])
             {
 			[self setHidden:YES];
             }
         }
 }
 
+
 #pragma mark Private
 
-- (void)updateFrame:(NSTimer*)timer {
+- (void)updateFrame:(NSTimer *)timer {
 
-    if(_position > 0) 
+    if(_position > 0)
         {
         _position--;
         }
-    else 
+    else
         {
         _position = _numFins - 1;
         }
     
     // update the colors
     CGFloat minAlpha = _displayedWhenStopped ? kAlphaWhenStopped : 0.01;
-    for (int i=0; i<_numFins; i++) 
+    for (int i=0; i<_numFins; i++)
         {
         // want each fin to fade exponentially over _numFins frames of animation
         CGFloat newAlpha = [_finColors[i] alphaComponent] * kFadeMultiplier;
@@ -314,38 +318,38 @@
         [oldColor release];
         }
     
-    if (_isFadingOut) 
+    if (_isFadingOut)
         {
         // check if the fadeout is done
         BOOL done = YES;
-        for (int i=0; i<_numFins; i++) 
+        for (int i=0; i<_numFins; i++)
             {
-            if (fabs([_finColors[i] alphaComponent] - minAlpha) > 0.01) 
+            if (fabs([_finColors[i] alphaComponent] - minAlpha) > 0.01)
                 {
                 done = NO;
                 break;
                 }
             }
-        if (done) 
+        if (done)
             {
             [self actuallyStopAnimation];
             }
         }
-    else 
+    else
         {
         // "light up" the next fin (with full alpha)
-        NSColor* oldColor = _finColors[_position];
+        NSColor *oldColor = _finColors[_position];
         _finColors[_position] = [_foreColor retain];
         [oldColor release];
         }
     
-    if (_usesThreadedAnimation) 
+    if (_usesThreadedAnimation)
         {
         // draw now instead of waiting for setNeedsDisplay (that's the whole reason
         // we're animating from background thread)
         [self display];
         }
-    else 
+    else
         {
         [self setNeedsDisplay:YES];
         }
@@ -365,15 +369,15 @@
 	if (!_displayedWhenStopped)
 		[self setHidden:NO];
 
-    if ([self window]) 
+    if ([self window])
         {
         // Why animate if not visible?  viewDidMoveToWindow will re-call this method when needed.
-        if (_usesThreadedAnimation) 
+        if (_usesThreadedAnimation)
             {
             _animationThread = [[NSThread alloc] initWithTarget:self selector:@selector(animateInBackgroundThread) object:nil];
             [_animationThread start];
             }
-        else 
+        else
             {
             _animationTimer = [[NSTimer timerWithTimeInterval:(NSTimeInterval)0.05
                                                        target:self
@@ -396,18 +400,18 @@
     if (!_displayedWhenStopped)
         [self setHidden:YES];
     
-    if (_animationThread) 
+    if (_animationThread)
         {
         // we were using threaded animation
 		[_animationThread cancel];
-		if (![_animationThread isFinished]) 
+		if (![_animationThread isFinished])
             {
 			[[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
             }
 		[_animationThread release];
         _animationThread = nil;
         }
-    else if (_animationTimer) 
+    else if (_animationTimer)
         {
         // we were using timer-based animation
         [_animationTimer invalidate];
@@ -419,9 +423,9 @@
 
 - (void)generateFinColorsStartAtPosition:(int)startPosition {
 
-    for (int i=0; i<_numFins; i++) 
+    for (int i=0; i<_numFins; i++)
         {
-        NSColor* oldColor = _finColors[i];
+        NSColor *oldColor = _finColors[i];
         CGFloat alpha = [oldColor alphaComponent];
         _finColors[i] = [[_foreColor colorWithAlphaComponent:alpha] retain];
         [oldColor release];
@@ -430,33 +434,28 @@
 
 - (void)animateInBackgroundThread {
 
-    @autoreleasepool
-        {
-        /* JPHARC NSAutoreleasePool* animationPool = [[NSAutoreleasePool alloc] init]; */
+	NSAutoreleasePool *animationPool = [[NSAutoreleasePool alloc] init];
 
-        // Set up the animation speed to subtly change with size > 32.
-        // int animationDelay = 38000 + (2000 * ([self bounds].size.height / 32));
-        
-        // Set the rev per minute here
-        int omega = 100; // RPM
-        int animationDelay = 60*1000000/omega/_numFins;
-        /* JPHARC int poolFlushCounter = 0; */
-        
-        do 
-            {
-            [self updateFrame:nil];
-            usleep(animationDelay);
-            /* JPHARC  poolFlushCounter++;
-            if (poolFlushCounter > 256) 
-                {
-                [animationPool drain];
-                animationPool = [[NSAutoreleasePool alloc] init];
-                poolFlushCounter = 0;
-                } */
-            } while (![[NSThread currentThread] isCancelled]); 
-        
-        /* JPHARC [animationPool release]; */
-        }
+	// Set up the animation speed to subtly change with size > 32.
+	// int animationDelay = 38000 + (2000 * ([self bounds].size.height / 32));
+    
+    // Set the rev per minute here
+    int omega = 100; // RPM
+    int animationDelay = 60*1000000/omega/_numFins;
+	int poolFlushCounter = 0;
+    
+	do {
+		[self updateFrame:nil];
+		usleep(animationDelay);
+		poolFlushCounter++;
+		if (poolFlushCounter > 256) {
+			[animationPool drain];
+			animationPool = [[NSAutoreleasePool alloc] init];
+			poolFlushCounter = 0;
+		}
+	} while (![[NSThread currentThread] isCancelled]); 
+    
+	[animationPool release];
 }
 
 @end

@@ -23,12 +23,6 @@
 	[controlWindow close];
 }
 
-/* JPHARC - (void)dealloc {
-
-	[controlWindow release];
-	[super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];

@@ -27,7 +27,6 @@
         distribution   = [aDecoder decodeObjectForKey:@"distribution"];
         partition      = [aDecoder decodeObjectForKey:@"partition"];
         randomVariable = [aDecoder decodeObjectForKey:@"randomVariable"];
-		/* JPHARC [distribution retain]; */
 		}
 	return self;
 }

@@ -7,11 +7,6 @@
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    /* JPHARC if (alignTask != nil)
-        [alignTask release];
-    if (outputPipe != nil)
-        [outputPipe release];
-	[super dealloc]; */
 }
 
 - (id)init {
@@ -137,7 +132,6 @@
     NSFileManager* clustalFileManager = [[NSFileManager alloc] init];
     NSDictionary* clustalTemporaryDirectoryAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"clustalTemporaryDirectory"];
     [clustalFileManager createDirectoryAtPath:workingDirectory withIntermediateDirectories:NO attributes:clustalTemporaryDirectoryAttributes error:NULL];
-    /* JPHARC [clustalFileManager release]; */
     
     // find the clustal executable in the application bundle
     NSString* clustalPath = [[NSBundle mainBundle] pathForResource:@"clustalw2" ofType:nil];
@@ -182,7 +176,6 @@
     NSData* incomingData = [[aNotification userInfo] objectForKey:NSFileHandleNotificationDataItem];
     NSString* incomingText = [[NSString alloc] initWithData:incomingData encoding:NSASCIIStringEncoding];
     NSLog(@"task %@ %@", self, incomingText);
-    /* JPHARC [incomingText release]; */
 }
 
 @end

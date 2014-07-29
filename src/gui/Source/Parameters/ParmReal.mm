@@ -5,11 +5,6 @@
 
 @implementation ParmReal
 
-/* JPHARC - (void)dealloc {
-
-	[super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];

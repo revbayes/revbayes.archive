@@ -54,7 +54,6 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 	
 	// add the tracking area to the dictionary
 	[trackingAreas setObject:ta forKey:itemKey];
-	/* JPHARC [ta release]; */
 }
 
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender {
@@ -82,16 +81,6 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-	/* JPHARC for (int i=0; i<8; i++)
-		{
-		[selectedAttributedString[i]   release];
-		[unselectedAttributedString[i] release];
-		} */
-	/* JPHARC [trackingAreas release];
-    [selectedItems release];
-    [copiedItems release];
-	[super dealloc]; */
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {

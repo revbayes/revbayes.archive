@@ -19,13 +19,6 @@
     [self setInletsAndOutlets];
 }
 
-/* JPHARC - (void)dealloc {
-
-    [settings release];
-    [controlWindow release];
-	[super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
@@ -85,7 +78,6 @@
         
         // initialize the settings
         settings = [aDecoder decodeObjectForKey:@"settings"];
-        /* JPHARC [settings retain]; */
         
 		// initialize the control window
 		controlWindow = [[WindowControllerMcmc alloc] initWithTool:self andSettings:settings];

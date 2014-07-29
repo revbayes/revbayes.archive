@@ -9,12 +9,6 @@
     return nil;
 }
 
-/* JPHARC - (void)dealloc {
-
-    // dealloc here
-	[super dealloc];
-}*/
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
 }

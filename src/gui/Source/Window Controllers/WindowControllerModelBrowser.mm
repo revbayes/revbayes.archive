@@ -30,13 +30,6 @@
     [self close];
 }
 
-/* JPHARC - (void)dealloc {
-
-	[curatedModels release];
-    [userModels release];
-	[super dealloc];
-} */
-
 - (IBAction)helpButtonAction:(id)sender {
 
 }
