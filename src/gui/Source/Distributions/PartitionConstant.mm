@@ -34,7 +34,6 @@
         value        = [aDecoder decodeObjectForKey:@"value"];
         partition    = [aDecoder decodeObjectForKey:@"partition"];
         constantParm = [aDecoder decodeObjectForKey:@"constantParm"];
-		/* JPHARC [value retain]; */
 		}
 	return self;
 }

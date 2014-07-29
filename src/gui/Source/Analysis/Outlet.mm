@@ -27,7 +27,6 @@
         [c setInlet:theInlet];
         [connections addObject:c];
         [theInlet addConnection:c];
-        /* JPHARC [c release]; */
         [[self toolOwner] updateDownstreamTools];
         }
 }
@@ -46,12 +45,6 @@
 
     return [connections objectAtIndex:idx];
 }
-
-/* JPHARC - (void)dealloc {
-
-	[connections release];
-	[super dealloc];
-} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
@@ -74,7 +67,6 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
 		connections = [aDecoder decodeObjectForKey:@"connections"];
-        /* JPHARC [connections retain]; */
 		}
 	return self;
 }

@@ -20,14 +20,6 @@
     return nil;
 }
 
-/* JPHARC - (void)dealloc {
-
-    NSLog(@"distribution with name %@ is dealloced", [self className]);
-	[distributionName release];
-	[parameters release];
-	[super dealloc];
-}*/
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[aCoder encodeObject:distributionName                          forKey:@"distributionName"];
@@ -66,9 +58,6 @@
         appliesExclusivelyToBranchesOfUnrootedTrees = [aDecoder decodeBoolForKey:@"appliesExclusivelyToBranchesOfUnrootedTrees"];
         appliesExclusivelyToNodesOfRootedTrees      = [aDecoder decodeBoolForKey:@"appliesExclusivelyToNodesOfRootedTrees"];
         appliesExclusivelyToBranchsOfRootedTrees    = [aDecoder decodeBoolForKey:@"appliesExclusivelyToBranchsOfRootedTrees"];
-		/* JPHARC [distributionName retain];
-		[distributionDescription retain];
-		[parameters retain]; */
 		}
 	return self;
 }
@@ -77,8 +66,8 @@
 
     if ( (self = [super init]) ) 
 		{
-        distributionName        = [[NSString alloc] initWithString:@""];
-		distributionDescription = [[NSString alloc] initWithString:@""];
+        distributionName        = @"";
+		distributionDescription = @"";
 		parameters              = [[NSMutableArray alloc] init];
         
         [self setAppliesExclusivelyToNodesOfUnrootedTrees:[d appliesExclusivelyToNodesOfUnrootedTrees]];
@@ -104,8 +93,8 @@
     if ( (self = [super init]) ) 
 		{
 		myParm                                      = p;
-        distributionName                            = [[NSString alloc] initWithString:@""];
-		distributionDescription                     = [[NSString alloc] initWithString:@""];
+        distributionName                            = @"";
+		distributionDescription                     = @"";
 		parameters                                  = [[NSMutableArray alloc] init];
 		distributionType                            = 0;
         appliesExclusivelyToNodesOfUnrootedTrees    = NO;

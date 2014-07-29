@@ -20,11 +20,6 @@
     return NO;
 }
 
-/* JPHARC - (void)dealloc {
-
-    [super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
     [aCoder encodePoint:position   forKey:@"position"];

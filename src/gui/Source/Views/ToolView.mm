@@ -30,13 +30,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     delete [] toolShowVector;
     delete [] toolPaletteOffset;
-
-	/* JPHARC NSEnumerator* enumerator = [myTrackingAreas objectEnumerator];
-	id element;
-	while ( (element = [enumerator nextObject]) )
-        [self removeTrackingArea:element];
-	[myTrackingAreas release];
-	[super dealloc]; */
 }
 
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal {
@@ -169,7 +162,6 @@
 		[[[NSColor darkGrayColor] colorWithAlphaComponent:0.75] set];
 		[NSBezierPath fillRect:tipRect];
 		[attrString drawAtPoint:p];
-		/* JPHARC [attrString release]; */
 		}
 }
 

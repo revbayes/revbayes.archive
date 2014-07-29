@@ -287,12 +287,6 @@
         }
 }
 
-/* JPHARC - (void)dealloc {
-
-	[probabilityModel release];
-	[super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
     [super encodeWithCoder:aCoder];
@@ -333,7 +327,6 @@
         isClamped                     = [aDecoder decodeBoolForKey:@"isClamped"];
         monitorValue                  = [aDecoder decodeBoolForKey:@"monitorValue"];
         indexOfSelectedPartitionModel = [aDecoder decodeIntForKey:@"indexOfSelectedPartitionModel"];
-		/* JPHARC [probabilityModel retain]; */
 		}
 	return self;
 }

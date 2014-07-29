@@ -21,11 +21,6 @@
     [self refreshWindow];
 }
 
-/* JPHARC - (void)dealloc {
-    
-    [super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[super encodeWithCoder:aCoder];
@@ -105,7 +100,6 @@
             [aCell setTextColor:[NSColor blackColor]];
             }
         [valueScroll setDocumentView:vec];
-        /* JPHARC [vec release]; */
         [valueScroll display];
         NSLog(@"%@", vec);
         NSLog(@"valueScroll = %@", valueScroll);

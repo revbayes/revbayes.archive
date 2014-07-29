@@ -61,17 +61,6 @@
 	return (int)[data count];
 }
 
-/* JPHARC - (void)dealloc {
-
-	[data release];
-	[name release];
-    [alignmentMethod release];
-	[taxonNames release];
-	[excludedTaxa release];
-	[excludedCharacters release];
-	[super dealloc];
-} */
-
 - (void)deleteLastTaxon {
 
     if ([data count] > 0)
@@ -113,7 +102,6 @@
         {
         NSNumber* n = [[NSNumber alloc] initWithInt:idx];
 		[excludedCharacters addObject:n];
-        /* JPHARC [n release]; */
         }
 }
 
@@ -196,12 +184,6 @@
 		excludedTaxa          = [aDecoder decodeObjectForKey:@"excludedTaxa"];
 		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
         copiedFrom            = [aDecoder decodeObjectForKey:@"copiedFrom"];
-		/* JPHARC [data retain];
-		[name retain];
-        [alignmentMethod retain];
-		[taxonNames retain];
-		[excludedTaxa retain];
-		[excludedCharacters retain]; */
 		}
 	return self;
 }
@@ -421,10 +403,8 @@
             [dc setNumStates:10];
             [dc setIsAmbig:YES];
             [td addObservation:dc];
-            /* JPHARC [dc release]; */
             }
         [data addObject:td];
-        /* JPHARC [td release]; */
         }
 }
 

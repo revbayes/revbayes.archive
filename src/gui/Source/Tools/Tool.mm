@@ -24,7 +24,6 @@
 	Inlet* il = [[Inlet alloc] initWithTool:self];
 	[il setToolColor:c];
 	[inlets addObject:il];
-    /* JPHARC [il release]; */
 	[self setInletLocations];
 }
 
@@ -33,7 +32,6 @@
 	Outlet* ol = [[Outlet alloc] initWithTool:self];
 	[ol setToolColor:c];
 	[outlets addObject:ol];
-    /* JPHARC [ol release]; */
 	[self setOutletLocations];
 }
 
@@ -62,14 +60,6 @@
 
 	return [[outlets objectAtIndex:idx] toolColor];
 }
-
-/* JPHARC - (void)dealloc {
-
-	[inlets release];
-	[outlets release];
-    [workspaceName release];
-	[super dealloc];
-} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
@@ -157,7 +147,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
-        workspaceName     = [[NSString alloc] initWithString:@""];
+        workspaceName     = @"";
 		flagCount         = 0;
 		touchOnRevival    = NO;
         isLoop            = NO;
@@ -173,7 +163,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
-        workspaceName     = [[NSString alloc] initWithString:@""];
+        workspaceName     = @"";
 		flagCount         = 0;
 		touchOnRevival    = NO;
         isLoop            = NO;
@@ -193,9 +183,6 @@
 		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
         isLoop            = [aDecoder decodeBoolForKey:@"isLoop"];
         workspaceName     = [aDecoder decodeObjectForKey:@"workspaceName"];
-        /* JPHARC [inlets retain];
-        [outlets retain];
-        [workspaceName retain]; */
         isDirty           = NO;
 		}
 	return self;
@@ -559,11 +546,8 @@
     // instantiate the progress indicator and set the views correctly
     NSView* superView = myAnalysisView;
     NSRect frame = NSMakeRect(tRect.origin.x + margine, tRect.origin.y + margine, tRect.size.width - 2.0*margine, tRect.size.height - 2.0*margine);
-    /* JPHARC if (progressIndicator != nil)
-        [progressIndicator release]; */
     progressIndicator = [[YRKSpinningProgressIndicator alloc] initWithFrame:frame];
     [superView addSubview:progressIndicator];
-    /* JPHARC [progressIndicator release]; */
     
     // set properties of the progress indicator and start it up
     [progressIndicator setUsesThreadedAnimation:YES];

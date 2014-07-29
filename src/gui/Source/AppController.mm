@@ -52,13 +52,6 @@
         [fileManager createDirectoryAtPath:folder2 withIntermediateDirectories:YES attributes:nil error:NULL];
 }
 
-/* JPHARC - (void)dealloc {
-
-    [preferencesController release];
-	[registrationController release];
-	[super dealloc];
-} */
-
 - (id)init {
 
     if ( (self = [super init]) ) 

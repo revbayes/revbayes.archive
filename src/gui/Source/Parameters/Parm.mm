@@ -98,11 +98,6 @@
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	/* JPHARC [parents release];
-	[children release];
-    [parmName release];
-	[containingPlates release];*/
-	/* JPHARC [super dealloc]; */
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -149,10 +144,6 @@
         isConstant       = [aDecoder decodeBoolForKey:@"isConstant"];
         isVector         = [aDecoder decodeBoolForKey:@"isVector"];
         dimensions       = [aDecoder decodeIntForKey:@"dimensions"];
-        /* JPHARC [parents retain];
-        [children retain];
-        [parmName retain];
-		[containingPlates retain];*/
         if (saveAsModelTemplate == NO)
             myModel = [aDecoder decodeObjectForKey:@"myModel"];
 		}

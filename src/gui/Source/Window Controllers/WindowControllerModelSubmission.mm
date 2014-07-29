@@ -54,14 +54,6 @@
 	[creatorNameField setStringValue:userName];
 }
 
-/* JPHARC - (void)dealloc {
-
-	[modelName release];
-	[creatorName release];
-    [notes release];
-	[super dealloc];
-} */
-
 - (BOOL)doesModelExist:(NSString*)mn {
 
 	NSString* newModelName = @"~/Library/Application Support/RevBayes/User Models/";

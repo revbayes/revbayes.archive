@@ -110,7 +110,6 @@
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"scaleFactorChangeNotification" object:nil];
-	/* JPHARC [super dealloc]; */
 }
 
 - (void)dfsForTool:(Tool*)t forArray:(NSMutableArray*)dpa {
@@ -317,7 +316,6 @@
 				textSize.origin.y = pr.origin.y + padding;
 				NSPoint p = textSize.origin;
 				[attrString drawAtPoint:p];
-				/* JPHARC [attrString release]; */
 				[element setMinLoopSize:NSMakeSize(textSize.size.width + 2.0*padding, textSize.size.height + 2.0*padding)];
 				}
 				
@@ -456,7 +454,6 @@
                     numRect.origin.x += drawingRect.size.width * 0.5 - numRect.size.width * 0.5;
                     numRect.origin.y += drawingRect.size.height * 0.5 - numRect.size.height * 0.5;
                     [attrString drawAtPoint:numRect.origin];
-                    /* JPHARC [attrString release]; */
                     }
 
                 }
@@ -640,7 +637,6 @@
             [[[NSColor darkGrayColor] colorWithAlphaComponent:0.75] set];
             [NSBezierPath fillRect:tipRect];
 			[attrString drawAtPoint:p];
-			/* JPHARC [attrString release]; */
             }
         }
         
@@ -1283,10 +1279,8 @@
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         NSData* colorAsData = [defaults objectForKey:RB_AnalysisBgrndColorKey];
         bkgrndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-        /* JPHARC [bkgrndColor retain]; */
         colorAsData = [defaults objectForKey:RB_AnalysisGridColorKey];
         gridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-        /* JPHARC [gridColor retain]; */
 		}
     return self;
 }
@@ -1429,7 +1423,6 @@
     NSBezierPath* path = [NSBezierPath bezierPath];
     [path moveToPoint:NSMakePoint(0.0, 0.0)];
     [path appendBezierPathWithGlyphs:glyphs count:range.length inFont:numFont];
-    /* JPHARC [textview release]; */
     
     return path;
 }
@@ -2012,7 +2005,6 @@
 
         // add the tool to the array of tools
 		[itemsPtr addObject:newTool];
-        /* JPHARC [newTool release]; */
         
         // set the view for the tool
         [newTool setAnalysisView:self];

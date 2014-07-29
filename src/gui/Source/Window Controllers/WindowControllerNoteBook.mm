@@ -74,26 +74,10 @@
 		{
         readSuccess = YES;
         [self setString:fileContents];
-        /* JPHARC [fileContents release];*/
 		}
     return readSuccess;
 }
 
-/* JPHARC - (void)setString:(NSMutableAttributedString*)newValue {
-
-	if (mString != newValue) 
-		{
-		if (mString) 
-			[mString release];
-		mString = [newValue copy];
-		}
-}
-
-- (NSMutableAttributedString*)string { 
-
-	return [[mString retain] autorelease]; 
-} */
- 
 - (void)textDidChange:(NSNotification*)notification {
 
     [self setString:[textView textStorage]];

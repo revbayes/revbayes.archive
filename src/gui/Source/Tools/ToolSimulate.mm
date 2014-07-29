@@ -65,15 +65,6 @@
 	[queryWindow close];
 }
 
-/* JPHARC - (void)dealloc {
-
-    if (queryWindow != nil)
-        [queryWindow release];
-    [controlWindow release];
-    [myTree release];
-	[super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
@@ -173,8 +164,6 @@
         piT            = [aDecoder decodeDoubleForKey:@"piT"];
         sequenceLength = [aDecoder decodeIntForKey:@"sequenceLength"];
         myTree         = [aDecoder decodeObjectForKey:@"myTree"];
-        /* JPHARC [myTree retain];
-        [myTree print]; */
 
 		// initialize the control window
 		controlWindow  = [[WindowControllerSimulate alloc] initWithTool:self];
@@ -203,9 +192,6 @@
 }
 
 - (void)makeTreeOfSize:(int)nt {
-
-    /* JPHARC if (myTree != nil)
-        [myTree release]; */
 
     myTree = [[GuiTree alloc] initWithTipSize:nt];
     [myTree initializeDownPassSequence];
@@ -239,7 +225,6 @@
 
     if (queryWindow != nil)
         {
-        /* JPHARC [queryWindow release]; */
         queryWindow = nil;
         }
     
@@ -255,7 +240,6 @@
     
     if ( [queryWindow closedWithCancel] == YES )
         {
-        /* JPHARC [queryWindow release]; */
         queryWindow = nil;
         }
     else
@@ -270,7 +254,6 @@
         [[controlWindow window] makeKeyAndOrderFront:nil];
         [NSApp runModalForWindow:[controlWindow window]];
         
-        /* JPHARC [queryWindow release]; */
         queryWindow = nil;
         }
 }

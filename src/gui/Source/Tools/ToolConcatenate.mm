@@ -297,19 +297,12 @@
         NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:mergeMethod];
         for (RbData* d in [concatenatedMatrices objectEnumerator])
             [self addMatrix:d];
-        /* JPHARC [concatenatedMatrices release]; */
         }
     
     [self makeDataInspector];
     
     return YES;
 }
-
-/* JPHARC - (void)dealloc {
-
-	[controlWindow release];
-	[super dealloc];
-} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 

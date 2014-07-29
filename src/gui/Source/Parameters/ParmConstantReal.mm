@@ -12,11 +12,6 @@
     return ([[ValueReal alloc] initWithNumber:0.0]);
 }
 
-/* JPHARC - (void)dealloc {
-    
-	[super dealloc];
-} */
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[super encodeWithCoder:aCoder];

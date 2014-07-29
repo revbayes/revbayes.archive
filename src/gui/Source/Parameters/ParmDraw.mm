@@ -45,18 +45,6 @@
     return p;
 }
 
-/* JPHARC - (void)dealloc {
-    
-    [drawingCodes release];
-    [drawingPositions release];
-    [drawingSizes release];
-    [drawingType release];
-    [drawingTip release];
-    [drawingItalics release];
-    [drawingSuperscripts release];
-    [super dealloc];
-} */
-
 - (id)init {
     
     if ( (self = [super init]) ) 

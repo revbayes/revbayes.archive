@@ -111,11 +111,6 @@ NSString* const RB_NotebookFontKey       = @"NotebookFont";
     [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdatedModelBkgrndColor" object:self];
 }
 
-/* JPHARC - (void)dealloc {
-
-	[super dealloc];
-} */
-
 - (void)getStartingState {
 
 	// get the user defaults
@@ -152,37 +147,28 @@ NSString* const RB_NotebookFontKey       = @"NotebookFont";
 		// unarchive the analysis background color
         NSData *colorAsData = [defaults objectForKey:RB_AnalysisBgrndColorKey];
         currentAnalysisBkgndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        /* JPHARC [currentAnalysisBkgndColor retain]; */
 
 		// unarchive the analysis grid color
         colorAsData = [defaults objectForKey:RB_AnalysisGridColorKey];
         currentAnalysisGridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        /* JPHARC [currentAnalysisGridColor retain]; */
 		
 		// unarchive the model background color
         colorAsData = [defaults objectForKey:RB_ModelBgrndColorKey];
         currentModelBkgndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        /* JPHARC [currentModelBkgndColor retain]; */
 
 		// unarchive the model grid color
         colorAsData = [defaults objectForKey:RB_ModelGridColorKey];
         currentModelGridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        /* JPHARC [currentModelGridColor retain]; */
 		
 		// unarchive the notebook font
         NSData* fontAsData = [defaults objectForKey:RB_NotebookFontKey];
         notebookFont = [NSKeyedUnarchiver unarchiveObjectWithData:fontAsData];
-        /* JPHARC [notebookFont retain]; */
 		
 		// set the starting values for the background colors
 		startingAnalysisBkgndColor = currentAnalysisBkgndColor;
 		startingAnalysisGridColor  = currentAnalysisGridColor;
 		startingModelBkgndColor    = currentModelBkgndColor;
 		startingModelGridColor     = currentModelGridColor;
-		/* JPHARC [startingAnalysisBkgndColor retain];
-		[startingAnalysisGridColor retain];
-		[startingModelBkgndColor retain];
-		[startingModelGridColor retain]; */
         }
 	return self;
 }

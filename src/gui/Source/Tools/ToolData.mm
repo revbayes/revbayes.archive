@@ -31,7 +31,6 @@
     else
         numUnaligned++;
 	[dataMatrices addObject:m];
-	/* JPHARC [m release]; */
     hasInspectorInfo = YES;
 }
 
@@ -50,16 +49,6 @@
 		return nil;
 	return [dataMatrices objectAtIndex:i];
 }
-
-/* JPHARC - (void)dealloc {
-
-    if (dataInspector != nil)
-        [dataInspector release];
-    [dataMatrices release];
-    [dataWorkspaceName release];
-    
-	[super dealloc];
-} */
 
 - (NSMutableArray*)getAlignedData {
 
@@ -116,7 +105,7 @@
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
 		dataMatrices      = [[NSMutableArray alloc] init];
-        dataWorkspaceName = [[NSString alloc] initWithString:@""];
+        dataWorkspaceName = @"";
         dataInspector     = nil;
         
         // check to see if there are any data matrices stored in the tool
@@ -133,8 +122,6 @@
         dataMatrices      = [aDecoder decodeObjectForKey:@"dataMatrices"];
         dataWorkspaceName = [aDecoder decodeObjectForKey:@"dataWorkspaceName"];
         dataInspector     = nil;
-        /* JPHARC [dataMatrices retain];
-        [dataWorkspaceName retain]; */
 
         // check to see if there are any data matrices stored in the tool
         if ([dataMatrices count] > 0)
@@ -289,13 +276,10 @@
             [cell setRow:i];
             [cell setColumn:j];
             [rbTaxonData addObservation:cell];
-            /* JPHARC [cell release]; */
             }
         [m addTaxonData:rbTaxonData];
         }
-        
-    //[m print];
-        
+    
     return m;
 }
 
@@ -356,8 +340,6 @@
 
 - (void)removeDataInspector {
 
-    /* JPHARC if ( dataInspector != nil )
-        [dataInspector release]; */
     dataInspector = nil;
 }
 
