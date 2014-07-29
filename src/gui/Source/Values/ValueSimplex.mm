@@ -3,16 +3,18 @@
 
 @implementation ValueSimplex
 
+@synthesize value;
+
 - (Value*)clone {
     
     return [[ValueSimplex alloc] initWithValue:self];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     [value release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
@@ -33,7 +35,7 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
         {
         value = [aDecoder decodeObjectForKey:@"value"];
-        [value retain];
+        /* JPHARC [value retain]; */
         }
 	return self;
 }
@@ -47,7 +49,7 @@
     return self;
 }
 
-- (void)setValue:(NSArray*)x {
+/* JPHARC - (void)setValue:(NSArray*)x {
 
     value = x;
     [value retain];
@@ -56,6 +58,6 @@
 - (NSArray*)value {
     
     return value;
-}
+} */
 
 @end

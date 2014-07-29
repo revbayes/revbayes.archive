@@ -97,13 +97,12 @@
 
 - (void)dealloc {
 
-    NSLog(@"dealloc Parm %@ %@", [self parmName], self);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	[parents release];
+	/* JPHARC [parents release];
 	[children release];
     [parmName release];
-	[containingPlates release];
-	[super dealloc];
+	[containingPlates release];*/
+	/* JPHARC [super dealloc]; */
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -150,10 +149,10 @@
         isConstant       = [aDecoder decodeBoolForKey:@"isConstant"];
         isVector         = [aDecoder decodeBoolForKey:@"isVector"];
         dimensions       = [aDecoder decodeIntForKey:@"dimensions"];
-        [parents retain];
+        /* JPHARC [parents retain];
         [children retain];
         [parmName retain];
-		[containingPlates retain];
+		[containingPlates retain];*/
         if (saveAsModelTemplate == NO)
             myModel = [aDecoder decodeObjectForKey:@"myModel"];
 		}
@@ -166,7 +165,7 @@
 		{
         parents          = [[NSMutableArray alloc] init];
         children         = [[NSMutableArray alloc] init];
-        parmName         = [[NSString alloc] initWithString:@""];
+        parmName         = @"";
 		containingPlates = [[NSMutableArray alloc] init];
         isSelected       = NO;
         isConstant       = NO;

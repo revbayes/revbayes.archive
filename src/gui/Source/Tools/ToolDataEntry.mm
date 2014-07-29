@@ -27,11 +27,11 @@
     return d;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[controlWindow release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -67,11 +67,11 @@
             [c setIsGapState:NO];
             [c setVal:[NSNumber numberWithInt:1]];
             [td addObservation:c];
-            [c release];
+            /* JPHARC [c release]; */
             }
         [dm addTaxonName:[NSString stringWithFormat:@"Taxon %d", i+1]];
         [dm addTaxonData:td];
-        [td release];
+        /* JPHARC [td release]; */
         }
 }
 

@@ -21,11 +21,11 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[controlWindow release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 

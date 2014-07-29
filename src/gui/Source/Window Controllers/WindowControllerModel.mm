@@ -54,10 +54,10 @@
     [self updateInletSelector];        
 }
 
--(void)dealloc {
+/* JPHARC -(void)dealloc {
 
 	[super dealloc];
-}
+} */
 
 - (void)drawerClosed {
     
@@ -172,8 +172,8 @@
             [attrs setObject:[NSColor blueColor] forKey:NSForegroundColorAttributeName];
         NSMutableAttributedString* attrStr = [[NSMutableAttributedString alloc] initWithString:[str objectAtIndex:i] attributes:attrs];
         [(NSButton*)[btn objectAtIndex:i] setAttributedTitle:attrStr];
-        [attrStr release];
-        [style release];
+        /* JPHARC [attrStr release];
+        [style release]; */
         }
 
 }

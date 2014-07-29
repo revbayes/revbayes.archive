@@ -30,12 +30,12 @@
     [self close];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[curatedModels release];
     [userModels release];
 	[super dealloc];
-}
+} */
 
 - (IBAction)helpButtonAction:(id)sender {
 

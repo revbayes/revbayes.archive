@@ -180,12 +180,12 @@
         }
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
     [constantValues release];
     [savedConstantValues release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     
@@ -245,7 +245,7 @@
         indexOfSelectedPartitionModel = [aDecoder decodeIntForKey:@"indexOfSelectedPartitionModel"];
         appliesToNode                 = [aDecoder decodeBoolForKey:@"appliesToNode"];
         valueSource                   = [aDecoder decodeIntForKey:@"valueSource"];
-        [constantValues retain];
+        /* JPHARC [constantValues retain]; */
         whichView = -1;
         savedConstantValues = [[NSMutableArray alloc] init];
 		}

@@ -48,7 +48,7 @@
         }
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     NSLog(@"WindowControllerPartitionSelector dealloc");
     NSLog(@" 1 ");
@@ -59,7 +59,7 @@
     [secondTaxonList release];
     //[bpName release];
 	[super dealloc];
-}
+} */
 
 - (IBAction)firstTaxaSetsButtonAction:(id)sender {
     

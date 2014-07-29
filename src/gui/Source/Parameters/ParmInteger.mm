@@ -5,10 +5,10 @@
 
 @implementation ParmInteger
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 

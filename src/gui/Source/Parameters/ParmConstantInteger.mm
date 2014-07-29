@@ -12,10 +12,10 @@
     return ([[ValueInteger alloc] initWithNumber:0]);
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     

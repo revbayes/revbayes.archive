@@ -42,12 +42,12 @@
     return [descendants objectAtIndex:idx];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[name release];
     [descendants release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -91,9 +91,9 @@
 		name         = [aDecoder decodeObjectForKey:@"name"];
         ancestor     = [aDecoder decodeObjectForKey:@"ancestor"];
         descendants  = [aDecoder decodeObjectForKey:@"descendants"];
-		[name retain];
+		/* JPHARC [name retain];
         [ancestor retain]; // does this need a retain, given that it is not an object, but a pointer to one?
-        [descendants retain];
+        [descendants retain]; */
 
         isBranchSelected = NO;
         isNodeSelected   = NO;

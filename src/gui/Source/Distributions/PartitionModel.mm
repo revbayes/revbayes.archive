@@ -6,11 +6,7 @@
 
 @synthesize partition;
 @synthesize randomVariable;
-
-- (DistributionGui*)distribution {
-
-    return distribution;
-}
+@synthesize distribution;
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -21,8 +17,7 @@
 
 - (id)init {
 
-	[self initWithParm:nil];
-	return self;
+	return [self initWithParm:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
@@ -32,7 +27,7 @@
         distribution   = [aDecoder decodeObjectForKey:@"distribution"];
         partition      = [aDecoder decodeObjectForKey:@"partition"];
         randomVariable = [aDecoder decodeObjectForKey:@"randomVariable"];
-		[distribution retain];
+		/* JPHARC [distribution retain]; */
 		}
 	return self;
 }
@@ -46,15 +41,6 @@
         randomVariable = p;
 		}
     return self;
-}
-
-- (void)setDistribution:(DistributionGui *)d {
-
-    if (distribution == d)
-        return;
-    DistributionGui* oldValue = distribution;
-    distribution = [d retain];
-    [oldValue release];
 }
 
 @end

@@ -54,12 +54,12 @@
     [self setControlsEnabledState];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[fileName release];
 	[pathName release];
 	[super dealloc];
-}
+} */
 
 - (IBAction)helpButtonAction:(id)sender {
 

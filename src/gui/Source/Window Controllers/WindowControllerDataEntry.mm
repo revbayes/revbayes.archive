@@ -105,11 +105,11 @@
     return myTool;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     [rowData release];
 	[super dealloc];
-}
+} */
 
 - (IBAction)deleteColumn:(id)sender {
 

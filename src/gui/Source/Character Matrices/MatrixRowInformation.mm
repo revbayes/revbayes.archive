@@ -11,11 +11,11 @@
     [values addObject:@"?"];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     [values dealloc];
     [super dealloc];
-}
+} */
 
 - (void)deleteCharacterWithIndex:(int)idx {
 

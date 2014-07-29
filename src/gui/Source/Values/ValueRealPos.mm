@@ -9,11 +9,11 @@
     return [[ValueRealPos alloc] initWithValue:self];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     [value release];
 	[super dealloc];
-}
+}*/
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -32,7 +32,7 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
         value = [aDecoder decodeObjectForKey:@"value"];
-        [value retain];
+        /* JPHARC [value retain]; */
 		}
 	return self;
 }

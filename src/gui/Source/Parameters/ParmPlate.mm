@@ -50,11 +50,11 @@
 	[self refreshWindow];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     NSLog(@"dealloc ParmPlate");
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 

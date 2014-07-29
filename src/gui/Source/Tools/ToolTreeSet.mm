@@ -31,13 +31,13 @@
 	[treeInspector close];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 	
 	[myTrees release];
     [controlWindow release];
     [treeInspector release];
 	[super dealloc];
-}
+}*/
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -99,7 +99,7 @@
         
         // get the set of trees
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
-        [myTrees retain];
+        /* JPHARC [myTrees retain]; */
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
 

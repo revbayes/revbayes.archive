@@ -111,7 +111,7 @@
             [cell setRow:i];
             [cell setColumn:j];
             [td addObservation:cell];
-            [cell release];
+            /* JPHARC [cell release]; */
             }
         [m addTaxonData:td];
         }
@@ -134,14 +134,14 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[fileName release];
 	[pathName release];
 	[controlWindow release];
 
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
@@ -179,8 +179,8 @@
         [self setOutletLocations];
 
 		// initialize the data
-		fileName           = [[NSString alloc] initWithString:@""];
-		pathName           = [[NSString alloc] initWithString:@""];
+		fileName           = @"";
+		pathName           = @"";
 		dataAlignment      = 0;
         dataFormat         = 0;
 		dataType           = 1;
@@ -215,8 +215,8 @@
 		numberOfCharacters = [aDecoder decodeIntForKey:@"numberOfCharacters"];
 		numberOfTaxa       = [aDecoder decodeIntForKey:@"numberOfTaxa"];
 		matrixType         = [aDecoder decodeIntForKey:@"matrixType"];
-        [fileName retain];
-        [pathName retain];
+        /* JPHARC [fileName retain];
+        [pathName retain]; */
         
 		// initialize the control window
 		controlWindow = [[WindowControllerReadData alloc] initWithTool:self];

@@ -63,14 +63,14 @@
 	[excludedCharView setDocumentView:[excludedCharMatrices objectAtIndex:idx]];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[includedCharMatrices release];
 	[excludedCharMatrices release];
 	[includedTaxaMatrices release];
 	[excludedTaxaMatrices release];
 	[super dealloc];
-}
+} */
 
 - (IBAction)excludeCharButtonAction:(id)sender {
 
@@ -681,8 +681,8 @@
 	[itm setFrame:NSMakeRect(0.0,0.0,cellWidth,(cellHeight*[itm numberOfRows]))];
 	[etm setFrame:NSMakeRect(0.0,0.0,cellWidth,(cellHeight*[etm numberOfRows]))];
     
-    [itm release];
-    [etm release];
+    /* JPHARC [itm release];
+    [etm release]; */
 
 	return YES;
 }
@@ -748,8 +748,8 @@
 	[itm setFrame:NSMakeRect(0.0,0.0,nameWidth,(cellHeight*[itm numberOfRows]))];
 	[etm setFrame:NSMakeRect(0.0,0.0,nameWidth,(cellHeight*[etm numberOfRows]))];
     
-    [itm release];
-    [etm release];
+    /* JPHARC [itm release];
+    [etm release]; */
 
 	return YES;
 }

@@ -61,7 +61,7 @@
 	return (int)[data count];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[data release];
 	[name release];
@@ -70,7 +70,7 @@
 	[excludedTaxa release];
 	[excludedCharacters release];
 	[super dealloc];
-}
+} */
 
 - (void)deleteLastTaxon {
 
@@ -113,7 +113,7 @@
         {
         NSNumber* n = [[NSNumber alloc] initWithInt:idx];
 		[excludedCharacters addObject:n];
-        [n release];
+        /* JPHARC [n release]; */
         }
 }
 
@@ -196,12 +196,12 @@
 		excludedTaxa          = [aDecoder decodeObjectForKey:@"excludedTaxa"];
 		excludedCharacters    = [aDecoder decodeObjectForKey:@"excludedCharacters"];
         copiedFrom            = [aDecoder decodeObjectForKey:@"copiedFrom"];
-		[data retain];
+		/* JPHARC [data retain];
 		[name retain];
         [alignmentMethod retain];
 		[taxonNames retain];
 		[excludedTaxa retain];
-		[excludedCharacters retain];
+		[excludedCharacters retain]; */
 		}
 	return self;
 }
@@ -212,9 +212,9 @@
 		{
 		// allocate an array holding the data
 		data            = [[NSMutableArray alloc] init];
-		name            = [[NSString alloc] initWithString:@""];
+		name            = @"";
 		taxonNames      = [[NSMutableArray alloc] init];
-        alignmentMethod = [[NSString alloc] initWithString:@""];
+        alignmentMethod = @"";
 		
 		// allocate sets keeping track of excluded taxa and characters
 		excludedTaxa       = [[NSMutableSet alloc] init];
@@ -348,7 +348,7 @@
 			{
 			RbDataCell* cell = [td dataCellIndexed:j];
 			NSNumber* n = [cell val];
-            char c;
+            char c = ' ';
             if ( [cell dataType] == DNA )
                 c = [cell interpretAsDna:[n unsignedIntValue]];
             else if ( [cell dataType] == RNA )
@@ -421,10 +421,10 @@
             [dc setNumStates:10];
             [dc setIsAmbig:YES];
             [td addObservation:dc];
-            [dc release];
+            /* JPHARC [dc release]; */
             }
         [data addObject:td];
-        [td release];
+        /* JPHARC [td release]; */
         }
 }
 

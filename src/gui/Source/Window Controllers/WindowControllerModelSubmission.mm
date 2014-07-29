@@ -54,13 +54,13 @@
 	[creatorNameField setStringValue:userName];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[modelName release];
 	[creatorName release];
     [notes release];
 	[super dealloc];
-}
+} */
 
 - (BOOL)doesModelExist:(NSString*)mn {
 
@@ -82,9 +82,9 @@
 	if ( (self = [super initWithWindowNibName:@"ModelSubmission"]) )
         {
 		submitModelToPublic = NO;
-        modelName   = [[NSString alloc] initWithString:@""];
-        creatorName = [[NSString alloc] initWithString:@""];
-        notes       = [[NSString alloc] initWithString:@""];
+        modelName   = @"";
+        creatorName = @"";
+        notes       = @"";
         }
 	return self;
 }

@@ -1,5 +1,6 @@
 #import "Connection.h"
 #import "Inlet.h"
+#import "Outlet.h"
 #import "RbData.h"
 #import "RbDataCell.h"
 #import "RbTaxonData.h"
@@ -296,7 +297,7 @@
         NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:mergeMethod];
         for (RbData* d in [concatenatedMatrices objectEnumerator])
             [self addMatrix:d];
-        [concatenatedMatrices release];
+        /* JPHARC [concatenatedMatrices release]; */
         }
     
     [self makeDataInspector];
@@ -304,11 +305,11 @@
     return YES;
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[controlWindow release];
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 

@@ -138,12 +138,12 @@
     [self print];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[nodes release];
     [info release];
 	[super dealloc];
-}
+} */
 
 - (Node*)downPassNodeIndexed:(int)idx {
 
@@ -239,9 +239,9 @@
         numberOfTaxa        = [aDecoder decodeIntForKey:@"numberOfTaxa"];
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
-		[nodes retain];
+		/* JPHARC [nodes retain];
         [downPassSequence retain];
-        [info retain];
+        [info retain]; */
 		}
 	return self;
 }
@@ -448,7 +448,7 @@
         {
         [nodes removeObject:nde];
         [downPassSequence removeObject:nde];
-        [nde release];
+        /* JPHARC [nde release]; */
         }
         
     // get the new downpass sequence

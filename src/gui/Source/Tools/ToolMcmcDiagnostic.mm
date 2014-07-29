@@ -87,7 +87,7 @@
 	
 //	[self setToolValues];
     [self closeControlPanel];
-    [self updateForChangeInState];
+    [self updateDownstreamTools];
 }
 
 - (void)closeControlPanel {
@@ -97,13 +97,13 @@
     [self setInletsAndOutlets];
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
     
 //    data->clear();
 //    delete data;
 //    [controlWindow release];
 	[super dealloc];
-}
+} */
 
 - (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem {
     
@@ -283,7 +283,7 @@
     {
         std::string str = t->getFileName();
         NSString* cellContent = [[NSString alloc] initWithCString:str.c_str() encoding:NSUTF8StringEncoding];
-        [cellContent autorelease];
+        /* JPHARC [cellContent autorelease]; */
         return cellContent;
     }
     
@@ -291,7 +291,7 @@
     {
         std::string str = t->getParameterName();
         NSString* cellContent = [[NSString alloc] initWithCString:str.c_str() encoding:NSUTF8StringEncoding];
-        [cellContent autorelease];
+        /* JPHARC [cellContent autorelease]; */
         return cellContent;
     }
     
@@ -299,7 +299,7 @@
     {
         int n = (int)t->getBurnin();
         NSNumber* cellContent = [[NSNumber alloc] initWithInt:n];
-        [cellContent autorelease];
+        /* JPHARC [cellContent autorelease]; */
         return cellContent;
     }
     
@@ -307,7 +307,7 @@
     {
         double n = t->getMean();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
-        [cellContent autorelease];
+        /* JPHARC [cellContent autorelease]; */
         return cellContent;
     }
     
@@ -315,7 +315,7 @@
     {
         double n = t->getSem();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
-        [cellContent autorelease];
+        /* JPHARC [cellContent autorelease]; */
         return cellContent;
     }
     
@@ -323,7 +323,7 @@
     {
         double n = t->getEss();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
-        [cellContent autorelease];
+        /* JPHARC [cellContent autorelease]; */
         return cellContent;
     }  
     
@@ -624,10 +624,10 @@
     
     // adding a column with the the check box 
     NSString* identifier = [[NSString alloc] initWithString:@"Include"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     NSTableColumn* col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
@@ -635,7 +635,7 @@
     [header setObjectValue:identifier];
     // set the default cell for the column
     NSButtonCell* bCell = [[NSButtonCell alloc] init];
-    [bCell autorelease];
+    /* JPHARC [bCell autorelease]; */
     [bCell setTitle:@""];
     [bCell setEditable:YES];
     [bCell setButtonType:NSSwitchButton];
@@ -653,10 +653,10 @@
     
     // adding a column with the file name
     identifier = [[NSString alloc] initWithString:@"File name"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
@@ -664,7 +664,7 @@
     [header setObjectValue:identifier];
     // set the default cell for the column
     NSTextFieldCell* tCell = [[NSTextFieldCell alloc] init];
-    [tCell autorelease];
+    /* JPHARC [tCell autorelease]; */
     [tCell setAlignment:NSLeftTextAlignment];
     [col setDataCell:tCell];
     // add the table column to the table view
@@ -672,17 +672,17 @@
     
     // adding a column with the parameter name
     identifier = [[NSString alloc] initWithString:@"Parameter name"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
     header = [col headerCell];
     [header setObjectValue:identifier];
     tCell = [[NSTextFieldCell alloc] init];
-    [tCell autorelease];
+    /* JPHARC [tCell autorelease]; */
     [tCell setAlignment:NSLeftTextAlignment];
     [col setDataCell:tCell];
     // add the table column to the table view
@@ -691,10 +691,10 @@
     
     // adding a column with the burnin
     identifier = [[NSString alloc] initWithString:@"Burnin"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
@@ -702,7 +702,7 @@
     [header setObjectValue:identifier];
     // set the default cell for the column
     tCell = [[NSTextFieldCell alloc] init];
-    [tCell autorelease];
+    /* JPHARC [tCell autorelease]; */
     [tCell setAlignment:NSRightTextAlignment];
     [col setDataCell:tCell];
     // add the table column to the table view
@@ -710,10 +710,10 @@
     
     // adding a column with the mean
     identifier = [[NSString alloc] initWithString:@"Mean"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
@@ -721,7 +721,7 @@
     [header setObjectValue:identifier];
     // set the default cell for the column
     tCell = [[NSTextFieldCell alloc] init];
-    [tCell autorelease];
+    /* JPHARC [tCell autorelease]; */
     [tCell setAlignment:NSRightTextAlignment];
     [col setDataCell:tCell];
     // add the table column to the table view
@@ -729,10 +729,10 @@
     
     // adding a column with the SEM
     identifier = [[NSString alloc] initWithString:@"SEM"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
@@ -740,7 +740,7 @@
     [header setObjectValue:identifier];
     // set the default cell for the column
     tCell = [[NSTextFieldCell alloc] init];
-    [tCell autorelease];
+    /* JPHARC [tCell autorelease]; */
     [tCell setAlignment:NSRightTextAlignment];
     [col setDataCell:tCell];
     // add the table column to the table view
@@ -748,10 +748,10 @@
     
     // adding a column with the ESS
     identifier = [[NSString alloc] initWithString:@"ESS"];
-    [identifier autorelease];
+    /* JPHARC [identifier autorelease]; */
     // create a table column
     col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-    [col autorelease];
+    /* JPHARC [col autorelease]; */
     [col setWidth:width];
     [col setMinWidth:minWidth];
     // set the value for the table header
@@ -759,7 +759,7 @@
     [header setObjectValue:identifier];
     // set the default cell for the column
     tCell = [[NSTextFieldCell alloc] init];
-    [tCell autorelease];
+    /* JPHARC [tCell autorelease]; */
     [tCell setAlignment:NSRightTextAlignment];
     [col setDataCell:tCell];
     // add the table column to the table view
@@ -769,10 +769,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"Stationarity test"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -780,7 +780,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -791,10 +791,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"Geweke test"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -802,7 +802,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -813,10 +813,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"Heidelberger-Welch test"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -824,7 +824,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -835,10 +835,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"Raftery-Lewis test"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -846,7 +846,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -857,10 +857,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"ESS > k"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -868,7 +868,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -879,10 +879,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"SEM < k"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -890,7 +890,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -901,10 +901,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"IID Sampling Theory between chains"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -912,7 +912,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -923,10 +923,10 @@
     {
         // adding a column with the column name
         identifier = [[NSString alloc] initWithString:@"Gelman-Rubin test"];
-        [identifier autorelease];
+        /* JPHARC [identifier autorelease]; */
         // create a table column
         col = [[NSTableColumn alloc] initWithIdentifier:identifier];
-        [col autorelease];
+        /* JPHARC [col autorelease]; */
         [col setWidth:width];
         [col setMinWidth:minWidth];
         // set the value for the table header
@@ -934,7 +934,7 @@
         [header setObjectValue:identifier];
         // set the default cell for the column
         tCell = [[NSTextFieldCell alloc] init];
-        [tCell autorelease];
+        /* JPHARC [tCell autorelease]; */
         [tCell setAlignment:NSCenterTextAlignment];
         [col setDataCell:tCell];
         // add the table column to the table view
@@ -1000,11 +1000,11 @@
 		// copy the traces to this control window's tool
 //        data = [data initWithArray:[t data]];
 //        data = [data initWithArray:[t data] copyItems:YES];
-        data = [t data];
+        /* JPHARC data = [t data];
         for (int i=0; i<[t data]->size(); i++) 
         {
             [included addObject:[[NSNumber alloc] initWithBool:YES]];
-        }
+        } */
         
 //        NSLog(@"Diagnostic tool has now %lu traces.", [data count]);
 

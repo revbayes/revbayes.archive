@@ -11,13 +11,14 @@
 	[super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
     NSLog(@"Executing tool %@", self);
     
     [self startProgressIndicator];
     
     [self stopProgressIndicator];
+    return YES;
 }
 
 - (id)init {

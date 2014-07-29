@@ -62,8 +62,8 @@
         partitionType   = [aDecoder decodeIntForKey:@"partitionType"];
         partitionName   = [aDecoder decodeObjectForKey:@"partitionName"];
         taxaInPartition = [aDecoder decodeObjectForKey:@"taxaInPartition"];
-        [partitionName retain];
-        [taxaInPartition retain];
+        /* JPHARC [partitionName retain];
+        [taxaInPartition retain]; */
 		}
 	return self;
 }

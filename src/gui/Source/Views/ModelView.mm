@@ -45,7 +45,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d);
         [pp setParentParm:x];
         [pp setChildParm:y];
         [selectedLinks addObject:pp];
-        [pp release];
+        /* JPHARC [pp release]; */
         }
 }
 
@@ -168,12 +168,12 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d);
 #	endif
 }
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
     [parameterDrawObj release];
     [selectedLinks release];
 	[super dealloc];
-}
+} */
 
 - (float)distanceFromPoint:(NSPoint)a toPoint:(NSPoint)b {
 
@@ -385,7 +385,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 				textSize.origin.y = pr.origin.y + padding;
 				NSPoint p = textSize.origin;
 				[attrString drawAtPoint:p];
-				[attrString release];
+				/* JPHARC [attrString release]; */
 				[element setMinPlateSize:NSMakeSize(textSize.size.width + 2.0*padding, textSize.size.height + 2.0*padding)];
 				}
 				
@@ -615,7 +615,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 				textSize.origin.y = pr.origin.y + padding;
 				NSPoint p = textSize.origin;
 				[attrString drawAtPoint:p];
-				[attrString release];
+				/* JPHARC [attrString release]; */
 				[element setMinPlateSize:NSMakeSize(textSize.size.width + 2.0*padding, textSize.size.height + 2.0*padding)];
 				}
             
@@ -845,7 +845,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
             p.x += drawingRect.origin.x;
             p.y += drawingRect.origin.y;
 			[attrString drawAtPoint:p];
-			[attrString release];
+			/* JPHARC [attrString release]; */
 			}
         }
         
@@ -870,11 +870,11 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 			p.y -= (ITEM_IMAGE_SIZE * scaleFactor * 0.5 + textSize.size.height * 0.75);
 
 			[attrString drawAtPoint:p];
-			[attrString release];
+			/* JPHARC [attrString release]; */
 			}
 		}                                
     
-    [shadow release];
+    /* JPHARC [shadow release]; */
 
 	// draw a sweep for multiple selection
 	if (sweepAction == YES)
@@ -1038,7 +1038,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
         NSString* tempName = @"TEMP";
         NSAttributedString* tempText = [[NSAttributedString alloc] initWithString:tempName attributes:attrs];
         parmNameHeight = [tempText boundingRectWithSize:NSMakeSize(1e10, 1e10) options:nil].size.height;
-        [tempText release];
+        /* JPHARC [tempText release]; */
         
         // allocate an NSView object for drawing parameters
         parameterDrawObj = [[PaletteView alloc] initWithFrame:[self frame]];
@@ -1064,10 +1064,10 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSData *colorAsData = [defaults objectForKey:RB_ModelBgrndColorKey];
         bkgrndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-        [bkgrndColor retain];
+        /* JPHARC [bkgrndColor retain]; */
         colorAsData = [defaults objectForKey:RB_ModelGridColorKey];
         gridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-        [gridColor retain];
+        /* JPHARC [gridColor retain]; */
         
         [self initializeDrawingInfo];
 		}
@@ -1660,7 +1660,7 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
 
         // add the parm to the array of parameters
 		[itemsPtr addObject:newParm];
-        [newParm release];
+        /* JPHARC [newParm release]; */
 		
 		// reset the bottom right corner
 		[self setCorners];

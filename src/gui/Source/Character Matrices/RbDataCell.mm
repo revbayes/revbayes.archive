@@ -13,10 +13,10 @@
 @synthesize numStates;
 @synthesize val;
 
-- (void)dealloc {
+/* JPHARC - (void)dealloc {
 
 	[super dealloc];
-}
+} */
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
@@ -221,7 +221,7 @@
 		dataType   = [aDecoder decodeIntForKey:@"dataType"];
 		numStates  = [aDecoder decodeIntForKey:@"numStates"];
 		val        = [aDecoder decodeObjectForKey:@"val"];
-		[val retain];
+		/* JPHARC [val retain]; */
 		}
 	return self;
 }

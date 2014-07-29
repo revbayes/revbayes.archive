@@ -110,7 +110,7 @@
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"scaleFactorChangeNotification" object:nil];
-	[super dealloc];
+	/* JPHARC [super dealloc]; */
 }
 
 - (void)dfsForTool:(Tool*)t forArray:(NSMutableArray*)dpa {
@@ -317,7 +317,7 @@
 				textSize.origin.y = pr.origin.y + padding;
 				NSPoint p = textSize.origin;
 				[attrString drawAtPoint:p];
-				[attrString release];
+				/* JPHARC [attrString release]; */
 				[element setMinLoopSize:NSMakeSize(textSize.size.width + 2.0*padding, textSize.size.height + 2.0*padding)];
 				}
 				
@@ -439,23 +439,29 @@
 				}
             }
             
+#if 1
         if ([[element className] isEqualToString:@"ToolParsimony"] == YES)
             {
             if ( [element numTreesVisited] > 0 )
                 {
-                NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:(14.0*scaleFactor)], nil]
-                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
-				NSString* numString = [NSString stringWithFormat:@"%d", [element numTreesVisited]];
-				NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:numString attributes:attrs];
-                NSRect numRect = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:(NSStringDrawingUsesLineFragmentOrigin)];
-                numRect.origin = drawingRect.origin;
-                numRect.origin.x += drawingRect.size.width * 0.5 - numRect.size.width * 0.5;
-                numRect.origin.y += drawingRect.size.height * 0.5 - numRect.size.height * 0.5;
-                [attrString drawAtPoint:numRect.origin];
-                [attrString release];
+                
+                @autoreleasepool
+                    {
+                    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:(14.0*scaleFactor)], nil]
+                                          forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+                    NSString* numString = [NSString stringWithFormat:@"%d", [element numTreesVisited]];
+                    NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:numString attributes:attrs];
+                    NSRect numRect = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:(NSStringDrawingUsesLineFragmentOrigin)];
+                    numRect.origin = drawingRect.origin;
+                    numRect.origin.x += drawingRect.size.width * 0.5 - numRect.size.width * 0.5;
+                    numRect.origin.y += drawingRect.size.height * 0.5 - numRect.size.height * 0.5;
+                    [attrString drawAtPoint:numRect.origin];
+                    /* JPHARC [attrString release]; */
+                    }
+
                 }
             }
-
+#endif
 		// draw the information button in the lower-right corner of the tool
 		NSRect iRect = informationRect[scaleIdx];
 		iRect.origin = NSMakePoint(drawingRect.origin.x + rOffset[scaleIdx].x, drawingRect.origin.y + rOffset[scaleIdx].y);
@@ -634,7 +640,7 @@
             [[[NSColor darkGrayColor] colorWithAlphaComponent:0.75] set];
             [NSBezierPath fillRect:tipRect];
 			[attrString drawAtPoint:p];
-			[attrString release];
+			/* JPHARC [attrString release]; */
             }
         }
         
@@ -1277,10 +1283,10 @@
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         NSData* colorAsData = [defaults objectForKey:RB_AnalysisBgrndColorKey];
         bkgrndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-        [bkgrndColor retain];
+        /* JPHARC [bkgrndColor retain]; */
         colorAsData = [defaults objectForKey:RB_AnalysisGridColorKey];
         gridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
-        [gridColor retain];
+        /* JPHARC [gridColor retain]; */
 		}
     return self;
 }
@@ -1423,7 +1429,7 @@
     NSBezierPath* path = [NSBezierPath bezierPath];
     [path moveToPoint:NSMakePoint(0.0, 0.0)];
     [path appendBezierPathWithGlyphs:glyphs count:range.length inFont:numFont];
-    [textview release];
+    /* JPHARC [textview release]; */
     
     return path;
 }
@@ -2006,7 +2012,7 @@
 
         // add the tool to the array of tools
 		[itemsPtr addObject:newTool];
-        [newTool release];
+        /* JPHARC [newTool release]; */
         
         // set the view for the tool
         [newTool setAnalysisView:self];

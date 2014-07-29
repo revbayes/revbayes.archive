@@ -77,7 +77,7 @@
 - (void)dealloc {
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	[super dealloc];
+	/* JPHARC [super dealloc]; */
 }
 
 - (IBAction)editButtonAction:(id)sender {

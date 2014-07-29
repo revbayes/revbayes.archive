@@ -14,7 +14,7 @@
 
 @interface YRKSpinningProgressIndicator ()
 
-- (void)updateFrame:(NSTimer *)timer;
+- (void)updateFrame:(NSTimer*)timer;
 - (void)animateInBackgroundThread;
 - (void)actuallyStartAnimation;
 - (void)actuallyStopAnimation;
@@ -25,14 +25,14 @@
 
 @implementation YRKSpinningProgressIndicator
 
-@synthesize color = _foreColor;
-@synthesize backgroundColor = _backColor;
-@synthesize drawsBackground = _drawsBackground;
-@synthesize displayedWhenStopped = _displayedWhenStopped;
+@synthesize color                 = _foreColor;
+@synthesize backgroundColor       = _backColor;
+@synthesize drawsBackground       = _drawsBackground;
+@synthesize displayedWhenStopped  = _displayedWhenStopped;
 @synthesize usesThreadedAnimation = _usesThreadedAnimation;
-@synthesize indeterminate = _isIndeterminate;
-@synthesize doubleValue = _currentValue;
-@synthesize maxValue = _maxValue;
+@synthesize indeterminate         = _isIndeterminate;
+@synthesize doubleValue           = _currentValue;
+@synthesize maxValue              = _maxValue;
 
 
 #pragma mark Init
@@ -42,8 +42,8 @@
     if ( (self = [super initWithFrame:frame]) ) 
         {
         _position = 0;
-        _numFins = 12;
-        _finColors = (NSColor**)calloc(_numFins, sizeof(NSColor*));
+        _numFins = NUM_FINS;
+        //_finColors = (NSColor**)calloc(_numFins, sizeof(NSColor*));
         
         _isAnimating = NO;
         _isFadingOut = NO;
@@ -64,11 +64,11 @@
 
 - (void) dealloc {
 
-    for (int i=0; i<_numFins; i++) 
+    /*for (int i=0; i<_numFins; i++)
         {
         [_finColors[i] release];
         }
-    free(_finColors);
+    free(_finColors);*/
     [_foreColor release];
     [_backColor release];
     if (_isAnimating) [self stopAnimation:self];
@@ -151,16 +151,14 @@
         CGFloat circleRadius = (theMaxSize - lineWidth) / 2.1;
         NSPoint circleCenter = NSMakePoint(0, 0);
         [_foreColor set];
-        NSBezierPath *path = [[NSBezierPath alloc] init];
-        [path setLineWidth:lineWidth];
-        [path appendBezierPathWithOvalInRect:NSMakeRect(-circleRadius, -circleRadius, circleRadius*2, circleRadius*2)];
-        [path stroke];
-        [path release];
-        path = [[NSBezierPath alloc] init];
-        [path appendBezierPathWithArcWithCenter:circleCenter radius:circleRadius startAngle:90 endAngle:90-(360*(_currentValue/_maxValue)) clockwise:YES];
-        [path lineToPoint:circleCenter] ;
-        [path fill];
-        [path release];
+        NSBezierPath* path1 = [NSBezierPath bezierPath];
+        [path1 setLineWidth:lineWidth];
+        [path1 appendBezierPathWithOvalInRect:NSMakeRect(-circleRadius, -circleRadius, circleRadius*2, circleRadius*2)];
+        [path1 stroke];
+        NSBezierPath* path2 = [NSBezierPath bezierPath];
+        [path2 appendBezierPathWithArcWithCenter:circleCenter radius:circleRadius startAngle:90 endAngle:90-(360*(_currentValue/_maxValue)) clockwise:YES];
+        [path2 lineToPoint:circleCenter] ;
+        [path2 fill];
         }
 
     [NSGraphicsContext restoreGraphicsState];
@@ -432,30 +430,33 @@
 
 - (void)animateInBackgroundThread {
 
-	NSAutoreleasePool* animationPool = [[NSAutoreleasePool alloc] init];
-
-	// Set up the animation speed to subtly change with size > 32.
-	// int animationDelay = 38000 + (2000 * ([self bounds].size.height / 32));
-    
-    // Set the rev per minute here
-    int omega = 100; // RPM
-    int animationDelay = 60*1000000/omega/_numFins;
-	int poolFlushCounter = 0;
-    
-	do 
+    @autoreleasepool
         {
-		[self updateFrame:nil];
-		usleep(animationDelay);
-		poolFlushCounter++;
-		if (poolFlushCounter > 256) 
+        /* JPHARC NSAutoreleasePool* animationPool = [[NSAutoreleasePool alloc] init]; */
+
+        // Set up the animation speed to subtly change with size > 32.
+        // int animationDelay = 38000 + (2000 * ([self bounds].size.height / 32));
+        
+        // Set the rev per minute here
+        int omega = 100; // RPM
+        int animationDelay = 60*1000000/omega/_numFins;
+        /* JPHARC int poolFlushCounter = 0; */
+        
+        do 
             {
-			[animationPool drain];
-			animationPool = [[NSAutoreleasePool alloc] init];
-			poolFlushCounter = 0;
-            }
-        } while (![[NSThread currentThread] isCancelled]); 
-    
-	[animationPool release];
+            [self updateFrame:nil];
+            usleep(animationDelay);
+            /* JPHARC  poolFlushCounter++;
+            if (poolFlushCounter > 256) 
+                {
+                [animationPool drain];
+                animationPool = [[NSAutoreleasePool alloc] init];
+                poolFlushCounter = 0;
+                } */
+            } while (![[NSThread currentThread] isCancelled]); 
+        
+        /* JPHARC [animationPool release]; */
+        }
 }
 
 @end
