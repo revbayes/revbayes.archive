@@ -237,17 +237,22 @@ The data file contains a matrix of binary characters corresponding to the observ
 \noindent \\ \impmark  Open the file \texttt{examples/my\_data.txt}.
 
 \begin{framed} \begin{lstlisting}
-50 33
-t1 000000000000000000110000001111000
-t2 000000000000000000011000001011010
-t3 000000000000000000011000001011010
-t4 000000000000000000000000010001000
-t5 000000000001000000000000010001000
-t6 000000000000000000101000001011000
-t7 000000000000010000001100010000000
-t8 000000000000010000001100010010000
-t9 000001000000000000011000011110000
-...
+#NEXUS
+
+begin data;
+  dimensions ntax=19 nchar=4;
+  format datatype=standard symbols = "01";
+  matrix
+    P_fauriei2          0100
+    P_grandiflora_Kal2  1000
+    ...
+    P_wawraeDL7428      1000	
+  ;
+end;
+
+Begin trees;
+	TREE tree1 = ((((((((P_hawaiiensis_WaikamoiL1:1.0853,P_mauiensis_Eke:1.0853)N2:0.7964,(P_fauriei2:1.3826,P_hathewayi_1:1.3826)N5:0.4991)N6:0.1986,(P_kaduana_PuuKukuiAS:1.9803,P_mauiensis_PepeAS:1.9803)N9:0.1)N10:0.3762,P_kaduana_HawaiiLoa:2.4565)N12:0.3398,(P_greenwelliae07:1.2715,P_greenwelliae907:1.2715)N15:1.5248)N16:1.8984,((((P_mariniana_MauiNui:2.241,P_hawaiiensis_Makaopuhi:2.241)N19:0.8236,P_mariniana_Oahu:3.0646)N21:0.2893,P_mariniana_Kokee2:3.3539)N23:0.5171,P_wawraeDL7428:3.871)N25:0.8237)N26:0.8255,(P_grandiflora_Kal2:2.7864,P_hobdyi_Kuia:2.7864)N29:2.7338)N30:0.3229,((P_hexandra_K1:2.6568,P_hexandra_M:2.6568)N33:0.5204,P_hexandra_Oahu:3.1772)N35:2.6659)N36;
+End;
 \end{lstlisting}
 \end{framed}
 
@@ -335,7 +340,7 @@ For example, taxon \texttt{t4} is present in areas 26 and 30 but absent everywhe
 %The symmetry of uniform discretization offers some aid to easily identify which species are present in which areas.
 %The following Python script generates a geodesic tiling, excludes water (or land) areas, converts species occurrence data into presence-absence characters, and writes files for the data matrix and area coordinates (below).
 
-\subsection{Area coordinates}
+\subsection{Geography}
 
 Each area is assigned a point to represent its geographical coordinates.
 The distances between these coordinates inform to distance-dependent dispersal parameter for range expansion events.
@@ -347,18 +352,21 @@ Each remaining line reports the latitude and longitude in order of the areas in 
 
 \begin{framed}
 \begin{lstlisting}
-# 0.0
--12.5	132.5
--12.5	142.5
--17.5	122.5
--17.5	127.5
--17.5	132.5
--17.5	137.5
--17.5	142.5
--22.5	117.5
--22.5	122.5
--22.5	127.5
-...
+
+{
+  "name":"HawaiianArchipelago10my",
+  "epochs":
+  [{
+    "name":"epoch1",
+    "start_age":10.0,
+    "end_age":0.0,
+    "areas":
+      [{ "name": "Kauai",  "latitude":22.0833, "longitude": -159.5000, "dispersalValues": [ 1,0,0,0 ] },
+       { "name": "Oahu",   "latitude":21.4722, "longitude": -157.9772, "dispersalValues": [ 0,0,0,0 ] },
+       { "name": "Maui",   "latitude":20.8000, "longitude": -156.3333, "dispersalValues": [ 0,0,0,0 ] },
+       { "name": "Hawaii", "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 0,0,0,0 ] }]
+  }]
+}
 \end{lstlisting}
 \end{framed}
 
