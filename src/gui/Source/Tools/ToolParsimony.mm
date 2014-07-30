@@ -29,12 +29,6 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
-
-    [bestTrees release];
-    [super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[super encodeWithCoder:aCoder];
@@ -172,7 +166,6 @@
             [nde setIsLeaf:YES];
             [availableTips addObject:nde];
             [nodeContainer addObject:nde];
-            [nde release];
             }
         }
     for (int i=numTaxa; i<numNodes; i++)
@@ -181,7 +174,6 @@
         [nde setIndex:i];
         [availableInts addObject:nde];
         [nodeContainer addObject:nde];
-        [nde release];
         }
     
     // set up a simple three species tree
@@ -234,7 +226,6 @@
     for (size_t i=0; i<[bestTrees count]; i++)
         {
         NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
-        [treeNodeData retain];
         GuiTree* newTree = [[GuiTree alloc] init];
         [newTree setNodesToArray:treeNodeData];
         Node* newRoot = nil;
@@ -251,9 +242,6 @@
         [treeSetTool addTreeToSet:newTree];
         }
 
-    if ( [alignedData count] > 1 )
-        [d release];
-    
     return YES;
 }
 

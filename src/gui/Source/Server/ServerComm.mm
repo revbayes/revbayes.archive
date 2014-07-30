@@ -20,20 +20,9 @@
 
 - (void)cleanup {
 
-    if (localModelNames != nil)
-        [localModelNames release];
-    localModelNames = nil;
-    if (curatedModelNames != nil)
-        [curatedModelNames release];
-    curatedModelNames = nil;
-    if (modelsToTransfer != nil)
-        [modelsToTransfer release];
-    modelsToTransfer = nil;
-   
 	NSConnection* connection = [proxy connectionForProxy];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[connection invalidate];
-	[proxy release];
 	proxy = nil;
     connectedToServer = NO;
 }
@@ -48,12 +37,11 @@
 	NSConnection* connection = [NSConnection connectionWithReceivePort:nil sendPort:sendPort];
 	[connection setRequestTimeout:10.0];
 	[connection setReplyTimeout:10.0];
-	[sendPort release];
 	
 	@try 
 		{
-		proxy = [[connection rootProxy] retain];
-		
+		proxy = [connection rootProxy];
+        
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(connectionDown:) name:NSConnectionDidDieNotification object:connection];
 		
 		[proxy setProtocolForProxy:@protocol(RevBayesServing)];
@@ -149,8 +137,6 @@
 - (void)curatedModelNames:(in bycopy NSMutableArray*)message {
 
     // get the curated models
-    if (curatedModelNames != nil)
-        [curatedModelNames release];
     curatedModelNames = [[NSMutableArray alloc] initWithArray:message];
     
     // print the list of curated models
@@ -160,11 +146,6 @@
     int i = 1;
     while ( (element = [modelListEnum nextObject]) )
         NSLog(@" *    Curated model %d: = \"%@\"", i++, element);
-}
-
-- (void)dealloc {
-
-	[super dealloc];
 }
 
 - (void)disconnectFromServer {
@@ -235,8 +216,6 @@
 - (void)getListOfClientsModels {
 
     // allocate a mutable array that holds the names of the models
-    if (localModelNames != nil)
-        [localModelNames release];
 	localModelNames = [[NSMutableArray alloc] init];
 
     // read the names of the files in the support folder for RevBayes
@@ -267,8 +246,6 @@
 - (void)getListOfModelsToDownload {
 
 	// initialize a list of models that need to be transferred from the remote location
-    if (modelsToTransfer != nil)
-        [modelsToTransfer release];
 	modelsToTransfer = [[NSMutableArray alloc] initWithCapacity:0];
     id element;
     NSEnumerator* modelListEnum = [curatedModelNames objectEnumerator];

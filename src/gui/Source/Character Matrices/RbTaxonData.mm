@@ -25,13 +25,6 @@
 	return [data objectAtIndex:idx];
 }
 
-- (void)dealloc {
-
-	[data release];
-	[taxonName release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
     [aCoder encodeInt:dataType      forKey:@"dataType"];
@@ -60,8 +53,6 @@
         dataType  = [aDecoder decodeIntForKey:@"dataType"];
 		data      = [aDecoder decodeObjectForKey:@"data"];
 		taxonName = [aDecoder decodeObjectForKey:@"taxonName"];
-		[data retain];
-		[taxonName retain];
 		}
 	return self;
 }
@@ -154,9 +145,6 @@
         tn = [tn stringByReplacingOccurrencesOfString:@"\'" withString:@""];
         tn = [tn stringByReplacingOccurrencesOfString:@"\"" withString:@""];
         tn = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-        [tn retain];
-        taxonName = tn;
-        //[taxonName release];
         }
 }
 
