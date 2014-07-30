@@ -12,7 +12,7 @@
 
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (void)showControlPanel;

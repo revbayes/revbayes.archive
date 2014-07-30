@@ -12,8 +12,8 @@
 	AnalysisTools*               myAnalysis;
 }
 
+@property (nonatomic,strong,getter=string,setter=setString:) NSMutableAttributedString* mString;
+
 - (id)initWithAnalysis:(AnalysisTools*)a;
-- (void)setString:(NSMutableAttributedString*)newValue;
-- (NSMutableAttributedString*)string;
 
 @end

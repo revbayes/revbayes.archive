@@ -10,11 +10,6 @@
     return [[DistributionStudentGui alloc] initWithDist:self];
 }
 
-- (void)dealloc {
-
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
 	[super encodeWithCoder:aCoder];
@@ -23,8 +18,7 @@
 
 - (id)init {
 
-	[self initWithParm:nil];
-	return self;
+	return [self initWithParm:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
