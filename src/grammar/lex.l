@@ -69,6 +69,12 @@ function                                {
 #endif
                                             return FUNCTION;
                                         }
+procedure                               {
+#ifdef DEBUG_BISON_FLEX
+                                            printf("Flex found 'procedure'\n");
+#endif
+                                            return PROCEDURE;
+                                        }
 class                                   {
 #ifdef DEBUG_BISON_FLEX
                                             printf("Flex found 'class'\n");
@@ -183,11 +189,11 @@ deterministic                           {
 #endif
                                             return MOD_DETERMINISTIC;
                                         }
-mutable                                 {
+protected                               {
 #ifdef DEBUG_BISON_FLEX
-                                            printf("Flex found 'mutable'\n");
+                                            printf("Flex found 'protected'\n");
 #endif
-                                            return MOD_MUTABLE;
+                                            return PROTECTED;
                                         }
 {DIGIT}+"."{DIGIT}*({EXP})?             {
 #ifdef DEBUG_BISON_FLEX
