@@ -50,15 +50,17 @@ namespace RevBayesCore {
         const std::vector<double>&  getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
 
         void                            updateMatrix(void);
+        void setMutationRates(const std::vector<double>& mr);
+        void setSelectionCoefficients(const std::vector<double>& sc);
+        
         
     private:
         size_t N;							 //!< Number of individuals in idealized population
         size_t matrixSize;                  //!< Number of elements in a row or column of the rate matrix 
         std::vector < std::vector < double > > mu;			//!< Matrix of 12 mutation rates and 0s elsewhere
         std::vector < double > s;					//!< Vector of 4 selection coefficients
-        //	std::vector < double > pi;					//!< Vector of 4 root frequencies
-        double precision;                  //!< Precision for exponentiation through repeated squaring 
-        std::vector<double>                 stationaryFreqs;                                                                            //!< Holds the stationary frequencies
+        double precision;                  //!< Precision for exponentiation through repeated squaring
+        std::vector<double>                 stationaryFreqs;        //!< Holds the stationary frequencies
 
         void buildRateMatrix(void);
         void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
