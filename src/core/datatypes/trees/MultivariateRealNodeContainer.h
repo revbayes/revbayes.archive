@@ -37,6 +37,7 @@ namespace RevBayesCore {
         const TimeTree*                             getTimeTree() const {return tree;}
         size_t                                      getDim() const {return getNumberOfColumns();}
         
+        bool                                        checkTreePointer(const TimeTree* in) const {return (in == tree);}
 
         // MultivariateRealNodeContainer functions
         double                                      getRootVal(int k) const;

@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class ConjugateInverseWishartBrownianMove : public CompoundMove {
         
     public:
-        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                         //!< Constructor
+        ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, StochasticNode<TimeTree>* t, TypedDagNode<double>* k, TypedDagNode<int>* d, double w);                         //!< Constructor
         
         // Basic utility functions
         ConjugateInverseWishartBrownianMove*         clone(void) const;                                                                  //!< Clone this object.
@@ -46,6 +46,7 @@ namespace RevBayesCore {
         
         StochasticNode<MatrixRealSymmetric>*            sigma;
         StochasticNode<MultivariateRealNodeContainer>*   process;
+        StochasticNode<TimeTree>*                       tau;
         TypedDagNode<double>*                       kappa;
         TypedDagNode<int>*                          df;
         

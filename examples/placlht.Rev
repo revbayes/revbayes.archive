@@ -1,4 +1,9 @@
-# Test file for mcmc on gtr model with primates dataset
+#
+# Tutorial -- the phylogenetic comparative method
+# Correlation analysis of life-history traits in placental mammals
+# Nicolas Lartillot -- July 2014
+#
+
 
 # read the data
 # the readCharacter function returns a vector of matrices. We just take the first one
@@ -48,13 +53,6 @@ index <- index + 1
 
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
-
-br.newick(1)
-
-""
-br
-""
-
 
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
