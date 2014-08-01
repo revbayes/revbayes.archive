@@ -52,7 +52,7 @@ br ~ mvtBrownian(tau,sigma=sigma)
 #index <- index + 1
 
 # conjugate move
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, tau=tau, kappa=kappa, df=df, weight=1) 
 index <- index + 1
 
 br.clampAt(contData,2,1)
@@ -92,8 +92,8 @@ seq.clamp(data)
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma, br)
-monitors[2] <- filemonitor(filename="placfreetimes1.prec",printgen=10, separator = "	", sigma, br)
+monitors[1] <- screenmonitor(printgen=10, separator = "	", sigma)
+monitors[2] <- filemonitor(filename="placfreetimes1.prec",printgen=10, separator = "	", sigma)
 monitors[3] <- modelmonitor(filename="placfreetimes1.log",printgen=10, separator = "	")
  
 "mcmc"
