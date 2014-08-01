@@ -315,6 +315,7 @@
 #include "Func_readTrees.h"
 #include "Func_readTreeTrace.h"
 #include "Func_source.h"
+#include "Func_TaxonReader.h"
 #include "Func_write.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
@@ -939,6 +940,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
+        addFunction( "readTaxonData",               new Func_TaxonReader()                 );
         addFunction( "readTrace",                   new Func_readTrace()                   );
         addFunction( "readTrees",                   new Func_readTrees()                   );
         addFunction( "readTreeTrace",               new Func_readTreeTrace()               );

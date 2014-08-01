@@ -22,7 +22,7 @@ namespace RevLanguage {
         virtual ~Dist_uniformTimeTree();             //!< Virtual destructor
         
         // Basic utility functions
-        Dist_uniformTimeTree*                    clone(void) const;                                                              //!< Clone the object
+        Dist_uniformTimeTree*                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
