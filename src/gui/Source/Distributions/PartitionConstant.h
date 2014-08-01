@@ -14,11 +14,10 @@
     
 @property (nonatomic,strong) TaxonBipartition* partition;
 @property (nonatomic,strong) Parm*             constantParm;
+@property (nonatomic,strong) Value*            value;
 
 - (PartitionConstant*)clone;
 - (id)initWithParm:(Parm*)p;
 - (id)initWithPartitionConstant:(PartitionConstant*)pc;
-- (void)setValue:(Value*)v;
-- (Value*)value;
 
 @end

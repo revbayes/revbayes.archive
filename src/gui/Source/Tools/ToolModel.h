@@ -26,9 +26,8 @@
 - (NSMutableArray*)allocateParms;
 - (int)calculateNumTaxa;
 - (void)closeControlPanel;
-- (void)deleteParms;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (void)exportModel;
 - (void)importModel;
 - (id)initWithCoder:(NSCoder*)aDecoder;
