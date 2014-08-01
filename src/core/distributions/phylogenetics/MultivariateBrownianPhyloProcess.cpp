@@ -117,7 +117,7 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 
 void MultivariateBrownianPhyloProcess::redrawValue(void) {
     simulate();
-    corruptAll();
+    // corruptAll();
 }
 
 void MultivariateBrownianPhyloProcess::simulate() {
@@ -187,6 +187,7 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     }
 }
 
+/*
 void MultivariateBrownianPhyloProcess::corruptAll() {
     recursiveCorruptAll(tau->getValue().getRoot());
 }
@@ -257,3 +258,4 @@ void MultivariateBrownianPhyloProcess::restoreSpecialization( DagNode *restorer 
     dagNode->clearTouchedElementIndices();    
 }
 
+*/
