@@ -12,16 +12,17 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "ConjugateInverseWishartBrownianMove.h"
-
+#include "TimeTree.h"
 #include "DistributionInverseWishart.h"
 
 #include <cmath>
 
 using namespace RevBayesCore;
 
-ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
+ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(StochasticNode<MatrixRealSymmetric>* s, StochasticNode<MultivariateRealNodeContainer>* p, StochasticNode<TimeTree>* t, TypedDagNode<double>* k, TypedDagNode<int>* d, double w) : CompoundMove(std::vector<DagNode*>(),w,false)    {
 
     process = p;
+    tau = t;
     sigma = s;
     kappa = k;
     df = d;
@@ -30,6 +31,7 @@ ConjugateInverseWishartBrownianMove::ConjugateInverseWishartBrownianMove(Stochas
     nodes.insert( sigma );
     nodes.insert( kappa );
     nodes.insert( df );
+    nodes.insert( tau );
 }
 
 ConjugateInverseWishartBrownianMove* ConjugateInverseWishartBrownianMove::clone( void ) const {
@@ -56,6 +58,10 @@ double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
     bksigma = sigma->getValue();
 
     // calculate sufficient statistics based on current process
+    if (! process->getValue().checkTreePointer(&tau->getValue()))   {
+        std::cerr << "error: Non matching tree\n";
+        exit(1);
+    }
     int nnode = 0;
     MatrixRealSymmetric A = process->getValue().getBranchContrasts(nnode);    
     for (size_t i=0; i<dim; i++)    {
@@ -112,5 +118,7 @@ void ConjugateInverseWishartBrownianMove::swapNode(DagNode *oldN, DagNode *newN)
         kappa = static_cast<TypedDagNode<double>*> (newN);
     if (oldN == df)
         df = static_cast<TypedDagNode<int>*> (newN);    
+    if (oldN == tau)
+        tau = static_cast<StochasticNode<TimeTree>*> (newN);    
 }
 

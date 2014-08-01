@@ -53,6 +53,8 @@ double MultivariateRealNodeContainerSlidingMove::performSimpleMove( void ) {
     
     storedValue = v[nodeindex][compindex];
     
+    bk = variable->getValue();
+    
     double u = rng->uniform01();
     double slidingFactor = lambda * ( u - 0.5 );
 
@@ -60,14 +62,14 @@ double MultivariateRealNodeContainerSlidingMove::performSimpleMove( void ) {
         v[nodeindex][compindex] += slidingFactor;
     }
         
-    variable->addTouchedElementIndex(nodeindex);
+    // variable->addTouchedElementIndex(nodeindex);
     double lnHastingsratio = 0;
     
     return lnHastingsratio;
 }
 
 void MultivariateRealNodeContainerSlidingMove::acceptSimpleMove()   {
-    variable->clearTouchedElementIndices();
+//    variable->clearTouchedElementIndices();
 }
 
 void MultivariateRealNodeContainerSlidingMove::printParameterSummary(std::ostream &o) const {
@@ -77,9 +79,10 @@ void MultivariateRealNodeContainerSlidingMove::printParameterSummary(std::ostrea
 
 void MultivariateRealNodeContainerSlidingMove::rejectSimpleMove( void ) {
     
-    MatrixReal& v = variable->getValue();
-    v[nodeindex][compindex] = storedValue;
-    variable->addTouchedElementIndex(nodeindex);
+//    MatrixReal& v = variable->getValue();
+//    v[nodeindex][compindex] = storedValue;
+//    variable->addTouchedElementIndex(nodeindex);
+    variable->setValue(bk);
 }
 
 void MultivariateRealNodeContainerSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {

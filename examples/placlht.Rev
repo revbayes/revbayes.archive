@@ -54,13 +54,6 @@ index <- index + 1
 # bivariate Brownian process
 br ~ mvtBrownian(tau,sigma=sigma)
 
-br.newick(1)
-
-""
-br
-""
-
-
 # moves on the Brownian process
 moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
