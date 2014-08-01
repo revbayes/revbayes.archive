@@ -9,12 +9,6 @@
     return [[ValueIntegerPos alloc] initWithValue:self];
 }
 
-- (void)dealloc {
-
-    [value release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
     [super encodeWithCoder:aCoder];
@@ -32,7 +26,6 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
         value = [aDecoder decodeObjectForKey:@"value"];
-        [value retain];
 		}
 	return self;
 }

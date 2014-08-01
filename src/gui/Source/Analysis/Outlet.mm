@@ -27,7 +27,6 @@
         [c setInlet:theInlet];
         [connections addObject:c];
         [theInlet addConnection:c];
-        [c release];
         [[self toolOwner] updateDownstreamTools];
         }
 }
@@ -45,12 +44,6 @@
 - (Connection*)connectionWithIndex:(int)idx {
 
     return [connections objectAtIndex:idx];
-}
-
-- (void)dealloc {
-
-	[connections release];
-	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -74,7 +67,6 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
 		connections = [aDecoder decodeObjectForKey:@"connections"];
-        [connections retain];
 		}
 	return self;
 }

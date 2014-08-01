@@ -9,12 +9,6 @@
 
 }
 
-- (void)dealloc {
-
-    NSLog(@"dealloc ParmRateMatrix %@", self);
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
