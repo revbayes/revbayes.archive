@@ -15,13 +15,18 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
+ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode< RealNodeContainer > *up, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
 
     TypedFunction< std::vector< double > >( new std::vector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
-    tau(t), process(p), offset(o), traitindex(i) {
+    tau(t), process(p), uniprocess(up), offset(o), traitindex(i) {
     
     this->addParameter( tau );
-    this->addParameter( process );
+    if (process != NULL)    {
+        this->addParameter(process);
+    }
+    if (uniprocess != NULL)    {
+        this->addParameter(uniprocess);
+    }
     if (offset != NULL) {
          this->addParameter( offset );   
     }    
@@ -34,7 +39,7 @@ ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, 
 ExponentialBranchTree::ExponentialBranchTree(const ExponentialBranchTree &n):
 
     TypedFunction< std::vector< double > >( n ), 
-        tau(n.tau), process( n.process ), offset( n.offset ), traitindex( n.traitindex) {
+        tau(n.tau), process( n.process ), uniprocess( n.uniprocess ), offset( n.offset ), traitindex( n.traitindex) {
     
 }
 
@@ -54,6 +59,10 @@ void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const Dag
         process = static_cast< const TypedDagNode<MultivariateRealNodeContainer> * >( newP );
     }
 
+    if ( oldP == uniprocess ) {
+        uniprocess = static_cast< const TypedDagNode<RealNodeContainer> * >( newP );
+    }
+
     if (oldP == offset) {
         offset = static_cast<const TypedDagNode< double >* >(newP);
     }
@@ -71,6 +80,9 @@ void ExponentialBranchTree::update(void)    {
 }
 
 int ExponentialBranchTree::getTraitIndex()  {
+    if (uniprocess) {
+        return 0;
+    }
     return traitindex->getValue() - 1;
 }
 
@@ -83,7 +95,7 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
         
         size_t upindex = from.getParent().getIndex();
 
-        if (getTraitIndex() >= 0)    {
+        if (process)    {
             
             double x1 = process->getValue()[index][getTraitIndex()] + offset->getValue();
             double x2 = process->getValue()[upindex][getTraitIndex()] + offset->getValue();
@@ -95,17 +107,13 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
         }
         else    {
 
-            std::cerr << "should not be in simple univariate case\n";
-            exit(1);
-            /*
-            double x1 = nodeval->getValue()[index];
-            double x2 = nodeval->getValue()[upindex];
+            double x1 = uniprocess->getValue()[index];
+            double x2 = uniprocess->getValue()[upindex];
             
             double y = 0.5 * (exp(x1) + exp(x2));
         
             // we store this val here
             (*value)[index] = y;
-             */
             
         }        
     }

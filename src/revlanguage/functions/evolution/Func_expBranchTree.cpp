@@ -47,6 +47,7 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec() ) );
+//        argumentRules.push_back( new ArgumentRule( "uniprocess", true, RevLanguage::RealNodeValTree::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
         
@@ -104,7 +105,7 @@ RevPtr<Variable> Func_expBranchTree::execute() {
 
     RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &>( args[3].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, process, offset, traitindex );
+    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, process, 0, offset, traitindex );
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
