@@ -148,7 +148,7 @@ void ExponentialBranchTree::flagNodes() {
         }
     }
 }
-/*
+
 void ExponentialBranchTree::touch(DagNode *toucher)    {
 
     
@@ -181,6 +181,6 @@ void ExponentialBranchTree::restore(DagNode *restorer)    {
 //    dagNode->clearTouchedElementIndices();    
      
 }
-*/
+
 
 

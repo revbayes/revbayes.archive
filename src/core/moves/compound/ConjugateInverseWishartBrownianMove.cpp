@@ -58,10 +58,6 @@ double ConjugateInverseWishartBrownianMove::performCompoundMove( void ) {
     bksigma = sigma->getValue();
 
     // calculate sufficient statistics based on current process
-    if (! process->getValue().checkTreePointer(&tau->getValue()))   {
-        std::cerr << "error: Non matching tree\n";
-        exit(1);
-    }
     int nnode = 0;
     MatrixRealSymmetric A = process->getValue().getBranchContrasts(nnode);    
     for (size_t i=0; i<dim; i++)    {

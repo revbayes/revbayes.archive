@@ -40,10 +40,8 @@ namespace RevBayesCore {
         
         void                                                recursiveUpdate(const TopologyNode& n);
 
-        /*
         void                                                touch(DagNode *toucher);
         void                                                restore(DagNode *restorer);
-        */
         
     private:
 

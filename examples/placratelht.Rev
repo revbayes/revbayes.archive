@@ -22,10 +22,10 @@ tau.clamp(fixedTree)
 index <- 1
 
 # moves on the tree: only relative dates
-moves[index] <- mSubtreeScale(tau, weight=5.0)
-index <- index + 1
-moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
-index <- index + 1
+#moves[index] <- mSubtreeScale(tau, weight=5.0)
+#index <- index + 1
+#moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+#index <- index + 1
 
 contDataArray <- readCharacterData("data/plac73lhtlog.nex")
 contData <- contDataArray[1]
@@ -46,18 +46,23 @@ index <- index + 1
 br ~ mvtBrownian(tau,sigma=sigma)
 
 # moves on the Brownian process
-#moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
-#index <- index + 1
-#moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
-#index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=10) 
+index <- index + 1
 
+"conj move"
 # conjugate move
 moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, tau=tau, kappa=kappa, df=df, weight=1) 
 index <- index + 1
 
+"clamp"
+
 br.clampAt(contData,2,1)
 br.clampAt(contData,3,2)
 br.clampAt(contData,4,3)
+
+"subs"
 
 # substition models
 # constant hypernodes
