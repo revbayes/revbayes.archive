@@ -30,9 +30,9 @@ namespace RevBayesCore {
     class MultispeciesCoalescent : public TypedDistribution<TimeTree> {
         
     public:
-        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::map<std::string, std::string> &g2S);        
-        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                          //!< Copy constructor
-        virtual                                            ~MultispeciesCoalescent(void);                                                                    //!< Virtual destructor
+        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
+        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                                //!< Copy constructor
+        virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions
         MultispeciesCoalescent*                             clone(void) const;                                                                                  //!< Create an independent clone
