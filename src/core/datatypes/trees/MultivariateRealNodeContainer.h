@@ -35,10 +35,10 @@ namespace RevBayesCore {
     
         void                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         const TimeTree*                             getTimeTree() const {return tree;}
+        void                                        setTimeTree(const TimeTree* intree) {tree = intree;}
+        
         size_t                                      getDim() const {return getNumberOfColumns();}
         
-        bool                                        checkTreePointer(const TimeTree* in) const {return (in == tree);}
-
         // MultivariateRealNodeContainer functions
         double                                      getRootVal(int k) const;
         double                                      getMean(int k) const;

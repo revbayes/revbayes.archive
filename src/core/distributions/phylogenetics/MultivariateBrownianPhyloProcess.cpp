@@ -76,8 +76,8 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
     
     if (! from.isRoot()) {
         
-        if (1)  {
-//        if (dirtyNodes[index])  {
+//        if (1)  {
+        if (dirtyNodes[index])  {
 
             // x ~ normal(x_up, sigma^2 * branchLength)
 
@@ -117,7 +117,7 @@ double MultivariateBrownianPhyloProcess::recursiveLnProb( const TopologyNode& fr
 
 void MultivariateBrownianPhyloProcess::redrawValue(void) {
     simulate();
-    // corruptAll();
+    corruptAll();
 }
 
 void MultivariateBrownianPhyloProcess::simulate() {
@@ -180,6 +180,7 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     if ( oldP == tau )
     {
         tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+        getValue().setTimeTree(&tau->getValue());
     }
     
     if ( oldP == sigma ) {
@@ -187,7 +188,6 @@ void MultivariateBrownianPhyloProcess::swapParameter( const DagNode *oldP, const
     }
 }
 
-/*
 void MultivariateBrownianPhyloProcess::corruptAll() {
     recursiveCorruptAll(tau->getValue().getRoot());
 }
@@ -211,7 +211,7 @@ void MultivariateBrownianPhyloProcess::flagNodes() {
     // flag recomputation only for the nodes
     for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
         dirtyNodes[*it] = true;
-        const TimeTree& tau = getTimeTree()->getValue();
+        const TimeTree& tau = *getTimeTree();
         const TopologyNode& from = tau.getNode(*it);
         for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
             dirtyNodes[from.getChild(i).getIndex()] = true;
@@ -257,5 +257,3 @@ void MultivariateBrownianPhyloProcess::restoreSpecialization( DagNode *restorer 
     }
     dagNode->clearTouchedElementIndices();    
 }
-
-*/

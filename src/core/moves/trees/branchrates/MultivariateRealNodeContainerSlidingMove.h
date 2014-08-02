@@ -48,7 +48,7 @@ namespace RevBayesCore {
         size_t                                      nodeindex;
         size_t                                      compindex;
 
-        MultivariateRealNodeContainer bk;
+        //MultivariateRealNodeContainer bk;
     };
     
 }
