@@ -1,13 +1,12 @@
 /* 
- * File:   RealNodeContainerSlidingMove.h
+ * File:   RealNodeContainerTranslationMove.h
  * Author: nl
  *
- * Created on 26 juillet 2014, 13:27
+ * Created on 2 août 2014, 21:32
  */
 
-
-#ifndef PHYLOPROCESSSLIDINGMOVE_H
-#define	PHYLOPROCESSSLIDINGMOVE_H
+#ifndef REALNODECONTAINERTRANSLATIONMOVE_H
+#define	REALNODECONTAINERTRANSLATIONMOVE_H
 
 #include "SimpleMove.h"
 #include "StochasticNode.h"
@@ -20,13 +19,13 @@
 namespace RevBayesCore {
     
 
-    class RealNodeContainerSlidingMove : public SimpleMove {
+    class RealNodeContainerTranslationMove : public SimpleMove {
         
     public:
-        RealNodeContainerSlidingMove(StochasticNode<RealNodeContainer>* n, double l, bool t, double w);                         //!< Constructor
+        RealNodeContainerTranslationMove(StochasticNode<RealNodeContainer>* n, double l, bool t, double w);                         //!< Constructor
         
         // Basic utility functions
-        RealNodeContainerSlidingMove*         clone(void) const;                                                                  //!< Clone this object.
+        RealNodeContainerTranslationMove*         clone(void) const;                                                                  //!< Clone this object.
         const std::string&                          getMoveName(void) const;                                                            //!< Get the name of the move for summary printing.
         void                                        swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the variable if it was replaced.
         
@@ -42,14 +41,11 @@ namespace RevBayesCore {
     private:
         
         StochasticNode<RealNodeContainer>*          variable;
-
-        double                                      lambda;                 
-        double                                      storedValue;
-        size_t                                      nodeindex;
+        double                                      lambda;                         
+        RealNodeContainer                           storedValue;
     };
     
 }
 
-
-#endif	/* REALNODECONTAINERSLIDINGMOVE_H */
+#endif	/* REALNODECONTAINERTRANSLATIONMOVE_H */
 

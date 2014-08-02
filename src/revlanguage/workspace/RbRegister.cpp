@@ -134,6 +134,7 @@
 #include "Move_MultivariateRealNodeValTreeSliding.h"
 #include "Move_ConjugateInverseWishartBrownian.h"
 #include "Move_RealNodeValTreeSliding.h"
+#include "Move_RealNodeValTreeTranslation.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -523,6 +524,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvMultivariateRealNodeValTreeSliding",    new Move_MultivariateRealNodeValTreeSliding() );
         addTypeWithConstructor("mvConjugateInverseWishartBrownian",    new Move_ConjugateInverseWishartBrownian() );
         addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
+        addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
         addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
 
         // nonstandard forms (for backward compatibility)
