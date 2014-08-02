@@ -118,6 +118,7 @@ void ScreenMonitor::monitor(unsigned long gen) {
         }
         
         std::cout << std::endl;
+        std::cout.flush();
         
     }
 }
