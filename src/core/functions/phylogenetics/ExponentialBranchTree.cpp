@@ -130,14 +130,14 @@ void ExponentialBranchTree::recursiveCorruptAll(const TopologyNode& from)    {
         recursiveCorruptAll(from.getChild(i));
     }    
 }
-
-void ExponentialBranchTree::flagNodes() {
+/*
+void ExponentialBranchTree::flagNodes(DagNode* toucher) {
 
     // the value at some of the nodes has changed
     // flag them as well as their immediate children
     // only those nodes will recompute their probability
 
-    const std::set<size_t> &indices = dagNode->getTouchedElementIndices();
+    const std::set<size_t> &indices = toucher->getTouchedElementIndices();
 
     // flag recomputation only for the nodes
     for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
@@ -153,12 +153,14 @@ void ExponentialBranchTree::touch(DagNode *toucher)    {
 
     
     if (toucher == process) {
-        flagNodes();
+        flagNodes(toucher);
     }
     else if (toucher == tau)    {
         // nothing to do here! these are rates...
+        corruptAll();
     } 
     else    {
+        std::cerr << "something else\n";
         corruptAll();
     }
 //    dagNode->clearTouchedElementIndices();    
@@ -170,9 +172,10 @@ void ExponentialBranchTree::restore(DagNode *restorer)    {
 
     
     if (restorer == process) {
-        flagNodes();
+        flagNodes(restorer);
     }
     else if (restorer == tau)    {
+        corruptAll();
         // nothing to do here! these are rates...
     } 
     else    {
@@ -181,6 +184,5 @@ void ExponentialBranchTree::restore(DagNode *restorer)    {
 //    dagNode->clearTouchedElementIndices();    
      
 }
-
-
+*/
 
