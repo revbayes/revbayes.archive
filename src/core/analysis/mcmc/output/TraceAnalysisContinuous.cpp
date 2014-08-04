@@ -20,16 +20,17 @@ using namespace std;
 /**
  * 
  */
-TraceAnalysisContinuous::TraceAnalysisContinuous() {
+TraceAnalysisContinuous::TraceAnalysisContinuous()
+{
     // initialize data to invalid values
     invalidateTraceStatistics();
-//    burnin               = new int;
     burnin              = RbConstants::Integer::nan;
     
 
 }
 
-void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values) {
+void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values)
+{
     // make sure the burnin is valid
     size_t b = 0;
     
@@ -39,27 +40,31 @@ void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values) {
 void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values, size_t b) {
     double m = 0;
     size_t size = values.size();
-    for (size_t i=b; i<size; i++) {
+    for (size_t i=b; i<size; i++)
+    {
         m += values.at(i);
     }
     
     mean = m/double(size-b);
 }
 
-void TraceAnalysisContinuous::analyseMean(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins) {
+void TraceAnalysisContinuous::analyseMean(const std::vector<std::vector<double> >& values, const std::vector<size_t>& burnins)
+{
     double m = 0;
     int sampleSize = 0;
     // get the number of chains
     size_t chains = values.size();
     // iterate over all chains
-    for (size_t j=0; j<chains; j++) {
+    for (size_t j=0; j<chains; j++)
+    {
         // get the chain
         const std::vector<double>& chain = values.at(j);
         size_t b = burnins.at(j);
         size_t chainSize = chain.size() - b;
         // add this chain size to the total sample size
         sampleSize += chainSize;
-        for (size_t i=burnin; i<chainSize; i++) {
+        for (size_t i=burnin; i<chainSize; i++)
+        {
             m += chain.at(i);
         }
     }
@@ -67,9 +72,12 @@ void TraceAnalysisContinuous::analyseMean(const std::vector<std::vector<double> 
     mean = m/sampleSize;
 }
 
-void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values, size_t begin, size_t end) {
+void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values, size_t begin, size_t end)
+{
+
     double m = 0;
-    for (size_t i=begin; i<end; i++) {
+    for (size_t i=begin; i<end; i++)
+    {
         m += values.at(i);
     }
     
@@ -80,7 +88,8 @@ void TraceAnalysisContinuous::analyseMean(const std::vector<double>& values, siz
  * Analyze trace
  *
  */
-void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values) {
+void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values)
+{
     // make sure the burnin is valid
     size_t b = 0;
     
@@ -94,9 +103,11 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
  *
  * @attention This method assumes that the mean was either made invalid before execution or is calculated apropriately for this burnin.
  */
-void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t b) {
+void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& values, size_t b)
+{
     // if we have not yet calculated the mean, do this now
-    if (mean == RbConstants::Double::max) {
+    if (mean == RbConstants::Double::max)
+    {
         analyseMean(values,b);
     }
     
@@ -105,7 +116,8 @@ void TraceAnalysisContinuous::analyseCorrelation(const std::vector<double>& valu
     
     double* gammaStat = new double[maxLag];
     // setting values to 0
-    for (size_t i=0; i<maxLag; i++) {
+    for (size_t i=0; i<maxLag; i++)
+    {
         gammaStat[i] = 0;
     }
     double varStat = 0.0;
