@@ -9,13 +9,6 @@
     return nil;
 }
 
-- (void)dealloc {
-    
-    // dealloc here
-    [vector release];
-	[super dealloc];
-}
-
 - (int)dimensions {
 
     return (int)[vector count];
@@ -42,7 +35,6 @@
     if ( (self = [super init]) ) 
 		{
         vector = [aDecoder decodeObjectForKey:@"vector"];
-        [vector retain];
 		}
 	return self;
 }

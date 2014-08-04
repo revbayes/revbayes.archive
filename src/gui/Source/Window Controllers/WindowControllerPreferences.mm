@@ -111,11 +111,6 @@ NSString* const RB_NotebookFontKey       = @"NotebookFont";
     [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdatedModelBkgrndColor" object:self];
 }
 
-- (void)dealloc {
-
-	[super dealloc];
-}
-
 - (void)getStartingState {
 
 	// get the user defaults
@@ -152,37 +147,28 @@ NSString* const RB_NotebookFontKey       = @"NotebookFont";
 		// unarchive the analysis background color
         NSData *colorAsData = [defaults objectForKey:RB_AnalysisBgrndColorKey];
         currentAnalysisBkgndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        [currentAnalysisBkgndColor retain];
 
 		// unarchive the analysis grid color
         colorAsData = [defaults objectForKey:RB_AnalysisGridColorKey];
         currentAnalysisGridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        [currentAnalysisGridColor retain];
 		
 		// unarchive the model background color
         colorAsData = [defaults objectForKey:RB_ModelBgrndColorKey];
         currentModelBkgndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        [currentModelBkgndColor retain];
 
 		// unarchive the model grid color
         colorAsData = [defaults objectForKey:RB_ModelGridColorKey];
         currentModelGridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData]; 
-        [currentModelGridColor retain];
 		
 		// unarchive the notebook font
         NSData* fontAsData = [defaults objectForKey:RB_NotebookFontKey];
         notebookFont = [NSKeyedUnarchiver unarchiveObjectWithData:fontAsData];
-        [notebookFont retain];
 		
 		// set the starting values for the background colors
 		startingAnalysisBkgndColor = currentAnalysisBkgndColor;
 		startingAnalysisGridColor  = currentAnalysisGridColor;
 		startingModelBkgndColor    = currentModelBkgndColor;
 		startingModelGridColor     = currentModelGridColor;
-		[startingAnalysisBkgndColor retain];
-		[startingAnalysisGridColor retain];
-		[startingModelBkgndColor retain];
-		[startingModelGridColor retain];
         }
 	return self;
 }

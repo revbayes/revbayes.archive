@@ -15,14 +15,6 @@
 	return analysisName; 
 }
 
-- (void)dealloc {
-
-    [tools release];
-	[noteBook release];
-	[notebookContents release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[aCoder encodeObject:analysisName     forKey:@"analysisName"];
@@ -52,9 +44,6 @@
 		tools            = [aDecoder decodeObjectForKey:@"tools"];
         analysisName     = [aDecoder decodeObjectForKey:@"analysisName"];
 		notebookContents = [aDecoder decodeObjectForKey:@"notebookContents"];
-        [tools retain];
-        [analysisName retain];
-		[notebookContents retain];
 
 		// allocate the note book
 		noteBook = [[WindowControllerNoteBook alloc] initWithAnalysis:self];
@@ -108,8 +97,6 @@
 
     if (aName != analysisName) 
 		{
-        [analysisName release];
-        [aName retain];
         analysisName = aName;
 		
 		if ( [noteBook isWindowLoaded] == YES )
@@ -126,8 +113,6 @@
 
 	if (notebookContents != newValue) 
 		{
-		if (notebookContents) 
-			[notebookContents release];
 		notebookContents = [newValue copy];
 		}
 }

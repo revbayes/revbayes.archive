@@ -37,7 +37,8 @@ namespace RevBayesCore {
         double                              getLogDet() const;
         
         size_t                              getDim() const;
-        
+        bool                                isNull() const;
+                
         void                                touch();
         void                                update() const;
         
@@ -45,6 +46,9 @@ namespace RevBayesCore {
         
         double                              getCovariance(size_t k, size_t l) const;
         double                              getPrecision(size_t k, size_t l) const;
+        double                              getCorrel(size_t k, size_t l) const;
+        double                              getPartialCorrel(size_t k, size_t l) const;
+        
         void                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
 
         

@@ -5,18 +5,18 @@
 
 @interface GuiTree : NSObject <NSCoding> {
 
-	NSMutableArray*                     nodes;
-    NSMutableArray*                     downPassSequence;
-    BOOL                                initializedDownPass;
-    Node*                               root;
-    int                                 numberOfTaxa;
-	NSString*                           info;
+	NSMutableArray*   nodes;
+    NSMutableArray*   downPassSequence;
+    BOOL              initializedDownPass;
+    Node*             root;
+    int               numberOfTaxa;
+	NSString*         info;
 
 }
 
-@property (nonatomic)        BOOL       initializedDownPass;
-@property (nonatomic,strong) NSString*  info;
-@property (nonatomic,weak)   Node*      root;
+@property (nonatomic)        BOOL      initializedDownPass;
+@property (nonatomic,strong) NSString* info;
+@property (nonatomic,strong) Node*     root;
 
 - (void)addTaxonToRandomBranch;
 - (void)buildRandomTreeWithSize:(int)n;

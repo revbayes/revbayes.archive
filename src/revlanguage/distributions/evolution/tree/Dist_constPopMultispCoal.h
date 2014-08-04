@@ -45,7 +45,7 @@ namespace RevLanguage {
 
         RevPtr<const Variable>                              Ne;                                                                                     //!< The population size
         RevPtr<const Variable>                              speciesTree;                                                                            //!< The species tree
-        RevPtr<const Variable>                              taxons;                                                                                 //!< The taxons
+        RevPtr<const Variable>                              taxa;                                                                                 //!< The taxons
         
         
     };

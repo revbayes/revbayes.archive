@@ -65,15 +65,6 @@
 	[queryWindow close];
 }
 
-- (void)dealloc {
-
-    if (queryWindow != nil)
-        [queryWindow release];
-    [controlWindow release];
-    [myTree release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
@@ -93,11 +84,12 @@
     [aCoder encodeObject:myTree      forKey:@"myTree"];
 }
 
-- (void)execute {
+- (BOOL)execute {
     
     [self startProgressIndicator];
     
     [self stopProgressIndicator];
+    return YES;
 }
 
 - (GuiTree*)exposeTreePtr {
@@ -172,8 +164,6 @@
         piT            = [aDecoder decodeDoubleForKey:@"piT"];
         sequenceLength = [aDecoder decodeIntForKey:@"sequenceLength"];
         myTree         = [aDecoder decodeObjectForKey:@"myTree"];
-        [myTree retain];
-        [myTree print];
 
 		// initialize the control window
 		controlWindow  = [[WindowControllerSimulate alloc] initWithTool:self];
@@ -202,9 +192,6 @@
 }
 
 - (void)makeTreeOfSize:(int)nt {
-
-    if (myTree != nil)
-        [myTree release];
 
     myTree = [[GuiTree alloc] initWithTipSize:nt];
     [myTree initializeDownPassSequence];
@@ -238,7 +225,6 @@
 
     if (queryWindow != nil)
         {
-        [queryWindow release];
         queryWindow = nil;
         }
     
@@ -254,7 +240,6 @@
     
     if ( [queryWindow closedWithCancel] == YES )
         {
-        [queryWindow release];
         queryWindow = nil;
         }
     else
@@ -269,7 +254,6 @@
         [[controlWindow window] makeKeyAndOrderFront:nil];
         [NSApp runModalForWindow:[controlWindow window]];
         
-        [queryWindow release];
         queryWindow = nil;
         }
 }
