@@ -24,7 +24,6 @@
 - (NSMutableArray*)allocateParms {
 
     parms = [[NSMutableArray alloc] init];
-    NSLog(@"ToolModel allocateParms cnt = %lu", [parms retainCount]);
     return parms;
 }
 
@@ -63,23 +62,6 @@
     [self setInletsAndOutlets];
 }
 
-- (void)dealloc {
-    
-    if (modelBrowser != nil)
-        [modelBrowser release];
-	if (modelSubmission != nil)
-		[modelSubmission release];
-	[controlWindow release];
-	[parms release];
-    [distributionList release];
-	[super dealloc];
-}
-
-- (void)deleteParms {
-
-    [parms release];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
 	[super encodeWithCoder:aCoder];
@@ -90,13 +72,13 @@
     [aCoder encodeBool:possibleInlets[3] forKey:@"possibleInlets3"];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
     
     [self startProgressIndicator];
     
     [self stopProgressIndicator];
+    return YES;
 }
 
 - (void)exportModel {
@@ -137,7 +119,6 @@
         if ([server connectToServer] == NO)
             {
             NSRunAlertPanel(@"Connection Failure", @"The model could not be submitted for use by others because the RevBayes server could not be reached. The file was saved to this computer.", @"OK", nil, nil);
-            [server release];
             return;
             }
 
@@ -146,7 +127,6 @@
         [server submitModelWithInfo:mi andData:d];
         
         [server disconnectFromServer];
-        [server release];
 		}
 }
 
@@ -163,8 +143,6 @@
     
     if ([modelBrowser userDidCancel] == YES)
         {
-        [modelBrowser release];
-        modelBrowser = nil;
         return;
         }
 	
@@ -180,22 +158,15 @@
 	// read the parameter information from the model file
 	NSData* md = [NSData dataWithContentsOfFile:selectedModelName];
 	@try {
-        [parms release];
 		parms = [NSKeyedUnarchiver unarchiveObjectWithData:md];
 		[controlWindow setParmsPtr:parms];
-        [parms retain];
 		}
 	@catch (NSException* e) 
 		{
         NSRunAlertPanel(@"Error", @"Problem reading the model", @"OK", nil, nil);
-        [modelBrowser release];
         modelBrowser = nil;
         return;
 		}
-    
-    // release the browser
-    [modelBrowser release];
-    modelBrowser = nil;
     
     // set the window for all of the parameters
 	id element;
@@ -260,7 +231,6 @@
 
 		// read the mutable array holding the parameters
         parms = [aDecoder decodeObjectForKey:@"parms"];
-        [parms retain];
 		[self touchAllParameters];
         possibleInlets[0] = [aDecoder decodeBoolForKey:@"possibleInlets0"];
         possibleInlets[1] = [aDecoder decodeBoolForKey:@"possibleInlets1"];

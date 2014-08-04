@@ -35,7 +35,6 @@
 % attach psi
 \node[detnode] (topo) at (0,0) {\Large $\Psi$};
 \draw[-,line width=2pt] (topo) -- (tp_dec) ;
-\draw[-,line width=2pt] (topo) -- (tp_gtr) ;
 \node[snode] (birth) at ($(topo)-(-1.5,2)$) {$\lambda$};
 \node[snode] (death) at ($(topo)-(1.5,2)$) {$\mu$};
 \node[constnode] (birthpr) at ($(birth)-(0,2)$) {$b$};

@@ -35,9 +35,10 @@ namespace RevBayesCore {
     
         void                                        executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         const TimeTree*                             getTimeTree() const {return tree;}
+        void                                        setTimeTree(const TimeTree* intree) {tree = intree;}
+        
         size_t                                      getDim() const {return getNumberOfColumns();}
         
-
         // MultivariateRealNodeContainer functions
         double                                      getRootVal(int k) const;
         double                                      getMean(int k) const;
@@ -46,8 +47,13 @@ namespace RevBayesCore {
         void                                        recursiveGetStats(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
         void                                        recursiveGetStatsOverTips(int k, const TopologyNode& from, double& e1, double& e2, int& n) const;
 
+        std::string                                 getNewick(int k) const;
+        std::string                                 recursiveGetNewick(const TopologyNode& from, int k) const;        
+        std::string                                 getNewick() const;
+        std::string                                 recursiveGetNewick(const TopologyNode& from) const;
+        
         void                                        printBranchContrasts(std::ostream& os) const;
-        MatrixRealSymmetric                             getBranchContrasts(int& nnode) const ;
+        MatrixRealSymmetric                         getBranchContrasts(int& nnode) const ;
 
         bool                                        isClamped(size_t index, size_t k) const;
         void                                        clampAt(const ContinuousCharacterData* data, size_t k, size_t l);

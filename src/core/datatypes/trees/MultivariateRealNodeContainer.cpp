@@ -15,6 +15,8 @@
 
 #include <iomanip>
 
+#include <sstream>
+
 using namespace RevBayesCore;
 
 // Declarations
@@ -106,7 +108,7 @@ void MultivariateRealNodeContainer::recursiveClampAt(const TopologyNode& from, c
         
         // get taxon index
         size_t index = from.getIndex();
-        std::string taxon = tree->getTipNames()[index];
+        std::string taxon = getTimeTree()->getTipNames()[index];
         size_t dataindex = data->getIndexOfTaxon(taxon);
         
         if (data->getCharacter(dataindex,l).getMean() != -1000) {
@@ -275,30 +277,83 @@ void MultivariateRealNodeContainer::recursiveGetStatsOverTips(int k, const Topol
     
 }
 
+std::string MultivariateRealNodeContainer::getNewick(int k) const {
+
+    return recursiveGetNewick(getTimeTree()->getRoot(),k-1);
+}
+
+std::string MultivariateRealNodeContainer::recursiveGetNewick(const TopologyNode& from, int k) const {
+
+    std::ostringstream s;
+    
+    if (from.isTip())   {
+        s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+    }
+    else    {
+        s << "(";
+        // propagate forward
+        size_t numChildren = from.getNumberOfChildren();
+        for (size_t i = 0; i < numChildren; ++i) {
+            s << recursiveGetNewick(from.getChild(i),k);
+            if (i < numChildren-1)  {
+                s << ",";
+            }
+        }
+        s << ")";
+    }
+    s << (*this)[from.getIndex()][k];
+    if (!from.isRoot()) {
+        s << ":";
+        s << getTimeTree()->getBranchLength(from.getIndex());
+    }
+    
+    return s.str();
+}
+
+
+std::string MultivariateRealNodeContainer::getNewick() const {
+
+    return recursiveGetNewick(getTimeTree()->getRoot());
+}
+
+std::string MultivariateRealNodeContainer::recursiveGetNewick(const TopologyNode& from) const {
+
+    std::ostringstream s;
+    
+    if (from.isTip())   {
+        s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+    }
+    else    {
+        s << "(";
+        // propagate forward
+        size_t numChildren = from.getNumberOfChildren();
+        for (size_t i = 0; i < numChildren; ++i) {
+            s << recursiveGetNewick(from.getChild(i));
+            if (i < numChildren-1)  {
+                s << ",";
+            }
+        }
+        s << ")";
+    }
+    s << "[";
+    for (size_t k=0; k<getDim(); k++)   {
+        s << (*this)[from.getIndex()][k];
+        if (k < getDim() -1)    {
+            s << ",";
+        }
+    }
+    s << "]";
+    if (!from.isRoot()) {
+        s << ":";
+        s << getTimeTree()->getBranchLength(from.getIndex());
+    }
+    
+    return s.str();
+}
 
 std::ostream& RevBayesCore::operator<<(std::ostream& os, const MultivariateRealNodeContainer& x) {
 
-    os << std::fixed;
-    os << std::setprecision(4);
-        
-    x.printBranchContrasts(os);
-    os << '\t';
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getMean(i) << '\t';
-    }
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getStdev(i) << '\t';
-    }    
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getRootVal(i);
-        if (i < x.getDim() -1)  {
-            os << '\t';
-        }
-    }    
-    
+    os << x.getNewick();
     return os;
 }
 

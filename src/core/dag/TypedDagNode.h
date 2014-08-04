@@ -34,17 +34,16 @@ namespace RevBayesCore {
     
     public:
         TypedDagNode(const std::string &n);
-        TypedDagNode(const TypedDagNode<valueType> &n);                                                                                 //!< Copy constructor
-        virtual                                            ~TypedDagNode(void);                                                         //!< Virtual destructor
+        virtual                                            ~TypedDagNode(void);                                                                         //!< Virtual destructor
     
         // pure virtual methods
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
 
         // member functions
-        virtual bool                                        isSimpleNumeric(void) const;                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
-        virtual void                                        printName(std::ostream &o, const std::string &sep) const;                   //!< Monitor/Print this variable 
-        virtual void                                        printValue(std::ostream &o, const std::string &sep) const;                  //!< Monitor/Print this variable 
-        virtual void                                        printValue(std::ostream &o, size_t i) const;                                //!< Monitor/Print the i-th element of this variable 
+        virtual bool                                        isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
+        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;         //!< Monitor/Print this variable
+        virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;        //!< Monitor/Print this variable
+//        virtual void                                        printValue(std::ostream &o, size_t i, size_t l=12, bool left=false) const;                  //!< Monitor/Print the i-th element of this variable
 
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
@@ -69,17 +68,13 @@ namespace RevBayesCore {
 }
 
 #include "RbUtil.h"
+#include "StringUtilities.h"
+
 #include <vector>
 
 
 template<class valueType>
 RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n ) {
-    
-}
-
-
-template<class valueType>
-RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const TypedDagNode<valueType> &n) : DagNode( n ) {
     
 }
 
@@ -110,7 +105,8 @@ bool RevBayesCore::TypedDagNode<valueType>::isSimpleNumeric( void ) const
 
 
 template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep) const {
+void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left) const
+{
     
     if ( RbUtils::is_vector<valueType>::value ) 
     {
@@ -121,18 +117,31 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
             {
                 o << sep;
             }
-            o << getName() << "[" << i << "]";
+            std::stringstream ss;
+            ss << getName() << "[" << i << "]";
+            std::string n = ss.str();
+            if ( l > 0)
+            {
+                StringUtilities::fillWithSpaces(n, l, left);
+            }
+            o << n;
         }
     } 
     else 
     {
-        o << getName();
+        std::string n = getName();
+        if ( l > 0 )
+        {
+            StringUtilities::fillWithSpaces(n, l, left);
+        }
+        o << n;
     }
 }
 
 
 template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep) const {
+void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep, int l, bool left) const
+{
     
     if ( RbUtils::is_vector<valueType>::value ) 
     {
@@ -143,29 +152,43 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
             {
                 o << sep;
             }
-            o << RbUtils::sub_vector<valueType>::getElement( getValue(), i );
+            std::stringstream ss;
+            ss << RbUtils::sub_vector<valueType>::getElement( getValue(), i );
+            std::string s = ss.str();
+            if ( l > 0 )
+            {
+                StringUtilities::fillWithSpaces(s, l, left);
+            }
+            o << s;
         }
     } 
     else 
     {
-        o << getValue();
+        std::stringstream ss;
+        ss << getValue();
+        std::string s = ss.str();
+        if ( l > 0 )
+        {
+            StringUtilities::fillWithSpaces(s, l, left);
+        }
+        o << s;
     }
 }
 
 
-template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, size_t index) const {
-    
-    if ( RbUtils::is_vector<valueType>::value ) 
-    {
-        o << RbUtils::sub_vector<valueType>::getElement( getValue(), index );
-    } 
-    else 
-    {
-        o << getValue();
-    }
-    
-}
+//template<class valueType>
+//void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, size_t index) const {
+//    
+//    if ( RbUtils::is_vector<valueType>::value ) 
+//    {
+//        o << RbUtils::sub_vector<valueType>::getElement( getValue(), index );
+//    } 
+//    else 
+//    {
+//        o << getValue();
+//    }
+//    
+//}
 
 
 //template <typename T, typename Alloc>

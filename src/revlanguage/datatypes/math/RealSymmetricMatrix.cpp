@@ -91,18 +91,11 @@ const RevLanguage::MethodTable& RealSymmetricMatrix::getMethods(void) const {
         covArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
         methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
 
-        ArgumentRules* precArgRules = new ArgumentRules();
-        precArgRules->push_back(new ArgumentRule("i", false, Natural::getClassTypeSpec()));
-        precArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
-        methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, precArgRules ) );
+        methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
         
-        /*
-        ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
-        clampArgRules->push_back(new ArgumentRule("processIndex", false, Natural::getClassTypeSpec()));
-        clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
-        methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
-        */
+        methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+        
+        methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &ModelObject<RevBayesCore::MatrixRealSymmetric>::getMethods() );
@@ -112,16 +105,6 @@ const RevLanguage::MethodTable& RealSymmetricMatrix::getMethods(void) const {
     
     return methods;
 }
-
-
-
-/** Is convertible to type? */
-/*
-bool RealSymmetricMatrix::isConvertibleTo(const TypeSpec& type) const {
-    
-    return RevObject::isConvertibleTo(type);
-}
-*/
 
 /** Print value for user */
 void RealSymmetricMatrix::printValue(std::ostream &o) const {

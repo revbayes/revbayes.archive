@@ -30,11 +30,6 @@
     return connection;
 }
 
-- (void)dealloc {
-
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
 	[aCoder encodeObject:connection forKey:@"connection"];

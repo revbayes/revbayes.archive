@@ -1,6 +1,5 @@
 //
 //  RateMatrix_Pomo.cpp
-//  rb_mlandis
 //
 //  Created by Bastien Boussau on 4/4/14.
 //  Copyright (c) 2014 Bastien Boussau. All rights reserved.
@@ -390,4 +389,26 @@ void RateMatrix_Pomo::updateMatrix( void ) {
         // clean flags
         needsUpdate = false;
     }
+}
+
+
+void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
+    mu[0][1] = mr[0];
+    mu[0][2] = mr[1];
+    mu[0][3] = mr[2];
+    mu[1][0] = mr[3];
+    mu[1][2] = mr[4];
+    mu[1][3] = mr[5];
+    mu[2][0] = mr[6];
+    mu[2][1] = mr[7];
+    mu[2][3] = mr[8];
+    mu[3][0] = mr[9];
+    mu[3][1] = mr[10];
+    mu[3][2] = mr[11];
+}
+
+
+void RateMatrix_Pomo::setSelectionCoefficients(const std::vector<double>& sc){
+    s = sc;
+
 }

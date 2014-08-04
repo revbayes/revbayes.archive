@@ -53,6 +53,8 @@ double MultivariateRealNodeContainerSlidingMove::performSimpleMove( void ) {
     
     storedValue = v[nodeindex][compindex];
     
+    // bk = variable->getValue();
+    
     double u = rng->uniform01();
     double slidingFactor = lambda * ( u - 0.5 );
 
@@ -80,6 +82,7 @@ void MultivariateRealNodeContainerSlidingMove::rejectSimpleMove( void ) {
     MatrixReal& v = variable->getValue();
     v[nodeindex][compindex] = storedValue;
     variable->addTouchedElementIndex(nodeindex);
+//    variable->setValue(bk);
 }
 
 void MultivariateRealNodeContainerSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {

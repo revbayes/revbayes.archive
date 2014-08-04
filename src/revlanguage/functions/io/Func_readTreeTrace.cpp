@@ -196,10 +196,10 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             // splitting every line into its columns
             std::vector<std::string> columns;
             // first, getting the file delimmiter
-            std::string delimitter = "\t";
+            std::string delimiter = "\t";
             
             // we should provide other delimiters too
-            StringUtilities::stringSplit(line, delimitter, columns);
+            StringUtilities::stringSplit(line, delimiter, columns);
             
             // we assume a header at the first line of the file
             if (!hasHeaderBeenRead) {
@@ -292,10 +292,10 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             // splitting every line into its columns
             std::vector<std::string> columns;
             // first, getting the file delimmiter
-            std::string delimitter = "\t";
+            std::string delimiter = "\t";
             
             // we should provide other delimiters too
-            StringUtilities::stringSplit(line, delimitter, columns);
+            StringUtilities::stringSplit(line, delimiter, columns);
             
             // we assume a header at the first line of the file
             if (!hasHeaderBeenRead) {

@@ -21,8 +21,7 @@
 
 - (id)init {
 
-	[self initWithDist:nil];
-	return self;
+	return [self initWithDist:nil];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
@@ -34,8 +33,6 @@
 		myDist               = [aDecoder decodeObjectForKey:@"myDist"];
         refParm              = [aDecoder decodeObjectForKey:@"refParm"];
 		type                 = [aDecoder decodeIntForKey:@"type"];
-		[parameterName retain];
-		[parameterDescription retain];
 		}
 	return self;
 }
@@ -45,8 +42,8 @@
     if ( (self = [super init]) ) 
 		{
 		myDist               = d;
-        parameterName        = [[NSString alloc] initWithString:@""];
-        parameterDescription = [[NSString alloc] initWithString:@""];
+        parameterName        = @"";
+        parameterDescription = @"";
 		refParm              = nil;
 		type                 = 0;
 		}
@@ -57,8 +54,8 @@
 
     if ( (self = [super init]) ) 
 		{
-        parameterName        = [[NSString alloc] initWithString:@""];
-        parameterDescription = [[NSString alloc] initWithString:@""];
+        parameterName        = @"";
+        parameterDescription = @"";
         
         [self setParameterName:[p parameterName]];
         [self setParameterDescription:[p parameterDescription]];

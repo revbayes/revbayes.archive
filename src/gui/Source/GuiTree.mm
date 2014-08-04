@@ -78,7 +78,7 @@
             }
         else 
             {
-            nameStr = [[NSString alloc] initWithString:@"Interior Node"];
+            nameStr = @"Interior Node";
             }
         [nde setName:nameStr];
         [nodes addObject:nde];
@@ -136,13 +136,6 @@
         }
         
     [self print];
-}
-
-- (void)dealloc {
-
-	[nodes release];
-    [info release];
-	[super dealloc];
 }
 
 - (Node*)downPassNodeIndexed:(int)idx {
@@ -239,9 +232,6 @@
         numberOfTaxa        = [aDecoder decodeIntForKey:@"numberOfTaxa"];
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
-		[nodes retain];
-        [downPassSequence retain];
-        [info retain];
 		}
 	return self;
 }
@@ -448,7 +438,7 @@
         {
         [nodes removeObject:nde];
         [downPassSequence removeObject:nde];
-        [nde release];
+        /* JPHARC [nde release]; */
         }
         
     // get the new downpass sequence

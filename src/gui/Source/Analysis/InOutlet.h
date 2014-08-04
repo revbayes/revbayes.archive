@@ -6,14 +6,14 @@
 
 @interface InOutlet : NSObject <NSCoding> {
 
-    NSColor*                        toolColor;       // the color for this inlet/outlet
-	Tool*                           toolOwner;       // the tool that "owns" this inlet/outlet
-    NSPoint                         position;        // x,y position of the middle relative to bottom-left corner of tool, in a (0,1) coordinate system
+    NSColor*   toolColor;       // the color for this inlet/outlet
+	Tool*      toolOwner;       // the tool that "owns" this inlet/outlet
+    NSPoint    position;        // x,y position of the middle relative to bottom-left corner of tool, in a (0,1) coordinate system
 }
 
-@property (nonatomic,weak) NSColor* toolColor;
-@property (nonatomic,weak) Tool*    toolOwner;
-@property (nonatomic)      NSPoint  position;
+@property (nonatomic,strong) NSColor* toolColor;
+@property (nonatomic,strong) Tool*    toolOwner;
+@property (nonatomic)        NSPoint  position;
 
 - (BOOL)amInlet;
 - (BOOL)amOutlet;
