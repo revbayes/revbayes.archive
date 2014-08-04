@@ -44,10 +44,10 @@ namespace RevLanguage {
         void                                                readTrace(const std::string &fn, std::vector<RevBayesCore::Trace> &data);
         void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        std::string                                         delimitter;
+        std::string                                         delimiter;
         std::string                                         filename;
         std::string                                         burninMethod;
-        
+        bool                                                verbose;
     };
     
 }
