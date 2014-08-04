@@ -80,8 +80,8 @@ parcor12 := sigma.partialCorrelation(1,2)
 # get useful outputs from the brownian process
 
 bn1 := br.newick(1)
-bn2 := br.newick(2)
-bn3 := br.newick(3)
+
+bn1
 
 for (i in 1:nTraits)	{
 
@@ -95,11 +95,9 @@ for (i in 1:nTraits)	{
 mymodel <- model(kappa)
 
 monitors[1] <- screenmonitor(printgen=100, cov12, cor12, meanbr, stdevbr)
-monitors[2] <- filemonitor(filename="placlht1.cov",printgen=100, separator = "	", sigma)
-monitors[3] <- modelmonitor(filename="placlht1.log",printgen=100, separator = "	")
-#monitors[4] <- filemonitor(filename="placlht1.trait1",printgen=100, separator = "	", bn1)
-#monitors[5] <- filemonitor(filename="placlht1.trait2",printgen=100, separator = "	", bn2)
-#monitors[6] <- filemonitor(filename="placlht1.trait3",printgen=100, separator = "	", bn3)
+monitors[2] <- filemonitor(filename="placlht1.cov",printgen=10, separator = "	", sigma)
+monitors[3] <- modelmonitor(filename="placlht1.log",printgen=10, separator = "	")
+monitors[4] <- filemonitor(filename="placlht1.trait1",printgen=10, separator = "	", bn1)
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
