@@ -139,7 +139,7 @@ seq.clamp(D)
 
 monitors[1] <- modelmonitor(filename="primates_node_dating.log",printgen=10, separator = "	") 
 monitors[2] <- filemonitor(filename="primates_node_dating.trees",printgen=10, separator = "	", psi)
-monitors[3] <- screenmonitor(printgen=10, separator = "	", tmrca_Apes)
+monitors[3] <- screenmonitor(printgen=10, tmrca_Apes)
 
 
 

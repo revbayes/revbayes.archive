@@ -133,7 +133,7 @@ seq.clamp(data)
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=10, separator = "	", var1, cov12, cor12, parcor12, meanbr, stdevbr)
+monitors[1] <- screenmonitor(printgen=10, var1, cov12, cor12, parcor12, meanbr, stdevbr)
 monitors[2] <- filemonitor(filename="placdrlht1.cov",printgen=10, separator = "	", sigma)
 monitors[3] <- modelmonitor(filename="placdrlht1.log",printgen=10, separator = "	")
  

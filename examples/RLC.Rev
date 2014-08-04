@@ -166,7 +166,7 @@ mymodel <- model(rho)
 monitors[1] <- modelmonitor(filename="test_RLC.log",printgen=10, separator = "	")
 monitors[2] <- filemonitor(filename="test_RLC_ClockRates.log",printgen=10, separator = "	", branchRateMultipliers, posterior=false, prior=false, likelihood=false)
 monitors[3] <- extNewickmonitor(filename="test_RLC.trees",printgen=10, separator = "	", psi, clockRates, branchRateMultipliers, posterior=false, prior=false, likelihood=false)
-monitors[4] <- screenmonitor(printgen=100, separator = "	", rho, meanClockRate, tmrca)
+monitors[4] <- screenmonitor(printgen=100, rho, meanClockRate, tmrca)
 
  
 mymcmc <- mcmc(mymodel, monitors, moves)

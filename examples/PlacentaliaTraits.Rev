@@ -94,7 +94,7 @@ for (i in 1:nTraits)	{
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=100, separator = "	", cov12, cor12, meanbr, stdevbr)
+monitors[1] <- screenmonitor(printgen=100, cov12, cor12, meanbr, stdevbr)
 monitors[2] <- filemonitor(filename="placlht1.cov",printgen=100, separator = "	", sigma)
 monitors[3] <- modelmonitor(filename="placlht1.log",printgen=100, separator = "	")
 #monitors[4] <- filemonitor(filename="placlht1.trait1",printgen=100, separator = "	", bn1)
