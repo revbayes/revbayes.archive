@@ -17,7 +17,7 @@ using namespace RevBayesCore;
 // constructor(s)
 ExponentialBranchTree::ExponentialBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< MultivariateRealNodeContainer > *p, const TypedDagNode< RealNodeContainer > *up, const TypedDagNode<double>* o, const TypedDagNode< int >* i): 
 
-    TypedFunction< std::vector< double > >( new std::vector< double >(p->getValue().getTimeTree()->getNumberOfNodes() -1, 0.0 ) ),
+    TypedFunction< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes() -1, 0.0 ) ),
     tau(t), process(p), uniprocess(up), offset(o), traitindex(i) {
     
     this->addParameter( tau );
@@ -75,7 +75,7 @@ void ExponentialBranchTree::swapParameterInternal(const DagNode *oldP, const Dag
 void ExponentialBranchTree::update(void)    {
     
     // get the root
-    const TopologyNode& root = process->getValue().getTimeTree()->getRoot();
+    const TopologyNode& root = tau->getValue().getRoot();
     recursiveUpdate(root);
 }
 
