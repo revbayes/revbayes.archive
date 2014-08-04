@@ -45,7 +45,7 @@ namespace RevLanguage {
         void                                                setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         std::string                                         delimiter;
-        std::string                                         filename;
+        std::set<std::string>                               filenames;
         std::string                                         burninMethod;
         bool                                                verbose;
     };
