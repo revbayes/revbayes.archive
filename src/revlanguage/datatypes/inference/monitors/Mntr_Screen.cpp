@@ -27,27 +27,31 @@ Mntr_Screen* Mntr_Screen::clone(void) const {
 }
 
 
-void Mntr_Screen::constructInternalObject( void ) {
+void Mntr_Screen::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
     // now allocate space for a new Mntr_Screen object
-    const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
+    
     std::set<RevBayesCore::DagNode *> n;
-    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i)
+    {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
         n.insert( node );
     }
+    
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
-    value = new RevBayesCore::ScreenMonitor(n, g, sep, pp, l, pr);
+    value = new RevBayesCore::ScreenMonitor(n, g, pp, l, pr);
 }
 
 
 /** Get Rev type of object */
-const std::string& Mntr_Screen::getClassType(void) { 
+const std::string& Mntr_Screen::getClassType(void)
+{
     
     static std::string revType = "Mntr_Screen";
     
@@ -55,7 +59,8 @@ const std::string& Mntr_Screen::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_Screen::getClassTypeSpec(void) { 
+const TypeSpec& Mntr_Screen::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
@@ -65,28 +70,30 @@ const TypeSpec& Mntr_Screen::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_Screen::getMemberRules(void) const {
+const MemberRules& Mntr_Screen::getMemberRules(void) const
+{
     
-    static MemberRules filemonitorMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+    if ( !rulesSet )
+    {
         
+        memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
+        memberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
         rulesSet = true;
     }
     
-    return filemonitorMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */
-const TypeSpec& Mntr_Screen::getTypeSpec( void ) const {
+const TypeSpec& Mntr_Screen::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -95,34 +102,39 @@ const TypeSpec& Mntr_Screen::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Mntr_Screen::printValue(std::ostream &o) const {
+void Mntr_Screen::printValue(std::ostream &o) const
+{
     
     o << "Mntr_Screen";
 }
 
 
 /** Set a member variable */
-void Mntr_Screen::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Mntr_Screen::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+{
     
-    if ( name == "" ) {
+    if ( name == "" )
+    {
         vars.insert( var );
     }
-    else if ( name == "separator" ) {
-        separator = var;
-    }
-    else if ( name == "printgen" ) {
+    else if ( name == "printgen" )
+    {
         printgen = var;
     }
-    else if ( name == "prior" ) {
+    else if ( name == "prior" )
+    {
         prior = var;
     }
-    else if ( name == "posterior" ) {
+    else if ( name == "posterior" )
+    {
         posterior = var;
     }
-    else if ( name == "likelihood" ) {
+    else if ( name == "likelihood" )
+    {
         likelihood = var;
     }
-    else {
+    else
+    {
         RevObject::setConstMemberVariable(name, var);
     }
 }
