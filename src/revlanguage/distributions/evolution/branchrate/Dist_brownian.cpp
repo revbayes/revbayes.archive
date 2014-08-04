@@ -31,7 +31,7 @@ RevBayesCore::BrownianPhyloProcess* Dist_brownian::createDistribution( void ) co
 
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
-    RevBayesCore::TypedDagNode<double>* s  = static_cast<const Real&>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos&>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* dr  = static_cast<const Real&>( drift->getRevObject() ).getDagNode();
     
     RevBayesCore::BrownianPhyloProcess* d    = new RevBayesCore::BrownianPhyloProcess( tau, s, dr );
