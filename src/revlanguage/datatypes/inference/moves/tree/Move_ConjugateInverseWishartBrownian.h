@@ -40,9 +40,7 @@ namespace RevLanguage {
         RevPtr<const Variable>                      sigma;
         RevPtr<const Variable>                      kappa;
         RevPtr<const Variable>                      df;
-
-//         RevPtr<const Variable>                      lambda;
-//         RevPtr<const Variable>                      tuning;
+//        RevPtr<const Variable>                      tau;
         
     };
     

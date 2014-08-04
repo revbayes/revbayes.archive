@@ -188,8 +188,8 @@ private:
             tab.append("..");
         }
         //message.append(tab).append(state->getMessage()).append(nl);
-        message.append(tab).append(m).append("-").append(state->getDescription()).append(nl);
-        message.append("Current state:").append(queuedStates->back()->getDescription()).append(nl);
+        message.append(tab).append(m).append("-").append(state->getDescription());
+        message.append(" -> ").append(queuedStates->back()->getDescription()).append(nl);
     }
 
     void addState(EditorState* e, std::string subject) {

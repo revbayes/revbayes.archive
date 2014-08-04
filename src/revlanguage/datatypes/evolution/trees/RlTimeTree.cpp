@@ -56,11 +56,6 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
         size_t n = this->dagNode->getValue().getNumberOfNodes();
         return new Variable( new Natural( n ) );
     }
-    else if (name == "height") 
-    {
-        const RevBayesCore::TopologyNode& r = this->dagNode->getValue().getTipNode( 0 );
-        return new Variable( new RealPos( r.getTime() ) );
-    } 
     else if (name == "names") 
     {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
@@ -110,7 +105,7 @@ const RevLanguage::MethodTable& TimeTree::getMethods(void) const
         methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
 
         ArgumentRules* heightArgRules = new ArgumentRules();
-        methods.addFunction("height", new MemberProcedure(Natural::getClassTypeSpec(),          heightArgRules   ) );
+        methods.addFunction("rootAge", new MemberFunction<TimeTree, RealPos>(this,          heightArgRules   ) );
 
         ArgumentRules* namesArgRules = new ArgumentRules();
         methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );

@@ -16,14 +16,19 @@
 using namespace RevBayesCore;
 
 MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,  
-                                               const std::map<std::string, std::string> &g2s) : TypedDistribution<TimeTree>( NULL ), 
-gene2species( g2s ),
-speciesTree( sp ),
-Nes( NULL ),
-Ne( NULL ),
-numTaxa( g2s.size() ),
-logTreeTopologyProb (0.0)
- {
+                                               const std::vector<Taxon> &taxa) : TypedDistribution<TimeTree>( NULL ),
+    gene2species(),
+    speciesTree( sp ),
+    Nes( NULL ),
+    Ne( NULL ),
+    numTaxa( taxa.size() ),
+    logTreeTopologyProb (0.0)
+{
+    
+    for (std::vector<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it)
+    {
+        gene2species[it->getName()] = it->getSpeciesName();
+    }
     
     double lnFact = RbMath::lnFactorial((int)(numTaxa));
     
