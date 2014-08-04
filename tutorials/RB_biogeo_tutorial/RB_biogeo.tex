@@ -264,17 +264,24 @@ End;
 
 Range data is stored in standard Nexus format.
 In the \texttt{begin data} block, the first line gives the dimensions of the data matrix and the second line indicates we will be using binary characters. 
-Rows in the \textttt{matrix} block correspond to taxa and their range data, while columns give in which areas each taxon is present (1) or absent (0).
-For example, taxon \texttt{P_fauriei2} is present only in area 2, which will be defined by the Geography file.
+%Rows in the \texttt{matrix} block correspond to taxa and their range data, while columns give in which areas each taxon is present (1) or absent (0).
+%For example, taxon \texttt{P_fauriei2} is present only in area 2, which will be defined by the Geography file.
 
 \subsection{Geography}
 
-This model will use discrete-state biogeographic ranges, meaning the range
+Although the model will use discrete-state biogeographic ranges, geographical area is naturally continuous.
+This means we must impose some discretization upon the geography to designate a set of biogeographically meaningful characters (called areas).
+Different methods use different criteria for this discretization, so it is best to perform the discretization yourself rather than blindly using the discretization given from a previous study or method.
+Some geographies have natural discretizations: for instance, the Hawaiian archipelago forms naturally discrete areas on the basis of islands.
+For many geographies, however, it may unclear how to perform this discretization.
+Much like morphological analyses, you might choose to choose areas based on expert opinion, based on some model, or using some ``naive'' uniform discretization.
+This procedure is not part of the tutorial, but you should be aware that area definitions are not always obvious or objective.
+
 Each area is assigned a point to represent its geographical coordinates.
-The distances between these coordinates inform to distance-dependent dispersal parameter for range expansion events.
-Coordinates close to the center of the area suffice.
-The first line is used to indicate the time the distances apply to and should be set to ``\# 0.0''.
-Each remaining line reports the latitude and longitude in order of the areas in the columns of the data matrix.
+The distances between these coordinates inform to distance-dependent dispersal parameter for range expansion events, so coordinates roughly close to the center of the area suffice.
+data matrix.
+
+In addition the accessability
 
 \noindent \\ \impmark Open the file \texttt{examples/my\_areas.txt}.
 
