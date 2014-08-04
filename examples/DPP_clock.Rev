@@ -119,7 +119,7 @@ mymodel <- model(pi)
 
 monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10, separator = "\t")
 monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, separator = "\t", tau)
-monitors[3] <- screenmonitor(printgen=10, separator = "  ", pi)
+monitors[3] <- screenmonitor(printgen=10, pi)
 
 ### This works up until this point
 mymcmc <- mcmc(mymodel, monitors, moves)

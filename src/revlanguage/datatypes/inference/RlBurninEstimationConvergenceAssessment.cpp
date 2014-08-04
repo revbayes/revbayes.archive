@@ -17,13 +17,16 @@
 #include "StationarityTest.h"
 #include "StringUtilities.h"
 #include "TypeSpec.h"
+#include "ModelVector.h"
 
 
 using namespace RevLanguage;
 
 BurninEstimationConvergenceAssessment::BurninEstimationConvergenceAssessment() : RevObject(),
-    filename( "" ),
-    burninMethod( "ESS" )
+    delimiter( "\t" ),
+    filenames(),
+    burninMethod( "ESS" ),
+    verbose( false )
 {
     
 }
@@ -42,7 +45,7 @@ BurninEstimationConvergenceAssessment* BurninEstimationConvergenceAssessment::cl
 RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
     RevPtr<Variable> retVar;
-
+    
     if (name == "run")
     {
         bool passed = true;
@@ -73,18 +76,24 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
         RevBayesCore::ConvergenceDiagnosticContinuous *stationarityTest = new RevBayesCore::StationarityTest();
         
         // read the traces
-        // check that the file/path name has been correctly specified
-        RevBayesCore::RbFileManager myFileManager( filename );
         
         // set up a vector of strings containing the name or names of the files to be read
         std::vector<std::string> vectorOfFileNames;
-        if ( myFileManager.isFile() )
+        
+        for (std::set<std::string>::const_iterator it=filenames.begin(); it!=filenames.end(); ++it)
         {
-            vectorOfFileNames.push_back( myFileManager.getFullFileName() );
-        }
-        else
-        {
-            myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
+            const std::string &fn = *it;
+            // check that the file/path name has been correctly specified
+            RevBayesCore::RbFileManager myFileManager( fn );
+        
+            if ( myFileManager.isFile() )
+            {
+                vectorOfFileNames.push_back( myFileManager.getFullFileName() );
+            }
+            else
+            {
+                myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
+            }
         }
         
         
@@ -92,13 +101,29 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
         tmp << "Processing " << vectorOfFileNames.size() << ( vectorOfFileNames.size() > 1 ? " files ..." : " file ...");
         RBOUT( tmp.str() );
         
+        
+        
+        RBOUT("\n\t-----------------------------------");
+        RBOUT("\tSingle Chain Convergence Assessment");
+        RBOUT("\t-----------------------------------\n\n");
+        
+        std::vector< std::vector<RevBayesCore::Trace> > runs;
+        std::vector< size_t > burnins;
+        
         for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
         {
-            std::vector<RevBayesCore::Trace> data;
+            
+            std::vector<RevBayesCore::Trace> d;
             const std::string &fn = *p;
-            readTrace(fn, data);
             
             RBOUT("\tProcessing file '" + fn + "'");
+            
+            // read in the traces from this file
+            readTrace(fn, d);
+            
+            // add the traces to our runs
+            runs.push_back( d );
+            std::vector<RevBayesCore::Trace> &data = runs[runs.size()-1];
             
             size_t maxBurnin = 0;
             
@@ -113,96 +138,154 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
                 }
             }
             
+            burnins.push_back( maxBurnin );
+            
             bool failed = false;
-            std::vector<std::string> failedGeweke;
-            std::vector<std::string> failedGelman;
-            std::vector<std::string> failedStationary;
-            std::vector<std::string> failedESS;
-            std::vector<std::string> failedHeidelberger;
+            size_t numFailedParams = 0;
             for ( size_t i = 0; i < data.size(); ++i)
             {
                 RevBayesCore::Trace &t = data[i];
                 const std::vector<double> &v = t.getValues();
                 t.setBurnin( maxBurnin );
+                t.computeStatistics();
                 
                 const std::string &traceName = t.getParameterName();
                 
+                
                 bool gewekeStat = gewekeTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( !gewekeStat )
-                {
-                    failedGeweke.push_back( traceName );
-                }
-                
                 bool essStat = essTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( !essStat )
-                {
-                    failedESS.push_back( traceName );
-                }
-                
-                bool gelmanStat = gelmanRubinTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( !gelmanStat )
-                {
-                    failedGelman.push_back( traceName );
-                }
-                
+//                bool gelmanStat = gelmanRubinTest->assessConvergenceSingleChain( v, maxBurnin );
                 bool stationarityStat = stationarityTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( !stationarityStat )
-                {
-                    failedStationary.push_back( traceName );
-                }
-                
                 bool heidelbergerStat = heidelbergerTest->assessConvergenceSingleChain( v, maxBurnin );
-                if ( !heidelbergerStat )
+                bool failedParam = !gewekeStat || !stationarityStat || !heidelbergerStat || !essStat;
+                
+                if ( failedParam == true )
                 {
-                    failedHeidelberger.push_back( traceName );
+                    numFailedParams++;
                 }
                 
-                failed = !gewekeStat || !gelmanStat || !stationarityStat || !heidelbergerStat || !essStat;
+                failed |= failedParam;
+                
+                if ( verbose == true )
+                {
+                    RBOUT("\t\tResults for parameter '" + traceName + "'\n" );
+                    std::stringstream ss("");
+                    ss << "\t\t\tESS = " << t.getEss();
+                    RBOUT( ss.str() );
+                    std::string p = (gewekeStat ? "TRUE" : "FALSE");
+                    RBOUT("\t\t\tPassed Geweke test:\t\t\t\t" + p);
+                    p = (essStat ? "TRUE" : "FALSE");
+                    RBOUT("\t\t\tPassed ESS test:\t\t\t\t" + p);
+//                    p = (gelmanStat ? "TRUE" : "FALSE");
+//                    RBOUT("\t\t\tPassed Gelman-Rubin test:\t\t\t" + p);
+                    p = (stationarityStat ? "TRUE" : "FALSE");
+                    RBOUT("\t\t\tPassed Stationarity test:\t\t\t" + p);
+                    p = (heidelbergerStat ? "TRUE" : "FALSE");
+                    RBOUT("\t\t\tPassed Heideberger-Welch test:\t\t" + p);
+                }
+                
             }
             
             if ( failed )
             {
-                RBOUT("\tConvergence assessment detected possible issues in file " + fn + ":");
-                
-                // printing failures of convergence of the Geweke test
-                for (std::vector<std::string>::iterator it = failedGeweke.begin(); it != failedGeweke.end(); ++it)
-                {
-                    RBOUT("\t\tThe parameter with name '" + *it + " failed the Geweke test.");
-                }
-                
-                // printing failures of convergence of the Gelman-Rubin test
-                for (std::vector<std::string>::iterator it = failedGelman.begin(); it != failedGelman.end(); ++it)
-                {
-                    RBOUT("\t\tThe parameter with name '" + *it + " failed the Gelman-Rubin test.");
-                }
-                
-                // printing failures of convergence of the stationarity test
-                for (std::vector<std::string>::iterator it = failedStationary.begin(); it != failedStationary.end(); ++it)
-                {
-                    RBOUT("\t\tThe parameter with name '" + *it + " failed the stationarity test.");
-                }
-                
-                // printing failures of convergence of the ESS test
-                for (std::vector<std::string>::iterator it = failedESS.begin(); it != failedESS.end(); ++it)
-                {
-                    RBOUT("\t\tThe parameter with name '" + *it + " failed the ESS test.");
-                }
-                
-                // printing failures of convergence of the Heidelberger-Welch test
-                for (std::vector<std::string>::iterator it = failedHeidelberger.begin(); it != failedHeidelberger.end(); ++it)
-                {
-                    RBOUT("\t\tThe parameter with name '" + *it + " failed the Heidelberger-Welch test.");
-                }
+                std::stringstream ss("");
+                ss << "\tConvergence assessment detected " << numFailedParams << " possible issues in file '" + fn + "'.\n\n";
+                RBOUT( ss.str() );
                 
             }
             else
             {
-                RBOUT("No failure to convergence could be detected.");
+                RBOUT("No failure to convergence could be detected in file '"+ fn +"'.\n\n");
             }
             
             passed &= !failed;
         }
-
+        
+        
+        // now, compare the different runs
+        if ( runs.size() > 1 )
+        {
+            RBOUT("\n\t----------------------------------");
+            RBOUT("\tMulti Chain Convergence Assessment");
+            RBOUT("\t----------------------------------\n\n");
+            
+            std::vector<RevBayesCore::Trace> &run = runs[0];
+            
+            bool failed = false;
+            size_t numFailedParams = 0;
+            
+            for (size_t j=0; j<run.size(); ++j)
+            {
+                
+                RevBayesCore::Trace &t = run[j];
+                const std::string &traceName = t.getParameterName();
+                std::vector< std::vector<double> > v;
+                v.push_back( t.getValues() );
+                
+                for (size_t i=1; i<runs.size(); ++i)
+                {
+                    
+                    size_t index = runs[i].size();
+                    for (size_t k=0; k<runs[i].size(); ++k)
+                    {
+                        if ( runs[i][k].getParameterName() == traceName )
+                        {
+                            index = k;
+                            break;
+                        }
+                    }
+                    
+                    if ( index == runs[i].size() )
+                    {
+                        throw RbException("Could not find a trace for parameter '" + traceName + "' in file '" + runs[i][0].getFileName() + "'.");
+                    }
+                    RevBayesCore::Trace &nextTrace = runs[i][index];
+                    v.push_back( nextTrace.getValues() );
+            
+                }
+                
+                
+//                bool gewekeStat = gewekeTest->assessConvergenceMultipleChains( v, burnins );
+//                bool essStat = essTest->assessConvergenceMultipleChains( v, burnins );
+                bool gelmanStat = gelmanRubinTest->assessConvergenceMultipleChains( v, burnins );
+                bool stationarityStat = stationarityTest->assessConvergenceMultipleChains( v, burnins );
+//                bool heidelbergerStat = heidelbergerTest->assessConvergenceMultipleChains( v, burnins );
+                bool failedParam =  !gelmanStat || !stationarityStat;
+                
+                if ( failedParam == true )
+                {
+                    numFailedParams++;
+                }
+                
+                failed |= failedParam;
+                
+                if ( verbose == true )
+                {
+                    RBOUT("\t\tResults for parameter '" + traceName + "'\n" );
+                    std::string p = (gelmanStat ? "TRUE" : "FALSE");
+                    RBOUT("\t\t\tPassed Gelman-Rubin test:\t\t\t" + p);
+                    p = (stationarityStat ? "TRUE" : "FALSE");
+                    RBOUT("\t\t\tPassed Stationarity test:\t\t\t" + p);
+                }
+            
+            }
+            
+            
+            
+            if ( failed )
+            {
+                std::stringstream ss("");
+                ss << "\tConvergence assessment detected " << numFailedParams << " possible issues.\n\n";
+                RBOUT( ss.str() );
+                
+            }
+            else
+            {
+                RBOUT("No failure to convergence could be detected.\n\n");
+            }
+            
+        }
+        
         RBOUT("\n");
         
         retVar = new Variable( new RlBoolean( passed ) );
@@ -212,6 +295,12 @@ RevPtr<Variable> BurninEstimationConvergenceAssessment::executeMethod(std::strin
     {
         // get the member with give index
         burninMethod = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+    }
+    else if (name == "verbose")
+    {
+        // get the member with give index
+        verbose = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
         
     }
     else
@@ -232,7 +321,8 @@ const std::string& BurninEstimationConvergenceAssessment::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void) {
+const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -242,15 +332,19 @@ const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& BurninEstimationConvergenceAssessment::getMemberRules(void) const {
+const MemberRules& BurninEstimationConvergenceAssessment::getMemberRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("delimitter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
+        std::vector<TypeSpec> filenameTypes;
+        filenameTypes.push_back( RlString::getClassTypeSpec() );
+        filenameTypes.push_back( ModelVector<RlString>::getClassTypeSpec() );
+        memberRules.push_back( new ArgumentRule("filename", true, filenameTypes ) );
+        memberRules.push_back( new ArgumentRule("delimiter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
         
         rulesSet = true;
     }
@@ -277,6 +371,10 @@ const MethodTable& BurninEstimationConvergenceAssessment::getMethods(void) const
         ArgumentRules* burninMethodArgRules = new ArgumentRules();
         burninMethodArgRules->push_back( new OptionRule("method", options ) );
         methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
+        
+        ArgumentRules* verboseArgRules = new ArgumentRules();
+        verboseArgRules->push_back( new ArgumentRule("x", true, RlBoolean::getClassTypeSpec() ) );
+        methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
         
         // necessary call for proper inheritance
         methods.setParentTable( &RevObject::getMethods() );
@@ -307,44 +405,44 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
 {
     
     bool hasHeaderBeenRead = false;
-        
-        /* Open file */
+    
+    /* Open file */
     std::ifstream inFile( fn.c_str() );
-        
+    
     if ( !inFile )
         throw RbException( "Could not open file \"" + fn + "\"" );
     
     /* Initialize */
     std::string commandLine;
-
+    
     size_t startIndex = 0;
     
     /* Command-processing loop */
     while ( inFile.good() )
     {
-            
+        
         // Read a line
         std::string line;
         getline( inFile, line );
-            
+        
         // skip empty lines
         //line = stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if (line.length() == 0)
         {
             continue;
         }
-            
-            
+        
+        
         // removing comments
         if (line[0] == '#')
         {
             continue;
         }
-            
+        
         // splitting every line into its columns
         std::vector<std::string> columns;
-        StringUtilities::stringSplit(line, delimitter, columns);
-            
+        StringUtilities::stringSplit(line, delimiter, columns);
+        
         // we assume a header at the first line of the file
         if (!hasHeaderBeenRead)
         {
@@ -358,19 +456,19 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
             for (size_t j=startIndex; j<columns.size(); j++)
             {
                 RevBayesCore::Trace t;
-                    
+                
                 std::string parmName = columns[j];
                 t.setParameterName(parmName);
                 t.setFileName(fn);
-                    
+                
                 data.push_back( t );
             }
-                
+            
             hasHeaderBeenRead = true;
-                
+            
             continue;
         }
-            
+        
         // adding values to the Tracess
         for (size_t j=startIndex; j<columns.size(); j++)
         {
@@ -389,13 +487,27 @@ void BurninEstimationConvergenceAssessment::setConstMemberVariable(const std::st
     
     if ( name == "filename")
     {
-        filename = static_cast<const RlString&>( var->getRevObject() ).getValue();
+        // empty the files names
+        if ( var->getRevObject().getTypeSpec().isDerivedOf( RlString::getClassTypeSpec() ) )
+        {
+            filenames.insert( static_cast<const RlString&>( var->getRevObject() ).getValue() );
+        }
+        else
+        {
+            const std::vector<std::string> &fn = static_cast<const ModelVector<RlString> &>( var->getRevObject() ).getValue();
+            for (std::vector<std::string>::const_iterator it=fn.begin(); it!=fn.end(); ++it)
+            {
+                filenames.insert( *it );
+            }
+        }
+        
     }
-    else if ( name == "delimitter")
+    else if ( name == "delimiter")
     {
-        delimitter = static_cast<const RlString&>( var->getRevObject() ).getValue();
+        delimiter = static_cast<const RlString&>( var->getRevObject() ).getValue();
     }
-    else {
+    else
+    {
         RevObject::setConstMemberVariable(name, var);
     }
     

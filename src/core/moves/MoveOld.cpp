@@ -125,7 +125,9 @@ void MoveOld::performGibbsMove(void) {
 }
 
 
-void MoveOld::printSummary( std::ostream &o ) const {
+void MoveOld::printSummary( std::ostream &o ) const
+{
+    
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     

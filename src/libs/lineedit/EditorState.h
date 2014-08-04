@@ -253,6 +253,10 @@ public:
 //        if (LineEditUtils().lastCharContains(cmd, releaseChars)) { 
 //            return true;
 //        }
+<<<<<<< HEAD
+=======
+        return false;
+>>>>>>> 13e59c59512377783673d3b98c196e8eda6fedee
     }
 };
 
