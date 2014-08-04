@@ -96,7 +96,7 @@ void ExponentialBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &fr
         else    {
 
             std::cerr << "should not be in simple univariate case\n";
-            exit(1);
+            std::exit(1);
             /*
             double x1 = nodeval->getValue()[index];
             double x2 = nodeval->getValue()[upindex];
