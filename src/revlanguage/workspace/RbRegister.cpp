@@ -165,6 +165,7 @@
 #include "Dist_phyloDACTMC.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
+#include "Dist_autocorrelatedLnBranchRates.h"
 #include "Dist_branchRateJumpProcess.h"
 #include "Dist_whiteNoise.h"
 
@@ -554,7 +555,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Branch rate processes (in folder "distributions/evolution/branchrate") */
         
-        // branch-rate jump process
+        // autocorrelated log-normal branch rates relaxed clock model
+        addDistribution( "dnAutocorrrelatedLNBranchRates", new Dist_autocorrelatedLnBranchRates() );
+        addDistribution( "autocorrrelatedLNBranchRates", new Dist_autocorrelatedLnBranchRates() );
+        addDistribution( "dnACLN", new Dist_autocorrelatedLnBranchRates() );
+        addDistribution( "ACLN", new Dist_autocorrelatedLnBranchRates() );
+		
+		
+		// branch-rate jump process
         addDistribution( "dnDist_branchRateJumpProcess", new Dist_branchRateJumpProcess() );
         addDistribution( "branchRateJumpProcess",   new Dist_branchRateJumpProcess() );
         
