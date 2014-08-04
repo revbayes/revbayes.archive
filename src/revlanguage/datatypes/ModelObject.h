@@ -21,7 +21,7 @@
 #include "MethodTable.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
-#include "UserFunctionArgs.h"
+#include "UserFunction.h"
 #include "UserFunctionCall.h"
 
 namespace RevLanguage {
@@ -50,7 +50,7 @@ namespace RevLanguage {
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
-        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunction* code);         //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -469,10 +469,10 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 
 /** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunction* code )
 {
     TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
-    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, args );
+    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, code );
     
     if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
         delete dagNode;

@@ -71,6 +71,30 @@ Environment& Environment::operator=(const Environment &x)
 }
 
 
+/** Add alias to variable to frame. */
+void Environment::addAlias( const std::string& name, const RevPtr<Variable>& theVar )
+{
+    
+    /* Throw an error if the name string is empty. */
+    if ( name == "" )
+        throw RbException("Invalid attempt to add unnamed reference variable to frame.");
+    
+    /* Throw an error if the variable exists. Note that we cannot use the function
+     existsVariable because that function looks recursively in parent frames, which
+     would make it impossible to hide global variables. */
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
+    
+    /* Insert new alias to variable in variable table (we do not and should not name it) */
+    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    
+#ifdef DEBUG_WORKSPACE
+    printf("Inserted \"%s\" (alias of \"%s\") in frame\n", name.c_str(), theVar->getName() );
+#endif
+    
+}
+
+
 /* Add function to frame. */
 bool Environment::addFunction(const std::string& name, Function* func)
 {
@@ -313,6 +337,7 @@ const Function& Environment::getFunction(const std::string& name)
     return functionTable.getFunction(name);
 }
 
+
 /* Get function. This call will throw an error if the function is missing. */
 Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args)
 {
@@ -391,6 +416,15 @@ const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
     return it->second;
 }
 
+
+/**
+ * Is the function with the name 'fxnName' a procedure? Simply ask the
+ * function table.
+ */
+bool Environment::isProcedure(const std::string& fxnName) const
+{
+    return functionTable.isProcedure( fxnName );
+}
 
 /**
  * Is Environment same or parent of otherEnvironment? We use this function

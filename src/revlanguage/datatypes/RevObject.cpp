@@ -25,7 +25,6 @@
 #include "RlUtils.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
 
 #include <sstream>
 #include <stdio.h>
@@ -364,7 +363,7 @@ RevObject* RevObject::makeIndirectReference(void)
 /**
  * Convert the object to a deterministic object with a userdefined Rev function inside it.
  */
-void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunction* code )
 {
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in deterministic nodes (yet)";

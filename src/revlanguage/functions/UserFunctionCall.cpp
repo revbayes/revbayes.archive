@@ -18,7 +18,8 @@ using namespace RevLanguage;
 
 /** Constructor */
 UserFunctionCall::UserFunctionCall( UserFunction* fxn   ) :
-    Function(), userFunction(fxn)
+    Function(),
+    userFunction(fxn)
 {
 
     // Create new function frame with user function execution environment as parent
@@ -38,8 +39,10 @@ UserFunctionCall::UserFunctionCall( UserFunction* fxn   ) :
 
 /** Copy constructor */
 UserFunctionCall::UserFunctionCall(const UserFunctionCall &f)
-    : Function( f ), userFunction( f.userFunction ), functionFrame( f.functionFrame->clone() ) {
-    
+    : Function( f ),
+    userFunction( f.userFunction ),
+    functionFrame( f.functionFrame->clone() )
+{
 }
 
 
@@ -72,9 +75,9 @@ UserFunctionCall* UserFunctionCall::clone(void) const {
 }
 
 
-/** In this function we execute the Rev code for the function (uncompiled syntax tree for now) */
-RevPtr<Variable> UserFunctionCall::execute( void ) {
-    
+/** In this function we execute the Rev code for the function (uncompiled syntax tree) */
+RevPtr<Variable> UserFunctionCall::execute( void )
+{
     // Clear signals
     Signals::getSignals().clearFlags();
     
@@ -89,7 +92,10 @@ RevPtr<Variable> UserFunctionCall::execute( void ) {
         retVar = theSyntaxElement->evaluateContent( *functionFrame );
         
         if ( Signals::getSignals().isSet( Signals::RETURN ) )
+        {
+            Signals::getSignals().clearFlags();
             break;
+        }
     }
 
     // Return the return value

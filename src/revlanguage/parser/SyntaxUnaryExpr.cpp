@@ -159,6 +159,21 @@ bool SyntaxUnaryExpr::isConstExpression( void ) const
 }
 
 
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The unary expression is safe
+ * if its single operand is safe.
+ */
+bool SyntaxUnaryExpr::isFunctionSafe( const Environment& env ) const
+{
+    // Check the operand
+    if ( operand->isFunctionSafe( env ) )
+        return true;
+    else
+        return false;
+}
+
+
 /** Print info about the syntax element */
 void SyntaxUnaryExpr::printValue(std::ostream& o) const
 {

@@ -15,6 +15,11 @@ namespace RevLanguage {
     class UserFunctionArgs;
     class UserFunctionCall;
 
+    /**
+     * The UserFunction class holds information about the definition of a user function. Two help classes,
+     * UserFunctionCall and UserFunctionArgs are used to populate a RevLanguage::DeterministicNode together
+     * with a TypedUserFunction to make a deterministic variable using the user function.
+     */
     class UserFunction :  public Function {
         
     public:

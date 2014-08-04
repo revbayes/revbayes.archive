@@ -78,6 +78,7 @@ namespace RevLanguage {
         RevPtr<Variable>            evaluateContent(Environment& env);                              //!< Get semantic value (static version)
         RevPtr<Variable>            evaluateDynamicContent(Environment& env);                       //!< Get semantic value (dynamic version)
         bool                        isConstExpression(void) const;                                  //!< Is the expression constant?
+        bool                        isFunctionSafe(const Environment& env) const;                   //!< Is this element safe in a function?
 
     protected:
         SyntaxElement*              operand;                                                        //!< The operand

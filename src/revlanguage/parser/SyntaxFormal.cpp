@@ -177,3 +177,10 @@ void SyntaxFormal::printValue(std::ostream& o) const
     o << std::endl;
 }
 
+
+/** Set the protected flag of the formal argument specification */
+void SyntaxFormal::setIsProtected( bool prot )
+{
+//    argRule->setIsProtected( prot );
+}
+

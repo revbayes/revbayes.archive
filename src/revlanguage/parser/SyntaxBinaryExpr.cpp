@@ -180,6 +180,22 @@ bool SyntaxBinaryExpr::isConstExpression( void ) const
 }
 
 
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The binary expression is safe
+ * if its operands are safe.
+ */
+bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env ) const
+{
+    // Check operands
+    if ( leftOperand->isFunctionSafe( env ) && rightOperand->isFunctionSafe( env ) )
+        return true;
+
+    // At least one operand not safe
+    return false;
+}
+
+
 /** Print info about the syntax element */
 void SyntaxBinaryExpr::printValue( std::ostream& o ) const
 {

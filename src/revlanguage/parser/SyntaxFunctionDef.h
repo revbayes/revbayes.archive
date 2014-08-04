@@ -26,7 +26,11 @@ namespace RevLanguage {
     class SyntaxFunctionDef : public SyntaxElement {
 
     public:
-        SyntaxFunctionDef(const std::string &type, const std::string &name, std::list<SyntaxFormal*>*   formals, std::list<SyntaxElement*>*  stmts);    //!< Standard constructor
+        SyntaxFunctionDef(const std::string&            type,
+                          const std::string&            name,
+                          std::list<SyntaxFormal*>*     formals,
+                          std::list<SyntaxElement*>*    stmts,
+                          bool                          isProcDef = false );                                                                            //!< Standard constructor
         SyntaxFunctionDef(const SyntaxFunctionDef& x);                                                                                                  //!< Copy constructor
 	    
         virtual                        ~SyntaxFunctionDef();                                                                                            //!< Destructor
@@ -46,7 +50,8 @@ namespace RevLanguage {
         std::string                     functionName;                                                                                                   //!< The name of the function
         std::list<SyntaxFormal*>*       formalArgs;                                                                                                     //!< The formal arguments
         TypeSpec                        returnType;                                                                                                     //!< The return type specification of the function
-    
+        bool                            isProcedureDef;                                                                                                 //!< Is this a procedure definition?
+        
     };
     
 }
