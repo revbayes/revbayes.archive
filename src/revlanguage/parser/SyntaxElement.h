@@ -43,6 +43,8 @@ namespace RevLanguage {
         virtual RevPtr<Variable>        evaluateDynamicContent(Environment& env);                                           //!< Get semantic value (dynamic, if different)
         virtual bool                    isAssignment(void) const;                                                           //!< Is this an assignment statement element?
         virtual bool                    isConstExpression(void) const;                                                      //!< Is subtree constant expr?
+        virtual bool                    isFunctionSafe(const Environment& env) const;                                       //!< Is this element safe in a function?
+        virtual bool                    retrievesExternVar(const Environment& env) const;                                   //!< Does this element retrieve an external variable?
 
     protected:
                                         SyntaxElement(void) {}                                                              //!< Protected constructor, just in case

@@ -49,6 +49,8 @@ namespace RevLanguage {
         const std::string&          getLabel() const { return label; }                                              //!< Return label
         RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
         bool                        isConstExpression(void) const;                                                  //!< Is the expression constant?
+        bool                        isFunctionSafe(const Environment& env) const;                                   //!< Is this element safe in a function?
+        bool                        retrievesExternVar(const Environment& env) const;                               //!< Does this element retrieve an external variable?
 
     protected:
         std::string                 label;                                                                          //!< The label of the argument

@@ -23,7 +23,6 @@
 #include "TypedUserFunction.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
-#include "UserFunctionArgs.h"
 #include "UserFunctionCall.h"
 #include "Workspace.h"
 
@@ -31,37 +30,41 @@
 
 using namespace RevLanguage;
 
-/** Constructor */
+/** Basic constructor */
 UserFunction::UserFunction( const ArgumentRules*        argRules,
                             const TypeSpec&             retType ,
                             std::list<SyntaxElement*>*  stmts   )   :
     Function(),
-    argumentRules(argRules),
-    returnType(retType),
-    code(stmts)
+    argumentRules( argRules ),
+    returnType( retType ),
+    code( stmts )
 {
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) :
-    Function(x), argumentRules( new ArgumentRules(*x.argumentRules) ), returnType( x.returnType ), code( NULL )
+UserFunction::UserFunction( const UserFunction& x ) :
+    Function( x ),
+    argumentRules( new ArgumentRules( *x.argumentRules ) ),
+    returnType( x.returnType ),
+    code( NULL )
 {
-    // create a new list for the code
+    // Create a new list for the code
     code = new std::list<SyntaxElement*>();
-    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+    for ( std::list<SyntaxElement*>::const_iterator it = x.code->begin(); it != x.code->end(); ++it )
     {
-        SyntaxElement* element = (*i)->clone();
-        code->push_back(element);
+        SyntaxElement* element = (*it)->clone();
+        code->push_back( element );
     }
 }
 
 
 /** Assignment operator. Deal with argument rules and code. */
-UserFunction& UserFunction::operator=(const UserFunction &f)
+UserFunction& UserFunction::operator=( const UserFunction &f )
 {
     if ( this != &f ) {
-        // call the base class assignment operator
+        
+        // Call the base class assignment operator
         Function::operator=(f);
 
         delete argumentRules;
@@ -74,7 +77,7 @@ UserFunction& UserFunction::operator=(const UserFunction &f)
         }
         code->clear();
         
-        // create a new list for the code
+        // Create a new list for the code
         for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++)
         {
             SyntaxElement* element = (*i)->clone();
@@ -120,10 +123,10 @@ RevPtr<Variable> UserFunction::execute( void )
     if ( retVal->hasDagNode() )
     {
         // Make a deterministic variable
-        UserFunctionCall* call = new UserFunctionCall( this );
-        UserFunctionArgs* args = new UserFunctionArgs( this );
+        UserFunction*     fxn = this->clone();
+        UserFunctionCall* call = new UserFunctionCall( fxn );
         
-        retVal->makeDeterministicValue( call, args );
+        retVal->makeDeterministicValue( call, fxn );
 
         return new Variable( retVal );
     }

@@ -23,7 +23,6 @@
 #include "Function.h"
 #include "RevObject.h"
 #include "RbUtil.h"
-#include "Workspace.h"
 
 #include <sstream>
 
@@ -124,7 +123,7 @@ std::string Function::callSignature(void) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore) {
+bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore) {
     
     /*********************  0. Initialization  **********************/
     

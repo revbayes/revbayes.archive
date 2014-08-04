@@ -59,7 +59,6 @@ namespace RevLanguage {
 #include "RevPtr.h"
 #include "TypeSpec.h"
 #include "Variable.h"
-#include "Workspace.h"
 
 #include <algorithm>
 

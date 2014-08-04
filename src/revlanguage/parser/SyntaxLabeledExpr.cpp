@@ -72,6 +72,16 @@ bool SyntaxLabeledExpr::isConstExpression( void ) const
 }
 
 
+/**
+ * Is this syntax element safe for inclusion in a function definition? Simply
+ * delegate to the expression.
+ */
+bool SyntaxLabeledExpr::isFunctionSafe( const Environment& env ) const
+{
+    return expression->isFunctionSafe( env );
+}
+
+
 /** Print info about the syntax element */
 void SyntaxLabeledExpr::printValue( std::ostream& o ) const
 {
@@ -81,5 +91,15 @@ void SyntaxLabeledExpr::printValue( std::ostream& o ) const
     expression->printValue(o);
     o << std::endl;
     o << std::endl;
+}
+
+
+/**
+ * Does this syntax element retrieve an external variable? Simply
+ * delegate to the expression.
+ */
+bool SyntaxLabeledExpr::retrievesExternVar( const Environment& env ) const
+{
+    return expression->retrievesExternVar( env );
 }
 

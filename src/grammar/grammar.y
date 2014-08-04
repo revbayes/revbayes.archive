@@ -281,7 +281,7 @@ prog    :       END_OF_INPUT
 #ifdef DEBUG_BISON_FLEX
                     printf("Bison trying to get help for symbol\n");
 #endif
-                    int rv =  parser.help($2);
+                    int rv =  parser.help(*$2);
                     delete $2;
                     return rv;
                 }
@@ -290,7 +290,7 @@ prog    :       END_OF_INPUT
 #ifdef DEBUG_BISON_FLEX
                     printf("Bison trying to get help for symbol\n");
 #endif
-                    int rv =  parser.help($2);
+                    int rv =  parser.help(*$2);
                     delete $2;
                     return rv;
                 }

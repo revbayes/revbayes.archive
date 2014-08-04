@@ -50,6 +50,7 @@ namespace RevLanguage {
         // Regular functions
         Variable*               clone(void) const;                                      //!< Clone variable
         const std::string&      getName(void) const;                                    //!< Get the name of the variable
+        RevPtr<Variable>        getReferencedVariable(void) const;                      //!< Get the referenced variable
         RevObject&              getRevObject(void) const;                               //!< Get the value of the variable (non-const to return non-const value)
         const TypeSpec&         getRevObjectTypeSpec(void) const;                       //!< Get the required Rev object type spec
         bool                    isControlVar(void) const;                               //!< Is this a control variable?

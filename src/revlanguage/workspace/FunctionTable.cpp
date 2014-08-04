@@ -64,7 +64,30 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
     retVal = equal_range(name);
     for (std::multimap<std::string, Function *>::iterator i=retVal.first; i!=retVal.second; i++) 
     {
-        if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules())) 
+        if ( i->second->isProcedure() != func->isProcedure() )
+        {
+            // Construct an error message
+            std::ostringstream msg;
+            if ( func->isProcedure() )
+                msg << "Procedure ";
+            else
+                msg << "Function ";
+            
+            msg << name << " =  ";
+            i->second->printValue(msg);
+            msg << " cannot overload ";
+            if ( i->second->isProcedure() )
+                msg << " procedure ";
+            else
+                msg << " function ";
+            msg << name << " = ";
+            func->printValue(msg);
+            
+            // throw the error message
+            throw RbException(msg.str());
+        }
+
+        if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()))
         {
             std::ostringstream msg;
             msg << name << " =  ";
@@ -76,14 +99,20 @@ void FunctionTable::addFunction(const std::string name, Function *func) {
             throw RbException(msg.str());
         }
     }
+
+    // Insert the function
     insert(std::pair<std::string, Function* >(name, func));
 
-    /* Name the function so that it is aware of what it is called */
+    // Name the function so that it is aware of what it is called
     func->setName( name );
 }
 
 
-/** Clear table */
+/**
+ * Clear table. We own the functions so we need
+ * to delete them. When that is completed, we
+ * call the base class clear function.
+ */
 void FunctionTable::clear(void) {
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
@@ -94,6 +123,7 @@ void FunctionTable::clear(void) {
 }
 
 
+/** Return a type-safe clone of the function table */
 FunctionTable* FunctionTable::clone( void ) const {
     
     return new FunctionTable( *this );
@@ -124,7 +154,11 @@ RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const s
 }
 
 
-
+/**
+ * Does a function with the given name exist? We check this
+ * function table and then delegate to parent table if we cannot
+ * find the function here.
+ */
 bool FunctionTable::existsFunction(std::string const &name) const {
     
     const std::map<std::string, Function *>::const_iterator& it = find( name );
@@ -290,7 +324,6 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 {
                     msg << ",";
                 }
-//                msg << " " << it->getVariable().getDagNode()->getValue().getTypeSpec();
                 const RevPtr<const Variable>& theVar = j->getVariable();
                 msg << " " << theVar->getRevObject().getTypeSpec().getType();
                 
@@ -425,6 +458,31 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     }
 
     return false;
+}
+
+
+/**
+ * Is the function with the given name a procedure? We check this
+ * function table and then delegate to parent table if we cannot
+ * find the function here.
+ */
+bool FunctionTable::isProcedure(const std::string& name) const
+{
+    const std::map<std::string, Function *>::const_iterator& it = find( name );
+    
+    // If we have the function, we know the answer
+    if ( it != end() )
+        return it->second->isProcedure();
+
+    // If this table doesn't contain the function, then we ask the parent table
+    if ( parentTable != NULL )
+    {
+        return parentTable->isProcedure( name );
+    }
+    else
+    {
+        throw RbException( "No function or procedure '" + name + "'" );
+    }
 }
 
 

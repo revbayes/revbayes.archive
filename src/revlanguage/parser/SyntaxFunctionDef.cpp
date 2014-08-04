@@ -10,11 +10,16 @@
 using namespace RevLanguage;
 
 /** Construct global function call from function name and arguments */
-SyntaxFunctionDef::SyntaxFunctionDef( const std::string &type, const std::string &name, std::list<SyntaxFormal*>* formals, std::list<SyntaxElement*>* stmts ) :
+SyntaxFunctionDef::SyntaxFunctionDef( const std::string&            type,
+                                      const std::string&            name,
+                                      std::list<SyntaxFormal*>*     formals,
+                                      std::list<SyntaxElement*>*    stmts,
+                                      bool                          isProcDef) :
     SyntaxElement(),
     code( stmts ),
     functionName( name ),
     formalArgs( formals ),
+    isProcedureDef( isProcDef ),
     returnType( RlUtils::Void )
 {
     if ( type == "" )
@@ -27,10 +32,10 @@ SyntaxFunctionDef::SyntaxFunctionDef( const std::string &type, const std::string
 /** Deep copy constructor */
 SyntaxFunctionDef::SyntaxFunctionDef( const SyntaxFunctionDef& x ) :
     SyntaxElement( x ),
+    functionName( x.functionName ),
+    isProcedureDef( x.isProcedureDef ),
     returnType( x.returnType )
 {
-    functionName = functionName;
- 
     for ( std::list<SyntaxFormal*>::const_iterator it = x.formalArgs->begin(); it != x.formalArgs->end(); ++it )
         formalArgs->push_back( (*it)->clone() );
     
@@ -59,8 +64,9 @@ SyntaxFunctionDef& SyntaxFunctionDef::operator=( const SyntaxFunctionDef& x )
     {
         SyntaxElement::operator=( x );
 
-        returnType   = x.returnType;
-        functionName = x.functionName;
+        functionName    = x.functionName;
+        isProcedureDef  = x.isProcedureDef;
+        returnType      = x.returnType;
         
         formalArgs->clear();
         for ( std::list<SyntaxFormal*>::const_iterator it = x.formalArgs->begin(); it != x.formalArgs->end(); ++it )
@@ -84,7 +90,7 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone( void ) const
 
 
 
-/** Get semantic value: insert a user-defined function in the user workspace */
+/** Get semantic value: insert a user-defined function or procedure in the user workspace */
 RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
 {
     // Get argument rules from the formals
@@ -93,6 +99,22 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
     for ( std::list<SyntaxFormal*>::iterator it = formalArgs->begin(); it !=formalArgs->end(); ++it )
         argRules->push_back( (*it)->getArgumentRule()->clone() );
 
+    // Check whether statements are function-safe if we are a function
+    if ( !isProcedureDef )
+    {
+        // Check first that all statements are function-safe
+        for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
+        {
+            if ( !(*it)->isFunctionSafe( env ) )
+                throw RbException( "The code is not function-safe." );
+        }
+
+        // Finally check whether last statement (if there is one) retrieves an external variable
+        std::list<SyntaxElement*>::const_reverse_iterator rit = code->rbegin();
+        if ( rit != code->rend() && (*rit)->retrievesExternVar( env ) )
+            throw RbException( "The code is not function-safe." );
+    }
+
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
 
@@ -100,9 +122,13 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
         stmts->push_back( (*it)->clone() );
 
     // Create the function
-    Function* theFunction = new UserFunction( argRules, returnType, stmts );
-        
-    // Insert the function in the (user) workspace
+    Function* theFunction;
+    if ( isProcedureDef )
+        theFunction = new UserFunction( argRules, returnType, stmts );  // UserProcedure( argRules, returnType, stmts );
+    else
+        theFunction = new UserFunction( argRules, returnType, stmts );
+    
+    // Insert the function/procedure in the (user) workspace
     env.addFunction( functionName, theFunction );
 
     // No return value 

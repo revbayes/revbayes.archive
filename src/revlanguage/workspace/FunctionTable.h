@@ -51,6 +51,7 @@ namespace RevLanguage {
         Function&                               getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
         std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
+        bool                                    isProcedure(const std::string& fxnName) const;                                          //!< Is 'fxnName' a procedure?
         void                                    setParentTable(const FunctionTable* ft) { parentTable = ft; }                           //!< Set parent table
 
     protected:

@@ -67,7 +67,7 @@ namespace RevLanguage {
         bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
         void                                            makeCompositeValue();                                               //!< Convert the container to a composite value
         void                                            makeConstantValue();                                                //!< Convert the container to a constant variable
-        void                                            makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Convert to deterministic object with a userdefined Rev function
+        void                                            makeDeterministicValue(UserFunctionCall* call, UserFunction* code); //!< Convert to deterministic object with a userdefined Rev function
         void                                            printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
         void                                            printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
@@ -475,10 +475,10 @@ void ModelContainer<rlType, dim, valueType>::makeConstantValue( void )
 
 /** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
 template <typename rlType, size_t dim, typename valueType>
-void ModelContainer<rlType, dim, valueType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+void ModelContainer<rlType, dim, valueType>::makeDeterministicValue( UserFunctionCall* call, UserFunction* code )
 {
     TypedUserFunction< valueType >*  fxn      = new TypedUserFunction< valueType >( call );
-    DeterministicNode< valueType >*  detNode  = new DeterministicNode< valueType >("", fxn, args );
+    DeterministicNode< valueType >*  detNode  = new DeterministicNode< valueType >("", fxn, code );
     
     setDagNode( detNode );
 }
