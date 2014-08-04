@@ -401,7 +401,7 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
     
     // collect the samples
     treeSamples.clear();
-    for (std::map<std::string, Sample<std::string>>::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
+    for (std::map<std::string, Sample<std::string> >::iterator it = treeAbsencePresence.begin(); it != treeAbsencePresence.end(); ++it)
     {
         it->second.computeStatistics();
         treeSamples.push_back( it->second );
@@ -413,7 +413,7 @@ void RevBayesCore::TreeSummary<treeType>::summarize( int b )
     
     // collect the samples
     cladeSamples.clear();
-    for (std::map<std::string, Sample<std::string>>::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
+    for (std::map<std::string, Sample<std::string> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
     {
         it->second.computeStatistics();
         cladeSamples.push_back( it->second );
