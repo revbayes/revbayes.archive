@@ -227,8 +227,8 @@ bool TestACLNRatesGen::run( void ) {
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(bmNu, 0.75), 4, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 0.5), 2, false ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 1.0), 2, false ) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 8.0 * (double)numNodes) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 8.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, 1.0, false, 8.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, 2.0, false, 8.0 * (double)numNodes) );
 	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 
 	
     // add some tree stats to monitor

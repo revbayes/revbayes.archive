@@ -78,7 +78,7 @@ for (i in 1:branch_rates.size()) {
 }
 
 ## a statistic to monitor
-#mean_brate := mean(branch_rates) ## Mean func
+mean_brate := mean(branch_rates) ## Mean func
 
 
 ####################################
@@ -93,8 +93,7 @@ er ~ dirichlet(e)
 Q := gtr(er,pi)
 
 # the sequence evolution model
-#phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
-phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_rates, nSites=n_sites, type="DNA")
+phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=branch_subrates, nSites=n_sites, type="DNA")
 
 # attach the data
 phySeq.clamp(D)
@@ -117,14 +116,11 @@ moves[10] <- mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n
 
 mymodel <- model(pi)
 
-monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10, separator = "\t")
-monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, separator = "\t", tau)
+monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10, separator = "	")
+monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, separator = "	", tau)
 monitors[3] <- screenmonitor(printgen=10, pi)
 
-### This works up until this point
 mymcmc <- mcmc(mymodel, monitors, moves)
-#### when this line above is executed, it returns this error:
-### Error:	Cannot find node with name 'branch_rates' in the model but received a move working on it.
 
 mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(generations=10000)
