@@ -135,6 +135,7 @@
 #include "Move_ConjugateInverseWishartBrownian.h"
 #include "Move_RealNodeValTreeSliding.h"
 #include "Move_RealNodeValTreeTranslation.h"
+#include "Move_ScaleSingleACLNRates.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -242,6 +243,7 @@
 
 
 /* Functions related to evolution (in folder "functions/evolution") */
+#include "Func_averageRateOnBranch.h"
 #include "Func_clade.h"
 #include "Func_expBranchTree.h"
 #include "Func_tanhBranchTree.h"
@@ -527,6 +529,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRealNodeValTreeSliding",    new Move_RealNodeValTreeSliding() );
         addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
         addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
+        addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -787,6 +790,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         
         /* Evolution-related functions (in folder "functions/evolution") */
+        addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
         addFunction( "clade",                       new Func_clade()                    );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
         addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
