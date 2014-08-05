@@ -142,7 +142,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 10;
+    mcmcGenerations *= 5;
     //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
     
@@ -164,7 +164,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool useClock                   = !true;
     bool useBdProcess               = !true;
     bool forbidExtinction           = true;
-    bool useCladogenesis            = true;
+    bool useCladogenesis            = !true;
     bool useDistances               = true;
     bool useAdjacency               = true;
     bool useAvailable               = true;
@@ -299,7 +299,7 @@ bool TestCharacterHistory::run_exp(void) {
         charactermodel->clamp( data[0] );
     
     // initialize mapping
-    //    charactermodel->redraw();
+        charactermodel->redraw();
     
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
@@ -318,10 +318,10 @@ bool TestCharacterHistory::run_exp(void) {
     RbVector<Move> moves;
     //    TopologyNode* nd = NULL; // &tau->getValue().getNode(60);
     
-	moves.push_back( new RootTimeSlide( tau, 50.0, true, 5.0 ) );
-	moves.push_back( new OriginTimeSlide( origin, tau, 50.0, true, 5.0 ) );
-	moves.push_back( new NodeTimeSlideUniform( tau, numNodes*2 ) );
-    
+//	moves.push_back( new RootTimeSlide( tau, 50.0, true, 5.0 ) );
+//	moves.push_back( new OriginTimeSlide( origin, tau, 50.0, true, 5.0 ) );
+//	moves.push_back( new NodeTimeSlideUniform( tau, numNodes*2 ) );
+//    
     
     if (useClock)
     {
@@ -335,12 +335,12 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back(new SlidingMove(dp, 0.3, false, 2.0 ));
     }
     
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.25, false, 2.0));
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 2.0));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 4.0));
     for( size_t i=0; i<2; i++)
     {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 1.0, !true ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.25), 1.0, !true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
         //        moves.push_back( new SlidingMove( glr_nonConst[i], 0.1, false, 2.0 ));
     }
     
@@ -366,15 +366,15 @@ bool TestCharacterHistory::run_exp(void) {
     else if (useCladogenesis)
     {
         // path
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes * 2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2), 0.2, false, numNodes * 2));
         moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 1.0), 1.0, false, numNodes));
         
         // node
         //        BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>* eprsp = new BiogeographyPathRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3);
         //        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, eprsp, 0.2), 0.2, false, numNodes*2));
         
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.1), 0.1, false, numNodes*2));
-        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.3), 1.0, false, numNodes));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 0.2), 0.2, false, numNodes*2));
+        moves.push_back(new PathRejectionSampleMove<StandardState, TimeTree>(charactermodel, tau, q_sample, new BiogeographyNodeRejectionSampleProposal<StandardState,TimeTree>(charactermodel, tau, q_sample, 1.0), 1.0, false, numNodes));
         
     }
     

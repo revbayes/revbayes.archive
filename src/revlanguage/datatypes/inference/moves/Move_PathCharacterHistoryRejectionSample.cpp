@@ -15,7 +15,6 @@
 #include "Dist_phyloDACTMC.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
-//#include "PathRejectionSampleProposal.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -28,6 +27,10 @@
 #include "ScaleProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
+
+// to be removed once MH moves work
+#include "PathRejectionSampleMove.h"
+#include "StandardState.h"
 
 
 using namespace RevLanguage;
@@ -85,13 +88,16 @@ void Move_PathCharacterHistoryRejectionSample::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >(tree_tdn);
     
     // finally create the internal move object
-    RevBayesCore::Proposal *p = NULL;
-    if (mt == "std")
-        ;
-    else if (mt == "biogeo")
-        p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d);
+//    RevBayesCore::Proposal *p = NULL;
+//    if (mt == "std")
+//        ;
+//    else if (mt == "biogeo")
+//        p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d);
+//    
+//    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
     
-    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
+    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
+
 }
 
 
