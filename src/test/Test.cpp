@@ -142,7 +142,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-     //   testDdm.run();
+        testDdm.run();
     }
     catch (RbException &e)
     {
@@ -301,7 +301,7 @@ bool Test::performTests(int argc, const char * argv[]) {
 //        TestGtrModel testGtr = TestGtrModel("data/anolis.nex", "trees/anolis_MAP.dnd", 10000);
   //      TestGtrModel testGtr = TestGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
 
-        testGtr.run();
+//        testGtr.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
 //        testTrace.run();
     } catch (RbException &e) {
