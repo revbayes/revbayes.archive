@@ -336,7 +336,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, "\t", false, false, false ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, false, false, false ) );
     for (unsigned int i = 0; i < nGeneTrees; i++) {
         std::stringstream o;
         o << "estimatedGeneTree_" << i << ".trees";
