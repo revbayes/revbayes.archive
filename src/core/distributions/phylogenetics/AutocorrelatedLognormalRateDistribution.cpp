@@ -16,7 +16,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ), 
+AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes()-1, 0.0 ) ),
 tau( t ), 
 sigma( s ), 
 rootRate( rr ),
@@ -26,7 +26,7 @@ scaleValue( new ConstantNode<double>(" ", new double(1.0) )) {
 }
 
 // constructor for when rescaling the tree to relative rates or other value
-AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes(), 0.0 ) ), 
+AutocorrelatedLognormalRateDistribution::AutocorrelatedLognormalRateDistribution(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* rr, const TypedDagNode< double >* sv): TypedDistribution< std::vector< double > >( new std::vector< double >(t->getValue().getNumberOfNodes()-1, 0.0 ) ),
 tau( t ), 
 sigma( s ), 
 rootRate( rr ),
@@ -52,37 +52,32 @@ double AutocorrelatedLognormalRateDistribution::computeLnProbability(void) {
     
     // get the root
     const TopologyNode& root = tau->getValue().getRoot();
-    size_t rootIndex= root.getIndex();
+	
     
     double lnProb = 0.0;
 	double scale = scaleValue->getValue();
 	
     
     double parentRate = rootRate->getValue();
-    // check if the root rate matches the parameter value for the root rate
-    // the move could have changed this
-    if ( (*value)[rootIndex] != parentRate ) {
-        lnProb = RbConstants::Double::neginf;
-    } else {
-        parentRate = log( parentRate );
-        size_t numChildren = root.getNumberOfChildren();
-        for (size_t i = 0; i < numChildren; ++i) {
-            const TopologyNode& child = root.getChild(i);
-            lnProb += recursiveLnProb(child);
-            
-            // compute the variance
-            double variance = sigma->getValue() * child.getBranchLength() * scale;
-            
-            size_t childIndex = child.getIndex();
-            double childRate = (*value)[childIndex];
-			
-			// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
-			// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
-			double mu = parentRate - (variance * 0.5);
-			double stDev = sqrt(variance);
-            lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
-        } 
-    }
+
+	parentRate = log( parentRate );
+	size_t numChildren = root.getNumberOfChildren();
+	for (size_t i = 0; i < numChildren; ++i) {
+		const TopologyNode& child = root.getChild(i);
+		lnProb += recursiveLnProb(child);
+		
+		// compute the variance
+		double variance = sigma->getValue() * child.getBranchLength() * scale;
+		
+		size_t childIndex = child.getIndex();
+		double childRate = (*value)[childIndex];
+		
+		// the mean of the LN dist is parentRate = exp[mu + (variance / 2)],
+		// where mu is the location param of the LN dist (see Kishino & Thorne 2001)
+		double mu = parentRate - (variance * 0.5);
+		double stDev = sqrt(variance);
+		lnProb += RbStatistics::Lognormal::lnPdf(mu, stDev, childRate);
+	} 
     
     return lnProb;
 }
@@ -111,9 +106,16 @@ double AutocorrelatedLognormalRateDistribution::recursiveLnProb( const TopologyN
     double lnProb = 0.0;
     size_t numChildren = n.getNumberOfChildren();
 	double scale = scaleValue->getValue();
+	size_t rootIndex = tau->getValue().getRoot().getIndex();
     
     if ( numChildren > 0 ) {
-        double parentRate = log( (*value)[nodeIndex] );
+        double parentRate;
+		if(nodeIndex == rootIndex){
+			parentRate = log(rootRate->getValue());
+		}
+		else{
+			parentRate = log( (*value)[nodeIndex] );
+		}
         
         for (size_t i = 0; i < numChildren; ++i) {
             const TopologyNode& child = n.getChild(i);
@@ -145,14 +147,14 @@ void AutocorrelatedLognormalRateDistribution::redrawValue(void) {
 
 void AutocorrelatedLognormalRateDistribution::restoreSpecialization( DagNode *restorer ) {
     // only do this when the toucher was our parameters
-    if ( restorer == rootRate ) {
-        // get the index of the root
-        size_t rootIndex = tau->getValue().getRoot().getIndex();
-        (*value)[rootIndex] = rootRate->getValue();
-        
-        // delegate a restore to our children
-        this->dagNode->restoreAffected();
-    }
+//    if ( restorer == rootRate ) {
+//        // get the index of the root
+//        size_t rootIndex = tau->getValue().getRoot().getIndex();
+//        (*value)[rootIndex] = rootRate->getValue();
+//        
+//        // delegate a restore to our children
+//        this->dagNode->restoreAffected();
+//    }
 }
 
 
@@ -193,18 +195,14 @@ void AutocorrelatedLognormalRateDistribution::swapParameter(const DagNode *oldP,
 
 
 void AutocorrelatedLognormalRateDistribution::simulate() {
-        
+    
+
     // get the initial rate
     double parentRate = rootRate->getValue();
         
     // get the root
     const TopologyNode& root = tau->getValue().getRoot();
     
-    // get the index of the root
-    size_t rootIndex = root.getIndex();
-    
-    // for savety reasons we store this rate here again
-    (*value)[rootIndex] = parentRate;
     
     size_t numChildren = root.getNumberOfChildren();
     
@@ -248,17 +246,17 @@ void AutocorrelatedLognormalRateDistribution::recursiveSimulate(const TopologyNo
 
 void AutocorrelatedLognormalRateDistribution::touchSpecialization( DagNode *toucher ) {
     // if the root rate has changed, then we need to change the corresponding value in our vector and downpass the touch
-    if ( rootRate == toucher ) {
-        
-        // get the index of the root
-        size_t rootIndex = tau->getValue().getRoot().getIndex();
-        (*value)[rootIndex] = rootRate->getValue();
-        
-        // we notify our DAG node which element has changed
-        dagNode->addTouchedElementIndex( rootIndex );
-        
-        // delegate a touch to our children
-        this->dagNode->touchAffected();
-    }
+//    if ( rootRate == toucher ) {
+//        
+//        // get the index of the root
+//        //size_t rootIndex = tau->getValue().getRoot().getIndex();
+//        //(*value)[rootIndex] = rootRate->getValue();
+//        
+//        // we notify our DAG node which element has changed
+//        dagNode->addTouchedElementIndex( rootIndex );
+//        
+//        // delegate a touch to our children
+//        this->dagNode->touchAffected();
+//    }
 }
 
