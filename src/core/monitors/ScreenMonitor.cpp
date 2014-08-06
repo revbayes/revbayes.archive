@@ -31,7 +31,8 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    separator("   |   ")
+    separator("   |   "),
+    headerPrintingInterval( 50 )
 {
     
 }
@@ -42,7 +43,8 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    separator("   |   ")
+    separator("   |   "),
+    headerPrintingInterval( 50 )
 {
     
 }
@@ -52,7 +54,8 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    separator("   |   ")
+    separator("   |   "),
+    headerPrintingInterval( 50 )
 {
     
 }
@@ -74,7 +77,15 @@ void ScreenMonitor::monitor(unsigned long gen)
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
-    if (gen % samplingFrequency == 0) {
+    if ( gen > 0 && gen % (headerPrintingInterval*samplingFrequency) == 0 )
+    {
+        std::cout << std::endl;
+        printHeader();
+    }
+    
+    
+    if (gen % samplingFrequency == 0)
+    {
         // print the iteration number first
         std::stringstream ss;
         ss << gen;
