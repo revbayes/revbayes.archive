@@ -51,6 +51,7 @@ namespace RevBayesCore {
         bool                                prior;
         bool                                likelihood;
         std::string                         separator;
+        size_t                              headerPrintingInterval;
     };
     
 }
