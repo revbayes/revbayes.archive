@@ -61,7 +61,7 @@ DagNode::~DagNode( void )
     if ( refCount != 0 )
     {
         std::stringstream s;
-        s << "Deleting DAG Node with " << refCount << " references to it (reported)!" << std::endl;
+        s << "Deleting DAG Node with " << refCount << " references to it!" << std::endl;
         throw RbException( s.str() );
     }
     if ( children.size() != 0 )

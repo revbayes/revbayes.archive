@@ -58,28 +58,28 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                         getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
-        RevObject*                                      makeIndirectReference(void) = 0;                                    //!< Make an object referencing the dag node of this object
+        virtual void                                    makeCompositeValue() = 0;                                           //!< Convert the container to a composite value
+        virtual RevObject*                              makeIndirectReference(void) = 0;                                    //!< Make an object referencing the dag node of this object
+        virtual void                                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
         
         // Basic utility functions you should not have to override
         RevBayesCore::TypedDagNode<valueType>*          getDagNode(void) const;                                             //!< Get the DAG node
         const valueType&                                getValue(void) const;                                               //!< Get the internal value
         bool                                            hasDagNode(void) const;                                             //!< Do we have a DAG node?
+        bool                                            isComposite(void) const;                                            //!< Is this a composite container?
         bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
-        void                                            makeCompositeValue();                                               //!< Convert the container to a composite value
         void                                            makeConstantValue();                                                //!< Convert the container to a constant variable
         void                                            makeDeterministicValue(UserFunctionCall* call, UserFunction* code); //!< Convert to deterministic object with a userdefined Rev function
         void                                            printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
-        void                                            printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
         void                                            setDagNode(RevBayesCore::DagNode *newNode);                         //!< Set or replace the internal dag node (and keep me)
-        
         void                                            setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
         
         // Member object functions you may want to override
         virtual RevPtr<Variable>                        executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual const MethodTable&                      getMethods(void) const;                                                     //!< Get member methods (const)
         
-        // Container functions that you have to override
+        // Container functions you have to override
         virtual RevPtr<Variable>                        findOrCreateElement(const std::vector<size_t>& oneOffsetIndices) = 0;               //!< Find or create element variable
         virtual RevPtr<Variable>                        getElement(const std::vector<size_t>& oneOffsetIndices) = 0;                        //!< Get element variable
         virtual void                                    setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths) = 0; //!< Set elements from Rev objects
@@ -88,9 +88,7 @@ namespace RevLanguage {
         size_t                                          getDim(void) const;                                                 //!< Get the dimensions
         RevObject*                                      makeElementLookup(const std::vector< RevPtr<Variable> >& oneOffsetIndices); //!< Get dynamic element variable lookup
         size_t                                          size(void) const;                                                   //!< Get the number of elements
-        
-        // Container function you have to override
-        
+
     protected:
         ModelContainer(void);                                           //!< Construct empty container
         ModelContainer(const valueType& v);                             //!< Construct constant model container
@@ -99,9 +97,6 @@ namespace RevLanguage {
         
         // Assignment operator
         ModelContainer&                             operator=(const ModelContainer& x);                             //!< Assignment operator
-        
-        // ModelContainer helper function you have to override
-        virtual RevPtr<Variable>                    getElementFromValue(const std::vector<size_t>& oneOffsetIndices) = 0;   //!< Get element from value (and not from container node)
         
         // Member variable (protected and not private to make it available to derived classes)
         RevBayesCore::TypedDagNode<valueType>*      dagNode;                                                        //!< The DAG node keeping the value
@@ -184,7 +179,7 @@ ModelContainer<rlType, dim, valueType>::ModelContainer( const ModelContainer& c)
 template <typename rlType, size_t dim, typename valueType>
 ModelContainer<rlType, dim, valueType>::~ModelContainer()
 {
-    if ( dagNode->decrementReferenceCount() == 0 )
+    if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
         delete dagNode;
 }
 
@@ -423,6 +418,9 @@ size_t ModelContainer<rlType, dim, valueType>::getDim( void ) const
 template <typename rlType, size_t dim, typename valueType>
 const valueType& ModelContainer<rlType, dim, valueType>::getValue( void ) const
 {
+    if ( dagNode == NULL )
+        throw RbException( "Invalid attempt to get the value of an NA object" );
+    
     return dagNode->getValue();
 }
 
@@ -435,28 +433,19 @@ bool ModelContainer<rlType, dim, valueType>::hasDagNode( void ) const
 }
 
 
+/** Check whether this node is composite by checking the DAG node. */
+template <typename rlType, size_t dim, typename valueType>
+bool ModelContainer<rlType, dim, valueType>::isComposite( void ) const
+{
+    return dynamic_cast< ContainerNode<rlType, valueType>* >( dagNode ) != NULL;
+}
+
+
 /** Check whether this node has a constant value by asking the DAG node. */
 template <typename rlType, size_t dim, typename valueType>
 bool ModelContainer<rlType, dim, valueType>::isConstant( void ) const
 {
     return dagNode->isConstant();
-}
-
-
-/**
- * Convert this node to a composite value, that is, a container where each element has
- * its own DAG node controlling its value. We do this by setting the DAG node to a
- * container node, if it is not already one.
- */
-template <typename rlType, size_t dim, typename valueType>
-void ModelContainer<rlType, dim, valueType>::makeCompositeValue( void )
-{
-    if ( dynamic_cast< ContainerNode<rlType, valueType>* >( dagNode ) != NULL )
-        return;
-
-    ContainerNode<rlType, valueType>* newNode = new ContainerNode<rlType, valueType>( "", getValue() );
-
-    setDagNode( newNode );
 }
 
 
@@ -517,22 +506,8 @@ void ModelContainer<rlType, dim, valueType>::printStructure( std::ostream &o ) c
     Container::printStructure( o );
 
     dagNode->printStructureInfo( o );
-}
-
-
-/**
- * Print value for user. We just delegate this to our DAG node.
- *
- * The current hack works reasonably well for some vectors.
- *
- * @todo This needs a lot more work for nice printing of all container values.
- */
-template <typename rlType, size_t dim, typename valueType>
-void ModelContainer<rlType, dim, valueType>::printValue(std::ostream &o) const
-{
-    o << "[ ";
-    dagNode->printValue( o,", " );
-    o << " ]";
+    
+    printMemberInfo( o );
 }
 
 
@@ -547,9 +522,10 @@ void ModelContainer<rlType, dim, valueType>::replaceVariable( RevObject *newObj 
 {
     RevBayesCore::DagNode* newParent = newObj->getDagNode();
     
-    while ( dagNode->getNumberOfChildren() > 0 )
+    if ( dagNode != NULL )
     {
-        dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        while ( dagNode->getNumberOfChildren() > 0 )
+            dagNode->getFirstChild()->swapParent(dagNode, newParent);
     }
 }
 
@@ -558,19 +534,20 @@ void ModelContainer<rlType, dim, valueType>::replaceVariable( RevObject *newObj 
  * Replace the DAG node. We throw an error if the new node does
  * not have the right value type. This is based on a dynamic
  * cast to the expected value type.
+ 
  */
 template <typename rlType, size_t dim, typename valueType>
 void RevLanguage::ModelContainer<rlType, dim, valueType>::setDagNode( RevBayesCore::DagNode* newNode )
 {
     RevBayesCore::TypedDagNode<valueType>* newDagNode = dynamic_cast< RevBayesCore::TypedDagNode<valueType>* >( newNode );
-
-    if ( newDagNode == NULL )
-        throw RbException( "Illegal attempt to set type '" + this->getType() + "' with DAG node of wrong value type" );
+    if ( newNode != NULL && newDagNode == NULL )
+            throw RbException( "Illegal attempt to set type '" + this->getType() + "' with DAG node of wrong value type" );
     
     // Take care of the old value node
     if ( dagNode != NULL )
     {
-        newDagNode->setName( dagNode->getName() );
+        if ( newNode != NULL )
+            newNode->setName( dagNode->getName() );
         dagNode->replace( newDagNode );
         
         if ( dagNode->decrementReferenceCount() == 0 )
@@ -581,7 +558,8 @@ void RevLanguage::ModelContainer<rlType, dim, valueType>::setDagNode( RevBayesCo
     dagNode = newDagNode;
     
     // Increment the reference count to the new value node
-    dagNode->incrementReferenceCount();
+    if ( dagNode != NULL )
+        dagNode->incrementReferenceCount();
 }
 
 
@@ -589,25 +567,26 @@ void RevLanguage::ModelContainer<rlType, dim, valueType>::setDagNode( RevBayesCo
 template <typename rlType, size_t dim, typename valueType>
 void ModelContainer<rlType, dim, valueType>::setName( std::string const& n )
 {
-    if ( dagNode == NULL )
-    {
-        throw RbException( "Cannot set name of object with null DAG node." );
-    }
-    else
-    {
+    if ( dagNode != NULL )
         dagNode->setName( n );
-    }
 }
 
 
 /**
  * Return size of container. This relies on there being a member
- * function size() in valueType.
+ * function size() in valueType. If we are a composite container,
+ * we want to ask our container node so that we can get the size
+ * without having to compute an internal value. This is because there
+ * may be NA elements, which make it impossible to compute an internal
+ * value representation.
  */
 template <typename rlType, size_t dim, typename valueType>
 size_t ModelContainer<rlType, dim, valueType>::size( void ) const
 {
-    return getValue().size();
+    if ( isComposite() )
+        return static_cast< ContainerNode<rlType, valueType>* >( dagNode )->size();
+    else
+        return getValue().size();
 }
 
 

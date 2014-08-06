@@ -354,6 +354,9 @@ const RevLanguage::MethodTable&  RevLanguage::ModelObject<rbType>::getMethods(vo
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
+    if ( dagNode == NULL )
+        throw RbException( "Invalid attempt to get value from an NA object" );
+    
     return dagNode->getValue();
 }
 
@@ -506,14 +509,22 @@ void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o ) const
     RevObject::printStructure( o );
 
     dagNode->printStructureInfo( o );
+
+    printMemberInfo( o );
 }
 
 
- /** Print value for user */
+/**
+ * Print value for user. For a default object, the DAG node pointer is
+ * NULL, so we print something appropriate. Here, we use NA as in R.
+ */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
-    
-    dagNode->printValue(o,"");
+void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
+{
+    if ( dagNode == NULL )
+        o << "NA";
+    else
+        dagNode->printValue(o,"");
 }
 
 
@@ -522,26 +533,22 @@ void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
-    while ( dagNode->getNumberOfChildren() > 0 )
+    if ( dagNode != NULL )
     {
-        dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        while ( dagNode->getNumberOfChildren() > 0 )
+        {
+            dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        }
     }
-    
 }
 
 
+/** Copy name of variable onto DAG node, if it is not NULL */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setName(std::string const &n) {
-    
-    if ( dagNode == NULL )
-    {
-        throw RbException("Null-pointer-exception: Cannot set name of value.");
-    } 
-    else 
-    {
+void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
+{
+    if ( dagNode != NULL )
         dagNode->setName( n );
-    }
-    
 }
 
 
@@ -574,15 +581,18 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
 }
 
 
+/**
+ * Set dag node. We also accommodate the possibility of setting the dag node
+ * to null, creating an NA object.
+ */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
-    
-    assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newNode) != NULL );
     
     // Take care of the old value node
     if ( dagNode != NULL )
     {
-        newNode->setName( dagNode->getName() );
+        if ( newNode != NULL )
+            newNode->setName( dagNode->getName() );
         dagNode->replace(newNode);
         
         if ( dagNode->decrementReferenceCount() == 0 )
@@ -596,7 +606,8 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
     dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
     
     // Increment the reference count to the new value node
-    dagNode->incrementReferenceCount();
+    if ( dagNode != NULL )
+        dagNode->incrementReferenceCount();
     
 }
 

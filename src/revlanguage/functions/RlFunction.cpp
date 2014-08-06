@@ -63,14 +63,23 @@ std::string Function::callSignature(void) const {
     o << getType() << ": " << std::endl;
     
     if (argsProcessed)
+    {
         o << "Arguments processed; there are " << args.size() << " values." << std::endl;
+        for ( size_t i = 0;  i < args.size(); i++ ) {
+            o << " args[" << i << "] = ";
+            args[i].getVariable()->getRevObject().printValue(o);
+            o << std::endl;
+        }
+    }
     else
+    {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
-    
-    for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = ";
-        args[i].getVariable()->getRevObject().printValue(o);
-        o << std::endl;
+        
+        for ( size_t i = 0;  i < getArgumentRules().size(); i++ ) {
+            o << " args[" << i << "] = ";
+            getArgumentRules()[i].printValue( o );
+            o << std::endl;
+        }
     }
     
     return o.str();

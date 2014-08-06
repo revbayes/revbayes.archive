@@ -370,13 +370,24 @@ template<typename rlType>
 void RevObjectVector<rlType>::printValue( std::ostream& o ) const
 {
     o << std::endl;
-    o << getClassType() << " vector with " << size() << " values" << std::endl;
-    o << std::endl;
+    std::stringstream s;
+    if ( size() == 1 )
+        s << getClassType() << " vector with 1 value";
+    else
+        s << getClassType() << " vector with " << size() << " values";
+    o << s.str() << std::endl;
+
+    for ( size_t i = 0; i < s.str().size(); ++i )
+        o << "=";
+    o << std::endl << std::endl;
     
     for ( size_t i = 0; i < elements.size(); ++i )
     {
         o << "[" << i + 1 << "]" << std::endl;
-        elements[i]->getRevObject().printValue( o );
+        if ( elements[i]->isNAVar() )
+            o << "NA" << std::endl;
+        else
+            elements[i]->getRevObject().printValue( o );
         o << std::endl;
     }
 }

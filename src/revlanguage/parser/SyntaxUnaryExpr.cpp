@@ -96,10 +96,12 @@ RevPtr<Variable> SyntaxUnaryExpr::evaluateContent( Environment& env )
 
     // Find the function
     std::string funcName = "_" + opCode[ operation ];
-    Function& func = Workspace::globalWorkspace().getFunction( funcName, arg );
-    func.processArguments( arg );
+    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg ).clone();
+    func->processArguments( arg );
     
-    RevPtr<Variable> funcReturnValue = func.execute();
+    RevPtr<Variable> funcReturnValue = func->execute();
+
+    delete func;
 
     // Return value after making sure it is constant
     if ( funcReturnValue != NULL )
@@ -137,13 +139,17 @@ RevPtr<Variable> SyntaxUnaryExpr::evaluateDynamicContent( Environment& env )
     std::vector<Argument> arg;
     arg.push_back( Argument( operand->evaluateDynamicContent( env ), "" ) );
     
-    // Find the function
+    // Find the function and clone it
     std::string funcName = "_" + opCode[ operation ];
-    Function& func = Workspace::globalWorkspace().getFunction( funcName, arg );
-    func.processArguments( arg );
+    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg ).clone();
+    func->processArguments( arg );
     
-    RevPtr<Variable> funcReturnValue = func.execute();
+    // Execute function
+    RevPtr<Variable> funcReturnValue = func->execute();
     
+    // Delete function clone
+    delete func;
+
     // Return new deterministic variable
     return funcReturnValue;
 }

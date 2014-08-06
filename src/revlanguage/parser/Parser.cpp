@@ -149,9 +149,14 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
             const std::string& fxnName = theVariable->getIdentifier();
             const std::vector<Function*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName );
             if ( functions.size() != 0 ) {
-                RBOUT( "Usage:" );
                 for ( std::vector<Function*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
-                    RBOUT( (*i)->callSignature() );
+                    std::ostringstream s;
+                    (*i)->printValue( s );
+                    RBOUT( s.str() );
+                    
+                    // Uncommenting this as the function callSignature() does not produce the call signature despite its name
+                    // -- Fredrik
+                    // RBOUT( (*i)->callSignature() );
                 }
                 return 0;
             }
