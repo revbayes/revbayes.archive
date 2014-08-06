@@ -331,7 +331,7 @@ void DagNode::keepAffected() {
 
 
 /** Print children. We assume indent is from line 2 (hanging indent). Line length is lineLen. */
-void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) const
+void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, bool verbose ) const
 {
     std::string pad;
     for ( size_t i = 0; i < indent; ++i )
@@ -350,12 +350,29 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) co
     {
         std::ostringstream s;
         if ( (*it)->getName() == "" )
-            s << "<" << (*it) << ">";
+        {
+            if ( verbose == true )
+            {
+                s << "<" << (*it) << ">";
+            }
+        
+        }
         else
+        {
+            if ( verbose == true )
+            {
             s << (*it)->getName() << " <" << (*it) << ">";
+            }
+            else
+            {
+                s << (*it)->getName();
+            }
+        }
         
         if ( children.size() - i > 1 )
+        {
             s << ", ";
+        }
         
         if ( s.str().size() + currentLength > lineLen )
         {
@@ -378,13 +395,15 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen ) co
  * Note the use of a const reference here to potentially avoid one copy
  * operation on the set of DAG nodes.
  */
-void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen ) const
+void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool verbose ) const
 {
     const std::set<const DagNode*>& parents = getParents();
 
     std::string pad;
     for ( size_t i = 0; i < indent; ++i )
+    {
         pad.push_back( ' ' );
+    }
     
     o << "[ ";
     pad += "  ";
@@ -399,12 +418,30 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen ) con
     for ( i = 0, it = parents.begin(); it != parents.end(); ++it, ++i )
     {
         if ( (*it)->getName() == "" )
-            s << "<" << (*it) << ">";
+        {
+            
+            if ( verbose == true )
+            {
+                s << "<" << (*it) << ">";
+            }
+            
+        }
         else
-            s << (*it)->getName() << " <" << (*it) << ">";
+        {
+            if ( verbose == true )
+            {
+                s << (*it)->getName() << " <" << (*it) << ">";
+            }
+            else
+            {
+                s << (*it)->getName();
+            }
+        }
         
         if ( parents.size() - i > 1 )
+        {
             s << ", ";
+        }
         
         if ( s.str().size() + currentLength > lineLen )
         {

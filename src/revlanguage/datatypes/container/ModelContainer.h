@@ -68,7 +68,7 @@ namespace RevLanguage {
         void                                            makeCompositeValue();                                               //!< Convert the container to a composite value
         void                                            makeConstantValue();                                                //!< Convert the container to a constant variable
         void                                            makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Convert to deterministic object with a userdefined Rev function
-        void                                            printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        void                                            printStructure(std::ostream& o, bool verbose=false) const;          //!< Print structure of language object for user
         void                                            printValue(std::ostream& o) const;                                  //!< Print value for user
         void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
         void                                            setDagNode(RevBayesCore::DagNode *newNode);                         //!< Set or replace the internal dag node (and keep me)
@@ -502,8 +502,6 @@ RevObject* ModelContainer<rlType, dim, valueType>::makeElementLookup( const std:
     rlType* newObj = new rlType( newNode );
     
     return newObj;
-    
-    return NULL;
 }
 
 
@@ -512,11 +510,11 @@ RevObject* ModelContainer<rlType, dim, valueType>::makeElementLookup( const std:
  * internal DAG node.
  */
 template <typename rlType, size_t dim, typename valueType>
-void ModelContainer<rlType, dim, valueType>::printStructure( std::ostream &o ) const
+void ModelContainer<rlType, dim, valueType>::printStructure( std::ostream &o, bool verbose ) const
 {
-    Container::printStructure( o );
+    Container::printStructure( o, verbose );
 
-    dagNode->printStructureInfo( o );
+    dagNode->printStructureInfo( o, verbose );
 }
 
 
