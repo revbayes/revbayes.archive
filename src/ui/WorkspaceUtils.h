@@ -118,7 +118,7 @@ public:
             return sv;
         }
 
-        RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().getNewTypeObject(typeName);
+        RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().makeNewDefaultObject(typeName);
         RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (type->getMethods());
 
         std::multimap<std::string, RevLanguage::Function*> printTable = methods.getTableCopy(false);
