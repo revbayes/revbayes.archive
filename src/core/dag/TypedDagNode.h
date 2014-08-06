@@ -91,18 +91,6 @@ bool RevBayesCore::TypedDagNode<valueType>::isSimpleNumeric( void ) const
     return false;
 }
 
-//template<>
-//bool RevBayesCore::TypedDagNode<int>::isSimpleNumeric( void ) const
-//{
-//    return true;
-//}
-//
-//template<>
-//bool RevBayesCore::TypedDagNode<double>::isSimpleNumeric( void ) const
-//{
-//    return true;
-//}
-
 
 template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left) const
@@ -118,7 +106,7 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
                 o << sep;
             }
             std::stringstream ss;
-            ss << getName() << "[" << i << "]";
+            ss << getName() << "[" << (i+1) << "]";
             std::string n = ss.str();
             if ( l > 0)
             {
