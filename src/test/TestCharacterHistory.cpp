@@ -163,7 +163,8 @@ bool TestCharacterHistory::run_exp(void) {
     bool simulate                   = false;
     bool useClock                   = !true;
     bool useBdProcess               = !true;
-    bool forbidExtinction           = true;
+    
+    bool forbidExtinction           = !true;
     bool useCladogenesis            = !true;
     bool useDistances               = true;
     bool useAdjacency               = true;
