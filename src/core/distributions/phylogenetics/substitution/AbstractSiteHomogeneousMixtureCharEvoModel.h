@@ -832,6 +832,10 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // delegate to the parent class
     TypedDistribution< AbstractCharacterData >::setValue(v);
     
+    // reset the number of sites
+    this->numSites = v->getNumberOfIncludedCharacters();
+    
+    // now compress the data and resize the likelihood vectors
     this->compress();
 }
 
