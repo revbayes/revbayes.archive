@@ -330,9 +330,9 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     {
         o << "_refCount     = " << this->getReferenceCount() << std::endl;
         o << "_function     = <" << function << ">" << std::endl;
+        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     }
     
-    o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
     this->printParents(o, 16, 70, verbose);
