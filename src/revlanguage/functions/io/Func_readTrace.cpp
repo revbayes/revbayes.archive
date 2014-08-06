@@ -50,7 +50,8 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
     const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     // get the column delimiter
     const std::string& delimiter = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-        
+    
+    
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
     if ( !myFileManager.testFile() || !myFileManager.testDirectory() ) {

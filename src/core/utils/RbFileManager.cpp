@@ -363,42 +363,47 @@ bool RbFileManager::parsePathFileNames(std::string s)
     bool isDPresent = isDirectoryPresent(s);
     bool isFPresent = isFilePresent(s);
     if (isDPresent == false && isFPresent == false)
-        {
+    {
         fileName = "";
         filePath = "";
+        
+        throw RbException("No file found with name '" + s + "'.");
         return false;
-        }
+    }
+    
     if (isDPresent == true && isFPresent == false)
-        {
+    {
         fileName = "";
         int location = (int)s.find_last_of( pathSeparator );
         if ( location == (int)s.length() - 1 )
+        {
             s.erase( location );
+        }
         filePath = s;
         return true;
-        }
+    }
     
     /* the string that is supposed to hold the
      path/file information is empty. */
 	if ( s.length() == 0 )
-        {
+    {
 		return false;
-        }
+    }
     
 	/* Find the location of the last "/". This is where
      we will divide the path/file string into two. */
 	size_t location = s.find_last_of( pathSeparator );
 	
 	if ( location == std::string::npos )
-        {
+    {
 		/* There is no path in this string. We 
          must have only the file name, and the
          file should be in our current directory. */
 		fileName = s;
 		filePath = "";
-        }
+    }
 	else if ( location == s.length() - 1 )
-        {
+    {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. However,
          it also means that the directory that has been provided
@@ -407,16 +412,16 @@ bool RbFileManager::parsePathFileNames(std::string s)
 		fileName = "";
 		filePath = "";
 		return false;
-        }
+    }
 	else
-        {
+    {
 		/* We can divide the path into the path and the file. */
 		fileName = s.substr( location+1, s.length()-location-1 );
 		s.erase( location );
 		filePath = s;
         if ( isDirectoryPresent(filePath) == false )
             filePath = "";
-        }
+    }
     
 	return true;
 }
