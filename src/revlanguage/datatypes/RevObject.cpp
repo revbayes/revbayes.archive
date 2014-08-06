@@ -401,7 +401,7 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
  * complex structure need to override this function, best by calling
  * it first and then provide the additional information.
  */
-void RevObject::printStructure( std::ostream &o ) const
+void RevObject::printStructure( std::ostream &o, bool verbose ) const
 {
     o << "_RevType      = " << getType() << std::endl;
     o << "_RevTypeSpec  = " << getTypeSpec() << std::endl;

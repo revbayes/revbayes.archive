@@ -52,7 +52,7 @@ namespace RevLanguage {
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
         void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
-        virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
+        virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
         void                                    setName(const std::string &n);                                              //!< Set the name of the variable (if applicable)
@@ -501,11 +501,11 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
 
 /** Print structure info for user */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o ) const
+void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool verbose ) const
 {
-    RevObject::printStructure( o );
+    RevObject::printStructure( o, verbose );
 
-    dagNode->printStructureInfo( o );
+    dagNode->printStructureInfo( o, verbose );
 }
 
 

@@ -46,7 +46,7 @@ namespace RevBayesCore {
         valueType&                                          getValue(void);
         const valueType&                                    getValue(void) const;
         bool                                                isConstant(void) const;                                                     //!< Is this DAG node constant?
-        virtual void                                        printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        virtual void                                        printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                update(void);                                                               //!< Update the current value by recomputation
         void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
@@ -313,23 +313,33 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 
 /** Print struct for user */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
+void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
     
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        o << "_dagNode      = " << this->name << std::endl;
+    }
     o << "_dagType      = Deterministic DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
-
-    o << "_function     = <" << function << ">" << std::endl;
-
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+        o << "_function     = <" << function << ">" << std::endl;
+    }
+    
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents(o, 16, 70, verbose);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren(o, 16, 70, verbose);
     o << std::endl;
 }
 

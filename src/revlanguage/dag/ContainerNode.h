@@ -60,7 +60,7 @@ namespace RevLanguage {
         valueType&                              getValue(void);                                                         //!< Get the value
         const valueType&                        getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
+        virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void);                                                           //!< Redraw (or not)
         void                                    setName(const std::string& n);                                          //!< Set the name of myself and of elements
         void                                    update(void);                                                           //!< Update current value
@@ -431,12 +431,23 @@ void ContainerNode<rlElemType, valueType>::pop_front( void )
  * const cast, but this should be perfectly safe.
  */
 template< typename rlElemType, typename valueType >
-void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o ) const
+void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    o << "_dagType      = Container DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
     
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        o << "_dagNode      = " << this->name <<  std::endl;
+    }
+    o << "_dagType      = Container DAG node" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";

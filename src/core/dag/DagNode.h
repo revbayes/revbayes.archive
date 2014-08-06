@@ -43,7 +43,7 @@ namespace RevBayesCore {
         virtual double                                              getLnProbabilityRatio(void) = 0;
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value
         virtual void                                                printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const = 0;     //!< Monitor/Print this variable
-        virtual void                                                printStructureInfo(std::ostream &o) const = 0;                                              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        virtual void                                                printStructureInfo(std::ostream &o, bool verbose=false) const = 0;                          //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         virtual void                                                printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const = 0;    //!< Monitor/Print this variable
 //        virtual void                                                printValue(std::ostream &o,size_t i) const = 0;                                 //!< Monitor/Print the i-th element of this variable 
         virtual void                                                redraw(void) = 0;                                                                           //!< Redraw the current value of the node (applies only to stochastic nodes)
@@ -98,8 +98,8 @@ namespace RevBayesCore {
         virtual void                                                touchMe(DagNode *toucher) = 0;                                                              //!< Touch myself (flag for recalculation)
     
         // helper functions
-        void                                                        printChildren(std::ostream& o, size_t indent, size_t lineLen) const;                        //!< Print children DAG nodes
-        void                                                        printParents(std::ostream& o, size_t indent, size_t lineLen) const;                         //!< Print children DAG nodes
+        void                                                        printChildren(std::ostream& o, size_t indent, size_t lineLen, bool verbose=false) const;    //!< Print children DAG nodes
+        void                                                        printParents(std::ostream& o, size_t indent, size_t lineLen, bool verbose=false) const;     //!< Print children DAG nodes
         
         // members
         mutable std::set<DagNode*>                                  children;                                                                                   //!< The children in the model graph of this node

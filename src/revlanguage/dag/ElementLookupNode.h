@@ -47,7 +47,7 @@ namespace RevLanguage {
         typename rlElemType::valueType&         getValue(void);                                                         //!< Get the value
         const typename rlElemType::valueType&   getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
+        virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void) {}                                                         //!< Redraw (or not)
         void                                    update(void);                                                           //!< Update current value
         
@@ -344,11 +344,23 @@ void ElementLookupNode<rlType, rlElemType>::keepMe( RevBayesCore::DagNode* affec
  * const cast, but this should be perfectly safe.
  */
 template<typename rlType, typename rlElemType>
-void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o ) const
+void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        o << "_dagNode      = " << this << ">" << std::endl;
+    }
     o << "_dagType      = Element lookup DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
