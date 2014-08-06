@@ -135,6 +135,8 @@ namespace RevBayesCore {
 
 
 
+#include "RbConstants.h"
+
 template<class charType, class treeType>
 RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool forbidExt, bool useClado) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
@@ -365,6 +367,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         }
         return lnL;
     }
+    
+    
+    // @Michael: My compiler complained about reaching the end of a non-void function. (Sebastian)
+    return RbConstants::Double::nan;
 }
 
 
