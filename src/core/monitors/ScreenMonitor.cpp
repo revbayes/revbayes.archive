@@ -32,7 +32,7 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     prior( pr ),
     likelihood( l ),
     separator("   |   "),
-    headerPrintingInterval( 50 )
+    headerPrintingInterval( 20 )
 {
     
 }
@@ -44,7 +44,7 @@ ScreenMonitor::ScreenMonitor(const std::set<DagNode *> &n, int g, bool pp, bool 
     prior( pr ),
     likelihood( l ),
     separator("   |   "),
-    headerPrintingInterval( 50 )
+    headerPrintingInterval( 20 )
 {
     
 }
@@ -55,7 +55,7 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     prior( pr ),
     likelihood( l ),
     separator("   |   "),
-    headerPrintingInterval( 50 )
+    headerPrintingInterval( 20 )
 {
     
 }
@@ -184,6 +184,8 @@ void ScreenMonitor::printHeader()
     StringUtilities::fillWithSpaces(itString,10,true);
     std::cout << itString;
     
+    size_t width = 12;
+    
     if ( posterior ) 
     {
         // add a separator before every new element
@@ -191,6 +193,8 @@ void ScreenMonitor::printHeader()
         std::string poString = "Posterior";
         StringUtilities::fillWithSpaces(poString,12,false);
         std::cout << poString;
+        
+        width += 12 + separator.size();
     }
     
     if ( likelihood ) 
@@ -200,6 +204,8 @@ void ScreenMonitor::printHeader()
         std::string liString = "Likelihood";
         StringUtilities::fillWithSpaces(liString,12,false);
         std::cout << liString;
+        
+        width += 12 + separator.size();
     }
     
     if ( prior ) 
@@ -209,6 +215,8 @@ void ScreenMonitor::printHeader()
         std::string prString = "Prior";
         StringUtilities::fillWithSpaces(prString,12,false);
         std::cout << prString;
+        
+        width += 12 + separator.size();
     }
     
     for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) 
@@ -229,9 +237,19 @@ void ScreenMonitor::printHeader()
             StringUtilities::fillWithSpaces(nString,12,false);
             std::cout << nString;
         }
+        
+        width += theNode->getNumberOfElements()*(12 + separator.size());
     }
     
     std::cout << std::endl;
+    
+    for (size_t i=0; i<width; ++i)
+    {
+        std::cout << "-";
+    }
+    
+    std::cout << std::endl;
+    
 }
 
 

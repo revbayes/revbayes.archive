@@ -40,6 +40,7 @@ namespace RevBayesCore {
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
 
         // member functions
+        virtual size_t                                      getNumberOfElements(void) const;                                                            //!< Get the number of elements for this value
         virtual bool                                        isSimpleNumeric(void) const;                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;         //!< Monitor/Print this variable
         virtual void                                        printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;        //!< Monitor/Print this variable
@@ -81,6 +82,17 @@ RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagN
 
 template<class valueType>
 RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void ) {
+}
+
+
+
+template<class valueType>
+size_t RevBayesCore::TypedDagNode<valueType>::getNumberOfElements( void ) const
+{
+    
+    size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
+    
+    return numElements;
 }
 
 
