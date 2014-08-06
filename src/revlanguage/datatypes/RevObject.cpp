@@ -395,6 +395,31 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 
 
 /**
+ * Print the member object information, if any. We
+ * use member rules and the method table to access
+ * the information.
+ */
+void RevObject::printMemberInfo( std::ostream &o ) const
+{
+    const ArgumentRules& memberRules = getMemberRules();
+    for ( size_t i = 0; i < memberRules.size(); ++i )
+    {
+        o << ".";
+        memberRules[i].printValue( o );
+        o << std::endl;
+    }
+    
+    const MethodTable& methods = getMethods();
+    for ( MethodTable::const_iterator it = methods.begin(); it != methods.end(); ++it )
+    {
+        o << "." << (*it).first << " = ";
+        (*it).second->printValue( o );
+        o << std::endl;
+    }
+}
+
+
+/**
  * Print the structural information for this object. Here we print the
  * type and type spec, as well as the value. Objects that have more
  * complex structure need to override this function, best by calling
@@ -409,6 +434,7 @@ void RevObject::printStructure( std::ostream &o ) const
     std::ostringstream o1;
     printValue( o1 );
     o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+
 }
 
 

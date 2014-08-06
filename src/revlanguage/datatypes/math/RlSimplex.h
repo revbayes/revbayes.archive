@@ -38,9 +38,9 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
         
-        // Container functions overridden here to protect from assignment or external modification
-        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t> oneOffsetIndices);    //!< Find or create element variable
-        RevPtr<Variable>                            getElement(const std::vector<size_t> oneOffsetIndices);             //!< Get element variable
+        // ModelVector functions overridden here to protect from assignment or external modification
+        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);   //!< Find or create element variable
+        RevPtr<Variable>                            getElement(size_t oneOffsetIndex);                                  //!< Get element variable
 
         // ModelVector functions that we override here to stop inappropriate actions
         void                                        sort(void);                                                         //!< Sort vector

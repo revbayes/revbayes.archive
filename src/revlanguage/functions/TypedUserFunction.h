@@ -47,8 +47,6 @@ namespace RevLanguage {
 
 #include "AbstractCharacterData.h"
 #include "ContinuousCharacterData.h"
-#include "RateMatrix.h"
-#include "RateMatrix_JC.h"
 #include "RlDeterministicNode.h"
 #include "Variable.h"
 

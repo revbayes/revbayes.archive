@@ -107,13 +107,14 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env )
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args );
-    theFunction.processArguments( args );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args ).clone();
+    theFunction->processArguments( args );
     
-    RevPtr<Variable> theReturnValue = theFunction.execute();
+    // Execute the function
+    RevPtr<Variable> theReturnValue = theFunction->execute();
     
-    // Clear the arguments in the function
-    theFunction.clear();
+    // Delete the function clone
+    delete theFunction;
     
     // Return the return value of the function after making it constant
     if ( theReturnValue != NULL )
@@ -151,21 +152,21 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
     // Package the arguments
     std::vector<Argument> args;
     
-    RevPtr<Variable> left = leftOperand->evaluateContent( env );
+    RevPtr<Variable> left = leftOperand->evaluateDynamicContent( env );
     args.push_back( Argument( left, "" ) );
     
-    RevPtr<Variable> right = rightOperand->evaluateContent( env );
+    RevPtr<Variable> right = rightOperand->evaluateDynamicContent( env );
     args.push_back( Argument( right, "" ) );
     
-    // Get function and create deterministic DAG node
+    // Get function clone and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args );
-    theFunction.processArguments( args );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args ).clone();
+    theFunction->processArguments( args );
     
-    RevPtr<Variable> theReturnValue = theFunction.execute();
+    RevPtr<Variable> theReturnValue = theFunction->execute();
     
-    // Clear the arguments in the function
-    theFunction.clear();
+    // Delete the function clone
+    delete theFunction;
     
     return theReturnValue;
 }

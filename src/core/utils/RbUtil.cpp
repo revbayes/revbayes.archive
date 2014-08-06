@@ -140,7 +140,70 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Trace>
 }
 
 
-std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::vector<int>& y) 
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector< std::vector<double> >& x) {
+    o << "[ ";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i != 0 )
+            o << ", ";
+        o << "[ ";
+        for ( size_t j = 0; j < x[i].size(); ++j )
+        {
+            if ( j != 0 )
+                o << ", ";
+            o << x[i][j];
+        }
+        o << " ]";
+    }
+    o << " ]";
+
+    return o;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector< std::vector<int> >& x) {
+    o << "[ ";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i != 0 )
+            o << ", ";
+        o << "[ ";
+        for ( size_t j = 0; j < x[i].size(); ++j )
+        {
+            if ( j != 0 )
+                o << ", ";
+            o << x[i][j];
+        }
+        o << " ]";
+    }
+    o << " ]";
+    
+    return o;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector< std::vector<unsigned int> >& x) {
+    o << "[ ";
+    for ( size_t i = 0; i < x.size(); ++i )
+    {
+        if ( i != 0 )
+            o << ", ";
+        o << "[ ";
+        for ( size_t j = 0; j < x[i].size(); ++j )
+        {
+            if ( j != 0 )
+                o << ", ";
+            o << x[i][j];
+        }
+        o << " ]";
+    }
+    o << " ]";
+    
+    return o;
+}
+
+
+std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::vector<int>& y)
 {
     
     size_t n = x.size();

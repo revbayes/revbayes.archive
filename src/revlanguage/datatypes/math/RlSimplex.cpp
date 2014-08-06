@@ -91,7 +91,7 @@ Simplex* Simplex::clone( void ) const
  * from assigning to the simplex through direct
  * element assignment.
  */
-RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t> oneOffsetIndices)
+RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t>& oneOffsetIndices)
 {
     throw RbException( "Illegal attempt to assign to simplex element" );
 }
@@ -106,9 +106,9 @@ RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t> oneOffse
  * done by calling the getElementFromValue function,
  * which does exactly that.
  */
-RevPtr<Variable> Simplex::getElement(const std::vector<size_t> oneOffsetIndices)
+RevPtr<Variable> Simplex::getElement(size_t oneOffsetIndex)
 {
-    return getElementFromValue( oneOffsetIndices );
+    return getElementFromValue( oneOffsetIndex );
 }
 
 

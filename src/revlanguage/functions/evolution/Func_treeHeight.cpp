@@ -9,7 +9,6 @@
 #include "Func_treeHeight.h"
 #include "ModelVector.h"
 #include "RlTimeTree.h"
-#include "RateMatrix.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "Topology.h"
