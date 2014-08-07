@@ -26,7 +26,9 @@ void DelimitedDataReader::readData(void)
     std::ifstream readStream;
     RbFileManager* f = new RbFileManager(filename);
     if (!f->openFile(readStream))
+    {
         std::cout << "ERROR: Could not open file " << filename << "\n";
+    }
     
     chars.clear();
     
