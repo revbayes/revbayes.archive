@@ -1,0 +1,194 @@
+################################################################################
+#
+# RevBayes Exercise: Calculating Marginal Liklihoods and Bayes Factors to test
+#  data partitioning strategies
+# 
+# This file: Specifies the full model parameters and moves for a 2-gene
+#				partition model
+#
+# authors: Tracy A. Heath, Michael Landis, and Sebastian Hoehna
+#
+################################################################################
+
+
+# read in the character data
+data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
+data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
+
+# Get some useful variables from the data. We need these later on.
+n_species <- data_atpB.ntaxa()
+names <- data_atpB.names()
+n_branches <- 2 * n_species - 2
+
+
+#####################
+# Subsitution Model #
+#   atpB = 1 - 1394   #
+#####################
+
+n_sites_atpB <- data_atpB.nchar()[1]
+
+er_prior_atpB <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+er_atpB ~ dnDirichlet(er_prior_atpB)
+moves[1] <- mvSimplexElementScale(er_atpB, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+
+
+sf_prior_atpB <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+sf_atpB ~ dnDirichlet(sf_prior_atpB)
+moves[2] <- mvSimplexElementScale(sf_atpB, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+
+#### create a deterministic variable for the rate matrix ####
+Q_atpB := gtr(er_atpB,sf_atpB)                                                                                # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+
+
+shape_prior_atpB <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+shape_atpB ~ dnExponential( shape_prior_atpB )
+norm_gamma_rates := discretizeGamma( shape, 4 )
+ 
+# add moves for the stationary frequencies, exchangeability rates and the shape parameter
+moves[3] <- mvScale(shape_atpB, lambda=1.0, tune=true, weight=1.0)
+
+
+
+
+#####################
+# Subsitution Model #
+#   rbcL 1395-2659   #
+#####################
+
+n_sites_rbcL <- data_rbcL.nchar()[1]
+
+vec_1pos <- seq(1,n_sites_rbcL,3)
+vec_2pos <- seq(2,n_sites_rbcL,3)
+vec_3pos <- seq(3,n_sites_rbcL,3)
+
+n_sites_rp1 <- vec_1pos.size()
+n_sites_rp2 <- vec_2pos.size()
+n_sites_rp3 <- vec_3pos.size()
+
+
+
+### rbcL position 1 model ###############################################
+data_rp1 <- data_rbcL
+for(i in vec_2pos){
+   data_rp1.excludeCharacter(i)
+}
+for(i in vec_3pos){
+   data_rp1.excludeCharacter(i)
+}
+
+er_prior_rp1 <- v(1,1,1,1,1,1) 
+er_rp1 ~ dnDirichlet(er_prior_rp1)
+moves[4] <- mvSimplexElementScale(er_rp1, alpha=10.0, tune=true, weight=3.0)
+
+sf_prior_rp1 <- v(1,1,1,1) 
+sf_rp1 ~ dnDirichlet(sf_prior_rp1)
+moves[5] <- mvSimplexElementScale(sf_rp1, alpha=10.0, tune=true, weight=2.0) 
+
+Q_rp1 := gtr(er_rp1,sf_rp1)
+
+shape_prior_rp1 <- 0.05 
+shape_rp1 ~ dnExponential( shape_prior_rp1 )
+for ( i in 1:4 ) {
+  gamma_rates_rp1[i] := qgamma( i*0.25 - 0.125, shape_rp1, shape_rp1 )
+}
+norm_gamma_rates_rp1 := normalize( gamma_rates_rp1 )
+moves[6] <- mvScale(shape_rp1, lambda=1.0, tune=true, weight=1.0)
+##############################################################################
+
+### rbcL position 2 model ###############################################
+data_rp2 <- data_rbcL
+for(i in vec_1pos){
+   data_rp2.excludeCharacter(i)
+}
+for(i in vec_3pos){
+   data_rp2.excludeCharacter(i)
+}
+
+er_prior_rp2 <- v(1,1,1,1,1,1) 
+er_rp2 ~ dnDirichlet(er_prior_rp2)
+moves[7] <- mvSimplexElementScale(er_rp2, alpha=10.0, tune=true, weight=3.0)
+
+sf_prior_rp2 <- v(1,1,1,1) 
+sf_rp2 ~ dnDirichlet(sf_prior_rp2)
+moves[8] <- mvSimplexElementScale(sf_rp2, alpha=10.0, tune=true, weight=2.0) 
+
+Q_rp2 := gtr(er_rp2,sf_rp2)
+
+shape_prior_rp2 <- 0.05 
+shape_rp2 ~ dnExponential( shape_prior_rp2 )
+for ( i in 1:4 ) {
+  gamma_rates_rp2[i] := qgamma( i*0.25 - 0.125, shape_rp2, shape_rp2 )
+}
+norm_gamma_rates_rp2 := normalize( gamma_rates_rp2 )
+moves[9] <- mvScale(shape_rp2, lambda=1.0, tune=true, weight=1.0)
+##############################################################################
+
+### rbcL position 3 model ###############################################
+data_rp3 <- data_rbcL
+for(i in vec_1pos){
+   data_rp3.excludeCharacter(i)
+}
+for(i in vec_2pos){
+   data_rp3.excludeCharacter(i)
+}
+
+er_prior_rp3 <- v(1,1,1,1,1,1) 
+er_rp3 ~ dnDirichlet(er_prior_rp3)
+moves[10] <- mvSimplexElementScale(er_rp3, alpha=10.0, tune=true, weight=3.0)
+
+sf_prior_rp3 <- v(1,1,1,1) 
+sf_rp3 ~ dnDirichlet(sf_prior_rp3)
+moves[11] <- mvSimplexElementScale(sf_rp3, alpha=10.0, tune=true, weight=2.0) 
+
+Q_rp3 := gtr(er_rp3,sf_rp3)
+
+shape_prior_rp3 <- 0.05 
+shape_rp3 ~ dnExponential( shape_prior_rp3 )
+for ( i in 1:4 ) {
+  gamma_rates_rp3[i] := qgamma( i*0.25 - 0.125, shape_rp3, shape_rp3 )
+}
+norm_gamma_rates_rp3 := normalize( gamma_rates_rp3 )
+moves[12] <- mvScale(shape_rp3, lambda=1.0, tune=true, weight=1.0)
+##############################################################################
+
+
+
+# Specify a uniform topology prior
+topology ~ uniformTopology(n_species, names)
+
+# moves on the tree
+moves[13] <- mvNNI(topology, weight=1.0)
+##############################################################################
+
+
+#### Specify a prior and moves on the branch lengths #### 
+# create a random variable for each branch length using a for loop
+for (i in 1:n_branches) {
+  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  br_lens[i] ~ exponential(1.0)
+  
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[i+13] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
+}
+
+
+# Build the tree by combining the topology with the branch length.
+phylogeny := treeAssembly(topology, br_lens)
+
+
+
+# the sequence evolution model
+phyloSeq_atpB ~ phyloCTMC(tree=phylogeny, Q=Q_atpB, siteRates=norm_gamma_rates_atpB, nSites=n_sites_atpB, type="DNA")
+phyloSeq_rbcL_pos1 ~ phyloCTMC(tree=phylogeny, Q=Q_rp1, siteRates=norm_gamma_rates_rp1, nSites=n_sites_rp1, type="DNA")
+phyloSeq_rbcL_pos2 ~ phyloCTMC(tree=phylogeny, Q=Q_rp2, siteRates=norm_gamma_rates_rp2, nSites=n_sites_rp2, type="DNA")
+phyloSeq_rbcL_pos3 ~ phyloCTMC(tree=phylogeny, Q=Q_rp3, siteRates=norm_gamma_rates_rp3, nSites=n_sites_rp3, type="DNA")
+
+# clamp the data
+phyloSeq_atpB.clamp(data_atpB)
+phyloSeq_rbcL_pos1.clamp(data_rp1)
+phyloSeq_rbcL_pos2.clamp(data_rp2)
+phyloSeq_rbcL_pos3.clamp(data_rp3)
+
+mymodel <- model(topology)
+
