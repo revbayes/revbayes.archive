@@ -433,10 +433,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
 //        std::cout << *it << " ";
 //    std::cout << "\n";
     
-    if (node->isRoot())
-    {
-        return;
-    }
+//    if (node->isRoot())
+//    {
+//        return;
+//    }
     
     BranchHistory* bh = &p.getHistory(*node);
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();

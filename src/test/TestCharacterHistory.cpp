@@ -153,9 +153,9 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::cout << old_seed[0] << " " << old_seed[1] << "\n";
     std::vector<unsigned> seed;
-//    seed.push_back(1+1); seed.push_back(1);
+    seed.push_back(1+1); seed.push_back(1);
     //    old_seed = seed;
-    //    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     
@@ -192,7 +192,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::string afn="";
     //    afn = "malesia_static.atlas.txt";
     //    afn = "hawaii_static.atlas.txt";
-    afn = "hawaii_dynamic.atlas.txt";
+    afn = "hawaii_static.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -305,7 +305,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
-//    GLOBAL_RNG->setSeed(old_seed);
+    GLOBAL_RNG->setSeed(old_seed);
     //    glr_nonConst[0]->redraw();
     //    glr_nonConst[1]->redraw();
     
