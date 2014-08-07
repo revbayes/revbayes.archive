@@ -231,12 +231,13 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 	unsigned int n0 = (unsigned)(this->numSites - n1);
     unsigned counts[2] = { n0, n1 };
     
-    if (node.isRoot())
-    {
-        
-        ; // return 0.0;
-    }
-    else if (counts[1] == 0 && forbidExtinction)
+//    if (node.isRoot())
+//    {
+//        
+//        ; // return 0.0;
+//    }
+//    else
+    if (counts[1] == 0 && forbidExtinction)
     {
         return RbConstants::Double::neginf;
     }

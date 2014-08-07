@@ -225,8 +225,8 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     double branchLength = this->node->getBranchLength();
     if (this->node->isRoot())
     {
-        return 0.0;
-        branchLength = 1e10;//2*tree.getTreeLength();
+//        return 0.0;
+        branchLength = this->node->getAge() * 5; //1e10;//2*tree.getTreeLength();
     }
     
     // get epoch variables
@@ -397,10 +397,10 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>::
     //        std::cout << *it << " ";
     //    std::cout << "\n";
     
-    if (this->node->isRoot())
-    {
-        return;
-    }
+//    if (this->node->isRoot())
+//    {
+//        return;
+//    }
     
     BranchHistory* bh = &p.getHistory(*(this->node));
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
