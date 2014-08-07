@@ -1,0 +1,151 @@
+################################################################################
+#
+# Example of a Bayesian phylogenetic analysis with different partitition schemes.
+# Here we run a MCMC to estimate the parameters such as the phylogeny.
+# 
+# Model:
+# uniform unrooted topology
+# GTR + gamma model
+# two partitions 
+#   * atpB = 1-1394
+#   * rbcL = 1395-2659
+#
+# Data:
+# conifer DNA sequences
+#
+#
+# author: Tracy A. Heath, Brian R. Moore and Sebastian Hoehna
+#
+################################################################################
+
+
+# read in the character data
+data <- readCharacterData("data/conifer_dna.nex")[1]
+
+# Get some useful variables from the data. We need these later on.
+taxaCount <- data.ntaxa()
+names <- data.names()
+
+
+#####################
+# Subsitution Model #
+#   Partition One   #
+#####################
+
+# specify the GTR+G substitution model applied uniformly to all sites
+erPriorPartOne <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+erPartOne ~ dirichlet(erPriorPartOne)
+piPriorPartOne <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+piPartOne ~ dirichlet(piPriorPartOne)
+alphaPriorPartOne <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+alphaPartOne ~ exponential( alphaPriorPartOne )
+
+# construct the gamma distributed rate variables
+for ( i in 1:4 ) {
+  gammaRatesPartOne[i] := qgamma( i*0.25 - 0.125, alphaPartOne, alphaPartOne )
+}
+# now normalize the rates
+# this is necessary to keep the parameters identifiable
+normGammaRatesPartOne := normalize( gammaRatesPartOne )
+
+# add moves for the base frequencies, exchangeability rates and the shape parameter
+moves[1] <- mSimplexElementScale(piPartOne, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+moves[2] <- mSimplexElementScale(erPartOne, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+moves[3] <- mScale(alphaPartOne, lambda=1.0, tune=true, weight=1.0)
+
+
+# create a deterministic variable for the rate matrix
+QPartOne := gtr(erPartOne,piPartOne)                                                                  # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+
+
+
+#####################
+# Subsitution Model #
+#   Partition Two   #
+#####################
+
+# specify the GTR+G substitution model applied uniformly to all sites
+erPriorPartTwo <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+erPartTwo ~ dirichlet(erPriorPartTwo)
+piPriorPartTwo <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+piPartTwo ~ dirichlet(piPriorPartTwo)
+alphaPriorPartTwo <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+alphaPartTwo ~ exponential( alphaPriorPartTwo )
+
+# construct the gamma distributed rate variables
+for ( i in 1:4 ) {
+  gammaRatesPartTwo[i] := qgamma( i*0.25 - 0.125, alphaPartTwo, alphaPartTwo )
+}
+# now normalize the rates
+# this is necessary to keep the parameters identifiable
+normGammaRatesPartTwo := normalize( gammaRatesPartTwo )
+
+# add moves for the base frequencies, exchangeability rates and the shape parameter
+moves[4] <- mSimplexElementScale(piPartTwo, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+moves[5] <- mSimplexElementScale(erPartTwo, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+moves[6] <- mScale(alphaPartTwo, lambda=1.0, tune=true, weight=1.0)
+
+
+# create a deterministic variable for the rate matrix
+QPartTwo := gtr(erPartTwo,piPartTwo)                                                                  # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+
+
+
+# Specify a uniform topology prior
+tau ~ uniformTopology(taxaCount, names)
+
+# moves on the tree
+moves[7] <- mNNI(tau, weight=1.0)
+
+# create a random variable for each branch length
+numNodes <- tau.nnodes()
+for (i in 1:numNodes) {
+  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  brlens[i] ~ exponential(1.0)
+  
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[i+7] <- mScale(brlens[i],lambda=1,tune=true,weight=1) 
+}
+
+
+# Build the tree by combining the topology with the branch length.
+psi := treeAssembly(tau, brlens)
+
+
+# the sequence evolution model
+seqPartOne ~ substModel(tree=psi, Q=QPartOne, siteRates= normGammaRatesPartOne, nSites=1394, type="DNA")
+seqPartTwo ~ substModel(tree=psi, Q=QPartTwo, siteRates= normGammaRatesPartTwo, nSites=1265, type="DNA")
+
+# attach the data
+dataPartOne <- data
+dataPartOne.excludeCharacter(1395:2659)
+seqPartOne.clamp(dataPartOne)
+dataPartTwo <- data
+dataPartTwo.excludeCharacter(1:1394)
+seqPartTwo.clamp(dataPartTwo)
+
+mymodel <- model(tau)
+
+
+monitors[1] <- modelmonitor(filename="conifer_byGene.log",printgen=100, separator = "	")
+monitors[2] <- filemonitor(filename="conifer_byGene.trees",printgen=100, separator = "	", psi)
+monitors[3] <- screenmonitor(printgen=10, separator = "	", alphaPartOne, alphaPartTwo)
+
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=10000,tuningInterval=1000)
+mymcmc.run(generations=100000)
+
+# Now, we will analyze the tree output.
+# Let us start by reading in the tree trace
+treetrace <- readTreeTrace("conifer_gene.trees")
+# and get the summary of the tree trace
+treetrace.summarize()
+
+
+mapTree(treetrace,"conifer_uniform.tree")
+
+
+# quit RevBayes. DANGER!!! ;)
+q()

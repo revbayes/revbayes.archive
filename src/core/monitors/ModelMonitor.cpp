@@ -2,7 +2,7 @@
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
-#include "BranchLengthTree.h"
+#include "RbFileManager.h"
 #include "StochasticNode.h"
 
 using namespace RevBayesCore;
@@ -36,7 +36,10 @@ ModelMonitor::ModelMonitor( const ModelMonitor &m) : Monitor( m ),
     stochasticNodesOnly( m.stochasticNodesOnly )
 {
     if (m.outStream.is_open())
+    {
         openStream();
+    }
+    
 }
 
 
@@ -163,6 +166,9 @@ void ModelMonitor::monitor(unsigned long gen)
  */
 void ModelMonitor::openStream(void) 
 {
+    
+    RbFileManager f = RbFileManager(filename);
+    f.createDirectoryForFile();
     
     // open the stream to the Model
     if ( append )
