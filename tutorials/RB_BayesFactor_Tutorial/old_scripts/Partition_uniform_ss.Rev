@@ -1,0 +1,125 @@
+################################################################################
+#
+# Example of a Bayesian phylogenetic analysis with different partitition schemes.
+# Here we run a marginal likelihood estimation.
+# 
+# Model:
+# uniform unrooted topology
+# GTR + gamma model
+# one partition for all the data
+#
+# Data:
+# conifer DNA sequences
+#
+#
+# author: Tracy A. Heath, Michael Landis, and Sebastian Hoehna
+#
+################################################################################
+
+
+# read in the character data
+data <- readCharacterData("data/conifer_dna.nex")[1]
+
+# Get some useful variables from the data. We need these later on.
+taxaCount <- data.ntaxa()
+nSites <- data.nchar()[1]
+names <- data.names()
+
+
+# specify the GTR+G substitution model applied uniformly to all sites
+erPrior <- v(1,1,1,1,1,1)                                                                      # specify priors for: exchangeability parameters...
+er ~ dirichlet(erPrior)
+piPrior <- v(1,1,1,1)                                                                          # ...stationary frequencies...
+pi ~ dirichlet(piPrior)
+alphaPrior <- 0.05                                                                             # ...and alpha, the shape parameter that governs the shape of the gamma used to model ASRV
+alpha ~ exponential( alphaPrior )
+
+# construct the gamma distributed rate variables
+for ( i in 1:4 ) {
+  gammaRates[i] := qgamma( i*0.25 - 0.125, alpha, alpha )
+}
+# now normalize the rates
+# this is necessary to keep the parameters identifiable
+normGammaRates := normalize( gammaRates )
+
+# add moves for the base frequencies, exchangeability rates and the shape parameter
+moves[1] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=2.0)                        # moves on the substitution process parameters
+moves[2] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)                        # these moves only changing one value of the simplex
+moves[3] <- mScale(alpha, lambda=1.0, tune=true, weight=1.0)
+
+
+# create a deterministic variable for the rate matrix
+Q := gtr(er,pi)                                                                                # The GTR rate matrix is computed by multiplying the base frequencies with the exchangeability parameters
+
+
+# Specify a uniform topology prior
+tau ~ uniformTopology(taxaCount, names)
+
+# moves on the tree
+moves[4] <- mNNI(tau, weight=1.0)
+
+# create a random variable for each branch length
+numNodes <- tau.nnodes()
+for (i in 1:numNodes) {
+  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  brlens[i] ~ exponential(10.0)
+  
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[i+4] <- mScale(brlens[i],lambda=1,tune=true,weight=1) 
+}
+
+
+# Build the tree by combining the topology with the branch length.
+psi := treeAssembly(tau, brlens)
+
+
+# the sequence evolution model
+seq ~ substModel(tree=psi, Q=Q, siteRates= normGammaRates, nSites=nSites, type="DNA")
+
+# attach the data
+seq.clamp(data)
+
+mymodel <- model(pi)
+
+## These aren't actually needed for the ss, so commenting out...
+#monitors[1] <- modelmonitor(filename="conifer_uniform_ss.log",printgen=100, separator = "	")
+#monitors[2] <- filemonitor(filename="conifer_uniform_ss.trees",printgen=100, separator = "	", psi)
+#monitors[3] <- screenmonitor(printgen=10, separator = "	", pi, alpha)
+
+ 
+### ss <- powerPosterior(mymodel, moves, cats=50) ## this doesn't work
+
+## could try creating vector of powers ... but this doesn't work
+#ncats <- 50
+#b_a <- 0.4
+#RealPos powers
+#for(i in 1:ncats){
+#   powers[i] <- qbeta(b_a, 1.0, i / ncats)  ## no qbeta function
+#}
+
+## ss <- powerPosterior(mymodel, moves, "ss_run.out") ## this works, but defaults to 100 steps
+
+ss <- powerPosterior(mymodel, moves, "ss_run.out", cats=50) ## this works (added cats argument)
+
+
+##ss.burnin(generations=1000,tuningInterval=100)
+##ss.run(generations=1000)  
+
+
+## ss.pathSampling() ## this doesn't work
+## ss.steppingStoneSampling() ## this doesn't work
+
+
+## These don't work because the column parser isn't using the delimiter "\t"
+## These work if you replace the del with " "
+ssamp <- steppingStoneSampler("ss_run.out", "power", "likelihood", " ")
+ssamp.marginal() ## returns -9974.973
+
+
+## These don't work because the column parser isn't using the delimiter "\t"
+## These work if you replace the del with " " in the function below and in file
+ps <- pathSampler("ss_run.out", "power", "likelihood", " ")
+ps.marginal() ## returns -9975.043
+
+# quit RevBayes. DANGER!!! ;)
+q()
