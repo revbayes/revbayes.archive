@@ -102,9 +102,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     this->fillStateCounts(currState, counts);
     
     if (nd.isRoot())
-    {
         return 0.0;
-    }
   
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
@@ -225,12 +223,13 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     double branchLength = this->node->getBranchLength();
     if (this->node->isRoot())
     {
-//        return 0.0;
+        return 0.0;
         branchLength = this->node->getAge() * 5; //1e10;//2*tree.getTreeLength();
     }
     
     // get epoch variables
-    double startAge = this->node->getParent().getAge();
+//    double startAge = this->node->getParent().getAge();
+    double startAge = (!this->node->isRoot() ? this->node->getParent().getAge() : 1e10);
 //    double endAge = this->node->getAge();
     
     // clear characters
@@ -332,9 +331,10 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType, treeType>
     // assign values back to model for likelihood
     bh->updateHistory(this->proposedHistory, this->siteIndexSet);
     
-    // auto-reject if too many failed rejections samplings
-    if (!failed)
+    // auto-reject if too many failed rejection samplings
+    if (failed)
         this->proposedLnProb = RbConstants::Double::neginf;
+    
     // otherwise, proceed with MH
     else
         this->proposedLnProb = computeLnProposal( *(this->node), *bh);

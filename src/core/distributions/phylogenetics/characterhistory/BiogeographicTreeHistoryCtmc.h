@@ -231,12 +231,11 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 	unsigned int n0 = (unsigned)(this->numSites - n1);
     unsigned counts[2] = { n0, n1 };
     
-//    if (node.isRoot())
-//    {
-//        
-//        ; // return 0.0;
-//    }
-//    else
+    if (node.isRoot())
+    {
+        return 0.0;
+    }
+    
     if (counts[1] == 0 && forbidExtinction)
     {
         return RbConstants::Double::neginf;
@@ -252,12 +251,6 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         double startAge = currAge;
         double endAge = node.getAge();
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
-        
-//        if (nodeIndex==1)
-//        {
-//            std::vector<double> glr = rm.getHomogeneousGainLossRates();
-//            std::cout << "glr " << glr[0] << " " << glr[1] << "\n";
-//        }
 
         // handle stratified/epoch models
         const std::vector<double>& epochs = rm.getEpochs();
@@ -356,7 +349,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         {
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
             lnL += -sr * ( (1.0 - t) * branchLength );
-            if (debug) std::cout << "EndBranch   " << epochIdx << ":" << epochEndAge << ")\n" << "  a=" << currAge << " lnL=" << lnL << " sr=" << sr << " tr=" << "wait "<< " da=" << currAge-epochEndAge << "\n";        }
+            if (debug) std::cout << "EndBranch   " << epochIdx << ":" << epochEndAge << ")\n" << "  a=" << currAge << " lnL=" << lnL << " sr=" << sr << " tr=" << "wait "<< " da=" << currAge-epochEndAge << "\n";
+        }
         if (debug) std::cout << "-------\n\n";
 
 //        if (debug) std::cout << lnL << "\n";

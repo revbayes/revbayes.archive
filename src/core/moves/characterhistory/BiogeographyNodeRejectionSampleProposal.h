@@ -458,7 +458,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     // propose new cladogenic state
     storedCladogenicState = p->getCladogenicState(*proposedTrunkNode);
     double u = GLOBAL_RNG->uniform01();
-    if (u < 0.5 || p->useCladogenicEvents() == false)
+    if (u < 1.0 || p->useCladogenicEvents() == false)
         proposedCladogenicState = 0;
     else if (u < 1.0)
         proposedCladogenicState = 1;
