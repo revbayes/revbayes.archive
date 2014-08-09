@@ -17,7 +17,6 @@
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "Vector.h"
 
 #include "DiscretizeGammaFunction.h"
 

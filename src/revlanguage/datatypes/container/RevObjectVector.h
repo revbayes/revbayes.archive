@@ -48,9 +48,6 @@ namespace RevLanguage {
         RevPtr<Variable>                            getElement(const std::vector<size_t>& oneOffsetIndices);            //!< Get element variable
         virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
         
-        // RevObjectVector functions
-        vectorRlPtr                                 getVectorRlPointer(void) const;                                     //!< Translate to vector of rl pointers
-        
     private:
         
     };
@@ -288,27 +285,6 @@ const TypeSpec& RevObjectVector<rlType>::getTypeSpec(void) const
     //    return typeSpec;
     
     return getClassTypeSpec();  // This should do the trick; there should be a separate version of the function for each template type
-}
-
-
-/**
- * Here we return a vector of pointers to the Rev object elements. We hope
- * that the caller does not delete the element values but it does not
- * matter if they change them.
- *
- * @todo We might want to change this function so that it gives out references
- *       instead of pointers to the Rev objects
- */
-template<typename rlType>
-std::vector<rlType*> RevObjectVector<rlType>::getVectorRlPointer( void ) const
-{
-    vectorRlPtr theVector;
-    
-    std::vector< RevPtr<Variable> >::const_iterator it;
-    for ( it = elements.begin(); it != elements.end(); ++it )
-        theVector.push_back( &( static_cast<rlType&>( (*it)->getRevObject() ) ) );
-    
-    return theVector;
 }
 
 

@@ -47,8 +47,9 @@ namespace RevLanguage {
         bool                                    existsFunction(const std::string &name) const;                                          //!< Does this table contain a function with given name?
         void                                    eraseFunction(const std::string& name);                                                 //!< Erase a function (all versions)
         std::vector<Function*>                  findFunctions(const std::string& name) const;                                           //!< Return functions matching name
-        const Function&                         getFunction(const std::string& name);                                                   //!< Get function (a copy)
-        Function&                               getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function (a copy)
+        const Function&                         getFirstFunction(const std::string& name);                                              //!< Get function
+        const Function&                         getFunction(const std::string& name);                                                   //!< Get function
+        Function&                               getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function
         std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
         bool                                    isProcedure(const std::string& fxnName) const;                                          //!< Is 'fxnName' a procedure?

@@ -72,9 +72,9 @@ Variable::~Variable( void )
 {
 #if defined ( DEBUG_MEMORY )
     std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
+#endif
     if ( !isReferenceVariable && revObject != NULL )
         delete revObject;
-#endif
 }
 
 

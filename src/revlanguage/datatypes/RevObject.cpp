@@ -363,7 +363,7 @@ RevObject* RevObject::makeIndirectReference(void)
 /**
  * Convert the object to a deterministic object with a userdefined Rev function inside it.
  */
-void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunction* code )
+void RevObject::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
 {
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in deterministic nodes (yet)";
@@ -372,7 +372,7 @@ void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunction* co
 
 
 /** Get a deterministic lookup of an element. Default implementation throws an error */
-RevObject* RevObject::makeElementLookup( const std::vector< RevPtr<Variable> >& indices )
+RevObject* RevObject::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& indices )
 {
     throw RbException( "Object of type '" + this->getType() + "' does not have elements");
 }

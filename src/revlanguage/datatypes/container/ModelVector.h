@@ -89,6 +89,7 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
 #include "MethodTable.h"
+#include "NAValueNode.h"
 #include "RbException.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
@@ -267,9 +268,9 @@ RevPtr<Variable> ModelVector<rlType>::findOrCreateElement( const std::vector<siz
     if ( oneOffsetIndices.size() > 1 )
         throw RbException( "Unexpected extra indices to a vector" );
     
-    // Resize if myIndex is out of range; fill with NULL variables
+    // Resize if myIndex is out of range; fill with NA objects
     for ( size_t it = this->size(); it < oneOffsetIndices[0]; ++it )
-        theContainerNode->push_back( NULL );
+        theContainerNode->push_back( new rlType( new NAValueNode<rlType>() ) );
     
     // Return the assignable element
     return theContainerNode->getElement( oneOffsetIndices[0] - 1 );
@@ -648,17 +649,13 @@ void ModelVector<rlType>::push_front( const elementType& x )
 
 /**
  * Set elements from a vector of Rev objects. We assume that we want
- * a simple constant container. This function will typically be called
+ * a composite container. This function will typically be called
  * by the type conversion code.
  */
 template <typename rlType>
 void ModelVector<rlType>::setElements( std::vector<RevObject*> elems, const std::vector<size_t>& lengths )
 {
-    valueType* newVal = new valueType();
-    for ( std::vector<RevObject*>::iterator it = elems.begin(); it != elems.end(); ++it )
-        (*newVal).push_back( static_cast< ModelObject<typename rlType::valueType>* >( (*it) )->getValue() );
-    
-    this->setDagNode( new RevBayesCore::ConstantNode<valueType>( "", newVal ) );
+    this->setDagNode( new ContainerNode<rlType, valueType>( "", elems, lengths ) );
 }
 
 

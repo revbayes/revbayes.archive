@@ -9,7 +9,6 @@
 #include "TypedUserFunction.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
-#include "UserFunctionCall.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -108,11 +107,10 @@ RevPtr<Variable> UserFunction::execute( void )
 
     if ( retVal->hasDagNode() )
     {
-        // Make a deterministic variable
-        UserFunction*     fxn = this->clone();
-        UserFunctionCall* call = new UserFunctionCall( fxn );
+        UserFunction* fxn = this->clone();
+        UserFunction* code = this->clone();
         
-        retVal->makeDeterministicValue( call, fxn );
+        retVal->makeDeterministicValue( fxn, code );
 
         return new Variable( retVal );
     }
@@ -121,10 +119,47 @@ RevPtr<Variable> UserFunction::execute( void )
         // "Flat" call: Simply execute and return the variable
         delete retVal;  // We don't need this
 
-        UserFunctionCall fxnCall( this );
-
-        return fxnCall.execute();
+        return executeCode();
     }
+}
+
+
+/** In this function we execute the Rev code for the function (compiled syntax tree) */
+RevPtr<Variable> UserFunction::executeCode( void )
+{
+    // Create new evaluation frame with function base class execution environment as parent
+    Environment* functionFrame = new Environment( getEnvironment() );
+    
+    // Add the arguments to our environment
+    for ( std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it )
+    {
+        // Note: We can add also temporary variable arguments as references because we
+        // currently store them as arguments of the Rev function in UserFunctionArgs
+        // as long as the UserFunctionCall exists.
+        functionFrame->addReference( it->getLabel(), it->getVariable() );
+    }
+
+    // Clear signals
+    Signals::getSignals().clearFlags();
+    
+    // Set initial return value
+    RevPtr<Variable> retVar = NULL;
+    
+    // Execute code
+    for ( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
+    {
+        SyntaxElement* theSyntaxElement = *it;
+        retVar = theSyntaxElement->evaluateContent( *functionFrame );
+        
+        if ( Signals::getSignals().isSet( Signals::RETURN ) )
+        {
+            Signals::getSignals().clearFlags();
+            break;
+        }
+    }
+    
+    // Return the return value
+    return retVar;
 }
 
 
@@ -150,6 +185,21 @@ const TypeSpec& UserFunction::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/** Get the parameters from the argument vector */
+std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
+{
+    std::set<const RevBayesCore::DagNode*> params;
+
+    for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it )
+    {
+        if ( (*it).getVariable()->getRevObject().hasDagNode() )
+            params.insert( (*it).getVariable()->getRevObject().getDagNode() );
+    }
+
+    return params;
 }
 
 

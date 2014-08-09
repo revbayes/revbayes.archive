@@ -16,10 +16,11 @@ namespace RevLanguage {
      * Rev type of the elements of the vector, which are expected to be workspace objects
      * (inheriting from WorkspaceObject).
      *
-     * The class gives direct access to a vector of pointers to the internal value objects
-     * through the getVectorRbPointer method. It also gives access to a vector of pointers to
-     * the Rev objects through the getVectorRlPointer method. Both types of vectors can be used
-     * to construct a WorkspaceVector instance.
+     * The class gives access to an RbVector of clones of the internal value objects through
+     * the getVectorRbPointer() method. The workspace vector can be set using either an
+     * RbVector object or a vector of RevObject element pointers (vectorRlPtr). In the latter
+     * case, we assume ownership of the elements; in the former, we generate independent clones
+     * of the elements.
      *
      * For Rev objects that are not model objects or workspace objects, see RevObjectVector.
      */
@@ -59,8 +60,7 @@ namespace RevLanguage {
         virtual void                                setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
         
         // WorkspaceVector functions
-        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Translate to vector of rb pointers
-        vectorRlPtr                                 getVectorRlPointer(void) const;                                     //!< Translate to vector of rl pointers
+        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
         
     private:
 
@@ -99,7 +99,7 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRbPtr& v ) :
 {
     for ( typename vectorRbPtr::const_iterator it = v.begin(); it != v.end(); ++it )
     {
-        Variable* newVar = new Variable( new rlType( *( *it ) ) );
+        Variable* newVar = new Variable( new rlType( ( *it )->clone() ) );
         newVar->setRevObjectTypeSpec( rlType::getClassTypeSpec() );
         elements.push_back( newVar );
         delete ( *it );
@@ -324,34 +324,9 @@ const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
 
 
 /**
- * Here we return a vector of pointers to the Rev object elements. We hope
- * that the caller does not delete the element values but it does not
- * matter if they change them.
- *
- * @todo We might want to change this function so that it gives out references
- *       instead of pointers to the Rev objects
- */
-template<typename rlType>
-std::vector<rlType*> WorkspaceVector<rlType>::getVectorRlPointer( void ) const
-{
-    vectorRlPtr theVector;
-    
-    std::vector< RevPtr<Variable> >::const_iterator it;
-    for ( it = elements.begin(); it != elements.end(); ++it )
-        theVector.push_back( &( static_cast<rlType&>( (*it)->getRevObject() ) ) );
-    
-    return theVector;
-}
-
-
-/**
- * Here we return a vector of pointers to the elementType values of the
- * Rev object elements. We hope that the caller does not delete the element
- * values but it does not matter if they change them except that the Rev
- * object has lost control then of what ranges of values are acceptable.
- * This is mainly provided here for backwards compatibility.
- *
- * @todo This function should probably be removed
+ * Here we return a vector of clones of the elementType values of the
+ * Rev object elements. The clones are put in an RbVector, which is
+ * assumed to take on ownership of those element value clones.
  */
 template<typename rlType>
 RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getVectorRbPointer( void ) const
@@ -360,7 +335,7 @@ RevBayesCore::RbVector<typename rlType::valueType> WorkspaceVector<rlType>::getV
     
     std::vector< RevPtr<Variable> >::const_iterator it;
     for ( it = elements.begin(); it != elements.end(); ++it )
-        theVector.push_back( &( static_cast<rlType&>( (*it)->getRevObject() ).getValue() ) );
+        theVector.push_back( static_cast<rlType&>( (*it)->getRevObject() ).getValue().clone() );
     
     return theVector;
 }
