@@ -22,7 +22,6 @@
 #include "RevObject.h"
 #include "TypedDagNode.h"
 #include "UserFunction.h"
-#include "UserFunctionCall.h"
 
 namespace RevLanguage {
     
@@ -49,8 +48,9 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
+        bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
         void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
-        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunction* code);         //!< Make deterministic clone with a userdefined Rev function
+        void                                    makeDeterministicValue(UserFunction* fxn, UserFunction* code);              //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         virtual void                            printStructure(std::ostream& o) const;                                      //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -89,11 +89,13 @@ namespace RevLanguage {
 #include "DeterministicNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
+#include "NAValueNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
 #include "TypedUserFunction.h"
 #include "Variable.h"
+#include "Workspace.h"
 
 #include <cassert>
 
@@ -355,7 +357,7 @@ template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
     if ( dagNode == NULL )
-        throw RbException( "Invalid attempt to get value from an NA object" );
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
     
     return dagNode->getValue();
 }
@@ -443,6 +445,13 @@ bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
 
 
 template <typename rbType>
+bool RevLanguage::ModelObject<rbType>::isNAObject( void ) const {
+    
+    return dagNode->isNAValue();
+}
+
+
+template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     
     if ( dagNode == NULL )
@@ -472,10 +481,10 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 
 /** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunction* code )
+void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
 {
-    TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
-    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, code );
+    TypedUserFunction< rbType >*  rbFxn    = new TypedUserFunction< rbType >( code );
+    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", rbFxn, fxn );
     
     if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
         delete dagNode;
@@ -515,8 +524,8 @@ void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o ) const
 
 
 /**
- * Print value for user. For a default object, the DAG node pointer is
- * NULL, so we print something appropriate. Here, we use NA as in R.
+ * Print value for user. The DAG node pointer may be NULL, in which
+ * case we print "NA".
  */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
@@ -524,7 +533,7 @@ void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
     if ( dagNode == NULL )
         o << "NA";
     else
-        dagNode->printValue(o,"");
+        dagNode->printValue(o, "" );
 }
 
 
@@ -552,38 +561,9 @@ void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
 }
 
 
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
-    
-    RevBayesCore::ConstantNode<rbType>* newNode;
-    
-    if ( dagNode == NULL )
-    {
-        newNode = new RevBayesCore::ConstantNode<rbType>("",x);
-    } 
-    else 
-    {
-        newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(),x);
-        dagNode->replace(newNode);
-
-        if ( dagNode->decrementReferenceCount() == 0 )
-        {
-            delete dagNode;
-        }
-        
-    }
-    
-    dagNode = newNode;
-    
-    // increment the reference count to the value
-    dagNode->incrementReferenceCount();
-    
-}
-
-
 /**
- * Set dag node. We also accommodate the possibility of setting the dag node
- * to null, creating an NA object.
+ * Set dag node. We also accommodate the possibility of setting the DAG node
+ * to null.
  */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
@@ -610,5 +590,35 @@ void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode
         dagNode->incrementReferenceCount();
     
 }
+
+
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
+    
+    RevBayesCore::ConstantNode<rbType>* newNode;
+    
+    if ( dagNode == NULL )
+    {
+        newNode = new RevBayesCore::ConstantNode<rbType>("",x);
+    }
+    else
+    {
+        newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(),x);
+        dagNode->replace(newNode);
+        
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+        
+    }
+    
+    dagNode = newNode;
+    
+    // increment the reference count to the value
+    dagNode->incrementReferenceCount();
+    
+}
+
 
 #endif

@@ -167,7 +167,7 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
     
     // Delete the function clone
     delete theFunction;
-    
+
     return theReturnValue;
 }
 

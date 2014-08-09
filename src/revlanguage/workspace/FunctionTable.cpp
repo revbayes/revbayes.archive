@@ -347,6 +347,19 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
 }
 
 
+/**
+ * Get first function. This function will find the first function with a matching name without
+ * throwing an error. Compare with the getFunction(name) function, which will throw an error
+ * if the function name is overloaded.
+ */
+const Function& FunctionTable::getFirstFunction( const std::string& name ) {
+    
+    // find the template function
+    const std::vector<Function *>& theFunctions = findFunctions(name);
+    
+    return *theFunctions[0];
+}
+
 
 /** Get function. This function will throw an error if the name is missing or if there are several matches (overloaded functions) */
 const Function& FunctionTable::getFunction( const std::string& name ) {

@@ -290,6 +290,12 @@ bool DagNode::isConstant( void ) const {
 }
 
 
+/** Is this a non-applicable (NA) value? */
+bool DagNode::isNAValue( void ) const {
+    return false;
+}
+
+
 /**
  * Is this variable a simple numeric variable?
  * This is asked for example by the model monitor that only wants to monitor simple

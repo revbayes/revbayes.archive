@@ -103,7 +103,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         theParam->removeChild( copy );
     }
     
-    // Now replace the parents of the copy (which our now the same as our parents) with the parent clones
+    // Now replace the parents of the copy (which are now the same as our parents) with the parent clones
     for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         // Get the i-th parent

@@ -69,7 +69,7 @@ namespace RevLanguage {
         bool                                            isComposite(void) const;                                            //!< Is this a composite container?
         bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
         void                                            makeConstantValue();                                                //!< Convert the container to a constant variable
-        void                                            makeDeterministicValue(UserFunctionCall* call, UserFunction* code); //!< Convert to deterministic object with a userdefined Rev function
+        void                                            makeDeterministicValue(UserFunction* fxn, UserFunction* code);      //!< Convert to deterministic object with a userdefined Rev function
         void                                            printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
         void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
         void                                            setDagNode(RevBayesCore::DagNode *newNode);                         //!< Set or replace the internal dag node (and keep me)
@@ -86,20 +86,21 @@ namespace RevLanguage {
 
         // Container functions you should not have to override
         size_t                                          getDim(void) const;                                                 //!< Get the dimensions
-        RevObject*                                      makeElementLookup(const std::vector< RevPtr<Variable> >& oneOffsetIndices); //!< Get dynamic element variable lookup
+        RevObject*                                      makeElementLookup(const RevPtr<Variable>&                var,
+                                                                          const std::vector< RevPtr<Variable> >& oneOffsetIndices); //!< Get dynamic element variable lookup
         size_t                                          size(void) const;                                                   //!< Get the number of elements
 
     protected:
-        ModelContainer(void);                                           //!< Construct empty container
-        ModelContainer(const valueType& v);                             //!< Construct constant model container
-        ModelContainer(RevBayesCore::TypedDagNode<valueType>* n);       //!< Construct model container from DAG node
-        ModelContainer(const ModelContainer<rlType,dim,valueType>& c);  //!< Copy constructor
+        ModelContainer(void);                                                                                               //!< Construct empty container
+        ModelContainer(const valueType& v);                                                                                 //!< Construct constant model container
+        ModelContainer(RevBayesCore::TypedDagNode<valueType>* n);                                                           //!< Construct model container from DAG node
+        ModelContainer(const ModelContainer<rlType,dim,valueType>& c);                                                      //!< Copy constructor
         
         // Assignment operator
-        ModelContainer&                             operator=(const ModelContainer& x);                             //!< Assignment operator
+        ModelContainer&                                 operator=(const ModelContainer& x);                                 //!< Assignment operator
         
         // Member variable (protected and not private to make it available to derived classes)
-        RevBayesCore::TypedDagNode<valueType>*      dagNode;                                                        //!< The DAG node keeping the value
+        RevBayesCore::TypedDagNode<valueType>*          dagNode;                                                            //!< The DAG node keeping the value
 
     };
 
@@ -464,10 +465,10 @@ void ModelContainer<rlType, dim, valueType>::makeConstantValue( void )
 
 /** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
 template <typename rlType, size_t dim, typename valueType>
-void ModelContainer<rlType, dim, valueType>::makeDeterministicValue( UserFunctionCall* call, UserFunction* code )
+void ModelContainer<rlType, dim, valueType>::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
 {
-    TypedUserFunction< valueType >*  fxn      = new TypedUserFunction< valueType >( call );
-    DeterministicNode< valueType >*  detNode  = new DeterministicNode< valueType >("", fxn, code );
+    TypedUserFunction< valueType >*  rbFxn    = new TypedUserFunction< valueType >( code );
+    DeterministicNode< valueType >*  detNode  = new DeterministicNode< valueType >("", rbFxn, fxn );
     
     setDagNode( detNode );
 }
@@ -483,10 +484,10 @@ void ModelContainer<rlType, dim, valueType>::makeDeterministicValue( UserFunctio
  * current value of i in this evaluation context.
  */
 template <typename rlType, size_t dim, typename valueType>
-RevObject* ModelContainer<rlType, dim, valueType>::makeElementLookup( const std::vector< RevPtr<Variable> >& oneOffsetIndices ) {
+RevObject* ModelContainer<rlType, dim, valueType>::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& oneOffsetIndices ) {
     
     ElementLookupNode< ModelContainer<rlType, dim, valueType>, rlType >* newNode =
-        new ElementLookupNode< ModelContainer<rlType, dim, valueType>, rlType >( "", this, oneOffsetIndices );
+        new ElementLookupNode< ModelContainer<rlType, dim, valueType>, rlType >( "", var, oneOffsetIndices );
 
     rlType* newObj = new rlType( newNode );
     

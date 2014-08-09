@@ -53,7 +53,7 @@ namespace RevLanguage {
         // Public methods
         void                                    addChild(RevBayesCore::DagNode *child) const;                           //!< Protect NA containers to form part of DAGs
         ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone
-        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG which is connected to this node
+        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
         RevPtr<Variable>&                       getElement(size_t index);                                               //!< Return an element
         RevPtr<const Variable>&                 getElement(size_t index) const;                                         //!< Return an element (const version)
         double                                  getLnProbability(void);                                                 //!< Get ln prob (0.0)
@@ -106,27 +106,6 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n ) :
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 }
-
-
-#if 0
-/**
- * Constructor of constant value container node. We take a
- * value of valueType and set our elements vector from that
- * value.
- */
-template<typename rlElemType, typename valueType>
-ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, const valueType& v ) :
-    RevBayesCore::DynamicNode<valueType>( n ),
-    elements(),
-    touched( true ),
-    value()
-{
-    this->type = RevBayesCore::DagNode::DETERMINISTIC;
-
-    for ( size_t i = 0; i < v.size(); ++i )
-        this->push_back( new rlElemType( v[i] ) );
-}
-#endif
 
 
 /**

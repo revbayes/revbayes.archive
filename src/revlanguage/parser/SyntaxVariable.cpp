@@ -592,7 +592,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
             }
             
             // Make a dynamic element lookup
-            theVar = new Variable( theVar->getRevObject().makeElementLookup( containerOneOffsetIndices ) );
+            theVar = new Variable( theVar->getRevObject().makeElementLookup( theVar, containerOneOffsetIndices ) );
         }
         else
         {
@@ -608,7 +608,8 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
             
             // Get the variable using the subscript operator function
             // TODO: This needs to be made generic for user-defined member objects
-            // TODO: This needs to return a dynamic element lookup
+            // TODO: This needs to check that there is a subscript operator function and not procedure,
+            // and then return a dynamic element lookup
             theVar = theVar->getRevObject().executeMethod( "[]", args );
             
             // Erase the index
