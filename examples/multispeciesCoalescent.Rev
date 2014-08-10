@@ -24,7 +24,7 @@ filenames <- v("data/Cettiidae_cytb.nex", "data/Cettiidae_G3P.nex", "data/Cettii
 
 n_parts <- filenames.size()
 for (i in 1:n_parts){
-  data[i] <- readCharacterData(filenames[i])[1]
+  data[i] <- readCharacterData(filenames[i])
   n_sites[i] <- data[i].nchar(1)
 }
 
@@ -55,7 +55,7 @@ moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
 moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
 
 # tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=taxaCount, names=names)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=n_species, names=names)
 
 # moves on the tree
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)

@@ -142,7 +142,7 @@ const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
         branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "branchNes"    , true, branchNeTypes ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"    , true, branchNeTypes ) );
         distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxa"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
         rulesSet = true;
     }
