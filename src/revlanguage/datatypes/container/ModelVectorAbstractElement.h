@@ -434,7 +434,7 @@ RevObject* ModelVectorAbstractElement<rlType>::makeIndirectReference(void) {
 template <typename rlType>
 void ModelVectorAbstractElement<rlType>::printValue( std::ostream& o ) const
 {
-    if ( this->dagNode->isNaValue() )
+    if ( this->dagNode->isNAValue() )
     {
         o << "NA";
         return;

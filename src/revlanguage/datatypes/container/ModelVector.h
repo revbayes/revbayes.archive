@@ -523,7 +523,7 @@ void ModelVector<rlType>::pop_front( void )
 template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
-    if ( this->dagNode->isNaValue() )
+    if ( this->dagNode->isNAValue() )
     {
         o << "NA";
         return;
