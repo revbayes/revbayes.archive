@@ -52,9 +52,8 @@ z2
 
 clear()
 
-# Index bound checking. This statement
-# should throw an error; uncomment it
-# to test it
+# Index bound checking. The element access statement
+# should throw an error; uncomment it to test it
 a <- [ 1, 2 ]
 # a[3]
 
@@ -65,7 +64,7 @@ clear()
 # elements but not access the value, which is
 # typically done when building DAGs. Accessing
 # the value, should throw an error (statement
-# that is commented out below. We also test
+# that is commented out below). We also test
 # reassignment here to NA and regular elements
 a[1] <- 1
 a[3] <- 3
@@ -98,8 +97,10 @@ str(moves)
 
 clear()
 
+#####################################
 # Problems raised by Sebastian with the initial version of the 
 # new container implementation
+#####################################
 
 # Problems with NA/default variables caused problems with this
 a[1] <- -1
@@ -111,7 +112,7 @@ clear()
 
 # Problems with simplices caused by a missing ampersand breaking
 # a function override. All attempted assignments that are commented
-# out should throw illegal assignment errors and leave the simplex
+# out below should throw illegal assignment errors and leave the simplex
 # intact.
 a <- simplex(1,2,3,4)
 # a[5] <- 5
@@ -141,6 +142,7 @@ clear()
 
 # Creating vectors of abstract elements. The implementation
 # of the ModelVectorAbstractElement class was incomplete
+# in the version of the code that was originally pushed
 # and no vectors of abstract element types had been
 # registered in RbRegister.
 data[1] <- readCharacterData("data/primates.nex")[1]
