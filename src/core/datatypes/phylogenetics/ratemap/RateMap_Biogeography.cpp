@@ -35,6 +35,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     useAreaAvailable = false;
     useAreaAdjacency = false;
     useDistanceDependence = false;
+    useRootFrequencies = true;
     
     branchOffset=1;
     epochOffset=1;
@@ -59,6 +60,7 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     useAreaAvailable = m.useAreaAvailable;
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
+    useRootFrequencies = m.useRootFrequencies;
     
     geographyRateModifier = m.geographyRateModifier;
     useGeographyRateModifier = m.useGeographyRateModifier;
@@ -101,6 +103,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         useAreaAdjacency = r.useAreaAdjacency;
         useAreaAvailable = r.useAreaAvailable;
         useDistanceDependence = r.useDistanceDependence;
+        useRootFrequencies = r.useRootFrequencies;
         
         branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
         branchHeterogeneousGainLossRates = r.branchHeterogeneousClockRates;
@@ -250,6 +253,14 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     if (useGeographyRateModifier) // want this to take in age as an argument...
         rate *= geographyRateModifier->computeRateModifier(node, from, to, age);
     
+    // root freqs
+    if (useRootFrequencies)
+    {
+        int countDiff[2][2] = { {-1, 1}, {1, -1} };
+        double rfr = pow(rootFrequencies[0], count[0] + countDiff[s][0]) * pow(rootFrequencies[1], count[1] + countDiff[s][1]);
+        rate *= rfr;
+    }
+    
     return rate;
 
 }
@@ -345,6 +356,17 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
         r1 *= homogeneousGainLossRates[1];
     }
     
+    
+    if (useRootFrequencies)
+    {
+        // root freqs
+        int countDiff[2][2] = { {-1, 1}, {1, -1} };
+        double rfr0 = pow(rootFrequencies[0], counts[0] + countDiff[0][0]) * pow(rootFrequencies[1], counts[1] + countDiff[0][1]);
+        double rfr1 = pow(rootFrequencies[0], counts[0] + countDiff[1][0]) * pow(rootFrequencies[1], counts[1] + countDiff[1][1]);
+        r0 *= rfr0;
+        r1 *= rfr1;
+    }
+    
     // apply rate for branch.
     double sum = r0 + r1;
     if (branchHeterogeneousClockRates)
@@ -355,7 +377,7 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     {
         sum *= homogeneousClockRate;
     }
-    
+        
     return sum;
 }
 
