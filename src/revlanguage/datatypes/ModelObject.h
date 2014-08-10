@@ -49,7 +49,7 @@ namespace RevLanguage {
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
-        void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
+        void                                    makeConstantValue(void);                                                    //!< Convert the stored variable to a constant variable (if applicable)
         void                                    makeDeterministicValue(UserFunction* fxn, UserFunction* code);              //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user

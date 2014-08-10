@@ -209,9 +209,13 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::findOrCreateElement( const 
     if ( oneOffsetIndices.size() > 1 )
         throw RbException( "Unexpected extra indices to a vector" );
     
-    // Resize if myIndex is out of range; fill with NULL variables
+    // Resize if myIndex is out of range; fill with NA objects using Workspace functionality
     for ( size_t it = this->size(); it < oneOffsetIndices[0]; ++it )
-        theContainerNode->push_back( NULL );
+    {
+        rlType* theObject = static_cast<rlType*>( Workspace::userWorkspace().makeNewDefaultObject( rlType::getClassType() ) );
+        theObject->setDagNode( new NAValueNode<rlType>() );
+        theContainerNode->push_back( theObject );
+    }
     
     // Return the assignable element
     return theContainerNode->getElement( oneOffsetIndices[0] - 1 );

@@ -26,8 +26,8 @@ namespace RevLanguage {
         valueType&                                          getValue(void);                                                         //!< Get value (throw error)
         const valueType&                                    getValue(void) const;                                                   //!< Get value (throw error) (const)
         bool                                                isConstant(void) const;                                                 //!< Is this DAG node constant?
-        bool                                                isNAValue(void) const;                                                  //!< Is this an NA value?
-        void                                                printStructureInfo(std::ostream &o) const;                              //!< Print structure info
+        bool                                                isNAValue(void) const;                                                  //!< Is this an NA value node?
+        void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;          //!< Print structure info
         void                                                printValue(std::ostream &o, const std::string &sep) const;              //!< Print this variable
         void                                                printValue(std::ostream &o, size_t i) const;                            //!< Print the i-th element of this variable
         void                                                redraw(void);
@@ -188,15 +188,24 @@ void NAValueNode<rlType>::keepMe( RevBayesCore::DagNode* affecter ) {
 
 /** Print struct for user */
 template<class rlType>
-void NAValueNode<rlType>::printStructureInfo(std::ostream &o) const
+void NAValueNode<rlType>::printStructureInfo(std::ostream &o, bool verbose) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    if ( verbose )
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    else
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+
     o << "_dagType      = NA value DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
     
-    o << "_parents      = ";
-    this->printParents(o, 16, 70);
-    o << std::endl;
+    if ( verbose )
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    
+    if ( verbose )
+    {
+        o << "_parents      = ";
+        this->printParents(o, 16, 70);
+        o << std::endl;
+    }
     
     o << "_children     = ";
     this->printChildren(o, 16, 70);

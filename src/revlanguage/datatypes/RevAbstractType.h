@@ -21,7 +21,7 @@ namespace RevLanguage {
     class RevAbstractType : public RevObject {
         
     public:
-                                            RevAbstractType(const TypeSpec& TypeSpec);                           //!< Constructor from type specification
+                                            RevAbstractType(const TypeSpec& TypeSpec, RevObject* obj);              //!< Standard constructor
                                             RevAbstractType(const RevAbstractType& n);                              //!< Copy constructor
         virtual                            ~RevAbstractType(void) {}                                                //!< Virtual destructor just in case
         
@@ -30,10 +30,13 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get the type spec for this instance
         bool                                isAbstract(void) const;                                                 //!< Return true because we are abstract
         void                                printValue(std::ostream& o) const;                                      //!< Print value for user
-        
+
+        // RevAbstractType function
+        RevObject*                          makeExampleObject(void) const;                                          //!< Make new example object instance
 
     private:
-        const TypeSpec&                     myTypeSpec;
+        const TypeSpec&                     myTypeSpec;                                                             //!< Abstract type specification
+        RevObject*                          exampleObject;                                                          //!< Example of non-abstract derived class
     };
 
     // Global functions using the class
