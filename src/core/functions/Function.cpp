@@ -6,8 +6,9 @@ using namespace RevBayesCore;
 
 
 
-Function::Function(void)  : parameters(),
-dirty( true )
+Function::Function(void)  :
+    dirty( true ),
+    parameters()
 {
     
 }

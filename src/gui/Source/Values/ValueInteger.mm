@@ -9,12 +9,6 @@
     return [[ValueInteger alloc] initWithValue:self];
 }
 
-- (void)dealloc {
-
-    [value release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
     [super encodeWithCoder:aCoder];
@@ -32,7 +26,6 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
         value = [aDecoder decodeObjectForKey:@"value"];
-        [value retain];
 		}
 	return self;
 }
@@ -58,10 +51,7 @@
 
 - (void)setValue:(int)x {
 
-    NSNumber* tempNumber = [NSNumber numberWithInt:x];
-    [value release];
-    value = tempNumber;
-    [value retain];
+    value = [NSNumber numberWithInt:x];
 }
 
 - (NSString*)stringRepresentation {

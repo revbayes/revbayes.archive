@@ -41,7 +41,8 @@ namespace RevLanguage {
         
         
     private:
- //       RevPtr<const Variable>                          omega;
+        RevPtr<const Variable>                          sigma;
+        RevPtr<const Variable>                          diagonal;
         RevPtr<const Variable>                          kappa;
         RevPtr<const Variable>                          df;
         RevPtr<const Variable>                          dim;

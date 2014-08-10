@@ -26,7 +26,7 @@ namespace RevLanguage {
         Dist_divDepYuleProcess( void );
         
         // Basic utility functions
-        Dist_divDepYuleProcess*                 clone(void) const;                                                                  //!< Clone the object
+        Dist_divDepYuleProcess*                             clone(void) const;                                                                  //!< Clone the object
         static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         const TypeSpec&                                     getTypeSpec(void) const;                                                            //!< Get the type spec of the instance

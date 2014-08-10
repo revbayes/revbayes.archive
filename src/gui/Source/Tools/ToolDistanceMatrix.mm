@@ -64,7 +64,7 @@
         
     // and make a temporary directory to contain the alignments
     NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
               alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
@@ -186,7 +186,6 @@
             {
             NSNumber* myNumber = [[NSNumber alloc] initWithDouble:((*dm)[i][j])];
             [distances addObject:myNumber];
-            [myNumber release];
             }
         }
 
@@ -214,13 +213,6 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
-
-    [distances release];
-    [controlWindow release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[aCoder encodeInt:distanceType                 forKey:@"distanceType"];
@@ -233,9 +225,9 @@
 	[super encodeWithCoder:aCoder];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
+
     [self startProgressIndicator];
 
     // find the parent of this tool, which should be an instance of ToolReadData
@@ -254,7 +246,7 @@
     if ( dataTool == nil )
         {
         [self stopProgressIndicator];
-        return;
+        return YES;
         }
         
     // get the workspace variable name for the parent tool
@@ -270,7 +262,7 @@
     if ( [alignedData count] == 0 )
         {
         [self stopProgressIndicator];
-        return;
+        return YES;
         }
         
     // check that the alignments contain DNA or RNA sequences
@@ -284,14 +276,14 @@
     if ( isNucleotideData == NO )
         {
         [self stopProgressIndicator];
-        return;
+        return YES;
         }
         
     // check that we have only one alignment
     if ( [alignedData count] > 1 )
         {
         [self stopProgressIndicator];
-        return;
+        return YES;
         }
         
     // make a unique name for this distance matrix
@@ -312,7 +304,7 @@
     if (coreResult != 0)
         {
         [self stopProgressIndicator];
-        return;
+        return YES;
         }
 
 
@@ -330,6 +322,7 @@
 
     
     [self stopProgressIndicator];
+    return YES;
 }
 
 - (id)init {
@@ -381,7 +374,6 @@
 		proportionInvariableSites = [aDecoder decodeDoubleForKey:@"proportionInvariableSites"];
 		gammaShape                = [aDecoder decodeDoubleForKey:@"gammaShape"];
         distances                 = [aDecoder decodeObjectForKey:@"distances"];
-        [distances retain];
 
 		// initialize the control window
 		controlWindow = [[WindowControllerDistanceMatrix alloc] initWithTool:self];

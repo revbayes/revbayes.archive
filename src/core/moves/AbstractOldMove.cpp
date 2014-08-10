@@ -34,7 +34,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         // do a Metropolois-Hastings proposal
         
         // Propose a new value
-        double lnProbabilityRatio;
+        double lnProbabilityRatio = 0;
         double lnHastingsRatio = performOld(lnProbabilityRatio);
         
         double lnPriorRatio = 0.0;

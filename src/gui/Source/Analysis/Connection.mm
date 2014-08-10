@@ -12,13 +12,6 @@
 @synthesize path1;
 @synthesize path2;
 
-- (void)dealloc {
-
-    [path1 release];
-    [path2 release];
-    [super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
     [aCoder encodeBool:isSelected forKey:@"isSelected"];
@@ -60,8 +53,6 @@
 		outlet     = [aDecoder decodeObjectForKey:@"outlet"];
         path1      = [aDecoder decodeObjectForKey:@"path1"];
         path2      = [aDecoder decodeObjectForKey:@"path2"];
-        [path1 retain];
-        [path2 retain];
 		}
 	return self;
 }

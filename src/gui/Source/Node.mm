@@ -5,6 +5,7 @@
 
 @implementation Node
 
+@synthesize ancestor;
 @synthesize flag;
 @synthesize index;
 @synthesize isLeaf;
@@ -34,23 +35,11 @@
     return (int)[descendants count];
 }
 
-- (Node*)ancestor {
-
-    return ancestor;
-}
-
 - (Node*)descendantIndexed:(size_t)idx {
 
     if ( idx >= [descendants count] )
         return nil;
     return [descendants objectAtIndex:idx];
-}
-
-- (void)dealloc {
-
-	[name release];
-    [descendants release];
-	[super dealloc];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -95,9 +84,6 @@
 		name         = [aDecoder decodeObjectForKey:@"name"];
         ancestor     = [aDecoder decodeObjectForKey:@"ancestor"];
         descendants  = [aDecoder decodeObjectForKey:@"descendants"];
-		[name retain];
-        [ancestor retain]; // does this need a retain, given that it is not an object, but a pointer to one?
-        [descendants retain];
 
         isBranchSelected = NO;
         isNodeSelected   = NO;
@@ -149,11 +135,6 @@
 - (void)removeAllDescendants {
 
     [descendants removeAllObjects];
-}
-
-- (void)setAncestor:(Node*)anc {
-
-    ancestor = anc;
 }
 
 @end

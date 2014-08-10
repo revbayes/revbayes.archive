@@ -9,6 +9,7 @@
 #include "Dist_inverseWishart.h"
 #include "Natural.h"
 #include "RealPos.h"
+#include "ModelVector.h"
 #include "RealSymmetricMatrix.h"
 #include "StochasticNode.h"
 #include "InverseWishartDistribution.h"
@@ -34,34 +35,24 @@ Dist_inverseWishart* Dist_inverseWishart::clone( void ) const {
 RevBayesCore::InverseWishartDistribution* Dist_inverseWishart::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* sg = NULL;
-    RevBayesCore::TypedDagNode<double>* ka = NULL;
-    /*
-    if (sigma != NULL)  {
-        sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
-    }
-     */
-    if (kappa != NULL)  {
-        ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
-    }
-    
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* sg = static_cast<const RealSymmetricMatrix &>( sigma->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* dv = static_cast<const ModelVector<RealPos> &>( diagonal->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* ka = static_cast<const RealPos&>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<int>* deg = static_cast<const Natural &>( df->getRevObject()).getDagNode();
-
-    RevBayesCore::TypedDagNode<int>* dm = NULL;
-//    int dm = -1;
-    if (dim != NULL)    {
-        dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
-//        dm = static_cast<const Natural &>( dim->getValue()).getValue();
-    }
-    RevBayesCore::InverseWishartDistribution* w    =  0;
+    RevBayesCore::TypedDagNode<int>* dm = static_cast<const Natural &>( dim->getRevObject()).getDagNode();
     
-    if (sg) {
-            w = new RevBayesCore::InverseWishartDistribution( sg, deg );
+    RevBayesCore::InverseWishartDistribution* w    =  0;
+
+    if (! sg->getValue().isNull())   {
+        // parameter is sigma
+        w = new RevBayesCore::InverseWishartDistribution( sg, deg );
     }
-    else{
-        if (! dm || ! ka)   {
-            throw RbException("error in Dist_inverseWishart: should specify arguments");
-        }
+    else if (dm->getValue() == 0)    {
+        // parameter is Diagonal(kappaVector))
+        w = new RevBayesCore::InverseWishartDistribution( dv, deg );
+    }
+    else    { 
+        // parameter is kappa * Id
         w = new RevBayesCore::InverseWishartDistribution( dm, ka, deg );
     }
     return w;
@@ -96,10 +87,11 @@ const MemberRules& Dist_inverseWishart::getMemberRules(void) const {
     
     if ( !rulesSet ) {
         
-//        distExpMemberRules.push_back( new ArgumentRule( "sigma", true, RealSymmetricMatrix::getClassTypeSpec() ) );
+        distExpMemberRules.push_back( new ArgumentRule( "sigma", true, RealSymmetricMatrix::getClassTypeSpec(), new RealSymmetricMatrix()  ) );
+        distExpMemberRules.push_back( new ArgumentRule( "diagonal", true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>()  ) );
         distExpMemberRules.push_back( new ArgumentRule( "df", true, Natural::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec() ) );
-        distExpMemberRules.push_back( new ArgumentRule( "dim", true, Natural::getClassTypeSpec() ) );
+        distExpMemberRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec(), new Real(0) ) );
+        distExpMemberRules.push_back( new ArgumentRule( "dim", true, Natural::getClassTypeSpec(), new Natural(0) ) );
         
         rulesSet = true;
     }
@@ -125,16 +117,15 @@ void Dist_inverseWishart::printValue(std::ostream& o) const {
         o << sigma->getName();
     } else {
 */
- if (kappa != NULL)  {
-            if (dim == NULL)    {
-                throw RbException("error in Wishart distribution: kappa and dim should both be non null");
-            }
-            o << kappa->getName() << ".I_" << dim->getName();
+    if (kappa != NULL)  {
+        if (dim == NULL) {
+            throw RbException("error in Wishart distribution: kappa and dim should both be non null");
         }
-        else{
-            o << "?";
-        }
-   // }
+        o << kappa->getName() << ".I_" << dim->getName();
+    } else {
+        o << "?";
+    }
+
     o << ")";
 }
 
@@ -143,7 +134,10 @@ void Dist_inverseWishart::printValue(std::ostream& o) const {
 void Dist_inverseWishart::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "sigma" ) {
-//        sigma = var;
+        sigma = var;
+    }
+    else if ( name == "diagonal" ) {
+        diagonal = var;
     }
     else if ( name == "kappa" ) {
         kappa = var;

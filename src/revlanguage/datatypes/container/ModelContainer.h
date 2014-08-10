@@ -70,7 +70,7 @@ namespace RevLanguage {
         bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
         void                                            makeConstantValue();                                                //!< Convert the container to a constant variable
         void                                            makeDeterministicValue(UserFunction* fxn, UserFunction* code);      //!< Convert to deterministic object with a userdefined Rev function
-        void                                            printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        void                                            printStructure(std::ostream& o, bool verbose=false) const;          //!< Print structure of language object for user
         void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
         void                                            setDagNode(RevBayesCore::DagNode *newNode);                         //!< Set or replace the internal dag node (and keep me)
         void                                            setName(const std::string &n);                                      //!< Set the name of the variable (if applicable)
@@ -492,21 +492,19 @@ RevObject* ModelContainer<rlType, dim, valueType>::makeElementLookup( const RevP
     rlType* newObj = new rlType( newNode );
     
     return newObj;
-    
-    return NULL;
 }
 
 
 /**
- * Print structure info for user  We simply delegate this to our
- * internal DAG node.
+ * Print structure info for user  We use a combination of information
+ * from different sources.
  */
 template <typename rlType, size_t dim, typename valueType>
-void ModelContainer<rlType, dim, valueType>::printStructure( std::ostream &o ) const
+void ModelContainer<rlType, dim, valueType>::printStructure( std::ostream &o, bool verbose ) const
 {
-    Container::printStructure( o );
+    Container::printStructure( o, verbose );
 
-    dagNode->printStructureInfo( o );
+    dagNode->printStructureInfo( o, verbose );
     
     printMemberInfo( o );
 }

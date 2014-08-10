@@ -25,7 +25,6 @@
     AnalysisTools* t = [[AnalysisTools alloc] init];
     [t setAnalysisName:uniqueName];
     [analysesController addObject:t];
-    [t release];
     [self updateChangeCount:NSChangeDone];
 }
 
@@ -145,12 +144,8 @@
 
 - (void)dealloc {
 
-    //[[NSNotificationCenter defaultCenter] removeObserver:self name:@"boundsChangeNotification"                  object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NSTableViewSelectionDidChangeNotification" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"badAnalysis"                               object:nil];
-	[splitViewDelegate release];
-    [analyses release];
-	[super dealloc];
 }
 
 - (IBAction)executeButton:(id)sender {
@@ -251,7 +246,7 @@
 	[fw addRegularFileWithContents:settingsData preferredFilename:@"settings"];
     
 	// return the file wrapper object
-	return [fw autorelease];
+    return fw;
 }
 
 - (NSString*)findUniqueNameForAnalysis {
@@ -286,7 +281,7 @@
 							  name:@"NSTableViewSelectionDidChangeNotification"
 						    object:nil];
 		[defaultCenter addObserver:self
-						  selector:@selector(analysisError)
+						  selector:@selector(analysisError:)
 							  name:@"badAnalysis"
 						    object:nil];
 
@@ -295,7 +290,6 @@
 		AnalysisTools* t = [[AnalysisTools alloc] init];
 		[analyses addObject:t];
 		selectedAnalysis = t;
-		[t release];
 		
 		// set some default values
 		rbTimer         = nil;
@@ -356,11 +350,9 @@
 	NSDictionary* files = [fileWrapper fileWrappers];
 	
 	// read the analyses
-	[analyses release];
 	NSFileWrapper* analysesFile = [files objectForKey:@"analyses"];
 	NSData* analysesData = [analysesFile regularFileContents];
 	analyses = [NSKeyedUnarchiver unarchiveObjectWithData:analysesData];
-	[analyses retain];
 
 	NSEnumerator* enumerator = [analyses objectEnumerator];
 	id element;
@@ -377,7 +369,6 @@
 	snapToGrid = [[settingsArray objectAtIndex:1] boolValue];
     
     [w orderOut:nil];
-    [progressWin release];
         
 	return YES;
 }

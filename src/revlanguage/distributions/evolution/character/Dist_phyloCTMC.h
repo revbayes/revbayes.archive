@@ -373,7 +373,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "siteRates"    , true, ModelVector<RealPos>::getClassTypeSpec(), defaultSiteRates ) );
         
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec() ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec(), new Natural(10) ) );
         
         std::vector<RlString> options;
         options.push_back( RlString("DNA") );

@@ -297,7 +297,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A GTR model test */
     try {
 //        TestGtrModel testGtr = TestGtrModel("data/primates.nex", "trees/primates.tree", 10000);
-        TestGtrModel testGtr = TestGtrModel("data/primates_mtDNA.nex", "trees/primates.tree", 200);
+        TestGtrModel testGtr = TestGtrModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.fas", "/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 200);
 //        TestGtrModel testGtr = TestGtrModel("data/anolis.nex", "trees/anolis_MAP.dnd", 10000);
   //      TestGtrModel testGtr = TestGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
 

@@ -11,12 +11,6 @@
     [values addObject:@"?"];
 }
 
-- (void)dealloc {
-
-    [values dealloc];
-    [super dealloc];
-}
-
 - (void)deleteCharacterWithIndex:(int)idx {
 
     [values removeObjectAtIndex:idx];

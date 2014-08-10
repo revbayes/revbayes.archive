@@ -33,8 +33,8 @@ namespace RevBayesCore {
     class RateOnBranchAve : public TypedFunction<double> {
         
     public:
-        RateOnBranchAve(const StochasticNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const size_t idx);                                                                                   //!< Default constructor
-        RateOnBranchAve(const StochasticNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode< double >* sv, const size_t idx);                                                                                   //!< Default constructor
+        RateOnBranchAve(const TypedDagNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *rr, const size_t idx);                                                                                   //!< Default constructor
+        RateOnBranchAve(const TypedDagNode< std::vector<double> > *rts, const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *rr, const TypedDagNode< double >* sv, const size_t idx);                                                                                   //!< Default constructor
         RateOnBranchAve(const RateOnBranchAve& t);                                                                                      //!< Copy constructor
         virtual                                    ~RateOnBranchAve(void);                                                                  //!< Destructor
         
@@ -49,8 +49,9 @@ namespace RevBayesCore {
         
     private:
         // members
-		const StochasticNode< std::vector<double> >*					nodeRates;
+		const TypedDagNode< std::vector<double> >*					nodeRates;
         const TypedDagNode<TimeTree>*               tree;
+		const TypedDagNode<double>*					rootRate;
 		const TypedDagNode< double >*				scaleValue;
 		const size_t								nodeID;
 		

@@ -40,7 +40,7 @@ namespace RevLanguage {
         typename rlType::valueType&             getValue(void);                                                         //!< Get the value
         const typename rlType::valueType&       getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
+        virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void) {}                                                         //!< Redraw (or not)
         void                                    update(void);                                                           //!< Update current value
         
@@ -255,11 +255,24 @@ void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
  * const cast, but this should be perfectly safe.
  */
 template< typename rlType >
-void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o ) const
+void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        o << "_dagNode      = " << this->name << std::endl;
+    }
+
     o << "_dagType      = Indirect reference DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     

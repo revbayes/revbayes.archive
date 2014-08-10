@@ -69,7 +69,7 @@ mymodel <- model(pi)
 
 monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
 monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)
-monitors[3] <- screenmonitor(printgen=10, separator = "	", pi)
+monitors[3] <- screenmonitor(printgen=10, pi)
 
  
 mymcmc <- mcmc(mymodel, monitors, moves)

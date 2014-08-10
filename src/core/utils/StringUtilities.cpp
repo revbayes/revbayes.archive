@@ -34,48 +34,79 @@ std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::st
     std::string tempS = s;
 	size_t location = tempS.find_last_of( pathSeparator );
 	if ( location == std::string::npos )
-        {
+    {
 		/* There is no path in this string. We 
          must have only the file name. */
 		return "";
-        }
+    }
 	else if ( location == tempS.length() - 1 )
-        {
+    {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. */
 		return tempS;
-        }
+    }
 	else
-        {
+    {
 		/* We can divide the path into the path and the file. */
 		tempS.erase( location );
 		return tempS;
-        }
+    }
+    
     return "";
 }
 
 
 
+/**
+ * Fill this string with spaces so that it has the required length.
+ * Either fill the spaces on the right if left aligned (true)
+ * or on the left if right aligned.
+ */
+void StringUtilities::fillWithSpaces(std::string &s, size_t l, bool left)
+{
+    
+    for (size_t i=s.length(); i<l ; ++i)
+    {
+        // either left algined
+        if (left == true)
+        {
+            s.push_back(' ');
+        }
+        else
+        {
+            s.insert(s.begin(), ' ');
+        }
+        
+    }
+    
+}
+
+
+
 /** Format string for printing to screen, with word wrapping, and various indents */
-std::string StringUtilities::formatStringForScreen(const std::string s, std::string firstLinePad, std::string hangingPad, size_t screenWidth) {
+std::string StringUtilities::formatStringForScreen(const std::string &s, const std::string &firstLinePad, const std::string &hangingPad, size_t screenWidth) {
 
     std::string outputString;
 
     std::vector<std::string> lineList;
     StringUtilities::stringSplit( s, "\n", lineList );
 
-    for ( size_t i=0; i<lineList.size(); i++ ) {
+    for ( size_t i=0; i<lineList.size(); i++ )
+    {
     
         std::vector<std::string> stringList;
         StringUtilities::stringSplit(lineList[i], " ", stringList);
 
-        if ( stringList.size() > 0 ) {
+        if ( stringList.size() > 0 )
+        {
             outputString += firstLinePad;
 
             size_t count = firstLinePad.size();
-            for ( std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++ ) {
+            for ( std::vector<std::string>::iterator it = stringList.begin(); it != stringList.end(); it++ )
+            {
 
-                if ( count + (*it).size() > screenWidth && count != 0 ) {
+                if ( count + (*it).size() > screenWidth && count != 0 )
+                {
                     outputString[outputString.size()-1] = '\n';
                     outputString += hangingPad;
                     count = hangingPad.size();
@@ -86,7 +117,10 @@ std::string StringUtilities::formatStringForScreen(const std::string s, std::str
             outputString[outputString.size()-1] = '\n';
         }
         else
+        {
             outputString += "\n";
+        }
+        
     }
 
     return outputString;
@@ -94,7 +128,8 @@ std::string StringUtilities::formatStringForScreen(const std::string s, std::str
 
 
 /** Return file contents as string with '\n' line breaks */
-std::string StringUtilities::getFileContentsAsString(std::string& s) {
+std::string StringUtilities::getFileContentsAsString(const std::string& s)
+{
 
     // open file
 	std::ifstream fStrm;
@@ -106,7 +141,7 @@ std::string StringUtilities::getFileContentsAsString(std::string& s) {
     int ch;
     std::string retStr = "";
     while ( (ch = fStrm.get()) != EOF)
-        {
+    {
         char c = (char)ch;
         
         if (ch == '\n' || ch == '\r' || ch == EOF)
@@ -129,19 +164,26 @@ std::string StringUtilities::getLastPathComponent(const std::string& s) {
     stringSplit(s, "/", sVec);
     std::string lastComponent = "";
     if (sVec.size() > 0)
+    {
         lastComponent = sVec[sVec.size()-1];
+    }
+    
     return lastComponent;
 }
 
 
 /** Determine if the string s represents a number */
-bool StringUtilities::isNumber(std::string& s) {
+bool StringUtilities::isNumber(const std::string& s) {
 
     for (size_t i=0; i<s.size(); i++)
-        {
+    {
         if (!isdigit(s[i]))
+        {
             return false;
         }
+        
+    }
+    
     return true;
 }
 
@@ -162,19 +204,29 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
     for ( size_t i = 0; i < input.size(); ++i )
     {
         if ( input[ i ] == '\n' || input[ i ] == '\r' )
+        {
             begin = i + 1;
+        }
+        
         if ( isgraph( input[ i ] ) )
+        {
             break;
+        }
+        
     }
     size_t firstGraph = i;
     
     if ( firstGraph >= input.size() )
+    {
         return oneLiner;
+    }
     
     for ( size_t i = begin; i < input.size() && i < maxLen; ++i )
     {
         if ( input[ i ] == '\n' || input[ i ] == '\r' )
+        {
             break;
+        }
         oneLiner.push_back( input[ i ] );
     }
 
@@ -190,19 +242,31 @@ std::string StringUtilities::oneLiner( const std::string& input, size_t maxLen )
 
 
 /** Utility function for dividing string into pieces */
-void StringUtilities::stringSplit(std::string str, std::string delim, std::vector<std::string>& results) {
+void StringUtilities::stringSplit(const std::string &s, const std::string &delim, std::vector<std::string>& results)
+{
+    
+    // create our own copy of the string
+    std::string str = s;
 
     size_t cutAt;
     while ( (cutAt = str.find_first_of(delim)) != str.npos )
-        {
+    {
         if (cutAt > 0)
+        {
             results.push_back(str.substr(0, cutAt));
-        else
-            results.push_back( "" );
-        str = str.substr(cutAt+1);
         }
+        else
+        {
+            results.push_back( "" );
+        }
+        str = str.substr(cutAt+1);
+    }
+    
     if (str.length() > 0)
+    {
         results.push_back(str);
+    }
+    
 }
 
 
@@ -211,7 +275,9 @@ void StringUtilities::toLower(std::string& str)
 {
 
     for (size_t i=0; i<str.size(); i++)
+    {
         str[i] = char( tolower(str[i]) );
+    }
     
 }
 

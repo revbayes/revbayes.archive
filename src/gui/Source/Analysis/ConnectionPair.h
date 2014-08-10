@@ -6,11 +6,11 @@
 
 @interface ConnectionPair : NSObject {
 
-	Outlet*                 outlet;
-	Inlet*                  inlet;
+	Outlet*   outlet;
+	Inlet*    inlet;
 }
 
-@property (readwrite,assign) Outlet* outlet;
-@property (readwrite,assign) Inlet* inlet;
+@property (nonatomic,strong) Outlet* outlet;
+@property (nonatomic,strong) Inlet*  inlet;
 
 @end

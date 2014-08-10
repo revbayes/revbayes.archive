@@ -28,7 +28,7 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double> &z) {
 	
     return exp(lnPdfCovariance(mu,sigma,z));
 }
@@ -45,7 +45,7 @@ double RbStatistics::MultivariateNormal::pdfCovariance(const std::vector<double>
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double> &z) {
     
     sigma.update();
     
@@ -78,9 +78,9 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
  * \throws Does not throw an error.
  */
 
-std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, RandomNumberGenerator& rng) {
+std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, RandomNumberGenerator& rng) {
         
-    // actual work done inside PrecisionMatrix class
+    // actual work done inside MatrixRealSymmetric class
     // (more convenient: private members of sigma, e.g. eigenvalues and eigenvectors, are used here)
     sigma.update();
     size_t dim = sigma.getDim();
@@ -101,7 +101,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
  * \return Returns the probability density.
  * \throws Throws an RbException::ERROR.
  */
-double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, const std::vector<double> &z) {
 	
     return exp(lnPdfPrecision(mu,omega,z));
 }
@@ -118,7 +118,7 @@ double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>&
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double> &z) {
+double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, const std::vector<double> &z) {
     
     omega.update();
     
@@ -149,9 +149,9 @@ double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double
  * \return Returns a vector containing the MultivariateNormal random variable.
  * \throws Does not throw an error.
  */
-std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, RandomNumberGenerator& rng) {
+std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, RandomNumberGenerator& rng) {
     
-    // actual work done inside PrecisionMatrix class
+    // actual work done inside MatrixRealSymmetric class
     // (more convenient: private members of omega, e.g. eigenvalues and eigenvectors, are used here)
 
     omega.update();

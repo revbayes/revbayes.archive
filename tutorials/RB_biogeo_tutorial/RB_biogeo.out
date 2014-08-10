@@ -1,0 +1,22 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Handy links for this lab}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Setting up your workspace}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Model and method}{}% 4
+\BOOKMARK [1][-]{section.3}{Lab Outline}{}% 5
+\BOOKMARK [1][-]{section.4}{Input}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Pre-analysis}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Data}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.3}{Geography}{section.4}% 9
+\BOOKMARK [1][-]{section.5}{Analysis}{}% 10
+\BOOKMARK [2][-]{subsection.5.1}{Simulated data}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.2}{Settings}{section.5}% 12
+\BOOKMARK [2][-]{subsection.5.3}{Running a job}{section.5}% 13
+\BOOKMARK [1][-]{section.6}{Output}{}% 14
+\BOOKMARK [2][-]{subsection.6.1}{Screen}{section.6}% 15
+\BOOKMARK [2][-]{subsection.6.2}{Sampled parameters \(my\137run.parameters.txt\)}{section.6}% 16
+\BOOKMARK [2][-]{subsection.6.3}{Sampled range histories \(my\137run.area\137states.txt\)}{section.6}% 17
+\BOOKMARK [2][-]{subsection.6.4}{Posterior probabilities of range histories \(my\137run.area\137probs.txt\)}{section.6}% 18
+\BOOKMARK [2][-]{subsection.6.5}{New Hampshire extended format file \(my\137run.nhx\)}{section.6}% 19
+\BOOKMARK [1][-]{section.7}{Visualization}{}% 20
+\BOOKMARK [2][-]{subsection.7.1}{Phylowood}{section.7}% 21
+\BOOKMARK [2][-]{subsection.7.2}{BayArea-Fig}{section.7}% 22

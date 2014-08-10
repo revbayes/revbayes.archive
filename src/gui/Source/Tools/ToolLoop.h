@@ -6,34 +6,34 @@
 
 @interface ToolLoop : Tool <NSCoding> {
 
-	NSRect                   loopRect;
-	NSSize                   minLoopSize;
-	NSRange                  italicsRange;
+	NSRect                    loopRect;
+	NSSize                    minLoopSize;
+	NSRange                   italicsRange;
     
-	char                     indexLetter;
-	int                      indexSource;
-	int                      indexValue;
-	int                      numElements;
+	char                      indexLetter;
+	int                       indexSource;
+	int                       indexValue;
+	int                       numElements;
 
-    char                     startingIndexLetter;
-    int                      startingIndexSource;
-	int                      startingIndexValue;
-    int                      startingNumElements;
+    char                      startingIndexLetter;
+    int                       startingIndexSource;
+	int                       startingIndexValue;
+    int                       startingNumElements;
 
-    WindowControllerLoop*    controlWindow;
+    WindowControllerLoop*     controlWindow;
 }
 
-@property (readwrite) char    indexLetter;
-@property (readwrite) int     indexValue;
-@property (readwrite) NSRect  loopRect;
-@property (readwrite) int     numElements;
-@property (readwrite) NSSize  minLoopSize;
-@property (readwrite) int     indexSource;
-@property (readwrite) NSRange italicsRange;
+@property (nonatomic) char    indexLetter;
+@property (nonatomic) int     indexValue;
+@property (nonatomic) NSRect  loopRect;
+@property (nonatomic) int     numElements;
+@property (nonatomic) NSSize  minLoopSize;
+@property (nonatomic) int     indexSource;
+@property (nonatomic) NSRange italicsRange;
 
 - (void)closeControlPanel;
-- (void)encodeWithCoder:(NSCoder *)aCoder;
-- (void)execute;
+- (void)encodeWithCoder:(NSCoder*)aCoder;
+- (BOOL)execute;
 - (NSString*)getEndingRangeForLoop;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

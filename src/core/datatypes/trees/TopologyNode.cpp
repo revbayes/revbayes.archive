@@ -231,7 +231,7 @@ std::string TopologyNode::buildNewickString( void ) {
             // first let us print the node index
             if ( RbSettings::userSettings().getPrintNodeIndex() == true )
             {
-                o << "index=" << index;
+                o << "index=" << (index+1);
                 if (nodeComments.size() > 0) 
                 {
                     o << ",";
@@ -267,7 +267,9 @@ std::string TopologyNode::buildNewickString( void ) {
             o << "]";
         }
     }
-    else {
+    else
+    {
+        
         o << "(";
         for (size_t i=0; i<(getNumberOfChildren()-1); i++) 
         {
@@ -280,7 +282,7 @@ std::string TopologyNode::buildNewickString( void ) {
             // first let us print the node index
             if ( RbSettings::userSettings().getPrintNodeIndex() == true )
             {
-                o << "index=" << index;
+                o << "index=" << (index+1);
                 if (nodeComments.size() > 0) 
                 {
                     o << ",";
@@ -296,10 +298,12 @@ std::string TopologyNode::buildNewickString( void ) {
             }
             o << "]";
         }
+        
         if ( tree != NULL ) 
         {
             o << ":" << getBranchLength();
         }
+        
         if ( branchComments.size() > 0 ) 
         {
             o << "[&";
@@ -313,6 +317,7 @@ std::string TopologyNode::buildNewickString( void ) {
             }
             o << "]";
         }
+        
     }
     
     return o.str();

@@ -12,7 +12,7 @@ using namespace RevLanguage;
 
 /** Construct environment with NULL parent */
 Environment::Environment(void) :
-    functionTable(new FunctionTable()),
+    functionTable(),
     numUnnamedVariables(0),
     parentEnvironment(NULL),
     variableTable()
@@ -22,7 +22,7 @@ Environment::Environment(void) :
 
 /** Construct environment with parent */
 Environment::Environment(Environment* parentEnv) :
-    functionTable(new FunctionTable(&parentEnv->getFunctionTable())),
+    functionTable(&parentEnv->getFunctionTable()),
     numUnnamedVariables(0),
     parentEnvironment(parentEnv),
     variableTable()

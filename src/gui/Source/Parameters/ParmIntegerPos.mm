@@ -5,11 +5,6 @@
 
 @implementation ParmIntegerPos
 
-- (void)dealloc {
-
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];

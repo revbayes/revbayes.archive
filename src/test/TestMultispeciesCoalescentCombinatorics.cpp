@@ -56,19 +56,21 @@ bool TestMultispeciesCoalescentCombinatorics::run( void ) {
   //  size_t nNodes = speciesTree->getNumberOfNodes();
 //    ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
     std::vector<std::string> speciesNames = speciesTree->getTipNames();
-    map<std::string, std::string> indiv2species;
+    std::vector<Taxon> taxa;
     for (std::vector<std::string>::iterator s = speciesNames.begin(); s != speciesNames.end(); ++s) {
         for (size_t i = 1; i <= individualsPerSpecies; ++i)
         {
             std::stringstream o;
             o << *s << "_" << i;
-            indiv2species[ o.str() ] = *s;
+            Taxon t = Taxon( o.str() );
+            t.setSpeciesName( *s );
+            taxa.push_back( t );
         }
         
     }
     
     ConstantNode<TimeTree> *spTree = new ConstantNode<TimeTree>("speciesTree", speciesTree);
-    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new MultispeciesCoalescent( spTree, indiv2species) );
+    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", new MultispeciesCoalescent( spTree, taxa) );
     //    std::cout << "tau:\t" << tauCBD->getValue() << std::endl;
     std::vector<const TimeTree*> simTrees;
     for (size_t i = 0; i < nGeneTrees; ++i) 

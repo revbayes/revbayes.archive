@@ -29,7 +29,7 @@ public:
     /**
      * Run this method for each new context
      */
-    void reset(void) { 
+    void reset(void) {
         transition = NOOP;
         linePos.clear();
         linePos.push_back(0);
@@ -47,9 +47,9 @@ public:
      * @param buf
      */
     void deleteChar(std::string buf) {
-        
+
         transition = NOOP;
-        
+
         if (cmd.size() <= 0 || buf.size() <= 0 || linePos.back() <= 0 || linePos.size() <= 1) {
             reset();
             return;
@@ -59,7 +59,23 @@ public:
             cancelState(queuedStates->back());
             linePos.pop_back();
             cmd = cmd.substr(0, linePos.back());
+            processInput(buf);
         }
+    }
+
+    /**
+     * Allows state to release
+     * 
+     * @param buf
+     * @return 
+     */
+    bool tryRelease(std::string buf) {
+        StateType type = (queuedStates->back())->getType();
+        if (queuedStates->back()->tryRelease(cmd, type)) {
+            releaseState(queuedStates->back());
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -78,20 +94,15 @@ public:
         cmd = buf.substr(linePos.back(), buf.size());
         std::string subject = LineEditUtils().extractSubject(cmd);
 
-
         StateType type = (queuedStates->back())->getType();
-        bool stateReleased = false;
 
-        // release state
-        if (queuedStates->back()->tryRelease(cmd, type)) {
-            releaseState(queuedStates->back());
-            stateReleased = true;
-        }
+        // try release state
+        bool stateReleased = tryRelease(buf);
 
         bool stateTriggered = true;
         // set new state
-        if (stateInAssignment.tryHook(cmd, type)) {
-            addState(new StateAssigning(), subject);
+        if (stateGenericOperator.tryHook(cmd, type)) {
+            addState(new StateGenericOperator(stateGenericOperator.getTrigger()), subject);
 
         } else if (stateInBrackets.tryHook(cmd, type)) {
             addState(new StateDefiningList(), subject);
@@ -138,11 +149,15 @@ public:
         return message;
     }
 
+    std::string getTrigger() {
+        return trigger;
+    }
+
     void setObserver(EditorMachineObserver *observer) {
         this->observer = observer;
     }
-    
-    EditorStateChangeType getStateTransition(){
+
+    EditorStateChangeType getStateTransition() {
         return transition;
     }
 
@@ -153,6 +168,7 @@ private:
     std::string message;
     std::vector<int> linePos; // position on command line that was last processed
     std::string cmd; // the part of the command line that are currently being processed
+    std::string trigger; // what triggered the state
 
     StatePointer *queuedStates; // states can overlap, and are stored in this queue
 
@@ -160,7 +176,7 @@ private:
 
     // the states this machine can be in
     StateIdle stateIdle;
-    StateAssigning stateInAssignment;
+    StateGenericOperator stateGenericOperator;
     StateDefiningList stateInBrackets;
     StateDefiningString stateInString;
     StateAccessingMember stateListingMembers;
@@ -172,15 +188,15 @@ private:
             tab.append("..");
         }
         //message.append(tab).append(state->getMessage()).append(nl);
-        message.append(tab).append(m).append("-").append(state->getDescription()).append(nl);
-        message.append("Current state:").append(queuedStates->back()->getDescription()).append(nl);
+        message.append(tab).append(m).append("-").append(state->getDescription());
+        message.append(" -> ").append(queuedStates->back()->getDescription()).append(nl);
     }
 
     void addState(EditorState* e, std::string subject) {
         e->setSubject(subject);
         queuedStates->push_back(e);
         writeMessage("add", e);
-        
+
         transition = STATE_ADDED;
         observer->eventStateChanged(e, transition);
     }
@@ -188,7 +204,7 @@ private:
     void releaseState(EditorState* e) {
         queuedStates->pop_back();
         writeMessage("release", e);
-        
+
         transition = STATE_RELEASED;
         observer->eventStateChanged(e, transition);
     }
@@ -196,7 +212,7 @@ private:
     void cancelState(EditorState* e) {
         queuedStates->pop_back();
         writeMessage("cancel", e);
-        
+
         transition = STATE_CANCELLED;
         observer->eventStateChanged(e, transition);
     }

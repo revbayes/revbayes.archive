@@ -61,24 +61,19 @@ public:
         return makeUnique(result);
     }
 
-    std::vector<StringVector> getFunctionSignatures(std::string name) {
-        std::vector<StringVector> *signatures = new std::vector<StringVector>;
+    StringVector getFunctionSignatures(std::string name) {
+        StringVector signatures;
 
         if (!isFunction(name)) {
-            return *signatures;
+            return signatures;
         }
 
         FunctionVector v = RevLanguage::Workspace::globalWorkspace().getFunctionTable().findFunctions(name);
         for (FunctionVector::iterator it = v.begin(); it != v.end(); it++) {
-            StringVector *args = new StringVector;
-            ArgumentVector av = (*it)->getArguments();
-            for (ArgumentVector::iterator it1 = av.begin(); it1 != av.end(); it1++) {
-                args->push_back((*it1).getLabel());
-            }
-            signatures->push_back(*args);
+            signatures.push_back((*it)->getRevDeclaration());
         }
 
-        return *signatures;
+        return signatures;
     }
 
     bool isFunction(std::string name) {
@@ -109,7 +104,7 @@ public:
 
         return makeUnique(objects);
     }
-    
+
     StringVector getVariableMembers(std::string name);
     bool isVariable(std::string name);
 
@@ -122,7 +117,7 @@ public:
         if (!isType(typeName)) {
             return sv;
         }
-     
+
         RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().makeNewDefaultObject(typeName);
         RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (type->getMethods());
 
