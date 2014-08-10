@@ -61,7 +61,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::MemberFunction<memberObj
     std::vector<const RevBayesCore::DagNode*> argNodes;
     for ( size_t i=0; i<args.size(); ++i)
     {
-        argNodes.push_back( this->args[0].getVariable()->getRevObject().getDagNode() );
+        argNodes.push_back( this->args[i].getVariable()->getRevObject().getDagNode() );
     }
     
     const RevBayesCore::TypedDagNode<typename memberObjectType::valueType>* o = theMemberObject->getDagNode();

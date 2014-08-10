@@ -40,7 +40,7 @@ namespace RevLanguage {
         DeterministicNode<valueType>*       clone(void) const;                                                  //!< Clone the node
         Function&                           getRlFunction(void);                                                //!< Get the Rev function
         const Function&                     getRlFunction(void) const;                                          //!< Get the Rev function (const)
-        void                                printStructureInfo(std::ostream &o) const;                          //!< Print information on structure
+        void                                printStructureInfo(std::ostream &o, bool verbose=false) const;      //!< Print information on structure
         void                                touchMe(RevBayesCore::DagNode *toucher);                            //!< Use lazy evaluation (required by user-defined functions)
             
     protected:
@@ -118,22 +118,29 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
 
 /** Print struct for user */
 template<class valueType>
-void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o ) const
+void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
     o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
     o << "_dagType      = Deterministic DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
-
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     o << "_function     = " << rlFunction->getRevDeclaration() << std::endl;
 
-    o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_touched      = " << ( this->isFunctionDirty() ? "TRUE" : "FALSE" ) << std::endl;
+    }
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents(o, 16, 70, verbose);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren(o, 16, 70, verbose);
 
     o << std::endl;
 }

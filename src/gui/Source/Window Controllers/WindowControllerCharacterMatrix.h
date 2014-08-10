@@ -5,41 +5,41 @@
 
 @interface WindowControllerCharacterMatrix : NSWindowController {
 
-	IBOutlet NSSplitView*              windowSplitView;
-	IBOutlet NSScrollView*             dataScrollView;
-	IBOutlet NSScrollView*             namesScrollView;
-	IBOutlet NSPopUpButton*            matrixSelector;
-    IBOutlet NSTextField*              numTaxaIndicator;
-    IBOutlet NSTextField*              numCharIndicator;
-    IBOutlet NSTextField*              dataTypeIndicator;
-    IBOutlet NSTextField*              isAlignedIndicator;
-    IBOutlet NSTextField*              alignmentMethodIndicator;
-    IBOutlet NSTextField*              numExcludedTaxaIndicator;
-    IBOutlet NSTextField*              numExcludedCharIndicator;
-    IBOutlet NSButton*                 showInfoButton;
+	IBOutlet NSSplitView*   windowSplitView;
+	IBOutlet NSScrollView*  dataScrollView;
+	IBOutlet NSScrollView*  namesScrollView;
+	IBOutlet NSPopUpButton* matrixSelector;
+    IBOutlet NSTextField*   numTaxaIndicator;
+    IBOutlet NSTextField*   numCharIndicator;
+    IBOutlet NSTextField*   dataTypeIndicator;
+    IBOutlet NSTextField*   isAlignedIndicator;
+    IBOutlet NSTextField*   alignmentMethodIndicator;
+    IBOutlet NSTextField*   numExcludedTaxaIndicator;
+    IBOutlet NSTextField*   numExcludedCharIndicator;
+    IBOutlet NSButton*      showInfoButton;
 
-	NSFont*                            dataNamesFont;
-	NSFont*                            headerFont;
-	NSColor*                           headerBackground;
-	NSColor*                           namesBackground;
-	NSColor*                           dataTextColor;
-	NSColor*                           namesTextColor;
-	NSColor*                           headerTextColor;
-	NSDictionary*                      aminoColorsDict;
-	NSDictionary*                      nucleotideColorsDict;
-	NSDictionary*                      standardColorsDict;
+	NSFont*                 dataNamesFont;
+	NSFont*                 headerFont;
+	NSColor*                headerBackground;
+	NSColor*                namesBackground;
+	NSColor*                dataTextColor;
+	NSColor*                namesTextColor;
+	NSColor*                headerTextColor;
+	NSDictionary*           aminoColorsDict;
+	NSDictionary*           nucleotideColorsDict;
+	NSDictionary*           standardColorsDict;
 
-    ToolData*                          myTool;
-    int                                numTaxa;
-    int                                numChar;
-	float                              cellWidth;
-	float                              cellHeight;
-	NSMutableArray*                    dataMatrices;
-	NSMutableArray*                    taxaMatrices;
+    ToolData*               myTool;
+    int                     numTaxa;
+    int                     numChar;
+	float                   cellWidth;
+	float                   cellHeight;
+	NSMutableArray*         dataMatrices;
+	NSMutableArray*         taxaMatrices;
 }
 
-@property (readwrite) float cellWidth;
-@property (readwrite) float cellHeight;
+@property (nonatomic) float cellWidth;
+@property (nonatomic) float cellHeight;
 
 - (NSDictionary*)aminoColorsDict;
 - (IBAction)changeMatrix:(id)sender;

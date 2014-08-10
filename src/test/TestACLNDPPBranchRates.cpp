@@ -208,8 +208,8 @@ bool TestACLNDPPBranchRates::run( void ) {
 	moves.push_back( new SimplexMove( pi, 100.0, 1, 0, false, 0.5 ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 0.5), 3.0, false ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 1.0), 3.0, false ) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 5.0 * (double)numNodes) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 5.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, 1.0, false, 5.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, 2.0, false, 5.0 * (double)numNodes) );
 	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 
     moves.push_back( new DPPScaleCatValsMove( nodeNus, log(2.0), 2.0 ) );
     moves.push_back( new DPPAllocateAuxGibbsMove<double>( nodeNus, 4, 2.0 ) );

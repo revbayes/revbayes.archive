@@ -12,26 +12,32 @@
 #include <iostream>
 
 #include "TypedDistribution.h"
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
-    class InverseWishartDistribution : public TypedDistribution<PrecisionMatrix>   {
+    class InverseWishartDistribution : public TypedDistribution<MatrixRealSymmetric>   {
         
     public:
         
-        // inverse InverseWishart distribution of parameter sigma0 et df degrees of freedom
-        InverseWishartDistribution(const TypedDagNode<PrecisionMatrix> *insigma0, const TypedDagNode<int>* indf);
-        InverseWishartDistribution(const InverseWishartDistribution& from);
-        // specialized version: inverse InverseWishart of parameter sigma0=kappa*I and df degrees of freedom
+        // inverse InverseWishart distribution of parameter sigma0 and df degrees of freedom
+        InverseWishartDistribution(const TypedDagNode<MatrixRealSymmetric> *insigma0, const TypedDagNode<int>* indf);
+
+        // inverse InverseWishart distribution of parameter sigma0 = Diagonal(kappaVector) and df degrees of freedom
+        InverseWishartDistribution(const TypedDagNode<std::vector<double> > *inkappaVector, const TypedDagNode<int>* indf);
+
+        // inverse InverseWishart distribution of parameter sigma0 kappa * Identitymatrix and df degrees of freedom
         InverseWishartDistribution(const TypedDagNode<int>* indim, const TypedDagNode<double> *inkappa, const TypedDagNode<int>* indf);
-        
+
+        // copy constructor
+        InverseWishartDistribution(const InverseWishartDistribution& from);
+
         virtual                                            ~InverseWishartDistribution(void) {}
         
         // public member functions
 
-        InverseWishartDistribution*                                clone(void) const;                                                          //!< Create an independent clone
+        InverseWishartDistribution*                         clone(void) const;                                                          //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         
@@ -41,16 +47,14 @@ namespace RevBayesCore {
         std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
 
-        
     private:
 
-        // members
-        
-        const TypedDagNode<PrecisionMatrix>*                sigma0;
+        const TypedDagNode<MatrixRealSymmetric>*            sigma0;
+        const TypedDagNode<std::vector<double> >*           kappaVector;
         const TypedDagNode<double>*                         kappa;
         const TypedDagNode<int>*                            df;
         const TypedDagNode<int>*                            dim;
-        
+                
     };
     
 }

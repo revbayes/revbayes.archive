@@ -1,0 +1,83 @@
+#NEXUS
+
+Begin data;
+	Dimensions ntax=73 nchar=3;
+	Format datatype=Continuous;
+	Matrix
+
+Bos	651.5	748400	24.9
+Rousettus	257.5	112.08	18.53
+Spermophilus	374	270.55	8.225
+Artibeus	-1	53.6	19.2
+Sylvilagus	150.16	940.93	8.38
+Macaca	1378.27	7958.83	33.03
+Rattus	91.5	186.25	4.725
+Tamias	326.625	71.4	10.2
+Dipodomys	83.66	74.5	9.84
+Nycteris	-1	-1	-1
+Myrmecophaga	1186	28500	31
+Tursiops	2831	200000	51.6
+Amblysomus	-1	-1	-1
+Choloepusdi	1279	6250	36.8
+Homo	4745	62035	122.5
+Callithrix	442.25	295.6	17.08
+Hystrix	375	14948	26.375
+Dasypus	319.5	3487.5	19.55
+Tupaia	90	164.1	11.825
+Lama	532.33	109833.33	29.46
+Pongo	2555	64475	59
+Pteropus	481.66	564.41	21.6
+Canis	395	18562.5	19.26
+Euphractus	274	4850	22.1
+Tamandua	365	4500	17.5
+Panthera	1007.5	107400	27.15
+Myotis	370.44	10.58	20.52
+Megaptera	1643	30000000	95
+Procavia	500	3600	14.8
+Choloepusho	730	6250	37
+Orycteropus	730	60000	29.8
+Chaetophractus	273	1663.33	20.7
+Pedetes	1034	3500	20
+Ceratotherium	1643	2175000	45
+Vicugna	730	50000	31.6
+Pan	3285	42454.25	57.2
+Ailuropoda	2192	117500	36.8
+Solenodon	-1	1000	12.1
+Antrozous	365	20.8	14.8
+Echinops	365	180	19
+Erethizon	1095	8600	23.4
+Cavia	67.33	568.83	8.1
+Cynocephalus	-1	1300	-1
+Felis	335.33	4629.16	19.06
+Megaderma	540	38.6	14
+Ochotona	247.66	163.83	8.2
+Galeopterus	-1	-1	-1
+Talpa	182	92.5	-1
+Muscardinus	335	27.3	5.3
+Tapirus	1095	237237.5	33.15
+Hippopotamus	1279	3750000	61.2
+Macroscelides	44	40	8.7
+Sus	436	91687.5	18.55
+Galemys	730	57.5	-1
+Gorilla	2829	139842	55.4
+Manis	-1	7682.35	-1
+Loxodonta	4018	4800000	65
+Elephantulus	192.5	50.46	8.13
+Tadarida	273	23.75	12.5
+Tragelaphus	529.33	145833.33	20.26
+Sorex	268.125	7.46	3.1
+Otolemur	547.5	1197.25	20.5
+Castor	639	22625	23.4
+Equus	994.33	262499.75	36.7625
+Ptilocercus	-1	42.5	-1
+Mus	51	12.52	3.93
+Oryctolagus	730	1800	9
+Tarsius	672.5	128.83	16.15
+Lemur	595	2555	37.3
+Hydrochoerus	-1	-1	-1
+Trichechus	1187	401000	48
+Erinaceus	233	734.5	8.9
+Microcebus	277.5	143.83	17.8
+;
+End;
+

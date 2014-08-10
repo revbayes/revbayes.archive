@@ -11,8 +11,8 @@
 using namespace RevBayesCore;
 
 
-ScaleSingleACLNRatesMove::ScaleSingleACLNRatesMove(StochasticNode<std::vector<double> >* v, size_t rID, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
-    rootID = rID;
+ScaleSingleACLNRatesMove::ScaleSingleACLNRatesMove(StochasticNode<std::vector<double> >* v, double l, bool t, double w) : SimpleMove( v, w, t ), variable(v), lambda( l ) {
+
 }
 
 
@@ -38,12 +38,7 @@ double ScaleSingleACLNRatesMove::performSimpleMove( void ) {
 	
     std::vector<double>& v = variable->getValue();
 
-    // choose an index that is not the root
-	// this move is for the ACLN model, where the root rate has a separate gamma-prior on it.
 	index = int(rng->uniform01() * v.size());
-	while(index == rootID){
-		index = int(rng->uniform01() * v.size());
-    }
 	
     // copy value
     storedValue = v[index];

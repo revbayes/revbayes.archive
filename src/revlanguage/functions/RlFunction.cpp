@@ -413,7 +413,8 @@ std::string Function::getRevDeclaration(void) const {
 
 
 /** Print structure of object for user */
-void Function::printStructure(std::ostream& o) const {
+void Function::printStructure(std::ostream& o, bool verbose) const
+{
     
     o << "_objectType   = Function" << std::endl;
     o << "_type         = " << getType() << std::endl;

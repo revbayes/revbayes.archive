@@ -118,7 +118,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     const std::vector<double>& glr = ( branchHeterogeneousGainLossRates ? heterogeneousGainLossRates[node.getIndex()] : homogeneousGainLossRates );
 
     if (node.isRoot())
-        branchLength = 1e10;
+        branchLength = node.getAge() * 5;
 
     double expPart = exp( -(glr[0] + glr[1]) * r * branchLength);
     double p = glr[0] / (glr[0] + glr[1]);
@@ -133,7 +133,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
 void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
 {
 
-    double startAge = ( node.isRoot() ? 1e10 : node.getParent().getAge() );
+    double startAge = ( node.isRoot() ? node.getAge() * 5 : node.getParent().getAge() );
     double endAge = node.getAge();
     double currAge = startAge;
     

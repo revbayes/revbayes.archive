@@ -9,12 +9,6 @@
     return nil;
 }
 
-- (void)dealloc {
-
-    // dealloc here
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
 }

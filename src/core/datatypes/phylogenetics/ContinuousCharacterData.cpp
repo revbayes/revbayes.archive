@@ -5,6 +5,7 @@
 #include "RbException.h"
 
 #include <string>
+#include <algorithm>
 
 using namespace RevBayesCore;
 
@@ -326,7 +327,7 @@ const bool ContinuousCharacterData::getHomologyEstablished(void) const
  */
 size_t ContinuousCharacterData::getIndexOfTaxon(const std::string &n) const
 {
-    long pos = find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
+    long pos = std::find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
     
     if ( pos == sequenceNames.size() )
     {

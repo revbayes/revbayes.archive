@@ -21,26 +21,59 @@
 #include "Mcmc.h"
 #include "Model.h"
 #include "Monitor.h"
+#include "RbFileManager.h"
 
 using namespace RevBayesCore;
 
 /* Constructor */
-FileMonitor::FileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n),
+    outStream(),
+    filename( fname ),
+    separator( del ),
+    posterior( pp ),
+    prior( pr ),
+    likelihood( l ),
+    append(ap),
+    chainIdx(ci),
+    chainHeat(ch)
+{
     
 }
 
 
 /* Constructor */
-FileMonitor::FileMonitor(const std::set<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(const std::set<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n),
+    outStream(),
+    filename( fname ),
+    separator( del ),
+    posterior( pp ),
+    prior( pr ),
+    likelihood( l ),
+    append(ap),
+    chainIdx(ci),
+    chainHeat(ch)
+{
     
 }
 
-FileMonitor::FileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n), outStream(), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), chainIdx(ci), chainHeat(ch) {
+FileMonitor::FileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool ci, bool ch) : Monitor(g,n),
+    outStream(),
+    filename( fname ),
+    separator( del ),
+    posterior( pp ),
+    prior( pr ),
+    likelihood( l ),
+    append(ap),
+    chainIdx(ci),
+    chainHeat(ch)
+{
     
 }
 
 
-FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
+FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ),
+    outStream()
+{
     
     filename    = f.filename;
     separator   = f.separator;
@@ -52,33 +85,40 @@ FileMonitor::FileMonitor(const FileMonitor &f) : Monitor( f ), outStream() {
     chainHeat   = f.chainHeat;
     
     if (f.outStream.is_open())
+    {
         openStream();
+    }
 }
 
 
 /* Clone the object */
-FileMonitor* FileMonitor::clone(void) const {
+FileMonitor* FileMonitor::clone(void) const
+{
 
     return new FileMonitor(*this);
 }
 
 
-void FileMonitor::closeStream() {
+void FileMonitor::closeStream()
+{
     outStream.close();
 }
 
 
 /** Monitor value at generation gen */
-void FileMonitor::monitor(unsigned long gen) {
+void FileMonitor::monitor(unsigned long gen)
+{
 
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
-    if (gen % samplingFrequency == 0) {
+    if (gen % samplingFrequency == 0)
+    {
         // print the iteration number first
         outStream << gen;
         
-        if ( posterior ) {
+        if ( posterior )
+        {
             // add a separator before every new element
             outStream << separator;
             
@@ -97,8 +137,10 @@ void FileMonitor::monitor(unsigned long gen) {
             
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
-            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
-                if ( (*it)->isClamped() ) {
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
+            {
+                if ( (*it)->isClamped() )
+                {
                     pp += (*it)->getLnProbability();
                 }
             }
@@ -111,8 +153,10 @@ void FileMonitor::monitor(unsigned long gen) {
             
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
-            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it) {
-                if ( !(*it)->isClamped() ) {
+            for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
+            {
+                if ( !(*it)->isClamped() )
+                {
                     pp += (*it)->getLnProbability();
                 }
             }
@@ -151,13 +195,21 @@ void FileMonitor::monitor(unsigned long gen) {
 
 
 /** open the file stream for printing */
-void FileMonitor::openStream(void) {
+void FileMonitor::openStream(void)
+{
+    
+    RbFileManager f = RbFileManager(filename);
+    f.createDirectoryForFile();
     
     // open the stream to the file
     if (append)
+    {
         outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
+    }
     else
-        outStream.open( filename.c_str(), std::fstream::out);    
+    {
+        outStream.open( filename.c_str(), std::fstream::out);
+    }
 }
 
 /** Print header for monitored values */
@@ -166,25 +218,29 @@ void FileMonitor::printHeader() {
     // print one column for the iteration number
     outStream << "Iteration";
     
-    if ( posterior ) {
+    if ( posterior )
+    {
         // add a separator before every new element
         outStream << separator;
         outStream << "Posterior";
     }
     
-    if ( likelihood ) {
+    if ( likelihood )
+    {
         // add a separator before every new element
         outStream << separator;
         outStream << "Likelihood";
     }
     
-    if ( prior ) {
+    if ( prior )
+    {
         // add a separator before every new element
         outStream << separator;
         outStream << "Prior";
     }
     
-    if ( chainIdx ) {
+    if ( chainIdx )
+    {
         outStream << separator;
         outStream << "ChainIndex";
     }
@@ -195,17 +251,23 @@ void FileMonitor::printHeader() {
         outStream << "ChainHeat";
     }
     
-    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++) {
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++)
+    {
         // add a separator before every new element
         outStream << separator;
         
-         const DagNode* theNode = *it;
+        const DagNode* theNode = *it;
         
         // print the header
         if (theNode->getName() != "")
+        {
             theNode->printName(outStream,separator);
+        }
         else
+        {
             outStream << "Unnamed";
+        }
+        
     }
     
     outStream << std::endl;

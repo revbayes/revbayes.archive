@@ -122,9 +122,9 @@ RevPtr<Variable> Container::executeMethod(std::string const &name, const std::ve
 
 
 /** Print structure of a container */
-void Container::printStructure( std::ostream& o ) const
+void Container::printStructure( std::ostream& o, bool verbose ) const
 {
-    RevObject::printStructure( o );
+    RevObject::printStructure( o, verbose );
     o << "_size         = " << size() << std::endl;
 }
 

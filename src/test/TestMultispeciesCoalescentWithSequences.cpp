@@ -125,19 +125,21 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     size_t nNodes = t->getNumberOfNodes();
     ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
     std::vector<std::string> speciesNames = t->getTipNames();
-    map<std::string, std::string> indiv2species;
+    std::vector<Taxon> taxa;
     for (std::vector<std::string>::iterator s = speciesNames.begin(); s != speciesNames.end(); ++s) {
         for (size_t i = 1; i <= individualsPerSpecies; ++i)
         {
             std::stringstream o;
             o << *s << "_" << i;
-            indiv2species[ o.str() ] = *s;
+            Taxon t = Taxon( o.str() );
+            t.setSpeciesName( *s );
+            taxa.push_back( t );
         }
         
     }
     
     ConstantNode<TimeTree> *spTree = new ConstantNode<TimeTree>("speciesTree", t);
-    MultispeciesCoalescent *m = new MultispeciesCoalescent( spTree, indiv2species);
+    MultispeciesCoalescent *m = new MultispeciesCoalescent( spTree, taxa);
     m->setNes(Ne);
     StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", m);
 
@@ -268,7 +270,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     for (size_t i = 0; i < nGeneTrees; ++i) {
         std::stringstream o;
         o << "GeneTree_" << i;
-        multiCoals.push_back( new MultispeciesCoalescent(spTree_inf, indiv2species) );
+        multiCoals.push_back( new MultispeciesCoalescent(spTree_inf, taxa) );
         multiCoals[i]->setNes(Ne_inf);
         geneTrees_inf.push_back( new StochasticNode<TimeTree>(o.str(), multiCoals[i]) );
         // the following line is useful if we want to use the simulated gene trees as data
@@ -334,7 +336,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );
     monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
-    monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, "\t", false, false, false ) );
+    monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, false, false, false ) );
     for (unsigned int i = 0; i < nGeneTrees; i++) {
         std::stringstream o;
         o << "estimatedGeneTree_" << i << ".trees";

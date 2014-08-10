@@ -338,7 +338,9 @@ void MonteCarloSampler::initializeChain( void ) {
         std::stringstream msg;
         msg << "Unable to find a starting state with computable probability";
         if ( numTries > 1 )
+        {
             msg << " after " << numTries << " tries";
+        }
         throw RbException( msg.str() );
         
     }

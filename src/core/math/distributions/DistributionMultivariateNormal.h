@@ -15,7 +15,7 @@
 
 
 #include <vector>
-#include "PrecisionMatrix.h"
+#include "MatrixRealSymmetric.h"
 
 namespace RevBayesCore {
     
@@ -27,14 +27,14 @@ namespace RevBayesCore {
         namespace MultivariateNormal {
 
             // parameterization in terms of the covariance matrix sigma
-            double                      pdfCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
-            double                      lnPdfCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
-            std::vector<double>         rvCovariance(const std::vector<double>& mu, const PrecisionMatrix& sigma, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
+            double                      pdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
+            double                      lnPdfCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
+            std::vector<double>         rvCovariance(const std::vector<double>& mu, const MatrixRealSymmetric& sigma, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
 
             // parameterization in terms of the precision matrix (i.e. inverse covariance matrix) omega
-            double                      pdfPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
-            double                      lnPdfPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
-            std::vector<double>         rvPrecision(const std::vector<double>& mu, const PrecisionMatrix& omega, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
+            double                      pdfPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, const std::vector<double>& z);        /*!< MultivariateNormal(a[]) probability density */
+            double                      lnPdfPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, const std::vector<double>& z);      /*!< MultivariateNormal(a[]) log_e probability density */
+            std::vector<double>         rvPrecision(const std::vector<double>& mu, const MatrixRealSymmetric& omega, RandomNumberGenerator& rng);           /*!< MultivariateNormal(a[]) random variable */
         }
     }
 }

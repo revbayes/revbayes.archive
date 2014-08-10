@@ -135,6 +135,8 @@ namespace RevBayesCore {
 
 
 
+#include "RbConstants.h"
+
 template<class charType, class treeType>
 RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool forbidExt, bool useClado) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
@@ -233,7 +235,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     {
         return 0.0;
     }
-    else if (counts[1] == 0 && forbidExtinction)
+    
+    if (counts[1] == 0 && forbidExtinction)
     {
         return RbConstants::Double::neginf;
     }
@@ -244,16 +247,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         
 //        const treeType& tree = this->tau->getValue();
         double branchLength = node.getBranchLength();
-        double currAge = (node.isRoot() ? 1e10 : node.getParent().getAge());
+        double currAge = (node.isRoot() ? this->tau->getValue().getRoot().getAge()*5 : node.getParent().getAge());
         double startAge = currAge;
         double endAge = node.getAge();
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
-        
-//        if (nodeIndex==1)
-//        {
-//            std::vector<double> glr = rm.getHomogeneousGainLossRates();
-//            std::cout << "glr " << glr[0] << " " << glr[1] << "\n";
-//        }
 
         // handle stratified/epoch models
         const std::vector<double>& epochs = rm.getEpochs();
@@ -352,7 +349,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         {
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
             lnL += -sr * ( (1.0 - t) * branchLength );
-            if (debug) std::cout << "EndBranch   " << epochIdx << ":" << epochEndAge << ")\n" << "  a=" << currAge << " lnL=" << lnL << " sr=" << sr << " tr=" << "wait "<< " da=" << currAge-epochEndAge << "\n";        }
+            if (debug) std::cout << "EndBranch   " << epochIdx << ":" << epochEndAge << ")\n" << "  a=" << currAge << " lnL=" << lnL << " sr=" << sr << " tr=" << "wait "<< " da=" << currAge-epochEndAge << "\n";
+        }
         if (debug) std::cout << "-------\n\n";
 
 //        if (debug) std::cout << lnL << "\n";
@@ -364,6 +362,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         }
         return lnL;
     }
+    
+    
+    // @Michael: My compiler complained about reaching the end of a non-void function. (Sebastian)
+    return RbConstants::Double::nan;
 }
 
 
@@ -514,7 +516,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-        this->histories[i]->print();
+//        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();

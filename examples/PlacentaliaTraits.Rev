@@ -1,0 +1,106 @@
+#
+# Tutorial -- the phylogenetic comparative method
+# Correlation analysis of life-history traits in placental mammals
+# Nicolas Lartillot -- July 2014
+#
+
+# read the data 
+contDataArray <- readCharacterData("data/plac73lhtlog.nex")
+contData <- contDataArray[1]
+contData
+
+# get some useful variables from the data
+taxaCount <- contData.ntaxa()
+names <- contData.names()
+nTraits <- contData.nchar()[1]
+
+"number of traits to analyze"
+nTraits
+
+#create a tree whose tips match the taxon names given by the dataset
+tau ~ uniformTimeTree( originTime = 200.0, taxonNames = names)
+
+# work under fixed topology
+# set tau equal to externally given tree
+treeArray <- readTrees("data/chronoplac73.tree")
+fixedTree <- treeArray[1]
+tau.clamp(fixedTree)
+
+# covariance matrix (of dimension nTraits)
+# of parameters kappa * I3 and 5 degrees of freedom
+
+kappa ~ exponential(1.0)
+
+df <- nTraits+2
+
+sigma ~ invWishart(dim=nTraits, kappa=kappa, df=df)
+
+index <- 1
+
+# moves on kappa
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+# multivariate Brownian process along the tree
+br ~ mvtBrownian(tau,sigma=sigma)
+
+# conjugate Gibbs move on covariance matrix
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
+index <- index + 1
+
+# moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=1) 
+index <- index + 1
+
+# condition Brownian model on quantitative trait data
+# i.e. clamp the process at the tips of the tree, ot the values observed in extant taxa
+# you need to do this trait by trait
+
+for (i in 1:nTraits)	{
+
+	# here we say that the ith entry of the Brownian process should map to the ith. quantitative trait
+	br.clampAt(contData,i,i)
+}
+
+"stats for cov"
+# get useful functions of the covariance matrix
+# these are just specific examples
+
+var1 := sigma.covariance(1,1)
+var2 := sigma.covariance(2,2)
+var3 := sigma.covariance(3,3)
+cov12 := sigma.covariance(1,2)
+cov13 := sigma.covariance(1,3)
+cov23 := sigma.covariance(2,3)
+cor12 := sigma.correlation(1,2)
+parcor12 := sigma.partialCorrelation(1,2)
+
+# get useful outputs from the brownian process
+
+bn1 := br.newick(1)
+
+bn1
+
+for (i in 1:nTraits)	{
+
+	# mean and stdev of each trait
+	meanbr[i] := br.mean(i)
+	stdevbr[i] := br.stdev(i)
+}
+
+"mymodel"
+
+mymodel <- model(kappa)
+
+monitors[1] <- screenmonitor(printgen=100, cov12, cor12, meanbr, stdevbr)
+monitors[2] <- filemonitor(filename="placlht1.cov",printgen=10, separator = "	", sigma)
+monitors[3] <- modelmonitor(filename="placlht1.log",printgen=10, separator = "	")
+monitors[4] <- filemonitor(filename="placlht1.trait1",printgen=10, separator = "	", bn1)
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.run(100000)
+
+

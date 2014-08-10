@@ -11,18 +11,18 @@
 
 @interface ModelView : RbView {
 
-    float                         parmNameHeight;     // height of parameter names for deterimining the bottom-left corner
-    int                           parmCount;          // keeps track of the number of parameters created
-    NSMutableArray*               selectedLinks;
-	BOOL                          showParmNames;      // whether the parameter names should be displayed
-	ToolModel*                    myTool;
-	char                          availableIndices[27];
-    PaletteView*                  parameterDrawObj;    
+    float             parmNameHeight;     // height of parameter names for deterimining the bottom-left corner
+    int               parmCount;          // keeps track of the number of parameters created
+    NSMutableArray*   selectedLinks;
+	BOOL              showParmNames;      // whether the parameter names should be displayed
+	ToolModel*        myTool;
+	char              availableIndices[27];
+    PaletteView*      parameterDrawObj;
 }
 
-@property (readwrite) int parmCount;
-@property (readwrite) BOOL showParmNames;
-@property (readwrite,assign) ToolModel* myTool;
+@property (nonatomic)        int        parmCount;
+@property (nonatomic)        BOOL       showParmNames;
+@property (nonatomic,strong) ToolModel* myTool;
 
 - (void)addToSelectedLinkListParent:(Parm*)x andChild:(Parm*)y;
 - (void)checkPlateMembership;

@@ -6,10 +6,10 @@
 
 @interface AnalysisTools : NSObject <NSCoding> {
 
-	NSString*                             analysisName;
-	NSMutableArray*                       tools;
-	WindowControllerNoteBook*             noteBook;
-	NSMutableAttributedString*            notebookContents;
+	NSString*                                analysisName;
+	NSMutableArray*                          tools;
+	WindowControllerNoteBook*                noteBook;
+	NSMutableAttributedString*               notebookContents;
 }
 
 @property (nonatomic,strong) NSMutableArray* tools;

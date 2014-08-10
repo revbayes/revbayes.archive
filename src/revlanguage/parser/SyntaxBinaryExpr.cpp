@@ -118,7 +118,10 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env )
     
     // Return the return value of the function after making it constant
     if ( theReturnValue != NULL )
+    {
         theReturnValue->getRevObject().makeConstantValue();
+    }
+    
     return theReturnValue;
 }
 

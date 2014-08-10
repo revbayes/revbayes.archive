@@ -40,9 +40,9 @@ namespace RevBayesCore {
         ConditionalCladeProbabilityDistribution();                                                               //Does nothing. Formal constructor must be followed by load_state.
         ConditionalCladeProbabilityDistribution(Tree& tree);                                               //Constructs a basic instance by calling construct.
         
-        double getProbability(Tree& tree) const;                                                  //Computes the probability of a string tree. Calls recompose on the tree, and then uses the map returned by recompose to compute the probability of the whole tree.
-        std::pair<Tree ,double> getMapTree() const;                                    //Returns the maximum a posteriori tree that can be amalgamated from the ConditionalCladeProbabilityDistribution object. Uses a double-recursive traversal of all bipartitions.
-        const std::string& getAleRepresentation( ) const ;                                           //Writes the object to a stream.
+        double                      getProbability(Tree& tree) const;                                                  //Computes the probability of a string tree. Calls recompose on the tree, and then uses the map returned by recompose to compute the probability of the whole tree.
+        std::pair<Tree ,double>     getMapTree() const;                                    //Returns the maximum a posteriori tree that can be amalgamated from the ConditionalCladeProbabilityDistribution object. Uses a double-recursive traversal of all bipartitions.
+        std::string                 getAleRepresentation( ) const ;                                           //Writes the object to a stream.
 
     private:    
         

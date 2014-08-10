@@ -92,34 +92,34 @@
     
 }
 
-@property (readwrite,assign) std::vector<RevBayesCore::Trace* >* data;
-@property (readwrite,assign) NSMutableArray* included;
+@property (readwrite) std::vector<RevBayesCore::Trace* >* data;
+@property (readwrite) NSMutableArray* included;
 
-@property (readwrite,assign) BOOL useGeweke;
-@property (readwrite,assign) BOOL useHeidelbergerWelch;
-@property (readwrite,assign) BOOL useRafteryLewis;
-@property (readwrite,assign) BOOL useEssThreshold;
-@property (readwrite,assign) BOOL useSemThreshold;
-@property (readwrite,assign) BOOL useStationarity;
-@property (readwrite,assign) BOOL useIidBetweenChains;
-@property (readwrite,assign) BOOL useGelmanRubin;
-@property (readwrite,assign) BOOL useFixPercentage;
-@property (readwrite,assign) BOOL useOptimalBurninEstimation;
+@property (readwrite) BOOL useGeweke;
+@property (readwrite) BOOL useHeidelbergerWelch;
+@property (readwrite) BOOL useRafteryLewis;
+@property (readwrite) BOOL useEssThreshold;
+@property (readwrite) BOOL useSemThreshold;
+@property (readwrite) BOOL useStationarity;
+@property (readwrite) BOOL useIidBetweenChains;
+@property (readwrite) BOOL useGelmanRubin;
+@property (readwrite) BOOL useFixPercentage;
+@property (readwrite) BOOL useOptimalBurninEstimation;
 
-@property (readwrite,assign) double pGeweke;
-@property (readwrite,assign) double kEss;
-@property (readwrite,assign) double kSem;
-@property (readwrite,assign) double pStationarity;
-@property (readwrite,assign) double pIidBetween;
-@property (readwrite,assign) double rGelman;
-@property (readwrite,assign) double fixPercentage;
+@property (readwrite) double pGeweke;
+@property (readwrite) double kEss;
+@property (readwrite) double kSem;
+@property (readwrite) double pStationarity;
+@property (readwrite) double pIidBetween;
+@property (readwrite) double rGelman;
+@property (readwrite) double fixPercentage;
 
 - (NSString*)checkString:(int)index cell:(NSTextFieldCell*)aCell;
 - (IBAction)closeAction:(id)sender;
 - (void)closeControlPanel;
 - (void)tabView:(NSTabView*)tabView didSelectTabViewItem:(NSTabViewItem*)tabViewItem;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
-- (void)execute;
+- (BOOL)execute;
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

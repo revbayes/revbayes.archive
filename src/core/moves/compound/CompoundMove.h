@@ -50,8 +50,7 @@ namespace RevBayesCore {
         virtual void                            acceptCompoundMove(void); // non-pure virtual accept function
     
         bool                                    changed;
-        std::vector<DagNode*>                   theNodes;
-
+        
     };
     
 }

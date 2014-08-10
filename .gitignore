@@ -2,6 +2,7 @@
 # ----------------------------------------------
 !projects/cmake/README.txt
 !projects/cmake/regenerate.sh
+!projects/cmake/build*
 
 # Blacklist
 # ----------------------------------------------
@@ -25,3 +26,37 @@ downloads
 .DS_Store
 TSWLatexianTemp_*
 *-converted-to.pdf
+examples/brown.log
+examples/brown.prec
+examples/brown.tree
+examples/brown2.log
+examples/brown2.prec
+examples/cont.rev
+examples/gtr.rev
+examples/gtr_clock.log
+examples/gtr_clock.trees
+examples/mvbrownbk.Rev
+examples/mvtree
+examples/data/placbk
+examples/data/placlht
+nbproject/configurations.xml
+nbproject/project.xml
+nbproject/private/CodeAssistancePathMapper.properties
+nbproject/private/configurations.xml
+nbproject/private/Default.properties
+nbproject/private/launcher.properties
+nbproject/private/private.xml
+tutorials/RB_BayesFactor_Tutorial.aux
+tutorials/RB_BayesFactor_Tutorial.log
+tutorials/RB_BayesFactor_Tutorial.out
+tutorials/RB_BayesFactor_Tutorial.pdf
+tutorials/RB_BayesFactor_Tutorial.synctex.gz
+examples/.placratelht.Rev.swp
+examples/bos
+examples/brown3.log
+examples/brown3.prec
+examples/brown4.log
+examples/brown4.prec
+examples/placclock.Rev
+examples/placcoevol1.log
+examples/placcoevol1.prec

@@ -17,9 +17,15 @@
 
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "StringUtilities.h"
+
+
 #include <iostream>
 #include <string>
 #include <sys/stat.h>
+
+//#include <boost/filesystem.hpp>
+
 
 #ifdef WIN32
 #	include <dirent.h>
@@ -82,33 +88,52 @@ RbFileManager::RbFileManager(std::string s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-        {
+    {
         fullFileName = ".";
-        }
+    }
+    
     fullFileName += pathSeparator + fileName;
     
-    if ( !testDirectory() )
-        {
-        std::string errorStr = "";
-        formatError(errorStr);
-        throw( RbException(errorStr) );
-        }
 }
 
 
 /** Closes an input file */
-void RbFileManager::closeFile(std::ifstream& strm) {
+void RbFileManager::closeFile(std::ifstream& strm)
+{
     
 	strm.close();
 }
 
 
 /** Closes an output file */
-void RbFileManager::closeFile(std::ofstream& strm) {
+void RbFileManager::closeFile(std::ofstream& strm)
+{
     
 	strm.close();
 }
 
+
+/**
+ * Create the directories in which the file exist.
+ * We do this recursively.
+ */
+void RbFileManager::createDirectoryForFile( void )
+{
+    
+    std::string dir_path = getLastPathComponent( fullFileName );
+    
+//    boost::filesystem::path dir(dir_path);
+//	if(boost::filesystem::create_directory(dir))
+//    {
+//		std::cout << "Success" << "\n";
+//	}
+    
+    std::vector<std::string> paths;
+    StringUtilities::stringSplit(filePath, pathSeparator, paths);
+    
+    
+    
+}
 
 
 
@@ -128,12 +153,19 @@ void RbFileManager::formatError(std::string& errorStr)
     {
         errorStr += "Could not read file named \"" + getFileName() + "\" in directory named \"" + getFilePath() + "\" ";
         if (isFileNameGood == false && isDirectoryNameGood == true)
+        {
             errorStr += "because the file does not exist";
+        }
         else if (isFileNameGood == true && isDirectoryNameGood == false)
+        {
             errorStr += "because the directory does not exist";
+        }
         else
+        {
             errorStr += "because neither the directory nor the file exist";
+        }
     }
+    
 }
 
 
@@ -144,12 +176,16 @@ std::string RbFileManager::findCurrentDirectory(void)
 
 	char cwd[MAX_DIR_PATH+1];
 	if ( !getcwd(cwd, MAX_DIR_PATH+1) )
+    {
 		return "";
-	std::string curdir = cwd;
+	}
+    std::string curdir = cwd;
 	
 	if ( curdir.at( curdir.length()-1 ) == pathSeparator[0] )
+    {
 		curdir.erase( curdir.length()-1 );
-	
+	}
+    
 	return curdir;
     
 }
@@ -199,20 +235,27 @@ bool RbFileManager::isDirectoryPresent(const std::string &mp) const
     DIR* d = opendir( mp.c_str() );
 
 	if ( !d )
+    {
 		return false;
-
+    }
+    
     struct stat fInfo;
     if ( !stat(mp.c_str(), &fInfo) )
-        {
+    {
         if ( S_ISDIR(fInfo.st_mode) )
+        {
             return true;
+        }
         else
+        {
             return false;
         }
-    return false;
+        
+    }
     
     closedir(d);
-
+    
+    return false;
 }
 
 
@@ -258,9 +301,13 @@ bool RbFileManager::isFilePresent(const std::string &fn) const
     if ( !stat(fn.c_str(), &fInfo) )
     {
         if ( S_ISDIR(fInfo.st_mode) )
+        {
             return false;
+        }
         else
+        {
             return true;
+        }
     }
 
     return false;
@@ -333,8 +380,11 @@ bool RbFileManager::openFile(std::ifstream& strm)
 	   been checked elsewhere */
 	strm.open( filePathName.c_str(), std::ios::in );
 	if ( !strm )
+    {
 		return false;
-	return true;
+	}
+    
+    return true;
 }
 
 
@@ -349,9 +399,11 @@ bool RbFileManager::openFile(std::ofstream& strm)
 	   been checked elsewhere */
 	strm.open( filePathName.c_str(), std::ios::out );
 	if ( !strm )
+    {
 		return false;
-	return true;
+	}
     
+    return true;
 }
 
 
@@ -362,43 +414,40 @@ bool RbFileManager::parsePathFileNames(std::string s)
     // check if the path is a good one
     bool isDPresent = isDirectoryPresent(s);
     bool isFPresent = isFilePresent(s);
-    if (isDPresent == false && isFPresent == false)
-        {
-        fileName = "";
-        filePath = "";
-        return false;
-        }
+    
     if (isDPresent == true && isFPresent == false)
-        {
+    {
         fileName = "";
         int location = (int)s.find_last_of( pathSeparator );
         if ( location == (int)s.length() - 1 )
+        {
             s.erase( location );
+        }
         filePath = s;
         return true;
-        }
+    }
     
     /* the string that is supposed to hold the
      path/file information is empty. */
 	if ( s.length() == 0 )
-        {
+    {
 		return false;
-        }
+    }
     
 	/* Find the location of the last "/". This is where
      we will divide the path/file string into two. */
 	size_t location = s.find_last_of( pathSeparator );
 	
 	if ( location == std::string::npos )
-        {
+    {
 		/* There is no path in this string. We 
          must have only the file name, and the
          file should be in our current directory. */
 		fileName = s;
 		filePath = "";
-        }
+    }
 	else if ( location == s.length() - 1 )
-        {
+    {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. However,
          it also means that the directory that has been provided
@@ -407,67 +456,70 @@ bool RbFileManager::parsePathFileNames(std::string s)
 		fileName = "";
 		filePath = "";
 		return false;
-        }
+    }
 	else
-        {
+    {
 		/* We can divide the path into the path and the file. */
 		fileName = s.substr( location+1, s.length()-location-1 );
 		s.erase( location );
 		filePath = s;
-        if ( isDirectoryPresent(filePath) == false )
-            filePath = "";
-        }
+        
+    }
     
 	return true;
 }
 
-std::string RbFileManager::getLastPathComponent(std::string& s) {
+std::string RbFileManager::getLastPathComponent(std::string& s)
+{
 
     std::string tempS = s;
 	size_t location = tempS.find_last_of( pathSeparator );
 	if ( location == std::string::npos )
-        {
+    {
 		/* There is no path in this string. We 
          must have only the file name. */
 		return tempS;
-        }
+    }
 	else if ( location == tempS.length() - 1 )
-        {
+    {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. */
 		return "";
-        }
+    }
 	else
-        {
+    {
 		/* We can divide the path into the path and the file. */
 		std::string lpc = tempS.substr( location+1, tempS.length()-location-1 );
         return lpc;
-        }
+    }
+    
     return "";
 }
 
-std::string RbFileManager::getStringByDeletingLastPathComponent(std::string& s) {
+std::string RbFileManager::getStringByDeletingLastPathComponent(std::string& s)
+{
 
     std::string tempS = s;
 	size_t location = tempS.find_last_of( pathSeparator );
 	if ( location == std::string::npos )
-        {
+    {
 		/* There is no path in this string. We 
          must have only the file name. */
 		return "";
-        }
+    }
 	else if ( location == tempS.length() - 1 )
-        {
+    {
 		/* It looks like the last character is "/", which
          means that no file name has been provided. */
 		return tempS;
-        }
+    }
 	else
-        {
+    {
 		/* We can divide the path into the path and the file. */
 		tempS.erase( location );
 		return tempS;
-        }
+    }
+    
     return "";
 }
 
@@ -482,9 +534,9 @@ void RbFileManager::setFileName(std::string const &s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-        {
+    {
         fullFileName = ".";
-        }
+    }
     fullFileName += pathSeparator + fileName;
     
 }
@@ -495,9 +547,9 @@ void RbFileManager::setFilePath(std::string const &s)
     
     fullFileName = filePath;
     if ( fullFileName == "") 
-        {
+    {
         fullFileName = ".";
-        }
+    }
     fullFileName += pathSeparator + fileName;
     
 }
@@ -529,11 +581,18 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
                 if (S_ISDIR( entryinfo.st_mode ))
                 {
                     if (entryname == "..")
+                    {
                         ;
-                    else if (entryname == "." ) 
+                    }
+                    else if (entryname == "." )
+                    {
                         ;
+                    }
                     else
+                    {
                         setStringWithNamesOfFilesInDirectory( entrypath, sv );
+                    }
+                    
                 }
                 else
                 {

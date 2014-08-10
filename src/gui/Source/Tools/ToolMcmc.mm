@@ -19,26 +19,20 @@
     [self setInletsAndOutlets];
 }
 
-- (void)dealloc {
-
-    [settings release];
-    [controlWindow release];
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
     [aCoder encodeObject:settings forKey:@"settings"];
 }
 
-- (void)execute {
+- (BOOL)execute {
 
     NSLog(@"Executing tool %@", self);
     
     [self startProgressIndicator];
     
     [self stopProgressIndicator];
+    return YES;
 }
 
 - (id)init {
@@ -84,7 +78,6 @@
         
         // initialize the settings
         settings = [aDecoder decodeObjectForKey:@"settings"];
-        [settings retain];
         
 		// initialize the control window
 		controlWindow = [[WindowControllerMcmc alloc] initWithTool:self andSettings:settings];

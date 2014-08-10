@@ -1,9 +1,9 @@
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import "DistributionGui.h"
 
 
 
-@interface DistributionDirichletGui : DistributionGui {
+@interface DistributionDirichletGui : DistributionGui <NSCoding> {
     
 }
 

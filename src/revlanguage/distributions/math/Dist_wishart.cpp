@@ -35,7 +35,7 @@ Dist_wishart* Dist_wishart::clone( void ) const {
 RevBayesCore::WishartDistribution* Dist_wishart::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::PrecisionMatrix>* om = NULL;
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixRealSymmetric>* om = NULL;
     RevBayesCore::TypedDagNode<double>* ka = NULL;
     /*
     if (omega != NULL)  {
