@@ -21,6 +21,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     forbidExtinction = fe;
     geographyRateModifier = NULL;
     distancePower = 0.0;
+    rootFrequencies = std::vector<double>(2,1.0);
     
     
     epochs = std::vector<double>(1,0.0);
@@ -47,6 +48,7 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     homogeneousGainLossRates = m.homogeneousGainLossRates;
     heterogeneousGainLossRates = m.heterogeneousGainLossRates;
     distancePower = m.distancePower;
+    rootFrequencies = m.rootFrequencies;
 
     epochs = m.epochs;
     numEpochs = m.numEpochs;
@@ -85,6 +87,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         homogeneousGainLossRates = r.homogeneousGainLossRates;
         heterogeneousGainLossRates = r.heterogeneousGainLossRates;
         distancePower = r.distancePower;
+        rootFrequencies = r.rootFrequencies;
 
         epochs = r.epochs;
         numEpochs = r.numEpochs;
@@ -452,6 +455,16 @@ void RateMap_Biogeography::setHomogeneousClockRate(double r)
     homogeneousClockRate = r;
 }
 
+void RateMap_Biogeography::setRootFrequencies(const std::vector<double>& r)
+{
+    rootFrequencies = r;
+}
+
+const std::vector<double>& RateMap_Biogeography::getRootFrequencies(void) const
+{
+    return rootFrequencies;
+}
+
 const std::vector<double>& RateMap_Biogeography::getHeterogeneousClockRates(void) const
 {
     return heterogeneousClockRates;
@@ -488,7 +501,6 @@ void RateMap_Biogeography::setGeographicDistancePowers(const GeographyRateModifi
     useGeographyRateModifier = true;
     geographyRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
 }
-
 
 const GeographyRateModifier& RateMap_Biogeography::getGeographyRateModifier(void)
 {

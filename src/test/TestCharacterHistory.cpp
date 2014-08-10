@@ -191,8 +191,9 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
     //    afn = "malesia_static.atlas.txt";
-    afn = "hawaii_dynamic.atlas.txt";
+//    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
+    afn = "hawaii_dynamic_ss.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     

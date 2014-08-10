@@ -143,7 +143,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     // initialize with default parameters
 //    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
 //    heterogeneousClockRates     = NULL;
-    rootFrequencies             = NULL;
+//    rootFrequencies             = NULL;
+    rootFrequencies             = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(2, 1.0));
     siteRates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
@@ -1017,7 +1018,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFreq
     if ( f != NULL )
     {
         // set the value
-        //        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
         
         // add the parameter

@@ -52,6 +52,7 @@ namespace RevBayesCore {
         //const TypedDagNode<double>*                             distancePower;
         const TypedDagNode<GeographyRateModifier>*              geographyRateModifier;
         const TypedDagNode<TimeTree>*                           tau;
+        const TypedDagNode<std::vector<double> >*               rootFrequencies;
         
         // geography epochs
         // rate epochs
