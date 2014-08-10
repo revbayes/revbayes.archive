@@ -92,6 +92,7 @@ namespace RevBayesCore {
         bool                                        useAreaAdjacency;
         bool                                        useAreaAvailable;
         bool                                        useDistanceDependence;
+        bool                                        useRootFrequencies;
         
     };
     
