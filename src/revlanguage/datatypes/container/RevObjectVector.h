@@ -364,7 +364,7 @@ void RevObjectVector<rlType>::printValue( std::ostream& o ) const
             o << "NA" << std::endl;
         else
             elements[i]->getRevObject().printValue( o );
-        o << std::endl;
+        o << std::endl << std::endl;
     }
 }
 

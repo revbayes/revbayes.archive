@@ -28,8 +28,7 @@ namespace RevLanguage {
         bool                                                isConstant(void) const;                                                 //!< Is this DAG node constant?
         bool                                                isNAValue(void) const;                                                  //!< Is this an NA value node?
         void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;          //!< Print structure info
-        void                                                printValue(std::ostream &o, const std::string &sep) const;              //!< Print this variable
-        void                                                printValue(std::ostream &o, size_t i) const;                            //!< Print the i-th element of this variable
+        void                                                printValue(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;    //!< Monitor/Print this variable
         void                                                redraw(void);
         void                                                setValue(const valueType &v);                                           //!< Stop attempts to set value of this node
         
@@ -217,21 +216,16 @@ void NAValueNode<rlType>::printStructureInfo(std::ostream &o, bool verbose) cons
  * Print value. We override this function to print "NA".
  */
 template<class rlType>
-void NAValueNode<rlType>::printValue( std::ostream &o, const std::string &sep ) const
+void NAValueNode<rlType>::printValue( std::ostream &o, const std::string &sep, int l, bool left ) const
 {
-    o << "NA";
-}
-
-
-/**
- * Print value (element version). We override this function to print "NA".
- *
- * @TODO: Is this function used?
- */
-template<class rlType>
-void NAValueNode<rlType>::printValue(std::ostream &o, size_t index) const
-{
-    o << "NA";
+    std::stringstream ss;
+    ss << "NA";
+    std::string s = ss.str();
+    if ( l > 0 )
+    {
+        StringUtilities::fillWithSpaces(s, l, left);
+    }
+    o << s;
 }
 
 

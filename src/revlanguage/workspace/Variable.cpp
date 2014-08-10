@@ -223,11 +223,11 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
 }
 
 
-/* Print value of the variable variable */
+/* Print value of the variable */
 void Variable::printValue(std::ostream& o) const
 {
     if (revObject == NULL)
-        o << "NULL";
+        o << "NA";
     else
         revObject->printValue( o );
 }

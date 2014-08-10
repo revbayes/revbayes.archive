@@ -512,8 +512,7 @@ void ModelVector<rlType>::pop_front( void )
 
 
 /**
- * Print the value of the vector, taking the possibility of NA object
- * elements into account, and respecting the formatting of the
+ * Print the value of the vector, respecting the formatting of the
  * model object elements. We do this by retrieving the elements, one
  * by one, and printing them using their own printValue implementation.
  * Among other things, this takes care of proper formatting.
@@ -524,6 +523,12 @@ void ModelVector<rlType>::pop_front( void )
 template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
+    if ( this->dagNode->isNaValue() )
+    {
+        o << "NA";
+        return;
+    }
+    
     size_t lineLength = 75;
     
     std::ostringstream s, t;
@@ -532,10 +537,8 @@ void ModelVector<rlType>::printValue( std::ostream& o ) const
     for ( size_t i = 1; i <= this->size(); ++i )
     {
         RevPtr<Variable> elem = const_cast< ModelVector<rlType>* >(this)->getElement( i );
-        if ( elem->isNAVar() )
-            t << "NA";
-        else
-            elem->getRevObject().printValue( t );
+        elem->getRevObject().printValue( t );
+
         if ( i != this->size() )
             t << ", ";
         if ( curLength + t.str().size() > lineLength )
