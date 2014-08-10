@@ -365,7 +365,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
-        addType( new RevAbstractType( RevObject::getClassTypeSpec() ) );
+        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
         addType( new Complex()                  );
@@ -418,7 +418,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new StandardState()    );
         
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
-        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec() ) );
+        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
         addType( new DiscreteCharacterData<AminoAcidState>()    );
         addType( new DiscreteCharacterData<DnaState>()          );
         addType( new DiscreteCharacterData<RnaState>()          );
