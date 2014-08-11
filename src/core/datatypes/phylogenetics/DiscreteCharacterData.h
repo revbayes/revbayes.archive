@@ -795,7 +795,6 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::DiscreteCharacterData<c
     }
     else 
     {
-        
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
     }
     

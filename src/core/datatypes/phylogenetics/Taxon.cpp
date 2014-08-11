@@ -31,6 +31,67 @@ Taxon::Taxon(const std::string &n, const std::string &sn) :
 
 
 /**
+ * Equals operator.
+ * We check the species name and the individuals name.
+ */
+bool Taxon::operator==(const RevBayesCore::Taxon &t) const
+{
+    
+    if ( speciesName != t.speciesName )
+    {
+        return false;
+    }
+    
+    if ( name != t.name)
+    {
+        return false;
+    }
+    
+    return true;
+}
+
+
+/**
+ * Not equals operator. We simply invert the result of the equals operation.
+ */
+bool Taxon::operator!=(const RevBayesCore::Taxon &t) const
+{
+    
+    return !operator==(t);
+}
+
+
+/**
+ * Less-than operator.
+ * We check first the species name and then the indidivuals name.
+ */
+bool Taxon::operator<(const RevBayesCore::Taxon &t) const
+{
+    
+    if ( speciesName < t.speciesName)
+    {
+        return true;
+    }
+    else if ( speciesName > t.speciesName )
+    {
+        return false;
+    }
+    
+    if ( name < t.name )
+    {
+        return true;
+    }
+    else if ( name > t.name )
+    {
+        return false;
+    }
+    
+    // by default return true.
+    return true;
+}
+
+
+/**
  * Get the date info for this taxon.
  *
  * \return    The date.

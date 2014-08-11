@@ -3,7 +3,7 @@
 
 #include "DiscreteCharacterData.h"
 #include "ModelObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 
 #include <set>
 #include <string>
@@ -27,7 +27,7 @@ namespace RevLanguage {
      *
      */
     template <class rlCharType>
-    class DiscreteCharacterData : public AbstractCharacterData {
+    class DiscreteCharacterData : public AbstractDiscreteCharacterData {
     
     public:
         DiscreteCharacterData(void);                                                                                                            //!< Default constructor
@@ -60,19 +60,19 @@ namespace RevLanguage {
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData(void) : AbstractCharacterData() {
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData(void) : AbstractDiscreteCharacterData() {
     
 }
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v) : AbstractCharacterData( v ) {
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v) : AbstractDiscreteCharacterData( v ) {
     
 }
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) : AbstractCharacterData( d ) {
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) : AbstractDiscreteCharacterData( d ) {
 
 }
 
@@ -121,7 +121,7 @@ const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractDiscreteCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
 	return revClassTypeSpec; 
 }
@@ -145,7 +145,7 @@ const RevLanguage::MethodTable& RevLanguage::DiscreteCharacterData<rlType>::getM
         
                 
         // necessary call for proper inheritance
-        myMethods.setParentTable( &AbstractCharacterData::getMethods() );
+        myMethods.setParentTable( &AbstractDiscreteCharacterData::getMethods() );
         methodsSet = true;
     }
     
