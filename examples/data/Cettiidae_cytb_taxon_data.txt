@@ -7,7 +7,6 @@ Abroscopus.schisticeps_ripponi_6	Abroscopus.schisticeps
 Abroscopus.superciliaris_superciliaris_1	Abroscopus.superciliaris
 Cettia.brunnescens_monotypic_D1	Cettia.brunnescens
 Cettia.acanthizoides_acanthizoides_E93_1	Cettia.acanthizoides
-Cettia.acanthizoides_acanthizoides_E93_2	Cettia.acanthizoides
 Cettia.acanthizoides_acanthizoides_E99	Cettia.acanthizoides
 Cettia.acanthizoides_acanthizoides_Wuyi1	Cettia.acanthizoides
 Cettia.acanthizoides_acanthizoides_Wuyi2	Cettia.acanthizoides
@@ -17,7 +16,6 @@ Cettia.fortipes_pallida_Pak_GB_L77122	Cettia.fortipes
 Cettia.fortipes_fortipes_Lava	Cettia.fortipes
 Cettia.fortipes_fortipes_Chin1	Cettia.fortipes
 Cettia.fortipes_davidiana_E92	Cettia.fortipes
-Cettia.fortipes_davidiana_E99	Cettia.fortipes
 Cettia.fortipes_davidiana_HK1129	Cettia.fortipes
 Cettia.fortipes_davidiana_Fansi99	Cettia.fortipes
 Cettia.fortipes_robustipes_Taiwan	Cettia.fortipes
@@ -45,7 +43,6 @@ Cettia.cetti_cetti_VdT1	Cettia.cetti
 Cettia.cetti_cetti_VdT2	Cettia.cetti
 Cettia.cetti_cetti_VdT3	Cettia.cetti
 Cettia.cetti_cetti_FrHo	Cettia.cetti
-Cettia.cetti_cetti_Fr2	Cettia.cetti
 Cettia.cetti_cetti_Spain	Cettia.cetti
 Cettia.cetti_orientalis_1037	Cettia.cetti
 Cettia.cetti_orientalis_1060	Cettia.cetti
@@ -74,8 +71,6 @@ Cettia.brunnifrons_monotypic_920504	Cettia.brunnifrons
 Cettia.major_major_1	Cettia.major
 Tesia.castaneocoronata_castaneocoronata_NepUO	Tesia.castaneocoronata
 Tesia.castaneocoronata_castaneocoronata_Manali	Tesia.castaneocoronata
-Tesia.castaneocoronata_castaneocoronata_NepJGG	Tesia.castaneocoronata
-Tesia.castaneocoronata_castaneocoronata_NepUJ	Tesia.castaneocoronata
 Tesia.cyaniventer_monotypic_1	Tesia.cyaniventer
 Tesia.everetti_everetti_3	Tesia.everetti
 Tesia.everetti_everetti_4	Tesia.everetti
@@ -88,7 +83,6 @@ Urosphena.squameiceps_ussurianus_Badaling	Urosphena.squameiceps
 Urosphena.squameiceps_ussurianus_KorGenB_AB159179	Urosphena.squameiceps
 Urosphena.squameiceps_squameiceps_JapGenB_AB159177	Urosphena.squameiceps
 Urosphena.squameiceps_squameiceps_JapGenB_AB159178	Urosphena.squameiceps
-Urosphena.whiteheadi_monotypic_1	Urosphena.whiteheadi
 Orthotomus.cucullatus_hedymeles_Malino	Orthotomus.cucullatus
 Orthotomus.cucullatus_philippinus_Fil	Orthotomus.cucullatus
 Orthotomus.cucullatus_coronatus_Guanxi	Orthotomus.cucullatus
