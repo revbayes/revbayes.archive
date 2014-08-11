@@ -19,7 +19,7 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe) : T
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
     geographyRateModifier               = NULL;
-    rootFrequencies                     = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(2,1.0));
+    rootFrequencies                     = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(2,0.5));
     
     branchHeterogeneousClockRates       = false;
     branchHeterogeneousGainLossRates    = false;
