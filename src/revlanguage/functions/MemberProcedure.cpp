@@ -110,6 +110,13 @@ const TypeSpec& MemberProcedure::getReturnType(void) const {
 }
 
 
+/** This is a procedure, so return true for this function call */
+bool MemberProcedure::isProcedure( void ) const
+{
+    return true;
+}
+
+
 void MemberProcedure::setMemberObject( const RevPtr<Variable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions

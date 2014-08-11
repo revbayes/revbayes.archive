@@ -24,7 +24,6 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
 
 #include <fstream>
 

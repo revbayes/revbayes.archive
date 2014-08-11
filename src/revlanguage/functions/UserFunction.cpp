@@ -1,67 +1,55 @@
-#include "AminoAcidState.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "BranchLengthTree.h"
-#include "Clade.h"
-#include "ContinuousCharacterData.h"
-#include "DiscreteCharacterData.h"
-#include "DnaState.h"
 #include "Ellipsis.h"
-#include "MatrixReal.h"
-#include "MatrixRealSymmetric.h"
-#include "RateMatrix.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
-#include "RnaState.h"
 #include "Signals.h"
-#include "StandardState.h"
-#include "Taxon.h"
-#include "TimeTree.h"
-#include "Topology.h"
 #include "TypedUserFunction.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
-#include "UserFunctionArgs.h"
-#include "UserFunctionCall.h"
 #include "Workspace.h"
 
 #include <sstream>
 
 using namespace RevLanguage;
 
-/** Constructor */
+/** Basic constructor */
 UserFunction::UserFunction( const ArgumentRules*        argRules,
                             const TypeSpec&             retType ,
                             std::list<SyntaxElement*>*  stmts   )   :
     Function(),
-    argumentRules(argRules),
-    returnType(retType),
-    code(stmts)
+    argumentRules( argRules ),
+    returnType( retType ),
+    code( stmts )
 {
 }
 
 
 /** Copy constructor */
-UserFunction::UserFunction(const UserFunction &x) :
-    Function(x), argumentRules( new ArgumentRules(*x.argumentRules) ), returnType( x.returnType ), code( NULL )
+UserFunction::UserFunction( const UserFunction& x ) :
+    Function( x ),
+    argumentRules( new ArgumentRules( *x.argumentRules ) ),
+    returnType( x.returnType ),
+    code( NULL )
 {
-    // create a new list for the code
+    // Create a new list for the code
     code = new std::list<SyntaxElement*>();
-    for (std::list<SyntaxElement*>::const_iterator i=x.code->begin(); i!=x.code->end(); i++)
+    for ( std::list<SyntaxElement*>::const_iterator it = x.code->begin(); it != x.code->end(); ++it )
     {
-        SyntaxElement* element = (*i)->clone();
-        code->push_back(element);
+        SyntaxElement* element = (*it)->clone();
+        code->push_back( element );
     }
 }
 
 
 /** Assignment operator. Deal with argument rules and code. */
-UserFunction& UserFunction::operator=(const UserFunction &f)
+UserFunction& UserFunction::operator=( const UserFunction &f )
 {
     if ( this != &f ) {
-        // call the base class assignment operator
+        
+        // Call the base class assignment operator
         Function::operator=(f);
 
         delete argumentRules;
@@ -74,7 +62,7 @@ UserFunction& UserFunction::operator=(const UserFunction &f)
         }
         code->clear();
         
-        // create a new list for the code
+        // Create a new list for the code
         for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++)
         {
             SyntaxElement* element = (*i)->clone();
@@ -119,11 +107,10 @@ RevPtr<Variable> UserFunction::execute( void )
 
     if ( retVal->hasDagNode() )
     {
-        // Make a deterministic variable
-        UserFunctionCall* call = new UserFunctionCall( this );
-        UserFunctionArgs* args = new UserFunctionArgs( this );
+        UserFunction* fxn = this->clone();
+        UserFunction* code = this->clone();
         
-        retVal->makeDeterministicValue( call, args );
+        retVal->makeDeterministicValue( fxn, code );
 
         return new Variable( retVal );
     }
@@ -132,10 +119,47 @@ RevPtr<Variable> UserFunction::execute( void )
         // "Flat" call: Simply execute and return the variable
         delete retVal;  // We don't need this
 
-        UserFunctionCall fxnCall( this );
-
-        return fxnCall.execute();
+        return executeCode();
     }
+}
+
+
+/** In this function we execute the Rev code for the function (compiled syntax tree) */
+RevPtr<Variable> UserFunction::executeCode( void )
+{
+    // Create new evaluation frame with function base class execution environment as parent
+    Environment* functionFrame = new Environment( getEnvironment() );
+    
+    // Add the arguments to our environment
+    for ( std::vector<Argument>::iterator it = args.begin(); it != args.end(); ++it )
+    {
+        // Note: We can add also temporary variable arguments as references because we
+        // currently store them as arguments of the Rev function in UserFunctionArgs
+        // as long as the UserFunctionCall exists.
+        functionFrame->addReference( it->getLabel(), it->getVariable() );
+    }
+
+    // Clear signals
+    Signals::getSignals().clearFlags();
+    
+    // Set initial return value
+    RevPtr<Variable> retVar = NULL;
+    
+    // Execute code
+    for ( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
+    {
+        SyntaxElement* theSyntaxElement = *it;
+        retVar = theSyntaxElement->evaluateContent( *functionFrame );
+        
+        if ( Signals::getSignals().isSet( Signals::RETURN ) )
+        {
+            Signals::getSignals().clearFlags();
+            break;
+        }
+    }
+    
+    // Return the return value
+    return retVar;
 }
 
 
@@ -161,6 +185,21 @@ const TypeSpec& UserFunction::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/** Get the parameters from the argument vector */
+std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
+{
+    std::set<const RevBayesCore::DagNode*> params;
+
+    for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it )
+    {
+        if ( (*it).getVariable()->getRevObject().hasDagNode() )
+            params.insert( (*it).getVariable()->getRevObject().getDagNode() );
+    }
+
+    return params;
 }
 
 

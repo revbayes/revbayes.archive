@@ -47,47 +47,48 @@
      FALSE = 263,
      TRUE = 264,
      FUNCTION = 265,
-     CLASS = 266,
-     FOR = 267,
-     IN = 268,
-     IF = 269,
-     ELSE = 270,
-     WHILE = 271,
-     NEXT = 272,
-     BREAK = 273,
-     RETURN = 274,
-     MOD_CONST = 275,
-     MOD_DYNAMIC = 276,
-     MOD_STOCHASTIC = 277,
-     MOD_DETERMINISTIC = 278,
-     MOD_MUTABLE = 279,
-     ARROW_ASSIGN = 280,
-     TILDE_ASSIGN = 281,
-     EQUATION_ASSIGN = 282,
-     CONTROL_ASSIGN = 283,
-     REFERENCE_ASSIGN = 284,
-     ADDITION_ASSIGN = 285,
-     SUBTRACTION_ASSIGN = 286,
-     MULTIPLICATION_ASSIGN = 287,
-     DIVISION_ASSIGN = 288,
-     DECREMENT = 289,
-     INCREMENT = 290,
-     EQUAL = 291,
-     AND = 292,
-     OR = 293,
-     AND2 = 294,
-     OR2 = 295,
-     GT = 296,
-     GE = 297,
-     LT = 298,
-     LE = 299,
-     EQ = 300,
-     NE = 301,
-     END_OF_INPUT = 302,
-     UNOT = 303,
-     UPLUS = 304,
-     UMINUS = 305,
-     UAND = 306
+     PROCEDURE = 266,
+     CLASS = 267,
+     FOR = 268,
+     IN = 269,
+     IF = 270,
+     ELSE = 271,
+     WHILE = 272,
+     NEXT = 273,
+     BREAK = 274,
+     RETURN = 275,
+     MOD_CONST = 276,
+     MOD_DYNAMIC = 277,
+     MOD_STOCHASTIC = 278,
+     MOD_DETERMINISTIC = 279,
+     PROTECTED = 280,
+     ARROW_ASSIGN = 281,
+     TILDE_ASSIGN = 282,
+     EQUATION_ASSIGN = 283,
+     CONTROL_ASSIGN = 284,
+     REFERENCE_ASSIGN = 285,
+     ADDITION_ASSIGN = 286,
+     SUBTRACTION_ASSIGN = 287,
+     MULTIPLICATION_ASSIGN = 288,
+     DIVISION_ASSIGN = 289,
+     DECREMENT = 290,
+     INCREMENT = 291,
+     EQUAL = 292,
+     AND = 293,
+     OR = 294,
+     AND2 = 295,
+     OR2 = 296,
+     GT = 297,
+     GE = 298,
+     LT = 299,
+     LE = 300,
+     EQ = 301,
+     NE = 302,
+     END_OF_INPUT = 303,
+     UNOT = 304,
+     UPLUS = 305,
+     UMINUS = 306,
+     UAND = 307
    };
 #endif
 /* Tokens.  */
@@ -99,47 +100,48 @@
 #define FALSE 263
 #define TRUE 264
 #define FUNCTION 265
-#define CLASS 266
-#define FOR 267
-#define IN 268
-#define IF 269
-#define ELSE 270
-#define WHILE 271
-#define NEXT 272
-#define BREAK 273
-#define RETURN 274
-#define MOD_CONST 275
-#define MOD_DYNAMIC 276
-#define MOD_STOCHASTIC 277
-#define MOD_DETERMINISTIC 278
-#define MOD_MUTABLE 279
-#define ARROW_ASSIGN 280
-#define TILDE_ASSIGN 281
-#define EQUATION_ASSIGN 282
-#define CONTROL_ASSIGN 283
-#define REFERENCE_ASSIGN 284
-#define ADDITION_ASSIGN 285
-#define SUBTRACTION_ASSIGN 286
-#define MULTIPLICATION_ASSIGN 287
-#define DIVISION_ASSIGN 288
-#define DECREMENT 289
-#define INCREMENT 290
-#define EQUAL 291
-#define AND 292
-#define OR 293
-#define AND2 294
-#define OR2 295
-#define GT 296
-#define GE 297
-#define LT 298
-#define LE 299
-#define EQ 300
-#define NE 301
-#define END_OF_INPUT 302
-#define UNOT 303
-#define UPLUS 304
-#define UMINUS 305
-#define UAND 306
+#define PROCEDURE 266
+#define CLASS 267
+#define FOR 268
+#define IN 269
+#define IF 270
+#define ELSE 271
+#define WHILE 272
+#define NEXT 273
+#define BREAK 274
+#define RETURN 275
+#define MOD_CONST 276
+#define MOD_DYNAMIC 277
+#define MOD_STOCHASTIC 278
+#define MOD_DETERMINISTIC 279
+#define PROTECTED 280
+#define ARROW_ASSIGN 281
+#define TILDE_ASSIGN 282
+#define EQUATION_ASSIGN 283
+#define CONTROL_ASSIGN 284
+#define REFERENCE_ASSIGN 285
+#define ADDITION_ASSIGN 286
+#define SUBTRACTION_ASSIGN 287
+#define MULTIPLICATION_ASSIGN 288
+#define DIVISION_ASSIGN 289
+#define DECREMENT 290
+#define INCREMENT 291
+#define EQUAL 292
+#define AND 293
+#define OR 294
+#define AND2 295
+#define OR2 296
+#define GT 297
+#define GE 298
+#define LT 299
+#define LE 300
+#define EQ 301
+#define NE 302
+#define END_OF_INPUT 303
+#define UNOT 304
+#define UPLUS 305
+#define UMINUS 306
+#define UAND 307
 
 
 
@@ -163,7 +165,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 167 "./grammar.tab.h"
+#line 169 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

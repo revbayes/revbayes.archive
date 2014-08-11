@@ -32,7 +32,7 @@ class ArgumentRule;
 class ArgumentRules;
 class MethodTable;
 class TypeSpec;
-class UserFunctionArgs;
+class UserFunction;
 class UserFunctionCall;
 class Variable;
 
@@ -63,7 +63,6 @@ public:
     static const std::string&           getClassType(void);                                                                             //!< Get Rev type
     static const TypeSpec&              getClassTypeSpec(void);                                                                         //!< Get class type spec
     virtual const TypeSpec&             getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
-    virtual void                        printStructure(std::ostream& o, bool verbose=false) const;                                      //!< Print structure of language object for user
     virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
     virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
@@ -76,8 +75,10 @@ public:
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual bool                        isConvertibleTo(const TypeSpec& type) const;                                                    //!< Is convertible to type?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
-    virtual void                        makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);                         //!< Convert to deterministic object with a userdefined Rev function
+    virtual void                        makeDeterministicValue(UserFunction* fxn, UserFunction* code);                                  //!< Convert to deterministic object with a userdefined Rev function
     virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
+    virtual void                        printMemberInfo(std::ostream& o) const;                                                         //!< Print member info of language object for user
+    virtual void                        printStructure(std::ostream& o, bool verbose=false) const;                                      //!< Print structure of language object for user
     virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me
     virtual void                        setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
 
@@ -95,10 +96,11 @@ public:
     virtual void                        setMember(const std::string& name, const RevPtr<Variable> &var);                                //!< Set member variable
     
     // Container functions you may want to override (container object types)
-    virtual RevPtr<Variable>            findOrCreateElement( const std::vector<size_t>& oneOffsetIndices );                             //!< Find or create element variable
+    virtual RevPtr<Variable>            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);                               //!< Find or create element variable
     virtual size_t                      getDim(void) const;                                                                             //!< Get the dimensions (0 for scalar, 1 for vector etc)
-    virtual RevPtr<Variable>            getElement( const std::vector<size_t>& oneOffsetIndices );                                      //!< Get element variable
-    virtual RevObject*                  makeElementLookup( const std::vector< RevPtr<Variable> >& oneOffsetIndices );                   //!< Get dynamic element variable lookup
+    virtual RevPtr<Variable>            getElement(const std::vector<size_t>& oneOffsetIndices);                                        //!< Get element variable
+    virtual RevObject*                  makeElementLookup(const RevPtr<Variable>&                   var,
+                                                          const std::vector< RevPtr<Variable> >&    oneOffsetIndices );                 //!< Get dynamic element variable lookup
 
 protected:
     RevObject(void) {}                                                                                                                  //!< No objects of this class

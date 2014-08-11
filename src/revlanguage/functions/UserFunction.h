@@ -15,6 +15,11 @@ namespace RevLanguage {
     class UserFunctionArgs;
     class UserFunctionCall;
 
+    /**
+     * The UserFunction class holds information about the definition of a user function. Two help classes,
+     * UserFunctionCall and UserFunctionArgs are used to populate a RevLanguage::DeterministicNode together
+     * with a TypedUserFunction to make a deterministic variable using the user function.
+     */
     class UserFunction :  public Function {
         
     public:
@@ -34,9 +39,11 @@ namespace RevLanguage {
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language type of the object
 
         // Regular functions   
-        virtual RevPtr<Variable>                    execute(void);                                                              //!< Execute function
+        virtual RevPtr<Variable>                    execute(void);                                                              //!< Execute function (create det var)
+        virtual RevPtr<Variable>                    executeCode(void);                                                          //!< Execute function (execute code)
         const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
         const std::list<SyntaxElement*>&            getCode(void) const;                                                        //!< Get a pointer to the code
+        std::set<const RevBayesCore::DagNode*>      getParameters(void) const;                                                  //!< Get parameters
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get type of return value
         
     protected:

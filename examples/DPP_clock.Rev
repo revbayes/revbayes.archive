@@ -2,7 +2,7 @@
 
 # read the data
 # the readCharacter function returns a vector of matrices. We just take the first one
-D <- readCharacterData(file="data/test_data_clock_gtr.nex")[1]
+D <- readCharacterData(file="data/test_data_clock_gtr.nex")
 T <- readTrees("data/true_calib_clk.tre")[1]
 
 
@@ -13,6 +13,7 @@ T <- readTrees("data/true_calib_clk.tre")[1]
 ## diversification = birth_rate - death_rate
 div_lambda <- 1.0 / 5.0	
 diversification ~ exponential(div_lambda) 
+diversification.setValue(0.05)
 
 ## turnover = death_rate / birth_rate
 turn_alpha <- 2.0
@@ -34,7 +35,7 @@ rho <- 1.0
 
 # get some useful variables from the data
 n_taxa <- D.ntaxa()
-n_sites <- D.nchar()[1]
+n_sites <- D.nchar(1)
 names <- D.names()
 
 # tree from birth-death process 
@@ -78,7 +79,7 @@ for (i in 1:branch_rates.size()) {
 }
 
 ## a statistic to monitor
-mean_brate := mean(branch_rates) ## Mean func
+##mean_brate := mean(branch_rates) ## Mean func
 
 
 ####################################

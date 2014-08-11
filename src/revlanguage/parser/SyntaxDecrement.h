@@ -33,23 +33,24 @@ namespace RevLanguage {
     class SyntaxDecrement : public SyntaxElement {
         
     public:
-        SyntaxDecrement(SyntaxVariable* v);                                                                                     //!< Basic constructor
-        SyntaxDecrement(const SyntaxDecrement& x);                                                                              //!< Copy constructor
+        SyntaxDecrement(SyntaxVariable* v);                                                                   //!< Basic constructor
+        SyntaxDecrement(const SyntaxDecrement& x);                                                            //!< Copy constructor
 
-	    virtual                            ~SyntaxDecrement();                                                                  //!< Destructor
+	    virtual                            ~SyntaxDecrement();                                                //!< Destructor
         
         // Assignment operator
-        SyntaxDecrement&                    operator=(const SyntaxDecrement& x);                                                //!< Assignment operator
+        SyntaxDecrement&                    operator=(const SyntaxDecrement& x);                              //!< Assignment operator
         
         // Basic utility functions
-        SyntaxDecrement*                    clone() const;                                                                      //!< Clone object
-        void                                printValue(std::ostream& o) const;                                                  //!< Print info about object
+        SyntaxDecrement*                    clone() const;                                                    //!< Clone object
+        void                                printValue(std::ostream& o) const;                                //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env);                                                  //!< Get semantic value
+        RevPtr<Variable>                    evaluateContent(Environment& env);                                //!< Get semantic value
+        bool                                isFunctionSafe(const Environment& env) const;                     //!< Is this element safe in a function?
         
     protected:
-        SyntaxVariable*                     variable;                                                                           //!< The variable expression
+        SyntaxVariable*                     variable;                                                         //!< The variable expression
         
     };
     

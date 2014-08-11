@@ -112,7 +112,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<ch
 template <typename rlType>
 const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void) { 
     
-    static std::string revClassType = "DiscreteCharacterData";
+    static std::string revClassType = "DiscreteCharacterData<" + rlType::getClassType() + ">";
     
 	return revClassType; 
 }

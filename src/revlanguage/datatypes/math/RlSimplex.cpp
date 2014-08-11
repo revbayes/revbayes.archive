@@ -39,33 +39,15 @@ Simplex::Simplex( const std::vector<double>& v ) :
 
 /**
  * Make sure that a distribution or a function associated with
- * a dynamic node are of the right type
+ * a dynamic node are of the right type.
+ *
+ * @TODO Make sure we actually have a simplex stored in n (or an
+ *       NA value)
  */
 Simplex::Simplex( RevBayesCore::TypedDagNode<std::vector<double> >* n ) :
     ModelVector<RealPos>()
 {
-    // Make sure we actually have a simplex
-    RevBayesCore::DynamicNode< std::vector<double> >* dynNode = dynamic_cast<RevBayesCore::DynamicNode< std::vector<double> >* >( n );
-    if ( dynNode != NULL )
-    {
-        // We just make sure the type is right before setting the dynamic node
-        // TODO: Ask the DAG node for the Rev object type
-//        if ( dynNode->getRevTypeOfValue() != getClassType() )
-//            throw RbException( "Invalid attempt to initialize a simplex with a dynamic DAG node of Rev type '" + dynNode->getRevTypeOfValue() + "'" );
-
         this->setDagNode( n );
-    }
-    else
-    {
-        // We have a constant node, which does not know its language type. We normalize the vector to be on the safe side and
-        // replace the node.
-        const std::vector<double>& v = n->getValue();
-        std::vector<double>* newVal = makeNormalizedValue( v );
-
-        RevBayesCore::ConstantNode< std::vector< double > >* newNode = new RevBayesCore::ConstantNode< std::vector< double > >( "", newVal );
-        
-        this->setDagNode( newNode );
-    }
 }
 
 
@@ -91,7 +73,7 @@ Simplex* Simplex::clone( void ) const
  * from assigning to the simplex through direct
  * element assignment.
  */
-RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t> oneOffsetIndices)
+RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t>& oneOffsetIndices)
 {
     throw RbException( "Illegal attempt to assign to simplex element" );
 }
@@ -106,9 +88,9 @@ RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t> oneOffse
  * done by calling the getElementFromValue function,
  * which does exactly that.
  */
-RevPtr<Variable> Simplex::getElement(const std::vector<size_t> oneOffsetIndices)
+RevPtr<Variable> Simplex::getElement(size_t oneOffsetIndex)
 {
-    return getElementFromValue( oneOffsetIndices );
+    return getElementFromValue( oneOffsetIndex );
 }
 
 

@@ -21,7 +21,6 @@
 #include "RbException.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
 
 #include <sstream>
 
