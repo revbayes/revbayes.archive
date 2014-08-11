@@ -302,13 +302,16 @@ void Variable::setRevObject( RevObject *newValue )
  * We set here the required value type spec. An error is thrown if the
  * current Rev object of the variable, if any, is not of the specified type.
  */
-void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
+void Variable::setRevObjectTypeSpec(const TypeSpec &ts)
+{
     
     const RevObject& theObject = this->getRevObject();
     if ( theObject != RevNullObject::getInstance() )
     {
         if ( !theObject.isTypeSpec( ts ) )
+        {
             throw RbException( "Existing variable object is not of the required type" );
+        }
     }
     
     revObjectTypeSpec = ts;

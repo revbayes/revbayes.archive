@@ -289,8 +289,10 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
     {
         // Check whether the variable is actually a stochastic node
         if ( !dagNode->isStochastic() )
+        {
             throw RbException("You can only redraw the value of a stochastic variable.");
-
+        }
+        
         // Convert the node
         RevBayesCore::StochasticNode<valueType>* stochNode = static_cast< RevBayesCore::StochasticNode<valueType>* >( dagNode );
         
@@ -303,8 +305,10 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
     {
         // Check whether the variable is actually a stochastic node
         if ( !dagNode->isStochastic() )
+        {
             throw RbException( "You can only set the value of a stochastic variable." );
-
+        }
+        
         // Convert the node
         RevBayesCore::StochasticNode<valueType>* stochNode = static_cast< RevBayesCore::StochasticNode<valueType>* >( dagNode );
         
@@ -320,7 +324,9 @@ RevPtr<Variable> ModelContainer<rlType, dim, valueType>::executeMethod( std::str
     {
         // Check whether the DAG node is actually a stochastic node
         if ( !dagNode->isStochastic() )
+        {
             throw RbException( "Only stochastic variables can be unclamped." );
+        }
         
         // Convert the node
         RevBayesCore::StochasticNode<valueType>* stochNode = static_cast< RevBayesCore::StochasticNode<valueType>* >( dagNode );

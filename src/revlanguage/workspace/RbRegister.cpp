@@ -394,9 +394,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new ModelVector<ModelVector<Real> >()      );
         addType( new ModelVector<ModelVector<Natural> >()   );
         addType( new ModelVector<ModelVector<Integer> >()   );
+        addType( new ModelVector<TimeTree>());
         
         // Model vectors of abstract elements
         addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
+        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
+        addType( new ModelVectorAbstractElement<RateMatrix>() );
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
@@ -419,6 +422,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
         addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
+        addType( new RevAbstractType( AbstractDiscreteCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
         addType( new DiscreteCharacterData<AminoAcidState>()    );
         addType( new DiscreteCharacterData<DnaState>()          );
         addType( new DiscreteCharacterData<RnaState>()          );
