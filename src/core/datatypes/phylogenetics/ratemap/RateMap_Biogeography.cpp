@@ -21,7 +21,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     forbidExtinction = fe;
     geographyRateModifier = NULL;
     distancePower = 0.0;
-    rootFrequencies = std::vector<double>(2,1.0);
+    rootFrequencies = std::vector<double>(2,0.5);
     
     
     epochs = std::vector<double>(1,0.0);
@@ -256,8 +256,11 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     // root freqs
     if (useRootFrequencies)
     {
-        int countDiff[2][2] = { {-1, 1}, {1, -1} };
-        double rfr = pow(rootFrequencies[0], count[0] + countDiff[s][0]) * pow(rootFrequencies[1], count[1] + countDiff[s][1]);
+        int countDiff[2][2] = { {1, -1}, {-1, 1} };
+        double rfr = pow(2*rootFrequencies[0], count[0] + countDiff[s][0]) * pow(2*rootFrequencies[1], count[1] + countDiff[s][1]);
+//        double rfr = ( s == 0 ? rootFrequencies[0] / rootFrequencies[1] : rootFrequencies[1] / rootFrequencies[0] );
+//        double rfr = ( s == 1 ? rootFrequencies[1] / rootFrequencies[0] : 1.0 );
+//        double rfr = ( s == 0 ? rootFrequencies[0] : rootFrequencies[1] );
         rate *= rfr;
     }
     
@@ -360,9 +363,11 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     if (useRootFrequencies)
     {
         // root freqs
-        int countDiff[2][2] = { {-1, 1}, {1, -1} };
-        double rfr0 = pow(rootFrequencies[0], counts[0] + countDiff[0][0]) * pow(rootFrequencies[1], counts[1] + countDiff[0][1]);
-        double rfr1 = pow(rootFrequencies[0], counts[0] + countDiff[1][0]) * pow(rootFrequencies[1], counts[1] + countDiff[1][1]);
+        int countDiff[2][2] = { {1, -1}, {-1, 1} };
+        double rfr0 = pow(2*rootFrequencies[0], counts[0] + countDiff[0][0]) * pow(2*rootFrequencies[1], counts[1] + countDiff[0][1]);
+        double rfr1 = pow(2*rootFrequencies[0], counts[0] + countDiff[1][0]) * pow(2*rootFrequencies[1], counts[1] + countDiff[1][1]);
+//        double rfr0 = rootFrequencies[0];
+//        double rfr1 = rootFrequencies[1];
         r0 *= rfr0;
         r1 *= rfr1;
     }

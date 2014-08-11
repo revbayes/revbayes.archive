@@ -169,7 +169,7 @@ bool TestCharacterHistory::run_exp(void) {
     bool useDistances               = true;
     bool useAdjacency               = true;
     bool useAvailable               = true;
-    bool useRootFreqs               = !true;
+    bool useRootFreqs               = true;
     
     
     filepath="/Users/mlandis/data/bayarea/output/";
@@ -355,7 +355,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useRootFreqs)
     {
-        moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
+        moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2.0 ) );
         moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
     }
     
