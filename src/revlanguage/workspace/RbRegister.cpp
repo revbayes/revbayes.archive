@@ -51,6 +51,7 @@
 
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
+#include "ModelVectorAbstractElement.h"
 #include "RevObjectVector.h"
 #include "WorkspaceVector.h"
 
@@ -60,8 +61,11 @@
 #include "RlAminoAcidState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
+#include "RlStandardState.h"
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
+#include "RlAbstractCharacterData.h"
+#include "RlDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
@@ -361,7 +365,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
-        addType( new RevAbstractType( RevObject::getClassTypeSpec() ) );
+        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
         addType( new Complex()                  );
@@ -385,6 +389,14 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new ModelVector<RealPos>()          );
         addType( new ModelVector<RlBoolean>()        );
         addType( new ModelVector<RlString>()         );
+        addType( new ModelVector<Simplex>()          );
+        addType( new ModelVector<ModelVector<RealPos> >()   );
+        addType( new ModelVector<ModelVector<Real> >()      );
+        addType( new ModelVector<ModelVector<Natural> >()   );
+        addType( new ModelVector<ModelVector<Integer> >()   );
+        
+        // Model vectors of abstract elements
+        addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
@@ -398,11 +410,20 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new RevObjectVector<RevObject>()    );
 
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
-
         
         /* Add character types (in folder "datatypes/evolution/character") (alphabetic order) */
-
+        addType( new AminoAcidState()   );
+        addType( new DnaState()         );
+        addType( new RnaState()         );
+        addType( new StandardState()    );
         
+        /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
+        addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
+        addType( new DiscreteCharacterData<AminoAcidState>()    );
+        addType( new DiscreteCharacterData<DnaState>()          );
+        addType( new DiscreteCharacterData<RnaState>()          );
+        addType( new DiscreteCharacterData<StandardState>()     );
+
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
 

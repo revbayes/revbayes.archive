@@ -50,7 +50,7 @@ namespace RevLanguage {
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
         void                                            printStructure(std::ostream& o, bool verbose=false) const;                          //!< Print the structure of language object for user
         void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
-        void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was executed.
+        void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
         void                                            setName(const std::string& nm);                                                     //!< Name the function
     
         // Functions you have to override
@@ -60,6 +60,7 @@ namespace RevLanguage {
 
         // Functions you may want to override
         virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
 

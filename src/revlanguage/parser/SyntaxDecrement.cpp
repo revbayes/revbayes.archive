@@ -109,7 +109,28 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env )
 
 
 
-/** 
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The assignment is safe
+ * if the variable expression is safe, and the
+ * decrement is not to an external variable.
+ */
+bool SyntaxDecrement::isFunctionSafe( const Environment& env ) const
+{
+    // Check variable
+    if ( !variable->isFunctionSafe( env ) )
+        return false;
+    
+    // Check whether assignment is to external variable (not function safe)
+    if ( variable->retrievesExternVar( env ) )
+        return false;
+    
+    // All tests passed
+    return true;
+}
+
+
+/**
  * Print info about the syntax element 
  */
 void SyntaxDecrement::printValue(std::ostream& o) const 

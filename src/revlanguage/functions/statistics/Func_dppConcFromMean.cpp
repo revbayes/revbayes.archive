@@ -13,7 +13,6 @@
 #include "ModelVector.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
-#include "RateMatrix.h"
 #include "RbStatisticsHelper.h"
 #include "RealPos.h"
 #include "Topology.h"

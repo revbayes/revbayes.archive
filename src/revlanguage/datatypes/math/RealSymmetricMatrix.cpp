@@ -114,7 +114,8 @@ void RealSymmetricMatrix::printValue(std::ostream &o) const {
     
     std::fixed( o );
     o.precision( 3 );
-    o << dagNode->getValue();
+
+    dagNode->printValue( o, "" );
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

@@ -9,6 +9,7 @@
 #include "SyntaxFunctionCall.h"
 #include "SyntaxVariable.h"
 #include "RlUserInterface.h"
+#include "Signals.h"
 #include "Workspace.h"
 
 #include <cstdlib>
@@ -104,7 +105,11 @@ void RevLanguage::Parser::breakIntoLines( const std::string& cmd, std::list<std:
 }
 
 
-/** This function causes recursive execution of a syntax tree by calling the root to get its value */
+/**
+ * This function causes recursive execution of a syntax tree by calling the root to get its value.
+ * As long as we return to the bison code, bison takes care of deleting the syntax tree. However,
+ * if we encounter a quit() call, we delete the syntax tree ourselves and exit immediately.
+*/
 int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 
 #	ifdef DEBUG_PARSER
@@ -144,11 +149,15 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
             const std::string& fxnName = theVariable->getIdentifier();
             const std::vector<Function*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions( fxnName );
             if ( functions.size() != 0 ) {
-                RBOUT( "Usage:" );
                 for ( std::vector<Function*>::const_iterator i=functions.begin(); i!=functions.end(); i++ ) {
-                    RBOUT( (*i)->callSignature() );
+                    std::ostringstream s;
+                    (*i)->printValue( s );
+                    RBOUT( s.str() );
+                    
+                    // Uncommenting this as the function callSignature() does not produce the call signature despite its name
+                    // -- Fredrik
+                    // RBOUT( (*i)->callSignature() );
                 }
-                delete( root );
                 return 0;
             }
         }
@@ -161,7 +170,6 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
         RBOUT( msg.str() );
 
         // Return signal indicating problem
-        delete ( root );
         return 2;
     }
 
@@ -171,9 +179,13 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
         result->getRevObject().printValue(msg);
         RBOUT( msg.str() );
     }
+    
+    // Warn if a return signal has been encountered
+//    if ( Signals::getSignals().isSet( Signals::RETURN ) )
+//        RBOUT( "WARNING: No function to return from" );
+    Signals::getSignals().clearFlags();
 
     // Return success
-    delete( root );
     return 0;
 }
 
@@ -247,10 +259,10 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 
 /**
  * This function prints help info about a function if it sees a function call.
- *
- * Note: The caller needs to delete the syntax tree (the syntax function call).
+ * The function is called from the bison code, which is responsible for
+ * deleting the syntax tree (the function call).
  */
-int RevLanguage::Parser::help(const SyntaxFunctionCall& root) const {
+int RevLanguage::Parser::help(const SyntaxFunctionCall* root) const {
 
     std::ostringstream msg;
 
@@ -262,7 +274,7 @@ int RevLanguage::Parser::help(const SyntaxFunctionCall& root) const {
     std::cerr << std::endl;
 #	endif
 
-    RlString symbol = root.getFunctionName();
+    RlString symbol = root->getFunctionName();
 
     return help( symbol.getValue() );
 }

@@ -23,7 +23,6 @@
 #include "Function.h"
 #include "RevObject.h"
 #include "RbUtil.h"
-#include "Workspace.h"
 
 #include <sstream>
 
@@ -64,14 +63,23 @@ std::string Function::callSignature(void) const {
     o << getType() << ": " << std::endl;
     
     if (argsProcessed)
+    {
         o << "Arguments processed; there are " << args.size() << " values." << std::endl;
+        for ( size_t i = 0;  i < args.size(); i++ ) {
+            o << " args[" << i << "] = ";
+            args[i].getVariable()->getRevObject().printValue(o);
+            o << std::endl;
+        }
+    }
     else
+    {
         o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
-    
-    for ( size_t i = 0;  i < args.size(); i++ ) {
-        o << " args[" << i << "] = ";
-        args[i].getVariable()->getRevObject().printValue(o);
-        o << std::endl;
+        
+        for ( size_t i = 0;  i < getArgumentRules().size(); i++ ) {
+            o << " args[" << i << "] = ";
+            getArgumentRules()[i].printValue( o );
+            o << std::endl;
+        }
     }
     
     return o.str();
@@ -124,7 +132,7 @@ std::string Function::callSignature(void) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  */
-bool  Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore) {
+bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore) {
     
     /*********************  0. Initialization  **********************/
     

@@ -59,6 +59,7 @@ namespace RevLanguage {
         void                        getNextLoopState(void);                                                         //!< Get next state of loop
         bool                        isFinished() const;                                                             //!< Have we iterated over the whole loop?
         void                        initializeLoop(Environment& env);                                               //!< Initialize loop
+        bool                        isFunctionSafe(const Environment& env) const;                                   //!< Is this element safe in a function?
 
     protected:
         std::string                 varName;                                                                        //!< The name of the loop variable

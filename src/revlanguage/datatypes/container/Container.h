@@ -50,7 +50,7 @@ namespace RevLanguage {
         virtual const MethodTable&                  getMethods(void) const;                                             //!< Get methods
         virtual RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
 
-        // Container function you do not have to override
+        // Container function you do not have to override (but may want to for vectors)
         virtual RevPtr<Variable>                    getElement(size_t oneOffsetIndex);                                  //!< Get element variable (single index)
         
     protected:

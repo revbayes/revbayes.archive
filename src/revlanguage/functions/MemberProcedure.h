@@ -46,6 +46,7 @@ namespace RevLanguage {
         virtual RevPtr<Variable>            execute(void);                                                              //!< Execute function
         const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
+        bool                                isProcedure(void) const;                                                    //!< Is this a procedure?
         void                                setMemberObject(const RevPtr<Variable> &obj);                               //!< Set the member object to which this function belongs
         void                                setMethodName(const std::string& name);                                     //!< Set name of member method
         

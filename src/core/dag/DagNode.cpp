@@ -61,7 +61,7 @@ DagNode::~DagNode( void )
     if ( refCount != 0 )
     {
         std::stringstream s;
-        s << "Deleting DAG Node with " << refCount << " references to it (reported)!" << std::endl;
+        s << "Deleting DAG Node with " << refCount << " references to it!" << std::endl;
         throw RbException( s.str() );
     }
     if ( children.size() != 0 )
@@ -286,6 +286,12 @@ bool DagNode::isClamped( void ) const {
 
 
 bool DagNode::isConstant( void ) const {
+    return false;
+}
+
+
+/** Is this a non-applicable (NA) value? */
+bool DagNode::isNAValue( void ) const {
     return false;
 }
 

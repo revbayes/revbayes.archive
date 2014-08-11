@@ -72,9 +72,9 @@ Variable::~Variable( void )
 {
 #if defined ( DEBUG_MEMORY )
     std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
+#endif
     if ( !isReferenceVariable && revObject != NULL )
         delete revObject;
-#endif
 }
 
 
@@ -138,6 +138,16 @@ size_t Variable::getReferenceCount(void) const
 }
 
 
+/** Get the referenced variable, if this is a reference variable */
+RevPtr<Variable> Variable::getReferencedVariable(void) const
+{
+    if ( !isReferenceVariable )
+        throw RbException( "Illegal attempt to get a referenced variable from a non-reference variable" );
+
+    return referencedVariable;
+}
+
+
 /* Get the value of the variable */
 RevObject& Variable::getRevObject(void) const
 {
@@ -189,7 +199,11 @@ bool Variable::isReferenceVar(void) const
 }
 
 
-/** Make this variable a reference to another variable. Make sure we delete any object we held before. */
+/**
+ * Make this variable a reference to another variable. Make sure we delete any object we held before.
+ * We also check whether the argument is a reference variable, in which case we retrieve the
+ * referenced variable so that we do not make reference variable chains.
+ */
 void Variable::makeReference(const RevPtr<Variable>& refVar)
 {
     if ( !isReferenceVariable )
@@ -201,16 +215,19 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
         isReferenceVariable = true;
         isControlVariable = false;
     }
-    
-    referencedVariable = refVar;
+
+    if ( refVar->isReferenceVar() )
+        referencedVariable = refVar->getReferencedVariable();
+    else
+        referencedVariable = refVar;
 }
 
 
-/* Print value of the variable variable */
+/* Print value of the variable */
 void Variable::printValue(std::ostream& o) const
 {
     if (revObject == NULL)
-        o << "NULL";
+        o << "NA";
     else
         revObject->printValue( o );
 }

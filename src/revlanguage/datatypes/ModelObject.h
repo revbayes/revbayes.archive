@@ -21,8 +21,7 @@
 #include "MethodTable.h"
 #include "RevObject.h"
 #include "TypedDagNode.h"
-#include "UserFunctionArgs.h"
-#include "UserFunctionCall.h"
+#include "UserFunction.h"
 
 namespace RevLanguage {
     
@@ -49,8 +48,9 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
-        void                                    makeConstantValue();                                                        //!< Convert the stored variable to a constant variable (if applicable)
-        void                                    makeDeterministicValue(UserFunctionCall* call, UserFunctionArgs* args);     //!< Make deterministic clone with a userdefined Rev function
+        bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
+        void                                    makeConstantValue(void);                                                    //!< Convert the stored variable to a constant variable (if applicable)
+        void                                    makeDeterministicValue(UserFunction* fxn, UserFunction* code);              //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
@@ -89,11 +89,13 @@ namespace RevLanguage {
 #include "DeterministicNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
+#include "NAValueNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
 #include "TypedUserFunction.h"
 #include "Variable.h"
+#include "Workspace.h"
 
 #include <cassert>
 
@@ -354,6 +356,9 @@ const RevLanguage::MethodTable&  RevLanguage::ModelObject<rbType>::getMethods(vo
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
+    if ( dagNode == NULL )
+        throw RbException( "Invalid attempt to get value from an object with NULL DAG node" );
+    
     return dagNode->getValue();
 }
 
@@ -440,6 +445,13 @@ bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
 
 
 template <typename rbType>
+bool RevLanguage::ModelObject<rbType>::isNAObject( void ) const {
+    
+    return dagNode->isNAValue();
+}
+
+
+template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
     
     if ( dagNode == NULL )
@@ -469,10 +481,10 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 
 /** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
 {
-    TypedUserFunction< rbType >*  fxn      = new TypedUserFunction< rbType >( call );
-    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", fxn, args );
+    TypedUserFunction< rbType >*  rbFxn    = new TypedUserFunction< rbType >( code );
+    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", rbFxn, fxn );
     
     if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
         delete dagNode;
@@ -506,14 +518,22 @@ void RevLanguage::ModelObject<rbType>::printStructure( std::ostream &o, bool ver
     RevObject::printStructure( o, verbose );
 
     dagNode->printStructureInfo( o, verbose );
+
+    printMemberInfo( o );
 }
 
 
- /** Print value for user */
+/**
+ * Print value for user. The DAG node pointer may be NULL, in which
+ * case we print "NA".
+ */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const {
-    
-    dagNode->printValue(o,"");
+void RevLanguage::ModelObject<rbType>::printValue(std::ostream &o) const
+{
+    if ( dagNode == NULL )
+        o << "NA";
+    else
+        dagNode->printValue(o, "" );
 }
 
 
@@ -522,25 +542,52 @@ void RevLanguage::ModelObject<rbType>::replaceVariable(RevObject *newVar) {
     
     RevBayesCore::DagNode* newParent = newVar->getDagNode();
     
-    while ( dagNode->getNumberOfChildren() > 0 )
+    if ( dagNode != NULL )
     {
-        dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        while ( dagNode->getNumberOfChildren() > 0 )
+        {
+            dagNode->getFirstChild()->swapParent(dagNode, newParent);
+        }
     }
-    
 }
 
 
+/** Copy name of variable onto DAG node, if it is not NULL */
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setName(std::string const &n) {
-    
-    if ( dagNode == NULL )
-    {
-        throw RbException("Null-pointer-exception: Cannot set name of value.");
-    } 
-    else 
-    {
+void RevLanguage::ModelObject<rbType>::setName(std::string const &n)
+{
+    if ( dagNode != NULL )
         dagNode->setName( n );
+}
+
+
+/**
+ * Set dag node. We also accommodate the possibility of setting the DAG node
+ * to null.
+ */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
+    
+    // Take care of the old value node
+    if ( dagNode != NULL )
+    {
+        if ( newNode != NULL )
+            newNode->setName( dagNode->getName() );
+        dagNode->replace(newNode);
+        
+        if ( dagNode->decrementReferenceCount() == 0 )
+        {
+            delete dagNode;
+        }
+        
     }
+    
+    // Set the new value node
+    dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
+    
+    // Increment the reference count to the new value node
+    if ( dagNode != NULL )
+        dagNode->incrementReferenceCount();
     
 }
 
@@ -553,12 +600,12 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     if ( dagNode == NULL )
     {
         newNode = new RevBayesCore::ConstantNode<rbType>("",x);
-    } 
-    else 
+    }
+    else
     {
         newNode = new RevBayesCore::ConstantNode<rbType>(dagNode->getName(),x);
         dagNode->replace(newNode);
-
+        
         if ( dagNode->decrementReferenceCount() == 0 )
         {
             delete dagNode;
@@ -573,31 +620,5 @@ void RevLanguage::ModelObject<rbType>::setValue(rbType *x) {
     
 }
 
-
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::setDagNode(RevBayesCore::DagNode* newNode) {
-    
-    assert( dynamic_cast< RevBayesCore::TypedDagNode<rbType>* >(newNode) != NULL );
-    
-    // Take care of the old value node
-    if ( dagNode != NULL )
-    {
-        newNode->setName( dagNode->getName() );
-        dagNode->replace(newNode);
-        
-        if ( dagNode->decrementReferenceCount() == 0 )
-        {
-            delete dagNode;
-        }
-        
-    }
-    
-    // Set the new value node
-    dagNode = static_cast< RevBayesCore::TypedDagNode<rbType>* >( newNode );
-    
-    // Increment the reference count to the new value node
-    dagNode->incrementReferenceCount();
-    
-}
 
 #endif

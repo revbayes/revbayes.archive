@@ -7,9 +7,10 @@ using namespace RevLanguage;
 
 
 /** Constructor from type specification */
-RevAbstractType::RevAbstractType( const TypeSpec& t) :
+RevAbstractType::RevAbstractType( const TypeSpec& t, RevObject* obj ) :
     RevObject(),
-    myTypeSpec( t )
+    myTypeSpec( t ),
+    exampleObject( obj )
 {
 }
 
@@ -42,6 +43,13 @@ const TypeSpec& RevAbstractType::getTypeSpec( void ) const {
 bool RevAbstractType::isAbstract( void ) const
 {
     return true;
+}
+
+
+/** Make a new instance of the example object of a non-abstract derived class */
+RevObject* RevAbstractType::makeExampleObject( void ) const
+{
+    return exampleObject->clone();
 }
 
 

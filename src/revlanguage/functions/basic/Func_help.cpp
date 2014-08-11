@@ -17,7 +17,6 @@
 #include "RlUtils.h"
 #include "TypeSpec.h"
 #include "RlUserInterface.h"
-#include "Workspace.h"
 
 #include <fstream>
 

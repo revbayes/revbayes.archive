@@ -107,13 +107,14 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env )
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args );
-    theFunction.processArguments( args );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args ).clone();
+    theFunction->processArguments( args );
     
-    RevPtr<Variable> theReturnValue = theFunction.execute();
+    // Execute the function
+    RevPtr<Variable> theReturnValue = theFunction->execute();
     
-    // Clear the arguments in the function
-    theFunction.clear();
+    // Delete the function clone
+    delete theFunction;
     
     // Return the return value of the function after making it constant
     if ( theReturnValue != NULL )
@@ -160,16 +161,16 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
     RevPtr<Variable> right = rightOperand->evaluateDynamicContent( env );
     args.push_back( Argument( right, "" ) );
     
-    // Get function and create deterministic DAG node
+    // Get function clone and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args );
-    theFunction.processArguments( args );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args ).clone();
+    theFunction->processArguments( args );
     
-    RevPtr<Variable> theReturnValue = theFunction.execute();
+    RevPtr<Variable> theReturnValue = theFunction->execute();
     
-    // Clear the arguments in the function
-    theFunction.clear();
-    
+    // Delete the function clone
+    delete theFunction;
+
     return theReturnValue;
 }
 
@@ -180,6 +181,22 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
 bool SyntaxBinaryExpr::isConstExpression( void ) const
 {
     return leftOperand->isConstExpression() && rightOperand->isConstExpression();
+}
+
+
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The binary expression is safe
+ * if its operands are safe.
+ */
+bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env ) const
+{
+    // Check operands
+    if ( leftOperand->isFunctionSafe( env ) && rightOperand->isFunctionSafe( env ) )
+        return true;
+
+    // At least one operand not safe
+    return false;
 }
 
 
