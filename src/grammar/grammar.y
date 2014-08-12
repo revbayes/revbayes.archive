@@ -168,7 +168,7 @@ Parser& parser = Parser::getParser();
 %nonassoc   GT GE LT LE EQ NE
 %left       '+' '-'
 %left       '*' '/'
-%left       ':'
+%left       ':' '%'
 %right      DECREMENT INCREMENT
 %left       UMINUS UPLUS
 %right      '^'
@@ -351,6 +351,7 @@ expression  :   constant                    { $$ = $1; }
             |   expression '*' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mul, $1, $3); }
             |   expression '/' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Div, $1, $3); }
             |   expression '^' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Exp, $1, $3); }
+            |   expression '%' expression   { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Mod, $1, $3); }
 
             |   expression LT expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Lt, $1, $3); }
             |   expression LE expression    { $$ = new SyntaxBinaryExpr(SyntaxBinaryExpr::Le, $1, $3); }

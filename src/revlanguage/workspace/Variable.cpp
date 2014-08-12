@@ -61,10 +61,16 @@ Variable::Variable(const Variable &v) :
     isControlVariable( v.isControlVariable ),
     referencedVariable( v.referencedVariable )
 {
+    
     if ( v.revObject != NULL )
+    {
         setRevObject( v.revObject->clone() );
+    }
     else
+    {
         revObject = NULL;
+    }
+    
 }
 
 
@@ -74,7 +80,9 @@ Variable::~Variable( void )
     std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
 #endif
     if ( !isReferenceVariable && revObject != NULL )
+    {
         delete revObject;
+    }
 }
 
 
@@ -142,8 +150,10 @@ size_t Variable::getReferenceCount(void) const
 RevPtr<Variable> Variable::getReferencedVariable(void) const
 {
     if ( !isReferenceVariable )
+    {
         throw RbException( "Illegal attempt to get a referenced variable from a non-reference variable" );
-
+    }
+    
     return referencedVariable;
 }
 
@@ -152,7 +162,9 @@ RevPtr<Variable> Variable::getReferencedVariable(void) const
 RevObject& Variable::getRevObject(void) const
 {
     if ( isReferenceVariable )
+    {
         return referencedVariable->getRevObject();
+    }
     
     if (revObject == NULL)
     {
@@ -186,9 +198,14 @@ void Variable::incrementReferenceCount( void ) const
 bool Variable::isControlVar(void) const
 {
     if ( isReferenceVariable )
+    {
         return referencedVariable->isControlVar();
+    }
     else
+    {
         return isControlVariable;
+    }
+    
 }
 
 
@@ -209,7 +226,9 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
     if ( !isReferenceVariable )
     {
         if ( revObject != NULL )
+        {
             delete revObject;
+        }
         
         revObject = NULL;
         isReferenceVariable = true;
@@ -217,19 +236,30 @@ void Variable::makeReference(const RevPtr<Variable>& refVar)
     }
 
     if ( refVar->isReferenceVar() )
+    {
         referencedVariable = refVar->getReferencedVariable();
+    }
     else
+    {
         referencedVariable = refVar;
+    }
+    
 }
 
 
 /* Print value of the variable */
 void Variable::printValue(std::ostream& o) const
 {
+    
     if (revObject == NULL)
+    {
         o << "NA";
+    }
     else
+    {
         revObject->printValue( o );
+    }
+    
 }
 
 
@@ -252,7 +282,9 @@ void Variable::replaceRevObject( RevObject *newObj ) {
     revObject = newObj;
     
     if ( revObject != NULL )
+    {
         revObject->setName( name );
+    }
     
 }
 
@@ -265,7 +297,9 @@ void Variable::replaceRevObject( RevObject *newObj ) {
 void Variable::setControlVarState(bool flag)
 {
     if ( isReferenceVariable )
+    {
         throw "A reference variable cannot be made a control variable";
+    }
     
     isControlVariable = flag;
 }
@@ -276,7 +310,9 @@ void Variable::setName(std::string const &n) {
     
     name = n;
     if ( revObject != NULL )
+    {
         revObject->setName( n );
+    }
 }
 
 
