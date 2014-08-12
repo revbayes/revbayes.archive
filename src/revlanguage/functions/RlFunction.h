@@ -59,7 +59,7 @@ namespace RevLanguage {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // Functions you may want to override
-        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<double>* matchScore); //!< Process args, return a match score if pointer is not null
         virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
@@ -85,7 +85,7 @@ namespace RevLanguage {
         std::string                                     name;                                                                               //!< The name of the function in the environment
 
     private:
-        int                                             computeMatchScore(const Variable* arg, const ArgumentRule& rule);
+        double                                          computeMatchScore(const Variable* arg, const ArgumentRule& rule);
 };
     
 }
