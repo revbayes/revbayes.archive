@@ -140,6 +140,7 @@
 #include "Move_RealNodeValTreeSliding.h"
 #include "Move_RealNodeValTreeTranslation.h"
 #include "Move_ScaleSingleACLNRates.h"
+#include "Move_ACLNMixingStep.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -563,6 +564,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
         addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
+        addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
