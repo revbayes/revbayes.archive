@@ -78,8 +78,8 @@ const TypeSpec& DnaState::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool DnaState::isConvertibleTo(const TypeSpec& type) const {
+bool DnaState::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 

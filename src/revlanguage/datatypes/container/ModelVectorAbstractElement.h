@@ -44,7 +44,7 @@ namespace RevLanguage {
         
         // Type conversion functions
         RevObject*                                      convertTo(const TypeSpec& type) const;                                          //!< Convert to requested type
-        virtual bool                                    isConvertibleTo(const TypeSpec& type) const;                                    //!< Is this object convertible to the requested type?
+        virtual bool                                    isConvertibleTo(const TypeSpec& type, bool once) const;                         //!< Is this object convertible to the requested type?
         
         // Container functions you may want to override to protect from assignment
         virtual RevPtr<Variable>                        findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
@@ -354,9 +354,12 @@ const RevLanguage::TypeSpec& ModelVectorAbstractElement<rlType>::getTypeSpec(voi
  * other generic vectors with compatible elements. This is not done automatically
  * because of the templating: a vector of RealPos does not inherit from a vector
  * of Real, for example.
+ *
+ * Note that type conversion only works for composite vectors of abstract elements
+ * because it is only composite vectors that have the necessary Rev object elements.
  */
 template <typename rlType>
-bool ModelVectorAbstractElement<rlType>::isConvertibleTo( const TypeSpec& type ) const
+bool ModelVectorAbstractElement<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
     // No type conversion for simple vectors of abstract elements
     if ( !this->isComposite() )
@@ -373,14 +376,14 @@ bool ModelVectorAbstractElement<rlType>::isConvertibleTo( const TypeSpec& type )
             const RevObject& orgElement = const_cast< ModelVectorAbstractElement<rlType>* >( this )->getElement( i )->getRevObject();
             
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec() ) )
+            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
                 return false;
         }
         
         return true;
     }
     
-    return Container::isConvertibleTo( type );
+    return Container::isConvertibleTo( type, once );
 }
 
 

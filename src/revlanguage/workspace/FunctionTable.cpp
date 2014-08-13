@@ -145,7 +145,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 /** Execute function and get its variable value (evaluate once) */
 RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
-    Function&         theFunction = findFunction(name, args);
+    Function&         theFunction = findFunction(name, args, true);
     RevPtr<Variable>  theValue    = theFunction.execute();
 
     theFunction.clear();
@@ -213,7 +213,7 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
 
 /** Find function (also processes arguments) */
-Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) {
+Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
     
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
@@ -226,7 +226,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         {
             // \TODO: We shouldn't allow const casts!!!
             FunctionTable* pt = const_cast<FunctionTable*>(parentTable);
-            return pt->findFunction(name, args);
+            return pt->findFunction(name, args, once);
         }
         else
         {
@@ -236,7 +236,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
     }
     retVal = equal_range(name);
     if (hits == 1) {
-        if (retVal.first->second->checkArguments(args,NULL) == false) 
+        if (retVal.first->second->checkArguments(args,NULL,once) == false)
         {
             
             std::ostringstream msg;
@@ -270,7 +270,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         for (it=retVal.first; it!=retVal.second; it++) 
         {
             matchScore->clear();
-            if ( (*it).second->checkArguments(args, matchScore) == true ) 
+            if ( (*it).second->checkArguments(args, matchScore,once) == true )
             {
                 if ( bestMatch == NULL ) 
                 {
@@ -379,10 +379,10 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
 
 
 /** Get function. This function will throw an error if the name and args do not match any named function. */
-Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
+Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
     
     // find the template function
-    Function& theFunction = findFunction(name, args);
+    Function& theFunction = findFunction(name, args, once);
 
     return theFunction;
 }

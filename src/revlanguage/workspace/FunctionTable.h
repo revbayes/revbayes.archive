@@ -49,7 +49,7 @@ namespace RevLanguage {
         std::vector<Function*>                  findFunctions(const std::string& name) const;                                           //!< Return functions matching name
         const Function&                         getFirstFunction(const std::string& name);                                              //!< Get function
         const Function&                         getFunction(const std::string& name);                                                   //!< Get function
-        Function&                               getFunction(const std::string& name, const std::vector<Argument>& args);                //!< Get function
+        Function&                               getFunction(const std::string& name, const std::vector<Argument>& args, bool once);     //!< Get function
         std::multimap<std::string, Function*>   getTableCopy(bool env) const;                                                           //!< Get a copy of function table
         bool                                    isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const;                 //!< Are formals unique?
         bool                                    isProcedure(const std::string& fxnName) const;                                          //!< Is 'fxnName' a procedure?
@@ -57,7 +57,8 @@ namespace RevLanguage {
 
     protected:
         Function&                               findFunction(const std::string&           name,
-                                                             const std::vector<Argument>& args);                                        //!< Find function, process args
+                                                             const std::vector<Argument>& args,
+                                                             bool                         once);                                        //!< Find function, process args
     
         // Member variables
         const FunctionTable*                    parentTable;                                                                            //!< Enclosing table

@@ -71,8 +71,8 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type) const {
+bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 

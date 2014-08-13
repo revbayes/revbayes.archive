@@ -53,7 +53,7 @@ namespace RevLanguage {
  
         // Type conversion functions
         RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-        virtual bool                                isConvertibleTo(const TypeSpec& type) const;                //!< Is this object convertible to the requested type?
+        virtual bool                                isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
         RevPtr<Variable>                            executeMethod(std::string const &name, const std::vector<Argument> &args);      //!< Execute member methods
@@ -411,7 +411,7 @@ const RevLanguage::TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
  * of Real, for example.
  */
 template <typename rlType>
-bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
+bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
     if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
     {
@@ -424,14 +424,14 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
             rlType orgElement = rlType(*i);
             
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec() ) )
+            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
                 return false;
         }
         
         return true;
     }
     
-    return Container::isConvertibleTo( type );
+    return Container::isConvertibleTo( type, once );
 }
 
 

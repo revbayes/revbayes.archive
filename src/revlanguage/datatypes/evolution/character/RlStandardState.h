@@ -31,18 +31,18 @@ namespace RevLanguage {
     class StandardState : public ModelObject<RevBayesCore::StandardState> {
         
     public:
-        StandardState(void);                                                          //!< Default constructor
-        StandardState(const RevBayesCore::StandardState &d);                                                            //!< Construct from Standard
+        StandardState(void);                                                                                    //!< Default constructor
+        StandardState(const RevBayesCore::StandardState &d);                                                    //!< Construct from Standard
         
         // Operators
         
         // Basic utility functions
         StandardState*                  clone(void) const;                                                      //!< Clone object
-        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RevObject*               convertTo(const TypeSpec& type) const;                                         //!< Convert to type
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
     };
     

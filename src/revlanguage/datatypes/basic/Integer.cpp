@@ -230,7 +230,7 @@ void Integer::increment( void )
 
 
 /** Is convertible to language object of type? */
-bool Integer::isConvertibleTo( const TypeSpec& type ) const {
+bool Integer::isConvertibleTo( const TypeSpec& type, bool once ) const {
 
     if ( type == RlBoolean::getClassTypeSpec())
         return true;
@@ -241,13 +241,13 @@ bool Integer::isConvertibleTo( const TypeSpec& type ) const {
     if ( type == RlString::getClassTypeSpec() )
         return true;
 
-    if ( type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0 )
+    if ( once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0 )
         return true;
 
-    if ( type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0 )
+    if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0 )
         return true;
 
-    return RevObject::isConvertibleTo( type );
+    return RevObject::isConvertibleTo( type, once );
 }
 
 

@@ -101,7 +101,7 @@ std::string Function::callSignature(void) const {
  * the addition that types are also used in the matching process, after arguments
  * have been reordered as in R. The FunctionTable ensure that all argument rules
  * are distinct. However, several functions can nevertheless match the same
- * arguments because of the inheritance hierarchy. In these clases, the closest
+ * arguments because of the inheritance hierarchy. In these cases, the closest
  * match is chosen based on the first argument, then on the second, etc.
  *
  * The function returns a match score based on how closely the arguments match the
@@ -131,8 +131,15 @@ std::string Function::callSignature(void) const {
  *  5. Any remaining empty slots are filled with default values stored in the argument
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
+ *
+ * @TODO The code and the logic has been changed without changing the comments, so these
+ *       are out of date. Also note that the argument matching is problematic for unlabeled
+ *       arguments (order can be changed based on argument types, which may cause unintended
+ *       consequences). Furthermore, there is redundant code left from the old implementation.
+ *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
+ *       are still the last arguments after processing.
  */
-bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore) {
+bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore, bool once) {
     
     /*********************  0. Initialization  **********************/
     
@@ -168,7 +175,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) 
             {
                 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable() ) && !filled[j] ) 
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), once ) && !filled[j] )
                 {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -221,7 +228,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
         if (nMatches != 1)
             return false;
         
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable() ) ) 
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once ) )
         {
             taken[i]                  = true;
             filled[matchRule]         = true;
@@ -254,7 +261,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             if ( filled[j] == false ) 
             {
                 const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
-                if ( theRules[j].isArgumentValid( argVar ) ) 
+                if ( theRules[j].isArgumentValid( argVar, once ) )
                 {
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 
@@ -483,8 +490,18 @@ void Function::printValue(std::ostream& o) const {
  *  5. Any remaining empty slots are filled with default values stored in the argument
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
+ *
+ * @TODO The code and the logic has been changed without changing the comments, so these
+ *       are out of date. Also note that the argument matching is problematic for unlabeled
+ *       arguments (order can be changed based on argument types, which may cause unintended
+ *       consequences). Furthermore, there is redundant code left from the old implementation.
+ *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
+ *       are still the last arguments after processing.
+ *
+ * @TODO Static and dynamic type conversion added, but partly hack-ish, so the implementation
+ *       needs to be revised
  */
-void Function::processArguments( const std::vector<Argument>& passedArgs ) {
+void Function::processArguments( const std::vector<Argument>& passedArgs, bool once ) {
 
     /*********************  0. Initialization  **********************/
     /* Get my own copy of the argument vector */
@@ -523,7 +540,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), true) && !filled[j] ) 
+                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), once) && !filled[j] )
                 {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -571,7 +588,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
         if (nMatches != 1)
             throw RbException("Argument matches mutliple parameters.");
  
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), true ) ) 
+        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once ) )
         {
             taken[i]                  = true;
             filled[matchRule]         = true;
@@ -598,7 +615,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 
             if ( filled[j] == false ) 
             {
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), true ) ) {
+                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) ) {
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 
                     {
@@ -649,6 +666,30 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
     {
         if ( passedArgIndex[j] < 1000 ) 
         {
+            Argument&  theArg = pArgs[passedArgIndex[j]];
+            RevPtr<Variable> theVar = theArg.getVariable();
+            const std::vector<TypeSpec>& argTypeSpecs = theRules[j].getArgumentTypeSpec();
+            for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
+            {
+                if ( !theVar->getRevObject().isTypeSpec( *it ) && theVar->getRevObject().isConvertibleTo( *it, once ) )
+                {
+                    if ( once || !theVar->getRevObject().hasDagNode() )
+                    {
+                        RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                        theArg = Argument( new Variable( convertedObject ), theArg.getLabel(), theArg.isConstant() );
+                    }
+                    else
+                    {
+                        /** @TODO This is static type conversion. Make dynamic according to code sketch below. */
+                        RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                        theArg = Argument( new Variable( convertedObject ), theArg.getLabel(), theArg.isConstant() );
+                        
+                        // RevObject* conversionObject->makeConversionValue( theVar );
+                        // theArg = Argument( new Variable( conversionObject ), theArg.getLabel(), theArg.isConstant() );
+                    }
+                }
+            }
+            
             setArgument(theRules[j].getArgumentLabel(), pArgs[passedArgIndex[j]], theRules[j].isConstant() );
         }
 //        else 
@@ -666,7 +707,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs ) {
 }
 
 
-/** Set a member variable */
+/** Set an argument */
 void Function::setArgument(const std::string& name, Argument& arg, const bool c) {
     
     // make sure that the argument has the correct label

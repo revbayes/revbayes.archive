@@ -46,6 +46,7 @@ namespace RevLanguage {
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
+        RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
@@ -100,7 +101,8 @@ namespace RevLanguage {
 #include <cassert>
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject() : RevObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject() :
+    RevObject(),
     dagNode( NULL ),
     methods() 
 {
@@ -112,7 +114,8 @@ RevLanguage::ModelObject<rbType>::ModelObject() : RevObject(),
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : RevObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
+    RevObject(),
     dagNode( new RevBayesCore::ConstantNode<rbType>("",v) ),
     methods() 
 {
@@ -126,7 +129,8 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) : RevObject(),
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) : RevObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
+    RevObject(),
     dagNode( v ),
     methods() 
 {
@@ -142,7 +146,8 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 
 
 template <typename rbType>
-RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) : RevObject(), 
+RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
+    RevObject(),
     dagNode( NULL ),
     methods() 
 {
@@ -205,6 +210,29 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
     }
     
     return *this;
+}
+
+
+/**
+ * Clone the model DAG connected to this object. This function is used
+ * by the DAG node cloneDAG function, for DAG node types belonging to the
+ * RevLanguage layer and handling Rev objects.
+ *
+ * @TODO This is a temporary hack that makes different Rev objects sharing
+ *       the same internal DAG node keeping their value. Replace with code
+ *       that actually clones the model DAG with the included Rev objects
+ *       (and possibly also the included variables).
+ */
+template<typename rbType>
+RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
+{
+    ModelObject<rbType>* theClone = clone();
+
+    RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
+    
+    theClone->setDagNode( theNodeClone );
+    
+    return theClone;
 }
 
 

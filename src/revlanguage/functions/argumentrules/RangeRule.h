@@ -71,7 +71,11 @@ RangeRule<valType>::RangeRule( const std::string& argName, valType* defVal, valT
 
 
 
-/** Check whether argument is constant and within the permissible range */
+/**
+ * Check whether argument is constant and within the permissible range.
+ *
+ * @TODO This code is incorrect.
+ */
 template <typename valType>
 bool RangeRule<valType>::isArgumentValid( const RevPtr<const Variable>& var, bool convert ) const {
 

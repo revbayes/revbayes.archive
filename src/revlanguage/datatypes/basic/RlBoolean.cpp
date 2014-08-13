@@ -98,14 +98,14 @@ const TypeSpec& RlBoolean::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool RlBoolean::isConvertibleTo(const TypeSpec& type) const {
+bool RlBoolean::isConvertibleTo(const TypeSpec& type, bool once) const {
 
     if ( type == Integer::getClassTypeSpec() )
         return true;
     else if ( type == Real::getClassTypeSpec() )
         return true;
 
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 
 
