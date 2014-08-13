@@ -49,24 +49,29 @@ RevPtr<Variable> Func_readTreeTrace::execute( void ) {
         myFileManager.formatError(errorStr);
         throw RbException(errorStr);
     }
-        
+    
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
-    if ( myFileManager.isFile() ) 
+    if ( myFileManager.isFile() )
     {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
-    } 
-    else 
+    }
+    else
     {
         myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
     }
     
     RevObject *rv;
-    if ( treetype == "clock" ) {
+    if ( treetype == "clock" )
+    {
         rv = readTimeTrees(vectorOfFileNames);
-    } else if ( treetype == "non-clock" ) {
+    }
+    else if ( treetype == "non-clock" )
+    {
         rv = readBranchLengthTrees(vectorOfFileNames);
-    } else {
+    }
+    else
+    {
         throw RbException("Unknown tree type to read.");
     }
     
@@ -115,19 +120,19 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_readTreeTrace::getClassType(void) { 
+const std::string& Func_readTreeTrace::getClassType(void) {
     
     static std::string revType = "Func_readTreeTrace";
     
-	return revType; 
+	return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readTreeTrace::getClassTypeSpec(void) { 
+const TypeSpec& Func_readTreeTrace::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return revTypeSpec;
 }
 
 /** Get type spec */
@@ -157,7 +162,8 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
     std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
+    for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+    {
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
         
@@ -173,8 +179,11 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
         
         size_t index = 0;
         
+        std::string outgroup = "";
+        
         /* Command-processing loop */
-        while ( inFile.good() ) {
+        while ( inFile.good() )
+        {
             
             // Read a line
             std::string line;
@@ -182,7 +191,7 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             
             // skip empty lines
             //line = StringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if (line.length() == 0) 
+            if (line.length() == 0)
             {
                 continue;
             }
@@ -196,10 +205,10 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             // splitting every line into its columns
             std::vector<std::string> columns;
             // first, getting the file delimmiter
-            std::string delimiter = "\t";
+            std::string delimitter = "\t";
             
             // we should provide other delimiters too
-            StringUtilities::stringSplit(line, delimiter, columns);
+            StringUtilities::stringSplit(line, delimitter, columns);
             
             // we assume a header at the first line of the file
             if (!hasHeaderBeenRead) {
@@ -226,16 +235,23 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             }
             
             // adding values to the Traces
-            //            for (size_t j=1; j<columns.size(); j++) {
             RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree>& t = data[0];
             
             RevBayesCore::NewickConverter c;
             RevBayesCore::BranchLengthTree *tau = c.convertFromNewick( columns[index] );
             
+            if ( outgroup == "" )
+            {
+                RevBayesCore::BranchLengthTree& referenceTree = *tau;
+                outgroup = referenceTree.getTipNode(0).getName();
+            }
+            
+            // re-root the tree so that we can compare the the trees
+            tau->reroot( outgroup );
+            
             t.addObject( *tau );
             
             delete tau;
-            //            }
         }
     }
     
@@ -253,7 +269,8 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
     std::map<std::string,std::string> fileMap;
-    for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++) {
+    for (std::vector<std::string>::const_iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
+    {
         bool hasHeaderBeenRead = false;
         const std::string &fn = *p;
         
@@ -270,7 +287,8 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
         size_t index = 0;
         
         /* Command-processing loop */
-        while ( inFile.good() ) {
+        while ( inFile.good() )
+        {
             
             // Read a line
             std::string line;
@@ -278,7 +296,7 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             
             // skip empty lines
             //line = StringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if (line.length() == 0) 
+            if (line.length() == 0)
             {
                 continue;
             }
@@ -292,15 +310,17 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             // splitting every line into its columns
             std::vector<std::string> columns;
             // first, getting the file delimmiter
-            std::string delimiter = "\t";
+            std::string delimitter = "\t";
             
             // we should provide other delimiters too
-            StringUtilities::stringSplit(line, delimiter, columns);
+            StringUtilities::stringSplit(line, delimitter, columns);
             
             // we assume a header at the first line of the file
-            if (!hasHeaderBeenRead) {
+            if (!hasHeaderBeenRead)
+            {
                 
-                for (size_t j=1; j<columns.size(); j++) {
+                for (size_t j=1; j<columns.size(); j++)
+                {
                     
                     std::string parmName = columns[j];
                     if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior") {
@@ -332,7 +352,7 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             t.addObject( *tau );
             
             delete tau;
-            //            }
+
         }
     }
     

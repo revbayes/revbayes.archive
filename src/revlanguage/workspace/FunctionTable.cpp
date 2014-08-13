@@ -261,8 +261,8 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
     }
     else 
     {
-        std::vector<unsigned int>* matchScore = new std::vector<unsigned int>();
-        std::vector<unsigned int> bestScore;
+        std::vector<double>* matchScore = new std::vector<double>();
+        std::vector<double> bestScore;
         Function* bestMatch = NULL;
 
         bool ambiguous = false;
@@ -485,8 +485,10 @@ bool FunctionTable::isProcedure(const std::string& name) const
     
     // If we have the function, we know the answer
     if ( it != end() )
+    {
         return it->second->isProcedure();
-
+    }
+    
     // If this table doesn't contain the function, then we ask the parent table
     if ( parentTable != NULL )
     {
@@ -556,7 +558,9 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
         {
             o << "(";
             for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
+            {
                 (*i)->printValue(o);
+            }
             o << ")" << std::endl;
         }
     }

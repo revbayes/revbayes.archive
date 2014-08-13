@@ -25,9 +25,16 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
     logTreeTopologyProb (0.0)
 {
     
+    std::set<std::string> speciesNames;
     for (std::vector<Taxon>::const_iterator it=taxa.begin(); it!=taxa.end(); ++it)
     {
         gene2species[it->getName()] = it->getSpeciesName();
+        speciesNames.insert( it->getSpeciesName() );
+    }
+    
+    if ( sp->getValue().getNumberOfTips() != speciesNames.size() )
+    {
+//        throw RbException("Unequal number of species between species tree and gene tree.");
     }
     
     double lnFact = RbMath::lnFactorial((int)(numTaxa));
@@ -565,15 +572,20 @@ double MultispeciesCoalescent::computeLnProbability( void ) {
 //}
 
 
-double  MultispeciesCoalescent::getNe(size_t index) const {
-    if (Ne != NULL) {
+double  MultispeciesCoalescent::getNe(size_t index) const
+{
+
+    if (Ne != NULL)
+    {
         return Ne->getValue();
     }
-    else if (Nes != NULL) {
+    else if (Nes != NULL)
+    {
         return (Nes->getValue()[index]);
     }
-    else {
-        std::cerr << "Error: Null Pointers for Ne and Nes."<<std::endl;
+    else
+    {
+        std::cerr << "Error: Null Pointers for Ne and Nes." << std::endl;
         exit(-1);
     }
 }
