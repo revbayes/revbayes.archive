@@ -14,8 +14,8 @@
 
 ### Read in sequence data for both genes
 
-data_atpB <- readCharacterData("/Users/mlandis/Documents/code/revbayes-code/examples/data/conifer_atpB.nex")[1]
-data_rbcL <- readCharacterData("/Users/mlandis/Documents/code/revbayes-code/examples/data/conifer_rbcL.nex")[1]
+data_atpB <- readCharacterData("data/conifer_atpB.nex")
+data_rbcL <- readCharacterData("data/conifer_rbcL.nex")
 
 ### Create concatenated data matrix
 data <- data_atpB + data_rbcL
@@ -71,7 +71,8 @@ for (i in 1:n_branches) {
 }
 
 nb <- n_branches * 1.0
-tree_length := mean(br_lens) * nb
+#tree_length := mean(br_lens) * nb
+tree_length := br_lens[1]
 
 # Build the tree by combining the topology with the branch length.
 phylogeny := treeAssembly(topology, br_lens)
