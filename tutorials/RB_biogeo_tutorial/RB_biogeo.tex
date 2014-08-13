@@ -7,7 +7,7 @@
 \usepackage{mathtools}
 \usepackage{framed}
 \usepackage{listings}
-\usepackage{subcaption}
+%\usepackage{subcaption}
 \usepackage[margin=1.0in]{geometry}
 \usepackage{float}
 \usepackage{hyperref}
@@ -30,47 +30,61 @@
 \bibliographystyle{sysbio}
 \bibpunct[; ]{(}{)}{;}{a}{}{;}
 
-\title{Biogeographic dating in RevBayes}
+\title{Historical biogeography in RevBayes}
 \author{Michael J. Landis \\ \href{mailto:mlandis@berkeley.edu}{\texttt{mlandis@berkeley.edu}}}
 \maketitle
 
 \section{Introduction}
 
-This lab describes how to jointly infer the posterior range evolution parameters, ancestral ranges, and divergence times using RevBayes.
-%BayArea is a C++ command-line program that implements the method described in \citet{landis13}.
-Phylowood is a Javascript web service that for animating and filtering phylogenetic biogeographic reconstructions \citep{landis14}. \\
+Using RevBayes, this lab describes how to perform Bayesian inference of historical biogeography using RevBayes. The analysis jointly infers the posterior range evolution parameters and ancestral ranges using the data augmentation approach described in \citet{landis13}.
+To generate hypotheses, we will explore the resulting posterior using Tracer, an MCMC analysis tool created by Andrew Rambaut, and Phylowood, a Javascript web service that animates and filters phylogenetic biogeography reconstructions \citep{landis14}.
+Finally, we will quantify and plot certain qualities of the inferred biogeographic posterior using R. \\
 
-\noindent \textbf{By the end of this lab you should know how to} \\
-- Describe how the model and method \\
-- Identify the data needed for a biogeographic dating analysis \\
-- Configure and run an MCMC analysis \\
-- Review the MCMC tracer file \\
-- Retrieve posterior ancestral range reconstructions \\
-- Generate a Phylowood animation
+
+\noindent \textbf{Outline} \\
+1) Brief overview of model and method \\
+2) Historical biogeography analysis \\
+2.a) Input \\
+2.b) MCMC inference \\
+3) Review results. \\
+3.a) Parameter output \\
+3.b) Ancestral range output \\
+3.c) Visualize ancestral range reconstructions. \\
+
+%\noindent \textbf{By the end of this lab you should know how to} \\
+%- Describe how the model and method work \\
+%- Identify the data needed for a historical biogeographic analysis \\
+%- Configure and run an MCMC analysis \\
+%- Compute Bayes factors under competing models \\
+%- Review the MCMC tracer file \\
+%- Generate a Phylowood animation \\
+%- Extract useful information from the posterior distribution in R \\
 
 \noindent \\ \impmark These little arrows indicate lines containing key information to progress through the lab. The rest of the text gives context for why we're taking these steps or what to make of results.
 
 \subsection{Handy links for this lab}
 
 \begin{tabular}{ll}
-Lab zip file & \url{http://treethinkers.org/wp-content/uploads/2014/03/bayarea_lab.zip} \\
-Phylowood software & \url{http://mlandis.github.io/bayarea-fig} \\
+Lab zip file & [ NESCent URL ] \\
+RevBayes & \url{https://github.com/revbayes/revbayes} \\
+Phylowood software & \url{http://mlandis.github.io/phylowood} \\
 Phylowood manual & \url{https://github.com/mlandis/phylowood/wiki} \\
-DendroPy manual & \url{http://pythonhosted.org/DendroPy/} \\
-matplotlib manual & \url{http://matplotlib.org/} \\
-NumPy manual & \url{http://www.numpy.org/}
+Tracer & \url{http://tree.bio.ed.ac.uk/software/tracer}
+%DendroPy manual & \url{http://pythonhosted.org/DendroPy/} \\
+%matplotlib manual & \url{http://matplotlib.org/} \\
+%NumPy manual & \url{http://www.numpy.org/}
 
 \end{tabular}
 
 \subsection{Setting up your workspace}
 
-The practical part of the lab will analyze the simulated dataset we just reviewed.
+The practical part of the lab will analyze a small dataset of 19 taxa distributed over 4 biogeographic areas.
 Parts of the lab will require entering terminal commands, which will assume you are using the Unix shell \texttt{bash}.
 Just ask for help if the commands don't seem to work.
 
-\noindent \\ \impmark Portions of this lab require Python is installed, along with the Dendropy, matplotlib, and NumPy packages.
+\noindent \\ \impmark Portions of this lab require {\tt R} is installed, along with the {\tt stringr} and {\tt ggplot2} packages.
 
-\noindent \\ \impmark This tutorial will assume you have successfully installed BayArea to the directory \newline{\texttt{\char`\~/apps/bayarea\_1.0.2/}}. Shell commands will assume this is your current working directory.
+\noindent \\ \impmark This tutorial will assume you have successfully installed RevBayes and can be called from your current working directory.
 
 \noindent \\ \impmark Download and unzip the lab zip file, \texttt{bayarea\_lab.zip}, into \texttt{\char`\~/apps/bayarea\_1.0.2}.
 
@@ -98,7 +112,10 @@ my_run.area_probs.txt       pp_range.py
 \end{lstlisting}
 \end{framed}
 
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
 \section{Model and method}
+
 
 This section contains a brief description of the data, model, parameters, and method used in BayArea.
 
@@ -123,46 +140,66 @@ The rates in the transition matrix for three areas might appear as
 
 \[
 \textbf{Q} = 
-	\begin{array}{r|cccccccc}
-		& 000 & 001 & 010 & 011 & 100 & 101 & 110 & 111 \\
+	\begin{array}{r|ccccccc}
+		& 001 & 010 & 011 & 100 & 101 & 110 & 111 \\
 		\hline
-		000 & - & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-		001 & \lambda_0 & - & 0 & \lambda_1 & 0 & \lambda_1 & 0 & 0 \\
-		010 & \lambda_0 & 0 & - & \lambda_1 & 0 & 0 & \lambda_1 & 0 \\
-		011 & 0 & \lambda_0 & \lambda_0 & - & 0 & 0 & 0 & \lambda_1 \\
-		100 & \lambda_0 & 0 & 0 & 0 & - & \lambda_1 & \lambda_1 & 0 \\
-		101 & 0 & \lambda_0 & 0 & 0 & \lambda_0 & - & 0 & \lambda_1 \\
-		110 & 0 & 0 & \lambda_0 & 0 & \lambda_0 & 0 & - & \lambda_1 \\
-		111 & 0 & 0 & 0 & 0 & \lambda_0 & \lambda_0 & \lambda_0 & - \\								
+		001 & - & 0 & \lambda & 0 & \lambda & 0 & 0 \\
+		010  & 0 & - & \lambda & 0 & 0 & \lambda & 0 \\
+		011  & \lambda & \lambda & - & 0 & 0 & 0 & \lambda \\
+		100  & 0 & 0 & 0 & - & \lambda & \lambda & 0 \\
+		101  & \lambda & 0 & 0 & \lambda & - & 0 & \lambda \\
+		110  & 0 & \lambda & 0 & \lambda & 0 & - & \lambda \\
+		111  & 0 & 0 & 0 & \lambda & \lambda & \lambda & - \\								
 	\end{array},
 \]
-which can also be represented compactly as the rate function
+where $\lambda$ is the rate of area gain or loss. This can also be represented compactly as the rate function
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
 \begin{cases}
-\lambda_0 & \text{if $z_a=0$}  \\
-\lambda_1 & \text{if $z_a=1$} \\
-0 & \mathbf{y} = 00...0 \\
+\lambda & \text{\textbf{y} and \textbf{z} differ in exactly one area}  \\
 0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
 \end{cases},
 \]
 where $\textbf{y}$ and $\textbf{z}$ are the ``from'' and ``to'' ranges and $a$ is the area that changes.
 For example, $q^{(1)}_{011,111}$ is the rate of range expansion for $011 \rightarrow 111$ to gain area $1$.
-Since the taxon is extinct for the entirely unoccupied range, $00...0$, its rate of range expansion is zero (barring resurrection).
-Also note the rate of more than one event occurring simultaneously is zero.
+Note the rate of more than one event occurring simultaneously is zero, so a range must expand twice by one area in order to expand by two areas.
+This model is analogous to the Jukes-Cantor model, but uses binary characters instead of 4-state nucleotides.
 
-However, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited.
-The transition rate might then appear as
+
+There are several simple ways to extend this model. For example, the rate of area gain and area loss ($\lambda_0$ and $\lambda_1$, resp.) may differ as
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
 \begin{cases}
 \lambda_0 & \text{if $z_a=0$}  \\
-\lambda_1 \eta(\textbf{y}, \textbf{z}, a, \beta) & \text{if $z_a=1$} \\
+\lambda_1 & \text{if $z_a=1$} \\
+0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
+\end{cases}.
+\]
+
+In addition, you may want to assign transition probabilities to entering the all-zero ``extinction'' state -- an absorbing state that has a zero probability of being left (barring resurrection). In addition, it may not be that any species is equally likely to be present or absent in any given area, i.e. $\pi_0 \neq \pi_1$ but $\pi_0 + \pi_1 = 1$. This could be parameterized using state frequencies (much like as is done with base frequencies in the Felsenstein 84 model).
+
+\[
+q^{(a)}_{\textbf{y},\textbf{z}} =
+\begin{cases}
+2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
+2 \pi_1 \lambda_1 & \text{if $z_a=1$} \\
 0 & \mathbf{y} = 00...0 \\
 0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
 \end{cases}.
 \]
-The behavior of $\eta(\cdot)$ is given in finer detail in \citet{landis13}.
+
+Finally, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited.
+The transition rate might then appear as
+\[
+q^{(a)}_{\textbf{y},\textbf{z}} =
+\begin{cases}
+2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
+2 \pi_1 \lambda_1 \eta(\textbf{y}, \textbf{z}, a, \beta) & \text{if $z_a=1$} \\
+0 & \mathbf{y} = 00...0 \\
+0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
+\end{cases}.
+\]
+
 For this tutorial, you can take $\eta(\cdot)$ to adjust the rate of range expansion into area $a$ by considering how close it is to the current range, $\textbf{y}$ relative to the closeness of all other areas unoccupied by the taxon.
 The $\beta$ parameter rescales the importance of geographic distance between two areas by a power law.
 Importantly, $\eta(\cdot) = 1$ when $\beta=0$, meaning geographic distance between areas is irrelevant.
@@ -187,52 +224,22 @@ Ancestral range reconstructions are often of primary interest in phylogenetic bi
 
 The rest of the tutorial will describe how to assemble the input, run the analysis, assess the output, and visualize the results.
 
-\section{Lab Outline}
+\newpage
 
-%1) Pre-analysis
-%1.a) Format data partitions. \\
-%1.b) Infer MAP topology, T. \\
-1) Pre-analysis
-2) Biogeographic calibration analysis
-2.a) Format data partitions. \\
-2.a) Define geography. \\
-2.c) Infer joint posterior over molecular data, range data, and divergence times given T. \\
-3) Review results. \\
-3.a) Parameter output \\
-3.b) Ancestral range output \\
-3.c) Visualize ancestral range reconstructions. \\
-
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%
 \section{Input}
 
-This section describes how to generate the files needed for biogeographic calibration analysis.
+For this tutorial, we'll use a dataset for 19 species of $Psychotria$ whose range spans the Hawaiian archipelago.
+The dataset was originally reported in \citet{nepokroeff03} and analyzed using the likelihood-based historical biogeography method, LAGRANGE, by \citet{ree08}.
+We'll use this dataset for three reasons.
+First, it is relatively small, meaning we can produce results quickly.
+Second, the Hawaiian archipelago can be broken into naturally discrete areas and has a well-characterized geographical history that is uncomplicated to model.
+Third, it has previously been analyzed, which provides some basis for comparison to other methods.
 
-As an example, we'll use a dataset for 19 species of $Psychotria$ whose range spans the Hawaiian archipelago.
-. originated from \cite{XXX} 
 The model will assume presence-absence characters are recorded without error.
-Areas are defined over the Hawaiian archipelago in numbers that 
 
-\subsection{Pre-analysis}
-The biogeographic calibration analysis described in this tutorial assumes the tree topology is known.
-For this, you'll need the Newick string for {\it e.g.} a {\it maximum a posterior} (MAP) topology or most credible clade (MCC) topology, which can be generated by following other RevBayes, MrBayes, or BEAST tutorials.
-Generally, you will want to use the molecular data from that analysis for the divergence time estimation.
-
-\noindent \\ \impmark Open the file \texttt{examples/my\_tree.txt}.
-
-\begin{framed}
-\begin{lstlisting}
-(((((t1:1.040892,(t2:0.024898,t3:0.024898):1.015994):0.637439,((t4:0.379109,t5:0.379109):1.158215,t6:1.537324):0.141007):0.428946,((t7:0.26996,t8:0.26996):0.535304,t9:0.805264):1.302013):0.723986,
-...
-\end{lstlisting}
-\end{framed}
-
-Because range evolution occurs in units of geological time, a BayArea analysis requires a high-quality time-calibrated phylogeny. This typically requires a multiple sequence alignment over several loci plus fossils for calibration.
-Since this data availability is often the limiting factor for which taxa to include for your analysis, it is best to produce the phylogeny first.
-Only afterwards should you begin assembling data for your data matrix.
-%Tracy Heath has an excellent tutorial on how to generate time calibrated trees (\href{.
-If your phylogeny cannot be calibrated (e.g. it has no fossils) your best alternative is to proceed with a time tree resulting from a divergence time estimation analysis.
-For this tutorial, the phylogeny is assumed to contain no uncertainty.
-
-\subsection{Data}
+\subsection{Nexus file}
 
 The data file contains a matrix of binary characters corresponding to the observed ranges of the study taxa.
 
@@ -263,27 +270,30 @@ End;
 \end{framed}
 
 Range data is stored in standard Nexus format.
-In the \texttt{begin data} block, the first line gives the dimensions of the data matrix and the second line indicates we will be using binary characters. 
-%Rows in the \texttt{matrix} block correspond to taxa and their range data, while columns give in which areas each taxon is present (1) or absent (0).
-%For example, taxon \texttt{P_fauriei2} is present only in area 2, which will be defined by the Geography file.
+In the {\tt data} block, the first line gives the dimensions of the data matrix and the second line indicates we will be using binary characters.
+The four characters correspond to areas defined by the geography file (next subsection).
+Rows in the {\tt matrix} block correspond to taxa and their range data, while columns give in which areas each taxon is present (1) or absent (0).
+For example, taxon {\tt P\_fauriei2} is present only in area 2.
 
-\subsection{Geography}
+The {\tt trees} block gives the tree describing the shared ancestry of the study species.
+Because range evolution occurs in units of geological time, the analysis in this tutorial requires a high-quality time-calibrated phylogeny.
+This typically requires a multiple sequence alignment over several loci plus fossils for calibration.
+Since this data availability is often the limiting factor for which taxa to include for your analysis, it is best to produce the phylogeny first.
+Only afterwards should you begin assembling data for your data matrix.
+If your phylogeny cannot be calibrated (e.g. it has no fossils) your best alternative is to proceed with a time tree resulting from a divergence time estimation analysis.
+For this tutorial, the phylogeny is assumed to contain no uncertainty.
+
+\subsection{Atlas file}
 
 Although the model will use discrete-state biogeographic ranges, geographical area is naturally continuous.
-This means we must impose some discretization upon the geography to designate a set of biogeographically meaningful characters (called areas).
-Different methods use different criteria for this discretization, so it is best to perform the discretization yourself rather than blindly using the discretization given from a previous study or method.
+This means we must impose some discretization upon the geography to designate a set of biogeographically meaningful characters called areas.
+Different methods use different criteria for this discretization, so it is best to perform the discretization yourself rather than blindly using the discretization given from a previous study or method (but do blindly use the dataset included in this tutorial).
 Some geographies have natural discretizations: for instance, the Hawaiian archipelago forms naturally discrete areas on the basis of islands.
 For many geographies, however, it may unclear how to perform this discretization.
 Much like morphological analyses, you might choose to choose areas based on expert opinion, based on some model, or using some ``naive'' uniform discretization.
 This procedure is not part of the tutorial, but you should be aware that area definitions are not always obvious or objective.
 
-Each area is assigned a point to represent its geographical coordinates.
-The distances between these coordinates inform to distance-dependent dispersal parameter for range expansion events, so coordinates roughly close to the center of the area suffice.
-data matrix.
-
-In addition the accessability
-
-\noindent \\ \impmark Open the file \texttt{examples/my\_areas.txt}.
+\noindent \\ \impmark  Open the file \texttt{examples/hawaii\_dynamic.atlas.txt}.
 
 \begin{framed}
 \begin{lstlisting}
@@ -304,6 +314,25 @@ In addition the accessability
 }
 \end{lstlisting}
 \end{framed}
+
+This is called the Atlas file, which uses a file format called JSON.
+JSON is a lightweight format used to assign values to variables in a hierarchical manner.
+There are three main tiers to the hierarchy in the Atlas file: the atlas, the epoch, and the area.
+In the lowest tier, each area corresponds to a character in the model and is assigned it's own properties.
+In the middle tier, each epoch contains the set of homologous areas (characters), but importantly the properties of these areas may take on different values during different intervals of time, as given by the {\tt start_age} and {\tt end_age} variables.
+Because the tree and range evolution model also operate on units of geological time, the rates of area gain and loss can condition on areas' properties as a function of time.
+Sometimes these models are called stratified models or epochal models.
+Finally, the atlas contains the array of epochs in the highest tier.
+
+Each area is assigned a latitude and longitude to represent its geographical coordinates, ideally the area's centroid.
+If a centroid does not represent the distance between areas, splitting the area into multiple smaller areas is reasonable.
+The distance between any two areas' coordinates inform to distance-dependent dispersal parameter ($\beta$ from the $\eta(\cdot)$ function) for range expansion events, so coordinates roughly close to the center of the area suffice.
+
+In addition, whether an area is habitable is 
+
+\noindent \\ \impmark Open the file \texttt{examples/my\_areas.txt}.
+
+
 
 \section{Analysis}
 
@@ -743,17 +772,21 @@ Generally, the figure is most easily saved from the browser by printing the file
 In this case the image size is equal to the paper size.
 If the standard $8.5 \times 11$ inch image is too small, you will need to create and apply a sufficiently large custom paper size.
 
-% \bibliography{bayes}
+\bibliography{bayes}
 
-\newpage
-\begin{sidewaysfigure}
-\centering
-\includegraphics[width=9in]{figures/bg_mol_dag}
-\caption{Joint inference of range and molecular data. This figure explodes the module components in Figure \ref{fig:bm_mod}}
-\label{fig:bm_dag}
-\end{sidewaysfigure}
+%\newpage
+%\begin{sidewaysfigure}
+%\centering
+%\includegraphics[width=9in]{figures/bg_mol_dag}
+%\caption{Joint inference of range and molecular data. This figure explodes the module components in Figure \ref{fig:bm_mod}}
+%\label{fig:bm_dag}
+%\end{sidewaysfigure}
 
 \end{document}
+
+
+% old stuff
+
 
 %{\it If you want to construct your own data matrix, I'll go over these topics below: collecting species occurrence data, identifying the total geographic region to include for analysis, and discretizing the geography into areas.}
 %
