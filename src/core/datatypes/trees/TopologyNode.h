@@ -17,7 +17,7 @@
  * NOTE: This class might be a temporary solution being the unified solution for all tree nodes. In the future
  * we might make this class abstract and implement at least the two types of tree nodes: bifurcating tree nodes
  * which are restricted two have exactly two descendants and multifurcating tree nodes which can have any number
- * of tree nodes. Perhaps there might be also tip nodes as a derived class and a root node, which is the 
+ * of tree nodes. Perhaps there might be also tip nodes as a derived class and a root node, which is the
  * correct OO design approach but comes with a lot of overhead. A fast conversion method would be needed.
  *
  * @brief Declaration of TopologyNode
@@ -53,12 +53,12 @@ namespace RevBayesCore {
         TopologyNode(const TopologyNode &n);                                                                                            //!< Copy constructor
         virtual                                    ~TopologyNode(void);                                                                 //!< Destructor
         TopologyNode&                               operator=(const TopologyNode& n);
-
-    
+        
+        
         // Basic utility functions
         TopologyNode*                               clone(void) const;                                                                  //!< Clone object
         bool                                        equals(const TopologyNode& node) const;                                             //!< Test whether this is the same node
-
+        
         // public methods
         void                                        addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                        addChild(TopologyNode* c, bool enforceNewickRecomp = true);                         //!< Adds a child node
@@ -72,6 +72,7 @@ namespace RevBayesCore {
         void                                        flagNewickRecomputation(void);                                                      //!< Flag the newick string for recomputation
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
+        size_t                                      getCladeIndex(const TopologyNode* c) const;
         const TopologyNode&                         getChild(size_t i) const;                                                           //!< Returns the i-th child
         TopologyNode&                               getChild(size_t i);                                                                 //!< Returns the i-th child (non-const to return non-const node)
         const std::vector<TopologyNode*>&           getChildren(void) const;
@@ -93,20 +94,20 @@ namespace RevBayesCore {
         void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
         void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
-        void                                        setName(const std::string& n);                                                      //!< Set the name of this node   
+        void                                        setName(const std::string& n);                                                      //!< Set the name of this node
         void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                        //!< Sets the node's parent
         void                                        setTree(Tree *t);
-
-    protected:    
-
+        
+    protected:
+        
         // helper methods
         virtual std::string                         buildNewickString(void);                                                            //!< compute the newick RlString for a tree rooting at this node
-    
+        
         // protected members
-        std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around. 
+        std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
-
+        
         std::string                                 name;                                                                               //!< Name of the node, i.e. identifier/taxon name
         size_t                                      index;                                                                              //!< Node index
         bool                                        interiorNode;
@@ -116,7 +117,7 @@ namespace RevBayesCore {
         bool                                        newickNeedsRefreshing;
         std::vector<std::string>                    nodeComments;
         std::vector<std::string>                    branchComments;
-      
+        
     };
     
 }

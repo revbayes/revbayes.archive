@@ -292,7 +292,7 @@ void Tree::setTopology(const Topology *t, bool owns)
     ownsTopology = owns;
     
     // set the topology of this tree
-    topology = t;
+    topology = const_cast<Topology*>( t );
     
     // set the tree for each node
     topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );

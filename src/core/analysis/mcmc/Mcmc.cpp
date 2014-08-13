@@ -164,7 +164,9 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
     
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
     if (advanceCycle)
+    {
         generation++;
+    }
     
     // gen number used for p(MC)^3
     return generation;

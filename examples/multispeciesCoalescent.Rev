@@ -77,13 +77,15 @@ moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 # Gene-Tree model #
 ###################
 
-taxa <- readTaxonData("data/Cettiidae_Taxon_data.txt")
+taxaFileNames <- ["data/Cettiidae_cytb_Taxon_data.txt", "data/Cettiidae_G3P_Taxon_data.txt", "data/Cettiidae_myo_Taxon_data.txt", "data/Cettiidae_ODC_Taxon_data.txt"]
 
 # perhaps a better prior here!!!
 Ne ~ gamma(shape=1.0,rate=1.0)
 moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
 
 for (i in 1:n_genes) {
+
+   taxa <- readTaxonData(taxaFileNames[i])
 
    # tree from birth-death process
    geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
@@ -161,10 +163,8 @@ for (i in 1:n_genes) {
 # PhyloCTMC Model #
 ###################
 
-
 for (i in 1:n_genes) {
-#  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i], clockRate=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
-  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i], nSites=n_sites[i], type="DNA")
+  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 
@@ -174,7 +174,7 @@ for (i in 1:n_genes) {
 # THE Model #
 #############
 
-mymodel <- model(pi)
+mymodel <- model(speciesTree)
 
 
 
@@ -183,9 +183,14 @@ mymodel <- model(pi)
 # Monitors #
 ############
 
-monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)
-monitors[3] <- screenmonitor(printgen=10, pi)
+mntrIndex <- 0
+monitors[mntrIndex++] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
+gene <- ["cytB", "G3P", "myo", "ODC"]
+for (i in 1:n_genes) {
+   monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
+}
+monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne)
 
 
 
