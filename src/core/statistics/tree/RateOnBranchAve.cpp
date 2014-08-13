@@ -77,7 +77,7 @@ void RateOnBranchAve::update( void )
 	size_t parID = n.getParent().getIndex();
 	double myRt = brV[nodeID];
 	double parRt;
-	if(nodeID == rI){
+	if(parID == rI){
 		parRt = rr;
 	}
 	else{
