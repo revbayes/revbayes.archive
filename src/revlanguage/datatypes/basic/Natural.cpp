@@ -213,7 +213,7 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool Natural::isConvertibleTo( const TypeSpec& type ) const {
+bool Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
         return true;
@@ -227,7 +227,7 @@ bool Natural::isConvertibleTo( const TypeSpec& type ) const {
     if ( type == RlString::getClassTypeSpec() )
         return true;
 
-    return Integer::isConvertibleTo( type );
+    return Integer::isConvertibleTo( type, once );
 }
 
 

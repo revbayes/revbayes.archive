@@ -65,6 +65,14 @@ RevObject* RevObject::add(const RevObject &rhs) const
     return NULL;
 }
 
+
+/** Clone the model DAG connected to this object. */
+RevObject* RevObject::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
+{
+    throw RbException( "Rev object with no DAG node should not be included in model DAG" );
+}
+
+
 /** The default implementation does nothing because we don't have an internal object */
 void RevObject::constructInternalObject( void ) {
     // nothing to do
@@ -322,7 +330,7 @@ bool RevObject::isConstant( void ) const
 
 
 /** Is convertible to type? */
-bool RevObject::isConvertibleTo(const TypeSpec& type) const
+bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 {
     
     return false;

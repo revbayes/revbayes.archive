@@ -78,8 +78,8 @@ const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool AminoAcidState::isConvertibleTo(const TypeSpec& type) const {
+bool AminoAcidState::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 

@@ -249,22 +249,22 @@ void Real::increment( void )
 
 
 /** Is convertible to type? */
-bool Real::isConvertibleTo(const TypeSpec& type) const {
+bool Real::isConvertibleTo(const TypeSpec& type, bool once) const {
 
     if (type == RlBoolean::getClassTypeSpec())
         return true;
-    if (type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0.0)
+    if (once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0.0)
         return true;
-    if (type == Probability::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() <= 1.0)
+    if (once && type == Probability::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() <= 1.0)
         return true;
-    if ( type == Integer::getClassTypeSpec() && dagNode->getValue() == int(dagNode->getValue()) )
+    if ( once && type == Integer::getClassTypeSpec() && dagNode->getValue() == int(dagNode->getValue()) )
         return true;
-    if ( type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() == int(dagNode->getValue()) )
+    if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() == int(dagNode->getValue()) )
         return true;
     if ( type == RlString::getClassTypeSpec() )
         return true;
 
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 
 

@@ -63,6 +63,7 @@ namespace RevLanguage {
         virtual void                                    printValue(std::ostream& o) const = 0;                              //!< Print value for user
         
         // Basic utility functions you should not have to override
+        RevObject*                                      cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
         RevBayesCore::TypedDagNode<valueType>*          getDagNode(void) const;                                             //!< Get the DAG node
         const valueType&                                getValue(void) const;                                               //!< Get the internal value
         bool                                            hasDagNode(void) const;                                             //!< Do we have a DAG node?
@@ -234,6 +235,29 @@ template <typename rlType, size_t dim, typename valueType>
 typename valueType::const_iterator ModelContainer<rlType, dim, valueType>::begin( void ) const
 {
     return dagNode->getValue().begin();
+}
+
+
+/**
+ * Clone the model DAG connected to this object. This function is used
+ * by the DAG node cloneDAG function, for DAG node types belonging to the
+ * RevLanguage layer and handling Rev objects.
+ *
+ * @TODO This is a temporary hack that makes different Rev objects sharing
+ *       the same internal DAG node keeping their value. Replace with code
+ *       that actually clones the model DAG with the included Rev objects
+ *       (and possibly also the included variables).
+ */
+template<typename rlType, size_t dim, typename valueType>
+RevLanguage::RevObject* RevLanguage::ModelContainer<rlType, dim, valueType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
+{
+    ModelContainer<rlType, dim, valueType>* theClone = clone();
+    
+    RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
+    
+    theClone->setDagNode( theNodeClone );
+    
+    return theClone;
 }
 
 

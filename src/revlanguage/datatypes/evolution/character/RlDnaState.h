@@ -31,18 +31,18 @@ namespace RevLanguage {
     class DnaState : public ModelObject<RevBayesCore::DnaState> {
         
     public:
-        DnaState(void);                                                          //!< Default constructor
-        DnaState(const RevBayesCore::DnaState &d);                                                            //!< Construct from DNA
+        DnaState(void);                                                                                         //!< Default constructor
+        DnaState(const RevBayesCore::DnaState &d);                                                              //!< Construct from DNA
         
         // Operators
         
         // Basic utility functions
         DnaState*                       clone(void) const;                                                      //!< Clone object
-        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        RevObject*               convertTo(const TypeSpec& type) const;                                         //!< Convert to type
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
     };
     

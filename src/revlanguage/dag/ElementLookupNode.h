@@ -257,8 +257,7 @@ RevBayesCore::DagNode* ElementLookupNode<rlType, rlElemType>::cloneDAG( std::map
     
     // We avoid the conflict between having to make a deep copy in our clone
     // function and the need to have a shallow copy (identical parents) in
-    // this function by starting out with an empty container, and not filling
-    // it until we have the element clones we need.
+    // this function by replacing the variable using special code
     ElementLookupNode<rlType, rlElemType>* copy = this->clone();
     
     // Add this node and its copy to the map
@@ -533,6 +532,9 @@ void ElementLookupNode<rlType, rlElemType>::swapParent(const RevBayesCore::DagNo
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::update()
 {
+    // Free memory
+    delete value;
+    
     // Compute indices
     std::vector<size_t> theOneOffsetIndices;
     for( indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
