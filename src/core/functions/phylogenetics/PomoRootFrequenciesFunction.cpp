@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< int > *ps) : TypedFunction< std::vector<double> > ( new std::vector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationRates(mr), populationSize(ps)  {
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< unsigned int > *ps) : TypedFunction< std::vector<double> > ( new std::vector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationRates(mr), populationSize(ps)  {
     
     for (size_t i = 0; i < 4+6* (populationSize->getValue()-1); ++i) {
         static_cast< std::vector<double>* >(value)->push_back(0.0);
@@ -40,7 +40,7 @@ void PomoRootFrequenciesFunction::update( void )
     const std::vector<double>& fnrf = fixedNucleotideRootFrequencies->getValue();
     const double& fopar = frequencyOfPolymorphismsAtTheRoot->getValue();
     const std::vector<double>& mr = mutationRates->getValue();
-    const int& ps = populationSize->getValue();
+    const unsigned int& ps = populationSize->getValue();
 
     double OneMinusFopar = 1 - fopar;
     // compute all root frequencies as in De Maio, Schlötterer, Kosiol 2013
@@ -92,7 +92,7 @@ void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, con
     }
     else if (oldP == populationSize)
     {
-        populationSize = static_cast<const TypedDagNode< int >* >( newP );
+        populationSize = static_cast<const TypedDagNode< unsigned int >* >( newP );
     }
 
     

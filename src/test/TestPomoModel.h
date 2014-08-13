@@ -17,8 +17,8 @@
  */
 
 
-#ifndef TestGtrModel_H
-#define TestGtrModel_H
+#ifndef TestPomoModel_H
+#define TestPomoModel_H
 
 #include "RbFileManager.h"
 
@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class TestPomoModel {
         
     public:
-        TestPomoModel(const std::string &alignFile, const std::string &treeFn, int gen);
+        TestPomoModel(const std::string &treeFn, const unsigned int virtPopSize, int gen);
         
         virtual ~TestPomoModel(void);                             //!< Virtual destructor
         
@@ -39,8 +39,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        std::string                             alignmentFilename;
         std::string                             treeFilename;
+        unsigned int                            virtualPopulationSize;
         int                                     mcmcGenerations;
         
     };

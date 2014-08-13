@@ -983,7 +983,7 @@ bool TestCharacterHistory::run_dollo(void) {
     
     // tree
     // std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
-    std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn,"nexus");
+    std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn); //TEMPORARY FIX, OTHERWISE DOES NOT COMPILE,"nexus");
     std::vector<BranchLengthTree*> trees = *trees_ptr;
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
