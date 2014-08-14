@@ -139,7 +139,7 @@ std::string Function::callSignature(void) const {
  *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
  *       are still the last arguments after processing.
  */
-bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<unsigned int>* matchScore, bool once)
+bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vector<double>* matchScore, bool once)
 {
     
     /*********************  0. Initialization  **********************/

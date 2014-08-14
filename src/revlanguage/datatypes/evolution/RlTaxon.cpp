@@ -121,7 +121,6 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 }
 
 
-<<<<<<< HEAD
 /**
  * Get member methods. We construct the appropriate static member
  * function table here.
@@ -134,24 +133,6 @@ const RevLanguage::MethodTable& Taxon::getMethods( void ) const
     if ( !methodsSet )
     {
         myMethods = makeMethods();
-=======
-/* Get method specifications */
-const RevLanguage::MethodTable& Taxon::getMethods(void) const {
-    
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        ArgumentRules* speciesNameArgRules = new ArgumentRules();
-        methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
-//
-//        ArgumentRules* namesArgRules = new ArgumentRules();
-//        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
->>>>>>> 65ec182a54adf3e576d25ddf723d8318bd66d281
         methodsSet = true;
     }
     

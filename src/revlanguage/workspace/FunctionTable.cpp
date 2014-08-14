@@ -271,7 +271,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         for (it=retVal.first; it!=retVal.second; it++) 
         {
             matchScore->clear();
-            if ( (*it).second->checkArguments(args, matchScore,once) == true )
+            if ( (*it).second->checkArguments(args, matchScore, once) == true )
             {
                 if ( bestMatch == NULL ) 
                 {
