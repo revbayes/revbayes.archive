@@ -460,7 +460,9 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
     const std::string& name = sequenceNames[tn];
     const std::map<std::string, ContinuousTaxonData >::iterator& i = taxonMap.find( name ); 

@@ -68,15 +68,15 @@ RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData(void) : Ab
 
 template <class rlCharType>
 RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v) :
-    AbstractDiscreteCharacterData( v ) {
-    
+    AbstractDiscreteCharacterData( v )
+{
 }
 
 
 template <class rlCharType>
 RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) :
-    AbstractDiscreteCharacterData( d ) {
-
+    AbstractDiscreteCharacterData( d )
+{
 }
 
 

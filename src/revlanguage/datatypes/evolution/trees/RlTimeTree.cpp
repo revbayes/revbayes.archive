@@ -56,6 +56,11 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
         size_t n = this->dagNode->getValue().getNumberOfNodes();
         return new Variable( new Natural( n ) );
     }
+    else if (name == "ntips") 
+    {
+        size_t n = this->dagNode->getValue().getNumberOfTips();
+        return new Variable( new Natural( n ) );
+    } 
     else if (name == "names") 
     {
         const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
@@ -126,13 +131,16 @@ RevLanguage::MethodTable TimeTree::makeMethods( void ) const
     
     ArgumentRules* nnodesArgRules = new ArgumentRules();
     methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
-    
+
+    ArgumentRules* ntipsArgRules = new ArgumentRules();
+    methods.addFunction("ntips", new MemberProcedure(Natural::getClassTypeSpec(),          ntipsArgRules   ) );
+
     ArgumentRules* heightArgRules = new ArgumentRules();
     methods.addFunction("rootAge", new MemberFunction<TimeTree, RealPos>(this,          heightArgRules   ) );
-    
+
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
-    
+
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
     methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );

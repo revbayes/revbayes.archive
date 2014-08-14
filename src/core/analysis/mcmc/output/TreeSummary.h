@@ -267,9 +267,6 @@ template <class treeType>
 void RevBayesCore::TreeSummary<treeType>::summarize( int b ) 
 {
     
-//    std::map<std::string, unsigned int> treeFrequencies;
-//    std::map<std::string, std::vector<double> > treeAbsencePresence;
-//    std::map<std::string, std::vector<double> > cladeAbsencePresence;
     std::map<std::string, Sample<std::string> > treeAbsencePresence;
     std::map<std::string, Sample<std::string> > cladeAbsencePresence;
     

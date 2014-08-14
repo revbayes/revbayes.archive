@@ -40,6 +40,7 @@
 #include "TestMultispeciesCoalescentWithSequences.h"
 #include "TestNNI.h"
 #include "TestNormalModel.h"
+#include "TestPomoModel.h"
 #include "TestScalingMove.h"
 #include "TestSimplexMove.h"
 #include "TestSequenceSimulation.h"
@@ -142,7 +143,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-        testDdm.run();
+      //  testDdm.run();
     }
     catch (RbException &e)
     {
@@ -269,9 +270,9 @@ bool Test::performTests(int argc, const char * argv[]) {
     
     /* A coalescent model test complete with simulations and inference from sequences */
     try {
-        TestMultispeciesCoalescentWithSequences testCoal = TestMultispeciesCoalescentWithSequences("../../examples/data/primates.tree");
+        TestMultispeciesCoalescentWithSequences testCoal = TestMultispeciesCoalescentWithSequences("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree");
 //        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
-       //testCoal.run();
+   //    testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -285,6 +286,15 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
     
+    
+    /* A Pomo model test */
+    try {
+        TestPomoModel testPomo = TestPomoModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 10, 1000);
+           testPomo.run();
+    } catch (RbException &e) {
+        std::cout << e.getMessage() << std::endl;
+    }
+
     
     /* A NNI test */
     try {

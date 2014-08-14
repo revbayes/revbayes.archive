@@ -16,7 +16,7 @@ filenames <- v("data/conifer_atpb.nex", "data/conifer_rbcL.nex")
 
 n_parts <- filenames.size()
 for (i in 1:n_parts){
-  data[i] <- readCharacterData(filenames[i])[1]
+  data[i] <- readCharacterData(filenames[i])
   n_sites[i] <- data[i].nchar(1)
 }
 
@@ -68,7 +68,8 @@ for (i in 1:n_branches) {
 }
 
 nb <- n_branches * 1.0
-tree_length := mean(br_lens) * nb
+#tree_length := mean(br_lens) * nb
+tree_length := br_lens[1]
 
 
 # Build the tree by combining the topology with the branch length.

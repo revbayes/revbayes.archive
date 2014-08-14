@@ -169,6 +169,8 @@ bool TestCharacterHistory::run_exp(void) {
     bool useDistances               = true;
     bool useAdjacency               = true;
     bool useAvailable               = true;
+    bool useRootFreqs               = true;
+    
     
     filepath="/Users/mlandis/data/bayarea/output/";
     
@@ -193,6 +195,7 @@ bool TestCharacterHistory::run_exp(void) {
     //    afn = "malesia_static.atlas.txt";
     afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
+//    afn = "hawaii_dynamic_ss.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -236,7 +239,7 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<GeographyRateModifier>* ddd = NULL;
     ContinuousStochasticNode* dp = NULL;
     ConstantNode<double> *dp_pr = NULL;
-    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(1.0));
+    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
     dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
 //    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
 //    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(0.5));
@@ -268,12 +271,21 @@ bool TestCharacterHistory::run_exp(void) {
     
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
     
+    // root frequencies
+    // gtr model priors
+    ConstantNode<std::vector<double> > *pi_pr = new ConstantNode<std::vector<double> >( "pi_rf", new std::vector<double>(2,1.0) );
+    StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(pi_pr) );
+
+    
+    
     // Q-map used to compute likehood under the full model
     BiogeographyRateMapFunction* brmf_likelihood = new BiogeographyRateMapFunction(numAreas, forbidExtinction);
     brmf_likelihood->setGainLossRates(glr_vector);
     brmf_likelihood->setClockRate(clockRate);
     if (useDistances || useAvailable || useAdjacency)
         brmf_likelihood->setGeographyRateModifier(ddd);
+    if (useRootFreqs)
+        brmf_likelihood->setRootFrequencies(pi);
     
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
     
@@ -283,6 +295,8 @@ bool TestCharacterHistory::run_exp(void) {
     brmf_sample->setClockRate(clockRate);
     if (useDistances || useAvailable || useAdjacency)
         brmf_sample->setGeographyRateModifier(ddd);
+    if (useRootFreqs)
+        brmf_likelihood->setRootFrequencies(pi);
     
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
     
@@ -335,11 +349,14 @@ bool TestCharacterHistory::run_exp(void) {
     
     if (useDistances)
     {
-//        moves.push_back(new SlidingMove(dp, 0.1, false, 5.0 ));
-//        moves.push_back(new SlidingMove(dp, 0.3, false, 2.0 ));
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.1), 2.0, !true ) );
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.5), 4.0, !true ) );
-
+    }
+    
+    if (useRootFreqs)
+    {
+        moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2.0 ) );
+        moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
     }
     
     moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
@@ -350,6 +367,7 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
     
     }
+    
 //
     //            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[0], 0.1), 1.0, !true ) );
     
@@ -415,8 +433,10 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert(clockRate);
 //    if (useDistances)
         monitoredNodes.insert( dp );
-    monitoredNodes.insert( glr_nonConst[0] );
-    monitoredNodes.insert( glr_nonConst[1] );
+    monitoredNodes.insert( glr_vector );
+//    monitoredNodes.insert( glr_nonConst[1] );
+    if (useRootFreqs)
+        monitoredNodes.insert( pi );
     
     monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
@@ -963,7 +983,7 @@ bool TestCharacterHistory::run_dollo(void) {
     
     // tree
     // std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
-    std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn,"nexus");
+    std::vector<BranchLengthTree*>* trees_ptr = NclReader::getInstance().readBranchLengthTrees(in_fp + fn); //TEMPORARY FIX, OTHERWISE DOES NOT COMPILE,"nexus");
     std::vector<BranchLengthTree*> trees = *trees_ptr;
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
