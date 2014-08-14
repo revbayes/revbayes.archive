@@ -87,6 +87,26 @@ const TypeSpec& RlBoolean::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RlBoolean::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& RlBoolean::getTypeSpec( void ) const {
     
@@ -98,14 +118,14 @@ const TypeSpec& RlBoolean::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool RlBoolean::isConvertibleTo(const TypeSpec& type) const {
+bool RlBoolean::isConvertibleTo(const TypeSpec& type, bool once) const {
 
     if ( type == Integer::getClassTypeSpec() )
         return true;
     else if ( type == Real::getClassTypeSpec() )
         return true;
 
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 
 

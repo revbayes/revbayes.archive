@@ -29,6 +29,12 @@ PolymorphicState::PolymorphicState(void) : DiscreteCharacterState(), state( 0xFF
     
 }
 
+/** Constructor with virtual population size */
+PolymorphicState::PolymorphicState(unsigned int vps): DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( vps ) {
+    
+    
+}
+
 
 /** Copy constructor */
 PolymorphicState::PolymorphicState(const PolymorphicState& s) : DiscreteCharacterState(), state( s.state ), virtualPopulationSize ( s.virtualPopulationSize ) {
@@ -157,7 +163,7 @@ unsigned int PolymorphicState::computeState(std::string symbol) const {
     }
     
     int stepSize = 100 / virtualPopulationSize;
-    int numStep = firstFreq / stepSize;
+    int numStep = firstFreq / stepSize -1;
 
     if (firstChar ==  "A") {
         if (secondChar ==  "C")
@@ -202,7 +208,7 @@ std::string PolymorphicState::getDatatype( void ) const {
 
 
 unsigned int PolymorphicState::getNumberObservedStates(void) const  {
-    
+    ///PROBABLY DOES NOT WORK FOR POLYMORPHIC STATES.
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
     
@@ -222,7 +228,6 @@ size_t PolymorphicState::getNumberOfStates( void ) const {
 
 
 unsigned long PolymorphicState::getState( void ) const {
-    
     return (unsigned long)state;
 }
 
@@ -234,19 +239,19 @@ size_t  PolymorphicState::getStateIndex(void) const {
 
 const std::string& PolymorphicState::getStateLabels( void ) const {
     
-    static std::string labels = "A C G T";
+    static std::string labels = "A C G T ";
     std::string acgt( "ACGT" );
     std::vector< size_t > frequencies;
     int stepSize = 100 / virtualPopulationSize;
-    for (size_t i = 1; i <= virtualPopulationSize-1; ++i) {
+    for (size_t i = 1; i < virtualPopulationSize; ++i) {
         frequencies.push_back(i*stepSize);
     }
     BOOST_FOREACH( char ch, acgt )
     {
         BOOST_FOREACH( char ch2, acgt.substr(1, 3 ) )
         {
-            for (size_t i = 1; i <= virtualPopulationSize-1; ++i) {
-                labels += ch + boost::lexical_cast<std::string>(frequencies[i]) + ch2 + boost::lexical_cast<std::string>(frequencies[virtualPopulationSize - 1 - i]) + " ";
+            for (size_t i = 0; i < virtualPopulationSize-1; ++i) {
+                labels += ch + boost::lexical_cast<std::string>(frequencies[i]) + ch2 + boost::lexical_cast<std::string>(frequencies[virtualPopulationSize - 2 - i]) + " ";
             }
         }
     }
@@ -255,7 +260,7 @@ const std::string& PolymorphicState::getStateLabels( void ) const {
 
 std::string PolymorphicState::getStringValue(void) const  {
     
-    int stepSize = 100 / virtualPopulationSize;
+    int stepSize = 100 / virtualPopulationSize - 1;
     if (state < 5) {
         switch ( state )
         {
@@ -273,7 +278,7 @@ std::string PolymorphicState::getStringValue(void) const  {
     }
     int stateMinus5 = state - 5;
     int typeOfPolymorphicState = stateMinus5 / stepSize;
-    int typeOfFrequency = stateMinus5 % stepSize;
+    int typeOfFrequency = stateMinus5 % stepSize +1;
     int freqi = typeOfFrequency*virtualPopulationSize;
     int freqj = 100 - freqi;
     switch ( typeOfPolymorphicState )
@@ -334,6 +339,10 @@ void PolymorphicState::setState(std::string symbol)
 
 void PolymorphicState::setState(char symbol) {
     state = computeState(  boost::lexical_cast<std::string>(symbol) ) ;
+}
+
+void PolymorphicState::setState(size_t stateIndex) {
+    state = (int)stateIndex ;
 }
 
 

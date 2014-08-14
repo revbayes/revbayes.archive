@@ -1,4 +1,4 @@
-#include "sumFunction.h"
+#include "SumFunction.h"
 #include "Func_sum.h"
 #include "ModelVector.h"
 #include "Real.h"
