@@ -5,9 +5,9 @@
 \BOOKMARK [1][-]{section.3}{Input}{}% 5
 \BOOKMARK [2][-]{subsection.3.1}{Nexus\040file}{section.3}% 6
 \BOOKMARK [2][-]{subsection.3.2}{Atlas\040file}{section.3}% 7
-\BOOKMARK [1][-]{section.4}{Analysis}{}% 8
-\BOOKMARK [2][-]{subsection.4.1}{Simulated\040data}{section.4}% 9
-\BOOKMARK [2][-]{subsection.4.2}{Settings}{section.4}% 10
+\BOOKMARK [1][-]{section.4}{RevBayes\040Analysis}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{Analysis\040settings}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{Creating\040the\040model}{section.4}% 10
 \BOOKMARK [2][-]{subsection.4.3}{Running\040a\040job}{section.4}% 11
 \BOOKMARK [1][-]{section.5}{Output}{}% 12
 \BOOKMARK [2][-]{subsection.5.1}{Screen}{section.5}% 13

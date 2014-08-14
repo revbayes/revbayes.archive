@@ -1,28 +1,38 @@
 \documentclass[11pt]{article}
-% paragraph spacing
 
-\usepackage{amsmath, amsfonts, amssymb, graphicx}
-\usepackage[round]{natbib}
+% packages
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{dsfont}
-\usepackage{mathtools}
-\usepackage{framed}
-\usepackage[]{listings}
-\usepackage{fontspec}
-\usepackage{placeins}
 \usepackage{epstopdf}
+\usepackage{fontspec}
 \usepackage[margin=1.0in]{geometry}
-\usepackage{float}
 \usepackage{hyperref}
+\usepackage{float}
+\usepackage{framed}
+\usepackage{graphicx}
+\usepackage[]{listings}
+\usepackage{mathtools}
+\usepackage[round]{natbib}
+\usepackage{placeins}
 \usepackage{rotating}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{shadecolor}{RGB}{240,240,240}
 
+
+% document settings
+\setlength{\parskip}{6pt}
+
+
+% framed/snugshade settings
 \newfontfamily\listingsfont[Scale=1.0]{Courier New}
 \lstset{basicstyle=\listingsfont, columns=texcl}
 \defaultfontfeatures{Mapping=tex-text}
-
 \lstset{breaklines=true}
 %\lstset{basicstyle=\ttfamily}
-\setlength{\parskip}{6pt}
 
+% commands
 \newcommand{\impmark}{\strut\vadjust{\domark}}
 \newcommand{\domark}{%
   \vbox to 0pt{
@@ -31,6 +41,12 @@
     \vss
   }%
 }
+
+% environments
+% could not get to work with nested \begin statements
+%\newenvironment{cmdbox} { \snugshade \lstlisting } { \endlstlisting \endsnugshade }
+%\newenvironment{filebox} { \begin{framed} \begin{lstlisting} } { \end{lstlisting} \end{framed} }
+
 
 \begin{document}
 \bibliographystyle{sysbio}
@@ -182,25 +198,25 @@ q^{(a)}_{\textbf{y},\textbf{z}} =
 \end{cases}.
 \]
 
-In addition, you may want to assign transition probabilities to entering the all-zero ``extinction'' state -- an absorbing state that has a zero probability of being left (barring resurrection). In addition, it may not be that any species is equally likely to be present or absent in any given area, i.e. $\pi_0 \neq \pi_1$ but $\pi_0 + \pi_1 = 1$. This could be parameterized using state frequencies (much like as is done with base frequencies in the Felsenstein 84 model).
+%In addition, you may want to assign transition probabilities to entering the all-zero ``extinction'' state -- an absorbing state that has a zero probability of being left (barring resurrection). In addition, it may not be that any species is equally likely to be present or absent in any given area, i.e. $\pi_0 \neq \pi_1$ but $\pi_0 + \pi_1 = 1$. This could be parameterized using state frequencies (much like as is done with base frequencies in the Felsenstein 84 model).
+%
+%\[
+%q^{(a)}_{\textbf{y},\textbf{z}} =
+%\begin{cases}
+%2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
+%2 \pi_1 \lambda_1 & \text{if $z_a=1$} \\
+%0 & \mathbf{y} = 00...0 \\
+%0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
+%\end{cases}.
+%\]
 
-\[
-q^{(a)}_{\textbf{y},\textbf{z}} =
-\begin{cases}
-2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
-2 \pi_1 \lambda_1 & \text{if $z_a=1$} \\
-0 & \mathbf{y} = 00...0 \\
-0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
-\end{cases}.
-\]
-
-Finally, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited.
+Also, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited.
 The transition rate might then appear as
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
 \begin{cases}
-2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
-2 \pi_1 \lambda_1 \eta(\textbf{y}, \textbf{z}, a, \beta) & \text{if $z_a=1$} \\
+\lambda_0 & \text{if $z_a=0$}  \\
+\lambda_1 \eta(\textbf{y}, \textbf{z}, a, \beta) & \text{if $z_a=1$} \\
 0 & \mathbf{y} = 00...0 \\
 0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
 \end{cases}.
@@ -251,7 +267,8 @@ The data file contains a matrix of binary characters corresponding to the observ
 
 \noindent \\ \impmark  Open the file \texttt{examples/psychotria\_range.txt}.
 
-\begin{framed} \begin{lstlisting}
+\begin{framed}
+\begin{lstlisting}
 #NEXUS
 
 begin data;
@@ -312,7 +329,6 @@ This procedure is not part of the tutorial, but you should be aware that area de
 
 \begin{framed}
 \begin{lstlisting}
-
 {
   "name":"HawaiianArchipelago10my",
   "epochs":
@@ -360,90 +376,203 @@ The elements in the array correspond to the other areas defined in the analysis.
 For example, in {\tt epoch1}, Kauai's {\tt dispersalValues} is equal to {\tt [ 1,0,0,0 ]}, which indicates Kauai exists at that point in time but it is not in contact with any other areas, i.e. the range in that area cannot expand into other areas.
 The {\tt dispersalValues} for Oahu, Maui, and Hawaii are all equal to {\tt [ 0,0,0,0 ]}, meaning no species may be present in that area during the time interval of {\t epoch1} during ages from 10.0 to 3.7. In contrast, {\tt epoch4}, from ages 0.5 to the present, range expansions may occur between any pair of areas and any area may be included in a species' range.
 
-\noindent \\ \impmark Open the file \texttt{examples/my\_areas.txt}.
+\section{RevBayes Analysis}
 
+There are five major parts to the analysis.
 
+First, we need to read in the input files and assign analysis settings.
+Second, we need to construct our model.
+Third, we need to assign moves and monitors to our model parameters for use with Markov chain Monte Carlo (MCMC).
+Fourth, we will run an MCMC analysis assuming a complex model.
+Fifth, we will compare the complex model with a simple model using Bayes factors.
+Finally, we'll analyze our MCMC output.
 
-\section{Analysis}
+\subsection{Analysis settings}
 
-\subsection{Simulated data}
+\setlength{\parindent}{0pt}
 
-The zip file contains a simulated dataset for 50 taxa over 33 terrestrial areas throughout Australia.
-The rate of range expansion, rate of range contraction, and distance power parameter were set as 0.1, 0.7, and 4.0 respectively.
-Additionally, the zip file contains the output from two completed MCMC analyses under the settings given below.
+Open the RevBayes console
 
-\subsection{Settings}
-
-BayArea accepts command-line arguments to set input and output files, set MCMC sampling behavior, configure prior values, etc.
-To reduce the risk of typos, you can execute the command with arguments using a pre-defined shell script.
-For this lab, we'll be using \texttt{my\_lab\_run.sh}, which was used to produce the output files from the input files contained in \texttt{bayarea\_lab.zip}.
-Before running our job, let's review the program settings by opening \texttt{my\_lab\_run.sh} using your favorite text editor.
-
-\noindent \\ \impmark Enter the following command.
-\begin{framed}
+\begin{snugshade}
 \begin{lstlisting}
-> cat my_lab_run.sh
-./bayarea -areaFileName=my_data.txt \
-          -geoFileName=my_geo.txt \
-          -treeFileName=my_tree.txt \
-          -inputFilePath=./examples/ \
-          -outputFilePath=./examples/ \
-          -outputTimestamp=T \
-          -outputPrefix=my_run \
-          -parameterSampleFrequency=1000 \
-          -historySampleFrequency=10000 \
-          -printFrequency=10000 \
-          -chainLength=50000000 \
-          -chainBurnIn=0 \
-          -probBurnIn=10000000 \
-          -modelType=3 \
-          -gainPrior=0.1 \
-          -lossPrior=0.1 \
-          -distancePowerPrior=0.1 \
-          -guessInitialRates=T \
-          -geoDistancePowerPositive=T \
-          -geoDistanceTruncate=F \
-          -areaProposalTuner=0.1
+$ rb-extended
 \end{lstlisting}
-\end{framed}
+\end{snugshade}
 
-The first set of flags concerns file handling.
-\texttt{inputFilePath} indicates where to find the input files \texttt{areaFileName}, \texttt{geoFileName}, and \texttt{treeFileName}.
-\texttt{outputFilePath} indicates where output files will be stored, which may be prefixed with \texttt{outputPrefix} and timestamped with \texttt{outputTimestamp}, both useful for organizing output from many analyses.
+First, we'll assign all our input files to {\tt String} variables.
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > in_fp <- "/filepath/to/your/input/files/"
+RevBayes > data_fn <- "psychotria_range.nex"
+RevBayes > area_fn <- "hawaii_dynamic.atlas.txt"
+\end{lstlisting}
+\end{snugshade}
 
-The second set of flags concerns the MCMC analysis length, chain burn-in, and the sampling interval.
-MCMC starts at an arbitrary state (sampled from the prior) and takes some amount of time to converge to stationarity.
-Once at stationarity, independent samples of the MCMC state at regular intervals approximate the target posterior distribution.
-MCMC that relies on stochastic mapping for data augmentation takes a longer time to mix, because it takes many MCMC proposals to explore the space of stochastically mapped range evolution histories.
-Unfortunately, you typically do not know how long it takes to reach stationarity, so it's best to run MCMC analyses for an excessive length.
-\texttt{chainBurnIn} determines which cycle to begin recording the MCMC state, but generally you wish to save the entire chain and assess burn-in after the analysis.
+Then we'll create our range data, tree, and atlas objects
 
-In the next section, you'll see \texttt{my\_run.area\_probs.txt} and \texttt{my\_run.nhx} report ancestral range reconstruction probabilities.
-The MCMC records the sampled histories every \texttt{historySampleFrequency} iteration to \texttt{my\_run.area\_states.txt}.
-However, this data is relatively ``raw'' and must be manipulated with scripts for immediate use (we will cover how to do so later).
-The probabilities in the files above are computed as part of the analysis for your convenience, disregarding the first \texttt{probBurnIn} iterations of the MCMC.
-(Here it is set to disregard the first quarter of the chain.)
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > data <- readCharacterData(in_fp + data_fn)
+RevBayes > tree <- readTrees(in_fp + data_fn)[1]
+RevBayes > atlas <- readAtlas(in_fp + area_fn)
+\end{lstlisting}
+\end{snugshade}
 
-Parameters are sampled every \texttt{parameterSampleFrequency} iterations. The current MCMC state is printed on-screen every \texttt{printFrequency} iterations.
+Verify the data and tree share the same number of taxa and the data and atlas share the same number of characters
 
-The final set of flags concerns model parameters.
-The area gain rate ($\lambda_1$), area loss rate ($\lambda_0$), and distance power parameter ($\beta$) are each assigned their own half-Cauchy prior distribution.
-The half-Cauchy distribution can be thought of as the absolute value of ``fat-tailed'' normal distributions, with scale parameters set by \texttt{gainPrior}, \texttt{lossPrior}, and \texttt{distancePowerPrior}.
-The flag \texttt{guessInitialRates} makes a very rough estimate of the initial values for $\lambda_0$ and $\lambda_1$ from the data and tree rather than sampling their values from the prior distribution.
-\texttt{areaProposalTuner} controls the expected proportion of areas to update during a range history proposal.
-Mixing suffers when this value is too large.
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > data.ntaxa() == tree.ntips()
+   true
+RevBayes > data.nchar() == atlas.nareas()
+   true
+\end{lstlisting}
+\end{snugshade}
 
-The distance power parameter, $\beta$, effectively rescales the distance between areas.
-When computing the probability of range expansion, the pairwise distances are computed between each occupied area in the starting range and each unoccupied area in the expanded range.
-For large numbers of areas ($N > 100$), this computation can become slow.
-Assigning \texttt{geoDistanceTruncate} to \texttt{T} tells the software to skip computing pairwise distances for areas that are very distant given the current value of $\beta$, i.e. areas that have an exceedingly small chance of being gained.
-This speeds up computation but may introduce negligible amounts of error into computing the distance-dependent rate-modifier term, $\eta$.
 
-Finally, there is nothing mathematically to prevent $\beta$ from becoming negative, for which range expansion events would prefer distant areas to nearby areas.
-In some cases, BayArea will infer $\beta<0$ and generate implausible ancestral range reconstructions, particularly for globally distributed taxa.
-So, the flag \texttt{geoDistancePowerPositive} constrains $\beta \geq 0$ when set to \texttt{T}.
+\subsection{Creating the model}
 
-See Section 4.1 of the BayArea v1.0.2 manual to learn about additional input, output, and analysis settings.
+Here, we will compose our rate matrix, {\bf Q}, parameterized by the transition rates, $\lambda$, and the distance dependent dispersal power parameter, $\beta$.
+
+First, for $\lambda$, we will create a vector of two rates, where {\tt lambda[1]} corresponds to the rate of area loss (local extinction) and {\tt lambda[2]} corresponds to the rate of area gain (dispersal).
+Importantly, we must assign prior distributions to these parameters.
+Here, we'll use an exponential distribution with rate 10.0, which has a mean of 0.1.
+Because our tree is in units of millions of years, this means our prior expectation is that any given species undergoes one dispersal event and one extinction event per area per ten million years.
+To introduce this to the model, type
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > for (i in 1:2) lambda[i] ~ dnExponential(10.0)
+\end{lstlisting}
+\end{snugshade}
+
+Next, we will create {\tt beta}, which determines the importance of geographical distance to dispersal.
+Remember that values of $\beta$ far from zero means distance is important.
+So, if we we assign a prior that pulls $\beta$ towards zero, then posterior values of $\beta$ far from zero indicate the range data are informative of the importance of distance to dispersal.
+We'll use an exponential distribution with rate 10.0 (mean 0.1) as a prior for {\tt beta}.
+
+We will also create a deterministic node to modify the rate of dispersal between areas by evaluating {\tt beta} and {\tt atlas}.
+This node is determined by the function {\tt fnBiogeoGRM}, where GRM stands for ``geographical rate modifier'', and plays the role of the $\eta(\cdot)$ rate-modifier function mentioned earlier.
+We will tell the {\tt fnBiogeoGRM} function to modify dispersal rates based on distances and whether or not the area exists during an epoch.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > beta ~ dnExponential(10.0)
+RevBayes > grm := fnBiogeoGRM(atlas=atlas, distancePower=beta, useAvailable=true, useDistance=true)
+\end{lstlisting}
+\end{snugshade}
+
+Now we need a deterministic node to represent the rate matrix, {\bf Q}.
+To determine the value of this node, we'll use the function {\tt fnBiogeoDEC} to assign our model parameters to transition rates as described in the introduction.
+As input, we'll pass our gain and loss rates, {\tt lambda}, and our geographical rate modifier, {\tt grm}.
+In addition, we'll inform the function of the number of areas in our analysis and whether we will allow species to be absent in all areas (i.e. have the null range).
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > Q_like := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+\end{lstlisting}
+\end{snugshade}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%BayArea accepts command-line arguments to set input and output files, set MCMC sampling behavior, configure prior values, etc.
+%To reduce the risk of typos, you can execute the command with arguments using a pre-defined shell script.
+%For this lab, we'll be using \texttt{my\_lab\_run.sh}, which was used to produce the output files from the input files contained in \texttt{bayarea\_lab.zip}.
+%Before running our job, let's review the program settings by opening \texttt{my\_lab\_run.sh} using your favorite text editor.
+%
+%\noindent \\ \impmark Enter the following command.
+%\begin{framed}
+%\begin{lstlisting}
+%> cat my_lab_run.sh
+%./bayarea -areaFileName=my_data.txt \
+%          -geoFileName=my_geo.txt \
+%          -treeFileName=my_tree.txt \
+%          -inputFilePath=./examples/ \
+%          -outputFilePath=./examples/ \
+%          -outputTimestamp=T \
+%          -outputPrefix=my_run \
+%          -parameterSampleFrequency=1000 \
+%          -historySampleFrequency=10000 \
+%          -printFrequency=10000 \
+%          -chainLength=50000000 \
+%          -chainBurnIn=0 \
+%          -probBurnIn=10000000 \
+%          -modelType=3 \
+%          -gainPrior=0.1 \
+%          -lossPrior=0.1 \
+%          -distancePowerPrior=0.1 \
+%          -guessInitialRates=T \
+%          -geoDistancePowerPositive=T \
+%          -geoDistanceTruncate=F \
+%          -areaProposalTuner=0.1
+%\end{lstlisting}
+%\end{framed}
+%
+%The first set of flags concerns file handling.
+%\texttt{inputFilePath} indicates where to find the input files \texttt{areaFileName}, \texttt{geoFileName}, and \texttt{treeFileName}.
+%\texttt{outputFilePath} indicates where output files will be stored, which may be prefixed with \texttt{outputPrefix} and timestamped with \texttt{outputTimestamp}, both useful for organizing output from many analyses.
+%
+%The second set of flags concerns the MCMC analysis length, chain burn-in, and the sampling interval.
+%MCMC starts at an arbitrary state (sampled from the prior) and takes some amount of time to converge to stationarity.
+%Once at stationarity, independent samples of the MCMC state at regular intervals approximate the target posterior distribution.
+%MCMC that relies on stochastic mapping for data augmentation takes a longer time to mix, because it takes many MCMC proposals to explore the space of stochastically mapped range evolution histories.
+%Unfortunately, you typically do not know how long it takes to reach stationarity, so it's best to run MCMC analyses for an excessive length.
+%\texttt{chainBurnIn} determines which cycle to begin recording the MCMC state, but generally you wish to save the entire chain and assess burn-in after the analysis.
+%
+%In the next section, you'll see \texttt{my\_run.area\_probs.txt} and \texttt{my\_run.nhx} report ancestral range reconstruction probabilities.
+%The MCMC records the sampled histories every \texttt{historySampleFrequency} iteration to \texttt{my\_run.area\_states.txt}.
+%However, this data is relatively ``raw'' and must be manipulated with scripts for immediate use (we will cover how to do so later).
+%The probabilities in the files above are computed as part of the analysis for your convenience, disregarding the first \texttt{probBurnIn} iterations of the MCMC.
+%(Here it is set to disregard the first quarter of the chain.)
+%
+%Parameters are sampled every \texttt{parameterSampleFrequency} iterations. The current MCMC state is printed on-screen every \texttt{printFrequency} iterations.
+%
+%The final set of flags concerns model parameters.
+%The area gain rate ($\lambda_1$), area loss rate ($\lambda_0$), and distance power parameter ($\beta$) are each assigned their own half-Cauchy prior distribution.
+%The half-Cauchy distribution can be thought of as the absolute value of ``fat-tailed'' normal distributions, with scale parameters set by \texttt{gainPrior}, \texttt{lossPrior}, and \texttt{distancePowerPrior}.
+%The flag \texttt{guessInitialRates} makes a very rough estimate of the initial values for $\lambda_0$ and $\lambda_1$ from the data and tree rather than sampling their values from the prior distribution.
+%\texttt{areaProposalTuner} controls the expected proportion of areas to update during a range history proposal.
+%Mixing suffers when this value is too large.
+%
+%The distance power parameter, $\beta$, effectively rescales the distance between areas.
+%When computing the probability of range expansion, the pairwise distances are computed between each occupied area in the starting range and each unoccupied area in the expanded range.
+%For large numbers of areas ($N > 100$), this computation can become slow.
+%Assigning \texttt{geoDistanceTruncate} to \texttt{T} tells the software to skip computing pairwise distances for areas that are very distant given the current value of $\beta$, i.e. areas that have an exceedingly small chance of being gained.
+%This speeds up computation but may introduce negligible amounts of error into computing the distance-dependent rate-modifier term, $\eta$.
+%
+%Finally, there is nothing mathematically to prevent $\beta$ from becoming negative, for which range expansion events would prefer distant areas to nearby areas.
+%In some cases, BayArea will infer $\beta<0$ and generate implausible ancestral range reconstructions, particularly for globally distributed taxa.
+%So, the flag \texttt{geoDistancePowerPositive} constrains $\beta \geq 0$ when set to \texttt{T}.
+%
+%See Section 4.1 of the BayArea v1.0.2 manual to learn about additional input, output, and analysis settings.
 
 \subsection{Running a job}
 
