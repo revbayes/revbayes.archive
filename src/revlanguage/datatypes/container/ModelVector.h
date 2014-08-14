@@ -58,6 +58,7 @@ namespace RevLanguage {
         // Member object functions
         virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args);      //!< Map member methods to internal methods
         virtual const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
+        virtual MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
         
         // Container functions you may want to override to protect from assignment
         virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
@@ -466,28 +467,17 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 }
 
 
-
-
-
-/**
- * Get method specifications.
- */
+/** Make methods for this class */
 template <typename rlType>
-const MethodTable& ModelVector<rlType>::getMethods(void) const
+MethodTable ModelVector<rlType>::makeMethods(void) const
 {
-    static MethodTable methods      = MethodTable();
-    static bool        methodsSet   = false;
-    
-    if ( methodsSet == false )
-    {
+    MethodTable methods = MethodTable();
+
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
         
-        ArgumentRules* uniqueArgRules = new ArgumentRules();
-        methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-        
-        // Necessary call for proper inheritance
-        methods.setParentTable( &ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::getMethods() );
-        methodsSet = true;
-    }
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
     
     return methods;
 }
@@ -514,12 +504,8 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
             rlType orgElement = rlType(*i);
             
             // Test whether this element is already of the desired element type or can be converted to it
-<<<<<<< HEAD
             if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
-=======
-            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec() ) )
             {
->>>>>>> 65ec182a54adf3e576d25ddf723d8318bd66d281
                 return false;
             }
         }
@@ -527,7 +513,7 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) con
         return true;
     }
     
-    return Container::isConvertibleTo( type, once );
+    return ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::isConvertibleTo( type, once );
 }
 
 
