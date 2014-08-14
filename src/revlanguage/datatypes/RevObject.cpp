@@ -65,6 +65,14 @@ RevObject* RevObject::add(const RevObject &rhs) const
     return NULL;
 }
 
+
+/** Clone the model DAG connected to this object. */
+RevObject* RevObject::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
+{
+    throw RbException( "Rev object with no DAG node should not be included in model DAG" );
+}
+
+
 /** The default implementation does nothing because we don't have an internal object */
 void RevObject::constructInternalObject( void ) {
     // nothing to do
@@ -198,38 +206,24 @@ RevPtr<Variable> RevObject::getMember(const std::string& name) const
 }
 
 
-/** 
- * Get method specifications of all member objects. 
- * We support two methods:
- * 1) memberNames()
- * 2) get("name")
+/**
+ * Get common member methods. This function is used by all
+ * Rev member objects, which only use the common member
+ * methods.
  */
-const MethodTable& RevObject::getMethods(void) const
+const MethodTable& RevObject::getMethods( void ) const
 {
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable methods = MethodTable();
-    static bool        methodsSet = false;
-    
-    if ( methodsSet == false ) {
-        
-        ArgumentRules* getMembersArgRules = new ArgumentRules();
-        ArgumentRules* getMethodsArgRules = new ArgumentRules();
-        ArgumentRules* getArgRules = new ArgumentRules();
-        
-        // add the 'members()' method
-        methods.addFunction("members", new MemberProcedure(RlUtils::Void, getMembersArgRules) );
-        
-        // add the 'members()' method
-        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
-        
-        // add the 'memberNames()' method
-        getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
-        methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         
         methodsSet = true;
-    }   
+    }
     
-    return methods;
+    return myMethods;
 }
 
 
@@ -322,7 +316,7 @@ bool RevObject::isConstant( void ) const
 
 
 /** Is convertible to type? */
-bool RevObject::isConvertibleTo(const TypeSpec& type) const
+bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 {
     
     return false;
@@ -349,14 +343,13 @@ void RevObject::makeConstantValue( void )
 
 
 /**
- * Make a new object that is an indirect deterministic reference to the object.
- * The default implementation throws an error.
+ * Convert a model object to a conversion object, the value of which is determined by a type
+ * conversion from a specified variable. By default we throw an error, since we do not have
+ * a DAG node and cannot perform the requested action.
  */
-RevObject* RevObject::makeIndirectReference(void)
+void RevObject::makeConversionValue( RevPtr<Variable> var )
 {
-    std::ostringstream msg;
-    msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
-    throw RbException( msg );
+    throw RbException( "Object without DAG node cannot be made a conversion value" );
 }
 
 
@@ -375,6 +368,46 @@ void RevObject::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
 RevObject* RevObject::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& indices )
 {
     throw RbException( "Object of type '" + this->getType() + "' does not have elements");
+}
+
+
+/**
+ * Make a new object that is an indirect deterministic reference to the object.
+ * The default implementation throws an error.
+ */
+RevObject* RevObject::makeIndirectReference(void)
+{
+    std::ostringstream msg;
+    msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
+    throw RbException( msg );
+}
+
+
+/**
+ * Make methods common to all member objects.
+ * We support two methods:
+ * 1) memberNames()
+ * 2) get("name")
+ */
+MethodTable RevObject::makeMethods(void) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* getMembersArgRules = new ArgumentRules();
+    ArgumentRules* getMethodsArgRules = new ArgumentRules();
+    ArgumentRules* getArgRules = new ArgumentRules();
+    
+    // Add the 'members()' method
+    methods.addFunction("members", new MemberProcedure(RlUtils::Void, getMembersArgRules) );
+    
+    // Add the 'methods()' method
+    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    
+    // Add the 'get("name")' method
+    getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
+    methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
+    
+    return methods;
 }
 
 

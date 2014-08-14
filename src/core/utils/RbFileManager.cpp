@@ -128,11 +128,6 @@ void RbFileManager::createDirectoryForFile( void )
 //		std::cout << "Success" << "\n";
 //	}
     
-    std::vector<std::string> paths;
-    StringUtilities::stringSplit(filePath, pathSeparator, paths);
-    
-    
-    
 }
 
 

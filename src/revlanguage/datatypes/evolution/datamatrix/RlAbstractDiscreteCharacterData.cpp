@@ -50,6 +50,25 @@ const TypeSpec& AbstractDiscreteCharacterData::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& AbstractDiscreteCharacterData::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& AbstractDiscreteCharacterData::getTypeSpec(void) const {
     

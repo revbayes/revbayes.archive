@@ -31,16 +31,17 @@ namespace RevLanguage {
         typedef RevBayesCore::MultivariateRealNodeContainer valueType;
         
         // Basic utility functions
-        MultivariateRealNodeValTree*           clone(void) const;                                                                                  //!< Clone object
-        static const std::string&           getClassType(void);                                                                                 //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
+        MultivariateRealNodeValTree*        clone(void) const;                                                              //!< Clone object
+        static const std::string&           getClassType(void);                                                             //!< Get class name
+        static const TypeSpec&              getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                        //!< Get language type of the object
         
-        // Member method inits
-        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        // Member method functions
+        const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
+        MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Map member methods to internal functions
         
-        void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        void                                printValue(std::ostream& o) const;                                              //!< Print value (for user)
     };
     
 }

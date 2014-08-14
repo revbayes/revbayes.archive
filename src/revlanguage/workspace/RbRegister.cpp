@@ -127,6 +127,7 @@
 #include "Move_DPPScaleCatValsMove.h"
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
+#include "Move_DPPScaleCatAllocateAux.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -140,6 +141,7 @@
 #include "Move_RealNodeValTreeSliding.h"
 #include "Move_RealNodeValTreeTranslation.h"
 #include "Move_ScaleSingleACLNRates.h"
+#include "Move_ACLNMixingStep.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -515,6 +517,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
+        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
@@ -563,6 +566,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
         addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
+        addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );

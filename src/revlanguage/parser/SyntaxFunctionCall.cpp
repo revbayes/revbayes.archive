@@ -135,17 +135,17 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
             if ( theObject.isTypeSpec( Function::getClassTypeSpec() ) )
             {
                 func = static_cast<Function&>( theObject ).clone();
-                found = func->checkArguments(args, NULL);
+                found = func->checkArguments(args, NULL, true);
             }
         }
 
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw a relevant error message if the function is not found
         if ( !found )
-            func = env.getFunction(functionName, args).clone();
+            func = env.getFunction(functionName, args, true).clone();
 
         // Allow the function to process the arguments
-        func->processArguments( args );
+        func->processArguments( args, true );
 
         // Set the execution environment of the function
         func->setExecutionEnviroment( &env );
@@ -169,8 +169,8 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
             
-        Function* theFunction = mt.getFunction( functionName, args ).clone();
-        theFunction->processArguments(args);
+        Function* theFunction = mt.getFunction( functionName, args, true ).clone();
+        theFunction->processArguments(args, true);
         MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( theFunction );
         theMemberProcedure->setMemberObject( theVar );
         
@@ -233,17 +233,17 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
             if ( theObject.isTypeSpec( Function::getClassTypeSpec() ) )
             {
                 func = static_cast<Function&>( theObject ).clone();
-                found = func->checkArguments(args, NULL);
+                found = func->checkArguments(args, NULL, false);
             }
         }
         
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw with a relevant message if the function is not found
         if ( !found )
-            func = env.getFunction(functionName, args).clone();
+            func = env.getFunction(functionName, args, false).clone();
         
         // Allow the function to process the arguments
-        func->processArguments( args );
+        func->processArguments( args, false );
         
         // Set the execution environment of the function
         func->setExecutionEnviroment( &env );
@@ -267,8 +267,8 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
         
-        Function* theFunction = mt.getFunction( functionName, args ).clone();
-        theFunction->processArguments(args);
+        Function* theFunction = mt.getFunction( functionName, args, false ).clone();
+        theFunction->processArguments( args, false );
         MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( theFunction );
         theMemberFunction->setMemberObject( theVar );
         

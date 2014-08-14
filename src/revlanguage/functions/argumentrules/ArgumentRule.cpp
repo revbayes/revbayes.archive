@@ -118,57 +118,21 @@ bool ArgumentRule::hasDefault(void) const {
 }
 
 
-/** Test if argument is valid */
-bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool convert) const {
+/**
+ * Test if argument is valid. The boolean flag is used to signal whether the argument matching
+ * is done in a static or a dynamic context. */
+bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const {
     
     if ( var == NULL )
         return false;
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
-        // first we check if the type we want is already guaranteed by the variable
-        if ( var->getRevObjectTypeSpec().isDerivedOf( *it ) )
-        {
+        if ( var->getRevObject().isTypeSpec( *it ) )
             return true;
-        }
-
-        // we can only change the REQUIRED value type of the variable if we want a derived type of the current value type
-        // the actual variable type may be different to the required type
-        if ( it->isDerivedOf( var->getRevObjectTypeSpec() ) )
-        {
-                          
-            // first we check if the argument needs to be converted
-            if ( var->getRevObject().isTypeSpec( *it ) )
-            {
-                // No, we don't.
-            
-                // do the conversion if we are actually asked to
-                if ( convert ) 
-                {
-                    // this is a safe const cast (Sebastian)
-                    const_cast<Variable*>( (const Variable *)var )->setRevObjectTypeSpec( *it );
-                }
-            
-                return true;
-            } 
-            else if ( var->getRevObject().isConstant() && var->getRevObject().isConvertibleTo( *it ) )
-            {
-                // Yes, we can and have to convert
-            
-                // should we do the type conversion?
-                if ( convert ) 
-                {
-                
-                    RevObject* convObj = var->getRevObject().convertTo( *it );
-                    const_cast<Variable*>( (const Variable *) var )->setRevObject( convObj );
-
-                    // set the new type spec of the variable
-                    const_cast<Variable*>( (const Variable *) var )->setRevObjectTypeSpec( *it );
-                }
-                return true;
-            }
         
-        }
+        else if ( var->getRevObject().isConvertibleTo( *it, once ) )
+            return true;
     }
     
     return false;

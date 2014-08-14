@@ -32,7 +32,7 @@ namespace RevBayesCore {
     class PomoRootFrequenciesFunction : public TypedFunction< std::vector<double> > {
         
     public:
-        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< unsigned int > *ps);
         virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -46,9 +46,9 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< std::vector<double> >*           fixedNucleotideRootFrequencies;
-        const TypedDagNode< double >*           frequencyOfPolymorphismsAtTheRoot;
+        const TypedDagNode< double >*                        frequencyOfPolymorphismsAtTheRoot;
         const TypedDagNode< std::vector<double> >*           mutationRates;
-        const TypedDagNode< int >*                          populationSize;
+        const TypedDagNode< unsigned int >*                  populationSize;
     };
     
 }

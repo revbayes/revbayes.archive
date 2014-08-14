@@ -59,17 +59,19 @@ namespace RevLanguage {
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
         // Functions you may want to override
-        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs, std::vector<double>* matchScore); //!< Process args, return a match score if pointer is not null
+        virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs,
+                                                                       std::vector<double>*         matchScore,
+                                                                       bool                         once);                                  //!< Process args, return a match score if pointer is not null
         virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
-        virtual void                                    processArguments(const std::vector<Argument>& passedArgs);                          //!< Process args, return a match score if pointer is not null
+        virtual void                                    processArguments(const std::vector<Argument>& passedArgs, bool once);               //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
 
 
         // Function functions you should not override
         void                                            clear(void);                                                                        //!< Clear argument frame "args"
+        Argument                                        fitArgument(Argument arg, const ArgumentRule& rule, bool once) const;               //!< Fit argument to rule
         const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
         std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
-        void                                            setArgument(const std::string& name, Argument& arg, bool c);                        //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
         Environment*                                    getEnvironment(void) const;                                                         //!< Get the execution environment
         
 	protected:

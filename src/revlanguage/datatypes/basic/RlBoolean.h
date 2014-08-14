@@ -42,9 +42,12 @@ class RlBoolean : public ModelObject<bool> {
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         void                            printValue(std::ostream& o) const;                                      //!< Print value (for user)
-
+    
+        // Member methods
+        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
+    
 };
     
 }

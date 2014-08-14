@@ -62,7 +62,7 @@ namespace RevLanguage {
         bool                                existsVariable(const std::string& name) const;                                      //!< Does variable exist?
         std::string                         generateUniqueVariableName(void);                                                   //!< Automatically generate a unique variable name
         const Function&                     getFunction(const std::string& name);                                               //!< Get function reference
-        Function&                           getFunction(const std::string& name, const std::vector<Argument>& args);            //!< Get function reference
+        Function&                           getFunction(const std::string& name, const std::vector<Argument>& args, bool once); //!< Get function reference
         const FunctionTable&                getFunctionTable(void) const;                                                       //!< Get function table (const)
         FunctionTable&                      getFunctionTable(void);                                                             //!< Get function table (non-const)
         const RevObject&                    getRevObject(const std::string& name) const;                                        //!< Convenient alternative for [name]->getValue()

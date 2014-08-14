@@ -4,6 +4,7 @@
 #include "ConstantRateBirthDeathProcess.h"
 #include "DeterministicNode.h"
 #include "DirichletDistribution.h"
+#include "FastaWriter.h"
 #include "FileMonitor.h"
 #include "FixedNodeheightPruneRegraft.h"
 #include "GeneralBranchHeterogeneousCharEvoModel.h"
@@ -13,11 +14,14 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "Move.h"
+#include "MultispeciesCoalescent.h"
 #include "NarrowExchange.h"
 #include "NclReader.h"
 #include "NearestNeighborInterchange.h"
 #include "NodeTimeSlideBeta.h"
 #include "NodeTimeSlideUniform.h"
+#include "NucleotideBranchHeterogeneousCharEvoModel.h"
+#include "PolymorphicStateConverter.h"
 #include "PomoRootFrequenciesFunction.h"
 #include "PomoRateMatrixFunction.h"
 #include "RateMatrix_Pomo.h"
@@ -36,8 +40,8 @@
 
 using namespace RevBayesCore;
 
-TestPomoModel::TestPomoModel(const std::string &afn, const std::string &tFn, int gen) : alignmentFilename( afn ), treeFilename( tFn ), mcmcGenerations( gen ){
-    
+TestPomoModel::TestPomoModel(const std::string &treeFn, const unsigned int virtPopSize, int gen) : treeFilename( treeFn ), virtualPopulationSize(virtPopSize), mcmcGenerations( gen ){
+
 }
 
 TestPomoModel::~TestPomoModel() {
@@ -48,21 +52,146 @@ TestPomoModel::~TestPomoModel() {
 
 bool TestPomoModel::run( void ) {
     
+    // fix the rng seed
+    std::vector<unsigned int> seed;
+    seed.push_back(25);
+    seed.push_back(42);
+    GLOBAL_RNG->setSeed(seed);
+    
+    double trueNE = 100;
+    size_t nGeneTrees = 50;
+    size_t individualsPerSpecies = 10;
+    
+    //    #if defined (USE_LIB_OPENMP)
+    //        omp_set_num_threads(numProcesses);
+    //    #endif
+    //    numProcesses = 4;
+    //    if (nGeneTrees < numProcesses)
+    //        numProcesses = nGeneTrees;
+    //
+    //    genesPerProcess.resize(numProcesses);
+    //    for (size_t i = 0, j = 0; i < nGeneTrees; i++, j++)
+    //    {
+    //        if (j >= numProcesses)
+    //            j = 0;
+    //        genesPerProcess[j].push_back(i);
+    //    }
+    //
+    
+    
+    
+    /* First, we read in the species tree */
+    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::cout << "Read " << trees.size() << " trees." << std::endl;
+    TimeTree *t = trees[0];
+    std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
+    
+    
+    /* Then we set up the multispecies coalescent process and simulate gene trees */
+    size_t nNodes = t->getNumberOfNodes();
+    ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
+    std::vector<std::string> speciesNames = t->getTipNames();
+    std::vector<Taxon> taxa;
+    std::map<std::string, std::string> sequenceNameToSpeciesName;
+    for (std::vector<std::string>::iterator s = speciesNames.begin(); s != speciesNames.end(); ++s) {
+        for (size_t i = 1; i <= individualsPerSpecies; ++i)
+        {
+            std::stringstream o;
+            o << *s << "_" << i;
+            Taxon t = Taxon( o.str() );
+            t.setSpeciesName( *s );
+            taxa.push_back( t );
+            sequenceNameToSpeciesName[o.str()] = *s;
+        }
+        
+    }
+    
+    ConstantNode<TimeTree> *spTree = new ConstantNode<TimeTree>("speciesTree", t);
+    MultispeciesCoalescent *m = new MultispeciesCoalescent( spTree, taxa);
+    m->setNes(Ne);
+    StochasticNode<TimeTree> *tauCPC = new StochasticNode<TimeTree>( "tau", m);
+    
+    //Simulating gene trees
+    std::vector<const TimeTree*> simTrees;
+    for (size_t i = 0; i < nGeneTrees; ++i) {
+        simTrees.push_back(tauCPC->getValue().clone());
+        // write the simulated tree
+        stringstream ss; //create a stringstream
+        ss << i;
+        std::ofstream myfile;
+        myfile.open( ("primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
+        myfile << simTrees[i]->getNewickRepresentation() << std::endl;
+        myfile.close();
+        tauCPC->redraw();
+    }
+    std::cout << "\t\tGene trees simulated."<<std::endl;
+    
+    
+    
+    //Now we have the gene trees.
+    //We want to simulate sequences along these.
+    size_t nStates= 4;
+    RateMatrix_GTR gtr(nStates);
+    std::vector<double> simPi;
+    simPi.push_back(0.1);
+    simPi.push_back(0.2);
+    simPi.push_back(0.3);
+    simPi.push_back(0.4);
+    gtr.setStationaryFrequencies( simPi );
+    
+    // update rate matrix
+    gtr.updateMatrix();
+    ConstantNode<RateMatrix> *simQ = new ConstantNode<RateMatrix>( "Q", new RateMatrix_GTR(gtr) );
+    
+    ConstantNode<double> *simClockRate = new ConstantNode<double>("clockRate", new double(1.0) );
+    std::vector<StochasticNode< AbstractCharacterData > *> simSeqs;
+    for (size_t i = 0; i < nGeneTrees; ++i) {
+        std::stringstream o;
+        o << "SimulatedSequences_" << i;
+        // and the character model
+        NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new NucleotideBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(new ConstantNode<TimeTree> ("tau", new TimeTree(*(simTrees[i]))), true, 100);
+        phyloCTMC->setClockRate(simClockRate);
+        phyloCTMC->setRateMatrix(simQ);
+        simSeqs.push_back(new StochasticNode< AbstractCharacterData >(o.str(), phyloCTMC));
+        
+        // write the simulated sequence
+        FastaWriter writer;
+        stringstream ss; //create a stringstream
+        ss << i;
+        writer.writeData(o.str() + ".fas", simSeqs[i]->getValue());
+    }
+    
+    //NOW THE DATA HAS BEEN SIMULATED
+    std::cout << "\t\tSequence data simulated."<<std::endl;
+    
     /* First, we read in the data */
     // the matrix
-    std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
+  /*  std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     std::cout << data[0] << std::endl;
     
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
-    std::cout << trees[0]->getNewickRepresentation() << std::endl;
+    std::cout << trees[0]->getNewickRepresentation() << std::endl;*/
+
     
+    //Now the data needs to be converted into PolymorphicStates
+    std::vector< AbstractCharacterData*> simSeqsPol;
+    AbstractCharacterData* concatenatedSimSeqsPol = NULL;
+    PolymorphicStateConverter* psc = new PolymorphicStateConverter();
+    std::cout << "Number of sequence data sets: "<< simSeqs.size() <<std::endl;
+    for (size_t i = 0; i<simSeqs.size(); ++i) {
+        simSeqsPol.push_back(psc->convertData(simSeqs[i]->getValue(), virtualPopulationSize, sequenceNameToSpeciesName));
+        if (concatenatedSimSeqsPol== NULL ) {
+            concatenatedSimSeqsPol = simSeqsPol[i];
+        }
+        else {
+        concatenatedSimSeqsPol->add(*simSeqsPol[i]); //Concatenation
+        }
+    }
+    std::cout << "\t\tSequence data converted into Pomo format."<<std::endl;
     
     /* set up the model graph */
-    
-    //Size of the virtual population
-    ConstantNode<int> *popSize = new ConstantNode<int>("populationSize", new int(10));
     
     //////////////////////
     // first the priors //
@@ -74,8 +203,11 @@ bool TestPomoModel::run( void ) {
     ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
     ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
     
-    
+    //////////////////////
     // POMO model priors
+    
+    //Size of the virtual population
+    ConstantNode<unsigned int> *popSize = new ConstantNode<unsigned int>("populationSize", new unsigned int(virtualPopulationSize));
     
     // the parameters for the mutation rates
     ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(12,1.0) ); //All 12 possible mutations
@@ -95,31 +227,44 @@ bool TestPomoModel::run( void ) {
 
     //Other parameters for the Pomo model: selection coefficients for ACGT
     StochasticNode<std::vector<double> > *selco = new StochasticNode<std::vector<double> >( "selectionCoefficients", new DirichletDistribution(bf) );
+    std::vector<double> temp ;
+    temp.push_back(0.1);
+    temp.push_back(0.2);
+    temp.push_back(0.3);
+    temp.push_back(0.4);
 
-    DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new PomoRateMatrixFunction(popSize, mr, selco) );
+    //Temporary
+    ConstantNode<std::vector<double> > *selcotemp = new ConstantNode<std::vector<double> >( "selcotemp", &temp );
+
+    DeterministicNode<RateMatrix> *q = new DeterministicNode<RateMatrix>( "Q", new PomoRateMatrixFunction(popSize, mr, selcotemp) );
     
-    std::cout << "Q:\t" << q->getValue() << std::endl;
-    
-    /////I stopped here. From there on, need to adapt the code to the Pomo model.
+    std::cout << "Q matrix:\t" << q->getValue() << std::endl;
     
     
-    std::vector<std::string> names = data[0]->getTaxonNames();
+    
+    //////////////////////
+    // Topology prior
+    std::vector<std::string> names = concatenatedSimSeqsPol->getTaxonNames();
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
     StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
     
     //    tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
+    //////////////////////
+    // Clock prior
     ConstantNode<double> *clockRate = new ConstantNode<double>("clockRate", new double(1.0) );
     
-    // and the character model
-    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new CharacterEvolutionAlongTree<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-    //    StochasticNode<CharacterData<DnaState> > *charactermodel = new StochasticNode<CharacterData <DnaState> >("S", new SimpleCharEvoModel<DnaState, TimeTree>(tau, q, data[0]->getNumberOfCharacters()) );
-    GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<DnaState, TimeTree>(tau, 4, true, data[0]->getNumberOfCharacters());
+    
+    //////////////////////////
+    // Setting up the model //
+    //////////////////////////
+/////I stopped here. From there on, need to adapt the code to the Pomo model.
+    GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree>(tau, 4, true, concatenatedSimSeqsPol->getNumberOfCharacters());
     phyloCTMC->setClockRate( clockRate );
     phyloCTMC->setRateMatrix( q );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
-    charactermodel->clamp( data[0] );
+    charactermodel->clamp( concatenatedSimSeqsPol );
     
     /* add the moves */
     RbVector<Move> moves;
