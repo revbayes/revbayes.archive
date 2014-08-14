@@ -91,36 +91,22 @@ const TypeSpec& TimeTree::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& TimeTree::getMethods(void) const 
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& TimeTree::getMethods( void ) const
 {
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) 
+    if ( !methodsSet )
     {
-        
-        ArgumentRules* nnodesArgRules = new ArgumentRules();
-        methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
-
-        ArgumentRules* heightArgRules = new ArgumentRules();
-        methods.addFunction("rootAge", new MemberFunction<TimeTree, RealPos>(this,          heightArgRules   ) );
-
-        ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
-
-        ArgumentRules* rescaleArgRules = new ArgumentRules();
-        rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
-        methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::TimeTree>::getMethods() );
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 
@@ -130,5 +116,30 @@ const TypeSpec& TimeTree::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+/** Make member methods for this class */
+RevLanguage::MethodTable TimeTree::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* nnodesArgRules = new ArgumentRules();
+    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
+    
+    ArgumentRules* heightArgRules = new ArgumentRules();
+    methods.addFunction("rootAge", new MemberFunction<TimeTree, RealPos>(this,          heightArgRules   ) );
+    
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
+    
+    ArgumentRules* rescaleArgRules = new ArgumentRules();
+    rescaleArgRules->push_back( new ArgumentRule( "factor", true, RealPos::getClassTypeSpec() ) );
+    methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::TimeTree>::makeMethods() );
+    
+    return methods;
 }
 

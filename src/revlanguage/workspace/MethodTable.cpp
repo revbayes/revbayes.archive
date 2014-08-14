@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of MethodTable, which is
- * used to hold member functions of complex objects.
- *
- * @brief Implementation of MethodTable
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #include "ArgumentRule.h"
 #include "MethodTable.h"
 #include "RbException.h"
@@ -25,15 +10,16 @@
 using namespace RevLanguage;
 
 /** Basic constructor, empty table with or without parent */
-MethodTable::MethodTable(MethodTable* parent) : FunctionTable( parent ) {
-
+MethodTable::MethodTable( MethodTable* parent ) :
+    FunctionTable( parent )
+{
 }
 
 /** Assignment operator */
-MethodTable& MethodTable::operator=(const MethodTable& x) {
-    
-    if (this != &x) {
-        
+MethodTable& MethodTable::operator=( const MethodTable& x )
+{
+    if (this != &x)
+    {
         FunctionTable::operator=(x);
     }
     
@@ -41,16 +27,23 @@ MethodTable& MethodTable::operator=(const MethodTable& x) {
 }
 
 
+/** Insert inherited methods into method table */
+void MethodTable::insertInheritedMethods( const MethodTable& inheritedMethods )
+{
+    for ( MethodTable::const_iterator it = inheritedMethods.begin(); it != inheritedMethods.end(); ++it )
+    {
+        Function* theFunction = (*it).second->clone();
 
-/** Add function to table */
-void MethodTable::addFunction( const std::string name, Function *func ) {
-
-    FunctionTable::addFunction( name, func );
-
-    if ( func->isTypeSpec( MemberProcedure::getClassTypeSpec() ) )
-        static_cast<MemberProcedure*>( (Function*)func )->setMethodName( name );
-    
-//    if ( func->isTypeSpec( DagNodeFunction::getClassTypeSpec() ) )
-//        static_cast<DagNodeFunction*>( (Function*)func )->setMethodName( name );
+        try
+        {
+            addFunction( (*it).first, theFunction );
+        }
+        catch ( RbException )
+        {
+            // Exception if we cannot overload. We do not worry about that
+            // but need to delete the superfluous function
+            delete theFunction;
+        }
+    }
 }
 

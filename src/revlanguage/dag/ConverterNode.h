@@ -1,7 +1,6 @@
 #ifndef ConverterNode_H
 #define ConverterNode_H
 
-#include "Natural.h"
 #include "DynamicNode.h"
 #include "RevPtr.h"
 

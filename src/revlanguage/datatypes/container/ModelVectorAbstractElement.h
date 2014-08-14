@@ -46,6 +46,9 @@ namespace RevLanguage {
         RevObject*                                      convertTo(const TypeSpec& type) const;                                          //!< Convert to requested type
         virtual bool                                    isConvertibleTo(const TypeSpec& type, bool once) const;                         //!< Is this object convertible to the requested type?
         
+        // Member object functions
+        virtual const MethodTable&                      getMethods(void) const;                                                         //!< Get member methods
+        
         // Container functions you may want to override to protect from assignment
         virtual RevPtr<Variable>                        findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
         virtual RevPtr<Variable>                        getElement(size_t oneOffsetIndex);                                              //!< Get element variable (single index)
@@ -243,7 +246,7 @@ const std::string& ModelVectorAbstractElement<rlType>::getClassType(void)
  * specification.
  */
 template <typename rlType>
-const RevLanguage::TypeSpec& ModelVectorAbstractElement<rlType>::getClassTypeSpec(void)
+const TypeSpec& ModelVectorAbstractElement<rlType>::getClassTypeSpec(void)
 {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
@@ -340,9 +343,29 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElementFromValue( size_t
 }
 
 
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+template <typename rlType>
+const MethodTable& ModelVectorAbstractElement<rlType>::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = this->makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get the type spec of this class */
 template <typename rlType>
-const RevLanguage::TypeSpec& ModelVectorAbstractElement<rlType>::getTypeSpec(void) const
+const TypeSpec& ModelVectorAbstractElement<rlType>::getTypeSpec(void) const
 {
     return getClassTypeSpec();
 }

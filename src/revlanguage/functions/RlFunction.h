@@ -69,9 +69,9 @@ namespace RevLanguage {
 
         // Function functions you should not override
         void                                            clear(void);                                                                        //!< Clear argument frame "args"
+        Argument                                        fitArgument(Argument arg, const ArgumentRule& rule, bool once) const;               //!< Fit argument to rule
         const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
         std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
-        void                                            setArgument(const std::string& name, Argument& arg, bool c);                        //!< Set the argument for the label. We collect the argument and delegate to setArgumentVariable()
         Environment*                                    getEnvironment(void) const;                                                         //!< Get the execution environment
         
 	protected:

@@ -540,14 +540,13 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), once) && !filled[j] )
-                {
-                    taken[i]          = true;
-                    filled[j]         = true;
-                    passedArgIndex[j] = static_cast<int>( i );
-                }
-                else
-                    throw RbException("Arguments do not match.");
+                if ( filled[j] )
+                    throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
+                
+                pArgs[i]            = fitArgument( pArgs[i], theRules[j], once );
+                taken[i]            = true;
+                filled[j]           = true;
+                passedArgIndex[j]   = static_cast<int>( i );
                 
                 // We got an exact match -> we can skip the other labels for checking
                 break;
@@ -585,17 +584,15 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
             }
         }
 
-        if (nMatches != 1)
-            throw RbException("Argument matches mutliple parameters.");
+        if (nMatches > 1)
+            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
+        else if (nMatches < 1)
+            throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
  
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once ) )
-        {
-            taken[i]                  = true;
-            filled[matchRule]         = true;
-            passedArgIndex[matchRule] = static_cast<int>( i );
-        }
-        else
-            throw RbException("Argument " + passedArgs[i].getLabel() + "is not valid.");
+        pArgs[i]                    = fitArgument( pArgs[i], theRules[matchRule], once );
+        taken[i]                    = true;
+        filled[matchRule]           = true;
+        passedArgIndex[matchRule]   = static_cast<int>( i );
     }
 
 
@@ -615,7 +612,9 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( filled[j] == false ) 
             {
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) ) {
+                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) )
+                {
+                    pArgs[i]          = fitArgument( pArgs[i], theRules[j], once );
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 
                     {
@@ -624,7 +623,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
                     }
                     else 
                     {
-                        ellipsisArgs.push_back( passedArgs[i] );
+                        ellipsisArgs.push_back( pArgs[i] );
                     }
                     
                     break;
@@ -656,7 +655,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
-        pArgs.push_back( Argument( theVar, "" ) );
+        pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.isConstant() ) );
     }
 
     argsProcessed = true;
@@ -665,59 +664,58 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
     for (size_t j=0; j<nRules; j++) 
     {
         if ( passedArgIndex[j] < 1000 ) 
-        {
-            Argument&  theArg = pArgs[passedArgIndex[j]];
-            RevPtr<Variable> theVar = theArg.getVariable();
-            const std::vector<TypeSpec>& argTypeSpecs = theRules[j].getArgumentTypeSpec();
-            for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
-            {
-                if ( !theVar->getRevObject().isTypeSpec( *it ) && theVar->getRevObject().isConvertibleTo( *it, once ) )
-                {
-                    if ( once || !theVar->getRevObject().hasDagNode() )
-                    {
-                        RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                        theArg = Argument( new Variable( convertedObject ), theArg.getLabel(), theArg.isConstant() );
-                    }
-                    else
-                    {
-                        /** @TODO This is static type conversion. Make dynamic according to code sketch below. */
-                        RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                        theArg = Argument( new Variable( convertedObject ), theArg.getLabel(), theArg.isConstant() );
-                        
-                        // RevObject* conversionObject->makeConversionValue( theVar );
-                        // theArg = Argument( new Variable( conversionObject ), theArg.getLabel(), theArg.isConstant() );
-                    }
-                }
-            }
-            
-            setArgument(theRules[j].getArgumentLabel(), pArgs[passedArgIndex[j]], theRules[j].isConstant() );
-        }
-//        else 
-//        {
-//            std::cerr << "Optional argument for " << theRules[j].getArgumentLabel() << std::endl;
-//        }
+            args.push_back( pArgs[ passedArgIndex[j] ] );
     }
     
     /*********************  6. Insert ellipsis arguments  **********************/
     for (std::vector<Argument>::iterator i = ellipsisArgs.begin(); i != ellipsisArgs.end(); i++) 
     {
-        setArgument((*i).getLabel(), *i, true);
+        args.push_back( *i );
     }
 
 }
 
 
-/** Set an argument */
-void Function::setArgument(const std::string& name, Argument& arg, const bool c) {
-    
-    // make sure that the argument has the correct label
-    Argument myArg = Argument( arg.getVariable(), name, c );
-    
-    // just add this node to the vector
-    args.push_back(myArg);
-    
-}
+/** Set an argument. We also do type conversion here if necessary. */
+Argument Function::fitArgument( Argument arg, const ArgumentRule& rule, bool once ) const
+{
+    RevPtr<Variable> theVar = arg.getVariable();
+    const std::vector<TypeSpec>& argTypeSpecs = rule.getArgumentTypeSpec();
 
+    for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
+    {
+        if ( theVar->getRevObject().isTypeSpec( *it ) )
+        {
+            if ( !rule.isEllipsis() )
+                return Argument( theVar, rule.getArgumentLabel(), rule.isConstant() );
+            else
+                return Argument( theVar, arg.getLabel(), true );
+        }
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
+        {
+            if ( once || !theVar->getRevObject().hasDagNode() )
+            {
+                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                if ( !rule.isEllipsis() )
+                    return Argument( new Variable( convertedObject ), rule.getArgumentLabel(), rule.isConstant() );
+                else
+                    return Argument( new Variable( convertedObject ), arg.getLabel(), true );
+            }
+            else
+            {
+                /** @TODO This is static type conversion. Make dynamic according to code sketch below. */
+                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
+                // conversionObject->makeConversionValue( theVar );
+                if ( !rule.isEllipsis() )
+                    return Argument( new Variable( conversionObject ), rule.getArgumentLabel(), rule.isConstant() );
+                else
+                    return Argument( new Variable( conversionObject ), arg.getLabel(), true );
+            }
+        }
+    }
+
+    throw RbException( "Argument type mismatch" );
+}
 
 
 void Function::setExecutionEnviroment(Environment *e) {

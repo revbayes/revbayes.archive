@@ -45,6 +45,9 @@ namespace RevLanguage {
         // ModelVector functions that we override here to stop inappropriate actions
         void                                        sort(void);                                                         //!< Sort vector
         void                                        unique(void);                                                       //!< Remove consecutive duplicates
+        
+        // Member methods
+        const MethodTable&                          getMethods(void) const;                                             //!< Get member methods
 
     private:
         std::vector<double>*                        makeNormalizedValue(const std::vector<double>& v);                  //!< Help function
