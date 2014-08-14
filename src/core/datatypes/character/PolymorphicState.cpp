@@ -228,7 +228,6 @@ size_t PolymorphicState::getNumberOfStates( void ) const {
 
 
 unsigned long PolymorphicState::getState( void ) const {
-    
     return (unsigned long)state;
 }
 

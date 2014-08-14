@@ -112,7 +112,6 @@ for (i in 1:n_genes) {
 # Here we assume that all genes share the same basic substitution model, a GTR.
 # However, the parameters of the models change from one gene family to the next.
 for (i in 1:n_genes) {
-
   er_prior[i] <- v(1,1,1,1,1,1)
   er[i] ~ dnDirichlet(er_prior[i])
   moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
