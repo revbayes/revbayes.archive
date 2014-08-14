@@ -53,11 +53,12 @@ namespace RevLanguage {
  
         // Type conversion functions
         RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-        virtual bool                                isConvertibleTo(const TypeSpec& type) const;                //!< Is this object convertible to the requested type?
+        virtual bool                                isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
-        // Member object functions you may want to override
-        RevPtr<Variable>                            executeMethod(const std::string& name, const std::vector<Argument>& args);      //!< Override to map member methods to internal functions
-        const MethodTable&                          getMethods(void) const;                                                         //!< Get member methods (const)
+        // Member object functions
+        virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args);      //!< Map member methods to internal methods
+        virtual const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
+        virtual MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
         
         // Container functions you may want to override to protect from assignment
         virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
@@ -223,7 +224,7 @@ ModelVector<rlType>* ModelVector<rlType>::clone() const
 
 
 /**
- * Map calls to member methods. This deals with the stochastic variable methods.
+ * Map calls to member methods.
  */
 template <typename rlType>
 RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args )
@@ -438,36 +439,45 @@ RevPtr<Variable> ModelVector<rlType>::getElementFromValue( size_t oneOffsetIndex
 }
 
 
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+template <typename rlType>
+const MethodTable& ModelVector<rlType>::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = this->makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get the type spec (dynamic version) */
 template <typename rlType>
-const RevLanguage::TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
+const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 {
     return getClassTypeSpec();
 }
 
 
-
-
-
-/**
- * Get method specifications.
- */
+/** Make methods for this class */
 template <typename rlType>
-const MethodTable& ModelVector<rlType>::getMethods(void) const
+MethodTable ModelVector<rlType>::makeMethods(void) const
 {
-    static MethodTable methods      = MethodTable();
-    static bool        methodsSet   = false;
-    
-    if ( methodsSet == false )
-    {
+    MethodTable methods = MethodTable();
+
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
         
-        ArgumentRules* uniqueArgRules = new ArgumentRules();
-        methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-        
-        // Necessary call for proper inheritance
-        methods.setParentTable( &ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::getMethods() );
-        methodsSet = true;
-    }
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
     
     return methods;
 }
@@ -481,7 +491,7 @@ const MethodTable& ModelVector<rlType>::getMethods(void) const
  * of Real, for example.
  */
 template <typename rlType>
-bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
+bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
     if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
     {
@@ -494,7 +504,7 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
             rlType orgElement = rlType(*i);
             
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec() ) )
+            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
             {
                 return false;
             }
@@ -503,7 +513,7 @@ bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type ) const
         return true;
     }
     
-    return Container::isConvertibleTo( type );
+    return ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::isConvertibleTo( type, once );
 }
 
 

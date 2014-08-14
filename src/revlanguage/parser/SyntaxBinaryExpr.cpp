@@ -107,8 +107,8 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env )
 
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args ).clone();
-    theFunction->processArguments( args );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, true ).clone();
+    theFunction->processArguments( args, true );
     
     // Execute the function
     RevPtr<Variable> theReturnValue = theFunction->execute();
@@ -163,8 +163,8 @@ RevPtr<Variable> SyntaxBinaryExpr::evaluateDynamicContent( Environment& env )
     
     // Get function clone and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args ).clone();
-    theFunction->processArguments( args );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
+    theFunction->processArguments( args, false );
     
     RevPtr<Variable> theReturnValue = theFunction->execute();
     

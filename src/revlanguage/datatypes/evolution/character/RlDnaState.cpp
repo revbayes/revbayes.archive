@@ -67,6 +67,26 @@ const TypeSpec& DnaState::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& DnaState::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& DnaState::getTypeSpec( void ) const {
     
@@ -78,8 +98,8 @@ const TypeSpec& DnaState::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool DnaState::isConvertibleTo(const TypeSpec& type) const {
+bool DnaState::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 

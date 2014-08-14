@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "Argument.h"
+#include "ConverterNode.h"
 #include "Environment.h"
 #include "Integer.h"
 #include "ModelVector.h"
@@ -213,7 +214,7 @@ std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
                 oneOffsetIndices.push_back( oneOffsetIndex );
             }
             
-            else if ( indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) )
+            else if ( indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), true ) )
             {
                 // Convert to Natural
                 RevObject* theNaturalIndex = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
@@ -278,16 +279,15 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
         RevPtr<Variable> theIndex = ( *it )->evaluateDynamicContent( env );
     
         // We ensure that the variables are of type Natural or can be converted to Natural numbers.
-        // No sense in checking indices against permissible range here; errors are thrown later if
-        // we are out of range by the container or member object.
-        // TODO: This is static type conversion, needs to be replaced with dynamic type conversion
+        // No sense in checking indices against permissible range here; errors are thrown later by
+        // the container or member object if we are out of range.
         if ( !theIndex->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
         {
-            if (theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) )
+            if (theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), false ) )
             {
-                RevObject* convObj = theIndex->getRevObject().convertTo( Natural::getClassTypeSpec() );
+                ConverterNode<Natural>* converterNode = new ConverterNode<Natural>( "", theIndex );
                 
-                theIndex = new Variable( convObj );
+                theIndex = new Variable( new Natural( converterNode ) );
             }
             else
                 throw RbException( "No known conversion of type '" + theIndex->getRevObject().getType() + "' to 'Natural', required for index");

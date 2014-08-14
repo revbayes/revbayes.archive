@@ -57,7 +57,8 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 
 
 /** Add function to table */
-void FunctionTable::addFunction(const std::string name, Function *func) {
+void FunctionTable::addFunction( const std::string name, Function *func )
+{
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
 
@@ -145,7 +146,7 @@ void FunctionTable::eraseFunction(const std::string& name) {
 /** Execute function and get its variable value (evaluate once) */
 RevPtr<Variable> FunctionTable::executeFunction(const std::string& name, const std::vector<Argument>& args) {
 
-    Function&         theFunction = findFunction(name, args);
+    Function&         theFunction = findFunction(name, args, true);
     RevPtr<Variable>  theValue    = theFunction.execute();
 
     theFunction.clear();
@@ -213,7 +214,7 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
 
 /** Find function (also processes arguments) */
-Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args) {
+Function& FunctionTable::findFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
     
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
@@ -226,7 +227,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         {
             // \TODO: We shouldn't allow const casts!!!
             FunctionTable* pt = const_cast<FunctionTable*>(parentTable);
-            return pt->findFunction(name, args);
+            return pt->findFunction(name, args, once);
         }
         else
         {
@@ -236,7 +237,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
     }
     retVal = equal_range(name);
     if (hits == 1) {
-        if (retVal.first->second->checkArguments(args,NULL) == false) 
+        if (retVal.first->second->checkArguments(args,NULL,once) == false)
         {
             
             std::ostringstream msg;
@@ -270,7 +271,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         for (it=retVal.first; it!=retVal.second; it++) 
         {
             matchScore->clear();
-            if ( (*it).second->checkArguments(args, matchScore) == true ) 
+            if ( (*it).second->checkArguments(args, matchScore, once) == true )
             {
                 if ( bestMatch == NULL ) 
                 {
@@ -379,10 +380,10 @@ const Function& FunctionTable::getFunction( const std::string& name ) {
 
 
 /** Get function. This function will throw an error if the name and args do not match any named function. */
-Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args) {
+Function& FunctionTable::getFunction(const std::string& name, const std::vector<Argument>& args, bool once) {
     
     // find the template function
-    Function& theFunction = findFunction(name, args);
+    Function& theFunction = findFunction(name, args, once);
 
     return theFunction;
 }
@@ -513,56 +514,22 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
     if (printTable.size() == 0)
         return;
 
-    size_t maxFunctionNameLength = 6;   // Length of '<name>'
-    size_t maxReturnTypeLength   = 12;  // Length of '<returnType>'
-
     for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
     {
-        if ( i->first.size() > maxFunctionNameLength )
-            maxFunctionNameLength = i->first.size();
-        if ( i->second->getReturnType().getType().size() > maxReturnTypeLength )
-            maxReturnTypeLength = i->second->getReturnType().getType().size();
-    }
+        std::ostringstream s("");
 
-    int nameLen       = int( maxFunctionNameLength );
-    int returnTypeLen = int( maxReturnTypeLength );
-    int argTabLen     = nameLen + returnTypeLen + 14;   // position of closing parenthesis
-    int headerLen     = nameLen + returnTypeLen + 33;
-
-    o << std::setw(nameLen) << std::left << "<name>" << " = ";
-    o << std::setw(returnTypeLen) << "<returnType> " << " function (<formal arguments>)" << std::endl;
-    o << std::setw(headerLen) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
-
-    for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
-    {
-        o << std::setw(nameLen) << i->first << " = ";
+        s << i->first << " = ";
         
-        o << std::setw(returnTypeLen) << i->second->getReturnType().getType() << " function " << std::setw(1);
+        s << i->second->getReturnType().getType() << " function ";
         
         const RevLanguage::ArgumentRules& argRules = i->second->getArgumentRules();
         
-        if ( argRules.size() > 1 )
-        {
-            o << "(" << std::endl;
-            for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
-            {
-                o << std::setw(argTabLen) << std::setfill(' ') << " " << std::setw(1);
-                (*i)->printValue(o);
-                if ( i != argRules.end() - 1 )
-                    o << ",";
-                o << std::endl;
-            }
-            o << std::setw(argTabLen) << std::setfill(' ') << std::right << ")" << std::left << std::setw(1) << std::endl;
-        }
-        else
-        {
-            o << "(";
-            for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
-            {
-                (*i)->printValue(o);
-            }
-            o << ")" << std::endl;
-        }
+        s << "(";
+        for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
+            (*i)->printValue( s );
+        s << ")" << std::endl;
+        
+        o << StringUtilities::oneLiner( s.str(), 70 ) << std::endl;
     }
 }
 

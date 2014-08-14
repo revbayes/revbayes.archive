@@ -45,7 +45,7 @@ class ArgumentRule {
         const std::vector<TypeSpec>&        getArgumentTypeSpec(void) const;                                                                    //!< Get argument type spec
         virtual const Variable&             getDefaultVariable(void) const;                                                                     //!< Get default argument
         bool                                hasDefault(void) const;                                                                             //!< Has default?
-        virtual bool                        isArgumentValid(const RevPtr<const Variable> &var, bool convert = false) const;                     //!< Is var valid argument?
+        virtual bool                        isArgumentValid(const RevPtr<const Variable> &var, bool once) const;                                //!< Is var a valid argument?
         bool                                isConstant(void) const;
         virtual bool                        isEllipsis(void) const;
     

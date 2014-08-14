@@ -340,8 +340,12 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     unsigned n1 = counts[1];
 
     // forbid extinction events
-    if (counts[1] == 1 && forbidExtinction)
-        n1 = 0;
+//    if (counts[1] == 1 && forbidExtinction)
+//        n1 = 0;
+    if (counts[1] == 0 && forbidExtinction)
+    {
+        return 0.0;
+    }
     
     // get characters in each state
     double r0 = n1;

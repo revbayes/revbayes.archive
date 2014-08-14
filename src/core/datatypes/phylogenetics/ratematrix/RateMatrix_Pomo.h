@@ -36,9 +36,10 @@ namespace RevBayesCore {
     class RateMatrix_Pomo : public AbstractRateMatrix {
         
     public:
-        RateMatrix_Pomo(size_t n);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_Pomo(const RateMatrix_Pomo& m);                                                                               //!< Copy constructor
-        virtual                         ~RateMatrix_Pomo(void);                                                                  //!< Destructor
+        RateMatrix_Pomo(size_t n);                                                  //!< Construct rate matrix with n states
+        RateMatrix_Pomo(size_t n,  const size_t vps, const std::vector<double> mr, const std::vector<double> sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
+        RateMatrix_Pomo(const RateMatrix_Pomo& m);                                  //!< Copy constructor
+        virtual                         ~RateMatrix_Pomo(void);                     //!< Destructor
         
         // overloaded operators
         RateMatrix_Pomo&                operator=(const RateMatrix_Pomo& r);
@@ -63,6 +64,7 @@ namespace RevBayesCore {
         std::vector<double>                 stationaryFreqs;        //!< Holds the stationary frequencies
 
         void buildRateMatrix(void);
+        double computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1);
         void computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
         inline void squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
     };

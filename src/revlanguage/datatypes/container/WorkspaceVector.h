@@ -415,7 +415,7 @@ void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
     {
         o << "[" << i + 1 << "]" << std::endl;
         if ( elements[i]->isNAVar() )
-            o << "NA" << std::endl;
+            o << "NA";
         else
             elements[i]->getRevObject().printValue( o );
         o << std::endl << std::endl;

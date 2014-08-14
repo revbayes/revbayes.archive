@@ -121,27 +121,22 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& Taxon::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& Taxon::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        ArgumentRules* speciesNameArgRules = new ArgumentRules();
-        methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
-//
-//        ArgumentRules* namesArgRules = new ArgumentRules();
-//        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 
@@ -173,4 +168,23 @@ void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const V
         RevObject::setConstMemberVariable(name, var);
     }
 }
+
+
+/** Make methods for this class */
+RevLanguage::MethodTable Taxon::makeMethods(void) const
+{ 
+    MethodTable methods = MethodTable();
+        
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
+
+//    ArgumentRules* namesArgRules = new ArgumentRules();
+//    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+        
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::Taxon>::makeMethods() );
+
+    return methods;
+}
+
 

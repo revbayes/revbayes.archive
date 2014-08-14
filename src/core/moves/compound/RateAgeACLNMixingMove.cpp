@@ -67,13 +67,10 @@ double RateAgeACLNMixingMove::performCompoundMove( void ) {
 	
 	size_t nr = nrates.size();
 	rootR = rootR / c;
-	size_t rID = tau.getRoot().getIndex();
 	for(size_t i=0; i<nrates.size(); i++){
-		if( i != rID ){
-			double curRt = nrates[i];
-			double newRt = curRt / c;
-			nrates[i] = newRt;
-		} else nrates[i] = rootR;
+        double curRt = nrates[i];
+        double newRt = curRt / c;
+        nrates[i] = newRt;
 	}
 	
 	storedC = c;
@@ -107,14 +104,11 @@ void RateAgeACLNMixingMove::rejectCompoundMove( void ) {
 	}
 	
 	size_t nr = nrates.size();
-	size_t rID = tau.getRoot().getIndex();
 	rootR = rootR * c;
 	for(size_t i=0; i<nr; i++){
-		if( i != rID ){
-			double curRt = nrates[i];
-			double undoRt = curRt * c;
-			nrates[i] = undoRt;
-		} else nrates[i] = rootR;
+        double curRt = nrates[i];
+        double undoRt = curRt * c;
+        nrates[i] = undoRt;
 	}
 	
 #ifdef ASSERTIONS_TREE
