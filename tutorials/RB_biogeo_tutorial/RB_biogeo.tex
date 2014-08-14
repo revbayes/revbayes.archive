@@ -434,54 +434,73 @@ RevBayes > data.nchar() == atlas.nareas()
 
 Here, we will compose our rate matrix, {\bf Q}, parameterized by the transition rates, $\lambda$, and the distance dependent dispersal power parameter, $\beta$.
 
-First, for $\lambda$, we will create a vector of two rates, where {\tt lambda[1]} corresponds to the rate of area loss (local extinction) and {\tt lambda[2]} corresponds to the rate of area gain (dispersal).
+First, for $\lambda$, we will create a vector of two rates, where {\tt glr[1]} corresponds to the rate of area loss (local extinction) and {\tt glr[2]} corresponds to the rate of area gain (dispersal).
 Importantly, we must assign prior distributions to these parameters.
 Here, we'll use an exponential distribution with rate 10.0, which has a mean of 0.1.
 Because our tree is in units of millions of years, this means our prior expectation is that any given species undergoes one dispersal event and one extinction event per area per ten million years.
 To introduce this to the model, type
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > for (i in 1:2) lambda[i] ~ dnExponential(10.0)
+RevBayes > for (i in 1:2) glr[i] ~ dnExponential(10.0)
 \end{lstlisting}
 \end{snugshade}
 
-Next, we will create {\tt beta}, which determines the importance of geographical distance to dispersal.
+Next, we will create {\tt dp}, which determines the importance of geographical distance to dispersal.
 Remember that values of $\beta$ far from zero means distance is important.
 So, if we we assign a prior that pulls $\beta$ towards zero, then posterior values of $\beta$ far from zero indicate the range data are informative of the importance of distance to dispersal.
-We'll use an exponential distribution with rate 10.0 (mean 0.1) as a prior for {\tt beta}.
+We'll use an exponential distribution with rate 10.0 (mean 0.1) as a prior for {\tt dp}.
 
-We will also create a deterministic node to modify the rate of dispersal between areas by evaluating {\tt beta} and {\tt atlas}.
+We will also create a deterministic node to modify the rate of dispersal between areas by evaluating {\tt dp} and {\tt atlas}.
 This node is determined by the function {\tt fnBiogeoGRM}, where GRM stands for ``geographical rate modifier'', and plays the role of the $\eta(\cdot)$ rate-modifier function mentioned earlier.
 We will tell the {\tt fnBiogeoGRM} function to modify dispersal rates based on distances and whether or not the area exists during an epoch.
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > beta ~ dnExponential(10.0)
-RevBayes > grm := fnBiogeoGRM(atlas=atlas, distancePower=beta, useAvailable=true, useDistance=true)
+RevBayes > dp ~ dnExponential(10.0)
+RevBayes > grm := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAvailable=true, useDistance=true)
 \end{lstlisting}
 \end{snugshade}
 
 Now we need a deterministic node to represent the rate matrix, {\bf Q}.
 To determine the value of this node, we'll use the function {\tt fnBiogeoDEC} to assign our model parameters to transition rates as described in the introduction.
-As input, we'll pass our gain and loss rates, {\tt lambda}, and our geographical rate modifier, {\tt grm}.
+As input, we'll pass our gain and loss rates, {\tt glr}, and our geographical rate modifier, {\tt grm}.
 In addition, we'll inform the function of the number of areas in our analysis and whether we will allow species to be absent in all areas (i.e. have the null range).
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > Q_like := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+RevBayes > Q_like := fnBiogeoDEC(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
 \end{lstlisting}
 \end{snugshade}
 
+For the model's final node, we create the stochastic node for the continuous-time Markov chain (CTMC).
+This node's distribution is {\tt dnPhyloDACTMC} where {\tt DA} indicates the CTMC uses data-augmentation to compute the likelihood rather than Felsenstein's pruning algorithm.
+Because biogeographic characters 
+To create the distribution, we must pass it our {\tt tree} and {\tt Q_like} objects, but additionally inform the distribution that it will be handling biogeographic characters, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), it will assign zero probability to a transition away from the null range state.
 
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > M ~ dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+\end{lstlisting}
+\end{snugshade}
 
+So we may evaluate the graphical model's likelihood, we tell the CTMC to observe the {\tt data} object, which will prime the model with data-augmented character histories.
+Now {\tt M} has a defined likelihood value.
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > M.clamp(data)
+RevBayes > M.lnProb
+   -76.0193
+\end{lstlisting}
+\end{snugshade}
 
+Finally, we encapsulate our graphical model into a {\tt Model} object, which can learn the model's structure and dependencies from any model parameter.
+\begin{snugshade}
+\begin{lstlisting}
+my_model <- model(glr)
+\end{lstlisting}
+\end{snugshade}
 
-
-
-
-
-
-
+\subsection{Running the analysis}
 
 
 
