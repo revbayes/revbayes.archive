@@ -291,6 +291,8 @@ For this tutorial, the phylogeny is assumed to contain no uncertainty.
 
 \subsection{Atlas file}
 
+The geography used in this tutorial represents the Hawaiian archipelago, a chain 
+
 Although the model will use discrete-state biogeographic ranges, geographical area is naturally continuous.
 This means we must impose some discretization upon the geography to designate a set of biogeographically meaningful characters called areas.
 Different methods use different criteria for this discretization, so it is best to perform the discretization yourself rather than blindly using the discretization given from a previous study or method (but do blindly use the dataset included in this tutorial).
@@ -298,6 +300,9 @@ Some geographies have natural discretizations: for instance, the Hawaiian archip
 For many geographies, however, it may unclear how to perform this discretization.
 Much like morphological analyses, you might choose to choose areas based on expert opinion, based on some model, or using some ``naive'' uniform discretization.
 This procedure is not part of the tutorial, but you should be aware that area definitions are not always obvious or objective.
+
+
+\newpage
 
 \noindent \\ \impmark  Open the file \texttt{examples/hawaii\_dynamic.atlas.txt}.
 
@@ -310,13 +315,24 @@ This procedure is not part of the tutorial, but you should be aware that area de
   [{
     "name":"epoch1",
     "start_age":10.0,
+    "end_age":3.7,
+    "areas":
+      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50,  "dispersalValues": [ 1,0,0,0 ] },
+       { "name": "Oahu",   "latitude":21.47, "longitude": -157.98, "dispersalValues": [ 0,0,0,0 ] },
+       { "name": "Maui",   "latitude":20.80, "longitude": -156.33, "dispersalValues": [ 0,0,0,0 ] },
+       { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 0,0,0,0 ] }]
+  },
+  ... epoch2 and epoch3 omitted ...
+  {
+    "name":"epoch4",
+    "start_age":0.5,
     "end_age":0.0,
     "areas":
-      [{ "name": "Kauai",  "latitude":22.0833, "longitude": -159.5000, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Oahu",   "latitude":21.4722, "longitude": -157.9772, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Maui",   "latitude":20.8000, "longitude": -156.3333, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Hawaii", "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 1,1,1,1 ] }]
-  }]
+      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50,  "dispersalValues": [ 1,1,1,1 ] },
+       { "name": "Oahu",   "latitude":21.47, "longitude": -157.98, "dispersalValues": [ 1,1,1,1 ] },
+       { "name": "Maui",   "latitude":20.80, "longitude": -156.33, "dispersalValues": [ 1,1,1,1 ] },
+       { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 1,1,1,1 ] }]  }
+  ]
 }
 \end{lstlisting}
 \end{framed}
@@ -325,16 +341,20 @@ This is called the Atlas file, which uses a file format called JSON.
 JSON is a lightweight format used to assign values to variables in a hierarchical manner.
 There are three main tiers to the hierarchy in the Atlas file: the atlas, the epoch, and the area.
 In the lowest tier, each area corresponds to a character in the model and is assigned it's own properties.
-In the middle tier, each epoch contains the set of homologous areas (characters), but importantly the properties of these areas may take on different values during different intervals of time, as given by the {\tt start\_age} and {\tt end\_age} variables.
+In the middle tier, each epoch contains the set of homologous areas (characters) that may be part of a species' range, but importantly the properties of these areas may take on different values during different intervals of time, as given by the {\tt start\_age} and {\tt end\_age} variables.
 Because the tree and range evolution model also operate on units of geological time, the rates of area gain and loss can condition on areas' properties as a function of time.
 Sometimes these models are called stratified models or epochal models.
 Finally, the atlas contains the array of epochs in the highest tier.
 
-Each area is assigned a latitude and longitude to represent its geographical coordinates, ideally the area's centroid.
+Each area is assigned a {\tt latitude} and {\tt longitude} to represent its geographical coordinates, ideally the area's centroid.
 If a centroid does not represent the distance between areas, splitting the area into multiple smaller areas is reasonable.
+The data augmentation approach used in this analysis allows you to use more areas as desired, whereas matrix exponentiation methods are limited to approximately ten areas.
 The distance between any two areas' coordinates inform to distance-dependent dispersal parameter ($\beta$ from the $\eta(\cdot)$ function) for range expansion events, so coordinates roughly close to the center of the area suffice.
 
-In addition, whether an area is habitable is 
+In addition, each area is marked as habitable or not using the {\tt dispersalValues} array.
+The elements in the array correspond to the other areas defined in the analysis.
+For example, in {\tt epoch1}, Kauai's {\tt dispersalValues} is equal to {\tt [ 1,0,0,0 ]}, which indicates Kauai exists at that point in time but it is not in contact with any other areas, i.e. the range in that area cannot expand into other areas.
+The {\tt dispersalValues} for Oahu, Maui, and Hawaii are all equal to {\tt [ 0,0,0,0 ]}, meaning no species may be present in that area during the time interval of {\t epoch1} during ages from 10.0 to 3.7. In contrast, {\tt epoch4}, from ages 0.5 to the present, range expansions may occur between any pair of areas and any area may be included in a species' range.
 
 \noindent \\ \impmark Open the file \texttt{examples/my\_areas.txt}.
 
