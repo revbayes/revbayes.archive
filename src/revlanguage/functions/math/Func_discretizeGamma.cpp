@@ -1,14 +1,7 @@
-//
-//  Func_discretizeGamma.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 9/8/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_discretizeGamma.h"
+#include "Integer.h"
 #include "NormalizeVectorFunction.h"
 #include "ModelVector.h"
 #include "RbUtil.h"
@@ -63,7 +56,7 @@ const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const {
         argumentRules.push_back( new ArgumentRule( "shape", true, RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "rate", true, RealPos::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "num_cats", true, Integer::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "median", true, RlBoolean::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "median", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         rulesSet = true;
     }
     

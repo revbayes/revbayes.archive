@@ -50,7 +50,7 @@ MemberProcedure* MemberProcedure::clone(void) const
 RevPtr<Variable> MemberProcedure::execute( void )
 {
     
-    RevPtr<Variable> retValue = object->getRevObject().executeMethod( funcName, args );
+    RevPtr<Variable> retValue = object->getRevObject().executeMethod( getName(), args );
     
     try
     {
@@ -121,12 +121,5 @@ void MemberProcedure::setMemberObject( const RevPtr<Variable> &obj) {
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;
-}
-
-
-
-void MemberProcedure::setMethodName(std::string const &name) {
-    
-    funcName = name;
 }
 

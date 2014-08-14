@@ -91,7 +91,8 @@ RevPtr<Variable> SyntaxControlAssignment::evaluateContent( Environment& env )
     if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) )
     {
         // We are not of a derived type (or the same type) so we need to cast
-        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) )
+        // This is a one-time type conversion, so we set the once flag to true
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec(), true ) )
         {
             newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
         }

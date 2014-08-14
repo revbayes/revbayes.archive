@@ -48,13 +48,10 @@ namespace RevLanguage {
         const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
         bool                                isProcedure(void) const;                                                    //!< Is this a procedure?
         void                                setMemberObject(const RevPtr<Variable> &obj);                               //!< Set the member object to which this function belongs
-        void                                setMethodName(const std::string& name);                                     //!< Set name of member method
         
         
     protected:
         const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
-        std::string                         funcName;                                                                   //!< Name of member method
-        
         RevPtr<Variable>                    object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
         const TypeSpec                      returnType;                                                                 //!< Return type (different for different member functions)
         

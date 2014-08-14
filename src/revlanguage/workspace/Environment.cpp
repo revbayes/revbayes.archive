@@ -339,9 +339,9 @@ const Function& Environment::getFunction(const std::string& name)
 
 
 /* Get function. This call will throw an error if the function is missing. */
-Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args)
+Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once)
 {
-    return functionTable.getFunction(name, args);
+    return functionTable.getFunction(name, args, once);
 }
 
 

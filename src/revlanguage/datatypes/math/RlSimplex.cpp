@@ -79,21 +79,6 @@ RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t>& oneOffs
 }
 
 
-/**
- * We override this function here to stop the parser
- * from creating a reference to one of our elements,
- * allowing the user to modify that element. Instead of
- * throwing an error, we simply create a copy of the
- * element, which leaves our element intact. This is
- * done by calling the getElementFromValue function,
- * which does exactly that.
- */
-RevPtr<Variable> Simplex::getElement(size_t oneOffsetIndex)
-{
-    return getElementFromValue( oneOffsetIndex );
-}
-
-
 /** Get Rev type of object */
 const std::string& Simplex::getClassType(void) { 
     
@@ -109,6 +94,40 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Container::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * We override this function here to stop the parser
+ * from creating a reference to one of our elements,
+ * allowing the user to modify that element. Instead of
+ * throwing an error, we simply create a copy of the
+ * element, which leaves our element intact. This is
+ * done by calling the getElementFromValue function,
+ * which does exactly that.
+ */
+RevPtr<Variable> Simplex::getElement(size_t oneOffsetIndex)
+{
+    return getElementFromValue( oneOffsetIndex );
+}
+
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& Simplex::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
 }
 
 
