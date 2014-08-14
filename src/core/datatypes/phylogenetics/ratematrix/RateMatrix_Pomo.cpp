@@ -39,8 +39,8 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<d
 
 
 /** Copy constructor */
-RateMatrix_Pomo::RateMatrix_Pomo(const RateMatrix_Pomo& m) : AbstractRateMatrix( m ) {
-    
+RateMatrix_Pomo::RateMatrix_Pomo(const RateMatrix_Pomo& m) : AbstractRateMatrix( m ), N(m.N), matrixSize(m.matrixSize), mu(m.mu), s(m.s), precision(m.precision), stationaryFreqs(m.stationaryFreqs) {
+
 }
 
 
@@ -250,14 +250,12 @@ void RateMatrix_Pomo::buildRateMatrix(void)
         //cell1 = (N - i) /  (temp + N - i) * i / N;
         temp = (double) (N-i-1);
         cell1 = computeEntryFromMoranProcessWithSelection(1, 0, temp);
-        std::cout << "temp: "<< temp << " and cell1: " << cell1 << " in " << firstCell+i <<std::endl;
         (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
         //Gaining one A, from iA to (i+1)A
         //cell2 = temp / (temp + N - i) * (N-i) / N;
         if (i != 8 ) {
             temp = (double) (i+1);
             cell2 = computeEntryFromMoranProcessWithSelection(0, 1, temp);
-            std::cout << "temp: "<< temp << " and cell2: " << cell2 <<" in " << firstCell+i <<std::endl;
         }
         else {
             cell2 = 0.0;
@@ -418,7 +416,6 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     }
     
     //In the first 4 rows/columns, the diagonal is defined such that the sum by line is 1.
-    std::cout << "size: " << matrixSize <<std::endl;
     double sum = 0.0;
     for (size_t i=0; i< matrixSize; i++)
     {
@@ -463,7 +460,7 @@ double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1,
 
 /** Calculate the transition probabilities */
 void RateMatrix_Pomo::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
-     
+    std::cout << "In calculateTransitionProbabilities"<<std::endl;
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
@@ -541,6 +538,8 @@ void RateMatrix_Pomo::updateMatrix( void ) {
 
 void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
     std::cout << "HEHEH3 "<<mr[0] <<std::endl;
+    std::cout << "HEHEH4 "<<mu[0][1] <<std::endl;
+
     mu[0][1] = mr[0];
     mu[0][2] = mr[1];
     mu[0][3] = mr[2];

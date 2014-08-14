@@ -1,4 +1,5 @@
 #include "BetaDistribution.h"
+#include "BetaSimplexMove.h"
 #include "Clade.h"
 #include "ConstantNode.h"
 #include "ConstantRateBirthDeathProcess.h"
@@ -59,7 +60,7 @@ bool TestPomoModel::run( void ) {
     GLOBAL_RNG->setSeed(seed);
     
     double trueNE = 100;
-    size_t nGeneTrees = 50;
+    size_t nGeneTrees = 10;
     size_t individualsPerSpecies = 10;
     
     //    #if defined (USE_LIB_OPENMP)
@@ -180,6 +181,7 @@ bool TestPomoModel::run( void ) {
     AbstractCharacterData* concatenatedSimSeqsPol = NULL;
     PolymorphicStateConverter* psc = new PolymorphicStateConverter();
     std::cout << "Number of sequence data sets: "<< simSeqs.size() <<std::endl;
+    std::cout << "Each data set has length "<< simSeqs[0]->getValue().getNumberOfCharacters() <<std::endl;
     for (size_t i = 0; i<simSeqs.size(); ++i) {
         simSeqsPol.push_back(psc->convertData(simSeqs[i]->getValue(), virtualPopulationSize, sequenceNameToSpeciesName));
         if (concatenatedSimSeqsPol== NULL ) {
@@ -190,7 +192,7 @@ bool TestPomoModel::run( void ) {
         }
     }
     std::cout << "\t\tSequence data converted into Pomo format."<<std::endl;
-    
+    std::cout << "\t\tTotal number of sites: "<<concatenatedSimSeqsPol->getNumberOfCharacters() << std::endl;
     /* set up the model graph */
     
     //////////////////////
@@ -259,16 +261,23 @@ bool TestPomoModel::run( void ) {
     //////////////////////////
     // Setting up the model //
     //////////////////////////
-/////I stopped here. From there on, need to adapt the code to the Pomo model.
+    for (size_t i = 0; i< concatenatedSimSeqsPol->getNumberOfTaxa(); ++i) {
+        std::cout <<concatenatedSimSeqsPol->getTaxonNameWithIndex(i) << " : "<< concatenatedSimSeqsPol->getTaxonData(i).getCharacter(0) << " : "<< concatenatedSimSeqsPol->getTaxonData(i).getCharacter(0).getNumberOfStates() <<std::endl;
+    }
+    
+    
     GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree>(tau, 4, true, concatenatedSimSeqsPol->getNumberOfCharacters());
     phyloCTMC->setClockRate( clockRate );
     phyloCTMC->setRateMatrix( q );
+    phyloCTMC->setRootFrequencies( rf );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
     charactermodel->clamp( concatenatedSimSeqsPol );
     
     /* add the moves */
     RbVector<Move> moves;
+    //Move on the age
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(div, 1.0), 2, true ) );
+    //Moves on the topology
     moves.push_back( new NearestNeighborInterchange( tau, 5.0 ) );
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
@@ -276,11 +285,15 @@ bool TestPomoModel::run( void ) {
     moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
- /*   moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( er, 100.0, 6, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( pi, 100.0, 4, 0, true, 2.0 ) );
-    */
+    //Moves on the model parameters
+    moves.push_back( new SimplexMove( mr, 10.0, 1, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( fnrf, 10.0, 1, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( mr, 100.0, 12, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( fnrf, 100.0, 4, 0, true, 2.0 ) );
+    moves.push_back( new BetaSimplexMove( fopar, 10.0, 1, 0 ) ); //Parameters chosen arbitrarily...
+    moves.push_back( new SimplexMove( selco, 10.0, 1, 0, true, 2.0 ) );
+    moves.push_back( new SimplexMove( selco, 100.0, 4, 0, true, 2.0 ) );
+
     // add some tree stats to monitor
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
     
