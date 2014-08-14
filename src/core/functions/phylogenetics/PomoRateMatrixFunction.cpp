@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode<int > *ps, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< std::vector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1)) ), populationSize( ps ), mutationRates( mr ), selectionCoefficients ( sc ) {
+PomoRateMatrixFunction::PomoRateMatrixFunction(const TypedDagNode< unsigned int > *ps, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< std::vector<double>  > *sc) : TypedFunction<RateMatrix>( new RateMatrix_Pomo(4 + 6*(ps->getValue() - 1), ps->getValue(), mr->getValue(), sc->getValue()) ), populationSize( ps ), mutationRates( mr ), selectionCoefficients ( sc ) {
     // add the lambda parameter as a parent
     addParameter( populationSize );
     addParameter( mutationRates );
@@ -41,8 +41,7 @@ void PomoRateMatrixFunction::update( void )
     // set the base frequencies
     static_cast< RateMatrix_Pomo* >(value)->setMutationRates( r );
     static_cast< RateMatrix_Pomo* >(value)->setSelectionCoefficients( s );
-    
-    value->updateMatrix();
+    static_cast< RateMatrix_Pomo* >(value)->updateMatrix();
     
 }
 

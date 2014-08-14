@@ -170,7 +170,10 @@ RevObject* ModelVectorAbstractElement<rlType>::convertTo(const TypeSpec &type) c
     }
     
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
-    return this->ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::convertTo( type );
+    return this->ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
+    
+    // @Fredrik: old return code
+    // return this->ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::convertTo( type );
 }
 
 

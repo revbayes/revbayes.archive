@@ -27,6 +27,7 @@ namespace RevBayesCore {
         
     public:
         PolymorphicState(void);                                     //!< Default constructor
+        PolymorphicState(unsigned int vps);                                     //!< Constructor with virtual population size
         PolymorphicState(const PolymorphicState& s);                        //!< Copy constructor
         PolymorphicState(std::string s);                                   //!< Constructor with an observation
         
@@ -54,6 +55,7 @@ namespace RevBayesCore {
         bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
         void                            setState(std::string symbol);                       //!< Set the discrete observation
         void                            setState(char symbol);                              //!< Set the discrete observation
+        void                            setState(size_t stateIndex);                        //!< Set the discrete observation
         void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
         void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state

@@ -29,7 +29,7 @@ AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBaye
 
 
 
-AbstractCharacterData& AbstractCharacterData::add(const RevObject &d)
+AbstractCharacterData* AbstractCharacterData::add(const RevObject &d) const
 {
     const AbstractCharacterData* tmp = dynamic_cast<const AbstractCharacterData*>( &d );
     if ( tmp != NULL )
@@ -44,12 +44,13 @@ AbstractCharacterData& AbstractCharacterData::add(const RevObject &d)
 
 
 
-AbstractCharacterData& AbstractCharacterData::add(const AbstractCharacterData &d)
+AbstractCharacterData* AbstractCharacterData::add(const AbstractCharacterData &d) const
 {
-    dagNode->getValue().add( d.getValue() );
+    AbstractCharacterData* cloneObj = clone();
+    cloneObj->getDagNode()->getValue().add( d.getValue() );
     
-    // return a reference to myself
-    return *this;
+    // return the copy
+    return cloneObj;
 }
 
 

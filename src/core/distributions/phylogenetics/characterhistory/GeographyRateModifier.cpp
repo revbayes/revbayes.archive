@@ -232,59 +232,6 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     return r;
 }
 
-double GeographyRateModifier::computeRateModifier_test(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
-{
-    if (!useDistanceDependence || distancePower == 0.0 || newState->getState() == 0)
-    {
-        return 1.0;
-    }
-    
-    unsigned epochIndex = getEpochIndex(age);
-    
-    // determine which areas are present and which are absent
-    present.clear();
-    absent.clear();
-    for (unsigned i = 0; i < numAreas; i++)
-    {
-        if (currState[i]->getState() == 0)
-            absent.insert(currState[i]);
-        else
-            present.insert(currState[i]);
-    }
-    
-    if (present.size() == 0)
-        return 1.0;
-    
-    // get sum of distances_ij^beta
-    double rate = 0.0;
-    double sum = 0.0;
-    std::set<CharacterEvent*>::iterator it_p;
-    std::set<CharacterEvent*>::iterator it_a;
-    for (it_p = present.begin(); it_p != present.end(); it_p++)
-    {
-        size_t idx_p = (*it_p)->getIndex();
-        
-        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
-        {
-            size_t idx_a = (*it_a)->getIndex();
-            size_t idx_e = epochIndex*epochOffset + idx_p*areaOffset + idx_a;
-            
-            double d = geographicDistancePowers[ idx_e  ];
-            if  (useAreaAdjacency && dispersalValues[ idx_e ] == 0)
-                d = 0.0;
-            
-            sum += d;
-            
-            if (idx_a == newState->getIndex())
-                rate += d;
-        }
-    }
-    
-    // get sum-normalized rate-modifier
-    double r = absent.size() * rate / sum;
-    
-    return r;
-}
 
 double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
@@ -601,3 +548,61 @@ void GeographyRateModifier::printAll(void)
 //    print(geographicDistancePowers);
 //    
 }
+
+
+// old code
+
+
+//double GeographyRateModifier::computeRateModifier_test(std::vector<CharacterEvent *> currState, CharacterEvent* newState, double age)
+//{
+//    if (!useDistanceDependence || distancePower == 0.0 || newState->getState() == 0)
+//    {
+//        return 1.0;
+//    }
+//    
+//    unsigned epochIndex = getEpochIndex(age);
+//    
+//    // determine which areas are present and which are absent
+//    present.clear();
+//    absent.clear();
+//    for (unsigned i = 0; i < numAreas; i++)
+//    {
+//        if (currState[i]->getState() == 0)
+//            absent.insert(currState[i]);
+//        else
+//            present.insert(currState[i]);
+//    }
+//    
+//    if (present.size() == 0)
+//        return 1.0;
+//    
+//    // get sum of distances_ij^beta
+//    double rate = 0.0;
+//    double sum = 0.0;
+//    std::set<CharacterEvent*>::iterator it_p;
+//    std::set<CharacterEvent*>::iterator it_a;
+//    for (it_p = present.begin(); it_p != present.end(); it_p++)
+//    {
+//        size_t idx_p = (*it_p)->getIndex();
+//        
+//        for (it_a = absent.begin(); it_a != absent.end(); it_a++)
+//        {
+//            size_t idx_a = (*it_a)->getIndex();
+//            size_t idx_e = epochIndex*epochOffset + idx_p*areaOffset + idx_a;
+//            
+//            double d = geographicDistancePowers[ idx_e  ];
+//            if  (useAreaAdjacency && dispersalValues[ idx_e ] == 0)
+//                d = 0.0;
+//            
+//            sum += d;
+//            
+//            if (idx_a == newState->getIndex())
+//                rate += d;
+//        }
+//    }
+//    
+//    // get sum-normalized rate-modifier
+//    double r = absent.size() * rate / sum;
+//    
+//    return r;
+//}

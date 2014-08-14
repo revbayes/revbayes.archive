@@ -127,6 +127,7 @@
 #include "Move_DPPScaleCatValsMove.h"
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
+#include "Move_DPPScaleCatAllocateAux.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -140,6 +141,7 @@
 #include "Move_RealNodeValTreeSliding.h"
 #include "Move_RealNodeValTreeTranslation.h"
 #include "Move_ScaleSingleACLNRates.h"
+#include "Move_ACLNMixingStep.h"
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
 #include "Move_FNPR.h"
@@ -151,6 +153,7 @@
 #include "Move_RateAgeBetaShift.h"
 #include "Move_RootTimeSlide.h"
 #include "Move_SubtreeScale.h"
+#include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
 #include "Move_WeightedNodeTimeSlide.h"
 
@@ -310,6 +313,10 @@
 #include "Func__unot.h"
 #include "Func__rladd.h"
 #include "Func__rlvectorIndexOperator.h"
+#include "Func__scalarVectorAdd.h"
+#include "Func__scalarVectorDiv.h"
+#include "Func__scalarVectorMult.h"
+#include "Func__scalarVectorSub.h"
 #include "Func__sub.h"
 #include "Func__uminus.h"
 #include "Func__vectorIndexOperator.h"
@@ -336,11 +343,13 @@
 #include "Func_floor.h"
 #include "Func_ln.h"
 #include "Func_log.h"
+#include "Func_mean.h"
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
 #include "Func_round.h"
 #include "Func_simplex.h"
+#include "Func_sum.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
 
@@ -350,7 +359,6 @@
 #include "Func_discretizeGamma.h"
 #include "Func_dppConcFromMean.h"
 #include "Func_dppMeanFromConc.h"
-#include "Func_mean.h"
 #include "Func_fnNormalizedQuantile.h"
 #include "Func_numUniqueInVector.h"
 
@@ -394,9 +402,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new ModelVector<ModelVector<Real> >()      );
         addType( new ModelVector<ModelVector<Natural> >()   );
         addType( new ModelVector<ModelVector<Integer> >()   );
+        addType( new ModelVector<TimeTree>());
         
         // Model vectors of abstract elements
         addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
+        addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
+        addType( new ModelVectorAbstractElement<RateMatrix>() );
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
@@ -419,6 +430,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
         addType( new RevAbstractType( AbstractCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
+        addType( new RevAbstractType( AbstractDiscreteCharacterData::getClassTypeSpec(), new DiscreteCharacterData<DnaState>() ) );
         addType( new DiscreteCharacterData<AminoAcidState>()    );
         addType( new DiscreteCharacterData<DnaState>()          );
         addType( new DiscreteCharacterData<RnaState>()          );
@@ -505,6 +517,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
         addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
+        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
@@ -533,6 +546,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRateAgeBetaShift",        new Move_RateAgeBetaShift() );
         addTypeWithConstructor("mvRootTimeSlide",           new Move_RootTimeSlide() );
         addTypeWithConstructor("mvSubtreeScale",            new Move_SubtreeScale() );
+        addTypeWithConstructor("mvSPR",                     new Move_SPRNonclock() );
+        addTypeWithConstructor("mvSubtreePruneRegraft",     new Move_SPRNonclock() );
         addTypeWithConstructor("mvTreeScale",               new Move_TreeScale() );
         
         /* Moves on character histories / data augmentation */
@@ -551,6 +566,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvRealNodeValTreeTranslation",    new Move_RealNodeValTreeTranslation() );
         addTypeWithConstructor("mvRealPhyloProcessSliding",    new Move_RealNodeValTreeSliding() );
         addTypeWithConstructor("mvScaleSingleACLNRates",    new Move_ScaleSingleACLNRates() );
+        addTypeWithConstructor("mvACLNMixingStep",    new Move_ACLNMixingStep() );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mFNPR",                 new Move_FNPR() );
@@ -924,34 +940,62 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "_add",      new Func__add< ModelVector<Integer>   , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
         addFunction( "_add",      new Func__add< ModelVector<RealPos>   , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         addFunction( "_add",      new Func__add< ModelVector<Real>      , ModelVector<Real>     , ModelVector<Real>          >(  )   );
+        addFunction( "_add",      new Func__scalarVectorAdd<Natural     , ModelVector<Natural>  , ModelVector<Natural>       >(  )   );
+        addFunction( "_add",      new Func__scalarVectorAdd<Integer     , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
+        addFunction( "_add",      new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
+        addFunction( "_add",      new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
         
         addFunction( "_add",      new Func__rladd< AbstractCharacterData  , AbstractCharacterData , AbstractCharacterData >(  )   );
         
         // division
-        addFunction( "_div",      new Func__div< Natural         , Natural           , RealPos           >(  )  );
-        addFunction( "_div",      new Func__div< Integer         , Integer           , Real              >(  )  );
-        addFunction( "_div",      new Func__div< Real            , Real              , Real              >(  )  );
-        addFunction( "_div",      new Func__div< RealPos         , RealPos           , RealPos           >(  )  );
-        addFunction( "_div",      new Func__div< ModelVector<Natural> , ModelVector<Natural>   , ModelVector<RealPos>   >(  )  );
-        addFunction( "_div",      new Func__div< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Real>      >(  )  );
-        addFunction( "_div",      new Func__div< ModelVector<RealPos> , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
-        addFunction( "_div",      new Func__div< ModelVector<Real>    , ModelVector<Real>      , ModelVector<RealPos>   >(  )  );
+        addFunction( "_div",      new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
+        addFunction( "_div",      new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
+        addFunction( "_div",      new Func__div< Integer                            , Real                  , Real                      >(  )  );
+        addFunction( "_div",      new Func__div< Real                               , Integer               , Real                      >(  )  );
+        addFunction( "_div",      new Func__div< Real                               , Real                  , Real                      >(  )  );
+        addFunction( "_div",      new Func__div< RealPos                            , RealPos               , RealPos                   >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Natural>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<RealPos>               , ModelVector<Natural>  , ModelVector<RealPos>      >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Integer>               , ModelVector<Real>     , ModelVector<Real>         >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
+        addFunction( "_div",      new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );
+        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Natural>    , RealPos               , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<RealPos>    , Natural               , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , ModelVector<Natural>  , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Natural                 , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Integer>    , Real                  , ModelVector<Real>         >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Real>       , Integer               , ModelVector<Real>         >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , ModelVector<Integer>  , ModelVector<Real>         >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Integer                 , ModelVector<Real>     , ModelVector<Real>         >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<Real>       , Real                  , ModelVector<Real>         >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<Real                    , ModelVector<Real>     , ModelVector<Real>         >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<ModelVector<RealPos>    , RealPos               , ModelVector<RealPos>      >(  )   );
+        addFunction( "_div",      new Func__scalarVectorDiv<RealPos                 , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )   );
         
         // multiplication
-        addFunction( "_mul",      new Func__mult< Natural            , Natural           , Natural           >(  )  );
-        addFunction( "_mul",      new Func__mult< Integer            , Integer           , Integer           >(  )  );
-        addFunction( "_mul",      new Func__mult< Real               , Real              , Real              >(  )  );
-        addFunction( "_mul",      new Func__mult< RealPos            , RealPos           , RealPos           >(  )  );
-        addFunction( "_mul",      new Func__mult< ModelVector<Natural>    , ModelVector<Natural>   , ModelVector<Natural>   >(  )  );
-        addFunction( "_mul",      new Func__mult< ModelVector<Integer>    , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
-        addFunction( "_mul",      new Func__mult< ModelVector<RealPos>    , ModelVector<RealPos>   , ModelVector<RealPos>   >(  )  );
-        addFunction( "_mul",      new Func__mult< ModelVector<Real>       , ModelVector<Real>      , ModelVector<Real>      >(  )  );
+        addFunction( "_mul",      new Func__mult< Natural               , Natural               , Natural               >(  )  );
+        addFunction( "_mul",      new Func__mult< Integer               , Integer               , Integer               >(  )  );
+        addFunction( "_mul",      new Func__mult< Real                  , Real                  , Real                  >(  )  );
+        addFunction( "_mul",      new Func__mult< RealPos               , RealPos               , RealPos               >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Natural>  , ModelVector<Natural>  , ModelVector<Natural>  >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Integer>  , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<RealPos>  , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )  );
+        addFunction( "_mul",      new Func__mult< ModelVector<Real>     , ModelVector<Real>     , ModelVector<Real>     >(  )  );
+        addFunction( "_mul",      new Func__scalarVectorMult<Natural    , ModelVector<Natural>  , ModelVector<Natural>  >(  )   );
+        addFunction( "_mul",      new Func__scalarVectorMult<Integer    , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
+        addFunction( "_mul",      new Func__scalarVectorMult<Real       , ModelVector<Real>     , ModelVector<Real>     >(  )   );
+        addFunction( "_mul",      new Func__scalarVectorMult<RealPos    , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )   );
         
         // subtraction
-        addFunction( "_sub",      new Func__sub< Integer         , Integer           , Integer           >(  )  );
-        addFunction( "_sub",      new Func__sub< Real            , Real              , Real              >(  )  );
-        addFunction( "_sub",      new Func__sub< ModelVector<Integer> , ModelVector<Integer>   , ModelVector<Integer>   >(  )  );
-        addFunction( "_sub",      new Func__sub< ModelVector<Real>    , ModelVector<Real>      , ModelVector<Real>      >(  )  );
+        addFunction( "_sub",      new Func__sub< Integer                            , Integer               , Integer               >(  )  );
+        addFunction( "_sub",      new Func__sub< Real                               , Real                  , Real                  >(  )  );
+        addFunction( "_sub",      new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
+        addFunction( "_sub",      new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
+        addFunction( "_sub",      new Func__scalarVectorSub<Integer                 , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<ModelVector<Integer>    , Integer               , ModelVector<Integer>  >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<Real                    , ModelVector<Real>     , ModelVector<Real>     >(  )   );
+        addFunction( "_sub",      new Func__scalarVectorSub<ModelVector<Real>       , Real                  , ModelVector<Real>     >(  )   );
         
         // modulo
         addFunction( "_mod",      new Func__mod() );
@@ -1030,6 +1074,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
+        
+        // mean function
+		addFunction( "sum",       new Func_sum()  );
 		
 		// truncate function
         addFunction( "trunc",     new Func_trunc<Real,Integer>()  );

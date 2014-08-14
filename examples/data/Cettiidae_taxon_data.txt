@@ -94,5 +94,5 @@ Orthotomus.cucullatus_philippinus_Fil	Orthotomus.cucullatus
 Orthotomus.cucullatus_coronatus_Guanxi	Orthotomus.cucullatus
 Orthotomus.cucullatus_coronatus_HK1642	Orthotomus.cucullatus
 Orthotomus.cucullatus_cucullatus_Kerinci22	Orthotomus.cucullatus
-Orthotomus.cucullatus_stentor(orriedeli)_LoreLindu	Orthotomus.cucullatus
+Orthotomus.cucullatus_stentor_LoreLindu	Orthotomus.cucullatus
 Hemitesia.neumanni_monotypic_1	Hemitesia.neumanni

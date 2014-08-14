@@ -22,18 +22,24 @@
 # read in the character data
 filenames <- v("data/Cettiidae_cytb.nex", "data/Cettiidae_G3P.nex", "data/Cettiidae_myo.nex", "data/Cettiidae_ODC.nex")
 
-n_parts <- filenames.size()
-for (i in 1:n_parts){
-  data[i] <- readCharacterData(filenames[i])[1]
+n_genes <- filenames.size()
+for (i in 1:n_genes) {
+  data[i] <- readCharacterData(filenames[i])
   n_sites[i] <- data[i].nchar(1)
 }
 
+
+taxa <- readTaxonData("data/Cettiidae_Taxon_data.txt")
+
+
 # Get some useful variables from the data. We need these later on.
-n_species <- data[1].ntaxa()
-names <- data[1].names()
+for (i in 1:taxa.size()) {
+   speciesNames[i] <- taxa[i].getSpeciesName()
+}
+speciesNames.unique()
+n_species <- speciesNames.size()
 n_branches <- 2 * n_species - 3
-
-
+n_species <- speciesNames.size()
 
 
 
@@ -55,7 +61,7 @@ moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
 moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
 
 # tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=taxaCount, names=names)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=n_species, names=speciesNames)
 
 # moves on the tree
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
@@ -71,13 +77,15 @@ moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 # Gene-Tree model #
 ###################
 
-taxa <- readTaxonData("data/Cettiidae_Taxon_data.txt")
+taxaFileNames <- ["data/Cettiidae_cytb_Taxon_data.txt", "data/Cettiidae_G3P_Taxon_data.txt", "data/Cettiidae_myo_Taxon_data.txt", "data/Cettiidae_ODC_Taxon_data.txt"]
 
 # perhaps a better prior here!!!
 Ne ~ gamma(shape=1.0,rate=1.0)
 moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
 
-for (i in 1:n_parts) {
+for (i in 1:n_genes) {
+
+   taxa <- readTaxonData(taxaFileNames[i])
 
    # tree from birth-death process
    geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
@@ -98,7 +106,7 @@ for (i in 1:n_parts) {
 # Substitution Model #
 ######################
 
-for (i in 1:n_parts) {
+for (i in 1:n_genes) {
 
   er_prior[i] <- v(1,1,1,1,1,1)
   er[i] ~ dnDirichlet(er_prior[i])
@@ -123,7 +131,7 @@ for (i in 1:n_parts) {
 ###############
 
 
-for (i in 1:n_parts) {
+for (i in 1:n_genes) {
   branchRates[i] ~ exponential(1.0)
   moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
 }
@@ -139,7 +147,7 @@ for (i in 1:n_parts) {
 
 
 
-for (i in 1:n_parts){
+for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
@@ -155,9 +163,8 @@ for (i in 1:n_parts){
 # PhyloCTMC Model #
 ###################
 
-
-for (i in 1:n_parts){
-  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i], clockRate=branchRates, siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
+for (i in 1:n_genes) {
+  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 
@@ -167,7 +174,7 @@ for (i in 1:n_parts){
 # THE Model #
 #############
 
-mymodel <- model(pi)
+mymodel <- model(speciesTree)
 
 
 
@@ -176,9 +183,14 @@ mymodel <- model(pi)
 # Monitors #
 ############
 
-monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)
-monitors[3] <- screenmonitor(printgen=10, pi)
+mntrIndex <- 0
+monitors[mntrIndex++] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
+gene <- ["cytB", "G3P", "myo", "ODC"]
+for (i in 1:n_genes) {
+   monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
+}
+monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne)
 
 
 
