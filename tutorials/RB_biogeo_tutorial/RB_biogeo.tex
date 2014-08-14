@@ -52,7 +52,7 @@
 \bibliographystyle{sysbio}
 \bibpunct[; ]{(}{)}{;}{a}{}{;}
 
-\title{Historical biogeography in RevBayes}
+\title{Historical biogeography using data augmentation in RevBayes}
 \author{Michael J. Landis \\ \href{mailto:mlandis@berkeley.edu}{\texttt{mlandis@berkeley.edu}}}
 \maketitle
 
@@ -402,7 +402,7 @@ $ rb-extended
 First, we'll assign all our input files to {\tt String} variables.
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > in_fp <- "/filepath/to/your/input/files/"
+RevBayes > in_fp   <- "/filepath/to/your/input/files/"
 RevBayes > data_fn <- "psychotria_range.nex"
 RevBayes > area_fn <- "hawaii_dynamic.atlas.txt"
 \end{lstlisting}
@@ -412,8 +412,8 @@ Then we'll create our range data, tree, and atlas objects
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > data <- readCharacterData(in_fp + data_fn)
-RevBayes > tree <- readTrees(in_fp + data_fn)[1]
+RevBayes > data  <- readCharacterData(in_fp + data_fn)
+RevBayes > tree  <- readTrees(in_fp + data_fn)[1]
 RevBayes > atlas <- readAtlas(in_fp + area_fn)
 \end{lstlisting}
 \end{snugshade}
@@ -475,7 +475,7 @@ RevBayes > Q_like := fnBiogeoDEC(gainLossRates=glr, rootFrequencies=pi, geoRateM
 For the model's final node, we create the stochastic node for the continuous-time Markov chain (CTMC).
 This node's distribution is {\tt dnPhyloDACTMC} where {\tt DA} indicates the CTMC uses data-augmentation to compute the likelihood rather than Felsenstein's pruning algorithm.
 Because biogeographic characters 
-To create the distribution, we must pass it our {\tt tree} and {\tt Q_like} objects, but additionally inform the distribution that it will be handling biogeographic characters, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), it will assign zero probability to a transition away from the null range state.
+To create the distribution, we must pass it our {\tt tree} and {\tt Q\_like} objects, but additionally inform the distribution that it will be using a biogeographic model, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), and that it will assign zero probability to a transition away from the null range state.
 
 \begin{snugshade}
 \begin{lstlisting}
@@ -500,13 +500,41 @@ my_model <- model(glr)
 \end{lstlisting}
 \end{snugshade}
 
-\subsection{Running the analysis}
+\subsection{Running an MCMC analysis}
+
+Now that we have our {\tt Model} object, we can soon run an MCMC analysis.
+Remember that MCMC approximates the posterior distribution by repeatedly proposing new model parameter values, accepting or rejecting those new parameter values based on the model likelihood (and on biases in the proposal distribution), then reporting the sampled parameter values.
+
+First, let's assign moves to our model parameters.
+These parameters are all supported for real positive values, which is appropriate for use with scale-multipler proposal, {\tt mvScale()}.
+To inspect our model parameter types and the proposal argument types, enter
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > type(dp)
+   RealPos
+RevBayes > type(glr)
+   RealPos[]
+RevBayes > mvScale
+   Move_Scale function (RealPos x, RealPos lambda, Bool tune, RealPos weight)
+\end{lstlisting}
+\end{snugshade}
+
+The arguments for {\tt mvScale} are fairly typical as far as RevBayes {\tt Move} objects go: {\tt x} is the stochastic node the {\tt Move} will update, {\tt lambda} is proportional to how radically different proposed parameter values will tend to be, {\tt tune} allows {\tt lambda} to be adjusted automatically as the MCMC runs, and {\tt weight} tells the MCMC how many times to perform the {\tt Move} during a single MCMC generation (e.g., {\tt weight=2.0)} means each generation will call that {\tt Move} for the parameter {\tt x} twice).
 
 
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=2.0)
+RevBayes > moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=2.0)
+RevBayes > moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=2.0)
+\end{lstlisting}
+\end{snugshade}
 
-
-
-
+In addition to proposing new model parameter values, we must also propose new data-augmented states and events to properly integrate over the space of possible range histories.
+Like any parameter, we can sample the augmented range histories from the MCMC to approximate the posterior distribution of range histories.
+This is statistically equivalent to generating ancestral state reconstructions from a posterior distribution via stochastic mapping.
+We will extract these reconstructions using special monitors designed for the {\tt dnPhyloDACTMC} distribution.
 
 
 

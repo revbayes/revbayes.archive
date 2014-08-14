@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.3-0.9997.5 (TeX Live 2011) (format=xelatex 2011.7.3)  14 AUG 2014 14:59
+This is XeTeX, Version 3.1415926-2.3-0.9997.5 (TeX Live 2011) (format=xelatex 2011.7.3)  14 AUG 2014 16:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -912,89 +912,89 @@ LaTeX Font Info:    Font shape `EU1/CourierNew(0)/m/n' will be
 (Font)              scaled to size 10.95pt on input line 116.
  [2] [3] [4] [5] [6] [7]
 Missing character: There is no ȇ in font [lmroman10-regular]:mapping=tex-text!
- [8] [9]
+ [8] [9] [10] [11]
 LaTeX Font Info:    Font shape `EU1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `EU1/lmtt/b/n' tried instead on input line 570.
+(Font)              Font shape `EU1/lmtt/b/n' tried instead on input line 654.
 File: figures/loss_gain.png Graphic file (type QTm)
- <use  "figures/loss_gain.png" > [10]
-Underfull \hbox (badness 10000) in paragraph at lines 588--589
+ <use  "figures/loss_gain.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 672--673
 
  []
 
 File: figures/loss_numloss.png Graphic file (type QTm)
-<use  "figures/loss_numloss.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 598--599
+<use  "figures/loss_numloss.png" > [12]
+Underfull \hbox (badness 10000) in paragraph at lines 682--683
 
  []
 
 File: figures/gain_distp.png Graphic file (type QTm)
 <use  "figures/gain_distp.png" >
 File: figures/hpd.png Graphic file (type QTm)
- <use  "figures/hpd.png" > [11] [12] [13]
+ <use  "figures/hpd.png" > [13] [14]
 File: figures/range_area_pair_pp.pdf Graphic file (type QTm)
 
-<use  "figures/range_area_pair_pp.pdf" > [14]
+<use  "figures/range_area_pair_pp.pdf" > [15] [16]
 File: figures/phw_mrca.png Graphic file (type QTm)
- <use  "figures/phw_mrca.png" >
-[15]
-Underfull \hbox (badness 10000) in paragraph at lines 797--798
+
+<use  "figures/phw_mrca.png" >
+Underfull \hbox (badness 10000) in paragraph at lines 881--882
 
  []
 
 File: figures/phw_1_1ma.png Graphic file (type QTm)
-<use  "figures/phw_1_1ma.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 810--811
+<use  "figures/phw_1_1ma.png" > [17]
+Underfull \hbox (badness 10000) in paragraph at lines 894--895
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 817--818
-
- []
-
-[16]
-Underfull \hbox (badness 10000) in paragraph at lines 824--825
+Underfull \hbox (badness 10000) in paragraph at lines 901--902
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 829--830
+Underfull \hbox (badness 10000) in paragraph at lines 908--909
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 913--914
 
  []
 
 File: figures/phw_mask.png Graphic file (type QTm)
-<use  "figures/phw_mask.png" > [17]
-Underfull \hbox (badness 10000) in paragraph at lines 865--866
+<use  "figures/phw_mask.png" > [18]
+Underfull \hbox (badness 10000) in paragraph at lines 949--950
 
  []
 
 File: figures/bayarea-fig.png Graphic file (type QTm)
-<use  "figures/bayarea-fig.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 875--876
+<use  "figures/bayarea-fig.png" > [19]
+Underfull \hbox (badness 10000) in paragraph at lines 959--960
 
  []
 
-[18]
-Underfull \hbox (badness 10000) in paragraph at lines 884--885
+
+Underfull \hbox (badness 10000) in paragraph at lines 968--969
 
  []
 
-(./RB_biogeo.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 907.
- [19]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 907.
+(./RB_biogeo.bbl [20])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 991.
+ [21]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 991.
  (./RB_biogeo.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 907.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 907.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 907.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 991.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 991.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 991.
  ) 
 Here is how much of TeX's memory you used:
  19720 strings out of 494150
  317328 string characters out of 3152950
- 505221 words of memory out of 3000000
+ 505363 words of memory out of 3000000
  22653 multiletter control sequences out of 15000+200000
  10686 words of font info for 67 fonts, out of 3000000 for 9000
  1018 hyphenation exceptions out of 8191
- 42i,12n,68p,513b,961s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 42i,12n,68p,575b,961s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on RB_biogeo.pdf (19 pages).
+Output written on RB_biogeo.pdf (21 pages).
