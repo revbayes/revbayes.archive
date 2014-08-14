@@ -6,8 +6,7 @@
 
 # read the sequence data
 # the readCharacter function returns a vector of matrices. We just take the first one
-dataArray <- readCharacterData("data/plac73_4fold.nex")
-data <- dataArray[1]
+data <- readCharacterData("data/plac73_4fold.nex")
 
 # get some useful variables from the data
 taxaCount <- data.ntaxa()
@@ -15,9 +14,7 @@ names <- data.names()
 nSites <- data.nchar()[1]
 
 # read the quantitative trait data 
-contDataArray <- readCharacterData("data/plac73lhtlog.nex")
-contData <- contDataArray[1]
-contData
+contData <- readCharacterData("data/plac73lhtlog.nex")
 
 # get some useful variables from the data
 contTaxaCount <- contData.ntaxa()
@@ -135,7 +132,8 @@ mymodel <- model(kappa)
 
 monitors[1] <- screenmonitor(printgen=10, var1, cov12, cor12, parcor12, meanbr, stdevbr)
 monitors[2] <- filemonitor(filename="placdrlht1.cov",printgen=10, separator = "	", sigma)
-monitors[3] <- modelmonitor(filename="placdrlht1.log",printgen=10, separator = "	")
+monitors[3] <- filemonitor(filename="placdrlht1.traits",printgen=10, separator = "	", br)
+monitors[4] <- modelmonitor(filename="placdrlht1.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
