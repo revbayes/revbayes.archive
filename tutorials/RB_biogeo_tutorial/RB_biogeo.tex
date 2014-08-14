@@ -6,15 +6,21 @@
 \usepackage{dsfont}
 \usepackage{mathtools}
 \usepackage{framed}
-\usepackage{listings}
-%\usepackage{subcaption}
+\usepackage[]{listings}
+\usepackage{fontspec}
+\usepackage{placeins}
+\usepackage{epstopdf}
 \usepackage[margin=1.0in]{geometry}
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{rotating}
 
+\newfontfamily\listingsfont[Scale=1.0]{Courier New}
+\lstset{basicstyle=\listingsfont, columns=texcl}
+\defaultfontfeatures{Mapping=tex-text}
+
 \lstset{breaklines=true}
-\lstset{basicstyle=\ttfamily}
+%\lstset{basicstyle=\ttfamily}
 \setlength{\parskip}{6pt}
 
 \newcommand{\impmark}{\strut\vadjust{\domark}}
@@ -319,7 +325,7 @@ This is called the Atlas file, which uses a file format called JSON.
 JSON is a lightweight format used to assign values to variables in a hierarchical manner.
 There are three main tiers to the hierarchy in the Atlas file: the atlas, the epoch, and the area.
 In the lowest tier, each area corresponds to a character in the model and is assigned it's own properties.
-In the middle tier, each epoch contains the set of homologous areas (characters), but importantly the properties of these areas may take on different values during different intervals of time, as given by the {\tt start_age} and {\tt end_age} variables.
+In the middle tier, each epoch contains the set of homologous areas (characters), but importantly the properties of these areas may take on different values during different intervals of time, as given by the {\tt start\_age} and {\tt end\_age} variables.
 Because the tree and range evolution model also operate on units of geological time, the rates of area gain and loss can condition on areas' properties as a function of time.
 Sometimes these models are called stratified models or epochal models.
 Finally, the atlas contains the array of epochs in the highest tier.
