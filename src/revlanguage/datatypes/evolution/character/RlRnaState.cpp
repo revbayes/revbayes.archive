@@ -67,6 +67,26 @@ const TypeSpec& RnaState::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RnaState::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& RnaState::getTypeSpec( void ) const {
     

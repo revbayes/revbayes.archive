@@ -57,7 +57,8 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 
 
 /** Add function to table */
-void FunctionTable::addFunction(const std::string name, Function *func) {
+void FunctionTable::addFunction( const std::string name, Function *func )
+{
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
 
@@ -511,54 +512,22 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
     if (printTable.size() == 0)
         return;
 
-    size_t maxFunctionNameLength = 6;   // Length of '<name>'
-    size_t maxReturnTypeLength   = 12;  // Length of '<returnType>'
-
     for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
     {
-        if ( i->first.size() > maxFunctionNameLength )
-            maxFunctionNameLength = i->first.size();
-        if ( i->second->getReturnType().getType().size() > maxReturnTypeLength )
-            maxReturnTypeLength = i->second->getReturnType().getType().size();
-    }
+        std::ostringstream s("");
 
-    int nameLen       = int( maxFunctionNameLength );
-    int returnTypeLen = int( maxReturnTypeLength );
-    int argTabLen     = nameLen + returnTypeLen + 14;   // position of closing parenthesis
-    int headerLen     = nameLen + returnTypeLen + 33;
-
-    o << std::setw(nameLen) << std::left << "<name>" << " = ";
-    o << std::setw(returnTypeLen) << "<returnType> " << " function (<formal arguments>)" << std::endl;
-    o << std::setw(headerLen) << std::setfill('-') << "" << std::setfill(' ') << std::endl;
-
-    for (std::multimap<std::string, Function *>::const_iterator i=printTable.begin(); i!=printTable.end(); i++)
-    {
-        o << std::setw(nameLen) << i->first << " = ";
+        s << i->first << " = ";
         
-        o << std::setw(returnTypeLen) << i->second->getReturnType().getType() << " function " << std::setw(1);
+        s << i->second->getReturnType().getType() << " function ";
         
         const RevLanguage::ArgumentRules& argRules = i->second->getArgumentRules();
         
-        if ( argRules.size() > 1 )
-        {
-            o << "(" << std::endl;
-            for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
-            {
-                o << std::setw(argTabLen) << std::setfill(' ') << " " << std::setw(1);
-                (*i)->printValue(o);
-                if ( i != argRules.end() - 1 )
-                    o << ",";
-                o << std::endl;
-            }
-            o << std::setw(argTabLen) << std::setfill(' ') << std::right << ")" << std::left << std::setw(1) << std::endl;
-        }
-        else
-        {
-            o << "(";
-            for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
-                (*i)->printValue(o);
-            o << ")" << std::endl;
-        }
+        s << "(";
+        for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
+            (*i)->printValue( s );
+        s << ")" << std::endl;
+        
+        o << StringUtilities::oneLiner( s.str(), 70 ) << std::endl;
     }
 }
 

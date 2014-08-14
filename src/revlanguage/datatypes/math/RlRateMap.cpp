@@ -72,32 +72,43 @@ const TypeSpec& RateMap::getClassTypeSpec(void) {
 }
 
 
-/** Get the methods for this vector class */
-/* Get method specifications */
-const MethodTable& RateMap::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RateMap::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        // add method for call "x.nChars()" as a function
-        ArgumentRules* nCharsArgRules = new ArgumentRules();
-        methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
-        
-        // add method for call "x.nStates()" as a function
-        ArgumentRules* nStatesArgRules = new ArgumentRules();
-        methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::RateMap>::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
+    return myMethods;
+}
+
+
+/** Make the member methods for this class */
+MethodTable RateMap::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+
+    // add method for call "x.nChars()" as a function
+    ArgumentRules* nCharsArgRules = new ArgumentRules();
+    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
+    
+    // add method for call "x.nStates()" as a function
+    ArgumentRules* nStatesArgRules = new ArgumentRules();
+    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::RateMap>::makeMethods() );
     
     return methods;
 }
-
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */

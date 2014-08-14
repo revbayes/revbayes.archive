@@ -29,6 +29,7 @@
 #include "RbUtil.h"
 #include "RbOptions.h"         // For debug defines
 #include "RlDistribution.h"
+#include "StringUtilities.h"
 #include "Function.h"
 #include "UserInterface.h"
 #include "Workspace.h"
@@ -299,8 +300,9 @@ void Workspace::printValue(std::ostream& o) const {
         for ( it = variableTable.begin(); it != variableTable.end(); it++)
         {
             o << (*it).first << " = ";
-            (*it).second->printValue( o );
-            o << std::endl;
+            std::ostringstream t;
+            (*it).second->printValue( t );
+            o << StringUtilities::oneLiner( t.str(), 60 ) << std::endl;
         }
         o << std::endl;
     }

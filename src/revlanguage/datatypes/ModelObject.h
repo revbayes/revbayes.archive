@@ -33,7 +33,7 @@ namespace RevLanguage {
 
         ModelObject&                            operator=(const ModelObject& x);                                            //!< Assignment operator
         
-        // the value type definition
+        // The value type definition
         typedef rbType valueType;
        
         // Basic utility functions you have to override
@@ -42,7 +42,8 @@ namespace RevLanguage {
         // Utility functions you might want to override
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
         virtual RevPtr<Variable>                getMember(const std::string& name) const;                                   //!< Get member variable
-        virtual const MethodTable&              getMethods(void) const;                                                     //!< Get member methods (const)
+        virtual const MethodTable&              getMethods(void) const = 0;                                                 //!< Get member methods
+        virtual MethodTable                     makeMethods(void) const;                                                    //!< Make member methods
         virtual bool                            hasMember(const std::string& name) const;                                   //!< Has this object a member with name
 
         // Basic utility functions you should not have to override
@@ -50,7 +51,8 @@ namespace RevLanguage {
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
-        void                                    makeConstantValue(void);                                                    //!< Convert the stored variable to a constant variable (if applicable)
+        void                                    makeConstantValue(void);                                                    //!< Convert the object to a constant object
+        void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert the object to a conversion object
         void                                    makeDeterministicValue(UserFunction* fxn, UserFunction* code);              //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
         virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
@@ -71,12 +73,7 @@ namespace RevLanguage {
         ModelObject(const ModelObject &v);
         
         RevBayesCore::TypedDagNode<rbType>*     dagNode;
-        mutable MethodTable                     methods;
 
-    private:
-        
-        void                                    initMethods(void);
-        
     };
     
 }
@@ -87,6 +84,7 @@ namespace RevLanguage {
 #include "ArgumentRules.h"
 #include "Cloner.h"
 #include "ConstantNode.h"
+#include "ConverterNode.h"
 #include "DeterministicNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
@@ -103,12 +101,8 @@ namespace RevLanguage {
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject() :
     RevObject(),
-    dagNode( NULL ),
-    methods() 
+    dagNode( NULL )
 {
-    
-//    initMethods();
-    
 }
 
 
@@ -116,13 +110,10 @@ RevLanguage::ModelObject<rbType>::ModelObject() :
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
     RevObject(),
-    dagNode( new RevBayesCore::ConstantNode<rbType>("",v) ),
-    methods() 
+    dagNode( new RevBayesCore::ConstantNode<rbType>("",v) )
 {
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-//    initMethods();
     
 }
 
@@ -131,16 +122,10 @@ RevLanguage::ModelObject<rbType>::ModelObject(rbType *v) :
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType> *v) :
     RevObject(),
-    dagNode( v ),
-    methods() 
+    dagNode( v )
 {
-    
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    
-//    initMethods();
-    
 }
 
 
@@ -148,10 +133,8 @@ RevLanguage::ModelObject<rbType>::ModelObject(RevBayesCore::TypedDagNode<rbType>
 template <typename rbType>
 RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
     RevObject(),
-    dagNode( NULL ),
-    methods() 
+    dagNode( NULL )
 {
-    
     if ( v.dagNode != NULL )
     {
         
@@ -160,11 +143,7 @@ RevLanguage::ModelObject<rbType>::ModelObject(const ModelObject &v) :
         // increment the reference count to the value
         dagNode->incrementReferenceCount();
     }
-    
-//    initMethods();
-    
 }
-
 
 
 template <typename rbType>
@@ -344,43 +323,6 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::get
 }
 
 
-/* Get method specifications */
-template <typename rbType>
-const RevLanguage::MethodTable&  RevLanguage::ModelObject<rbType>::getMethods(void) const {
-    
-//    static MethodTable methods      = MethodTable();
-    // Sebastian: Static variables don't work because derived classes, e.g. PosReal from Real
-    // require different types but only one static variable will be set for both classes!!!
-//    static bool        methodsSet   = false;
-    
-//    if ( methodsSet == false ) 
-//    {
-    
-    methods = MethodTable();
-        ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
-        
-        ArgumentRules* redrawArgRules = new ArgumentRules();
-        methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
-    
-        ArgumentRules* setValueArgRules = new ArgumentRules();
-        setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-        methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
-        
-        ArgumentRules* unclampArgRules = new ArgumentRules();
-        methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
-//        methodsSet = true;
-//    }
-    
-    return methods;
-}
-
-
-
 template <typename rbType>
 const rbType& RevLanguage::ModelObject<rbType>::getValue( void ) const {
     
@@ -439,33 +381,6 @@ bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const
 
 
 template <typename rbType>
-void RevLanguage::ModelObject<rbType>::initMethods( void )
-{
-    
-    ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-    methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
-    
-    ArgumentRules* redrawArgRules = new ArgumentRules();
-    methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
-    
-    ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
-    methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
-    
-    ArgumentRules* unclampArgRules = new ArgumentRules();
-    methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
-    
-    // necessary call for proper inheritance
-    methods.setParentTable( &RevObject::getMethods() );
-
-    // necessary call for proper inheritance
-    methods.setParentTable( &RevObject::getMethods() );
-
-}
-
-
-template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
     
     return dagNode->isConstant();
@@ -507,6 +422,33 @@ void RevLanguage::ModelObject<rbType>::makeConstantValue( void ) {
 }
 
 
+/**
+ * Convert a model object to a conversion object, the value of which is determined by a type
+ * conversion from a specified variable.
+ */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var )
+{
+    // Create the converter node
+    ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var );
+
+    // Signal replacement
+    dagNode->replace(newNode);
+    
+    // Delete the value if there are no other references to it.
+    if ( dagNode->decrementReferenceCount() == 0 )
+    {
+        delete dagNode;
+    }
+    
+    // Shift the actual node
+    dagNode = newNode;
+    
+    // Increment the reference counter
+    dagNode->incrementReferenceCount();
+}
+
+
 /** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
 template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
@@ -536,6 +478,43 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
     newObj->setDagNode( newNode );
     
     return newObj;
+}
+
+
+/**
+ * In this function we make member methods that belong to this level to serve
+ * derived classes when they construct their static member method tables.
+ * Using this mechanism, we ensure that the methods constructed at this
+ * level for each derived class can use the appropriate type specification
+ * for the derived class in its argument rules, if necessary. See the setValue
+ * function for an example.
+ *
+ * This mechanism makes it impossible for derived classes to construct their
+ * static method tables from the call to our getMethods(), which is therefore
+ * declared abstract.
+ */
+template <typename rbType>
+RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) const
+{
+    MethodTable methods;
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+    methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
+    
+    ArgumentRules* redrawArgRules = new ArgumentRules();
+    methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
+    
+    ArgumentRules* setValueArgRules = new ArgumentRules();
+    setValueArgRules->push_back( new ArgumentRule("x", true, getTypeSpec() ) );
+    methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+    
+    ArgumentRules* unclampArgRules = new ArgumentRules();
+    methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+    
+    methods.insertInheritedMethods( RevObject::makeMethods() );
+    
+    return methods;
 }
 
 

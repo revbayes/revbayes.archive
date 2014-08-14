@@ -3,7 +3,7 @@
 
 #include "DiscreteCharacterData.h"
 #include "ModelObject.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 
 #include <set>
 #include <string>
@@ -27,7 +27,7 @@ namespace RevLanguage {
      *
      */
     template <class rlCharType>
-    class DiscreteCharacterData : public AbstractCharacterData {
+    class DiscreteCharacterData : public AbstractDiscreteCharacterData {
     
     public:
         DiscreteCharacterData(void);                                                                                                            //!< Default constructor
@@ -43,8 +43,9 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
          
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
-        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
+        const MethodTable&                  getMethods(void) const;                                                                             //!< Get member methods
+        MethodTable                         makeMethods(void) const;                                                                            //!< Make member methods
+        RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);                          //!< Override to map member methods to internal functions
             
     };
     
@@ -60,19 +61,21 @@ namespace RevLanguage {
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData(void) : AbstractCharacterData() {
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData(void) : AbstractDiscreteCharacterData() {
     
 }
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v) : AbstractCharacterData( v ) {
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::DiscreteCharacterData<typename rlCharType::valueType> *v) :
+    AbstractDiscreteCharacterData( v ) {
     
 }
 
 
 template <class rlCharType>
-RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) : AbstractCharacterData( d ) {
+RevLanguage::DiscreteCharacterData<rlCharType>::DiscreteCharacterData( RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData > *d) :
+    AbstractDiscreteCharacterData( d ) {
 
 }
 
@@ -104,7 +107,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::DiscreteCharacterData<ch
         return new Variable( new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) ) );
     }
     
-    return AbstractCharacterData::executeMethod( name, args );
+    return AbstractDiscreteCharacterData::executeMethod( name, args );
 }
 
 
@@ -121,38 +124,48 @@ const std::string& RevLanguage::DiscreteCharacterData<rlType>::getClassType(void
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteCharacterData<rlType>::getClassTypeSpec(void) { 
     
-    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
+    static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractDiscreteCharacterData::getClassTypeSpec() ), new TypeSpec( rlType::getClassTypeSpec() ) );
     
 	return revClassTypeSpec; 
 }
 
 
-/** Get the methods for this vector class */
-/* Get method specifications */
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
 template <typename rlType>
-const RevLanguage::MethodTable& RevLanguage::DiscreteCharacterData<rlType>::getMethods(void) const {
+const RevLanguage::MethodTable& RevLanguage::DiscreteCharacterData<rlType>::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    myMethods                   = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) 
+    if ( !methodsSet )
     {
-                
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        myMethods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
-        
-                
-        // necessary call for proper inheritance
-        myMethods.setParentTable( &AbstractCharacterData::getMethods() );
+        myMethods = makeMethods();
         methodsSet = true;
     }
-    
     
     return myMethods;
 }
 
+
+/** Make member methods */
+template <typename rlType>
+RevLanguage::MethodTable RevLanguage::DiscreteCharacterData<rlType>::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
+    methods.addFunction("[]",  new MemberProcedure( DiscreteTaxonData<rlType>::getClassTypeSpec(), squareBracketArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( AbstractCharacterData::makeMethods() );
+
+    return methods;
+}
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */

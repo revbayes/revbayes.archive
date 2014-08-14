@@ -67,6 +67,26 @@ const TypeSpec& AminoAcidState::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& AminoAcidState::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& AminoAcidState::getTypeSpec( void ) const {
     

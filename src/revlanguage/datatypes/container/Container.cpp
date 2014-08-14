@@ -86,26 +86,21 @@ RevPtr<Variable> Container::getElement( const size_t oneOffsetIndex )
 
 
 /**
- * Get method specifications for container. Here we provide the "size" method.
- * Note that also the subscript operator method is supported by executeMethod.
- *
- * @todo Expose the subscript operator method
+ * Get member methods. We construct the appropriate static member
+ * function table here.
  */
-const MethodTable& Container::getMethods(void) const {
+const RevLanguage::MethodTable& Container::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable methods = MethodTable();
-    static bool          methodsSet = false;
-    
-    if ( methodsSet == false ) {
-        ArgumentRules* sizeArgRules = new ArgumentRules();
-        methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    return methods;
+    return myMethods;
 }
 
 
@@ -118,6 +113,21 @@ RevPtr<Variable> Container::executeMethod(std::string const &name, const std::ve
     } 
 
     return RevObject::executeMethod( name, args );
+}
+
+
+/** Make member methods for this class. */
+MethodTable Container::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( RevObject::makeMethods() );
+    
+    return methods;
 }
 
 

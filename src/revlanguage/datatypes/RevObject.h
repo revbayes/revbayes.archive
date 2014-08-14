@@ -76,6 +76,7 @@ public:
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual bool                        isConvertibleTo(const TypeSpec& type, bool once) const;                                         //!< Is convertible to type?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
+    virtual void                        makeConversionValue(RevPtr<Variable> var);                                                      //!< Convert the object to a conversion object
     virtual void                        makeDeterministicValue(UserFunction* fxn, UserFunction* code);                                  //!< Convert to deterministic object with a userdefined Rev function
     virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
     virtual void                        printMemberInfo(std::ostream& o) const;                                                         //!< Print member info of language object for user
@@ -91,7 +92,8 @@ public:
     virtual RevPtr<Variable>            executeMethod(const std::string& name, const std::vector<Argument>& args);                      //!< Override to map member methods to internal functions
     virtual RevPtr<Variable>            getMember(const std::string& name) const;                                                       //!< Get member variable
     virtual const MemberRules&          getMemberRules(void) const;                                                                     //!< Get member rules
-    virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods (const)
+    virtual const MethodTable&          getMethods(void) const;                                                                         //!< Get member methods
+    virtual MethodTable                 makeMethods(void) const;                                                                        //!< Make member methods
     virtual bool                        hasMember(const std::string& name) const;                                                       //!< Has this object a member with name
     virtual void                        setConstMember(const std::string& name, const RevPtr<const Variable> &var);                     //!< Set member variable
     virtual void                        setMember(const std::string& name, const RevPtr<Variable> &var);                                //!< Set member variable
