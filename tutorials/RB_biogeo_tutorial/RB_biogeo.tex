@@ -291,7 +291,11 @@ For this tutorial, the phylogeny is assumed to contain no uncertainty.
 
 \subsection{Atlas file}
 
-The geography used in this tutorial represents the Hawaiian archipelago, a chain 
+The geography used in this tutorial represents the Hawaiian archipelago.
+Beneath Hawaii, currently the largest and youngest island, is a volcanic hotspot that periodically creates new islands.
+The ages of these islands are fairly well known, meaning we can model range availability as a function of time.
+Following \citet{ree08}, we will lump groups of smaller islands into single areas to simplify the analysis, leaving us with four areas: Hawaii (H), Oahu (O), Maui (M; this includes Molokai and Lanai), and Kauai (K; this includes Niihau).
+These areas are modeled have arisen 0.5, 1.9, 3.7, and 5.5 million years ago, respectively.
 
 Although the model will use discrete-state biogeographic ranges, geographical area is naturally continuous.
 This means we must impose some discretization upon the geography to designate a set of biogeographically meaningful characters called areas.
@@ -314,7 +318,7 @@ This procedure is not part of the tutorial, but you should be aware that area de
   "epochs":
   [{
     "name":"epoch1",
-    "start_age":10.0,
+    "start_age":5.5,
     "end_age":3.7,
     "areas":
       [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50,  "dispersalValues": [ 1,0,0,0 ] },
