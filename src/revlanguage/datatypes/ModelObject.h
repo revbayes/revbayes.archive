@@ -371,10 +371,6 @@ bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const
             return true;
         }
     } 
-//    else 
-//    {
-//        <#statements-if-false#>
-//    }
     
     return false;
 }
