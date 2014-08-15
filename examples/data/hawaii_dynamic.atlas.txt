@@ -3,7 +3,7 @@
 	"epochs": [
 		{
 			"name":"epoch1",
-			"start_age":10.0,
+			"start_age":5.5,
 			"end_age":3.7,
 			"areas":
 			[{ "name":"Kauai", "latitude":22.0833, "longitude":-159.5000,   "dispersalValues": [ 1,0,0,0 ] },
