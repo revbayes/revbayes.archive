@@ -474,7 +474,6 @@ RevBayes > Q_like := fnBiogeoDEC(gainLossRates=glr, rootFrequencies=pi, geoRateM
 
 For the model's final node, we create the stochastic node for the continuous-time Markov chain (CTMC).
 This node's distribution is {\tt dnPhyloDACTMC} where {\tt DA} indicates the CTMC uses data-augmentation to compute the likelihood rather than Felsenstein's pruning algorithm.
-Because biogeographic characters 
 To create the distribution, we must pass it our {\tt tree} and {\tt Q\_like} objects, but additionally inform the distribution that it will be using a biogeographic model, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), and that it will assign zero probability to a transition away from the null range state.
 
 \begin{snugshade}
@@ -496,7 +495,7 @@ RevBayes > M.lnProb
 Finally, we encapsulate our graphical model into a {\tt Model} object, which can learn the model's structure and dependencies from any model parameter.
 \begin{snugshade}
 \begin{lstlisting}
-my_model <- model(glr)
+RevBayes > my_model <- model(glr)
 \end{lstlisting}
 \end{snugshade}
 
@@ -532,6 +531,38 @@ RevBayes > moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=2.0)
 \end{snugshade}
 
 In addition to proposing new model parameter values, we must also propose new data-augmented states and events to properly integrate over the space of possible range histories.
+The major challenge to sampling character histories is ensuring the character histories are consistent with the observations at the tip of the tree.
+The proposals in this tutorial use \citet{nielsen02}'s rejection sampling algorithm, with some modifications to account for cladogenic events and epoch-based rate matrices.
+
+The basic idea is simple.
+Each time a character history proposal is called, it selects a node at random from the tree.
+Path history proposals ({\tt mvPathCHRS()}) propose a new character history for the lineage leading to that node.
+Node history proposals ({\tt mvNodeCHRS()}) propose a new character history for the node and for the three lineages incident to that node.
+The character history proposal also samples some number of areas to update, ranging from one to all of the areas.
+Once the new character history is proposed, the likelihood of the model is evaluated and the MCMC accepts or rejects the new state according to e.g. the Metropolis-Hastings algorithm.
+
+Because these {\tt Move} objects update the character histories stored in the data-augmented CTMC node, e.g. {\tt M},
+they require access to a {\tt TimeTree} object to know which lineages are sisters and whether the lineages span various epochs, and a {\tt RateMap\_Biogeography} object to propose new character histories.
+The {\tt lambda} argument gives what proportion of areas' character histories to update.
+Here, if {\tt lambda=0.2}, then the proposal will redraw character histories for $n_{\text{redraw}} \sim \text{Poisson}(0.2 * n_{\text{areas}}) + 1$ areas, or $n_{\text{areas}}$, whichever is smaller.
+Below, we use two moves of each type with {\tt lambda=0.2} and {\tt lambda=1.0} for partial and full character history updates, respectively.
+Indicating {\tt type="biogeo"} informs the {\tt Move} object to be aware of special character history constraints, such as cladogenic events and forbidden null ranges.
+The {\tt weight} parameter should be assigned a value proportional to the number of nodes in the analysis to ensure proper mixing.
+
+Let's create the character history moves as follows.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > n_nodes  <- tree.nnodes()
+RevBayes > moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+RevBayes > moves[5] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+RevBayes > moves[6] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+RevBayes > moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+\end{lstlisting}
+\end{snugshade}
+
+Now that we have moves for all our parameters and the character histories, we'll proceed to assigning their monitors.
+
 Like any parameter, we can sample the augmented range histories from the MCMC to approximate the posterior distribution of range histories.
 This is statistically equivalent to generating ancestral state reconstructions from a posterior distribution via stochastic mapping.
 We will extract these reconstructions using special monitors designed for the {\tt dnPhyloDACTMC} distribution.
