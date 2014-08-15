@@ -561,16 +561,98 @@ RevBayes > moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, ty
 \end{lstlisting}
 \end{snugshade}
 
-Now that we have moves for all our parameters and the character histories, we'll proceed to assigning their monitors.
+Now that we have moves for all our parameters and the character histories, we'll proceed with assigning {\tt Monitor} objects to record their values.
+The first two {\tt Monitor} objects are fairly standard and found in most RevBayes MCMC analyses.
+{\tt mnScreen} reports the values for any nodes assigned to {\tt RevObject ...} every {\tt printgen} generations to the terminal screen.
+{\tt mnModel} reports the values for all nodes in the {\tt Model} object every {\tt printgen} generations to the file assigned to {\tt filename}, which is delimited by the {\tt separator} character.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mnScreen
+   Mntr_Screen function (RevObject ..., Natural printgen, Bool posterior, Bool
+   likelihood, Bool prior)
+RevBayes > monitors[1] <- mnScreen(printgen=10, glr, dp, pi)
+RevBayes > mnModel
+   Mntr_Model function (String filename, Natural printgen, String separator,
+   Bool posterior, Bool likelihood, Bool prior, Bool append, Bool
+   stochasticOnly)
+RevBayes > monitors[2] <- mnModel(filename=out_fp+params_fn, printgen=10)
+\end{lstlisting}
+\end{snugshade}
 
 Like any parameter, we can sample the augmented range histories from the MCMC to approximate the posterior distribution of range histories.
 This is statistically equivalent to generating ancestral state reconstructions from a posterior distribution via stochastic mapping.
 We will extract these reconstructions using special monitors designed for the {\tt dnPhyloDACTMC} distribution.
 
+Next, we will create {\tt Mntr\_CharacterHistoryNewickFile} objects to record the sampled character history states for each node in the tree.
+This {\tt Monitor} has two {\tt style} options: {\tt counts} reports the number of gains and losses per branch in a tab-delimited Tracer-readable format;  {\tt events} reports richer information of what happens along a branch, anagenically and cladogenically, using an extended Newick format.
+How to read these file formats will be discussed in more detail in Section \ref{sec:posterior}.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mnCharHistoryNewick
+   Mntr_CharacterHistoryNewickFile function (String filename,
+   AbstractCharacterData ctmc, TimeTree tree, Natural printgen, String
+   separator, Bool posterior, Bool likelihood, Bool prior, Bool append, String
+   style = events|counts
+   , String type = biogeo
+   )
+RevBayes > monitors[3] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=M, tree=tree, printgen=100, separator=" ", style="events")
+RevBayes > monitors[4] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=M, tree=tree, printgen=100, separator=" ", style="counts")
+\end{lstlisting}
+\end{snugshade}
+
+As our last monitor, the {\tt Mntr\_CharacterHistoryNhxFile} records character history values throughout the MCMC analysis, then stores some simple posterior summary statistics as a Nexus file.
+These summary statistics could be computed from the previously mentioned {\tt Monitor} output files, but {\tt mnCharHistoryNhx} provides a simple way to produce Phylowood-compatible files.
+We will also discuss this file's format in more detail in Section \ref{sec:posterior}.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mnCharHistoryNhx
+   Mntr_CharacterHistoryNhxFile function (String filename, AbstractCharacterData
+   ctmc, TimeTree tree, RlAtlas atlas, Natural samplegen, Natural maxgen,
+   Probability burnin, String separator, Bool posterior, Bool likelihood, Bool
+   prior, String type = biogeo
+   )
+RevBayes > monitors[5] <- mnCharHistoryNhx(filename="psychotria.nhx.txt", ctmc=M, tree=tree, atlas=atlas, samplegen=100, maxgen=nGens, burnin=0.25, separator=" ")
+\end{lstlisting}
+\end{snugshade}
 
 
+\subsection{Running an MCMC analysis}
 
+Now all that's left is to configure and run our MCMC analysis.
+For this, we create an {\tt Mcmc} object, which we give our {\tt Move} vector, our {\tt Monitor} vector, and our {\tt Model object}
 
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mcmc
+   MCMC function (Model model, Monitor[] monitors, Move[] moves, String
+   moveschedule = sequential|random|single
+   )
+RevBayes > my_mcmc <- mcmc(my_model, monitors, moves)
+\end{lstlisting}
+\end{snugshade}
+
+MCMC typically requires some period of burn-in before it reaches stationarity, i.e. from a random starting point, it takes some time for the chain to produce valid samples from the posterior distribution.
+By running {\tt burnin()}, we tell the {\tt Mcmc} object to propose and reject new states but {\it not} to record anything to file.
+After burn-in is complete, we call {\tt run()}, where we begin recording valid posterior samples under our model.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > my_mcmc.burnin(generations=1000, tuningInterval=100)
+RevBayes > my_mcmc.run(generations=10000)
+\end{lstlisting}
+\end{snugshade}
+
+Everything we've done is contained in the file {\tt biogeography_M1.Rev}.
+You can modify this file as you like then re-run the analysis by typing
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > source("biogeography_M1.Rev")
+\end{lstlisting}
+\end{snugshade}
 
 
 
