@@ -214,6 +214,8 @@
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
+#include "Dist_mixture.h"
+#include "Dist_rlmixture.h"
 
 /// Functions ///
 
@@ -241,6 +243,7 @@
 #include "Func_ls.h"
 #include "Func_quit.h"
 #include "Func_range.h"
+#include "Func_rbvector.h"
 #include "Func_rlvector.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
@@ -767,17 +770,31 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Mixture distributions (in folder "distributions/mixture") */
         
         // dirichlet process prior distribution
-        addDistribution( "dnDPP",		    new Dist_dpp<Real>() );
-		addDistribution( "dnDPP",			new Dist_dpp<RealPos>() );
-		addDistribution( "dnDPP",			new Dist_dpp<Natural>() );
-		addDistribution( "dnDPP",			new Dist_dpp<Integer>() );
-		addDistribution( "dnDPP",			new Dist_dpp<Probability>() );
-        addDistribution( "dpp",				new Dist_dpp<Real>() );
-		addDistribution( "dpp",				new Dist_dpp<RealPos>() );
-		addDistribution( "dpp",				new Dist_dpp<Natural>() );
-		addDistribution( "dpp",				new Dist_dpp<Integer>() );
-		addDistribution( "dpp",				new Dist_dpp<Probability>() );
+        addDistribution( "dnDPP",           new Dist_dpp<Real>() );
+		addDistribution( "dnDPP",           new Dist_dpp<RealPos>() );
+		addDistribution( "dnDPP",           new Dist_dpp<Natural>() );
+		addDistribution( "dnDPP",           new Dist_dpp<Integer>() );
+		addDistribution( "dnDPP",           new Dist_dpp<Probability>() );
+        addDistribution( "dpp",             new Dist_dpp<Real>() );
+		addDistribution( "dpp",             new Dist_dpp<RealPos>() );
+		addDistribution( "dpp",             new Dist_dpp<Natural>() );
+		addDistribution( "dpp",             new Dist_dpp<Integer>() );
+		addDistribution( "dpp",             new Dist_dpp<Probability>() );
         
+        // mixture distribution
+        addDistribution( "dnMixture",       new Dist_mixture<Real>() );
+		addDistribution( "dnMixture",       new Dist_mixture<RealPos>() );
+		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
+		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
+		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
+		addDistribution( "dnMixture",       new Dist_rlmixture<RateMatrix>() );
+        addDistribution( "mixture",			new Dist_mixture<Real>() );
+		addDistribution( "mixture",         new Dist_mixture<RealPos>() );
+		addDistribution( "mixture",         new Dist_mixture<Natural>() );
+		addDistribution( "mixture",         new Dist_mixture<Integer>() );
+		addDistribution( "mixture",         new Dist_mixture<Probability>() );
+		addDistribution( "mixture",         new Dist_rlmixture<RateMatrix>() );
+
         // TAH: these don't seem to work with the moves, probably need to figure this out
 		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
 		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
@@ -816,6 +833,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_rlvector<Monitor>()                  );
         addFunction( "v",         new Func_rlvector<Move>()                     );
         addFunction( "v",         new Func_rlvector<AbstractCharacterData>()    );
+//        addFunction( "v",         new Func_rbVector<RateMatrix>()               );
         addFunction( "v",         new Func_vector<Natural>()                    );
         addFunction( "v",         new Func_vector<Integer>()                    );
         addFunction( "v",         new Func_vector<Real>()                       );

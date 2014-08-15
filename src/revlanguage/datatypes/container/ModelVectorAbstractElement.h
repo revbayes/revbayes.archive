@@ -113,6 +113,7 @@ template <typename rlType>
 ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( RevBayesCore::TypedDagNode<valueType> *n ) :
     ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( rlType::getClassTypeSpec(), n )
 {
+    
 }
 
 
