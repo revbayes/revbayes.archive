@@ -1,3 +1,9 @@
+source("RevBayes_scripts/airline_fatalities.Rev")
+clear()
+
+source("RevBayes_scripts/coalmine_accidents.Rev")
+clear()
+
 source("RevBayes_scripts/noclock_JC.Rev")
 clear()
 
