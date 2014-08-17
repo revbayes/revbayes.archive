@@ -467,22 +467,6 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 }
 
 
-/** Make methods for this class */
-template <typename rlType>
-MethodTable ModelVector<rlType>::makeMethods(void) const
-{
-    MethodTable methods = MethodTable();
-
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-        
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
-    
-    return methods;
-}
-
-
 /**
  * In this function we check whether this type is convertible to some other
  * Rev object type. Here we focus entirely on supporting conversion to
@@ -563,6 +547,22 @@ RevObject* ModelVector<rlType>::makeIndirectReference(void) {
     newObj->setDagNode( newNode );
     
     return newObj;
+}
+
+
+/** Make methods for this class */
+template <typename rlType>
+MethodTable ModelVector<rlType>::makeMethods(void) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
+    
+    return methods;
 }
 
 

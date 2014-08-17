@@ -27,7 +27,7 @@ namespace RevLanguage {
     class ConverterNode : public RevBayesCore::DynamicNode<typename rlType::valueType> {
         
     public:
-        ConverterNode(const std::string& n, const RevPtr<Variable>& arg);                                               //!< Basic constructor
+        ConverterNode(const std::string& n, const RevPtr<Variable>& arg, const TypeSpec& ts );                          //!< Basic constructor
         ConverterNode(const ConverterNode<rlType>& n);                                                                  //!< Copy constructor
         
         virtual                                 ~ConverterNode(void);                                                   //!< Virtual destructor
@@ -61,6 +61,8 @@ namespace RevLanguage {
         RevPtr<Variable>                        argument;                                           //!< The argument variable
         bool                                    touched;                                            //!< Are we dirty?
         rlType*                                 convertedObject;                                    //!< The converted object
+        const TypeSpec&                         typeSpec;                                           //!< Type specification to convert to
+        
     };
     
 }
@@ -76,11 +78,12 @@ using namespace RevLanguage;
  * of the argument.
  */
 template<typename rlType>
-ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variable>& arg ) :
+ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variable>& arg, const TypeSpec& ts ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     argument( arg ),
     touched( true ),
-    convertedObject( NULL )
+    convertedObject( NULL ),
+    typeSpec( ts )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -100,7 +103,8 @@ ConverterNode<rlType>::ConverterNode( const ConverterNode<rlType>& n ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     argument( n.argument ),
     touched( true ),
-    convertedObject( NULL )
+    convertedObject( NULL ),
+    typeSpec( n.typeSpec )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -144,6 +148,9 @@ ConverterNode<rlType>& ConverterNode<rlType>::operator=( const ConverterNode<rlT
 {
     if (this != &x)
     {
+        if ( typeSpec != x.typeSpec )
+            throw RbException( "Invalid assignment involving converter nodes with different types" );
+        
         RevBayesCore::DynamicNode<typename rlType::valueType>::operator=( x );
         
         // Detach our bond to the old argument DAG node
@@ -186,7 +193,7 @@ ConverterNode<rlType>* ConverterNode<rlType>::clone( void ) const
  * variable) and the call from the variable wrapper (where we simply should update the
  * connections, and the variable wrapper replaces the DAG node inside it).
  *
- * @TODO For this to be perfectly safe, we need all DAG nodes to be connected to their
+ * @todo For this to be perfectly safe, we need all DAG nodes to be connected to their
  *       Rev object variables. The hack below (two variables sharing the same DAG node)
  *       should be safe for the current implementation of model, however, which does
  *       not expose its model variables to the parser.
@@ -215,7 +222,7 @@ RevBayesCore::DagNode* ConverterNode<rlType>::cloneDAG( std::map<const RevBayesC
     theArgumentNode->removeChild( copy );
     
     // Make sure the copy has its own Rev object argument with its DAG node being the clone of our variable DAG node
-    copy->argument = new Variable( argument->getRevObject().cloneDAG( newNodes ) );
+    copy->argument = new Variable( argument->getRevObject().cloneDAG( newNodes ), argument->getName() );
     
     // Now swap copy parents: detach the copy node from its old parent and attach it to the new parent
     // If we called swapParent here, the swapParent function would not find the old parent in its RevObject
@@ -349,11 +356,11 @@ void ConverterNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) 
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents(o, 16, 70, verbose);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren(o, 16, 70, verbose);
     o << std::endl;
 }
 
@@ -428,7 +435,7 @@ void ConverterNode<rlType>::update()
     delete convertedObject;
     
     // Get the converted object
-    convertedObject = static_cast<rlType*>( argument->getRevObject().convertTo( rlType::getClassTypeSpec() ) );
+    convertedObject = static_cast<rlType*>( argument->getRevObject().convertTo( typeSpec ) );
     
     // We are clean!
     touched = false;

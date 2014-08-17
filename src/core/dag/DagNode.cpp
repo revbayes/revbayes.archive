@@ -357,11 +357,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
         std::ostringstream s;
         if ( (*it)->getName() == "" )
         {
-            if ( verbose == true )
-            {
-                s << "<" << (*it) << ">";
-            }
-        
+            s << "<" << (*it) << ">";
         }
         else
         {
@@ -425,12 +421,7 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
     {
         if ( (*it)->getName() == "" )
         {
-            
-            if ( verbose == true )
-            {
-                s << "<" << (*it) << ">";
-            }
-            
+            s << "<" << (*it) << ">";
         }
         else
         {
@@ -497,7 +488,7 @@ void DagNode::reInitializeMe( void ) {
 }
 
 
-void DagNode::removeChild(DagNode *child) const 
+void DagNode::removeChild(DagNode *child) const
 {
     
     // test if we even have this node as a child
@@ -514,7 +505,7 @@ void DagNode::removeChild(DagNode *child) const
 
 /**
  * Replace the DAG node. 
- * We call replace for all children so that they get a new parent. We do not change the parents.
+ * We call swap parent for all children so that they get a new parent. We do not change the parents.
  */
 void DagNode::replace( DagNode *n ) {
     
