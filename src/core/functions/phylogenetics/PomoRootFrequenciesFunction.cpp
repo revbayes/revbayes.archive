@@ -41,21 +41,21 @@ void PomoRootFrequenciesFunction::update( void )
     const double& fopar = frequencyOfPolymorphismsAtTheRoot->getValue();
     const std::vector<double>& mr = mutationRates->getValue();
     const unsigned int& ps = populationSize->getValue();
-
+    
     double OneMinusFopar = 1 - fopar;
     // compute all root frequencies as in De Maio, Schlötterer, Kosiol 2013
     //First, the monoallelic states
-    static_cast< std::vector<double>* >(value)->at(0) = mr[0] * OneMinusFopar;
-    static_cast< std::vector<double>* >(value)->at(1) = mr[1] * OneMinusFopar;
-    static_cast< std::vector<double>* >(value)->at(2) = mr[2] * OneMinusFopar;
-    static_cast< std::vector<double>* >(value)->at(3) = mr[3] * OneMinusFopar;
+    static_cast< std::vector<double>* >(value)->at(0) = fnrf[0] * OneMinusFopar;
+    static_cast< std::vector<double>* >(value)->at(1) = fnrf[1] * OneMinusFopar;
+    static_cast< std::vector<double>* >(value)->at(2) = fnrf[2] * OneMinusFopar;
+    static_cast< std::vector<double>* >(value)->at(3) = fnrf[3] * OneMinusFopar;
     //Then, the biallelic states
     int currentCell = 4;
     for (unsigned int i = 0; i < 3; ++i) {
         for (unsigned int j = i+1; j < 4; ++j) {
             //For each frequency
             for (unsigned int f = 1; f < ps; ++f) {
-                static_cast< std::vector<double>* >(value)->at(currentCell) = fopar * ( ( fnrf[j]*mr[j*3+i]*1/(double)i) + ( fnrf[i]*mr[i*3+j-1] * 1/(double)(ps-i) ) );
+                static_cast< std::vector<double>* >(value)->at(currentCell) = fopar * ( ( fnrf[j]*mr[j*3+i]*1/(double)f) + ( fnrf[i]*mr[i*3+j-1] * 1/(double)(ps-f) ) );
                 currentCell ++;
             }
         }
@@ -69,6 +69,7 @@ void PomoRootFrequenciesFunction::update( void )
     for (unsigned int i = 4; i < static_cast< std::vector<double>* >(value)->size(); ++i) {
         static_cast< std::vector<double>* >(value)->at(i) *= normalizer;
     }
+    
 
 }
 
