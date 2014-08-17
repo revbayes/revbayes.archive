@@ -12,7 +12,7 @@
  * @version 1.0
  * @since 2011-04-13, version 1.0
  *
- * $Id: TimeTree.h 1651 2012-07-05 14:47:08Z hoehna $
+ * $Id: TreeBipartitions.h 1651 2012-07-05 14:47:08Z hoehna $
  */
 
 #ifndef TreeBipartitions_H
