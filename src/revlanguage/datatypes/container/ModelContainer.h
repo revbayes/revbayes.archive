@@ -56,7 +56,7 @@ namespace RevLanguage {
         const_iterator                                  end(void) const;                                                    //!< Const-iterator to the end of the Vector
         
         // Basic utility functions you have to override
-        virtual ModelContainer<rlType,dim,rbType>*   clone(void) const = 0;                                              //!< Clone object
+        virtual ModelContainer<rlType,dim,rbType>*      clone(void) const = 0;                                              //!< Clone object
         static const std::string&                       getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                         getTypeSpec(void) const = 0;                                        //!< Get the object type spec of the instance
@@ -66,8 +66,8 @@ namespace RevLanguage {
         
         // Basic utility functions you should not have to override
         RevObject*                                      cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
-        RevBayesCore::TypedDagNode<rbType>*          getDagNode(void) const;                                             //!< Get the DAG node
-        const rbType&                                getValue(void) const;                                               //!< Get the internal value
+        RevBayesCore::TypedDagNode<rbType>*             getDagNode(void) const;                                             //!< Get the DAG node
+        const rbType&                                   getValue(void) const;                                               //!< Get the internal value
         bool                                            hasDagNode(void) const;                                             //!< Do we have a DAG node?
         bool                                            isComposite(void) const;                                            //!< Is this a composite container?
         bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
@@ -97,15 +97,15 @@ namespace RevLanguage {
 
     protected:
         ModelContainer(void);                                                                                               //!< Construct empty container
-        ModelContainer(const rbType& v);                                                                                 //!< Construct constant model container
-        ModelContainer(RevBayesCore::TypedDagNode<rbType>* n);                                                           //!< Construct model container from DAG node
-        ModelContainer(const ModelContainer<rlType,dim,rbType>& c);                                                      //!< Copy constructor
+        ModelContainer(const rbType& v);                                                                                    //!< Construct constant model container
+        ModelContainer(RevBayesCore::TypedDagNode<rbType>* n);                                                              //!< Construct model container from DAG node
+        ModelContainer(const ModelContainer<rlType,dim,rbType>& c);                                                         //!< Copy constructor
         
         // Assignment operator
         ModelContainer&                                 operator=(const ModelContainer& x);                                 //!< Assignment operator
         
         // Member variable (protected and not private to make it available to derived classes)
-        RevBayesCore::TypedDagNode<rbType>*          dagNode;                                                            //!< The DAG node keeping the value
+        RevBayesCore::TypedDagNode<rbType>*             dagNode;                                                            //!< The DAG node keeping the value
 
     };
 
@@ -167,7 +167,7 @@ ModelContainer<rlType, dim, rbType>::ModelContainer( RevBayesCore::TypedDagNode<
 
 /**
  * Copy constructor. We make an independent copy of the DAG node
- * here, and deal with DAG node memory management.
+ * here (independent elements), and deal with DAG node memory management.
  */
 template <typename rlType, size_t dim, typename rbType>
 ModelContainer<rlType, dim, rbType>::ModelContainer( const ModelContainer& c) :
@@ -176,7 +176,11 @@ ModelContainer<rlType, dim, rbType>::ModelContainer( const ModelContainer& c) :
 {
     if ( c.dagNode != NULL )
     {
-        dagNode = c.dagNode->clone();
+        if ( c.isComposite() )
+            dagNode = static_cast< ContainerNode<rlType, rbType>* >( c.dagNode )->deepCopy();
+        else
+            dagNode = c.dagNode->clone();
+        
         dagNode->incrementReferenceCount();
     }
 }
@@ -210,7 +214,10 @@ ModelContainer<rlType, dim, rbType>& ModelContainer<rlType, dim, rbType>::operat
         // Create my own copy
         if ( c.dagNode != NULL )
         {
-            dagNode = c.dagNode->clone();
+            if ( c.isComposite() )
+                dagNode = static_cast< ContainerNode<rlType, rbType>* >( c.dagNode )->deepCopy();
+            else
+                dagNode = c.dagNode->clone();
             dagNode->incrementReferenceCount();
         }
     }
@@ -248,7 +255,7 @@ typename rbType::const_iterator ModelContainer<rlType, dim, rbType>::begin( void
  * by the DAG node cloneDAG function, for DAG node types belonging to the
  * RevLanguage layer and handling Rev objects.
  *
- * @TODO This is a temporary hack that makes different Rev objects sharing
+ * @todo This is a temporary hack that makes different Rev objects sharing
  *       the same internal DAG node keeping their value. Replace with code
  *       that actually clones the model DAG with the included Rev objects
  *       (and possibly also the included variables).
@@ -257,6 +264,8 @@ template<typename rlType, size_t dim, typename rbType>
 RevLanguage::RevObject* RevLanguage::ModelContainer<rlType, dim, rbType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
 {
     ModelContainer<rlType, dim, rbType>* theClone = clone();
+    
+    theClone->setDagNode( NULL );
     
     RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
     
@@ -470,7 +479,7 @@ template <typename rlType, size_t dim, typename rbType>
 void ModelContainer<rlType, dim, rbType>::makeConversionValue( RevPtr<Variable> var )
 {
     // Create the converter node
-    ConverterNode< ModelContainer<rlType, dim, rbType> >* newNode = new ConverterNode< ModelContainer<rlType, dim, rbType> >( "", var );
+    ConverterNode< ModelContainer<rlType, dim, rbType> >* newNode = new ConverterNode< ModelContainer<rlType, dim, rbType> >( "", var, getTypeSpec() );
     
     // Signal replacement
     dagNode->replace(newNode);
@@ -590,7 +599,6 @@ void ModelContainer<rlType, dim, rbType>::replaceVariable( RevObject *newObj )
  * Replace the DAG node. We throw an error if the new node does
  * not have the right value type. This is based on a dynamic
  * cast to the expected value type.
- 
  */
 template <typename rlType, size_t dim, typename rbType>
 void RevLanguage::ModelContainer<rlType, dim, rbType>::setDagNode( RevBayesCore::DagNode* newNode )

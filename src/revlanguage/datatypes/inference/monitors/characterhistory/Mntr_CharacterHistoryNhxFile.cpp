@@ -1,7 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BiogeographicTreeHistoryCtmc.h"
-#include "ConstantNode.h"
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 #include "OptionRule.h"

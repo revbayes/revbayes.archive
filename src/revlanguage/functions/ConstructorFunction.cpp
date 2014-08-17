@@ -65,7 +65,18 @@ ConstructorFunction* ConstructorFunction::clone(void) const {
 }
 
 
-/** Execute function: we reset our template object here and give out a copy */
+/**
+ * Execute function. We make a clone of our template object and set its
+ * member variables. If a member variable is 'const', this is already
+ * taken care of when the arguments are passed to the constructor
+ * function, so we need not differentiate between 'const' and dynamic
+ * member variables here. Member variables that are 'protected' cannot
+ * be changed but they can be set during construction, so we need not
+ * worry about the 'protected' modifier of a member variable rule.
+ *
+ * @todo This is the old code, which needs to be changed when the member
+ *       variable code is revised.
+ */
 RevPtr<Variable> ConstructorFunction::execute( void ) {
     
     RevObject* copyObject = templateObject->clone();

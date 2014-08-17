@@ -44,7 +44,7 @@ namespace RevBayesCore {
 
     private:
         // functions used to calculate eigenvalues and eigenvectors 
-        // @TODO Note, we should change most of these and move them to RbMath functions
+        // @todo Note, we should change most of these and move them to RbMath functions
         void                                    balance(MatrixReal& A, std::vector<double>& scale, int* low, int* high);                                      //!< balances a matrix
         void                                    balback(int low, int high, std::vector<double>& scale, MatrixReal& eivec);                                    //!< reverses the balancing
         bool                                    checkForComplexEigenvalues(void);                                                                                   //!< returns 'true' if there are complex eigenvalues

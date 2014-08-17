@@ -3,6 +3,7 @@
 #include "DagNode.h"
 #include "Func_structure.h"
 #include "RbException.h"
+#include "RbOptions.h"
 #include "RlBoolean.h"
 #include "RlUserInterface.h"
 #include "RlUtils.h"
@@ -73,7 +74,11 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "x", true, RevObject::getClassTypeSpec() ) );
+#if defined (DEBUG_STRUCTURE)
+        argumentRules.push_back( new ArgumentRule( "verbose", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+#else
         argumentRules.push_back( new ArgumentRule( "verbose", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+#endif
         rulesSet = true;
     }
     

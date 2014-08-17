@@ -41,7 +41,7 @@ Simplex::Simplex( const std::vector<double>& v ) :
  * Make sure that a distribution or a function associated with
  * a dynamic node are of the right type.
  *
- * @TODO Make sure we actually have a simplex stored in n (or an
+ * @todo Make sure we actually have a simplex stored in n (or an
  *       NA value)
  */
 Simplex::Simplex( RevBayesCore::TypedDagNode<std::vector<double> >* n ) :
