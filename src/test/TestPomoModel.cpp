@@ -27,6 +27,7 @@
 #include "PomoRateMatrixFunction.h"
 #include "RateMatrix_Pomo.h"
 #include "RbFileManager.h"
+#include "RobinsonFouldsDistanceStatistic.h"
 #include "RootTimeSlide.h"
 #include "ScaleProposal.h"
 #include "ScreenMonitor.h"
@@ -60,7 +61,8 @@ bool TestPomoModel::run( void ) {
     seed.push_back(42);
     GLOBAL_RNG->setSeed(seed);
     
-    double trueNE = 100;
+    double trueNE = 0.004; //as in Leaché et al., 2011
+    double trueTreeHeight = 0.012; //as in Leaché et al., 2011
     size_t nGeneTrees = 10;
     size_t individualsPerSpecies = 10;
     
@@ -92,8 +94,11 @@ bool TestPomoModel::run( void ) {
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
     std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
-  //  TreeUtilities::rescaleSubtree(t, &(t->getRoot()), 0.1 );
-  //  std::cout << "Rescaled species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
+    //We rescale the subtree so that the tree height is 0.004, as in Leaché et al., 2011
+    double treeHeight = t->getAge( t->getRoot().getIndex() );
+    
+    TreeUtilities::rescaleSubtree(t, &(t->getRoot()), trueTreeHeight/treeHeight );
+    std::cout << "Rescaled species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
 
     /* Then we set up the multispecies coalescent process and simulate gene trees */
     size_t nNodes = t->getNumberOfNodes();
@@ -166,7 +171,7 @@ bool TestPomoModel::run( void ) {
         FastaWriter writer;
         stringstream ss; //create a stringstream
         ss << i;
-        writer.writeData(o.str() + ".fas", simSeqs[i]->getValue());
+        writer.writeData(folder + o.str() + ".fas", simSeqs[i]->getValue());
     }
     
     //NOW THE DATA HAS BEEN SIMULATED
@@ -318,8 +323,11 @@ bool TestPomoModel::run( void ) {
     moves.push_back( new SimplexMove( selco, 100.0, 4, 0, true, 2.0 ) );
 
     // add some tree stats to monitor
-    DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
-    
+    DeterministicNode<double> *treeHeightStat = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
+    // RF distance between reconstructed and true tree
+    ConstantNode<TimeTree> *trueTree = new ConstantNode<TimeTree>( "trueTree", t );
+    DeterministicNode<double> *spTreeRF = new DeterministicNode<double>("spTreeRF", new RobinsonFouldsDistanceStatistic(trueTree, tau) );
+
     /* add the monitors */
     RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
@@ -331,7 +339,12 @@ bool TestPomoModel::run( void ) {
   /*  monitoredNodes1.insert( er );
     monitoredNodes1.insert( pi );*/
   //  monitoredNodes1.insert( q ); too large to monitor!
-    monitoredNodes1.insert( treeHeight );
+    monitoredNodes1.insert( treeHeightStat );
+    /*  monitoredNodes1.insert( er );
+     monitoredNodes1.insert( pi );*/
+    //  monitoredNodes1.insert( q ); too large to monitor!
+    monitoredNodes1.insert( spTreeRF );
+
     monitors.push_back( new FileMonitor( monitoredNodes1, 10, folder+"TestPomoModelSubstRates.log", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes1, 10, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
