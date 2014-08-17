@@ -242,6 +242,7 @@
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
+#include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
 #include "Func_rbvector.h"
@@ -822,6 +823,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
         addFunction( "ls",                       new Func_ls()                       );
+        addFunction( "printSeed",                new Func_printSeed()                );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "range",                    new Func_range()                    );
