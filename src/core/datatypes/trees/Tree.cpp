@@ -80,7 +80,7 @@ Tree& Tree::operator=(const Tree &t) {
     if (this != &t) 
     {
         // nothing really to do here, should be done in the derived classes
-        // @TODO: Find a better solution - Sebastian
+        // @todo: Find a better solution - Sebastian
         // Problem: If we redraw the tree because the initial states are invalid, 
         // then we somehow need to remember the tree event change listeners.
         // But it is not nice if the tree distribution needs to remember this!!!

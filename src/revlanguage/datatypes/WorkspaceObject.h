@@ -59,7 +59,6 @@ namespace RevLanguage {
 }
 
 
-#include "ConstantNode.h"
 #include "TypeSpec.h"
 
 template <typename rbType>
