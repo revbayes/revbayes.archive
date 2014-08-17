@@ -143,7 +143,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try
     {
         TestCharacterHistory testDdm = TestCharacterHistory("", "", "", 10000);
-      //  testDdm.run();
+        testDdm.run();
     }
     catch (RbException &e)
     {
@@ -290,7 +290,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     /* A Pomo model test */
     try {
         TestPomoModel testPomo = TestPomoModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 10, 1000);
-           testPomo.run();
+//           testPomo.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
