@@ -145,7 +145,6 @@ First, we define the range for taxon $i$ as the bit vector $X_i$, where $X_{i,j}
 Each taxon range is a bit vector of length $N$ areas.
 For example, if taxon $B$ is present only in areas 2 and 3 out of $N=3$ areas, its range is represented as $X_B = (0,1,1)$, which is translated to the bit string $X_B=011$ for short.
 The data matrix, $\textbf{X}$, is analogous to a multiple sequence alignment where each element in the data matrix reports a discrete value for a homologous character shared by all taxa at column $j$.
-How to choose areas to define species ranges will not be covered in this tutorial.
 
 Next, we need a model of range evolution.
 Since we have discrete characters we'll use the continuous-time Markov chain, which allows us to compute transition probability of a character changing from $i$ to $j$ in time $t$ through matrix exponentiation
@@ -185,8 +184,7 @@ q^{(a)}_{\textbf{y},\textbf{z}} =
 where $\textbf{y}$ and $\textbf{z}$ are the ``from'' and ``to'' ranges and $a$ is the area that changes.
 For example, $q^{(1)}_{011,111}$ is the rate of range expansion for $011 \rightarrow 111$ to gain area $1$.
 Note the rate of more than one event occurring simultaneously is zero, so a range must expand twice by one area in order to expand by two areas.
-This model is analogous to the Jukes-Cantor model, but uses binary characters instead of 4-state nucleotides.
-
+This model is analogous to the Jukes-Cantor model for three independent characters with binary states, except the all-zero ``null range'' is forbidden.
 
 There are several simple ways to extend this model. For example, the rate of area gain and area loss ($\lambda_0$ and $\lambda_1$, resp.) may differ as
 \[
@@ -198,19 +196,8 @@ q^{(a)}_{\textbf{y},\textbf{z}} =
 \end{cases}.
 \]
 
-%In addition, you may want to assign transition probabilities to entering the all-zero ``extinction'' state -- an absorbing state that has a zero probability of being left (barring resurrection). In addition, it may not be that any species is equally likely to be present or absent in any given area, i.e. $\pi_0 \neq \pi_1$ but $\pi_0 + \pi_1 = 1$. This could be parameterized using state frequencies (much like as is done with base frequencies in the Felsenstein 84 model).
-%
-%\[
-%q^{(a)}_{\textbf{y},\textbf{z}} =
-%\begin{cases}
-%2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
-%2 \pi_1 \lambda_1 & \text{if $z_a=1$} \\
-%0 & \mathbf{y} = 00...0 \\
-%0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
-%\end{cases}.
-%\]
-
-Also, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited.
+In addition, you may want to assign transition probabilities to entering the all-zero null range, but treat it as an absorbing state with that has a zero probability of being exited. 
+Lastly, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited, which imposes non-independence between characters.
 The transition rate might then appear as
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
@@ -645,7 +632,7 @@ RevBayes > my_mcmc.run(generations=10000)
 \end{lstlisting}
 \end{snugshade}
 
-Everything we've done is contained in the file {\tt biogeography_M1.Rev}.
+Everything we've done is contained in the file {\tt biogeography\_M1.Rev}.
 You can modify this file as you like then re-run the analysis by typing
 
 \begin{snugshade}
