@@ -1,5 +1,4 @@
 #include "WhiteNoisePhyloProcess.h"
-#include "ConstantNode.h"
 #include "DistributionGamma.h"
 #include "GtrRateMatrix.h"
 #include "RandomNumberFactory.h"

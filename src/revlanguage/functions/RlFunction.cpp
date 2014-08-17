@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the implementation of some functions in
- * Function, the interface fnd abstract base class for RevBayes
- * functions.
- *
- * @brief Partial implementation of Function
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes core team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-17, version 1.0
- *
- * $Id$
- */
-
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "ModelVector.h"
@@ -132,7 +114,7 @@ std::string Function::callSignature(void) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  *
- * @TODO The code and the logic has been changed without changing the comments, so these
+ * @todo The code and the logic has been changed without changing the comments, so these
  *       are out of date. Also note that the argument matching is problematic for unlabeled
  *       arguments (order can be changed based on argument types, which may cause unintended
  *       consequences). Furthermore, there is redundant code left from the old implementation.
@@ -182,7 +164,10 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) 
             {
                 
-                if ( theRules[j].isArgumentValid(passedArgs[i].getVariable(), once ) && !filled[j] )
+                if ( filled[j] )
+                    return false;
+
+                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) )
                 {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -280,6 +265,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             if ( filled[j] == false ) 
             {
                 const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
+
                 if ( theRules[j].isArgumentValid( argVar, once ) )
                 {
                     taken[i]          = true;
@@ -297,6 +283,8 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     
                     break;
                 }
+                else
+                    return false;
             }
         }
         
@@ -541,14 +529,14 @@ void Function::printValue(std::ostream& o) const {
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  *
- * @TODO The code and the logic has been changed without changing the comments, so these
+ * @todo The code and the logic has been changed without changing the comments, so these
  *       are out of date. Also note that the argument matching is problematic for unlabeled
  *       arguments (order can be changed based on argument types, which may cause unintended
  *       consequences). Furthermore, there is redundant code left from the old implementation.
  *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
  *       are still the last arguments after processing.
  *
- * @TODO Static and dynamic type conversion added, but partly hack-ish, so the implementation
+ * @todo Static and dynamic type conversion added, but partly hack-ish, so the implementation
  *       needs to be revised
  */
 void Function::processArguments( const std::vector<Argument>& passedArgs, bool once )
@@ -599,7 +587,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
                 if ( filled[j] )
                     throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
                 
-                pArgs[i]            = fitArgument( pArgs[i], theRules[j], once );
+                pArgs[i]            = theRules[j].fitArgument( pArgs[i], once );
                 taken[i]            = true;
                 filled[j]           = true;
                 passedArgIndex[j]   = static_cast<int>( i );
@@ -649,7 +637,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         else if (nMatches < 1)
             throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
  
-        pArgs[i]                    = fitArgument( pArgs[i], theRules[matchRule], once );
+        pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
         taken[i]                    = true;
         filled[matchRule]           = true;
         passedArgIndex[matchRule]   = static_cast<int>( i );
@@ -672,29 +660,26 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( filled[j] == false ) 
             {
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) )
+                pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
+                taken[i]          = true;
+                if ( !theRules[j].isEllipsis() ) 
                 {
-                    pArgs[i]          = fitArgument( pArgs[i], theRules[j], once );
-                    taken[i]          = true;
-                    if ( !theRules[j].isEllipsis() ) 
-                    {
-                        filled[j]     = true;
-                        passedArgIndex[j] = static_cast<int>( i );
-                    }
-                    else 
-                    {
-                        ellipsisArgs.push_back( pArgs[i] );
-                    }
-                    
-                    break;
+                    filled[j]     = true;
+                    passedArgIndex[j] = static_cast<int>( i );
                 }
+                else 
+                {
+                    ellipsisArgs.push_back( pArgs[i] );
+                }
+                
+                break;
             }
         }
         
         /* Final test if we found a match */
         if ( !taken[i] )
         {
-            throw RbException("Argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' is not valid for function '" + getType() + "'.");
+            throw RbException("Superfluous argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' passed to function '" + getType() + "'.");
         }
     }
 
@@ -738,48 +723,6 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         args.push_back( *i );
     }
 
-}
-
-
-/** Set an argument. We also do type conversion here if necessary. */
-Argument Function::fitArgument( Argument arg, const ArgumentRule& rule, bool once ) const
-{
-    RevPtr<Variable> theVar = arg.getVariable();
-    const std::vector<TypeSpec>& argTypeSpecs = rule.getArgumentTypeSpec();
-
-    for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
-    {
-        if ( theVar->getRevObject().isTypeSpec( *it ) )
-        {
-            if ( !rule.isEllipsis() )
-                return Argument( theVar, rule.getArgumentLabel(), rule.isConstant() );
-            else
-                return Argument( theVar, arg.getLabel(), true );
-        }
-        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
-        {
-            if ( once || !theVar->getRevObject().hasDagNode() )
-            {
-                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
-                if ( !rule.isEllipsis() )
-                    return Argument( new Variable( convertedObject ), rule.getArgumentLabel(), rule.isConstant() );
-                else
-                    return Argument( new Variable( convertedObject ), arg.getLabel(), true );
-            }
-            else
-            {
-                /** @TODO This is static type conversion. Make dynamic according to code sketch below. */
-                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
-                // conversionObject->makeConversionValue( theVar );
-                if ( !rule.isEllipsis() )
-                    return Argument( new Variable( conversionObject ), rule.getArgumentLabel(), rule.isConstant() );
-                else
-                    return Argument( new Variable( conversionObject ), arg.getLabel(), true );
-            }
-        }
-    }
-
-    throw RbException( "Argument type mismatch" );
 }
 
 

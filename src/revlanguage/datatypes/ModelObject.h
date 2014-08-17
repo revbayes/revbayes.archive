@@ -197,7 +197,7 @@ RevLanguage::ModelObject<rbType>& RevLanguage::ModelObject<rbType>::operator=(co
  * by the DAG node cloneDAG function, for DAG node types belonging to the
  * RevLanguage layer and handling Rev objects.
  *
- * @TODO This is a temporary hack that makes different Rev objects sharing
+ * @todo This is a temporary hack that makes different Rev objects sharing
  *       the same internal DAG node keeping their value. Replace with code
  *       that actually clones the model DAG with the included Rev objects
  *       (and possibly also the included variables).
@@ -207,6 +207,8 @@ RevLanguage::RevObject* RevLanguage::ModelObject<rbType>::cloneDAG( std::map<con
 {
     ModelObject<rbType>* theClone = clone();
 
+    theClone->setDagNode( NULL );
+    
     RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
     
     theClone->setDagNode( theNodeClone );
@@ -426,7 +428,7 @@ template <typename rbType>
 void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var )
 {
     // Create the converter node
-    ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var );
+    ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var, getTypeSpec() );
 
     // Signal replacement
     dagNode->replace(newNode);

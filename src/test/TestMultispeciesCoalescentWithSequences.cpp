@@ -93,7 +93,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     GLOBAL_RNG->setSeed(seed);
     
     double trueNE = 100;
-    size_t nGeneTrees = 50;
+    size_t nGeneTrees = 10;
     size_t individualsPerSpecies = 10;
     
 //    #if defined (USE_LIB_OPENMP)
@@ -112,6 +112,9 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 //    }
 //    
    
+    //Folder for output of the files
+    std::string folder = "/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/";
+
 
     
     /* First, we read in the species tree */
@@ -119,7 +122,9 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
     std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
-    
+   /* TreeUtilities::rescaleSubtree(t, &(t->getRoot()), 100 );
+    std::cout << "Rescaled species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;*/
+
     
     /* Then we set up the multispecies coalescent process and simulate gene trees */
     size_t nNodes = t->getNumberOfNodes();
@@ -151,7 +156,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         stringstream ss; //create a stringstream
         ss << i;
         std::ofstream myfile;
-        myfile.open( ("primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
+        myfile.open( (folder+"primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
         myfile << simTrees[i]->getNewickRepresentation() << std::endl;
         myfile.close();
         tauCPC->redraw();
@@ -197,7 +202,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
         stringstream ss; //create a stringstream
         ss << i;
         //  writer.writeData( "primatesSimulated_" + ss.str() + ".fas", charactermodel->getValue() );
-        writer.writeData(o.str() + ".fas", simSeqs[i]->getValue());
+        writer.writeData(folder+o.str() + ".fas", simSeqs[i]->getValue());
     }
     
     //NOW THE DATA HAS BEEN SIMULATED
@@ -332,10 +337,10 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     
     
     RbVector<Monitor> monitors;
-    monitors.push_back( new ModelMonitor( 10, "TestMultispeciesCoalescentWithSequences.p", "\t" ) );
+    monitors.push_back( new ModelMonitor( 10, folder+"TestMultispeciesCoalescentWithSequences.p", "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( spTree_inf );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, folder+"TestMultispeciesCoalescentWithSequences.trees", "\t", false, false, false ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes2, 10, false, false, false ) );
     for (unsigned int i = 0; i < nGeneTrees; i++) {
         std::stringstream o;
@@ -354,7 +359,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
     
     // read in the tree trace
-    TreeTrace<TimeTree> trace = readTreeTrace("TestMultispeciesCoalescentWithSequences.trees");
+    TreeTrace<TimeTree> trace = readTreeTrace(folder+"TestMultispeciesCoalescentWithSequences.trees");
     
     TreeSummary<TimeTree> summary = TreeSummary<TimeTree>(trace);
     summary.summarize();
