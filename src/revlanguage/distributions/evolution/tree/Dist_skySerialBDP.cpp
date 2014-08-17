@@ -72,7 +72,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
     // sampling probabilities
     RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<RealPos> &>( rhoTimes->getRevObject() ).getDagNode();
     // time between now and most recent sample
     double tLastSample                          = static_cast<const RealPos &>( tLast->getRevObject() ).getValue();
     // condition
@@ -150,7 +150,7 @@ const MemberRules& Dist_skySerialBDP::getMemberRules(void) const
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"                   , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"              , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"                   , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>(std::vector<double>(0.0)) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"              , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"              , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample"   , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
