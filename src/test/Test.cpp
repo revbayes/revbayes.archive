@@ -272,7 +272,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         TestMultispeciesCoalescentWithSequences testCoal = TestMultispeciesCoalescentWithSequences("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree");
 //        TestMultispeciesCoalescent testCoal = TestMultispeciesCoalescent("trees/smallTest.tree");
-   //    testCoal.run();
+  //     testCoal.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
@@ -289,7 +289,7 @@ bool Test::performTests(int argc, const char * argv[]) {
     
     /* A Pomo model test */
     try {
-        TestPomoModel testPomo = TestPomoModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 10, 1000);
+        TestPomoModel testPomo = TestPomoModel("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/primates.tree", 10, 10000);
            testPomo.run();
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
@@ -311,7 +311,7 @@ bool Test::performTests(int argc, const char * argv[]) {
 //        TestGtrModel testGtr = TestGtrModel("data/anolis.nex", "trees/anolis_MAP.dnd", 10000);
   //      TestGtrModel testGtr = TestGtrModel("data/LSU.phy", "trees/LSUrootedClocklike.dnd", 1000);
 
-//        testGtr.run();
+     //  testGtr.run();
         TestTreeTraceSummary testTrace = TestTreeTraceSummary("TestGtrModel.tree");
 //        testTrace.run();
     } catch (RbException &e) {

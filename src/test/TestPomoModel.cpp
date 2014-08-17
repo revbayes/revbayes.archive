@@ -37,6 +37,7 @@
 #include "TimeTree.h"
 #include "TreeHeightStatistic.h"
 #include "TreeScale.h"
+#include "TreeUtilities.h"
 #include "UniformDistribution.h"
 
 using namespace RevBayesCore;
@@ -80,15 +81,20 @@ bool TestPomoModel::run( void ) {
     //
     
     
+    //Folder for output of the files
+    std::string folder = "/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/data/";
+    
+    
     
     /* First, we read in the species tree */
-    treeFilename = "data/primates.tree";
+   // treeFilename = "data/primates.tree";
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
     std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
-    
-    
+  //  TreeUtilities::rescaleSubtree(t, &(t->getRoot()), 0.1 );
+  //  std::cout << "Rescaled species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
+
     /* Then we set up the multispecies coalescent process and simulate gene trees */
     size_t nNodes = t->getNumberOfNodes();
     ConstantNode< std::vector<double> > *Ne = new ConstantNode< std::vector<double> >("N", new std::vector<double>(nNodes, trueNE) );
@@ -121,7 +127,7 @@ bool TestPomoModel::run( void ) {
         stringstream ss; //create a stringstream
         ss << i;
         std::ofstream myfile;
-        myfile.open( ("primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
+        myfile.open( (folder + "primatesSimulatedTree_" + ss.str() + ".dnd").c_str() );
         myfile << simTrees[i]->getNewickRepresentation() << std::endl;
         myfile.close();
         tauCPC->redraw();
@@ -214,7 +220,23 @@ bool TestPomoModel::run( void ) {
     
     // the parameters for the mutation rates
     ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(12,1.0) ); //All 12 possible mutations
-    StochasticNode<std::vector<double> > *mr = new StochasticNode<std::vector<double> >( "mutationRates", new DirichletDistribution(e) );
+    //StochasticNode<std::vector<double> > *mr = new StochasticNode<std::vector<double> >( "mutationRates", new DirichletDistribution(e) );
+    std::vector<double> mu ;
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    mu.push_back(0.0001);
+    
+    ConstantNode<std::vector<double> > *mr = new ConstantNode<std::vector<double> >( "mutationRates", &mu );
+    
     std::cout << "Mutation rates:\t" << mr->getValue() << std::endl;
 
     //For the root frequencies, the proportion of polymorphic sites at the root, and the mutation rates
@@ -231,10 +253,10 @@ bool TestPomoModel::run( void ) {
     //Other parameters for the Pomo model: selection coefficients for ACGT
     StochasticNode<std::vector<double> > *selco = new StochasticNode<std::vector<double> >( "selectionCoefficients", new DirichletDistribution(bf) );
     std::vector<double> temp ;
-    temp.push_back(0.1);
-    temp.push_back(0.2);
-    temp.push_back(0.3);
-    temp.push_back(0.4);
+    temp.push_back(1);
+    temp.push_back(1);
+    temp.push_back(1);
+    temp.push_back(1);
 
     //Temporary
     ConstantNode<std::vector<double> > *selcotemp = new ConstantNode<std::vector<double> >( "selcotemp", &temp );
@@ -271,7 +293,7 @@ bool TestPomoModel::run( void ) {
     phyloCTMC->setClockRate( clockRate );
     phyloCTMC->setRateMatrix( q );
     phyloCTMC->setRootFrequencies( rf );
-    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("S", phyloCTMC );
+    StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("CharacterModel", phyloCTMC );
     charactermodel->clamp( concatenatedSimSeqsPol );
     
     /* add the moves */
@@ -287,9 +309,9 @@ bool TestPomoModel::run( void ) {
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
     //Moves on the model parameters
-    moves.push_back( new SimplexMove( mr, 10.0, 1, 0, true, 2.0 ) );
+ //   moves.push_back( new SimplexMove( mr, 10.0, 1, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( fnrf, 10.0, 1, 0, true, 2.0 ) );
-    moves.push_back( new SimplexMove( mr, 100.0, 12, 0, true, 2.0 ) );
+  //  moves.push_back( new SimplexMove( mr, 100.0, 12, 0, true, 2.0 ) );
     moves.push_back( new SimplexMove( fnrf, 100.0, 4, 0, true, 2.0 ) );
     moves.push_back( new BetaSimplexMove( fopar, 10.0, 1, 0 ) ); //Parameters chosen arbitrarily...
     moves.push_back( new SimplexMove( selco, 10.0, 1, 0, true, 2.0 ) );
@@ -304,17 +326,17 @@ bool TestPomoModel::run( void ) {
     //    monitoredNodes.insert( er );
     //    monitoredNodes.insert( pi );
     monitoredNodes.insert( div );
-    monitors.push_back( new FileMonitor( monitoredNodes, 10, "TestPomoModel.log", "\t" ) );
+    monitors.push_back( new FileMonitor( monitoredNodes, 10, folder+"TestPomoModel.log", "\t" ) );
     std::set<DagNode*> monitoredNodes1;
   /*  monitoredNodes1.insert( er );
     monitoredNodes1.insert( pi );*/
-    monitoredNodes1.insert( q );
+  //  monitoredNodes1.insert( q ); too large to monitor!
     monitoredNodes1.insert( treeHeight );
-    monitors.push_back( new FileMonitor( monitoredNodes1, 10, "TestPomoModelSubstRates.log", "\t" ) );
+    monitors.push_back( new FileMonitor( monitoredNodes1, 10, folder+"TestPomoModelSubstRates.log", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes1, 10, "\t" ) );
     std::set<DagNode*> monitoredNodes2;
     monitoredNodes2.insert( tau );
-    monitors.push_back( new FileMonitor( monitoredNodes2, 10, "TestPomoModel.tree", "\t", false, false, false ) );
+    monitors.push_back( new FileMonitor( monitoredNodes2, 10, folder+"TestPomoModel.tree", "\t", false, false, false ) );
     
     /* instantiate the model */
     Model myModel = Model(q);
