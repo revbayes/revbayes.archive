@@ -283,8 +283,6 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     
                     break;
                 }
-                else
-                    return false;
             }
         }
         
@@ -660,19 +658,24 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
             if ( filled[j] == false ) 
             {
-                pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
-                taken[i]          = true;
-                if ( !theRules[j].isEllipsis() ) 
-                {
-                    filled[j]     = true;
-                    passedArgIndex[j] = static_cast<int>( i );
-                }
-                else 
-                {
-                    ellipsisArgs.push_back( pArgs[i] );
-                }
+                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
                 
-                break;
+                if ( theRules[j].isArgumentValid( argVar, once ) )
+                {
+                    pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
+                    taken[i]          = true;
+                    if ( !theRules[j].isEllipsis() ) 
+                    {
+                        filled[j]     = true;
+                        passedArgIndex[j] = static_cast<int>( i );
+                    }
+                    else 
+                    {
+                        ellipsisArgs.push_back( pArgs[i] );
+                    }
+                    
+                    break;
+                }
             }
         }
         
