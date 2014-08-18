@@ -243,7 +243,7 @@ ElementLookupNode<rlType, rlElemType>* ElementLookupNode<rlType, rlElemType>::cl
  * variable) and the call from the variable wrapper (where we simply should update the
  * connections, and the variable wrapper replaces the DAG node inside it).
  *
- * @TODO For this to be perfectly safe, we need all DAG nodes to be connected to their
+ * @todo For this to be perfectly safe, we need all DAG nodes to be connected to their
  *       Rev object variables. The hack below (two variables sharing the same DAG node)
  *       should be safe for the current implementation of model, however, which does
  *       not expose its model variables to the parser.

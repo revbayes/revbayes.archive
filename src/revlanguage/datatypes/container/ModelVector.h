@@ -12,12 +12,11 @@ namespace RevLanguage {
     /**
      * @brief ModelVector: templated class for Rev vectors of model objects
      *
-     * We can rely on the template class specialization of ModelContainer for
-     * vectors to provide most of the functionality we need.
-     *
      * The class is based on a value type of std::vector<rlType>. This means
      * that it cannot be used for abstract Rev classes. For those, use
-     * ModelVectorAbstractElement instead.
+     * ModelVectorAbstractElement instead. It cannot be used for Rev classes
+     * with abstract internal value types (rbType) either. For those, use
+     * ModelVectorAbstractRbElement.
      */
     template <typename rlType>
     class ModelVector : public ModelContainer< rlType, 1, std::vector<typename rlType::valueType> > {
@@ -170,7 +169,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
     if ( type == getClassTypeSpec() )
         return this->clone();
     
-    // test whether we want to convert to another generic model vector
+    // Test whether we want to convert to another generic model vector
     if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We are both model vectors. Rely on generic code to cover all allowed conversions
@@ -467,22 +466,6 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 }
 
 
-/** Make methods for this class */
-template <typename rlType>
-MethodTable ModelVector<rlType>::makeMethods(void) const
-{
-    MethodTable methods = MethodTable();
-
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-        
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
-    
-    return methods;
-}
-
-
 /**
  * In this function we check whether this type is convertible to some other
  * Rev object type. Here we focus entirely on supporting conversion to
@@ -563,6 +546,22 @@ RevObject* ModelVector<rlType>::makeIndirectReference(void) {
     newObj->setDagNode( newNode );
     
     return newObj;
+}
+
+
+/** Make methods for this class */
+template <typename rlType>
+MethodTable ModelVector<rlType>::makeMethods(void) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
+    
+    return methods;
 }
 
 

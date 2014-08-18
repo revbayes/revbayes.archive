@@ -109,7 +109,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
         // Get the i-th parent
         const DagNode *theParam = (*i);
         
-        // Get its clone if we already have cloned this parent (parameter), then we will get the previously created clone
+        // Get its clone. If we already have cloned this parent (parameter), then we will get the previously created clone
         DagNode* theParamClone = theParam->cloneDAG( newNodes );
         
         // Add the copy back as a child of this parent so that the swapping works

@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the implementation of ArgumentRule, which is
- * the base class for objects used to describe rules for arguments
- * passed to functions.
- *
- * @brief Implementation of ArgumentRule 
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- *
- * $Id$
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "RbException.h"
@@ -90,6 +72,73 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
 }
 
 
+/**
+ * Fit a variable into an argument according to the argument rule. If necessary and
+ * appropriate, we do type conversion or type promotion.
+ *
+ * @todo The constant flag is currently not used correctly in ArgumentRule. Therefore,
+ *       we ignore it here for now. This needs to be changed.
+ */
+Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
+{
+
+    //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
+    //    if ( isConstant() )
+    //        once = true;
+
+    RevPtr<Variable> theVar = arg.getVariable();
+    
+    for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
+    {
+        if ( theVar->getRevObject().isTypeSpec( *it ) )
+        {
+            if ( !isEllipsis() )
+                return Argument( theVar, getArgumentLabel(), isConstant() );
+            else
+                return Argument( theVar, arg.getLabel(), true );
+        }
+        else if ( once == false &&
+                 theVar->getRevObject().isConstant() &&
+                 theVar->getRevObject().isConvertibleTo( *it, true ) &&
+                 (*it).isDerivedOf( theVar->getRevObjectTypeSpec() )
+                 )
+        {
+            // Fit by type promotion
+            RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+            theVar->setRevObject( convertedObject );
+            theVar->setRevObjectTypeSpec( *it );
+            if ( !isEllipsis() )
+                return Argument( theVar, getArgumentLabel(), isConstant() );
+            else
+                return Argument( theVar, arg.getLabel(), true );
+        }
+        else if ( theVar->getRevObject().isConvertibleTo( *it, once ) )
+        {
+            // Fit by type conversion
+            if ( once || !theVar->getRevObject().hasDagNode() )
+            {
+                RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                if ( !isEllipsis() )
+                    return Argument( new Variable( convertedObject ), getArgumentLabel(), isConstant() );
+                else
+                    return Argument( new Variable( convertedObject ), arg.getLabel(), true );
+            }
+            else
+            {
+                RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
+                conversionObject->makeConversionValue( theVar );
+                if ( !isEllipsis() )
+                    return Argument( new Variable( conversionObject ), getArgumentLabel(), isConstant() );
+                else
+                    return Argument( new Variable( conversionObject ), arg.getLabel(), true );
+            }
+        }
+    }
+    
+    throw RbException( "Argument type mismatch" );
+}
+
+
 const std::string& ArgumentRule::getArgumentLabel(void) const {
     return label;
 }
@@ -119,12 +168,18 @@ bool ArgumentRule::hasDefault(void) const {
 
 
 /**
- * Test if argument is valid. The boolean flag is used to signal whether the argument matching
- * is done in a static or a dynamic context. */
+ * Test if argument is valid. The boolean flag 'once' is used to signal whether the argument matching
+ * is done in a static or a dynamic context. If the rule is constant, then the argument matching
+ * is done in a static context (evaluate-x§once context) regardless of the setting of the once flag.
+ * If the argument is constant, we try type promotion if permitted by the variable required type.
+ */
 bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const {
     
     if ( var == NULL )
         return false;
+    
+    if ( isConst || var->getRevObject().isConstant() )
+        once = true;
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
@@ -132,6 +187,12 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
             return true;
         
         else if ( var->getRevObject().isConvertibleTo( *it, once ) )
+            return true;
+
+        else if ( once == false && var->getRevObject().isConstant() &&
+                  var->getRevObject().isConvertibleTo( *it, true ) &&
+                  (*it).isDerivedOf( var->getRevObjectTypeSpec() )
+                )
             return true;
     }
     
@@ -155,6 +216,9 @@ bool RevLanguage::ArgumentRule::isEllipsis( void ) const {
 
 /** Print value for user (in descriptions of functions, for instance) */
 void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
+
+    if ( isConstant() )
+        o << "const ";
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {

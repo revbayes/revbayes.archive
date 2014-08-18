@@ -148,7 +148,7 @@ void DualityDiagram::compute_(const MatrixReal& matrix, double tol)
     
     EigenSystem eigen(M3);
     eigen.update();
-    // @TODO: This may be implemented some time ... (Sebastian)
+    // @todo: This may be implemented some time ... (Sebastian)
 //    if (!eigen.isSymmetric())
 //        throw RbException("DualityDiagram (constructor). The variance-covariance or correlation matrix should be symmetric...");
     
