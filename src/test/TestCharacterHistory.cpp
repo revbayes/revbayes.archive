@@ -164,21 +164,21 @@ bool TestCharacterHistory::run_exp(void) {
     bool useClock                   = !true;
     bool useBdProcess               = !true;
     
-    bool forbidExtinction           = true;
+    bool forbidExtinction           = !true;
     bool useCladogenesis            = !true;
     bool useDistances               = true;
-    bool useAdjacency               = true;
-    bool useAvailable               = true;
-    bool useRootFreqs               = true;
+    bool useAdjacency               = !true;
+    bool useAvailable               = !true;
+    bool useRootFreqs               = !true;
     
     
     filepath="/Users/mlandis/data/bayarea/output/";
     
     // binary characters
     std::string fn = "";
-    //    fn = "vireya.nex";
-    fn = "psychotria_range.nex";
-    //    fn = "16tip_20areas.nex";
+    fn = "vireya.nex";
+//    fn = "psychotria_range.nex";
+//    fn = "16tip_100areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -192,10 +192,11 @@ bool TestCharacterHistory::run_exp(void) {
     
     // geo by epochs
     std::string afn="";
-    //    afn = "malesia_static.atlas.txt";
-    afn = "hawaii_dynamic.atlas.txt";
+    afn = "malesia_static.atlas.txt";
+//    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic_ss.atlas.txt";
+//    afn = "100area.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
@@ -205,7 +206,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     // clock
     ContinuousStochasticNode* clockRate = new ContinuousStochasticNode("clockRate", new GammaDistribution( new ConstantNode<double>("clockPrior_A", new double(2.0)),
-                                                                                                          new ConstantNode<double>("clockPrior_B", new double(2.0))));
+                                                                                                           new ConstantNode<double>("clockPrior_B", new double(2.0))));
     if (!useClock)
         clockRate->setValue(new double(1.0));
     
@@ -239,12 +240,13 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<GeographyRateModifier>* ddd = NULL;
     ContinuousStochasticNode* dp = NULL;
     ConstantNode<double> *dp_pr = NULL;
-    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
-    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
-//    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
-//    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(0.5));
-//    dp  = new ContinuousStochasticNode( "dp", new NormalDistribution(dp_mean, dp_sd) );
-//    dp->setValue(new double(0.00001));
+//    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
+//    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
+    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(1.0));
+    dp  = new ContinuousStochasticNode( "dp", new NormalDistribution(dp_mean, dp_sd) );
+//    ConstantNode<double> *dp2 = new ConstantNode<double>("dp2", new double(0.0));
+    dp->setValue(new double(0.00001));
     ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
     
     // ctmc rates
@@ -266,8 +268,8 @@ bool TestCharacterHistory::run_exp(void) {
 		glr_nonConst.push_back( tmp_glr );
         glr_stoch.push_back(tmp_glr);
 	}
-//    glr_nonConst[0]->setValue(0.1);
-//    glr_nonConst[1]->setValue(0.1);
+    glr_nonConst[0]->setValue(0.1);
+    glr_nonConst[1]->setValue(0.1);
     
     DeterministicNode< std::vector< double > >* glr_vector = new DeterministicNode< std::vector< double > >( "glr_vector", new VectorFunction< double >( glr ) );
     
@@ -322,7 +324,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::cout << "lnL = " << charactermodel->getDistribution().computeLnProbability() << "\n";
     
-    GLOBAL_RNG->setSeed(old_seed);
+//    GLOBAL_RNG->setSeed(old_seed);
     //    glr_nonConst[0]->redraw();
     //    glr_nonConst[1]->redraw();
     
@@ -347,26 +349,27 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), 2.0, false) );
     }
     
-    if (useDistances)
-    {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.1), 2.0, !true ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.5), 4.0, !true ) );
-    }
-    
-    if (useRootFreqs)
-    {
-        moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2.0 ) );
-        moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
-    }
-    
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
-    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 4.0));
-    for( size_t i=0; i<2; i++)
-    {
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
-        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
-    
-    }
+//    if (useDistances)
+//    {
+////        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.1), 2.0, !true ) );
+////        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.5), 4.0, !true ) );
+//        moves.push_back( new SlidingMove(dp, 0.5, false, 5.0 ));
+//    }
+//    
+//    if (useRootFreqs)
+//    {
+//        moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2.0 ) );
+//        moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
+//    }
+//    
+//    moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
+//    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 4.0));
+//    for( size_t i=0; i<2; i++)
+//    {
+//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
+//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
+//    
+//    }
     
 //
     //            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[0], 0.1), 1.0, !true ) );
@@ -431,7 +434,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     std::set<DagNode*> monitoredNodes;
     monitoredNodes.insert(clockRate);
-//    if (useDistances)
+    if (useDistances)
         monitoredNodes.insert( dp );
     monitoredNodes.insert( glr_vector );
 //    monitoredNodes.insert( glr_nonConst[1] );

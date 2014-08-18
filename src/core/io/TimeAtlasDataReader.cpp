@@ -40,6 +40,7 @@ TimeAtlasDataReader::TimeAtlasDataReader(const TimeAtlasDataReader& tadr) : Deli
 
 void TimeAtlasDataReader::readJson(void)
 {
+    
     std::cout << "Attempting to read the of file \"" << this->filename << "\"\n";
     
     std::ifstream readStream;
