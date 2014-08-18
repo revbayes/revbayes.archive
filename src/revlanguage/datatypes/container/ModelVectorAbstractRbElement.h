@@ -1,5 +1,5 @@
-#ifndef ModelVectorAbstractElement_H
-#define ModelVectorAbstractElement_H
+#ifndef ModelVectorAbstractRbElement_H
+#define ModelVectorAbstractRbElement_H
 
 #include "ModelContainer.h"
 #include "RbConstIterator.h"
@@ -11,27 +11,34 @@
 namespace RevLanguage {
     
     /**
-     * @brief ModelVectorAbstractElement: templated class for Rev vectors of abstract model objects
+     * @brief ModelVectorAbstractRbElement: vectors of model objects with abstract rbType
      *
      * The class is based on a value type of RbVector, which is a vector of pointers
      * to objects. This means that it can be used for abstract internal value types (rbType).
      * It can also be used for non-abstract internal value types but is less efficient for
      * those than ModelVector, which uses an STL std::vector for the values.
+     *
+     * This class differs from ModelVectorAbstractElement in that it supports additional
+     * functionality when the Rev object is not abstract. In particular, simple containers
+     * of ModelVectorAbstractRbElement can regenerate the Rev language object corresponding
+     * to an element from its rbType pointer, which is impossible if the language type of
+     * the element is abstract.
      */
     template <typename rlType>
-    class ModelVectorAbstractElement : public ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> > {
+    class ModelVectorAbstractRbElement : public ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> > {
         
     public:
         
         typedef typename rlType::valueType                                      elementType;
         typedef typename RevBayesCore::RbVector<typename rlType::valueType>     valueType;
+        typedef typename RevBayesCore::RbConstIterator<elementType>             const_iterator;
         
-                                                        ModelVectorAbstractElement(void);                                               //!< Default constructor
-                                                        ModelVectorAbstractElement(const valueType& v);                                 //!< Constructor from vector of values
-                                                        ModelVectorAbstractElement(RevBayesCore::TypedDagNode<valueType>* n);           //!< Constructor from value node
+        ModelVectorAbstractRbElement(void);                                               //!< Default constructor
+        ModelVectorAbstractRbElement(const valueType& v);                                 //!< Constructor from vector of values
+        ModelVectorAbstractRbElement(RevBayesCore::TypedDagNode<valueType>* n);           //!< Constructor from value node
         
         // Basic utility functions you have to override
-        virtual ModelVectorAbstractElement<rlType>*     clone(void) const;                                                              //!< Clone object
+        virtual ModelVectorAbstractRbElement<rlType>*     clone(void) const;                                                              //!< Clone object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         virtual const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get the object type spec of the instance
@@ -84,8 +91,8 @@ using namespace RevLanguage;
  * because this can be accessed from our Rev type specification.
  */
 template <typename rlType>
-ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( void ) :
-    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >()
+ModelVectorAbstractRbElement<rlType>::ModelVectorAbstractRbElement( void ) :
+ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >()
 {
     this->setDagNode( new ContainerNode<rlType, valueType>("") );
 }
@@ -96,8 +103,8 @@ ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( void ) :
  * to the internal value type instances.
  */
 template <typename rlType>
-ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( const valueType &v ) :
-    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( v )
+ModelVectorAbstractRbElement<rlType>::ModelVectorAbstractRbElement( const valueType &v ) :
+ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( v )
 {
 }
 
@@ -107,8 +114,8 @@ ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( const valueType 
  * object.
  */
 template <typename rlType>
-ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( RevBayesCore::TypedDagNode<valueType> *n ) :
-    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( n )
+ModelVectorAbstractRbElement<rlType>::ModelVectorAbstractRbElement( RevBayesCore::TypedDagNode<valueType> *n ) :
+ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( n )
 {
     
 }
@@ -116,9 +123,9 @@ ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( RevBayesCore::Ty
 
 /** Get a type-safe clone of the object */
 template <typename rlType>
-ModelVectorAbstractElement<rlType>* ModelVectorAbstractElement<rlType>::clone() const
+ModelVectorAbstractRbElement<rlType>* ModelVectorAbstractRbElement<rlType>::clone() const
 {
-    return new ModelVectorAbstractElement<rlType>( *this );
+    return new ModelVectorAbstractRbElement<rlType>( *this );
 }
 
 
@@ -129,17 +136,13 @@ ModelVectorAbstractElement<rlType>* ModelVectorAbstractElement<rlType>::clone() 
  * type.
  */
 template <typename rlType>
-RevObject* ModelVectorAbstractElement<rlType>::convertTo(const TypeSpec &type) const
+RevObject* ModelVectorAbstractRbElement<rlType>::convertTo(const TypeSpec &type) const
 {
     // First check that we are not asked to convert to our own type
     if ( type == getClassTypeSpec() )
         return this->clone();
     
-    // No type conversion for simple containers
-    if ( !this->isComposite() )
-        throw RbException( "Invalid attempt to do type conversion on a simple vector of abstract elements" );
-        
-    // test whether we want to convert to another generic model vector
+    // Test whether we want to convert to another generic model vector
     if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We are both model vectors. Rely on generic code to cover all allowed conversions
@@ -151,7 +154,7 @@ RevObject* ModelVectorAbstractElement<rlType>::convertTo(const TypeSpec &type) c
         std::vector<RevObject*> theConvertedObjects;
         for ( size_t i = 1; i <= this->size(); ++i )
         {
-            RevObject& orgElement = const_cast< ModelVectorAbstractElement<rlType>* >( this )->getElement( i )->getRevObject();
+            RevObject& orgElement = const_cast< ModelVectorAbstractRbElement<rlType>* >( this )->getElement( i )->getRevObject();
             if ( orgElement.isTypeSpec( *type.getElementTypeSpec() ) )
                 theConvertedObjects.push_back( orgElement.clone() );
             else
@@ -168,7 +171,7 @@ RevObject* ModelVectorAbstractElement<rlType>::convertTo(const TypeSpec &type) c
     }
     
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
-    return this->ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
+    return ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
 }
 
 
@@ -181,7 +184,7 @@ RevObject* ModelVectorAbstractElement<rlType>::convertTo(const TypeSpec &type) c
  * replacement.
  */
 template<typename rlType>
-RevPtr<Variable> ModelVectorAbstractElement<rlType>::findOrCreateElement( const std::vector<size_t>& oneOffsetIndices )
+RevPtr<Variable> ModelVectorAbstractRbElement<rlType>::findOrCreateElement( const std::vector<size_t>& oneOffsetIndices )
 {
     // First retrieve the variable elements vector, if possible
     ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
@@ -229,7 +232,7 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::findOrCreateElement( const 
  * of specifying generic types of vectors for all Rev object types.
  */
 template <typename rlType>
-const std::string& ModelVectorAbstractElement<rlType>::getClassType(void)
+const std::string& ModelVectorAbstractRbElement<rlType>::getClassType(void)
 {
     static std::string revType = rlType::getClassType() + "[]";
     
@@ -244,7 +247,7 @@ const std::string& ModelVectorAbstractElement<rlType>::getClassType(void)
  * specification.
  */
 template <typename rlType>
-const TypeSpec& ModelVectorAbstractElement<rlType>::getClassTypeSpec(void)
+const TypeSpec& ModelVectorAbstractRbElement<rlType>::getClassTypeSpec(void)
 {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
@@ -274,22 +277,28 @@ const TypeSpec& ModelVectorAbstractElement<rlType>::getClassTypeSpec(void)
  * want to return the entire vector.
  */
 template<typename rlType>
-RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElement( size_t oneOffsetIndex )
+RevPtr<Variable> ModelVectorAbstractRbElement<rlType>::getElement( size_t oneOffsetIndex )
 {
     // First check if we want to return a slice
     if ( oneOffsetIndex == 0 )
+    {
         return new Variable( this->clone() );
+    }
     
     // We want a single element; first check that index is in range
     if ( oneOffsetIndex > this->size() )
+    {
         throw RbException( "Index out of range" );
+    }
     
     // Check whether we have element variables
     ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
     
     // We need to retrieve the element from the value vector if we do not have a container node
     if ( theContainerNode == NULL )
-        throw RbException( "Cannot reconstruct abstract element of simple vector" );
+    {
+        return new Variable( new rlType( this->getValue()[ oneOffsetIndex - 1 ].clone() ) );
+    }
     
     // We are a composite vector with a container node. We retrieve the element from its elements vector
     return theContainerNode->getElement( oneOffsetIndex - 1 );
@@ -301,7 +310,7 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElement( size_t oneOffse
  * function that takes a single index.
  */
 template<typename rlType>
-RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElement( const std::vector<size_t>& oneOffsetIndices )
+RevPtr<Variable> ModelVectorAbstractRbElement<rlType>::getElement( const std::vector<size_t>& oneOffsetIndices )
 {
     // First check if we want to return a slice
     if ( oneOffsetIndices.size() == 0 )
@@ -324,20 +333,20 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElement( const std::vect
  * Note also that a zero index means that we want the entire vector.
  */
 template <typename rlType>
-RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElementFromValue( size_t oneOffsetIndex ) const
+RevPtr<Variable> ModelVectorAbstractRbElement<rlType>::getElementFromValue( size_t oneOffsetIndex ) const
 {
     if ( oneOffsetIndex == 0 )
     {
-        ModelVectorAbstractElement<rlType>* newVector = this->clone();
+        ModelVectorAbstractRbElement<rlType>* newVector = this->clone();
         newVector->makeConstantValue();
         
         return new Variable( newVector );
     }
-
+    
     if ( oneOffsetIndex > this->size() )
         throw RbException( "Index out of range" );
-
-    throw RbException( "E" );
+    
+    return new Variable( new rlType( *( this->getValue()[ oneOffsetIndex - 1 ] ) ) );
 }
 
 
@@ -346,7 +355,7 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElementFromValue( size_t
  * function table here.
  */
 template <typename rlType>
-const MethodTable& ModelVectorAbstractElement<rlType>::getMethods( void ) const
+const MethodTable& ModelVectorAbstractRbElement<rlType>::getMethods( void ) const
 {
     static MethodTable  myMethods   = MethodTable();
     static bool         methodsSet  = false;
@@ -363,7 +372,7 @@ const MethodTable& ModelVectorAbstractElement<rlType>::getMethods( void ) const
 
 /** Get the type spec of this class */
 template <typename rlType>
-const TypeSpec& ModelVectorAbstractElement<rlType>::getTypeSpec(void) const
+const TypeSpec& ModelVectorAbstractRbElement<rlType>::getTypeSpec(void) const
 {
     return getClassTypeSpec();
 }
@@ -380,13 +389,8 @@ const TypeSpec& ModelVectorAbstractElement<rlType>::getTypeSpec(void) const
  * because it is only composite vectors that have the necessary Rev object elements.
  */
 template <typename rlType>
-bool ModelVectorAbstractElement<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
+bool ModelVectorAbstractRbElement<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
-    // No type conversion for simple vectors of abstract elements
-    if ( !this->isComposite() )
-        return false;
-    
-    // Now proceed with the elements we have
     if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We want to convert to another generic model vector
@@ -394,17 +398,21 @@ bool ModelVectorAbstractElement<rlType>::isConvertibleTo( const TypeSpec& type, 
         // Simply check whether our elements can convert to the desired element type
         for ( size_t i = 1; i <= this->size(); ++i )
         {
-            const RevObject& orgElement = const_cast< ModelVectorAbstractElement<rlType>* >( this )->getElement( i )->getRevObject();
-            
+            const RevPtr<Variable>& orgVar = const_cast< ModelVectorAbstractRbElement<rlType>* >( this )->getElement( i );
+            const RevObject& orgElement = orgVar->getRevObject();
+
             // Test whether this element is already of the desired element type or can be converted to it
             if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
+            {
                 return false;
+            }
+            
         }
         
         return true;
     }
     
-    return Container::isConvertibleTo( type, once );
+    return ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );
 }
 
 
@@ -415,12 +423,23 @@ bool ModelVectorAbstractElement<rlType>::isConvertibleTo( const TypeSpec& type, 
  * correspond to its internal value elements.
  */
 template <typename rlType>
-void ModelVectorAbstractElement<rlType>::makeCompositeValue( void )
+void ModelVectorAbstractRbElement<rlType>::makeCompositeValue( void )
 {
     if ( dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode ) != NULL )
         return;
     
-    throw RbException( "Simple vector of abstract elements cannot be converted to composite vector" );
+    std::vector<RevObject*> elems;
+    for ( const_iterator it = this->getValue().begin(); it != this->getValue().end(); ++it )
+    {
+        elems.push_back( new rlType( (*it).clone() ) );
+    }
+    
+    std::vector<size_t> lengths;
+    lengths.push_back( elems.size() );
+    
+    ContainerNode<rlType, valueType>* newNode = new ContainerNode<rlType, valueType>( "", elems, lengths );
+    
+    this->setDagNode( newNode );
 }
 
 
@@ -433,12 +452,12 @@ void ModelVectorAbstractElement<rlType>::makeCompositeValue( void )
  * where this function is called if we are variable b.
  */
 template <typename rlType>
-RevObject* ModelVectorAbstractElement<rlType>::makeIndirectReference(void) {
+RevObject* ModelVectorAbstractRbElement<rlType>::makeIndirectReference(void) {
     
-    IndirectReferenceNode< ModelVectorAbstractElement<rlType> >* newNode =
-    new IndirectReferenceNode< ModelVectorAbstractElement<rlType> >( "", this->getDagNode() );
+    IndirectReferenceNode< ModelVectorAbstractRbElement<rlType> >* newNode =
+    new IndirectReferenceNode< ModelVectorAbstractRbElement<rlType> >( "", this->getDagNode() );
     
-    ModelVectorAbstractElement<rlType>* newObj = this->clone();
+    ModelVectorAbstractRbElement<rlType>* newObj = this->clone();
     
     newObj->setDagNode( newNode );
     
@@ -456,7 +475,7 @@ RevObject* ModelVectorAbstractElement<rlType>::makeIndirectReference(void) {
  * const printValue function of the element.
  */
 template <typename rlType>
-void ModelVectorAbstractElement<rlType>::printValue( std::ostream& o ) const
+void ModelVectorAbstractRbElement<rlType>::printValue( std::ostream& o ) const
 {
     if ( this->dagNode->isNAValue() )
     {
@@ -471,9 +490,9 @@ void ModelVectorAbstractElement<rlType>::printValue( std::ostream& o ) const
     size_t curLength = 2;
     for ( size_t i = 1; i <= this->size(); ++i )
     {
-        RevPtr<Variable> elem = const_cast< ModelVectorAbstractElement<rlType>* >(this)->getElement( i );
+        RevPtr<Variable> elem = const_cast< ModelVectorAbstractRbElement<rlType>* >(this)->getElement( i );
         elem->getRevObject().printValue( t );
-
+        
         if ( i != this->size() )
             t << ", ";
         if ( curLength + t.str().size() > lineLength )
@@ -500,7 +519,7 @@ void ModelVectorAbstractElement<rlType>::printValue( std::ostream& o ) const
  * by the type conversion code.
  */
 template <typename rlType>
-void ModelVectorAbstractElement<rlType>::setElements( std::vector<RevObject*> elems, const std::vector<size_t>& lengths )
+void ModelVectorAbstractRbElement<rlType>::setElements( std::vector<RevObject*> elems, const std::vector<size_t>& lengths )
 {
     this->setDagNode( new ContainerNode<rlType, valueType>( "", elems, lengths ) );
 }

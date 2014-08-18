@@ -249,7 +249,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 //        const treeType& tree = this->tau->getValue();
         double branchLength = node.getBranchLength();
         double currAge = (node.isRoot() ? this->tau->getValue().getRoot().getAge()*5 : node.getParent().getAge());
-        double startAge = currAge;
+//        double startAge = currAge;
         double endAge = node.getAge();
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
 
@@ -265,8 +265,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
       
         bool useEpoch = true;
         bool debug = !true;
-        if (debug) std::cout << "--lnL--\n";
-        if (debug) std::cout << "BranchStart  ("  << startAge << " to " << endAge << ")\n" << "  a=" << currAge << "\n";
+//        if (debug) std::cout << "--lnL--\n";
+//        if (debug) std::cout << "BranchStart  ("  << startAge << " to " << endAge << ")\n" << "  a=" << currAge << "\n";
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
@@ -276,7 +276,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             
             // reject extinction
             unsigned s = (*it_h)->getState();
-            if (counts[1] == 1 && s == 0 && forbidExtinction)
+            if (counts[1] == 0 && forbidExtinction)
             {
                 
                 return RbConstants::Double::neginf;

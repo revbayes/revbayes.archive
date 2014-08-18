@@ -321,7 +321,12 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
     
     // area effects
     if (useGeographyRateModifier)
-        rate *= geographyRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
+    {
+        double rm = geographyRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
+
+        rate *= rm;
+    }
+//        rate *= geographyRateModifier->computeSiteRateModifier(node,from,to,charIdx,age);
 
     
     return rate;
