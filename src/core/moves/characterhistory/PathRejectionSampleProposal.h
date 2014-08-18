@@ -456,7 +456,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     // flag node as dirty
     p.fireTreeChangeEvent(*node);
     
-    storedLnProb = computeLnProposal(*node, *bh);
+    double x = computeLnProposal(*node, *bh);
+    
+    storedLnProb = x;
     
 
 }
