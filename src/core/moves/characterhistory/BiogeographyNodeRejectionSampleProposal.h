@@ -410,7 +410,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
         storedTrunkNode = &node->getChild(0);
     }
     swapBudTrunk = GLOBAL_RNG->uniform01() < 0.5;
-    swapBudTrunk = false; // debug variable
+//    swapBudTrunk = false; // debug variable
     if (swapBudTrunk)
     {
         proposedBudNode = storedTrunkNode;
@@ -424,12 +424,12 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
     
     // propose new cladogenic state
     storedCladogenicState = p->getCladogenicState(*proposedTrunkNode);
-    double u = GLOBAL_RNG->uniform01();
-    if (u < 1.0 || p->useCladogenicEvents() == false)
+    double u = GLOBAL_RNG->uniform01() * 1.5;
+    if (u < 0.5 || p->useCladogenicEvents() == false)
         proposedCladogenicState = 0;
     else if (u < 1.0)
         proposedCladogenicState = 1;
-    else if (u < 1.0)
+    else if (u < 1.5)
         proposedCladogenicState = 2;
     
     

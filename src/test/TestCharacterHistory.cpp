@@ -155,7 +155,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> seed;
     seed.push_back(1+1); seed.push_back(1);
 //    old_seed = seed;
-    GLOBAL_RNG->setSeed(seed);
+//    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
     ss << ".s0_" << old_seed[0] << ".s1_" << old_seed[1];
     
@@ -164,11 +164,11 @@ bool TestCharacterHistory::run_exp(void) {
     bool useClock                   = !true;
     bool useBdProcess               = !true;
     
-    bool forbidExtinction           = !true;
+    bool forbidExtinction           = true;
     bool useCladogenesis            = !true;
     bool useDistances               = true;
-    bool useAdjacency               = !true;
-    bool useAvailable               = !true;
+    bool useAdjacency               = true;
+    bool useAvailable               = true;
     bool useRootFreqs               = !true;
     
     
@@ -349,27 +349,27 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(clockRate, 0.1), 2.0, false) );
     }
     
-//    if (useDistances)
-//    {
-////        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.1), 2.0, !true ) );
-////        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.5), 4.0, !true ) );
-//        moves.push_back( new SlidingMove(dp, 0.5, false, 5.0 ));
-//    }
-//    
-//    if (useRootFreqs)
-//    {
-//        moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2.0 ) );
-//        moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
-//    }
-//    
-//    moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
-//    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 4.0));
-//    for( size_t i=0; i<2; i++)
-//    {
-//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
-//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
-//    
-//    }
+    if (useDistances)
+    {
+//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.1), 2.0, !true ) );
+//        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(dp, 0.5), 4.0, !true ) );
+        moves.push_back( new SlidingMove(dp, 0.5, false, 5.0 ));
+    }
+    
+    if (useRootFreqs)
+    {
+        moves.push_back( new SimplexMove( pi, 20.0, 1, 0, true, 2.0 ) );
+        moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
+    }
+    
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
+    moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 4.0));
+    for( size_t i=0; i<2; i++)
+    {
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.1), 2.0, !true ) );
+        moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
+    
+    }
     
 //
     //            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[0], 0.1), 1.0, !true ) );
@@ -437,7 +437,6 @@ bool TestCharacterHistory::run_exp(void) {
     if (useDistances)
         monitoredNodes.insert( dp );
     monitoredNodes.insert( glr_vector );
-//    monitoredNodes.insert( glr_nonConst[1] );
     if (useRootFreqs)
         monitoredNodes.insert( pi );
     
