@@ -241,7 +241,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         {
             
             std::ostringstream msg;
-            msg << "Argument mismatch for call to function '" << name << "'(";
+            msg << "Argument mismatch for function call '" << name << "'(";
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
@@ -253,7 +253,8 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
                 if (it->getVariable() != NULL) type = it->getVariable()->getRevObject().getType();
                 msg << " " << type << " \"" << it->getLabel() << "\"";
             }
-            msg << " ). Correct usage is:" << std::endl;
+            msg << " )." << std::endl;
+            msg << "Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
             msg << std::endl;
             throw RbException( msg );

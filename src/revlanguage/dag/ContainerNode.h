@@ -52,8 +52,9 @@ namespace RevLanguage {
         
         // Public methods
         void                                    addChild(RevBayesCore::DagNode *child) const;                           //!< Protect NA containers to form part of DAGs
-        ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone
+        ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone (shallow copy)
         RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
+        ContainerNode<rlElemType,valueType>*    deepCopy(void) const;                                                   //!< Deep copy
         RevPtr<Variable>&                       getElement(size_t index);                                               //!< Return an element
         RevPtr<const Variable>&                 getElement(size_t index) const;                                         //!< Return an element (const version)
         double                                  getLnProbability(void);                                                 //!< Get ln prob (0.0)
@@ -134,26 +135,21 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::
 
 
 /**
- * Copy constructor. We make a deep copy here and override cloneDAG, which would
- * otherwise need a shallow copy. We need to pay special attention to NA elements.
+ * Copy constructor. We make a shallow copy here, as is standard for DAG node classes.
+ * We provide both a clone() function and a deepCopy() function to support ModelContainer
+ * objects that would like to produce element-level deep copies (element clones) instead
+ * of container-level shallow copies (independent containers with identical element
+ * variables). Use the deepCopy() function for the former, and the clone() function for
+ * the latter.
  */
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemType, valueType>& n ) :
     RevBayesCore::DynamicNode<valueType>( n ),
-    elements(),
+    elements( n.elements ),
     touched( true ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
-    
-    // Deep copy constructor
-    for ( std::vector< RevPtr<Variable> >::const_iterator it = n.elements.begin(); it != n.elements.end(); ++it )
-    {
-        if ( (*it)->isNAVar() )
-            push_back( NULL );
-        else
-            push_back( static_cast<rlElemType&>( (*it)->getRevObject() ).clone() );
-    }
 }
 
 
@@ -164,16 +160,14 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemT
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::~ContainerNode( void )
 {
-   // Deep copy destructor
     while ( elements.size() > 0 )
         pop_back();
 }
 
 
 /**
- * Assignment operator. We make a deep copy here using our
- * own push_back and pop_back functions to ensure proper
- * management of DAG node connections.
+ * Assignment operator. We make a shallow copy here, so that both
+ * containers after assignment share the same element variable pointers.
  */
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>& ContainerNode<rlElemType, valueType>::operator=( const ContainerNode<rlElemType, valueType>& x )
@@ -182,17 +176,18 @@ ContainerNode<rlElemType, valueType>& ContainerNode<rlElemType, valueType>::oper
     {
         RevBayesCore::DynamicNode<valueType>::operator=( x );
 
-        // Pop old elements (deep copy destructor)
+        // Pop old elements
         while ( elements.size() > 0 )
             pop_back();
 
-        // Push back new elements (deep copy constructor)
-        for ( std::vector< RevPtr<Variable> >::iterator it = x.elements.begin(); it != x.elements.end(); ++it )
+        // Set new elements
+        elements = x.elements;
+        
+        // Add ourself as a child of the new elements
+        for ( std::vector< RevPtr<Variable> >::iterator it = elements.begin(); it != elements.end(); ++it )
         {
-            if ( (*it)->isNAVar() )
-                push_back( NULL );
-            else
-                push_back( (*it)->getRevObject().clone() );
+            if ( !(*it)->isNAVar() )
+                (*it)->getRevObject().getDagNode()->addChild( this );
         }
 
         // Tell everybody we have been changed
@@ -223,29 +218,17 @@ RevBayesCore::DagNode* ContainerNode<rlElemType, valueType>::cloneDAG( std::map<
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
     
-    // We avoid the conflict between having to make a deep copy in our clone
-    // function and the need to have a shallow copy (identical parents) in
-    // this function by starting out with an empty container, and not filling
-    // it until we have the element clones we need.
+    // We first make an empty container node
     ContainerNode<rlElemType, valueType>* copy = new ContainerNode<rlElemType, valueType>( this->name );
     
     // Add this node and its copy to the map
     newNodes[ this ] = copy;
-    
+
     // Now make sure the copy has its own Rev objects with their DAG nodes being the clones of our parents
     for ( std::vector< RevPtr<Variable> >::const_iterator it = elements.begin(); it != elements.end(); ++it )
     {
-        // Get the i-th parent
-        const RevBayesCore::DagNode *theParent = (*it)->getRevObject().getDagNode();
-        
-        // Get its clone
-        RevBayesCore::DagNode* theParentClone = theParent->cloneDAG( newNodes );
-        
-        // Now we can safely make a copy of the element
-        rlElemType* elemCopy = static_cast<rlElemType&>( (*it)->getRevObject()).clone();
-        
-        // Replace its DAG node with the clone of our parent
-        elemCopy->setDagNode( theParentClone );
+        // Make a DAG clone of the element
+        rlElemType* elemCopy = static_cast< rlElemType*>( static_cast<rlElemType&>( (*it)->getRevObject()).cloneDAG( newNodes ) );
         
         // Push it onto the copy
         copy->push_back( elemCopy );
@@ -255,6 +238,30 @@ RevBayesCore::DagNode* ContainerNode<rlElemType, valueType>::cloneDAG( std::map<
     for( std::set<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
         (*it)->cloneDAG( newNodes );
     
+    return copy;
+}
+
+
+/**
+ * Deep copy function. This function returns a container node with independent copies of
+ * the elements.
+ */
+template<typename rlElemType, typename valueType>
+ContainerNode<rlElemType, valueType>* ContainerNode<rlElemType, valueType>::deepCopy( void ) const
+{
+    // Get an empty container node named after us
+    ContainerNode<rlElemType, valueType>* copy = new ContainerNode<rlElemType, valueType>( this->name );
+    
+    // Populate copy with clones of our elements
+    for ( std::vector< RevPtr<Variable> >::const_iterator it = elements.begin(); it != elements.end(); ++it )
+    {
+        if ( (*it)->isNAVar() )
+            copy->push_back( NULL );
+        else
+            copy->push_back( static_cast<rlElemType&>( (*it)->getRevObject() ).clone() );
+    }
+    
+    // Return the copy
     return copy;
 }
 
@@ -463,11 +470,11 @@ void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents(o, 16, 70, verbose);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren(o, 16, 70, verbose);
     o << std::endl;
 }
 

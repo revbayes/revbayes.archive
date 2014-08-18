@@ -52,6 +52,7 @@
 /* Container types (in folder "datatypes/container") */
 #include "ModelVector.h"
 #include "ModelVectorAbstractElement.h"
+#include "ModelVectorAbstractRbElement.h"
 #include "RevObjectVector.h"
 #include "WorkspaceVector.h"
 
@@ -214,6 +215,8 @@
 
 /* Mixture distributions (in folder "distributions/mixture") */
 #include "Dist_dpp.h"
+#include "Dist_mixture.h"
+#include "Dist_rlmixture.h"
 
 /// Functions ///
 
@@ -237,16 +240,20 @@
 #include "Func_clear.h"
 #include "Func_contributors.h"
 #include "Func_help.h"
+#include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
+#include "Func_modelVector.h"
+#include "Func_modelVectorAbstractElement.h"
+#include "Func_modelVectorAbstractRbElement.h"
+#include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
-#include "Func_rlvector.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
 #include "Func_structure.h"
 #include "Func_type.h"
-#include "Func_vector.h"
+#include "Func_workspaceVector.h"
 
 
 /* Functions related to evolution (in folder "functions/evolution") */
@@ -407,7 +414,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // Model vectors of abstract elements
         addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
         addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
-        addType( new ModelVectorAbstractElement<RateMatrix>() );
+        addType( new ModelVectorAbstractRbElement<RateMatrix>() );
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
@@ -767,17 +774,31 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Mixture distributions (in folder "distributions/mixture") */
         
         // dirichlet process prior distribution
-        addDistribution( "dnDPP",		    new Dist_dpp<Real>() );
-		addDistribution( "dnDPP",			new Dist_dpp<RealPos>() );
-		addDistribution( "dnDPP",			new Dist_dpp<Natural>() );
-		addDistribution( "dnDPP",			new Dist_dpp<Integer>() );
-		addDistribution( "dnDPP",			new Dist_dpp<Probability>() );
-        addDistribution( "dpp",				new Dist_dpp<Real>() );
-		addDistribution( "dpp",				new Dist_dpp<RealPos>() );
-		addDistribution( "dpp",				new Dist_dpp<Natural>() );
-		addDistribution( "dpp",				new Dist_dpp<Integer>() );
-		addDistribution( "dpp",				new Dist_dpp<Probability>() );
+        addDistribution( "dnDPP",           new Dist_dpp<Real>() );
+		addDistribution( "dnDPP",           new Dist_dpp<RealPos>() );
+		addDistribution( "dnDPP",           new Dist_dpp<Natural>() );
+		addDistribution( "dnDPP",           new Dist_dpp<Integer>() );
+		addDistribution( "dnDPP",           new Dist_dpp<Probability>() );
+        addDistribution( "dpp",             new Dist_dpp<Real>() );
+		addDistribution( "dpp",             new Dist_dpp<RealPos>() );
+		addDistribution( "dpp",             new Dist_dpp<Natural>() );
+		addDistribution( "dpp",             new Dist_dpp<Integer>() );
+		addDistribution( "dpp",             new Dist_dpp<Probability>() );
         
+        // mixture distribution
+        addDistribution( "dnMixture",       new Dist_mixture<Real>() );
+		addDistribution( "dnMixture",       new Dist_mixture<RealPos>() );
+		addDistribution( "dnMixture",       new Dist_mixture<Natural>() );
+		addDistribution( "dnMixture",       new Dist_mixture<Integer>() );
+		addDistribution( "dnMixture",       new Dist_mixture<Probability>() );
+		addDistribution( "dnMixture",       new Dist_rlmixture<RateMatrix>() );
+        addDistribution( "mixture",			new Dist_mixture<Real>() );
+		addDistribution( "mixture",         new Dist_mixture<RealPos>() );
+		addDistribution( "mixture",         new Dist_mixture<Natural>() );
+		addDistribution( "mixture",         new Dist_mixture<Integer>() );
+		addDistribution( "mixture",         new Dist_mixture<Probability>() );
+		addDistribution( "mixture",         new Dist_rlmixture<RateMatrix>() );
+
         // TAH: these don't seem to work with the moves, probably need to figure this out
 		//addDistribution( "dpp",				new Dist_dpp<Topology>() );
 		//addDistribution( "dpp",				new Dist_dpp<Simplex>() );
@@ -800,8 +821,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "contributors",             new Func_contributors()             );
         addFunction( "help",                     new Func_help()                     );
+        addFunction( "ifelse",                   new Func_ifelse<Real>()             );
+        addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
         addFunction( "ls",                       new Func_ls()                       );
+        addFunction( "printSeed",                new Func_printSeed()                );
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "range",                    new Func_range()                    );
@@ -813,18 +837,19 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "type",                     new Func_type()                     );
 
         // vector functions
-        addFunction( "v",         new Func_rlvector<Monitor>()                  );
-        addFunction( "v",         new Func_rlvector<Move>()                     );
-        addFunction( "v",         new Func_rlvector<AbstractCharacterData>()    );
-        addFunction( "v",         new Func_vector<Natural>()                    );
-        addFunction( "v",         new Func_vector<Integer>()                    );
-        addFunction( "v",         new Func_vector<Real>()                       );
-        addFunction( "v",         new Func_vector<RealPos>()                    );
-        addFunction( "v",         new Func_vector<RlBoolean>()                  );
-        addFunction( "v",         new Func_vector<Clade>()                      );
-        addFunction( "v",         new Func_vector<RlString>()                   );
-        addFunction( "v",         new Func_vector<TimeTree>()                   );
-        
+        addFunction( "v",         new Func_workspaceVector<Monitor>()                );
+        addFunction( "v",         new Func_workspaceVector<Move>()                   );
+        addFunction( "v",         new Func_modelVectorAbstractElement<AbstractCharacterData>()          );
+        addFunction( "v",         new Func_modelVectorAbstractElement<AbstractDiscreteCharacterData>()  );
+        addFunction( "v",         new Func_modelVectorAbstractRbElement<RateMatrix>()                   );
+        addFunction( "v",         new Func_modelVector<Natural>()                    );
+        addFunction( "v",         new Func_modelVector<Integer>()                    );
+        addFunction( "v",         new Func_modelVector<Real>()                       );
+        addFunction( "v",         new Func_modelVector<RealPos>()                    );
+        addFunction( "v",         new Func_modelVector<RlBoolean>()                  );
+        addFunction( "v",         new Func_modelVector<Clade>()                      );
+        addFunction( "v",         new Func_modelVector<RlString>()                   );
+        addFunction( "v",         new Func_modelVector<TimeTree>()                   );
         
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );

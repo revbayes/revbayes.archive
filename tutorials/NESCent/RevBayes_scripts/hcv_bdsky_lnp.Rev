@@ -1,0 +1,133 @@
+##seed(1503, 21489)
+printSeed()
+
+
+D <- readCharacterData(file="data/HCV_data.nex")
+
+## Starting tree from BEAST2 run
+T <- readTrees("data/HCV_data_start.tre")[1]
+
+
+n_taxa <- D.ntaxa()
+n_sites <- D.nchar(1)
+names <- D.names()
+
+
+## Priors from Stadler et al. (2013)
+origin ~ dnLnorm(1.0, 1.25)
+origin
+
+#origin.setValue(treeHeight(T) * 1.2)
+origin.setValue(257.2439155)
+origin
+
+
+## Setting the vector of parameter change times
+n_intervals <- 10 
+change_times <- n_intervals - 1
+
+## This produces a vector of relative times from oldest -> youngest 
+##### [ 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 ]
+for(i in 1:change_times){
+	p_rel_times[i] <- abs(1.0 - (i * (1.0 / n_intervals))) 
+##	p_abs_times[i] := origin * p_rel_times[i]
+}
+
+## The absolute times are a function of the origin time
+## in principle, this initialization of the vector can go in the for-loop above,
+## but there's an indexing issue (working on it)
+p_abs_times[1] := origin * p_rel_times[1]
+p_abs_times[2] := origin * p_rel_times[2]
+p_abs_times[3] := origin * p_rel_times[3]
+p_abs_times[4] := origin * p_rel_times[4]
+p_abs_times[5] := origin * p_rel_times[5]
+p_abs_times[6] := origin * p_rel_times[6]
+p_abs_times[7] := origin * p_rel_times[7]
+p_abs_times[8] := origin * p_rel_times[8]
+p_abs_times[9] := origin * p_rel_times[9]
+
+
+p_abs_times
+
+s[1] <- 0.0 # samplingProportion (or psi)
+
+## Creating vectors of m deterministic nodes for the changing parameters
+## R0 and delta (delta = becomeUninfectiousRate in BEAST2)
+for(i in 1:n_intervals){
+	delta[i] ~ dnLnorm(1.0, 1.25) # delta : mu = delta - s*delta
+##	delta[i].setValue(1.0)
+	R0[i] ~ dnLnorm(1.0, 1.25)
+##	R0[i].setValue(2.0)
+##	lambda[i] := R0[i] * delta[i]
+}
+							
+delta[1].setValue(0.78798691)
+delta[2].setValue(1.170685969)
+delta[3].setValue(0.236631795)
+delta[4].setValue(0.2605686551)
+delta[5].setValue(4.735510115)
+delta[6].setValue(0.8664180496)
+delta[7].setValue(0.4407274484)
+delta[8].setValue(0.4372837011)
+delta[9].setValue(0.8993880512)
+delta[10].setValue(3.992530229)
+
+R0[1].setValue(1.355944061)
+R0[2].setValue(1.103042864)
+R0[3].setValue(0.4261830512)
+R0[4].setValue(1.196423027)
+R0[5].setValue(1.088663642)
+R0[6].setValue(0.6275632772)
+R0[7].setValue(0.3322857361)
+R0[8].setValue(1.274769002)
+R0[9].setValue(1.199315078)
+R0[10].setValue(1.010521913)
+
+delta
+R0
+
+
+
+## lambda is a n_intervals-length vector of deterministic nodes
+lambda[1] := R0[1] * delta[1]
+lambda[2] := R0[2] * delta[2]
+lambda[3] := R0[3] * delta[3]
+lambda[4] := R0[4] * delta[4]
+lambda[5] := R0[5] * delta[5]
+lambda[6] := R0[6] * delta[6]
+lambda[7] := R0[7] * delta[7]
+lambda[8] := R0[8] * delta[8]
+lambda[9] := R0[9] * delta[9]
+lambda[10] := R0[10] * delta[10]
+
+## These data are contemporary, so only 1 value for rho
+rho[1] ~ dnBeta(1.0, 9999.0)
+#rho[1].setValue(1e-6)
+rho[1].setValue(3.94e-04)
+
+## some deterministic nodes to monitor
+rn_0 := R0[1]
+uir_0 := delta[1]
+l_0 := lambda[1]
+
+
+# the BD-skyline model
+tau ~ dnSkySerialBDP(origin=origin, lambda=lambda, lambdaTimes=p_abs_times,
+					 mu=delta, muTimes=p_abs_times,
+					 psi=s,
+					 rho=rho,
+					 timeSinceLastSample=0.0,
+					 condition="nTaxa", names=names)
+
+## The current model does not initialize properly
+tau.clamp(T)
+
+
+th := treeHeight(tau)
+
+## BEAST2 lnpr = -276.4880335
+
+tau.lnProb  ## sometimes this returns -671.007, other times it returns nan
+
+
+

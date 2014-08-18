@@ -68,10 +68,6 @@ double RateMatrix_Pomo::averageRate(void) const
 void RateMatrix_Pomo::buildRateMatrix(void) 
 {
     
-    std::cout << "mu bis : "<< mu[0][1] << " " << mu[0][2] << " " <<mu[0][3] << " " << mu[1][0] << " " <<mu[2][1] << " " << mu[2][2] << " " <<mu[2][3] << " " << mu[3][0] << " " <<std::endl;
-    std::cout << "sc bis: "<< s[0] << " " << s[1] <<  s[2] << " " << s[3] << std::endl;
-
-    
     // compute auxilliary variables
     double N2 = (double) (N*N);
     int Nminus1 = (int)N-1;
@@ -232,7 +228,52 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     
     //Now we need to fill the rest of the matrix, i.e. the B matrices along the diagonal.
     //In these B matrices, again most cells = 0.
-    //The diagonal is such that it's 1 - (sum of the cells in the line)
+    //The diagonal is such that it's 0 - (sum of the cells in the line)
+    
+    for (size_t k = 0; k <= 5; k++){
+        //Definition of the fitnesses
+        double f1, f2;
+        if (k<3) {
+            f1 = s[0];
+        }
+        else if (k<5) {
+            f1 = s[1];
+        }
+        else {
+            f1 = s[2];
+        }
+        if (k==0) {
+            f2 = s[1];
+        }
+        else if (k==2 || k==4) {
+            f2 = s[2];
+        }
+        else {
+            f2 = s[3];
+        }
+        
+        for (size_t i = 1; i <= 8 ; ++i){
+            for (size_t j = i+1; j<= 9; j++){
+                if ( j==(i+1) ){
+                    (*theRateMatrix)[4+i+9*k-1][4+j+9*k-1] = (f1*i/(f1*i + f2*(N-i)) * (N-i)/N);
+                    (*theRateMatrix)[4+j+9*k-1][4+i+9*k-1] = (f2*j/(f2*j + f1*(N-j)) * (N-j)/N);
+                }
+                /*else{
+                    (*theRateMatrix)[4+i+9*k,4+j+9*k] = M[4+j+9*k, 4+i+9*k] = 0;
+                }*/
+            }
+            
+        }
+      /*  Diagonal 
+       for (i in 1:9){
+            (*theRateMatrix)[4+j+9*k,4+i+9*k] <- 1 - sum((*theRateMatrix)[4+j+9*k,(1:58)[-(4+i+9*k)]])
+        }*/
+    }
+    
+    
+    
+    
+    /*
     double cell1, cell2;
     //First, the B^N_AC matrix
     //The 4..4+Nminus1 states are the AC matrix
@@ -241,6 +282,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     //case i = 0: moving from 1A to 2As
     double temp = 1.0;
    // temp = 1+s[0]-s[1];
+    //XXXXXXXXXXXX >>>>>>> PARIS
 //    (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
     (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(0, 1, temp);
         for (size_t i=1; i< N-1; i++)
@@ -261,7 +303,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
             cell2 = 0.0;
         }
         (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 1 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
+        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
     }
 
     //Then, the B^N_AG matrix
@@ -269,8 +311,8 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     //Cell 4+N,4+N is its first cell.
     firstCell = 4+Nminus1;
     //case i = 0: moving from 1A to 2As
-   /* temp = 1+s[0]-s[2];
-    (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;*/
+   // temp = 1+s[0]-s[2];
+   // (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
     temp = 1.0;
     (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(0, 2, temp);
         for (size_t i=1; i< N-1; i++)
@@ -292,7 +334,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
             cell2 = 0.0;
         }
         (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 1 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
+        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
     }
 
     //Then, the B^N_AT matrix
@@ -322,7 +364,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
             cell2 = 0.0;
         }
         (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 1 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
+        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
     }
 
     //Then, the B^N_CG matrix
@@ -352,7 +394,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
         }
        // cell2 = temp / (temp + N - i) * (N-i) / N;
         (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 1 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
+        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
     }
 
     //Then, the B^N_CT matrix
@@ -382,7 +424,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
             cell2 = 0.0;
         }
         (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 1 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
+        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
     }
 
     //Then, the B^N_GT matrix
@@ -411,9 +453,13 @@ void RateMatrix_Pomo::buildRateMatrix(void)
         else {
             cell2 = 0.0;
         }
-       // (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 1 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
+        if (i != 8 ) {
+            (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
+        }
+        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
     }
+    
+    */
     
     //In the first 4 rows/columns, the diagonal is defined such that the sum by line is 1.
     double sum = 0.0;
@@ -421,29 +467,52 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     {
         sum += (*theRateMatrix)[0][i];
     }
-    (*theRateMatrix)[0][0] = 1-sum;
+    (*theRateMatrix)[0][0] = 0-sum;
     
     sum = 0.0;
     for (size_t i=0; i< matrixSize; i++)
     {
         sum += (*theRateMatrix)[1][i];
     }
-    (*theRateMatrix)[1][1] = 1-sum;
+    (*theRateMatrix)[1][1] = 0-sum;
     
     sum = 0.0;
     for (size_t i=0; i< matrixSize; i++)
     {
         sum += (*theRateMatrix)[2][i];
     }
-    (*theRateMatrix)[2][2] = 1-sum;
+    (*theRateMatrix)[2][2] = 0-sum;
     
     sum = 0.0;
     for (size_t i=0; i< matrixSize; i++)
     {
         sum += (*theRateMatrix)[3][i];
     }
-    (*theRateMatrix)[3][3] = 1-sum;
+    (*theRateMatrix)[3][3] = 0-sum;
+    
+    for (size_t i=0; i< matrixSize; i++)
+    {
+        for (size_t j=0; j< matrixSize; j++)
+        {
+        (*theRateMatrix)[i][j] *= (double) N;
+        }
+    }
 
+    
+    // set the diagonal values
+    setDiagonal();
+    
+    
+    
+    // rescale
+    //rescaleToAverageRate( 1.0 );
+
+    
+    //Then we remove the identity matrix
+  /*  for (size_t i=0; i< matrixSize; i++)
+    {
+        (*theRateMatrix)[i][i] = (*theRateMatrix)[i][i] - 1 ;
+    }*/
 }
 
 
@@ -451,7 +520,7 @@ double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1,
     //We always assume state1 with count1 is increasing
     double count2 = (double)N-count1;
     //One of state2 alleles is chosen for disappearance
-    double result = 1/count2;
+    double result = count2/(double)N; // 1/count2;
     //One of state1 alleles is chosen for replication
     result *= s[state1]*count1 / ( s[state2]*count2 + s[state1]*count1) ;
     return result;
@@ -460,11 +529,18 @@ double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1,
 
 /** Calculate the transition probabilities */
 void RateMatrix_Pomo::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
-    std::cout << "In calculateTransitionProbabilities"<<std::endl;
+   // std::cout << "In calculateTransitionProbabilities: "<< t <<std::endl;
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
     computeExponentialMatrixByRepeatedSquaring(t, P);
+    
+/*    for (size_t i = 0 ; i<58; ++i) {
+      //  for (size_t j = 0 ; j<58; ++j) {
+            std::cout << "t: "<< t <<  " Diag "<< i << " : "<< P.getElement(i, i)<<std::endl;
+        //}
+        
+    }*/
     
     return;
 }
@@ -537,8 +613,6 @@ void RateMatrix_Pomo::updateMatrix( void ) {
 
 
 void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
-    std::cout << "HEHEH3 "<<mr[0] <<std::endl;
-    std::cout << "HEHEH4 "<<mu[0][1] <<std::endl;
 
     mu[0][1] = mr[0];
     mu[0][2] = mr[1];
@@ -552,12 +626,10 @@ void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
     mu[3][0] = mr[9];
     mu[3][1] = mr[10];
     mu[3][2] = mr[11];
-    std::cout <<"mu: "<< mu[0][1] << " " << mu[0][2] << " " <<mu[0][3] << " " << mu[1][0] << " " <<mu[2][1] << " " << mu[2][2] << " " <<mu[2][3] << " " << mu[3][0] << " " <<std::endl;
 }
 
 
 void RateMatrix_Pomo::setSelectionCoefficients(const std::vector<double>& sc){
     s = sc;
-    std::cout << "sc: "<< s[0] << " " << s[1] <<  s[2] << " " << s[3] << std::endl;
 
 }

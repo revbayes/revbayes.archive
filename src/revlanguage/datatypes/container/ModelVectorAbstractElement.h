@@ -13,13 +13,10 @@ namespace RevLanguage {
     /**
      * @brief ModelVectorAbstractElement: templated class for Rev vectors of abstract model objects
      *
-     * We can rely on the template class specialization of ModelContainer for
-     * vectors to provide most of the functionality we need.
-     *
      * The class is based on a value type of RbVector, which is a vector of pointers
-     * to objects. This means that it can be used for abstract internal value types,
-     * but it is less efficient for non-abstract value types and should not be used
-     * for those.
+     * to objects. This means that it can be used for abstract internal value types (rbType).
+     * It can also be used for non-abstract internal value types but is less efficient for
+     * those than ModelVector, which uses an STL std::vector for the values.
      */
     template <typename rlType>
     class ModelVectorAbstractElement : public ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> > {
@@ -111,8 +108,9 @@ ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( const valueType 
  */
 template <typename rlType>
 ModelVectorAbstractElement<rlType>::ModelVectorAbstractElement( RevBayesCore::TypedDagNode<valueType> *n ) :
-    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( rlType::getClassTypeSpec(), n )
+    ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >( n )
 {
+    
 }
 
 
@@ -171,9 +169,6 @@ RevObject* ModelVectorAbstractElement<rlType>::convertTo(const TypeSpec &type) c
     
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
     return this->ModelContainer< rlType, 1, RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
-    
-    // @Fredrik: old return code
-    // return this->ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::convertTo( type );
 }
 
 
@@ -230,7 +225,7 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::findOrCreateElement( const 
 
 /**
  * Get Rev type of object. This is the Rev object element type followed by
- * a single set of square brackets. This provides a nice and convenient way
+ * a single set of square brackets. This provides a convenient way
  * of specifying generic types of vectors for all Rev object types.
  */
 template <typename rlType>
@@ -294,7 +289,7 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElement( size_t oneOffse
     
     // We need to retrieve the element from the value vector if we do not have a container node
     if ( theContainerNode == NULL )
-        throw RbException( "Impossible to reconstruct element from simple container of abstract elements" );
+        throw RbException( "Cannot reconstruct abstract element of simple vector" );
     
     // We are a composite vector with a container node. We retrieve the element from its elements vector
     return theContainerNode->getElement( oneOffsetIndex - 1 );
@@ -342,7 +337,7 @@ RevPtr<Variable> ModelVectorAbstractElement<rlType>::getElementFromValue( size_t
     if ( oneOffsetIndex > this->size() )
         throw RbException( "Index out of range" );
 
-    return new Variable( new rlType( *( this->getValue()[ oneOffsetIndex - 1 ] ) ) );
+    throw RbException( "E" );
 }
 
 
@@ -425,7 +420,7 @@ void ModelVectorAbstractElement<rlType>::makeCompositeValue( void )
     if ( dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode ) != NULL )
         return;
     
-    throw RbException( "Simple vector of abstract elements cannot be converted to a composite vector" );
+    throw RbException( "Simple vector of abstract elements cannot be converted to composite vector" );
 }
 
 

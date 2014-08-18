@@ -266,8 +266,6 @@ std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
 
 /**
  * Evaluate the dynamic content of the one-offset index variables.
- *
- * @todo Add dynamic type conversion
  */
 std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment& env )
 {
@@ -283,10 +281,17 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
         // the container or member object if we are out of range.
         if ( !theIndex->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
         {
-            if (theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), false ) )
+            if( theIndex->getRevObject().isConstant() && theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), true ) &&
+                Natural::getClassTypeSpec().isDerivedOf( theIndex->getRevObjectTypeSpec() ) )
             {
-                ConverterNode<Natural>* converterNode = new ConverterNode<Natural>( "", theIndex );
-                
+                // Type promotion
+                theIndex->setRevObject( theIndex->getRevObject().convertTo( Natural::getClassTypeSpec() ) );
+                theIndex->setRevObjectTypeSpec( Natural::getClassTypeSpec() );
+            }
+            else if ( theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), false ) )
+            {
+                // Dynamic type conversion
+                ConverterNode<Natural>* converterNode = new ConverterNode<Natural>( "", theIndex, Natural::getClassTypeSpec() );
                 theIndex = new Variable( new Natural( converterNode ) );
             }
             else

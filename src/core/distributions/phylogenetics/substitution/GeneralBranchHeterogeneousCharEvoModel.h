@@ -467,7 +467,8 @@ const std::vector<double>& RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<
 
 
 template<class charType, class treeType>
-void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen) {
+void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen)
+{
     
     // first, get the rate matrix for this branch
     const RateMatrix *rm;
@@ -494,15 +495,19 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::u
     // and finally compute the per site rate transition probability matrix
     if ( this->rateVariationAcrossSites == true ) 
     {
+        
         const std::vector<double> &r = this->siteRates->getValue();
         for (size_t i = 0; i < this->numSiteRates; ++i)
         {
             rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
         }
-    } 
+
+    }
     else 
     {
+        
         rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
+    
     }
     
 }
@@ -513,10 +518,14 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< double > *r) {
     
     // remove the old parameter first
-    if ( homogeneousClockRate != NULL ) 
+    if ( homogeneousClockRate != NULL )
+    {
         homogeneousClockRate = NULL;
+    }
     else // heterogeneousClockRate != NULL
+    {
         heterogeneousClockRates = NULL;
+    }
     
     // set the value
     branchHeterogeneousClockRates = false;
@@ -536,10 +545,14 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r) {
     
     // remove the old parameter first
-    if ( homogeneousClockRate != NULL ) 
+    if ( homogeneousClockRate != NULL )
+    {
         homogeneousClockRate = NULL;
+    }
     else // heterogeneousClockRate != NULL
+    {
         heterogeneousClockRates = NULL;
+    }
     
     // set the value
     branchHeterogeneousClockRates = true;
@@ -558,10 +571,14 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
     
     // remove the old parameter first
-    if ( homogeneousRateMatrix != NULL ) 
+    if ( homogeneousRateMatrix != NULL )
+    {
         homogeneousRateMatrix = NULL;
+    }
     else // heterogeneousRateMatrix != NULL
+    {
         heterogeneousRateMatrices = NULL;
+    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
@@ -580,10 +597,14 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
     
     // remove the old parameter first
-    if ( homogeneousRateMatrix != NULL ) 
+    if ( homogeneousRateMatrix != NULL )
+    {
         homogeneousRateMatrix = NULL;
+    }
     else // heterogeneousRateMatrix != NULL
+    {
         heterogeneousRateMatrices = NULL;
+    }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = true;
@@ -602,8 +623,10 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f) {
     
     // remove the old parameter first
-    if ( rootFrequencies != NULL ) 
+    if ( rootFrequencies != NULL )
+    {
         rootFrequencies = NULL;
+    }
     
     if ( f != NULL )
     {
@@ -628,8 +651,10 @@ template<class charType, class treeType>
 void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
     
     // remove the old parameter first
-    if ( siteRates != NULL ) 
+    if ( siteRates != NULL )
+    {
         siteRates = NULL;
+    }
     
     if ( r != NULL ) 
     {
