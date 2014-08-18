@@ -97,11 +97,11 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
 
     DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
     
-//    ModelVectorAbstractElement<RateMatrix>* wrappedresult = new ModelVectorAbstractElement<RateMatrix>( dag );
-//    
-//    return new Variable( wrappedresult );
+    ModelVectorAbstractElement<RateMatrix>* wrappedresult = new ModelVectorAbstractElement<RateMatrix>( dag );
+
+    return new Variable( wrappedresult );
     
-    return NULL;
+//    return NULL;
 }
 
 
