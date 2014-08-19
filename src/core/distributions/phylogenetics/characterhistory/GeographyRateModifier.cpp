@@ -77,7 +77,7 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
     availableAreaSet.resize(numEpochs, tmpSet);
     adjacentAreaSet.resize(numEpochs*numAreas, tmpSet);
 
-    if (useAreaAdjacency)
+    if (useAreaAdjacency || useAreaAvailable)
        initializeAdjacentAreas();
     
     // unimplemented, but helps for computations for large N
@@ -377,12 +377,18 @@ void GeographyRateModifier::initializeAdjacentAreas(void)
         {
             const std::vector<double>& dvs = areas[numAreas*i + j]->getDispersalValues();
 //            const std::vector<double>& evs = areas[numAreas*i + j]->getExtinctionValues();
-
             for (unsigned k = 0; k < numAreas; k++)
             {
                 double d = 0.0;
-                if (dvs[k] > 0.0)
+                if (dvs.size() == numAreas)
+                {
+                    if (dvs[k] > 0.0)
+                        d = 1.0;
+                }
+                else
+                {
                     d = 1.0;
+                }
                 
                 adjacentAreaVector[epochOffset*i + areaOffset*j + k] = d;
                 adjacentAreaSet[numAreas*i + j].insert(k);
