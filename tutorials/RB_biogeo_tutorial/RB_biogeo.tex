@@ -145,7 +145,6 @@ First, we define the range for taxon $i$ as the bit vector $X_i$, where $X_{i,j}
 Each taxon range is a bit vector of length $N$ areas.
 For example, if taxon $B$ is present only in areas 2 and 3 out of $N=3$ areas, its range is represented as $X_B = (0,1,1)$, which is translated to the bit string $X_B=011$ for short.
 The data matrix, $\textbf{X}$, is analogous to a multiple sequence alignment where each element in the data matrix reports a discrete value for a homologous character shared by all taxa at column $j$.
-How to choose areas to define species ranges will not be covered in this tutorial.
 
 Next, we need a model of range evolution.
 Since we have discrete characters we'll use the continuous-time Markov chain, which allows us to compute transition probability of a character changing from $i$ to $j$ in time $t$ through matrix exponentiation
@@ -185,8 +184,7 @@ q^{(a)}_{\textbf{y},\textbf{z}} =
 where $\textbf{y}$ and $\textbf{z}$ are the ``from'' and ``to'' ranges and $a$ is the area that changes.
 For example, $q^{(1)}_{011,111}$ is the rate of range expansion for $011 \rightarrow 111$ to gain area $1$.
 Note the rate of more than one event occurring simultaneously is zero, so a range must expand twice by one area in order to expand by two areas.
-This model is analogous to the Jukes-Cantor model, but uses binary characters instead of 4-state nucleotides.
-
+This model is analogous to the Jukes-Cantor model for three independent characters with binary states, except the all-zero ``null range'' is forbidden.
 
 There are several simple ways to extend this model. For example, the rate of area gain and area loss ($\lambda_0$ and $\lambda_1$, resp.) may differ as
 \[
@@ -198,19 +196,8 @@ q^{(a)}_{\textbf{y},\textbf{z}} =
 \end{cases}.
 \]
 
-%In addition, you may want to assign transition probabilities to entering the all-zero ``extinction'' state -- an absorbing state that has a zero probability of being left (barring resurrection). In addition, it may not be that any species is equally likely to be present or absent in any given area, i.e. $\pi_0 \neq \pi_1$ but $\pi_0 + \pi_1 = 1$. This could be parameterized using state frequencies (much like as is done with base frequencies in the Felsenstein 84 model).
-%
-%\[
-%q^{(a)}_{\textbf{y},\textbf{z}} =
-%\begin{cases}
-%2 \pi_0 \lambda_0 & \text{if $z_a=0$}  \\
-%2 \pi_1 \lambda_1 & \text{if $z_a=1$} \\
-%0 & \mathbf{y} = 00...0 \\
-%0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
-%\end{cases}.
-%\]
-
-Also, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited.
+In addition, you may want to assign transition probabilities to entering the all-zero null range, but treat it as an absorbing state with that has a zero probability of being exited. 
+Lastly, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited, which imposes non-independence between characters.
 The transition rate might then appear as
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
@@ -544,7 +531,7 @@ Once the new character history is proposed, the likelihood of the model is evalu
 Because these {\tt Move} objects update the character histories stored in the data-augmented CTMC node, e.g. {\tt M},
 they require access to a {\tt TimeTree} object to know which lineages are sisters and whether the lineages span various epochs, and a {\tt RateMap\_Biogeography} object to propose new character histories.
 The {\tt lambda} argument gives what proportion of areas' character histories to update.
-Here, if {\tt lambda=0.2}, then the proposal will redraw character histories for $n_{\text{redraw}} \sim \text{Poisson}(0.2 * n_{\text{areas}}) + 1$ areas, or $n_{\text{areas}}$, whichever is smaller.
+Here, if {\tt lambda=0.2}, then the proposal will redraw character histories for each area with probability 0.2 (in addition to one random area with probability 1).
 Below, we use two moves of each type with {\tt lambda=0.2} and {\tt lambda=1.0} for partial and full character history updates, respectively.
 Indicating {\tt type="biogeo"} informs the {\tt Move} object to be aware of special character history constraints, such as cladogenic events and forbidden null ranges.
 The {\tt weight} parameter should be assigned a value proportional to the number of nodes in the analysis to ensure proper mixing.
@@ -561,113 +548,180 @@ RevBayes > moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, ty
 \end{lstlisting}
 \end{snugshade}
 
-Now that we have moves for all our parameters and the character histories, we'll proceed to assigning their monitors.
+Now that we have moves for all our parameters and the character histories, we'll proceed with assigning {\tt Monitor} objects to record their values.
+The first two {\tt Monitor} objects are fairly standard and found in most RevBayes MCMC analyses.
+{\tt mnScreen} reports the values for any nodes assigned to {\tt RevObject ...} every {\tt printgen} generations to the terminal screen.
+{\tt mnModel} reports the values for all nodes in the {\tt Model} object every {\tt printgen} generations to the file assigned to {\tt filename}, which is delimited by the {\tt separator} character.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mnScreen
+   Mntr_Screen function (RevObject ..., Natural printgen, Bool posterior, Bool
+   likelihood, Bool prior)
+RevBayes > monitors[1] <- mnScreen(printgen=10, glr, dp, pi)
+RevBayes > mnModel
+   Mntr_Model function (String filename, Natural printgen, String separator,
+   Bool posterior, Bool likelihood, Bool prior, Bool append, Bool
+   stochasticOnly)
+RevBayes > monitors[2] <- mnModel(filename=out_fp+params_fn, printgen=10)
+\end{lstlisting}
+\end{snugshade}
 
 Like any parameter, we can sample the augmented range histories from the MCMC to approximate the posterior distribution of range histories.
 This is statistically equivalent to generating ancestral state reconstructions from a posterior distribution via stochastic mapping.
 We will extract these reconstructions using special monitors designed for the {\tt dnPhyloDACTMC} distribution.
 
+Next, we will create {\tt Mntr\_CharacterHistoryNewickFile} objects to record the sampled character history states for each node in the tree.
+This {\tt Monitor} has two {\tt style} options: {\tt counts} reports the number of gains and losses per branch in a tab-delimited Tracer-readable format;  {\tt events} reports richer information of what happens along a branch, anagenically and cladogenically, using an extended Newick format.
+How to read these file formats will be discussed in more detail in Section \ref{sec:posterior}.
 
-
-
-
-
-
-
-
-
-
-
-
-
-%
-%BayArea accepts command-line arguments to set input and output files, set MCMC sampling behavior, configure prior values, etc.
-%To reduce the risk of typos, you can execute the command with arguments using a pre-defined shell script.
-%For this lab, we'll be using \texttt{my\_lab\_run.sh}, which was used to produce the output files from the input files contained in \texttt{bayarea\_lab.zip}.
-%Before running our job, let's review the program settings by opening \texttt{my\_lab\_run.sh} using your favorite text editor.
-%
-%\noindent \\ \impmark Enter the following command.
-%\begin{framed}
-%\begin{lstlisting}
-%> cat my_lab_run.sh
-%./bayarea -areaFileName=my_data.txt \
-%          -geoFileName=my_geo.txt \
-%          -treeFileName=my_tree.txt \
-%          -inputFilePath=./examples/ \
-%          -outputFilePath=./examples/ \
-%          -outputTimestamp=T \
-%          -outputPrefix=my_run \
-%          -parameterSampleFrequency=1000 \
-%          -historySampleFrequency=10000 \
-%          -printFrequency=10000 \
-%          -chainLength=50000000 \
-%          -chainBurnIn=0 \
-%          -probBurnIn=10000000 \
-%          -modelType=3 \
-%          -gainPrior=0.1 \
-%          -lossPrior=0.1 \
-%          -distancePowerPrior=0.1 \
-%          -guessInitialRates=T \
-%          -geoDistancePowerPositive=T \
-%          -geoDistanceTruncate=F \
-%          -areaProposalTuner=0.1
-%\end{lstlisting}
-%\end{framed}
-%
-%The first set of flags concerns file handling.
-%\texttt{inputFilePath} indicates where to find the input files \texttt{areaFileName}, \texttt{geoFileName}, and \texttt{treeFileName}.
-%\texttt{outputFilePath} indicates where output files will be stored, which may be prefixed with \texttt{outputPrefix} and timestamped with \texttt{outputTimestamp}, both useful for organizing output from many analyses.
-%
-%The second set of flags concerns the MCMC analysis length, chain burn-in, and the sampling interval.
-%MCMC starts at an arbitrary state (sampled from the prior) and takes some amount of time to converge to stationarity.
-%Once at stationarity, independent samples of the MCMC state at regular intervals approximate the target posterior distribution.
-%MCMC that relies on stochastic mapping for data augmentation takes a longer time to mix, because it takes many MCMC proposals to explore the space of stochastically mapped range evolution histories.
-%Unfortunately, you typically do not know how long it takes to reach stationarity, so it's best to run MCMC analyses for an excessive length.
-%\texttt{chainBurnIn} determines which cycle to begin recording the MCMC state, but generally you wish to save the entire chain and assess burn-in after the analysis.
-%
-%In the next section, you'll see \texttt{my\_run.area\_probs.txt} and \texttt{my\_run.nhx} report ancestral range reconstruction probabilities.
-%The MCMC records the sampled histories every \texttt{historySampleFrequency} iteration to \texttt{my\_run.area\_states.txt}.
-%However, this data is relatively ``raw'' and must be manipulated with scripts for immediate use (we will cover how to do so later).
-%The probabilities in the files above are computed as part of the analysis for your convenience, disregarding the first \texttt{probBurnIn} iterations of the MCMC.
-%(Here it is set to disregard the first quarter of the chain.)
-%
-%Parameters are sampled every \texttt{parameterSampleFrequency} iterations. The current MCMC state is printed on-screen every \texttt{printFrequency} iterations.
-%
-%The final set of flags concerns model parameters.
-%The area gain rate ($\lambda_1$), area loss rate ($\lambda_0$), and distance power parameter ($\beta$) are each assigned their own half-Cauchy prior distribution.
-%The half-Cauchy distribution can be thought of as the absolute value of ``fat-tailed'' normal distributions, with scale parameters set by \texttt{gainPrior}, \texttt{lossPrior}, and \texttt{distancePowerPrior}.
-%The flag \texttt{guessInitialRates} makes a very rough estimate of the initial values for $\lambda_0$ and $\lambda_1$ from the data and tree rather than sampling their values from the prior distribution.
-%\texttt{areaProposalTuner} controls the expected proportion of areas to update during a range history proposal.
-%Mixing suffers when this value is too large.
-%
-%The distance power parameter, $\beta$, effectively rescales the distance between areas.
-%When computing the probability of range expansion, the pairwise distances are computed between each occupied area in the starting range and each unoccupied area in the expanded range.
-%For large numbers of areas ($N > 100$), this computation can become slow.
-%Assigning \texttt{geoDistanceTruncate} to \texttt{T} tells the software to skip computing pairwise distances for areas that are very distant given the current value of $\beta$, i.e. areas that have an exceedingly small chance of being gained.
-%This speeds up computation but may introduce negligible amounts of error into computing the distance-dependent rate-modifier term, $\eta$.
-%
-%Finally, there is nothing mathematically to prevent $\beta$ from becoming negative, for which range expansion events would prefer distant areas to nearby areas.
-%In some cases, BayArea will infer $\beta<0$ and generate implausible ancestral range reconstructions, particularly for globally distributed taxa.
-%So, the flag \texttt{geoDistancePowerPositive} constrains $\beta \geq 0$ when set to \texttt{T}.
-%
-%See Section 4.1 of the BayArea v1.0.2 manual to learn about additional input, output, and analysis settings.
-
-\subsection{Running a job}
-
-Executing the shell script will run our job. Bombs away!
-
-\noindent \\ \impmark Enter the following command.
-\begin{framed}
+\begin{snugshade}
 \begin{lstlisting}
-> ./my_lab_run.sh
+RevBayes > mnCharHistoryNewick
+   Mntr_CharacterHistoryNewickFile function (String filename,
+   AbstractCharacterData ctmc, TimeTree tree, Natural printgen, String
+   separator, Bool posterior, Bool likelihood, Bool prior, Bool append, String
+   style = events|counts
+   , String type = biogeo
+   )
+RevBayes > monitors[3] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=M, tree=tree, printgen=100, style="events")
+RevBayes > monitors[4] <- mnCharHistoryNewick(filename="psychotria.counts.txt", ctmc=M, tree=tree, printgen=100, style="counts")
 \end{lstlisting}
-\end{framed}
+\end{snugshade}
+
+As our last monitor, the {\tt Mntr\_CharacterHistoryNhxFile} records character history values throughout the MCMC analysis, then stores some simple posterior summary statistics as a Nexus file.
+These summary statistics could be computed from the previously mentioned {\tt Monitor} output files, but {\tt mnCharHistoryNhx} provides a simple way to produce Phylowood-compatible files.
+We will also discuss this file's format in more detail in Section \ref{sec:posterior}.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mnCharHistoryNhx
+   Mntr_CharacterHistoryNhxFile function (String filename, AbstractCharacterData
+   ctmc, TimeTree tree, RlAtlas atlas, Natural samplegen, Natural maxgen,
+   Probability burnin, String separator, Bool posterior, Bool likelihood, Bool
+   prior, String type = biogeo
+   )
+RevBayes > monitors[5] <- mnCharHistoryNhx(filename="psychotria.nhx.txt", ctmc=M, tree=tree, atlas=atlas, samplegen=100, maxgen=nGens, burnin=0.25)
+\end{lstlisting}
+\end{snugshade}
+
+
+\subsection{Running an MCMC analysis}
+
+Now all that's left is to configure and run our MCMC analysis.
+For this, we create an {\tt Mcmc} object, which we give our {\tt Move} vector, our {\tt Monitor} vector, and our {\tt Model object}
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > mcmc
+   MCMC function (Model model, Monitor[] monitors, Move[] moves, String
+   moveschedule = sequential|random|single
+   )
+RevBayes > my_mcmc <- mcmc(my_model, monitors, moves)
+\end{lstlisting}
+\end{snugshade}
+
+MCMC typically requires some period of burn-in before it reaches stationarity, i.e. from a random starting point, it takes some time for the chain to produce valid samples from the posterior distribution.
+By running {\tt burnin()}, we tell the {\tt Mcmc} object to propose and reject new states but {\it not} to record anything to file.
+After burn-in is complete, we call {\tt run()}, where we begin recording valid posterior samples under our model.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > my_mcmc.burnin(generations=1000, tuningInterval=100)
+RevBayes > my_mcmc.run(generations=10000)
+\end{lstlisting}
+\end{snugshade}
+
+Everything we've done is contained in the file {\tt biogeography\_M1.Rev}.
+You can modify this file as you like then re-run the analysis by typing
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > source("biogeography_2rate.Rev")
+\end{lstlisting}
+\end{snugshade}
+
+\subsection{Model selection using Bayes factors}
+
+Bayes factors (BFs) are used to select which of two models better describes the observed data, $\mathbf{X}_{obs}$, and are computed as the ratio of marginal likelihoods for those two models.
+One might prefer to analytically compute the marginal likelihood as 
+\[
+\text{Prob}(\mathbf{X}_{obs} \mid M) = \int_{\mathbf{X}_{aug}} \int_{\theta} \text{Prob}(\mathbf{X}_{obs}, \mathbf{X}_{aug}, \theta \mid M) \, d\theta \, d\mathbf{X}_{aug}
+\]
+but the marginal likelihood is the same intractable quantity we intentionally avoid computing when using MCMC in a Bayesian context.
+Instead, we must estimate the marginal likelihood from our posterior distribution samples.
+Here, we will use thermodynamic integration \citep{lartillot06} and stepping-stone approximation \citep{xi11}.
+The exact details of these techniques will not be covered here, but there is an important practical point to mention: both methods rely on computing a number of ``power posterior'' distributions.
+Computing more power posteriors increases the marginal likelihood estimator's accuracy at the cost of computational time.
+(For more discussion on model selection and marginal likelihood estimation in RevBayes, see XXXX).
+
+Moving on, we'll compute the Bayes factor to compare a simple one-rate model, which asserts the rate of area gain and loss are always equal, to a two-rate model which allows these rates to vary independently.
+Rather than specifying the model manually, we will load (source) the model definition from a file then enter the commands to compute its marginal likelihood.
+For faster results, we will use two separate RevBayes sessions, one for each model.
+For each session, the power posterior analysis run for 1000 generations during burn-in then 1000 generations per each of 30 power posterior categories.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > source("biogeography_1rate.Rev")
+RevBayes > pow_p <- powerPosterior(my_model, moves, out_fp+out_pp_fn, cats=30) 
+RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)
+RevBayes > pow_p.run(generations=1000)
+\end{lstlisting}
+\end{snugshade}
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > source("biogeography_2rate.Rev")
+RevBayes > pow_p <- powerPosterior(my_model, moves, out_fp+out_pp_fn, cats=30) 
+RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)
+RevBayes > pow_p.run(generations=1000)  
+\end{lstlisting}
+\end{snugshade}
+
+Each power posterior analysis will write their contents to the file given in {\tt out\_pp\_fn}.
+These files are {\tt pp\_1rate\_out.txt} and {\tt pp\_2rate\_out.txt} for the simple and complex models, respectively.
+This may take a few minutes.
+When complete, the power posterior files may then be used to compute marginal likelihoods.
+For example, from the RevBayes session analyzing the simple one-rate model
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > ss <- steppingStoneSampler(file=out_fp+out_pp_fn)
+RevBayes > ss.marginal() 
+RevBayes > ps <- pathSampler(file=out_fp+ouf_pp_fn)
+RevBayes > ps.marginal() 
+\end{lstlisting}
+\end{snugshade}
+
+For a given model, the path sampling and stepping stone sampling methods should produce similar marginal likelihood estimates.
+Values should be within one log likelihood unit of one another.
+If the values are extremely different, this may indicate {\tt powerPosterior} should be re-run with a larger number of {\tt cats}.
+We chose {\tt cats=30} which should suffice, and we see no problem.
+Then from the complex two-rate model RevBayes session
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > ss <- steppingStoneSampler(file=out_fp+out_pp_fn)
+RevBayes > ss.marginal() 
+RevBayes > ps <- pathSampler(file=out_fp+out_pp_fn)
+RevBayes > ps.marginal() 
+\end{lstlisting}
+\end{snugshade}
+
+Finally, we can compute the Bayes factor, which is simply the ratio of marginal likelihoods.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > exp(-45.5) / exp(-46.7)
+\end{lstlisting}
+\end{snugshade}
+
+A value of one would mean both models had equal marginal likelihoods.
+A value less than one would indicate the first model, the simple model, had a larger marginal likelihood, and was therefore favored by model testing.
+But that's not the case, the value is greater than one, and the complex two-rate model is favored.
+Similar to frequentist interpretations of significance for p-values, there is no universal and objective criterion of significance with Bayes Factors, but most would agree a factor of 10 (or 0.1) indicates strong support for one model over the other.
 
 \section{Output}
-
-Instead of waiting for the MCMC to finish, we'll use the output from a completed analysis on the same data.
-
-\noindent \\ \impmark Press \texttt{ctrl-C} to kill the job.
 
 \subsection{Screen}
 

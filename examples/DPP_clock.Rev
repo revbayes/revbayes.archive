@@ -114,24 +114,26 @@ moves[6] <- mvSimplexElementScale(pi, alpha=100.0, tune=true, weight=4.0)
 moves[7] <- mvSimplexElementScale(er, alpha=100.0, tune=true, weight=6.0)
 
 
-moves[8] <- mvDPPScaleCatVals(branch_rates, ln(2.0), 2.0)
-moves[9] <- mvDPPAllocateAuxGibbs(branch_rates, 4, 2.0)
+moves[8] <- mvDPPScaleCatVals(branch_rates, ln(2.0), 3.0)
+moves[9] <- mvDPPAllocateAuxGibbs(branch_rates, 4, 3.0)
 moves[10] <- mvDPPGibbsConcentration(concentration, n_cats, cp_shape, cp_rate, n_branches, 2.0)
 
 mymodel <- model(pi)
 
 
 monitors[1] <- modelmonitor(filename="dpp_rclock_test.log",printgen=10)
-#monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, tau)
-monitors[2] <- screenmonitor(printgen=1, pi1, mean_brate, n_cats, concentration)
+monitors[2] <- filemonitor(filename="dpp_rclock_test.trees",printgen=10, tau)
+monitors[3] <- screenmonitor(printgen=10, pi1, mean_brate, n_cats, concentration)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 ##mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(generations=10000)
 
-treetrace <- readTreeTrace("./dpp_rclock_test.trees")
-treetrace.summarize()
+mymcmc.operatorSummary()
+
+#treetrace <- readTreeTrace("./dpp_rclock_test.trees")
+#treetrace.summarize()
 
 
-mapTree(treetrace,"dpp_rclock_test_MAP.tre")
+#mapTree(treetrace,"dpp_rclock_test_MAP.tre")

@@ -189,41 +189,53 @@ bool ArgumentRule::hasDefault(void) const {
  * is done in a static context (evaluate-x§once context) regardless of the setting of the once flag.
  * If the argument is constant, we try type promotion if permitted by the variable required type.
  */
-bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const {
+bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const
+{
     
     if ( var == NULL )
+    {
         return false;
+    }
     
     if ( isConst || var->getRevObject().isConstant() )
+    {
         once = true;
+    }
     
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
         if ( var->getRevObject().isTypeSpec( *it ) )
+        {
             return true;
-        
+        }
         else if ( var->getRevObject().isConvertibleTo( *it, once ) )
+        {
             return true;
-
+        }
         else if ( once == false && var->getRevObject().isConstant() &&
                   var->getRevObject().isConvertibleTo( *it, true ) &&
                   (*it).isDerivedOf( var->getRevObjectTypeSpec() )
                 )
+        {
             return true;
+        }
+        
     }
     
     return false;
 }
 
 
-bool RevLanguage::ArgumentRule::isConstant( void ) const {
+bool RevLanguage::ArgumentRule::isConstant( void ) const
+{
     
     return isConst;
 }
 
 
 
-bool RevLanguage::ArgumentRule::isEllipsis( void ) const {
+bool RevLanguage::ArgumentRule::isEllipsis( void ) const
+{
     
     return false;
 }

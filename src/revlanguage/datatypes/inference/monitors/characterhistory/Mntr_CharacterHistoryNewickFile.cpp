@@ -55,8 +55,8 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
 //    bool sc = static_cast<const RlBoolean &>( counts->getRevObject() ).getValue();
 //    bool se = static_cast<const RlBoolean &>( events->getRevObject() ).getValue();
-    bool sm = false; // show metadata disabled for now
-    bool ap = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool sm = true; // show metadata disabled for now
+    bool ap = false; //static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
 
     
     std::string ms = static_cast<const RlString&>( style->getRevObject() ).getValue();
@@ -102,7 +102,7 @@ const MemberRules& Mntr_CharacterHistoryNewickFile::getMemberRules(void) const {
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("ctmc", true, AbstractCharacterData::getClassTypeSpec() ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("tree", true, TimeTree::getClassTypeSpec() ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
-        Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString(" ") ) );
+        Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("posterior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("likelihood", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         Mntr_CharacterHistoryNewickFileMemberRules.push_back( new ArgumentRule("prior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
