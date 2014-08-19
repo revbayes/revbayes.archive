@@ -103,10 +103,11 @@ class SyntaxFunctionCall;
 
         // Regular functions
         std::vector<RevPtr<Variable> >      computeDynamicIndex(Environment& env);                                                  //!< Evaluate index variables (dynamic case)
-        std::vector<size_t>                 computeIndex(Environment& env);                                                         //!< Evaluate index (constant case)
+        std::vector<size_t>                 computeStaticIndex(Environment& env) const;                                             //!< Evaluate index variables (static case)
         RevPtr<Variable>                    evaluateContent(Environment& env);                                                      //!< Get semantic rhs value (constant case)
         RevPtr<Variable>                    evaluateDynamicContent(Environment& env);                                               //!< Get semantic rhs value (dynamic case)
         RevPtr<Variable>                    evaluateLHSContent(Environment& env, const std::string& varType);                       //!< Get semantic lhs value
+        size_t                              getIndex(const RevPtr<Variable>& var, Environment& env) const;                          //!< Get the index from an index variable (statically)
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
         bool                                isFunctionSafe(const Environment& env) const;                                           //!< Is this element safe in a function?
