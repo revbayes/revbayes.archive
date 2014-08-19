@@ -178,12 +178,12 @@ SyntaxVariable* SyntaxVariable::clone () const
  * variable is part of a left-hand side expression, and when it is part
  * of a static right-hand side expression.
  */
-std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
+std::vector<size_t> SyntaxVariable::computeStaticIndex( Environment& env ) const
 {
     std::vector<size_t> oneOffsetIndices;
     
     size_t count = 1;
-    for ( std::list<SyntaxElement*>::iterator it = index->begin(); it != index->end(); ++it, ++count )
+    for ( std::list<SyntaxElement*>::const_iterator it = index->begin(); it != index->end(); ++it, ++count )
     {
         if ( (*it) == NULL )
         {
@@ -191,71 +191,14 @@ std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
         }
         else
         {
+            // Evaluate the index variable statically
             RevPtr<Variable> indexVar = (*it)->evaluateContent( env );
-            
-            if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
-            {
-                // Get a Natural one-offset index
-                size_t oneOffsetIndex = static_cast<Natural &>( indexVar->getRevObject() ).getValue();
 
-                // Check validity
-                if ( oneOffsetIndex < 1 )
-                {
-                    std::ostringstream msg;
-                    msg << "Index " << count << " for ";
-                    if ( baseVariable != NULL )
-                        msg << baseVariable->getFullName( env ) << ".";
-                    msg << identifier;
-                    msg << " smaller than 1";
-                    throw RbException( msg );
-                }
-                
-                // Push the value onto integer index
-                oneOffsetIndices.push_back( oneOffsetIndex );
-            }
-            
-            else if ( indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), true ) )
-            {
-                // Convert to Natural
-                RevObject* theNaturalIndex = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
-                size_t oneOffsetIndex = static_cast<Natural*>( theNaturalIndex )->getValue();
-                delete theNaturalIndex;
+            // Get the index
+            size_t oneOffsetIndex = getIndex( indexVar, env );
 
-                // Check validity
-                if ( oneOffsetIndex < 1 )
-                {
-                    std::ostringstream msg;
-                    msg << "Index " << count << " for ";
-                    if ( baseVariable != NULL )
-                        msg << baseVariable->getFullName( env ) << ".";
-                    msg << identifier;
-                    msg << " smaller than 1";
-                    throw RbException( msg );
-                }
-                
-                // Push the value onto integer index
-                oneOffsetIndices.push_back( oneOffsetIndex );
-            }
-            
-            else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) )
-            {
-                throw RbException( "String indexes not supported (yet)");
-#if 0
-                //Push string index onto string index vector
-                stringIndex.push_back( static_cast<RlString&>( indexVar->getRevObject() ).getValue() );
-#endif
-            }
-            
-            else
-            {
-                std::ostringstream msg;
-                msg << "Index " << count << " for ";
-                if ( baseVariable != NULL )
-                    msg << baseVariable->getFullName( env ) << ".";
-                msg << identifier;
-                msg << " of wrong type (neither " << Natural::getClassType() << " nor " << RlString::getClassType() << ")";
-                throw RbException( msg );
-            }
+            // Push it onto the vector
+            oneOffsetIndices.push_back( oneOffsetIndex );
         }
     }
     
@@ -318,8 +261,8 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
  * then there will always be a list of indices, whereas the list of indices is
  * optional for an identifier.
  */
-RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
-    
+RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env)
+{
     RevPtr<Variable> theVar;
     
     if ( baseVariable == NULL )
@@ -357,7 +300,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     }
     
     // Get static index
-    std::vector< size_t > oneOffsetIndices = computeIndex( env );
+    std::vector< size_t > oneOffsetIndices = computeStaticIndex( env );
     
     // Get element if indices are provided.
     while ( !oneOffsetIndices.empty() )
@@ -420,7 +363,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
 RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
 {
     // Get static index. No dynamic evaluation here
-    std::vector<size_t> oneOffsetIndices = computeIndex( env );
+    std::vector<size_t> oneOffsetIndices = computeStaticIndex( env );
     
     RevPtr<Variable> theVar;
     
@@ -534,8 +477,8 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
  * from dynamic evaluation of the index variables. These need to be put
  * in a dynamic lookup variable.
  */
-RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
-    
+RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
+{
     RevPtr<Variable> theVar;
     
     if ( baseVariable == NULL )
@@ -571,33 +514,67 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
         // Find member variable (no dynamic version of identifier)
         theVar = theVar->getRevObject().getMember( identifier );
     }
+
+    // Get dynamic index
+    std::vector< RevPtr<Variable> > oneOffsetIndexVars = computeDynamicIndex( env );
     
-    // Get index
-    std::vector< RevPtr<Variable> > oneOffsetIndices = computeDynamicIndex( env );
+    // Check if we need a dynamic lookup
+    bool dynamicLookup = false;
+    for ( std::vector< RevPtr<Variable> >::iterator it = oneOffsetIndexVars.begin(); it != oneOffsetIndexVars.end(); ++it )
+    {
+        if ( !(*it)->getRevObject().isConstant() || (*it)->getName() != "" )
+        {
+            dynamicLookup = true;
+            break;
+        }
+    }
     
+    // If the variable we are looking up things in does not have a DAG node, we do not need a dynamic lookup regardless
+    if ( theVar->getRevObject().hasDagNode() == false )
+        dynamicLookup = false;
+
     // Get dynamic element from container or subscript operator
-    while ( !oneOffsetIndices.empty() )
+    while ( !oneOffsetIndexVars.empty() )
     {
         // Get the element...
         if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
         {
             // ... from a container
             
-            // Get the container indices
-            std::vector< RevPtr<Variable> > containerOneOffsetIndices;
+            // Get the container index variables
+            std::vector< RevPtr<Variable> > containerOneOffsetIndexVars;
             for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
             {
-                if ( !oneOffsetIndices.empty() )
+                if ( !oneOffsetIndexVars.empty() )
                 {
-                    containerOneOffsetIndices.push_back( oneOffsetIndices[0] );
-                    oneOffsetIndices.erase( oneOffsetIndices.begin() );
+                    containerOneOffsetIndexVars.push_back( oneOffsetIndexVars[0] );
+                    oneOffsetIndexVars.erase( oneOffsetIndexVars.begin() );
                 }
                 else
-                    containerOneOffsetIndices.push_back( new Variable( new Natural( 0 ) ) );
+                    containerOneOffsetIndexVars.push_back( new Variable( new Natural( 0 ) ) );
             }
             
-            // Make a dynamic element lookup
-            theVar = new Variable( theVar->getRevObject().makeElementLookup( theVar, containerOneOffsetIndices ) );
+            if ( dynamicLookup )
+            {
+                throw RbException( "Dynamic element lookups not working yet" );
+                
+                // Make a dynamic element lookup
+                theVar = new Variable( theVar->getRevObject().makeElementLookup( theVar, containerOneOffsetIndexVars ) );
+            }
+            else
+            {
+                // We want a static element lookup
+
+                // Get the container indices statically
+                std::vector<size_t> containerOneOffsetIndices;
+                for ( size_t i = 0; i < containerOneOffsetIndexVars.size(); ++i )
+                {
+                    containerOneOffsetIndices.push_back( getIndex( containerOneOffsetIndexVars[i], env ) );
+                }
+                
+                // Get the element using the getElement function
+                theVar = theVar->getRevObject().getElement( containerOneOffsetIndices );
+            }
         }
         else
         {
@@ -607,18 +584,18 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
             // a variable it names itself, or it gives out a temporary variable copy, which
             // should not be named
             
-            // Create the single argument for the index operator
+            // Create the single argument for the index operator (statically always for now)
             std::vector<Argument> args;
-            args.push_back( Argument( oneOffsetIndices[0] ) );
-            
-            // Get the variable using the subscript operator function
+            args.push_back( Argument( new Variable( new Natural( getIndex( oneOffsetIndexVars[0], env ) ) ) ) );
+
+           // Get the variable using the subscript operator function
             // TODO: This needs to be made generic for user-defined member objects
             // TODO: This needs to check that there is a subscript operator function and not procedure,
             // and then return a dynamic element lookup
             theVar = theVar->getRevObject().executeMethod( "[]", args );
             
             // Erase the index
-            oneOffsetIndices.erase( oneOffsetIndices.begin() );
+            oneOffsetIndexVars.erase( oneOffsetIndexVars.begin() );
         }
     }
     
@@ -651,6 +628,68 @@ std::string SyntaxVariable::getFullName( Environment& env ) const
         theName << "[...]";
 
     return theName.str();
+}
+
+
+/** Get an index from an index variable in a static context */
+size_t SyntaxVariable::getIndex( const RevPtr<Variable>& indexVar, Environment& env ) const
+{
+    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
+    {
+        // Get a Natural one-offset index
+        size_t oneOffsetIndex = static_cast<Natural &>( indexVar->getRevObject() ).getValue();
+        
+        // Check validity
+        if ( oneOffsetIndex < 1 )
+        {
+            std::ostringstream msg;
+            msg << "Index for ";
+            if ( baseVariable != NULL )
+                msg << baseVariable->getFullName( env ) << ".";
+            msg << identifier;
+            msg << " smaller than 1";
+            throw RbException( msg );
+        }
+        
+        // Return the index
+        return oneOffsetIndex;
+    }
+    else if ( indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), true ) )
+    {
+        // Convert to Natural
+        RevObject* theNaturalIndex = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
+        size_t oneOffsetIndex = static_cast<Natural*>( theNaturalIndex )->getValue();
+        delete theNaturalIndex;
+        
+        // Check validity
+        if ( oneOffsetIndex < 1 )
+        {
+            std::ostringstream msg;
+            msg << "Index for ";
+            if ( baseVariable != NULL )
+                msg << baseVariable->getFullName( env ) << ".";
+            msg << identifier;
+            msg << " smaller than 1";
+            throw RbException( msg );
+        }
+        
+        // Return the index
+        return oneOffsetIndex;
+    }
+    else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) )
+    {
+        throw RbException( "String indexes not supported (yet)");
+    }
+    else
+    {
+        std::ostringstream msg;
+        msg << "Index for ";
+        if ( baseVariable != NULL )
+            msg << baseVariable->getFullName( env ) << ".";
+        msg << identifier;
+        msg << " of wrong type (neither " << Natural::getClassType() << " nor " << RlString::getClassType() << ")";
+        throw RbException( msg );
+    }
 }
 
 
