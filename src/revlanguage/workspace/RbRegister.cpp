@@ -402,6 +402,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new ModelVector<Natural>()          );
         addType( new ModelVector<Real>()             );
         addType( new ModelVector<RealPos>()          );
+        addType( new ModelVector<Probability>()      );
         addType( new ModelVector<RlBoolean>()        );
         addType( new ModelVector<RlString>()         );
         addType( new ModelVector<Simplex>()          );
@@ -846,6 +847,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_modelVector<Integer>()                    );
         addFunction( "v",         new Func_modelVector<Real>()                       );
         addFunction( "v",         new Func_modelVector<RealPos>()                    );
+        addFunction( "v",         new Func_modelVector<Probability>()                );
         addFunction( "v",         new Func_modelVector<RlBoolean>()                  );
         addFunction( "v",         new Func_modelVector<Clade>()                      );
         addFunction( "v",         new Func_modelVector<RlString>()                   );
