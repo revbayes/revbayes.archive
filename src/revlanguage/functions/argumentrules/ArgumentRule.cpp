@@ -78,6 +78,13 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  *
  * @todo The constant flag is currently not used correctly in ArgumentRule. Therefore,
  *       we ignore it here for now. This needs to be changed.
+ *
+ * @todo To conform to the old code we change the required type of the incoming
+ *       variable wrapper here. We need to change this so that we do not change
+ *       the wrapper here, but make sure that if the argument variable is inserted
+ *       in a member variable or container element slot, that the slot variable
+ *       wrapper, which should be unique (not the same as the incoming variable
+ *       wrapper), has the right required type.
  */
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
@@ -92,6 +99,9 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
     {
         if ( theVar->getRevObject().isTypeSpec( *it ) )
         {
+            // For now, change the required type of the incoming variable wrapper
+            theVar->setRevObjectTypeSpec( *it );
+            
             if ( !isEllipsis() )
                 return Argument( theVar, getArgumentLabel(), isConstant() );
             else
@@ -103,7 +113,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                  (*it).isDerivedOf( theVar->getRevObjectTypeSpec() )
                  )
         {
-            // Fit by type promotion
+            // Fit by type promotion. For now, we also modify the type of the incoming variable wrapper.
             RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
             theVar->setRevObject( convertedObject );
             theVar->setRevObjectTypeSpec( *it );
@@ -118,19 +128,25 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
             if ( once || !theVar->getRevObject().hasDagNode() )
             {
                 RevObject* convertedObject = theVar->getRevObject().convertTo( *it );
+                Variable*  convertedVar    = new Variable( convertedObject );
+                convertedVar->setRevObjectTypeSpec( *it );
+
                 if ( !isEllipsis() )
-                    return Argument( new Variable( convertedObject ), getArgumentLabel(), isConstant() );
+                    return Argument( convertedVar, getArgumentLabel(), isConstant() );
                 else
-                    return Argument( new Variable( convertedObject ), arg.getLabel(), true );
+                    return Argument( convertedVar, arg.getLabel(), true );
             }
             else
             {
                 RevObject* conversionObject = theVar->getRevObject().convertTo( *it );
                 conversionObject->makeConversionValue( theVar );
+                Variable*  conversionVar    = new Variable( conversionObject );
+                conversionVar->setRevObjectTypeSpec( *it );
+                
                 if ( !isEllipsis() )
-                    return Argument( new Variable( conversionObject ), getArgumentLabel(), isConstant() );
+                    return Argument( conversionVar, getArgumentLabel(), isConstant() );
                 else
-                    return Argument( new Variable( conversionObject ), arg.getLabel(), true );
+                    return Argument( conversionVar, arg.getLabel(), true );
             }
         }
     }
