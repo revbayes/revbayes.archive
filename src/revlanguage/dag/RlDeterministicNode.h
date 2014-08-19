@@ -1,13 +1,3 @@
-/**
- * RlDeterministicNode.h
- *
- * (c) Copyright 2009- under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- */
-
-
-
 #ifndef RlDeterministicNode_H
 #define RlDeterministicNode_H
 
@@ -136,11 +126,11 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     }
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70, verbose);
+    this->printParents( o, 16, 70, verbose );
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70, verbose);
+    this->printChildren( o, 16, 70, verbose );
 
     o << std::endl;
 }

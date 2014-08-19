@@ -233,19 +233,23 @@ bool IndirectReferenceNode<rlType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node. If we have been touched
- * but no one asked for our value, we just leave our touched flag
- * set, which should be safe. We do not want to set the touched
- * flag to false without calling update, as done in
- * RevBayesCore::DeterministicNode.
+ * Keep the current value of the node. We copy the behavior in
+ * RevBayesCore::DeterministcNode
  *
- * @todo Check whether behavior in RevBayesCore::DeterministicNode is
- *       correct, or if there is some subtle point I have missed -- FR
+ * @todo We should not hard-set the touched flag to false here without
+ *       calling update, unless we can trust the caller to know that
+ *       this is correct behavior.
  */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-    // We just pass the call on
+    // TODO: Hard-set touched flag to false, potentially unsafe
+    // We at least check to make sure the value is not NULL
+    if ( value == NULL )
+        this->update();
+    touched = false;
+    
+    // Pass the call on
     this->keepAffected();
 }
 
@@ -277,11 +281,11 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool ve
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents( o, 16, 70, verbose );
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren( o, 16, 70, verbose );
     o << std::endl;
 }
 
@@ -303,18 +307,21 @@ void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 }
 
 
-/** Touch this node for recalculation */
+/**
+ * Touch this node for recalculation.
+ *
+ * @todo Can we test here for being touched and only pass the call
+ *       on if we are not touched? It is not safe in DeterministicNode
+ *       so we always pass the call on here, to be safe.
+ */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-    if ( !this->touched )
-    {
-        // Touch myself
-        this->touched = true;
-        
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-    }
+    // Touch myself
+    this->touched = true;
+    
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
 }
 
 
