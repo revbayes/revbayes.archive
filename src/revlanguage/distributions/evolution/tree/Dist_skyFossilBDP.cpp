@@ -56,6 +56,8 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
     
     // the origin
     RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    // the origin
+    RevBayesCore::TypedDagNode<double>* ra                  = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     // speciation rates
     RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
@@ -87,7 +89,7 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
     }
     
     // create the internal distribution object
-    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(o, s, st, e, et, p, pt, r, rt, cond, taxa, c);
+    RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess(o, ra, s, st, e, et, p, pt, r, rt, cond, taxa, c);
     
     return d;
 }
@@ -136,7 +138,8 @@ const MemberRules& Dist_skyFossilBDP::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"      , true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"      , true, RealPos::getClassTypeSpec(), NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge"     , true, RealPos::getClassTypeSpec(), NULL ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"      , true, ModelVector<RealPos>::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes" , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"          , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
@@ -225,6 +228,10 @@ void Dist_skyFossilBDP::setConstMemberVariable(const std::string& name, const Re
     else if ( name == "origin" )
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "names" ) 
     {
