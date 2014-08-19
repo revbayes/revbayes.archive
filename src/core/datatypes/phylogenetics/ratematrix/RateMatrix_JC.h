@@ -27,12 +27,8 @@ namespace RevBayesCore {
     class RateMatrix_JC : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_JC(const RateMatrix_JC& m);                                                                                  //!< Copy constructor
         RateMatrix_JC(size_t n);                                                                                                //!< Construct rate matrix with n states
         virtual                             ~RateMatrix_JC(void);                                                               //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_JC&                      operator=(const RateMatrix_JC& r);
         
         // RateMatrix functions
         void                                calculateStationaryFrequencies(void);                                               //!< Calculate the stationary frequencies for the rate matrix

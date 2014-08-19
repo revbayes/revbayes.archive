@@ -15,15 +15,15 @@ using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
-parent( NULL ),
-tree( NULL ),
-name(""),
-index(indx),
-interiorNode( false ),
-rootNode( true ),
-tipNode( true ),
-newick(""),
-newickNeedsRefreshing( true )
+    parent( NULL ),
+    tree( NULL ),
+    name(""),
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
+    newick(""),
+    newickNeedsRefreshing( true )
 {
     
 }
@@ -31,15 +31,15 @@ newickNeedsRefreshing( true )
 
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
-parent( NULL ),
-tree( NULL ),
-name(n),
-index(indx),
-interiorNode( false ),
-rootNode( true ),
-tipNode( true ),
-newick(""),
-newickNeedsRefreshing( true )
+    parent( NULL ),
+    tree( NULL ),
+    name(n),
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
+    newick(""),
+    newickNeedsRefreshing( true )
 {
     
 }
