@@ -10,7 +10,7 @@
 \BOOKMARK [2][-]{subsection.4.2}{Creating\040the\040model}{section.4}% 10
 \BOOKMARK [2][-]{subsection.4.3}{Running\040an\040MCMC\040analysis}{section.4}% 11
 \BOOKMARK [2][-]{subsection.4.4}{Running\040an\040MCMC\040analysis}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.5}{Running\040a\040job}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.5}{Model\040selection\040using\040Bayes\040factors}{section.4}% 13
 \BOOKMARK [1][-]{section.5}{Output}{}% 14
 \BOOKMARK [2][-]{subsection.5.1}{Screen}{section.5}% 15
 \BOOKMARK [2][-]{subsection.5.2}{Sampled\040parameters\040\(my_run.parameters.txt\)}{section.5}% 16

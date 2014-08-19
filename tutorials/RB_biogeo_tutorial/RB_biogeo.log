@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.4-0.9998 (TeX Live 2012) (format=xelatex 2012.6.30)  16 AUG 2014 09:25
+This is XeTeX, Version 3.1415926-2.4-0.9998 (TeX Live 2012) (format=xelatex 2012.6.30)  18 AUG 2014 17:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1029,97 +1029,105 @@ LaTeX Warning: Reference `sec:posterior' on page 12 undefined on input line 576
 LaTeX Warning: Reference `sec:posterior' on page 13 undefined on input line 594
 .
 
-[13] [14]
+[13]
+
+Package natbib Warning: Citation `lartillot06' on page 14 undefined on input li
+ne 653.
+
+
+Package natbib Warning: Citation `xi11' on page 14 undefined on input line 653.
+
+
+[14] [15]
 LaTeX Font Info:    Font shape `EU1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `EU1/lmtt/b/n' tried instead on input line 754.
+(Font)              Font shape `EU1/lmtt/b/n' tried instead on input line 739.
 File: figures/loss_gain.png Graphic file (type QTm)
  <use  "figures/loss_gain.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 772--773
+Underfull \hbox (badness 10000) in paragraph at lines 757--758
 
  []
 
 File: figures/loss_numloss.png Graphic file (type QTm)
-<use  "figures/loss_numloss.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 782--783
+<use  "figures/loss_numloss.png" > [16]
+Underfull \hbox (badness 10000) in paragraph at lines 767--768
 
  []
 
-[15]
 File: figures/gain_distp.png Graphic file (type QTm)
- <use  "figures/gain_distp.png" >
+<use  "figures/gain_distp.png" >
 File: figures/hpd.png Graphic file (type QTm)
- <use  "figures/hpd.png" > [16] [17]
+ <use  "figures/hpd.png" > [17] [18]
 File: figures/range_area_pair_pp.pdf Graphic file (type QTm)
 
-<use  "figures/range_area_pair_pp.pdf" > [18] [19]
+<use  "figures/range_area_pair_pp.pdf" > [19] [20]
 File: figures/phw_mrca.png Graphic file (type QTm)
 
 <use  "figures/phw_mrca.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 981--982
+Underfull \hbox (badness 10000) in paragraph at lines 966--967
 
  []
 
 File: figures/phw_1_1ma.png Graphic file (type QTm)
-<use  "figures/phw_1_1ma.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 994--995
-
- []
-
-[20]
-Underfull \hbox (badness 10000) in paragraph at lines 1001--1002
+<use  "figures/phw_1_1ma.png" > [21]
+Underfull \hbox (badness 10000) in paragraph at lines 979--980
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1008--1009
+Underfull \hbox (badness 10000) in paragraph at lines 986--987
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1013--1014
+Underfull \hbox (badness 10000) in paragraph at lines 993--994
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 998--999
 
  []
 
 File: figures/phw_mask.png Graphic file (type QTm)
-<use  "figures/phw_mask.png" > [21]
-Underfull \hbox (badness 10000) in paragraph at lines 1049--1050
+<use  "figures/phw_mask.png" > [22]
+Underfull \hbox (badness 10000) in paragraph at lines 1034--1035
 
  []
 
 File: figures/bayarea-fig.png Graphic file (type QTm)
-<use  "figures/bayarea-fig.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 1059--1060
+<use  "figures/bayarea-fig.png" > [23]
+Underfull \hbox (badness 10000) in paragraph at lines 1044--1045
 
  []
 
-[22]
-Underfull \hbox (badness 10000) in paragraph at lines 1068--1069
+
+Underfull \hbox (badness 10000) in paragraph at lines 1053--1054
 
  []
 
-(./RB_biogeo.bbl)
+(./RB_biogeo.bbl [24])
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1091.
-[23]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1091.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1076.
+[25]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1076.
  (./RB_biogeo.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1091.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1091.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1076.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1076.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1091.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1076.
  ) 
 Here is how much of TeX's memory you used:
- 22531 strings out of 494004
- 426396 string characters out of 3150890
- 564060 words of memory out of 3000000
- 25462 multiletter control sequences out of 15000+200000
+ 22533 strings out of 494004
+ 426415 string characters out of 3150890
+ 562088 words of memory out of 3000000
+ 25464 multiletter control sequences out of 15000+200000
  10718 words of font info for 71 fonts, out of 3000000 for 9000
  1144 hyphenation exceptions out of 8191
  42i,12n,45p,596b,963s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on RB_biogeo.pdf (23 pages).
+Output written on RB_biogeo.pdf (25 pages).
