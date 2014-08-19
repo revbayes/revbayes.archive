@@ -129,6 +129,7 @@
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
 #include "Move_DPPScaleCatAllocateAux.h"
+#include "Move_MixtureAllocation.h"
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -414,7 +415,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // Model vectors of abstract elements
         addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
         addType( new ModelVectorAbstractElement<AbstractDiscreteCharacterData>() );
-        addType( new ModelVectorAbstractRbElement<RateMatrix>() );
+        addType( new ModelVectorAbstractElement<RateMatrix>() );
 
         // Workspace vectors
         addType( new WorkspaceVector<Mcmc>()         );
@@ -531,6 +532,12 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
         addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Real>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RealPos>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateMatrix>( ) );
 
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mRlcRateScale",                 new Move_RLCRateScale() );
@@ -841,7 +848,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_workspaceVector<Move>()                   );
         addFunction( "v",         new Func_modelVectorAbstractElement<AbstractCharacterData>()          );
         addFunction( "v",         new Func_modelVectorAbstractElement<AbstractDiscreteCharacterData>()  );
-        addFunction( "v",         new Func_modelVectorAbstractRbElement<RateMatrix>()                   );
+        addFunction( "v",         new Func_modelVectorAbstractElement<RateMatrix>()                   );
         addFunction( "v",         new Func_modelVector<Natural>()                    );
         addFunction( "v",         new Func_modelVector<Integer>()                    );
         addFunction( "v",         new Func_modelVector<Real>()                       );

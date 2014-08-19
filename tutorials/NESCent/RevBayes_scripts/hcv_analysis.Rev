@@ -25,25 +25,12 @@ origin
 n_intervals <- 10 
 change_times <- n_intervals - 1
 
-## This produces a vector of relative times from oldest -> youngest 
-##### [ 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 ]
-for(i in 1:change_times){
-	p_rel_times[i] <- abs(1.0 - (i * (1.0 / n_intervals))) 
-##	p_abs_times[i] := origin * p_rel_times[i]
-}
-
+## This produces a vector of relative times from youngest -> oldest 
 ## The absolute times are a function of the origin time
-## in principle, this initialization of the vector can go in the for-loop above,
-## but there's an indexing issue (working on it)
-p_abs_times[1] := origin * p_rel_times[1]
-p_abs_times[2] := origin * p_rel_times[2]
-p_abs_times[3] := origin * p_rel_times[3]
-p_abs_times[4] := origin * p_rel_times[4]
-p_abs_times[5] := origin * p_rel_times[5]
-p_abs_times[6] := origin * p_rel_times[6]
-p_abs_times[7] := origin * p_rel_times[7]
-p_abs_times[8] := origin * p_rel_times[8]
-p_abs_times[9] := origin * p_rel_times[9]
+for(i in 1:change_times){
+	p_rel_times[i] <- abs((i * (1.0 / n_intervals))) 
+	p_abs_times[i] := origin * p_rel_times[i]
+}
 
 
 p_abs_times
@@ -57,20 +44,9 @@ for(i in 1:n_intervals){
 	delta[i].setValue(1.0)
 	R0[i] ~ dnLnorm(1.0, 1.25)
 	R0[i].setValue(2.0)
-##	lambda[i] := R0[i] * delta[i]
+	lambda[i] := R0[i] * delta[i]
 }
 							
-## lambda is a m-length vector of deterministic nodes
-lambda[1] := R0[1] * delta[1]
-lambda[2] := R0[2] * delta[2]
-lambda[3] := R0[3] * delta[3]
-lambda[4] := R0[4] * delta[4]
-lambda[5] := R0[5] * delta[5]
-lambda[6] := R0[6] * delta[6]
-lambda[7] := R0[7] * delta[7]
-lambda[8] := R0[8] * delta[8]
-lambda[9] := R0[9] * delta[9]
-lambda[10] := R0[10] * delta[10]
 
 delta
 R0
@@ -92,7 +68,7 @@ tau ~ dnSkySerialBDP(origin=origin, lambda=lambda, lambdaTimes=p_abs_times,
 					 psi=s,
 					 rho=rho,
 					 timeSinceLastSample=0.0,
-					 condition="nTaxa", names=names)
+					 condition="survival", names=names)
 
 ## The current model does not initialize properly
 tau.setValue(T)
@@ -147,14 +123,14 @@ moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
 mymodel <- model(er)
 
 monitors[1] <- filemonitor(filename="hcv_skybdp.log", posterior=true, prior=true, 
-							likelihood=true, printgen=10, separator = "	",
+							likelihood=true, printgen=10,
 							origin, th, rho, R0, delta, lambda, er, sf, p_abs_times)
-monitors[2] <- filemonitor(filename="hcv_skybdp.trees",printgen=10, separator = "	", tau)
+monitors[2] <- filemonitor(filename="hcv_skybdp.trees",printgen=10, tau)
 monitors[3] <- screenmonitor(printgen=10, origin, rho, th, rn_0, uir_0)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-##mymcmc.burnin(generations=1000,tuningInterval=100)
+#mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(generations=40000)
 
 ##mymcmc.operatorSummary()
