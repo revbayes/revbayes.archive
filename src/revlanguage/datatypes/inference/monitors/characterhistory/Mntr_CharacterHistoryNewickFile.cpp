@@ -55,8 +55,8 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
 //    bool sc = static_cast<const RlBoolean &>( counts->getRevObject() ).getValue();
 //    bool se = static_cast<const RlBoolean &>( events->getRevObject() ).getValue();
-    bool sm = false; // show metadata disabled for now
-    bool ap = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
+    bool sm = true; // show metadata disabled for now
+    bool ap = false; //static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
 
     
     std::string ms = static_cast<const RlString&>( style->getRevObject() ).getValue();
