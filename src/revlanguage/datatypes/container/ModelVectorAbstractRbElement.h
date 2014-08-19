@@ -398,11 +398,15 @@ bool ModelVectorAbstractRbElement<rlType>::isConvertibleTo( const TypeSpec& type
         // Simply check whether our elements can convert to the desired element type
         for ( size_t i = 1; i <= this->size(); ++i )
         {
-            const RevObject& orgElement = const_cast< ModelVectorAbstractRbElement<rlType>* >( this )->getElement( i )->getRevObject();
-            
+            const RevPtr<Variable>& orgVar = const_cast< ModelVectorAbstractRbElement<rlType>* >( this )->getElement( i );
+            const RevObject& orgElement = orgVar->getRevObject();
+
             // Test whether this element is already of the desired element type or can be converted to it
             if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
+            {
                 return false;
+            }
+            
         }
         
         return true;
