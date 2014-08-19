@@ -255,13 +255,13 @@ bool TestDPPRelClock::run( void ) {
     monitoredNodes.push_back( cp );
     monitoredNodes.push_back( div );
     monitoredNodes.push_back( srAlpha );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 1, "  " ) );
+	monitoredNodes.push_back( pi );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 1, " | " ) );
  
 	monitoredNodes.push_back( div );
 	monitoredNodes.push_back( turn );
 	monitoredNodes.push_back( birthRate );
 	monitoredNodes.push_back( deathRate );
-	monitoredNodes.push_back( pi );
     monitoredNodes.push_back( er );
     monitoredNodes.push_back( srAlpha );
  	monitoredNodes.push_back( branchRates );

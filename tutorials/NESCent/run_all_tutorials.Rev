@@ -7,6 +7,9 @@ clear()
 source("RevBayes_scripts/noclock_JC.Rev")
 clear()
 
+source("RevBayes_scripts/noclock_substitution_mixture.Rev")
+clear()
+
 source("RevBayes_scripts/multispeciesCoalescent.Rev")
 clear()
 
