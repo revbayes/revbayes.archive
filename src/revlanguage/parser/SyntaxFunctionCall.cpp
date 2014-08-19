@@ -240,7 +240,9 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         // If we cannot find the function name as a variable, it must be in the function table
         // This call will throw with a relevant message if the function is not found
         if ( !found )
+        {
             func = env.getFunction(functionName, args, false).clone();
+        }
         
         // Allow the function to process the arguments
         func->processArguments( args, false );
@@ -267,7 +269,27 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         // \todo: We shouldn't allow const casts!!!
         MethodTable& mt = const_cast<MethodTable&>( theMemberObject.getMethods() );
         
-        Function* theFunction = mt.getFunction( functionName, args, false ).clone();
+        Function* theFunction = NULL;
+//        try
+//        {
+//            theFunction = mt.getFunction( functionName, args, false ).clone();
+//            theFunction->processArguments( args, false );
+//        }
+//        catch ( RbException e )
+//        {
+//            
+//        }
+//        if ( theFunction == NULL )
+//        {
+//            // try to convert to stochastic node
+//            
+//            if ( theMemberObject.getDagNode()->isStochastic() )
+//            {
+//                theMemberObject.getDagNode()->get
+//            }
+//            
+//        }
+        theFunction = mt.getFunction( functionName, args, false ).clone();
         theFunction->processArguments( args, false );
         MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( theFunction );
         theMemberFunction->setMemberObject( theVar );
