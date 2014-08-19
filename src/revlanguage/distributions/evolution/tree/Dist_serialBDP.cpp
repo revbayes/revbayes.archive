@@ -57,6 +57,8 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::create
     
     // the origin
     RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    // the origin
+    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -81,7 +83,7 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::create
     }
     
     // create the internal distribution object
-    RevBayesCore::ConstantRateSerialSampledBirthDeathProcess*   d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(o, s, e, p, r, tLastSample, cond, taxa, c);
+    RevBayesCore::ConstantRateSerialSampledBirthDeathProcess*   d = new RevBayesCore::ConstantRateSerialSampledBirthDeathProcess(o, ra, s, e, p, r, tLastSample, cond, taxa, c);
     
     return d;
 }
@@ -134,7 +136,8 @@ const MemberRules& Dist_serialBDP::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec(), NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge", true, RealPos::getClassTypeSpec(), NULL ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi", true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
@@ -209,6 +212,10 @@ void Dist_serialBDP::setConstMemberVariable(const std::string& name, const RevPt
     else if ( name == "origin" ) 
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "names" ) 
     {
