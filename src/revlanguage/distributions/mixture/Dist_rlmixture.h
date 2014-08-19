@@ -35,7 +35,9 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-        
+        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
+        MethodTable                                     makeMethods(void) const;                                                        //!< Make member methods
+
         
         // Distribution functions you have to override
         RevBayesCore::RbMixtureDistribution<typename valType::valueType>*            createDistribution(void) const;
@@ -57,6 +59,7 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlSimplex.h"
 #include "StochasticNode.h"
 #include "TypedDistribution.h"
@@ -144,6 +147,26 @@ const RevLanguage::MemberRules& RevLanguage::Dist_rlmixture<valType>::getMemberR
 }
 
 
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+template <typename valType>
+const RevLanguage::MethodTable& Dist_rlmixture<valType>::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_rlmixture<valType>::getTypeSpec( void ) const
 {
@@ -151,6 +174,24 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_rlmixture<valType>::getTypeSpec( 
     static TypeSpec ts = getClassTypeSpec();
     
     return ts;
+}
+
+
+/* Make member methods for this class */
+template <typename valType>
+RevLanguage::MethodTable Dist_rlmixture<valType>::makeMethods(void) const
+{
+    
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* argRules = new ArgumentRules();
+    
+    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_rlmixture<valType> ,Natural>( this, argRules ) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( TypedDistribution<valType>::makeMethods() );
+    
+    return methods;
 }
 
 
