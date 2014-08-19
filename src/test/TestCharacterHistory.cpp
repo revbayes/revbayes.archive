@@ -153,7 +153,7 @@ bool TestCharacterHistory::run_exp(void) {
     std::vector<unsigned> old_seed = GLOBAL_RNG->getSeed();
     std::cout << old_seed[0] << " " << old_seed[1] << "\n";
     std::vector<unsigned> seed;
-    seed.push_back(1+1); seed.push_back(1);
+//    seed.push_back(1+1); seed.push_back(1);
 //    old_seed = seed;
 //    GLOBAL_RNG->setSeed(seed);
     std::stringstream ss;
@@ -167,8 +167,8 @@ bool TestCharacterHistory::run_exp(void) {
     bool forbidExtinction           = true;
     bool useCladogenesis            = !true;
     bool useDistances               = true;
-    bool useAdjacency               = true;
-    bool useAvailable               = true;
+    bool useAdjacency               = !true;
+    bool useAvailable               = !true;
     bool useRootFreqs               = !true;
     
     
@@ -176,9 +176,9 @@ bool TestCharacterHistory::run_exp(void) {
     
     // binary characters
     std::string fn = "";
-    fn = "vireya.nex";
+//    fn = "vireya.nex";
 //    fn = "psychotria_range.nex";
-//    fn = "16tip_100areas.nex";
+    fn = "16tip_100areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -192,11 +192,11 @@ bool TestCharacterHistory::run_exp(void) {
     
     // geo by epochs
     std::string afn="";
-    afn = "malesia_static.atlas.txt";
+//    afn = "malesia_static.atlas.txt";
 //    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic_ss.atlas.txt";
-//    afn = "100area.atlas.txt";
+    afn = "100area.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     
