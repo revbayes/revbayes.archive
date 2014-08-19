@@ -72,10 +72,8 @@ for (i in 1:n_branches) {
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
-
-nb <- n_branches * 1.0
-#tree_length := mean(br_lens) * nb
-tree_length := br_lens[1]
+# create a deterministic variable for monitoring purposes
+tree_length := sum(br_lens)
 
 # Build the tree by combining the topology with the branch length.
 phylogeny := treeAssembly(topology, br_lens)
@@ -97,7 +95,7 @@ mymodel <- model(Q)
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=200,tuningInterval=100)
+#mymcmc.burnin(generations=200,tuningInterval=100)
 mymcmc.run(generations=300)
 
 
