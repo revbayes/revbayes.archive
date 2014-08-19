@@ -14,8 +14,8 @@
 observed_fatalities <- v(24,25,31,31,22,21,26,20,16,22)
 x <- 1976:1985 - mean(1976:1985)
 
-alpha ~ dnUnif(-10,10) 
-beta ~ dnUnif(-10,10)
+alpha ~ dnUnif(-2,2) 
+beta ~ dnUnif(-2,2)
 
 mi <- 0
 moves[mi++] <- mvSlide(alpha)
