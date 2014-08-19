@@ -175,8 +175,13 @@ void RevBayesCore::MixtureDistribution<mixtureType>::redrawValue( void )
 template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 {
+
+    delete this->value;
+
     index = i;
-    *(this->value) = parameterValues->getValue()[i];
+    const mixtureType &tmp = parameterValues->getValue()[i];
+    
+    this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( tmp );
 }
 
 
