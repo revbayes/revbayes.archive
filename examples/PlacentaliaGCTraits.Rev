@@ -45,8 +45,8 @@ index <- index + 1
 
 kappa ~ exponential(1.0)
 
-df <- nTraits+3
-covdim <- nTraits+1
+df <- nTraits+4
+covdim <- nTraits+2
 
 sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
 
@@ -74,7 +74,7 @@ index <- index + 1
 for (i in 1:nTraits)	{
 
 	# here we say that the ith entry of the Brownian process should map to the ith. quantitative trait
-	br.clampAt(contData,i+1,i)
+	br.clampAt(contData,i+2,i)
 }
 
 #"stats for cov"
@@ -120,9 +120,24 @@ Q := gtr(er,pi)
 rootval <- 0
 rate := expbranchtree(tree=tau,process=br,offset=rootval,1)
 
+"gc"
+gctree := tanhBranchTree(tree=tau,process=br,offset=rootval,traitindex=2)
+
+gctree
+
+kappa ~ exponential(0.1)
+
+rootgc ~ beta(alpha=1,beta=1)
+
+rootgc
+
+"matrix tree"
+
+matrixtree := t92GCBranchTree(tree=tau,gctree=gctree,rootgc=rootgc,kappa=kappa)
+
 "subs"
 # the sequence evolution models
-seq ~ substModel(tree=tau, Q=Q, branchRates=rate, nSites=nSites, type="DNA")
+seq ~ substModel(tree=tau, Q=matrixtree, branchRates=rate, nSites=nSites, type="DNA")
 
 seq.clamp(data)
 

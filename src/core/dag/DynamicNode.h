@@ -58,6 +58,7 @@ namespace RevBayesCore {
 }
 
 #include "RbException.h"
+#include "RbOptions.h"
 
 template<class valueType>
 RevBayesCore::DynamicNode<valueType>::DynamicNode( const std::string &n ) : TypedDagNode<valueType>( n ), touched( true ) {
@@ -150,7 +151,11 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
     
-    if ( touched ) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if ( touched )
     {
         touched = false;
     }
@@ -163,7 +168,11 @@ void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter ) {
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
     
-    if ( touched ) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if ( touched )
     {
         touched = false;
     }
@@ -174,7 +183,11 @@ void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer) {
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher ) {
     
-    if (!touched) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of dynamic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if (!touched)
     {
         // Store the current lnProb 
         touched      = true;

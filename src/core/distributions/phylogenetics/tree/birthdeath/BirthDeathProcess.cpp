@@ -185,7 +185,6 @@ std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
     std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
     
     parameters.insert( rho );
-    parameters.insert( origin );
     
     parameters.erase( NULL );
     return parameters;

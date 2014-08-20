@@ -81,10 +81,16 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         
         if (lnR >= 0.0)
         {
+#ifdef DEBUG_MCMC_DETAILS
+            std::cerr << "Accepting move" << std::endl;
+#endif
             accept();
         }
         else if (lnR < -300.0)
         {
+#ifdef DEBUG_MCMC_DETAILS
+            std::cerr << "Rejecting move" << std::endl;
+#endif
             reject();
         }
         else
@@ -94,10 +100,16 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
             double u = GLOBAL_RNG->uniform01();
             if (u < r)
             {
+#ifdef DEBUG_MCMC_DETAILS
+                std::cerr << "Accepting move" << std::endl;
+#endif
                 accept();
             }
             else
             {
+#ifdef DEBUG_MCMC_DETAILS
+                std::cerr << "Rejecting move" << std::endl;
+#endif
                 reject();
             }
         }

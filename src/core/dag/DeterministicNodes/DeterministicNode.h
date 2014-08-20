@@ -71,6 +71,7 @@ namespace RevBayesCore {
 }
 
 #include <cassert>
+#include "RbOptions.h"
 
 
 template<class valueType>
@@ -297,6 +298,10 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 {
     
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we just mark ourselves as clean
     this->touched = false;
     
@@ -348,16 +353,6 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
 
 
 
-template <class valueType>
-void RevBayesCore::DeterministicNode<valueType>::update()
-{
-    
-    function->update();
-
-}
-
-
-
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::redraw( void )
 {
@@ -379,6 +374,10 @@ void RevBayesCore::DeterministicNode<valueType>::reInitializeMe( void )
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
 {
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of Deterministic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
     
     // we need to recompute our value?!
     this->update();
@@ -439,6 +438,10 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     this->touched = true;
     
     // We need to touch the function anyways because it might not be filthy enough.
@@ -465,6 +468,15 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
 //    this->touchAffected();
 //#endif
 
+}
+
+
+template <class valueType>
+void RevBayesCore::DeterministicNode<valueType>::update()
+{
+    
+    function->update();
+    
 }
 
 
