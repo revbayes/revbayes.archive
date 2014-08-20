@@ -219,7 +219,16 @@ std::vector<double>* AbstractBirthDeathProcess::divergenceTimesSinceOrigin( void
 {
     
     // get the time of the process
-    double org = origin->getValue();
+    double org = 0.0;
+    if ( startsAtRoot )
+    {
+        org = rootAge->getValue();
+    }
+    else
+    {
+        org = origin->getValue();
+    }
+    
     double tipTime = value->getTipNode(0).getTime();
     double offset = org - tipTime;
     

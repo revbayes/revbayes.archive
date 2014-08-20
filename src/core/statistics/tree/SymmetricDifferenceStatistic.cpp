@@ -1,4 +1,4 @@
-#include "RobinsonFouldsDistanceStatistic.h"
+#include "SymmetricDifferenceStatistic.h"
 #include "TreeBipartitions.h"
 #include <algorithm>
 
@@ -7,14 +7,14 @@
 using namespace RevBayesCore;
 
 //
-//  RobinsonFouldsDistanceStatistic.cpp
+//  SymmetricDifferenceStatistic.cpp
 //  RevBayesCore
 //
 //  Created by Bastien Boussau on 16/08/14.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-RobinsonFouldsDistanceStatistic::RobinsonFouldsDistanceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2) : TypedFunction< double >( new double(0.0) ),
+SymmetricDifferenceStatistic::SymmetricDifferenceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2) : TypedFunction< double >( new double(0.0) ),
 tree1( t1 ), tree2(t2)
 {
     // add the tree parameter as a parent
@@ -25,21 +25,21 @@ tree1( t1 ), tree2(t2)
 }
 
 
-RobinsonFouldsDistanceStatistic::~RobinsonFouldsDistanceStatistic( void )
+SymmetricDifferenceStatistic::~SymmetricDifferenceStatistic( void )
 {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-RobinsonFouldsDistanceStatistic* RobinsonFouldsDistanceStatistic::clone( void ) const
+SymmetricDifferenceStatistic* SymmetricDifferenceStatistic::clone( void ) const
 {
     
-    return new RobinsonFouldsDistanceStatistic( *this );
+    return new SymmetricDifferenceStatistic( *this );
 }
 
 
-void RobinsonFouldsDistanceStatistic::update( void )
+void SymmetricDifferenceStatistic::update( void )
 {
     
     //const TopologyNode& r = tree->getValue().getRoot();
@@ -76,7 +76,7 @@ void RobinsonFouldsDistanceStatistic::update( void )
 
 
 
-void RobinsonFouldsDistanceStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void SymmetricDifferenceStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == tree1)
