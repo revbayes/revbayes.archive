@@ -27,6 +27,7 @@
 #include "PomoRateMatrixFunction.h"
 #include "RateMatrix_Pomo.h"
 #include "RbFileManager.h"
+#include "SymmetricDifferenceStatistic.h"
 #include "RootTimeSlide.h"
 #include "ScaleProposal.h"
 #include "ScreenMonitor.h"
@@ -330,8 +331,7 @@ bool TestPomoModel::run( void ) {
     DeterministicNode<double> *treeHeightStat = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
     // RF distance between reconstructed and true tree
     ConstantNode<TimeTree> *trueTree = new ConstantNode<TimeTree>( "trueTree", t );
-//    DeterministicNode<double> *spTreeRF = new DeterministicNode<double>("spTreeRF", new RobinsonFouldsDistanceStatistic(trueTree, tau) );
-
+    DeterministicNode<double> *spTreeRF = new DeterministicNode<double>("spTreeRF", new SymmetricDifferenceStatistic(trueTree, tau) );
     /* add the monitors */
     RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
