@@ -185,7 +185,8 @@ bool TestCharacterHistory::run_exp(void) {
     size_t numAreas = data[0]->getNumberOfCharacters();
     
     // tree
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( "/Users/mlandis/Desktop/test_tree.txt" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();

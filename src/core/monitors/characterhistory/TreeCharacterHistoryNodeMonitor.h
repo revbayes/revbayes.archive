@@ -12,6 +12,7 @@
 
 #include "AbstractCharacterData.h"
 #include "AbstractTreeHistoryCtmc.h"
+#include "BiogeographicTreeHistoryCtmc.h"
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -176,6 +177,21 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
             ss << characters[i]->getState();
         }
     }
+    else if (infoStr=="clado_state")
+    {
+        int cladoState = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p)->getCladogenicState(*n);
+        switch(cladoState)
+        {
+            case 0: ss << "s";
+            case 1: ss << "p";
+            case 2: ss << "a";
+        }
+    }
+    else if (infoStr=="bud_state")
+    {
+        int budState = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p)->getBuddingState(*n);
+        ss << n->getChild(budState).getIndex() << "\n";
+    }
     else if (infoStr=="state_into")
     {
         // loop over events
@@ -277,19 +293,22 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         characterStream << "[";
         
         // character history
-        characterStream << "&pa={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << "&nd={" << buildCharacterHistoryString(n,"child") << "}";
         if (!n->isTip())
         {
             characterStream << ",&ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
             characterStream << ",&ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
         }
         
+        characterStream << ",&cs=" << buildCharacterHistoryString(n,"clado_state");
+        characterStream << ",&bn=" << buildCharacterHistoryString(n,"bud_state");
+        
         // # events
         characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";
         characterStream << ",&state_betw={" << buildCharacterHistoryString(n,"state_betw") << "}";
         
         // event history
-        characterStream << ",&events=[" << buildCharacterHistoryString(n,"events") << "]";
+        characterStream << ",&events={" << buildCharacterHistoryString(n,"events") << "}";
         
         // ... whatever else
         characterStream << "]";

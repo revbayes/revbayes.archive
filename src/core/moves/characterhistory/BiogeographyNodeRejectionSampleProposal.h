@@ -422,17 +422,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
         proposedTrunkNode = storedTrunkNode;
     }
     
-    // propose new cladogenic state
-    storedCladogenicState = p->getCladogenicState(*proposedTrunkNode);
-    double u = GLOBAL_RNG->uniform01() * 1.5;
-    if (u < 0.5 || p->useCladogenicEvents() == false)
-        proposedCladogenicState = 0;
-    else if (u < 1.0)
-        proposedCladogenicState = 1;
-    else if (u < 1.5)
-        proposedCladogenicState = 2;
-    
-    
+    // resample all characters for now...
     if (sampleSiteIndexSet)
     {
         siteIndexSet.clear();
@@ -497,10 +487,32 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
         }
     }
     
-//    std::cout << "before\n";
-//    p->getHistory(*node).print();
-//    p->getHistory(*storedTrunkNode).print();
-//    p->getHistory(*storedBudNode).print();
+    
+    // propose new cladogenic state
+    storedCladogenicState = p->getCladogenicState(*proposedTrunkNode);
+    
+    bool nodeHasOneArea = true;
+    int numOn = 0;
+    for (size_t i = 0; i < nodeState.size(); i++)
+    {
+        if (nodeState[i]->getState() == 1)
+            numOn++;
+        if (numOn > 1)
+        {
+            nodeHasOneArea = false;
+            break;
+        }
+    }
+    
+    double u = GLOBAL_RNG->uniform01() * 1.5;
+    if (u < 0.5 || p->useCladogenicEvents() == false || nodeHasOneArea)
+        proposedCladogenicState = 0;
+    else if (u < 1.0)
+        proposedCladogenicState = 1;
+    else if (u < 1.5)
+        proposedCladogenicState = 2;
+    
+
 }
 
 

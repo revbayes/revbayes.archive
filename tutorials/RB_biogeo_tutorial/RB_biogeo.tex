@@ -754,7 +754,7 @@ In this case, you may want to re-run the analysis with different arguments for t
 This tab-delimited file contains parameter samples from the posterior distribution.
 As with the {\tt ScreenMonitor}, columns are model or parameter values and rows are MCMC cycles.
 
-\begin{snugshade}
+\begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
 0	-50.3513	-50.7006	0.349325	0.249602	0.141818	0.0116311
@@ -766,15 +766,47 @@ Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
 
 ...
 \end{lstlisting}
-\end{snugshade}
+\end{framed}
 
 \subsection{Biogeographic event counts from {\tt mnCharHistoryNewick}}
 
+\begin{framed}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
+Iteration	Posterior	Likelihood	Prior	t0	t1	b0_s0	b0_s1	b1_s0	b1_s1	b2_s0	b2_s1	...
+0		-89.5384	-88.3926	-1.1458	24	24	1	0	1	1	2	2	...
+10		-72.5159	-73.7833	1.26734	16	17	1	0	1	1	1	1	...
+20		-61.3417	-63.5838	2.24210	14	12	0	0	1	1	1	1	...
+30		-68.5929	-69.9865	1.39352	15	16	1	1	0	0	0	0	...
+40		-58.2748	-59.1617	0.88684	11	13	0	0	0	0	0	0	...
+50		-79.7814	-81.0356	1.25418	21	19	3	2	1	1	0	0	...
+
+...
+\end{lstlisting}
+\end{framed}
 
 \subsection{Biogeographic event histories from {\tt mnCharHistoryNewick}}
 
+\begin{framed}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
+Iteration	Posterior	Likelihood	Prior	Tree
+0	-89.5384	-88.3926	-1.1458	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:0} ...
+10	-72.5159	-73.7833	1.26734	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
+20	-61.3417	-63.5838	2.24210	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
+30	-68.5929	-69.9865	1.39352	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
+40	-58.2748	-59.1617	0.88684	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:0} ...
+50	-79.7814	-81.0356	1.25418	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:1} ...
 
+...
+\end{lstlisting}
+\end{framed}
 
+Each MCMC cycle records the 
+
+\begin{snugshade}
+\begin{lstlisting}
+[&pa={0,1,1,0},&ch0={0,1,1,0},&ch1={0,0,1,0},&state_into={0:1,1:2},&state_betw={0:{0:0,1:2},1:{0:1,1:0}},&events=[{s:1,a:1.4118,t:0.0585102,i:1},{s:0,a:1.49565,t:0.226502,i:0},{s:1,a:1.5922,t:0.419948,i:2}]]
+\end{lstlisting}
+\end{snugshade}
 
 \subsection{New Hampshire extended format file (\texttt{my\_run.nhx})}
 
