@@ -129,7 +129,12 @@ bool TestCoala::run( void ) {
     
     std::vector<std::string> names = data[0]->getTaxonNames();
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( 2.0 ) );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, lambda, mu, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, lambda, mu, rho, "uniform", "survival", taxa, std::vector<Clade>()) );
         
     // and the character model
     GeneralBranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<AminoAcidState, TimeTree>(tau, 20, true, data[0]->getNumberOfCharacters());

@@ -70,7 +70,12 @@ bool TestNNI::run( void ) {
     
     
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( 2.0 ) );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", 4, names, std::vector<Clade>()) );
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, div, turn, rho, "uniform", "survival", taxa, std::vector<Clade>()) );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     
