@@ -76,35 +76,6 @@ for (i in 1:n_genes) {
 }
 
 
-taxaFileNames <- ["data/Cettiidae_cytb_taxon_data.txt", "data/Cettiidae_G3P_taxon_data.txt", "data/Cettiidae_myo_taxon_data.txt", "data/Cettiidae_ODC_taxon_data.txt"]
-
-
-# We assume a single effective population size for the entire species tree.
-# We could also assume different parameters for each branch of the species tree.
-Ne ~ gamma(shape=1.0,rate=1.0)
-moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
-
-for (i in 1:n_genes) {
-
-   taxa <- readTaxonData(taxaFileNames[i])
-
-   # The gene tree from the multispecies coalescent process
-   # Note that if Ne had been a vector of effective population sizes, 
-   # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
-
-   # moves on the tree
-   moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
-   moves[moveIndex++] <- mvFNPR(geneTree[i], 1.0)
-   moves[moveIndex++] <- mvSubtreeScale(geneTree[i], 5.0)
-   moves[moveIndex++] <- mvTreeScale(geneTree[i], 1.0, true, 3.0)
-   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTree[i], 10.0)
-   moves[moveIndex++] <- mvRootTimeSlide(geneTree[i], 1.0, true, 3.0)
-
-}
-
-
-
 #######################
 # Substitution Models #
 #######################
@@ -305,5 +276,42 @@ moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
 moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
 moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
 moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
+
+
+
+
+
+
+
+
+
+
+taxaFileNames <- ["data/Cettiidae_cytb_taxon_data.txt", "data/Cettiidae_G3P_taxon_data.txt", "data/Cettiidae_myo_taxon_data.txt", "data/Cettiidae_ODC_taxon_data.txt"]
+
+
+# We assume a single effective population size for the entire species tree.
+# We could also assume different parameters for each branch of the species tree.
+Ne ~ gamma(shape=1.0,rate=1.0)
+moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
+
+for (i in 1:n_genes) {
+
+   taxa <- readTaxonData(taxaFileNames[i])
+
+   # The gene tree from the multispecies coalescent process
+   # Note that if Ne had been a vector of effective population sizes, 
+   # allowing 1 parameter per branch of the species tree, the same line would work.
+   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+
+   # moves on the tree
+   moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
+   moves[moveIndex++] <- mvFNPR(geneTree[i], 1.0)
+   moves[moveIndex++] <- mvSubtreeScale(geneTree[i], 5.0)
+   moves[moveIndex++] <- mvTreeScale(geneTree[i], 1.0, true, 3.0)
+   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTree[i], 10.0)
+   moves[moveIndex++] <- mvRootTimeSlide(geneTree[i], 1.0, true, 3.0)
+
+}
+
 
 
