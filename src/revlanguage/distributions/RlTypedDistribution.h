@@ -49,7 +49,7 @@ namespace RevLanguage {
         
         
     protected:
-        TypedDistribution<valueType>(void);                                                                                                 //!< Basic constructor
+        TypedDistribution<rlType>(void);                                                                                                 //!< Basic constructor
         
     };
     

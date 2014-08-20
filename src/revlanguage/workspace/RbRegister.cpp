@@ -264,6 +264,7 @@
 #include "Func_expBranchTree.h"
 #include "Func_tanhBranchTree.h"
 #include "Func_t92GCBranchTree.h"
+#include "Func_mrcaIndex.h"
 #include "Func_phyloRateMultiplier.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
@@ -864,6 +865,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Evolution-related functions (in folder "functions/evolution") */
         addFunction( "aveRateOnBranch",             new Func_averageRateOnBranch()         );
         addFunction( "clade",                       new Func_clade()                    );
+        addFunction( "mrcaIndex",                   new Func_mrcaIndex()                   );
         addFunction( "expBranchTree",               new Func_expBranchTree()            );
         addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
         addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
