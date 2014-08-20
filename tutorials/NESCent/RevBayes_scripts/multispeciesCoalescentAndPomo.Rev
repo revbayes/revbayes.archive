@@ -29,7 +29,7 @@
 # and the model of sequence evolution (GTR+relaxed clock+ASRV in our case instead of JC69 in their case).
 
 #For conveniency, we define a data folder in which we will save the output of our work.
-dataFolder="/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/test/"
+dataFolder<-"/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/test/"
 
 
 # Let's simulate a species tree with 10 taxa, 10 gene trees, 10 alleles per species, and along each gene tree one gene alignment 500 bases long
@@ -56,7 +56,8 @@ tree_height <- 0.008
 # Species tree from birth-death process
 speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
 
-
+# Making a backup for future reference
+trueSpeciesTree <- speciesTree
 
 ###########################################
 # Gene-Tree multispecies coalescent model #
@@ -93,6 +94,9 @@ for (i in 1:(n_genes-1)) {
 #The distances show that the gene trees are very dissimilar, because the maximum symmetric difference is 
 #2*(number of internal branches), which is equal to:
 maxDiff <- 2 * (n_species*n_alleles - 2)
+
+# Making a backup for future reference
+trueGeneTrees <- geneTrees
 
 
 #######################
@@ -154,7 +158,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
 }
 
 
@@ -175,7 +179,7 @@ for (i in 1:n_genes) {
 
 # Saving the gene alignments
 for (i in 1:n_genes) {
-	write(alns[i], filename=dataFolder+"alignment_"+i)
+	writeFasta(alns[i], filename=dataFolder+"alignment_"+i+".fasta")
 }
 
 
@@ -184,6 +188,50 @@ for (i in 1:n_genes) {
 ####### Performing inference #########
 ######################################
 ######################################
+
+
+
+############################################
+# Clamping the model to our simulated data #
+############################################
+for (i in 1:n_genes) {
+	alns[i].clamp(alns[i])
+}
+
+
+#####################################################
+# Transforming constant nodes into stochastic nodes #
+#####################################################
+
+# Now the parameters of the birth-death process are not fixed, but are a random variable (aka a stochastic node)
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+org ~ unif(0,100.0)
+
+
+####################
+# Setting up moves #
+####################
+
+# We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, 
+# the parameter Ne, the rates on the gene trees, the parameters of the substitution models.
+
+moveIndex <- 0
+
+
+# moves for the birth-death parameters
+moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
+moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
+moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
+
+
+# moves on the tree
+moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
+moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
+moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
+moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
+moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 
 
 
