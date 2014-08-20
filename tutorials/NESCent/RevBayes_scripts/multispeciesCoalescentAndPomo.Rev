@@ -72,8 +72,21 @@ for (i in 1:n_genes) {
    # The gene tree from the multispecies coalescent process
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
+
+#For fun, let's look at the symmetric differences between the simulated gene tree topologies:
+ndiff <- 1
+for (i in 1:(n_genes-1)) {
+	for (j in (i+1):n_genes) {
+		diff[ndiff]<-symDiff (geneTrees[i], geneTrees[j]) 
+		ndiff <- ndiff+1
+	}
+}
+
+#The distances show that the gene trees are very dissimilar, because the maximum symmetric difference is 
+#2*(number of internal branches), which is equal to:
+maxDiff <- 2 * (n_species*n_alleles - 2)
 
 
 #######################
@@ -85,11 +98,9 @@ for (i in 1:n_genes) {
 for (i in 1:n_genes) {
   er_prior[i] <- v(1,1,1,1,1,1)
   er[i] ~ dnDirichlet(er_prior[i])
-  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
 
   sf_prior[i] <- v(1,1,1,1)
   sf[i] ~ dnDirichlet(sf_prior[i])
-  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
 
   Q[i] := gtr(er[i],sf[i]) 
 
@@ -103,12 +114,11 @@ for (i in 1:n_genes) {
 # Here we assume a simple relaxed clock model, but which takes quite a few parameters.
 # Each branch of each gene tree has its own rate parameter.
 # Those rate parameters are drawn independently from an exponential distribution.
-# This makes it possible to have huge differences in rates of evolution between neighbouring branches, 
+# This makes it possible to have large differences in rates of evolution between neighbouring branches, 
 # and also to have huge differences between rates associated to a given branch in two different gene families. 
 
 for (i in 1:n_genes) {
   branchRates[i] ~ exponential(1.0)
-  moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
 }
 
 
@@ -119,17 +129,15 @@ for (i in 1:n_genes) {
 
 # As for the substitution model and the clock model above, 
 # we assume that each gene family has its own set of parameters. 
+# Rate variation across sites is handled by a discretized Gamma distribution.
 
 for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
   norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
-  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
 
 }
-
-
 
 
 ###################
@@ -313,5 +321,50 @@ for (i in 1:n_genes) {
 
 }
 
+
+
+
+
+
+
+
+
+
+
+for (i in 1:n_genes) {
+  er_prior[i] <- v(1,1,1,1,1,1)
+  er[i] ~ dnDirichlet(er_prior[i])
+  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
+
+  sf_prior[i] <- v(1,1,1,1)
+  sf[i] ~ dnDirichlet(sf_prior[i])
+  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
+
+  Q[i] := gtr(er[i],sf[i]) 
+
+}
+
+
+
+
+for (i in 1:n_genes) {
+  branchRates[i] ~ exponential(1.0)
+  moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
+}
+
+
+
+
+
+
+
+for (i in 1:n_genes) {
+
+  shape_prior[i] <- 0.05 
+  shape[i] ~ dnExponential( shape_prior[i] )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
+
+}
 
 
