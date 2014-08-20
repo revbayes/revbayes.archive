@@ -121,6 +121,7 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
         else
             o << "_dagNode      = <" << this << ">" << std::endl;
     }
+    o << "_dagType      = Deterministic Rev function node" << std::endl;
     
     if ( verbose == true )
     {
