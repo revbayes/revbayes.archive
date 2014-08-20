@@ -15,15 +15,15 @@ using namespace RevBayesCore;
 
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
-parent( NULL ),
-tree( NULL ),
-name(""),
-index(indx),
-interiorNode( false ),
-rootNode( true ),
-tipNode( true ),
-newick(""),
-newickNeedsRefreshing( true )
+    parent( NULL ),
+    tree( NULL ),
+    name(""),
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
+    newick(""),
+    newickNeedsRefreshing( true )
 {
     
 }
@@ -31,15 +31,15 @@ newickNeedsRefreshing( true )
 
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
-parent( NULL ),
-tree( NULL ),
-name(n),
-index(indx),
-interiorNode( false ),
-rootNode( true ),
-tipNode( true ),
-newick(""),
-newickNeedsRefreshing( true )
+    parent( NULL ),
+    tree( NULL ),
+    name(n),
+    index(indx),
+    interiorNode( false ),
+    rootNode( true ),
+    tipNode( true ),
+    newick(""),
+    newickNeedsRefreshing( true )
 {
     
 }
@@ -150,7 +150,8 @@ void TopologyNode::addBranchParameter(std::string const &n, const std::vector<do
 
 
 /** Add a child node. We own it from here on. */
-void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp) {
+void TopologyNode::addChild(TopologyNode* c, bool forceNewickRecomp)
+{
     
     // add the child to our internal vector
     children.push_back(c);
@@ -185,9 +186,11 @@ void TopologyNode::addNodeParameter(std::string const &n, double p)
 }
 
 
-void TopologyNode::addParameter(std::string const &n, const std::vector<double> &p, bool internalOnly) {
+void TopologyNode::addParameter(std::string const &n, const std::vector<double> &p, bool internalOnly)
+{
     
-    if ( !internalOnly || !isTip()  ) {
+    if ( !internalOnly || !isTip()  )
+    {
         std::stringstream o;
         o << n << "=" << p[index];
         std::string comment = o.str();
@@ -195,7 +198,8 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
         
         newickNeedsRefreshing = true;
         
-        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it) {
+        for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
+        {
             (*it)->addParameter(n, p, internalOnly);
         }
     }
@@ -203,7 +207,8 @@ void TopologyNode::addParameter(std::string const &n, const std::vector<double> 
 
 
 /* Build newick string */
-std::string TopologyNode::buildNewickString( void ) {
+std::string TopologyNode::buildNewickString( void )
+{
     
     // create the newick string
     std::stringstream o;
@@ -255,7 +260,8 @@ std::string TopologyNode::buildNewickString( void ) {
             o << "]";
         }
     }
-    else {
+    else
+    {
         o << "(";
         for (size_t i=0; i<(getNumberOfChildren()-1); i++)
         {
@@ -307,7 +313,8 @@ std::string TopologyNode::buildNewickString( void ) {
 }
 
 
-void TopologyNode::clearBranchParameters( void ) {
+void TopologyNode::clearBranchParameters( void )
+{
     
     branchComments.clear();
     if ( !isTip()  )
@@ -322,14 +329,16 @@ void TopologyNode::clearBranchParameters( void ) {
 
 
 /** Clone function */
-TopologyNode* TopologyNode::clone(void) const {
+TopologyNode* TopologyNode::clone(void) const
+{
     
     return new TopologyNode(*this);
 }
 
 
 
-const std::string& TopologyNode::computeNewick(void) {
+const std::string& TopologyNode::computeNewick(void)
+{
     
     // check if we need to recompute
     if ( newickNeedsRefreshing )
@@ -343,7 +352,8 @@ const std::string& TopologyNode::computeNewick(void) {
 
 
 /* Build newick string */
-std::string TopologyNode::computePlainNewick( void ) const {
+std::string TopologyNode::computePlainNewick( void ) const
+{
     
     // test whether this is a internal or external node
     if (tipNode)
@@ -367,7 +377,8 @@ std::string TopologyNode::computePlainNewick( void ) const {
 }
 
 
-bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const {
+bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
+{
     
     std::vector<std::string> myTaxa;
     std::vector<std::string> yourTaxa;
@@ -469,7 +480,8 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
 
 
 
-bool TopologyNode::equals(const TopologyNode& node) const {
+bool TopologyNode::equals(const TopologyNode& node) const
+{
     
     if (this == &node)
     {
@@ -513,7 +525,8 @@ bool TopologyNode::equals(const TopologyNode& node) const {
 }
 
 
-void TopologyNode::flagNewickRecomputation( void ) {
+void TopologyNode::flagNewickRecomputation( void )
+{
     
     if ( parent != NULL && !newickNeedsRefreshing )
     {
@@ -530,7 +543,9 @@ void TopologyNode::flagNewickRecomputation( void ) {
  * We internally store the age so can return it. However, if we invalidated the age ( age = Inf ),
  * then we need to compute the age from the time.
  */
-double TopologyNode::getAge( void ) const {
+double TopologyNode::getAge( void ) const
+{
+
     return tree->getAge(index);
 }
 
@@ -539,7 +554,9 @@ double TopologyNode::getAge( void ) const {
  * Get the branch length.
  * We comput the difference of my time and my parents time.
  */
-double TopologyNode::getBranchLength( void ) const {
+double TopologyNode::getBranchLength( void ) const
+{
+
     return tree->getBranchLength(index);
 }
 
@@ -879,6 +896,7 @@ void TopologyNode::removeTree(Tree *t)
     // only remove the tree if we had a pointer stored to it
     if ( tree == t )
     {
+//        std::cerr << "Removing tree <" << t << "> from topology node " << name << " <" << this << "> " << std::endl;
         tree = NULL;
     }
     
@@ -934,6 +952,7 @@ void TopologyNode::setTree(Tree *t) {
     tree = t;
     for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i)
     {
+//        std::cerr << "Setting tree for topology node " << name << " < " << this << "> to <" << t << ">" << std::endl;
         (*i)->setTree( t );
     }
     

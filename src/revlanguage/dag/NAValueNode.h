@@ -190,10 +190,16 @@ template<class rlType>
 void NAValueNode<rlType>::printStructureInfo(std::ostream &o, bool verbose) const
 {
     if ( verbose )
+    {
         o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
     else
-        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
     o << "_dagType      = NA value DAG node" << std::endl;
     
     if ( verbose )
@@ -202,12 +208,12 @@ void NAValueNode<rlType>::printStructureInfo(std::ostream &o, bool verbose) cons
     if ( verbose )
     {
         o << "_parents      = ";
-        this->printParents(o, 16, 70);
+        this->printParents( o, 16, 70, verbose );
         o << std::endl;
     }
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren( o, 16, 70, verbose );
     o << std::endl;
 }
 

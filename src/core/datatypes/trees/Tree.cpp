@@ -51,6 +51,7 @@ Tree::Tree(const Tree& t) :
     }
     
     // set the tree for each node
+//    std::cerr << "In copy constructor: Setting tree to <" << this << "> for topology <" << topology << ">" << std::endl;
     topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
 }
 
@@ -68,6 +69,7 @@ Tree::~Tree(void)
         // remove the tree for each node
         // TODO: Why are we doing this? Apparently we need at least to check that
         // there are some nodes to delete because the topology can be empty. -- Fredrik
+//        std::cerr << "In destructor: Removing tree <" << this << "> from topology <" << topology << ">" << std::endl;
         if ( topology->getNumberOfNodes() > 0 )
             topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
     }
@@ -103,6 +105,7 @@ Tree& Tree::operator=(const Tree &t) {
         }
         
         // set the tree for each node
+//        std::cerr << "In assignment: Setting tree <" << this << "> for topology <" << topology << ">" << std::endl;
         topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
     }
     
@@ -279,10 +282,12 @@ void Tree::setTopology(const Topology *t, bool owns)
         // only delete if we own it
         if ( ownsTopology )
         {
+//            std::cerr << "Deleting tree <" << this << "> from topology <" << topology << ">" << std::endl;
             delete topology;
         }
         else
         {
+//            std::cerr << "In setTopology: Removing tree <" << this << "> from topology <" << topology << ">" << std::endl;
             // just remove the tree for each node
             topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );
         }
@@ -295,6 +300,7 @@ void Tree::setTopology(const Topology *t, bool owns)
     topology = const_cast<Topology*>( t );
     
     // set the tree for each node
+//    std::cerr << "In setTopology: Setting tree <" << this << "> for topology <" << topology << ">" << std::endl;
     topology->getNodes()[topology->getNumberOfNodes()-1]->setTree( this );
     
     resizeElementVectors( t->getNumberOfNodes() );

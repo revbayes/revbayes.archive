@@ -45,6 +45,7 @@ namespace RevLanguage {
         
         // members        
         RevPtr<const Variable>                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const Variable>                              rootAge;                                                                             //!< The time of the process since the origin
         RevPtr<const Variable>                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const Variable>                              numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
         RevPtr<const Variable>                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
