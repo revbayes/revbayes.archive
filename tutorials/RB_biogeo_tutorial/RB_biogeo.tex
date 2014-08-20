@@ -315,7 +315,7 @@ This procedure is not part of the tutorial, but you should be aware that area de
 \noindent \\ \impmark  Open the file \texttt{examples/hawaii\_dynamic.atlas.txt}.
 
 \begin{framed}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 {
   "name":"HawaiianArchipelago10my",
   "epochs":
@@ -324,22 +324,29 @@ This procedure is not part of the tutorial, but you should be aware that area de
     "start_age":5.5,
     "end_age":3.7,
     "areas":
-      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50,  "dispersalValues": [ 1,0,0,0 ] },
+      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50, "dispersalValues": [ 1,0,0,0 ] },
        { "name": "Oahu",   "latitude":21.47, "longitude": -157.98, "dispersalValues": [ 0,0,0,0 ] },
        { "name": "Maui",   "latitude":20.80, "longitude": -156.33, "dispersalValues": [ 0,0,0,0 ] },
        { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 0,0,0,0 ] }]
   },
-  ... epoch2 and epoch3 omitted ...
+  {
+    "name":"epoch2",
+    ...
+  },
+  {
+    "name":"epoch3",
+    ...
+  },
   {
     "name":"epoch4",
     "start_age":0.5,
     "end_age":0.0,
     "areas":
-      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50,  "dispersalValues": [ 1,1,1,1 ] },
+      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50, "dispersalValues": [ 1,1,1,1 ] },
        { "name": "Oahu",   "latitude":21.47, "longitude": -157.98, "dispersalValues": [ 1,1,1,1 ] },
        { "name": "Maui",   "latitude":20.80, "longitude": -156.33, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 1,1,1,1 ] }]  }
-  ]
+       { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 1,1,1,1 ] }]
+  }]
 }
 \end{lstlisting}
 \end{framed}
@@ -686,9 +693,9 @@ For example, from the RevBayes session analyzing the simple one-rate model
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file=out_fp+out_pp_fn)
+RevBayes > ss <- steppingStoneSampler(file=out_fn)
 RevBayes > ss.marginal() 
-RevBayes > ps <- pathSampler(file=out_fp+ouf_pp_fn)
+RevBayes > ps <- pathSampler(file=out_fp+out_fn)
 RevBayes > ps.marginal() 
 \end{lstlisting}
 \end{snugshade}
@@ -697,17 +704,7 @@ For a given model, the path sampling and stepping stone sampling methods should 
 Values should be within one log likelihood unit of one another.
 If the values are extremely different, this may indicate {\tt powerPosterior} should be re-run with a larger number of {\tt cats}.
 We chose {\tt cats=30} which should suffice, and we see no problem.
-Then from the complex two-rate model RevBayes session
-
-\begin{snugshade}
-\begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file=out_fp+out_pp_fn)
-RevBayes > ss.marginal() 
-RevBayes > ps <- pathSampler(file=out_fp+out_pp_fn)
-RevBayes > ps.marginal() 
-\end{lstlisting}
-\end{snugshade}
-
+Then from the complex two-rate model RevBayes session using the same commands as above.
 Finally, we can compute the Bayes factor, which is simply the ratio of marginal likelihoods.
 
 \begin{snugshade}
@@ -723,218 +720,61 @@ Similar to frequentist interpretations of significance for p-values, there is no
 
 \section{Output}
 
-\subsection{Screen}
+\subsection{Sampled parameters from {\tt ScreenMonitor}}
 
-There are three types of MCMC proposals, the first being parameter proposals that act upon the model parameters, $\lambda_0$, $\lambda_1$, and $\beta$.
-The second type of proposals act upon our sampling parameters, $\lambda^*_0$ and $\lambda^*_1$, which we use to sample range histories but do not directly affect our model likelihood.
-The last type, ancestral range history updates, occur in very high proportion to all other updates.
+The {\tt mnScreen} monitor reports model parameter values to the screen, where each row corresponds to the current accepted MCMC state, and each column reports some model feature, such as the model likelihood or a parameter value.
+Every 20 iterations, this monitor re-prints the column headers.
 
-Recall from the Introduction that this is necessary to effectively integrate over all ancestral ranges of moderate to high posterior probability.
-The screen output reports whether the proposal for that iteration was accepted or rejected.
-If you notice the MCMC is rejecting most proposals, it will probably not produce an accurate approximation of the posterior.
-Pay particular attention to range history proposals.
-Range history proposals tend to introduce very small differences to the likelihood so they are generally accepted easily.
-If you notice very few range history proposals are accepted, you will improve the acceptance probability by reducing the \texttt{areaProposalTuner} value.
+\begin{snugshade}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
+RevBayes > my_mcmc.run(generations=10000)
+Running MCMC simulation for 10000 iterations
+The simulator uses 7 different moves in a random
+move schedule with 228 moves per iteration
 
-\subsection{Sampled parameters (\texttt{my\_run.parameters.txt})}
+Iteration    |      Posterior   |     Likelihood   |          Prior   |             dp   |         glr[1]   |         glr[2]
+------------------------------------------------------------------------------------------------------------------------------
+0            |       -50.3513   |       -50.7006   |       0.349325   |      0.0116311   |       0.249602   |       0.141818
+10           |       -78.7372   |       -72.2327   |       -6.50447   |      0.0245285   |       0.475911   |       0.251751
+20           |       -70.4544   |       -68.9325   |       -1.52188   |      0.0275606   |       0.367347   |        0.10967
+30           |        -52.659   |       -51.6395   |       -1.01953   |      0.0164911   |        0.40243   |      0.0550032
+40           |       -48.2586   |       -49.6759   |         1.4173   |      0.0380796   |       0.275415   |       0.049383
+50           |       -51.7166   |       -50.9097   |      -0.806903   |       0.050249   |        0.28971   |       0.140213
 
-This tab-delimited file contains the parameters sampled at regular intervals from the MCMC (set by \texttt{parameterSampleFrequency}).
-Open the \texttt{my\_run.parameters.txt} in Tracer.
-First, we see the effective sample size is only moderate for $50 \times 10^6$ cycles when sampling every 1000 cycles.
-This is because the vast majority of MCMC updates are range history updates.
-
-\noindent \\ \impmark  Highlight the ``gain'' and ``loss'' parameters then click Joint-Marginal.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=2.5in]{figures/loss_gain}
-\end{figure}
-
-The Joint-Marginal of rate of area gain and loss parameters shows strong positive correlation.
-This correlation arises partly because the proportion of occupied areas is greatly influenced by the ratio of rate of area gain to rate of area loss.
-For example, when the rates of area gain and loss are equal, range sizes tend to equal half the total number of areas.
-
-\noindent \\ \impmark Highlight the ``loss'' and ``numLoss'' parameters then click Joint-Marginal. Do the same for ``gain'' and ``numGain''. \\
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=2.5in]{figures/loss_numloss}
-\end{figure}
-
-Again, we see strong positive correlation.
-This is reassuring, since we expect to see many sampled range gain and loss events when the corresponding rates are high.
-
-\noindent \\ \impmark  Highlight the ``gain'' and ``distP'' parameters then click Joint-Marginal. Do the same for ``loss'' and ``distP''.\\
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=2.5in]{figures/gain_distp}
-\end{figure}
-
-For the simulated data we don't see any strong correlation between either rate of loss or gain and the distance power parameter, but this is not always the case.
-Large distance power parameters sometimes results in rates of area gain and loss being underestimated in value, resulting in a mild negative correlation.
-
-\noindent \\ \impmark Highlight all parameters and click Estimates.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=2.5in]{figures/hpd}
-\end{figure}
-
-This gives you a handy selection of summary statistics.
-Of course we typically don't know the true parameter values, but we should be reassured to learn the true parameter values for gain, loss, and distP (0.1, 0.7, and 4.0, respectively) reside within their corresponding 95\% HPD Intervals.
-It's also interesting to note that the distance power parameter has a much wider interval that the rate parameters, suggesting there is less information in the data for this parameter.
-
-%The Gelman-Rubin convergence diagnostic tests whether two MCMC analyses converged to the same distribution (e.g. the posterior).
-%It does this by computing potential scale reduction factors (PSRFs) for all parameters, which compares the within-chain parameter variance to the between-chain parameter variance.
-%There's no hard rule, but PSRF values close to 1.0 show convergence while PSRF values greater than 1.1 raise concern.
-%Below, we can quickly compute the PSRFs for \texttt{my\_run.parameters.txt} and \texttt{my\_other\_run.parameters.txt} using the R package, coda.
-%
-%\noindent \\ \impmark Open the R console and enter the following commands.
-%\begin{framed}
-%\begin{lstlisting}
-%> install.packages('coda')
-%...
-%> library('coda')
-%> run1 = mcmc(read.table('my_run.parameters.txt',header=T))
-%> run2 = mcmc(read.table('my_other_run.parameters.txt',header=T))
-%> gelman.diag(mcmc.list(run1,run2))
-%>
-%Potential scale reduction factors:
-%
-%        Point est. Upper C.I.
-%n              NaN        NaN
-%lnL           1.00       1.00
-%gain          1.01       1.01
-%loss          1.00       1.01
-%gain.p        1.00       1.01
-%loss.p        1.00       1.01
-%distP         1.00       1.00
-%numGain       1.01       1.02
-%numLoss       1.00       1.01
-%
-%Multivariate psrf
-%
-%1
-%\end{listing}
-%\end{framed}
-
-\subsection{Sampled range histories (\texttt{my\_run.area\_states.txt})}
-
-This file reports the stochastically mapped range histories sampled every \texttt{historySampleFrequency} iterations.
-From this we can compute the {\it marginal} posterior probability of any given area being occupied simply by finding the frequency the area was marked present (1), which we'll call the {\it marginal area posterior probability}.
-You may be interested in not only the marginal posterior of area occupancy, but the marginal posterior of the joint distribution of areas, which we'll call the {\it marginal range posterior probability}.
-For example, say your range contains 4 areas, and taxon A is present only in areas 1 and 2 for half of all MCMC samples and only present in areas 3 and 4 for the remaining half.
-The marginal area posterior range would report a 0.5 probability of any given area being occupied.
-The marginal range posterior would give you richer information, that the range was either composed of areas 1 and 2 or of 3 and 4, but never 1 and 3, 1 and 4, 2 and 3, or 2 and 4.
-
-Here we will use Python to report the marginal range probability for the range belonging to the most recent common ancestor (MRCA) shared by the species named \texttt{t1} and \texttt{t2} ordered by their posterior probabilities. We'll call this node MRCA(t1,t5).
-
-\noindent \\ \impmark Change directories to \texttt{examples}.
-
-\begin{framed}
-\begin{lstlisting}
-> cd examples
+...
 \end{lstlisting}
-\end{framed}
+\end{snugshade}
 
-\noindent \\ \impmark Open the Python console and enter the following commands.
+For the complex 2-rate model, our three model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively.
+If you notice the value of some parameter is rarely updated from iteration to iteration, the MCMC is probably mixing poorly therefore it's not generating samples from the posterior distribution (the MCMC's stationary distribution).
+In this case, you may want to re-run the analysis with different arguments for the {\tt Move} object assigned to that parameter.
 
-\begin{framed}
-\begin{lstlisting}
->>> from pp_range import *
->>> range_dict = make_range_dict('my_run.area_states.txt', fburn=0.25)
->>> area_coords = get_area_coords('my_geo.txt')
->>> idx_list = get_node_idx_list('my_run.area_states.txt')
->>> node_key = get_node_key('my_tree.txt', 't1', 't5', idx_list)
->>> best_ranges = get_best_ranges(range_dict, node_key)
->>> prob_area_pairs = make_posterior_area_pairs(range_dict, node_key)
->>> best_area_pairs = get_best_area_pairs(prob_area_pairs)
->>> best_areas = get_best_area_pairs(prob_area_pairs, show_marginal=True)
+\subsection{Sampled parameters from {\tt ModelMonitor}}
+
+This tab-delimited file contains parameter samples from the posterior distribution.
+As with the {\tt ScreenMonitor}, columns are model or parameter values and rows are MCMC cycles.
+
+\begin{snugshade}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
+Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
+0	-50.3513	-50.7006	0.349325	0.249602	0.141818	0.0116311
+10	-78.7372	-72.2327	-6.50447	0.475911	0.251751	0.0245285
+20	-70.4544	-68.9325	-1.52188	0.367347	0.109670	0.0275606
+30	-52.6590	-51.6395	-1.01953	0.402430	0.0550032	0.0164911
+40	-48.2586	-49.6759	1.417300	0.275415	0.049383	0.0380796
+50	-51.7166	-50.9097	-0.806903	0.289710	0.140213	0.050249
+
+...
 \end{lstlisting}
-\end{framed}
+\end{snugshade}
 
-\noindent \\ \impmark To list the five most probable ranges for MRCA(t1,t5), type
-\begin{framed}
-\begin{lstlisting}
->>> best_ranges[0:5]
-[('000000000000000000000000001111000', 0.022660623833644103),
- ('000000000000000000000000001011000', 0.01759530791788836),
- ('000000000000000000000000011111000', 0.01652892561983452),
- ('000000000000000000000000011011000', 0.0146627565982403),
- ('000000000000000000010000001111000', 0.01226339642761916)]
+\subsection{Biogeographic event counts from {\tt mnCharHistoryNewick}}
 
->>> sum([p[1] for p in best_ranges[0:5]])
-0.08371101039722645
-\end{lstlisting}
-\end{framed}
 
-The second column gives the probability of the entire MRCA(t1,t5) range shown in the first column.
-There's a fair deal of uncertainty the MRCA(t1,t5) range reconstruction, since these best five ranges only account for about 0.08 of the probability.
+\subsection{Biogeographic event histories from {\tt mnCharHistoryNewick}}
 
-\noindent \\ \impmark To list the five most probable area co-occurrences in the MRCA(t1,t5) range, type
-\begin{framed}
-\begin{lstlisting}
->>> best_area_pairs[0:5]
-[((26, 29), 0.60650493201812505),
- ((26, 28), 0.57717941882164425),
- ((28, 29), 0.54385497200746136),
- ((26, 27), 0.42282058117834981),
- ((27, 28), 0.41242335377232475)]
- 
->>> best_areas[0:5]
-[((26, 26), 0.78459077579311998),
- ((29, 29), 0.77179418821647394),
- ((28, 28), 0.74193548387096575),
- ((26, 29), 0.60650493201812505),
- ((26, 28), 0.57717941882164425)]
 
-\end{lstlisting}
-\end{framed}
 
-Note the values in \texttt{best\_areas} are the marginal area probabilities.
-These correspond to the diagonal entries in the heatmap below and to the values in \texttt{my\_run.area\_probs.txt} and \texttt{my\_run.nhx}.
-
-\noindent \\ \impmark To visualize these probabilities as a heatmap, type
-\begin{framed}
-\begin{lstlisting}
->>> title_str = 'Prob(areas i,j co-occur in MRCA(t1,t5) range)'
->>> plot_posterior_area_pair(prob_area_pairs, title_str)
-\end{lstlisting}
-\end{framed}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=4in]{figures/range_area_pair_pp}
-\end{figure}
-
-As indicated from the list produced by \texttt{get\_best\_area\_pairs()}, we see the inference gives moderate support for areas 26, 28, and 29 being co-occupied by MRCA(t1,t5).
-Referring to \texttt{my\_geo.txt}, we see these areas are geographically close and located in south-eastern Australia.
-You can also retrieve the coordinates through the \texttt{area\_coords} dictionary.
-
-\noindent \\ \impmark To query the geographical coordinates for an area, type
-\begin{framed}
-\begin{lstlisting}
->>> area_coords[26]
-{'lat': -32.5, 'lon': 137.5}
-
->>> area_coords[28]
-{'lat': -32.5, 'lon': 147.5}
-
->>> area_coords[29]
-{'lat': -32.5, 'lon': 152.5}
-\end{lstlisting}
-\end{framed}
-
-\subsection{Posterior probabilities of range histories (\texttt{my\_run.area\_probs.txt})}
-
-Each row of this tab-delimited file contains information about that node's range.
-The rows are ordered in postorder traversal (aka pruningwise).
-The first column gives the taxon name.
-The remaining columns correspond to areas, maintaining the same order as all other files (e.g. the second column is the first area, the $n$th column is the ($n-1$)th area).
-These entries report the marginal area probability of the taxon (row) occupying the area (column).
-These probabilities are computed the frequency that the area was marked present from the data contained in \texttt{my\_run.area\_probs.txt}, a quantity that cannot be computed until the MCMC analysis completes.
-Because MCMC does not accurately sample from posterior during burn-in, some number of initial cycles are discarded as specified by the \texttt{probBurnIn} flag.
 
 \subsection{New Hampshire extended format file (\texttt{my\_run.nhx})}
 
@@ -1158,3 +998,204 @@ If the standard $8.5 \times 11$ inch image is too small, you will need to create
 %In this approach, all areas are equal in size and shape.
 %The symmetry of uniform discretization offers some aid to easily identify which species are present in which areas.
 %The following Python script generates a geodesic tiling, excludes water (or land) areas, converts species occurrence data into presence-absence characters, and writes files for the data matrix and area coordinates (below).
+
+
+%
+%Open the \texttt{my\_run.parameters.txt} in Tracer.
+%First, we see the effective sample size is only moderate for $50 \times 10^6$ cycles when sampling every 1000 cycles.
+%This is because the vast majority of MCMC updates are range history updates.
+%
+%\noindent \\ \impmark  Highlight the ``gain'' and ``loss'' parameters then click Joint-Marginal.
+%
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=2.5in]{figures/loss_gain}
+%\end{figure}
+%
+%The Joint-Marginal of rate of area gain and loss parameters shows strong positive correlation.
+%This correlation arises partly because the proportion of occupied areas is greatly influenced by the ratio of rate of area gain to rate of area loss.
+%For example, when the rates of area gain and loss are equal, range sizes tend to equal half the total number of areas.
+%
+%\noindent \\ \impmark Highlight the ``loss'' and ``numLoss'' parameters then click Joint-Marginal. Do the same for ``gain'' and ``numGain''. \\
+%
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=2.5in]{figures/loss_numloss}
+%\end{figure}
+%
+%Again, we see strong positive correlation.
+%This is reassuring, since we expect to see many sampled range gain and loss events when the corresponding rates are high.
+%
+%\noindent \\ \impmark  Highlight the ``gain'' and ``distP'' parameters then click Joint-Marginal. Do the same for ``loss'' and ``distP''.\\
+%
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=2.5in]{figures/gain_distp}
+%\end{figure}
+%
+%For the simulated data we don't see any strong correlation between either rate of loss or gain and the distance power parameter, but this is not always the case.
+%Large distance power parameters sometimes results in rates of area gain and loss being underestimated in value, resulting in a mild negative correlation.
+%
+%\noindent \\ \impmark Highlight all parameters and click Estimates.
+%
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=2.5in]{figures/hpd}
+%\end{figure}
+%
+%This gives you a handy selection of summary statistics.
+%Of course we typically don't know the true parameter values, but we should be reassured to learn the true parameter values for gain, loss, and distP (0.1, 0.7, and 4.0, respectively) reside within their corresponding 95\% HPD Intervals.
+%It's also interesting to note that the distance power parameter has a much wider interval that the rate parameters, suggesting there is less information in the data for this parameter.
+%
+
+
+%The Gelman-Rubin convergence diagnostic tests whether two MCMC analyses converged to the same distribution (e.g. the posterior).
+%It does this by computing potential scale reduction factors (PSRFs) for all parameters, which compares the within-chain parameter variance to the between-chain parameter variance.
+%There's no hard rule, but PSRF values close to 1.0 show convergence while PSRF values greater than 1.1 raise concern.
+%Below, we can quickly compute the PSRFs for \texttt{my\_run.parameters.txt} and \texttt{my\_other\_run.parameters.txt} using the R package, coda.
+%
+%\noindent \\ \impmark Open the R console and enter the following commands.
+%\begin{framed}
+%\begin{lstlisting}
+%> install.packages('coda')
+%...
+%> library('coda')
+%> run1 = mcmc(read.table('my_run.parameters.txt',header=T))
+%> run2 = mcmc(read.table('my_other_run.parameters.txt',header=T))
+%> gelman.diag(mcmc.list(run1,run2))
+%>
+%Potential scale reduction factors:
+%
+%        Point est. Upper C.I.
+%n              NaN        NaN
+%lnL           1.00       1.00
+%gain          1.01       1.01
+%loss          1.00       1.01
+%gain.p        1.00       1.01
+%loss.p        1.00       1.01
+%distP         1.00       1.00
+%numGain       1.01       1.02
+%numLoss       1.00       1.01
+%
+%Multivariate psrf
+%
+%1
+%\end{listing}
+%\end{framed}
+
+%\subsection{Sampled range histories (\texttt{my\_run.area\_states.txt})}
+%
+%This file reports the stochastically mapped range histories sampled every \texttt{historySampleFrequency} iterations.
+%From this we can compute the {\it marginal} posterior probability of any given area being occupied simply by finding the frequency the area was marked present (1), which we'll call the {\it marginal area posterior probability}.
+%You may be interested in not only the marginal posterior of area occupancy, but the marginal posterior of the joint distribution of areas, which we'll call the {\it marginal range posterior probability}.
+%For example, say your range contains 4 areas, and taxon A is present only in areas 1 and 2 for half of all MCMC samples and only present in areas 3 and 4 for the remaining half.
+%The marginal area posterior range would report a 0.5 probability of any given area being occupied.
+%The marginal range posterior would give you richer information, that the range was either composed of areas 1 and 2 or of 3 and 4, but never 1 and 3, 1 and 4, 2 and 3, or 2 and 4.
+%
+%Here we will use Python to report the marginal range probability for the range belonging to the most recent common ancestor (MRCA) shared by the species named \texttt{t1} and \texttt{t2} ordered by their posterior probabilities. We'll call this node MRCA(t1,t5).
+%
+%\noindent \\ \impmark Change directories to \texttt{examples}.
+%
+%\begin{framed}
+%\begin{lstlisting}
+%> cd examples
+%\end{lstlisting}
+%\end{framed}
+%
+%\noindent \\ \impmark Open the Python console and enter the following commands.
+%
+%\begin{framed}
+%\begin{lstlisting}
+%>>> from pp_range import *
+%>>> range_dict = make_range_dict('my_run.area_states.txt', fburn=0.25)
+%>>> area_coords = get_area_coords('my_geo.txt')
+%>>> idx_list = get_node_idx_list('my_run.area_states.txt')
+%>>> node_key = get_node_key('my_tree.txt', 't1', 't5', idx_list)
+%>>> best_ranges = get_best_ranges(range_dict, node_key)
+%>>> prob_area_pairs = make_posterior_area_pairs(range_dict, node_key)
+%>>> best_area_pairs = get_best_area_pairs(prob_area_pairs)
+%>>> best_areas = get_best_area_pairs(prob_area_pairs, show_marginal=True)
+%\end{lstlisting}
+%\end{framed}
+%
+%\noindent \\ \impmark To list the five most probable ranges for MRCA(t1,t5), type
+%\begin{framed}
+%\begin{lstlisting}
+%>>> best_ranges[0:5]
+%[('000000000000000000000000001111000', 0.022660623833644103),
+% ('000000000000000000000000001011000', 0.01759530791788836),
+% ('000000000000000000000000011111000', 0.01652892561983452),
+% ('000000000000000000000000011011000', 0.0146627565982403),
+% ('000000000000000000010000001111000', 0.01226339642761916)]
+%
+%>>> sum([p[1] for p in best_ranges[0:5]])
+%0.08371101039722645
+%\end{lstlisting}
+%\end{framed}
+%
+%The second column gives the probability of the entire MRCA(t1,t5) range shown in the first column.
+%There's a fair deal of uncertainty the MRCA(t1,t5) range reconstruction, since these best five ranges only account for about 0.08 of the probability.
+%
+%\noindent \\ \impmark To list the five most probable area co-occurrences in the MRCA(t1,t5) range, type
+%\begin{framed}
+%\begin{lstlisting}
+%>>> best_area_pairs[0:5]
+%[((26, 29), 0.60650493201812505),
+% ((26, 28), 0.57717941882164425),
+% ((28, 29), 0.54385497200746136),
+% ((26, 27), 0.42282058117834981),
+% ((27, 28), 0.41242335377232475)]
+% 
+%>>> best_areas[0:5]
+%[((26, 26), 0.78459077579311998),
+% ((29, 29), 0.77179418821647394),
+% ((28, 28), 0.74193548387096575),
+% ((26, 29), 0.60650493201812505),
+% ((26, 28), 0.57717941882164425)]
+%
+%\end{lstlisting}
+%\end{framed}
+%
+%Note the values in \texttt{best\_areas} are the marginal area probabilities.
+%These correspond to the diagonal entries in the heatmap below and to the values in \texttt{my\_run.area\_probs.txt} and \texttt{my\_run.nhx}.
+%
+%\noindent \\ \impmark To visualize these probabilities as a heatmap, type
+%\begin{framed}
+%\begin{lstlisting}
+%>>> title_str = 'Prob(areas i,j co-occur in MRCA(t1,t5) range)'
+%>>> plot_posterior_area_pair(prob_area_pairs, title_str)
+%\end{lstlisting}
+%\end{framed}
+%
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=4in]{figures/range_area_pair_pp}
+%\end{figure}
+%
+%As indicated from the list produced by \texttt{get\_best\_area\_pairs()}, we see the inference gives moderate support for areas 26, 28, and 29 being co-occupied by MRCA(t1,t5).
+%Referring to \texttt{my\_geo.txt}, we see these areas are geographically close and located in south-eastern Australia.
+%You can also retrieve the coordinates through the \texttt{area\_coords} dictionary.
+%
+%\noindent \\ \impmark To query the geographical coordinates for an area, type
+%\begin{framed}
+%\begin{lstlisting}
+%>>> area_coords[26]
+%{'lat': -32.5, 'lon': 137.5}
+%
+%>>> area_coords[28]
+%{'lat': -32.5, 'lon': 147.5}
+%
+%>>> area_coords[29]
+%{'lat': -32.5, 'lon': 152.5}
+%\end{lstlisting}
+%\end{framed}
+%
+%\subsection{Posterior probabilities of range histories (\texttt{my\_run.area\_probs.txt})}
+%
+%Each row of this tab-delimited file contains information about that node's range.
+%The rows are ordered in postorder traversal (aka pruningwise).
+%The first column gives the taxon name.
+%The remaining columns correspond to areas, maintaining the same order as all other files (e.g. the second column is the first area, the $n$th column is the ($n-1$)th area).
+%These entries report the marginal area probability of the taxon (row) occupying the area (column).
+%These probabilities are computed the frequency that the area was marked present from the data contained in \texttt{my\_run.area\_probs.txt}, a quantity that cannot be computed until the MCMC analysis completes.
+%Because MCMC does not accurately sample from posterior during burn-in, some number of initial cycles are discarded as specified by the \texttt{probBurnIn} flag.
