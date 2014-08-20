@@ -12,6 +12,7 @@
 #include "MatrixReal.h"
 #include "ModelVector.h"
 #include "RealPos.h"
+#include "Probability.h"
 #include "RlMultivariateRealNodeValTree.h"
 #include "RlTimeTree.h"
 
@@ -77,7 +78,7 @@ const TypeSpec& Func_tanhBranchTree::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_tanhBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ModelVector<RealPos>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVector<Probability>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
@@ -107,7 +108,7 @@ RevPtr<Variable> Func_tanhBranchTree::execute() {
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
-    ModelVector<RealPos>* wrappedresult = new ModelVector<RealPos>(dag);
+    ModelVector<Probability>* wrappedresult = new ModelVector<Probability>(dag);
     
     return new Variable( wrappedresult );
 }

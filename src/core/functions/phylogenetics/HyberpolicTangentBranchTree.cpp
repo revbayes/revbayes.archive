@@ -85,7 +85,9 @@ void HyperbolicTangentBranchTree::recursiveUpdate(const RevBayesCore::TopologyNo
             
             double x1 = exp(process->getValue()[index][getTraitIndex()] + offset->getValue());
             double x2 = exp(process->getValue()[upindex][getTraitIndex()] + offset->getValue());
-            double y = 0.5 * (x1 + x2);
+            double y1 = x1 / (1+x1);
+            double y2 = x2 / (1+x2);
+            double y = 0.5 * (y1 + y2);
         
             // we store this val here
             (*value)[index] = y;
