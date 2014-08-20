@@ -55,9 +55,17 @@ RevBayesCore::PiecewiseConstantFossilizedBirthDeathProcess* Dist_skyFossilBDP::c
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-    // the origin
-    RevBayesCore::TypedDagNode<double>* ra                  = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    }
+    // the root age
+    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    }
     // speciation rates
     RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
