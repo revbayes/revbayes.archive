@@ -166,7 +166,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     bool forbidExtinction           = true;
     bool useCladogenesis            = !true;
-    bool useDistances               = true;
+    bool useDistances               = !true;
     bool useAdjacency               = !true;
     bool useAvailable               = !true;
     bool useRootFreqs               = !true;

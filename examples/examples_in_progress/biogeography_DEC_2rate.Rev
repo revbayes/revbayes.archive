@@ -28,11 +28,12 @@ fBurn           <- 0.2
 
 # Per-area gain and loss rates 
 #   glr[1]: 1->0, glr[2]: 0->1
-for (i in 1:2) { glr[i] ~ dnExponential(20.0) }
+for (i in 1:2) { glr[i] ~ dnExponential(10.0) }
 
 # Distance-dependence
 #    dp is the distance-dependence power parameter
 dp          ~ dnExponential(10.0)
+#dp          ~ dnNorm(0.0,1.0)
 grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
 
 # Q_like is used to compute likelihoods
@@ -56,9 +57,10 @@ my_model    <- model(glr)
 n_nodes  <- tree.nnodes()
 
 # standard parameter moves
-moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=2.0)
-moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=2.0)
-moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=2.0)
+moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
+moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
+moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=5.0)
+#moves[3] <- mvSlide(x=dp, delta=0.5, tune=false, weight=5.0)
 
 # data augmentation moves
 moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
