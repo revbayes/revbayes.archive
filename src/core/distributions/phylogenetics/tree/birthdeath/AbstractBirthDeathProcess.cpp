@@ -219,7 +219,16 @@ std::vector<double>* AbstractBirthDeathProcess::divergenceTimesSinceOrigin( void
 {
     
     // get the time of the process
-    double org = origin->getValue();
+    double org = 0.0;
+    if ( startsAtRoot )
+    {
+        org = rootAge->getValue();
+    }
+    else
+    {
+        org = origin->getValue();
+    }
+    
     double tipTime = value->getTipNode(0).getTime();
     double offset = org - tipTime;
     
@@ -487,8 +496,15 @@ std::set<const DagNode*> AbstractBirthDeathProcess::getParameters( void ) const
 {
     std::set<const DagNode*> parameters;
     
-    parameters.insert( origin );
-    parameters.insert( rootAge );
+    if ( origin != NULL )
+    {
+        parameters.insert( origin );
+    }
+    
+    if ( rootAge != NULL )
+    {
+        parameters.insert( rootAge );
+    }
     
     parameters.erase( NULL );
     return parameters;

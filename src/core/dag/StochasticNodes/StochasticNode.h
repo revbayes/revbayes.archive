@@ -272,7 +272,6 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
     
     if ( needsProbabilityRecalculation ) 
     {
-        
         // compute and store log-probability
         lnProb = distribution->computeLnProbability();
         
@@ -339,7 +338,11 @@ bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const {
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
     
-    if ( this->touched ) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if ( this->touched )
     {
         
         storedLnProb = 1.0E6;       // An almost impossible value for the density
@@ -432,9 +435,12 @@ void RevBayesCore::StochasticNode<valueType>::reInitializeMe( void )
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
     
-    if ( this->touched ) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if ( this->touched )
     {
-        
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
                         
@@ -522,11 +528,13 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
 {
     
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
     if (!this->touched)
     {
-        
         storedLnProb = lnProb;
-        
     }
         
     needsProbabilityRecalculation = true;

@@ -53,7 +53,7 @@ const std::string& SimplexSingleElementScale::getMoveName( void ) const {
 /** Perform the move */
 double SimplexSingleElementScale::performSimpleMove( void ) {
     
-    // Get random number generator    
+    // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     // get the current value
@@ -102,6 +102,7 @@ void SimplexSingleElementScale::printParameterSummary(std::ostream &o) const {
 
 void SimplexSingleElementScale::rejectSimpleMove( void ) {
     // swap current value and stored value
+
     variable->setValue( new std::vector<double>(storedValue), false );
 }
 

@@ -27,10 +27,12 @@
 //#define DEBUG_WORKSPACE
 //#define DEBUG_BISON_FLEX
 //#define DEBUG_MCMC      // Define this to debug mcmc computation shortcuts (and perhaps other mcmc code). NB! Slow!
+//#define DEBUG_MCMC_DETAILS   // Define this to see more detailed mcmc debug info
 //#define DEBUG_HELP_SYSTEM
 //#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
 //#define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
 //#define DEBUG_STRUCTURE   // To debug structure of DAGs through verbose output of str() function
+//#define DEBUG_DAG_MESSAGES  // To debug messages and related functionality associated with partial DAG updates during MCMC
 
 //#define TESTING
 

@@ -151,7 +151,8 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         }
     }
     
-    throw RbException( "Argument type mismatch" );
+    throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
+                        getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
 }
 
 
@@ -242,11 +243,17 @@ bool RevLanguage::ArgumentRule::isEllipsis( void ) const
  
 
 
-/** Print value for user (in descriptions of functions, for instance) */
+/**
+ * Print value for user (in descriptions of functions, for instance). We apparently do
+ * not use the isConst flag to denote whether an argument is supposed to be passed as
+ * a constant currently, so the printing of this modifier is suspended for now.
+ *
+ * @todo Revise the usage and printing of the isConst flag
+ */
 void RevLanguage::ArgumentRule::printValue(std::ostream &o) const {
 
-    if ( isConstant() )
-        o << "const ";
+//    if ( isConstant() )
+//        o << "const ";
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
