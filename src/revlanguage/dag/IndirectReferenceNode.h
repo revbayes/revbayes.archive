@@ -268,7 +268,10 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool ve
     }
     else
     {
-        o << "_dagNode      = " << this->name << std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
 
     o << "_dagType      = Indirect reference DAG node" << std::endl;

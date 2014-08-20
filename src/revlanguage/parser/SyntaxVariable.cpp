@@ -519,6 +519,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
     std::vector< RevPtr<Variable> > oneOffsetIndexVars = computeDynamicIndex( env );
     
     // Check if we need a dynamic lookup
+    // TODO: Make sure we check for any named upstream constant DAG nodes that can be changed by user
     bool dynamicLookup = false;
     for ( std::vector< RevPtr<Variable> >::iterator it = oneOffsetIndexVars.begin(); it != oneOffsetIndexVars.end(); ++it )
     {

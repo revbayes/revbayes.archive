@@ -374,7 +374,10 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
     }
     else
     {
-        o << "_dagNode      = " << this->name << std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
     
     o << "_dagType      = Stochastic DAG node" << std::endl;

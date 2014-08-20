@@ -176,9 +176,9 @@ unsigned long Mcmc::nextCycle(bool advanceCycle) {
             std::cout << "lnLikelihoodProb = " << lnLikelihoodProb << "\t\t-\t\t" << touchedLnLikelihoodProb << "\t\t-\t\t" << touchedAgainLnLikelihoodProb << std::endl;
             std::cout << "lnProb           = " << lnProb << "\t\t-\t\t" << touchedLnProb << "\t\t-\t\t" << touchedAgainLnProb << std::endl;
             std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
-//            std::cerr << "Stopping here (infinite loop)" << std::endl;
-//            for ( ; ; )
-//                ;
+            std::cerr << "Stopping here (infinite loop)" << std::endl;
+            for ( ; ; )
+                ;
 
 //            throw RbException("Error in MCMC probability computation.");
         }

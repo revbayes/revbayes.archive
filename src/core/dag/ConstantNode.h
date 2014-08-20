@@ -189,7 +189,10 @@ void RevBayesCore::ConstantNode<valueType>::printStructureInfo(std::ostream &o, 
     }
     else
     {
-        o << "_dagNode      = " << this->name << std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
     
     o << "_dagType      = Constant DAG node" << std::endl;

@@ -110,8 +110,17 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    o << "_dagType      = Deterministic DAG node" << std::endl;
+    if ( verbose )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
     
     if ( verbose == true )
     {
