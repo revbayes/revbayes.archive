@@ -49,12 +49,20 @@ Q_GTR := gtr(er,sf)
 
 subst_model_prior <- simplex(1,1)
 vals := v(Q_JC,Q_GTR)
-type(vals)
-type(subst_model_prior)
-Q ~ dnMixture( vals, subst_model_prior)
-Q
 
-moves[mi++] <- mvMixtureAllocation(Q,weight=1.0)
+### Draw index from a bernoulli distribution (0 or 1 with equal prob)
+### In the general case of a mixture, we want to draw from the categorical
+### distribution, which is the generalization of the bernoulli distribution
+### to more than two categories
+index ~ bernoulli(0.5)
+
+### What move do we use for a bernoulli variable?
+
+### Use a dynamic lookup to obtain current value of Q
+### The dynamic lookup gets an update message both when
+### an element, such as Q_GTR, of vals is changed and when
+### the index value is changed
+Q := vals[ index + 1 ]
 
 #### Specify a uniform prior on the tree topology #### 
 topology ~ uniformTopology(n_species, names)
@@ -72,8 +80,10 @@ for (i in 1:n_branches) {
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
-# create a deterministic variable for monitoring purposes
-tree_length := sum(br_lens)
+
+nb <- n_branches * 1.0
+#tree_length := mean(br_lens) * nb
+tree_length := br_lens[1]
 
 # Build the tree by combining the topology with the branch length.
 phylogeny := treeAssembly(topology, br_lens)
@@ -95,7 +105,7 @@ mymodel <- model(Q)
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-#mymcmc.burnin(generations=200,tuningInterval=100)
+mymcmc.burnin(generations=200,tuningInterval=100)
 mymcmc.run(generations=300)
 
 
