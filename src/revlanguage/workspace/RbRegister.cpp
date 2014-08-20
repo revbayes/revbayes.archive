@@ -71,6 +71,9 @@
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
 
+/* Taxon types (in folder "datatypes/evolution") */
+#include "RlTaxon.h"
+
 /* Inference types (in folder "datatypes/inference") */
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
@@ -449,6 +452,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
         addTypeWithConstructor( "clade",            new Clade() );
+        
+        /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
+        addTypeWithConstructor( "taxon",            new Taxon() );
 
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
