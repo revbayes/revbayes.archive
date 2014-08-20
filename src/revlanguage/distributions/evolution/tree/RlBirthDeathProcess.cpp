@@ -61,12 +61,13 @@ const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
  *
  * The member rules of the homogeneous birth-death process are:
  * (1) time of the process since the origin.
- * (2) the sampling probability.
- * (3) the sampling strategy.
- * (4) the condition.
- * (5) the number of taxa.
- * (6) the taxon names.
- * (7) the clade constraints.
+ * (2) time of the process since the rootAge.
+ * (3) the sampling probability.
+ * (4) the sampling strategy.
+ * (5) the condition.
+ * (6) the number of taxa.
+ * (7) the taxon names.
+ * (8) the clade constraints.
  *
  * \return The member rules.
  */
@@ -78,7 +79,8 @@ const MemberRules& BirthDeathProcess::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec(), NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge", true, RealPos::getClassTypeSpec(), NULL ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"  , true, Probability::getClassTypeSpec(), new Probability(1.0) ) );
         std::vector<RlString> optionsStrategy;
         optionsStrategy.push_back( RlString("uniform") );
@@ -116,6 +118,10 @@ void BirthDeathProcess::setConstMemberVariable(const std::string& name, const Re
     if ( name == "origin" ) 
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "rho" ) 
     {

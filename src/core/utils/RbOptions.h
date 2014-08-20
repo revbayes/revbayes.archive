@@ -29,8 +29,8 @@
 //#define DEBUG_MCMC      // Define this to debug mcmc computation shortcuts (and perhaps other mcmc code). NB! Slow!
 //#define DEBUG_HELP_SYSTEM
 //#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
-// #define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
-// #define DEBUG_STRUCTURE   // To debug structure of DAGs through verbose output of str() function
+//#define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
+//#define DEBUG_STRUCTURE   // To debug structure of DAGs through verbose output of str() function
 
 //#define TESTING
 

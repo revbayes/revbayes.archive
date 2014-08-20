@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class AbstractBirthDeathProcess : public TypedDistribution<TimeTree> {
         
     public:
-        AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt, 
+        AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
                                   const std::vector<Taxon> &tn, const std::vector<Clade> &c);        
         
         // pure virtual member functions
@@ -47,6 +47,11 @@ namespace RevBayesCore {
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         virtual void                                        prepareProbComputation(void);
         
+        // virtual methods that may be overwritten, but then the derived class should call this methods
+        virtual void                                        keepSpecialization(DagNode* affecter);
+        virtual void                                        restoreSpecialization(DagNode *restorer);
+        virtual void                                        touchSpecialization(DagNode *toucher);
+
         // helper functions
         void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, 
                                                                         const std::vector<double> *times, double T);
@@ -62,8 +67,10 @@ namespace RevBayesCore {
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
+        const TypedDagNode<double>*                         rootAge;                                                                                             //!< Time since the origin.
         size_t                                              numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                         //!< Taxon names that will be attached to new simulated trees.
+        bool                                                startsAtRoot;
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
     };

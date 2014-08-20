@@ -44,7 +44,8 @@ AbstractRateMatrix::~AbstractRateMatrix(void)
 AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
 {
     
-    if (this != &r) {
+    if (this != &r)
+    {
         
         delete theRateMatrix;
         
@@ -63,7 +64,10 @@ AbstractRateMatrix& AbstractRateMatrix::operator=(const AbstractRateMatrix &r)
 const std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) const {
     
     if ( i >= numStates )
+    {
         throw RbException( "Index to RateMatrix[][] out of bounds" );
+    }
+    
     return (*theRateMatrix)[i];
 }
 
@@ -72,7 +76,10 @@ const std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) cons
 std::vector<double>& AbstractRateMatrix::operator[]( const size_t i ) {
     
     if ( i >= numStates )
+    {
         throw RbException( "Index to RateMatrix[][] out of bounds" );
+    }
+    
     return (*theRateMatrix)[i];
 }
 
@@ -116,12 +123,19 @@ bool AbstractRateMatrix::checkTimeReversibity(double tolerance)
     std::vector<double> theStationaryFreqs = getStationaryFrequencies();
 	double diff = 0.0;
 	for (size_t i=0; i<numStates; i++)
-		for (size_t j=i+1; j<numStates; j++)
+    {
+	
+        for (size_t j=i+1; j<numStates; j++)
+        {
 			diff += fabs( theStationaryFreqs[i] * (*theRateMatrix)[i][j] - theStationaryFreqs[j] * (*theRateMatrix)[j][i] );
+        }
     
+    }
     //    reversibilityChecked = true;
 	if (diff < tolerance)
+    {
         return true;
+    }
     
 	return false;
 }
@@ -140,8 +154,14 @@ void AbstractRateMatrix::rescaleToAverageRate(double r)
     double curAve = averageRate();
     double scaleFactor = r / curAve;
     for (size_t i=0; i<numStates; i++)
+    {
+        
         for (size_t j=0; j<numStates; j++)
+        {
             (*theRateMatrix)[i][j] *= scaleFactor;
+        }
+        
+    }
     
     // set flags
     needsUpdate = true;
@@ -158,8 +178,12 @@ void AbstractRateMatrix::setDiagonal(void)
         double sum = 0.0;
         for (size_t j=0; j<numStates; j++)
         {
+            
             if (i != j)
+            {
                 sum += (*theRateMatrix)[i][j];
+            }
+            
         }
         (*theRateMatrix)[i][i] = -sum;
     }
@@ -170,7 +194,8 @@ void AbstractRateMatrix::setDiagonal(void)
 
 
 
-size_t AbstractRateMatrix::size( void ) const {
+size_t AbstractRateMatrix::size( void ) const
+{
     return numStates;
 }
 

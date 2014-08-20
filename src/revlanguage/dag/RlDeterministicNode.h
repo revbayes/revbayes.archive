@@ -1,13 +1,3 @@
-/**
- * RlDeterministicNode.h
- *
- * (c) Copyright 2009- under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- */
-
-
-
 #ifndef RlDeterministicNode_H
 #define RlDeterministicNode_H
 
@@ -120,8 +110,17 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    o << "_dagType      = Deterministic DAG node" << std::endl;
+    if ( verbose )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
     
     if ( verbose == true )
     {
@@ -136,11 +135,11 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     }
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70, verbose);
+    this->printParents( o, 16, 70, verbose );
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70, verbose);
+    this->printChildren( o, 16, 70, verbose );
 
     o << std::endl;
 }

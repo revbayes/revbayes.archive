@@ -12,10 +12,12 @@
 
 using namespace RevBayesCore;
 
-ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, size_t nTaxa, 
-                                                     const std::vector<std::string> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, r, ss, cdt, nTaxa, tn, c ), 
-speciation( s ), extinction( e ) {
+ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
+                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
+                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, ro, r, ss, cdt, tn, c ),
+    speciation( s ),
+    extinction( e )
+{
 
     simulateTree();
 
@@ -63,13 +65,13 @@ double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) 
 
 
 
-std::vector<double> ConstantRateBirthDeathProcess::simSpeciations(size_t n, double origin, double r) const
+std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, double origin, double r) const
 {
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    std::vector<double> times = std::vector<double>(n, 0.0);
+    std::vector<double>* times = new std::vector<double>(n, 0.0);
     
     for (size_t i = 0; i < n; ++i) 
     {
@@ -82,11 +84,11 @@ std::vector<double> ConstantRateBirthDeathProcess::simSpeciations(size_t n, doub
     
         double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
 	
-        times[i] = t;
+        (*times)[i] = t;
     }
     
     // finally sort the times
-    std::sort(times.begin(), times.end());
+    std::sort(times->begin(), times->end());
     
     return times;
 }
