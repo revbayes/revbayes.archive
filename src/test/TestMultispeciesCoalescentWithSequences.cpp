@@ -244,7 +244,13 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     ConstantNode<double> *extinctionRate = new ConstantNode<double>("extinctionRate", new double(2.5) );
     ConstantNode<double> *sampling = new ConstantNode<double>("rho", new double(1.0) );
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "SpeciesTree", new ConstantRateBirthDeathProcess( origin, speciationRate, extinctionRate, sampling, "uniform", "survival", int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
+    std::vector<std::string> names = t->getTipNames();
+    std::vector<Taxon> taxaNames;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxaNames.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *spTree_inf = new StochasticNode<TimeTree>( "SpeciesTree", new ConstantRateBirthDeathProcess( origin, NULL, speciationRate, extinctionRate, sampling, "uniform", "survival", taxaNames, std::vector<Clade>()) );
 	
     // If we want to initialize the species tree to the starting tree
     TimeTree *startingTree = spTree_inf->getValue().clone();
