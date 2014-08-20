@@ -276,7 +276,12 @@ bool TestPomoModel::run( void ) {
     // Topology prior
     std::vector<std::string> names = concatenatedSimSeqsPol->getTaxonNames();
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+    std::vector<RevBayesCore::Taxon> taxaNames;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxaNames.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, div, turn, rho, "uniform", "survival", taxaNames, std::vector<Clade>()) );
     
     //    tau->setValue( trees[0] );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
@@ -327,7 +332,6 @@ bool TestPomoModel::run( void ) {
     // RF distance between reconstructed and true tree
     ConstantNode<TimeTree> *trueTree = new ConstantNode<TimeTree>( "trueTree", t );
     DeterministicNode<double> *spTreeRF = new DeterministicNode<double>("spTreeRF", new SymmetricDifferenceStatistic(trueTree, tau) );
-
     /* add the monitors */
     RbVector<Monitor> monitors;
     std::set<DagNode*> monitoredNodes;
@@ -343,7 +347,7 @@ bool TestPomoModel::run( void ) {
     /*  monitoredNodes1.insert( er );
      monitoredNodes1.insert( pi );*/
     //  monitoredNodes1.insert( q ); too large to monitor!
-    monitoredNodes1.insert( spTreeRF );
+//    monitoredNodes1.insert( spTreeRF );
 
     monitors.push_back( new FileMonitor( monitoredNodes1, 10, folder+"TestPomoModelSubstRates.log", "\t" ) );
     monitors.push_back( new ScreenMonitor( monitoredNodes1, 10, "\t" ) );
