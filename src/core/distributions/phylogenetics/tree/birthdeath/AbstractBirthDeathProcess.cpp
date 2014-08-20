@@ -496,8 +496,15 @@ std::set<const DagNode*> AbstractBirthDeathProcess::getParameters( void ) const
 {
     std::set<const DagNode*> parameters;
     
-    parameters.insert( origin );
-    parameters.insert( rootAge );
+    if ( origin != NULL )
+    {
+        parameters.insert( origin );
+    }
+    
+    if ( rootAge != NULL )
+    {
+        parameters.insert( rootAge );
+    }
     
     parameters.erase( NULL );
     return parameters;
