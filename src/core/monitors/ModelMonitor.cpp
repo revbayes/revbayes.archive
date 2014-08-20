@@ -152,11 +152,6 @@ void ModelMonitor::monitor(unsigned long gen)
             DagNode *node = *i;
             
             // print the value
-            std::cerr << "<" << node << "> ";
-            node->printName( std::cerr, ", " );
-            node->printValue( std::cerr, separator);
-            std::cerr << std::endl;
-
             node->printValue(outStream,separator);
         }
         
@@ -228,9 +223,6 @@ void ModelMonitor::printHeader()
         if (theNode->getName() != "")
         {
             // print the name
-            std::cerr << "<" << theNode << "> ";
-            theNode->printName( std::cerr, ", " );
-            std::cerr << std::endl;
             theNode->printName(outStream,separator);
         }
         else
