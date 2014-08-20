@@ -25,7 +25,7 @@
 namespace RevBayesCore {
     
     template <class mixtureType>
-    class MixtureDistribution : public TypedDistribution<mixtureType> {
+    class MixtureDistribution : public TypedDistribution<mixtureType>, public MemberObject<int> {
         
     public:
         // constructor(s)
@@ -34,6 +34,7 @@ namespace RevBayesCore {
         // public member functions
         MixtureDistribution*                                clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;     //!< Map the member methods to internal function calls
         const std::vector<mixtureType>&                     getParameterValues(void) const;
         size_t                                              getCurrentIndex(void) const;
         size_t                                              getNumberOfCategories(void) const;
@@ -97,6 +98,21 @@ double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( voi
 {
     
     return probabilities->getValue()[index];
+}
+
+
+template <class mixtureType>
+void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, int &rv) const
+{
+    
+    if ( n == "getAllocationIndex" )
+    {
+        rv = index;
+    }
+    else
+    {
+        throw RbException("A mixture distribution does not have a member method called '" + n + "'.");
+    }
 }
 
 
@@ -175,8 +191,13 @@ void RevBayesCore::MixtureDistribution<mixtureType>::redrawValue( void )
 template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::setCurrentIndex(size_t i)
 {
+
+    delete this->value;
+
     index = i;
-    *(this->value) = parameterValues->getValue()[i];
+    const mixtureType &tmp = parameterValues->getValue()[i];
+    
+    this->value = Cloner<mixtureType, IsDerivedFrom<mixtureType, Cloneable>::Is >::createClone( tmp );
 }
 
 

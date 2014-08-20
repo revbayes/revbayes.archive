@@ -288,6 +288,11 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::exe
         return NULL;
     }
     
+    if ( dagNode->isStochastic() )
+    {
+        
+    }
+    
     return RevObject::executeMethod( name, args );
 }
 

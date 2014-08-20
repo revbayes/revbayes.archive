@@ -26,13 +26,15 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const std::string &cdt,  
+AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
                                                      const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ),
     condition( cdt ),
     constraints( c ),
     origin( o ),
-    numTaxa( tn.size() ), 
-    taxa( tn )
+    rootAge( ra ),
+    numTaxa( tn.size() ),
+    taxa( tn ),
+    startsAtRoot(  origin == NULL )
 
 {
     
@@ -158,22 +160,45 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     }
     
     // present time 
-    double rootAge = value->getRoot().getAge();
-    double org = origin->getValue();
+    double ra = value->getRoot().getAge();
+    double presentTime = 0.0;
     
     // test that the time of the process is larger or equal to the present time
-    if ( rootAge > org ) 
+    if ( startsAtRoot == false )
     {
-        return RbConstants::Double::neginf;
+        double org = origin->getValue();
+        
+        // test that the time of the process is larger or equal to the present time
+        if ( ra > org )
+        {
+            return RbConstants::Double::neginf;
+        }
+        
+        presentTime = org;
+        
+    }
+    else
+    {
+        presentTime = ra;
+        
+        if ( ra != value->getRoot().getAge() )
+        {
+            return RbConstants::Double::neginf;
+        }
     }
     
-    double presentTime = org;
     
     // what do we condition on?
     // did we condition on survival?
     if ( condition == "survival" )    
     {
         lnProbTimes = - log( pSurvival(0,presentTime) );
+    }
+    
+    // if we started at the root then we square the survival prob
+    if ( startsAtRoot == true )
+    {
+        lnProbTimes *= 2.0;
     }
     
     // multiply the probability of a descendant of the initial species
@@ -314,6 +339,16 @@ std::vector<double>* AbstractBirthDeathProcess::getAgesOfTipsFromMostRecentSampl
 
 
 /**
+ * Keep the current value and reset some internal flags. Nothing to do here.
+ */
+void AbstractBirthDeathProcess::keepSpecialization(DagNode *affecter)
+{
+    
+}
+
+
+
+/**
  * We check here if all the constraints are satisfied.
  * These are hard constraints, that is, the clades must be monophyletic.
  *
@@ -406,7 +441,15 @@ void AbstractBirthDeathProcess::simulateTree( void )
     
     // now simulate the speciation times
     // first, get the time of the origin
-	double t_or = origin->getValue();
+	double t_or = 0.0;
+    if ( startsAtRoot == true )
+    {
+        t_or = rootAge->getValue();
+    }
+    else
+    {
+        t_or = origin->getValue();
+    }
     
     // draw a time for each speciation event condition on the time of the process
     std::vector<double> *times = simSpeciations(numTaxa-1, t_or);
@@ -423,6 +466,15 @@ void AbstractBirthDeathProcess::simulateTree( void )
     
     delete times;
     
+    // reset the listeners
+    const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
+    
+    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
+    {
+        value->getTreeChangeEventHandler().removeListener( *it );
+        psi->getTreeChangeEventHandler().addListener( *it );
+    }
+    
     // finally store the new value
     delete value;
     value = psi;
@@ -436,9 +488,26 @@ std::set<const DagNode*> AbstractBirthDeathProcess::getParameters( void ) const
     std::set<const DagNode*> parameters;
     
     parameters.insert( origin );
+    parameters.insert( rootAge );
     
     parameters.erase( NULL );
     return parameters;
+}
+
+
+
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void AbstractBirthDeathProcess::restoreSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == rootAge )
+    {
+        value->setAge(value->getRoot().getIndex(), rootAge->getValue() );
+    }
+    
 }
 
 
@@ -455,6 +524,26 @@ void AbstractBirthDeathProcess::swapParameter( const DagNode *oldP, const DagNod
     if ( oldP == origin ) 
     {
         origin = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if ( oldP == rootAge )
+    {
+        rootAge = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    
+}
+
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void AbstractBirthDeathProcess::touchSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == rootAge )
+    {
+        value->setAge(value->getRoot().getIndex(), rootAge->getValue() );
     }
     
 }
