@@ -21,7 +21,9 @@ T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedD
     this->addParameter( gctree );
     this->addParameter( rootgc );   
     this->addParameter( kappa );   
+    std::cerr << "update\n";
     update();
+    std::cerr << "update ok\n";
 }
 
 T92GCBranchTree::T92GCBranchTree(const T92GCBranchTree &n):
@@ -73,12 +75,19 @@ void T92GCBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)   
         gc = gctree->getValue()[index];
     }
 
-    RateMatrix_HKY& matrix = static_cast<RateMatrix_HKY&>( (*value)[index] );
+
+    RateMatrix_HKY* matrix = dynamic_cast<RateMatrix_HKY*>( &(*value)[index] );
+    if (! matrix)   {
+        std::cerr << "null matrix pointer\n";
+        std::cerr << &(*value)[index] << '\n';
+        
+        exit(1);
+    }
     std::vector<double> v(4);
     v[0] = v[3] = 0.5 * (1 - gc);
     v[1] = v[2] = 0.5 * gc;
-    matrix.setStationaryFrequenciesByCopy(v);
-    matrix.setKappa(kappa->getValue());
+    matrix->setStationaryFrequenciesByCopy(v);
+    matrix->setKappa(kappa->getValue());
     
     // simulate the val for each child (if any)
     size_t numChildren = from.getNumberOfChildren();
