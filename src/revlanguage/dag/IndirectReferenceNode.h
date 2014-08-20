@@ -56,7 +56,6 @@ namespace RevLanguage {
         
     private:
         const RevBayesCore::TypedDagNode<typename rlType::valueType>*   referencedNode;                                 //!< DAG node of referenced variable
-        bool                                                            touched;                                        //!< Are we dirty?
         typename rlType::valueType*                                     value;                                          //!< Current value
     };
     
@@ -80,7 +79,6 @@ template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const std::string& n, RevBayesCore::TypedDagNode<typename rlType::valueType>* var ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     referencedNode( var ),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -99,7 +97,6 @@ template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const IndirectReferenceNode<rlType>& n ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     referencedNode( n.referencedNode ),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -198,7 +195,7 @@ std::set<const RevBayesCore::DagNode*> IndirectReferenceNode<rlType>::getParents
 template<typename rlType>
 typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void )
 {
-    if ( touched )
+    if ( this->touched )
         update();
     
     return *value;
@@ -213,7 +210,7 @@ typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void )
 template<typename rlType>
 const typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void ) const {
     
-    if ( touched )
+    if ( this->touched )
         const_cast<IndirectReferenceNode<rlType>*>( this )->update();
     
     return *value;
@@ -243,11 +240,17 @@ bool IndirectReferenceNode<rlType>::isConstant( void ) const
 template<typename rlType>
 void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // TODO: Hard-set touched flag to false, potentially unsafe
     // We at least check to make sure the value is not NULL
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched indirect reference node" << std::endl;
     if ( value == NULL )
         this->update();
-    touched = false;
+    this->touched = false;
     
     // Pass the call on
     this->keepAffected();
@@ -302,6 +305,11 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool ve
 template<typename rlType>
 void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -320,6 +328,11 @@ void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
     // Touch myself
     this->touched = true;
     
@@ -371,7 +384,7 @@ void IndirectReferenceNode<rlType>::update()
     value = RevBayesCore::Cloner<typename rlType::valueType, IsDerivedFrom<typename rlType::valueType, RevBayesCore::Cloneable>::Is >::createClone( referencedNode->getValue() );
 
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 
