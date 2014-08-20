@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class ConstantRateBirthDeathProcess : public BirthDeathProcess {
         
     public:
-        ConstantRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
+        ConstantRateBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                       const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
                                       const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         
