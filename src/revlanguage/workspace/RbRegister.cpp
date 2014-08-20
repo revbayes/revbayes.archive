@@ -417,6 +417,8 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addType( new ModelVector<ModelVector<Natural> >()   );
         addType( new ModelVector<ModelVector<Integer> >()   );
         addType( new ModelVector<TimeTree>());
+        addType( new ModelVector<Taxon>());
+
         
         // Model vectors of abstract elements
         addType( new ModelVectorAbstractElement<AbstractCharacterData>() );
