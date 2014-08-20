@@ -179,18 +179,36 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
     }
     else if (infoStr=="clado_state")
     {
-        int cladoState = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p)->getCladogenicState(*n);
-        switch(cladoState)
+        BiogeographicTreeHistoryCtmc<charType, treeType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p);
+        int cladoState = q->getCladogenicState(*n);
+        
+        if (cladoState == 0)
+            ss << "s";
+        else if (cladoState == 1)
         {
-            case 0: ss << "s";
-            case 1: ss << "p";
-            case 2: ss << "a";
+         
+            
+            ss << "p";
+            
         }
+        else if (cladoState == 2)
+            ss << "a";
+        else
+        {
+            
+            
+            true;
+            
+            ss << "NA";
+        }
+        
     }
     else if (infoStr=="bud_state")
     {
-        int budState = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p)->getBuddingState(*n);
-        ss << n->getChild(budState).getIndex() << "\n";
+        BiogeographicTreeHistoryCtmc<charType, treeType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p);
+        int budState = (q)->getBuddingState(*n);
+        
+        ss << ( budState == 1 ? n->getIndex() : n->getParent().getChild(1).getIndex() );
     }
     else if (infoStr=="state_into")
     {
@@ -298,10 +316,10 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         {
             characterStream << ",&ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
             characterStream << ",&ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
+            
+            characterStream << ",&cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
+            characterStream << ",&bn=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
         }
-        
-        characterStream << ",&cs=" << buildCharacterHistoryString(n,"clado_state");
-        characterStream << ",&bn=" << buildCharacterHistoryString(n,"bud_state");
         
         // # events
         characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";

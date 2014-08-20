@@ -180,7 +180,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
 //    static bool         methodsSet  = false;
 //    
 //    if ( !methodsSet )
-//    {
+//    {quit
 //        myMethods = makeMethods();
 //        methodsSet = true;
 //    }
