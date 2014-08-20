@@ -151,7 +151,8 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         }
     }
     
-    throw RbException( "Argument type mismatch" );
+    throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
+                        getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
 }
 
 
