@@ -221,7 +221,7 @@ RevBayesCore::DagNode* ConverterNode<rlType>::cloneDAG( std::map<const RevBayesC
     // Remove the copy as a child to our argument DAG node so the cloning works
     theArgumentNode->removeChild( copy );
     
-    // Make sure the copy has its own Rev object argument with its DAG node being the clone of our variable DAG node
+    // Make sure the copy has its own Rev object argument with its DAG node being the clone of our argument DAG node
     copy->argument = new Variable( argument->getRevObject().cloneDAG( newNodes ), argument->getName() );
     
     // Now swap copy parents: detach the copy node from its old parent and attach it to the new parent
@@ -348,7 +348,10 @@ void ConverterNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) 
     }
     else
     {
-        o << "_dagNode      = " << this << ">" << std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
     o << "_dagType      = Type conversion DAG node" << std::endl;
     

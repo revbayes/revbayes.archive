@@ -460,7 +460,10 @@ void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o
     }
     else
     {
-        o << "_dagNode      = " << this->name <<  std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
     o << "_dagType      = Container DAG node" << std::endl;
     

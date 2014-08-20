@@ -265,28 +265,27 @@ RevBayesCore::DagNode* ElementLookupNode<rlType, rlElemType>::cloneDAG( std::map
     
     // First swap variable using non-standard code
     
+    // Swap argument variable using non-standard code
+    
     // Get our variable DAG node
-    const RevBayesCore::DagNode *theVariable = variable->getRevObject().getDagNode();
+    const RevBayesCore::DagNode *theVariableNode = variable->getRevObject().getDagNode();
     
     // Remove the copy as a child to our variable DAG node so the cloning works
-    theVariable->removeChild( copy );
-
-    // Get its clone
-    RevBayesCore::DagNode* theVariableClone = theVariable->cloneDAG( newNodes );
+    theVariableNode->removeChild( copy );
     
     // Make sure the copy has its own Rev object variable with its DAG node being the clone of our variable DAG node
-    copy->variable = variable->clone();
-    static_cast< rlType& >( copy->variable->getRevObject() ).setDagNode( theVariableClone );
+    copy->variable = new Variable( variable->getRevObject().cloneDAG( newNodes ), variable->getName() );
     
     // Now swap copy parents: detach the copy node from its old parent and attach it to the new parent
     // If we called swapParent here, the swapParent function would not find the old parent in its RevObject
     // variable wrapper because that wrapper has already been exchanged above. Note that we already removed
     // the copy as a child of the variable DAG node above. Just to conform to the pattern we check for
     // the need to delete even though the test should never be true here.
-    if ( theVariable->decrementReferenceCount() == 0 )
-        delete theVariable;
-    theVariableClone->addChild( copy );
-    theVariableClone->incrementReferenceCount();
+    if ( theVariableNode->decrementReferenceCount() == 0 )
+        delete theVariableNode;
+    RevBayesCore::DagNode* theVariableNodeClone = copy->variable->getRevObject().getDagNode();
+    theVariableNodeClone->addChild( copy );
+    theVariableNodeClone->incrementReferenceCount();
     
     // We use the standard code (below) for the index nodes
     
@@ -434,7 +433,10 @@ void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o,
     }
     else
     {
-        o << "_dagNode      = " << this << ">" << std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
     o << "_dagType      = Element lookup DAG node" << std::endl;
     

@@ -322,7 +322,10 @@ void RevBayesCore::DeterministicNode<valueType>::printStructureInfo( std::ostrea
     }
     else
     {
-        o << "_dagNode      = " << this->name << std::endl;
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
     }
     o << "_dagType      = Deterministic DAG node" << std::endl;
     
