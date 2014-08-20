@@ -70,9 +70,7 @@ for (i in 1:n_branches) {
   moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
 
-nb <- n_branches * 1.0
-#tree_length := mean(br_lens) * nb
-tree_length := br_lens[1]
+tree_length := sum(br_lens)
 
 # Build the tree by combining the topology with the branch length.
 phylogeny := treeAssembly(topology, br_lens)
