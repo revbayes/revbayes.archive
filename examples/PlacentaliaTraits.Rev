@@ -5,8 +5,7 @@
 #
 
 # read the data 
-contDataArray <- readCharacterData("data/plac73lhtlog.nex")
-contData <- contDataArray[1]
+contData <- readCharacterData("data/plac73lhtlog.nex")
 contData
 
 # get some useful variables from the data
@@ -64,40 +63,31 @@ for (i in 1:nTraits)	{
 	br.clampAt(contData,i,i)
 }
 
-"stats for cov"
 # get useful functions of the covariance matrix
 # these are just specific examples
 
-var1 := sigma.covariance(1,1)
-var2 := sigma.covariance(2,2)
-var3 := sigma.covariance(3,3)
+"stats for cov"
 cov12 := sigma.covariance(1,2)
-cov13 := sigma.covariance(1,3)
-cov23 := sigma.covariance(2,3)
-cor12 := sigma.correlation(1,2)
-parcor12 := sigma.partialCorrelation(1,2)
+#var1 := sigma.covariance(1,1)
+#cor12 := sigma.correlation(1,2)
+#parcor12 := sigma.partialCorrelation(1,2)
 
 # get useful outputs from the brownian process
 
-bn1 := br.newick(1)
-
-bn1
-
-for (i in 1:nTraits)	{
-
-	# mean and stdev of each trait
-	meanbr[i] := br.mean(i)
-	stdevbr[i] := br.stdev(i)
-}
+#for (i in 1:nTraits)	{
+#	# mean and stdev of each trait
+#	meanbr[i] := br.mean(i)
+#	stdevbr[i] := br.stdev(i)
+#}
 
 "mymodel"
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=100, cov12, cor12, meanbr, stdevbr)
+monitors[1] <- screenmonitor(printgen=100, cov12)
+#monitors[1] <- screenmonitor(printgen=100, cov12, cor12, meanbr, stdevbr)
 monitors[2] <- filemonitor(filename="placlht1.cov",printgen=10, separator = "	", sigma)
 monitors[3] <- modelmonitor(filename="placlht1.log",printgen=10, separator = "	")
-monitors[4] <- filemonitor(filename="placlht1.trait1",printgen=10, separator = "	", bn1)
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 

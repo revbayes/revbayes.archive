@@ -69,7 +69,7 @@ Tree::~Tree(void)
         // remove the tree for each node
         // TODO: Why are we doing this? Apparently we need at least to check that
         // there are some nodes to delete because the topology can be empty. -- Fredrik
-        std::cerr << "In destructor: Removing tree <" << this << "> from topology <" << topology << ">" << std::endl;
+//        std::cerr << "In destructor: Removing tree <" << this << "> from topology <" << topology << ">" << std::endl;
 //        if ( topology->getNumberOfNodes() > 0 )
 //        {
 //            topology->getNodes()[topology->getNumberOfNodes()-1]->removeTree( this );

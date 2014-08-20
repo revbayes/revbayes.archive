@@ -80,7 +80,6 @@ namespace RevLanguage {
         
     private:
         std::vector< RevPtr<Variable> >         elements;                                                               //!< The elements
-        bool                                    touched;                                                                //!< Are we dirty?
         valueType                               value;                                                                  //!< Current value
     };
     
@@ -101,7 +100,6 @@ template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n ) :
     RevBayesCore::DynamicNode<valueType>( n ),
     elements(),
-    touched( false ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -117,7 +115,6 @@ template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::vector<RevObject*> elems, const std::vector<size_t>& lengths ) :
     RevBayesCore::DynamicNode<valueType>( n ),
     elements(),
-    touched( true ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -146,7 +143,6 @@ template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemType, valueType>& n ) :
     RevBayesCore::DynamicNode<valueType>( n ),
     elements( n.elements ),
-    touched( true ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -348,8 +344,8 @@ std::set<const RevBayesCore::DagNode*> ContainerNode<rlElemType, valueType>::get
 template<typename rlElemType, typename valueType>
 valueType& ContainerNode<rlElemType, valueType>::getValue( void )
 {
-    if ( touched )
-        update();
+    if ( this->touched )
+        this->update();
 
     return value;
 }
@@ -363,7 +359,7 @@ valueType& ContainerNode<rlElemType, valueType>::getValue( void )
 template<typename rlElemType, typename valueType>
 const valueType& ContainerNode<rlElemType, valueType>::getValue( void ) const {
     
-    if ( touched )
+    if ( this->touched )
         const_cast<ContainerNode<rlElemType, valueType>*>( this )->update();
 
     return value;
@@ -399,8 +395,14 @@ bool ContainerNode<rlElemType, valueType>::isConstant( void ) const
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::keepMe( RevBayesCore::DagNode* affecter )
 {
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // TODO: Hard-set touched flag to false, potentially unsafe
-    touched = false;
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched container node" << std::endl;
+    this->touched = false;
 
     // Pass the call on
     this->keepAffected();
@@ -574,6 +576,11 @@ void ContainerNode<rlElemType, valueType>::redraw( void )
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -612,6 +619,11 @@ void ContainerNode<rlElemType, valueType>::setName( const std::string& n )
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::touchMe( RevBayesCore::DagNode *toucher )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
     // Touch myself
     this->touched = true;
 
@@ -669,7 +681,7 @@ void ContainerNode<rlElemType, valueType>::update()
     }
     
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 

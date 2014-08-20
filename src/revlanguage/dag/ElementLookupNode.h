@@ -66,7 +66,6 @@ namespace RevLanguage {
     private:
         RevPtr<Variable>                        variable;                                           //!< The base variable
         IndexVector                             oneOffsetIndices;                                   //!< The indices
-        bool                                    touched;                                            //!< Are we dirty?
         typename rlElemType::valueType*         value;                                              //!< Current value
     };
     
@@ -89,7 +88,6 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const std::string&    
     RevBayesCore::DynamicNode<typename rlElemType::valueType>( n ),
     variable( var ),
     oneOffsetIndices(),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -120,7 +118,6 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const ElementLookupNod
     RevBayesCore::DynamicNode<typename rlElemType::valueType>( n ),
     variable( n.variable ),
     oneOffsetIndices( n.oneOffsetIndices ),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -353,7 +350,7 @@ std::set<const RevBayesCore::DagNode*> ElementLookupNode<rlType, rlElemType>::ge
 template<typename rlType, typename rlElemType>
 typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue( void )
 {
-    if ( touched )
+    if ( this->touched )
         update();
     
     return *value;
@@ -366,9 +363,9 @@ typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue(
  * by the lazy evaluation mechanism.
  */
 template<typename rlType, typename rlElemType>
-const typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue( void ) const {
-    
-    if ( touched )
+const typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue( void ) const
+{
+    if ( this->touched )
         const_cast<ElementLookupNode<rlType, rlElemType>*>( this )->update();
     
     return *value;
@@ -408,11 +405,17 @@ bool ElementLookupNode<rlType, rlElemType>::isConstant( void ) const
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::keepMe( RevBayesCore::DagNode* affecter )
 {
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of element lookup node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // TODO: Hard-set touched flag to false, potentially unsafe
     // We at least check to make sure the value is not NULL
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched element lookup node" << std::endl;
     if ( value == NULL )
         this->update();
-    touched = false;
+    this->touched = false;
     
     // Pass the call on
     this->keepAffected();
@@ -466,6 +469,11 @@ void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o,
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of element lookup node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -526,6 +534,10 @@ void ElementLookupNode<rlType, rlElemType>::swapParent(const RevBayesCore::DagNo
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::touchMe( RevBayesCore::DagNode *toucher )
 {
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of element lookup node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
     // Touch myself
     this->touched = true;
     
@@ -555,7 +567,7 @@ void ElementLookupNode<rlType, rlElemType>::update()
     value = RevBayesCore::Cloner<typename rlElemType::valueType, IsDerivedFrom<typename rlElemType::valueType, RevBayesCore::Cloneable>::Is >::createClone( static_cast<rlElemType&>( theElement->getRevObject() ).getValue() );
 
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 

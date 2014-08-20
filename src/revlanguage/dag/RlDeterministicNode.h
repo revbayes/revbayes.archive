@@ -86,26 +86,6 @@ const RevLanguage::Function& RevLanguage::DeterministicNode<valueType>::getRlFun
 }
 
 
-/** Touch this node for recalculation. Here we use lazy evaluation. */
-template<class valueType>
-void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
-    
-    this->touched = true;     //!< To be on the safe side; the flag is not used by this class
-    
-    
-    // We need to touch the function anyways because it might not be filthy enough.
-    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
-//    if ( !this->isFunctionDirty() )
-//    {
-        // Essential for lazy evaluation
-        this->touchFunction( toucher );
-
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-//    }
-}
-
-
 /** Print struct for user */
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream& o, bool verbose ) const
@@ -121,6 +101,7 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
         else
             o << "_dagNode      = <" << this << ">" << std::endl;
     }
+    o << "_dagType      = Deterministic Rev function node" << std::endl;
     
     if ( verbose == true )
     {
@@ -142,6 +123,31 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
     this->printChildren( o, 16, 70, verbose );
 
     o << std::endl;
+}
+
+
+/** Touch this node for recalculation. Here we use lazy evaluation. */
+template<class valueType>
+void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of Rev function node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    this->touched = true;     //!< To be on the safe side; the flag is not used by this class
+    
+    
+    // We need to touch the function anyways because it might not be filthy enough.
+    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
+    //    if ( !this->isFunctionDirty() )
+    //    {
+
+    // Essential for lazy evaluation
+    this->touchFunction( toucher );
+    
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
+    //    }
 }
 
 
