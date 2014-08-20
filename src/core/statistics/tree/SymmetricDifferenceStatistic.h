@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the declaration of the RobinsonFouldsDistanceStatistic statistic, which computes
+ * This file contains the declaration of the SymmetricDifferenceStatistic statistic, which computes
  * the RF distance (sum of differing bipartitions) between two trees.
  *
- * @brief Declaration of the RobinsonFouldsDistanceStatistic
+ * @brief Declaration of the SymmetricDifferenceStatistic
  *
  * (c) Copyright 2009- under GPL version 3
  * @date Last modified: $Date: 2012-07-05 16:47:08 +0200 (Thu, 05 Jul 2012) $
@@ -12,11 +12,11 @@
  * @version 1.0
  * @since 2011-04-13, version 1.0
  *
- * $Id: RobinsonFouldsDistanceStatistic.h 1651 2012-07-05 14:47:08Z Bastien Boussau $
+ * $Id: SymmetricDifferenceStatistic.h 1651 2012-07-05 14:47:08Z Bastien Boussau $
  */
 
-#ifndef RobinsonFouldsDistanceStatistic_H
-#define RobinsonFouldsDistanceStatistic_H
+#ifndef SymmetricDifferenceStatistic_H
+#define SymmetricDifferenceStatistic_H
 
 //#include "Statistic.h"
 #include "TimeTree.h"
@@ -32,14 +32,14 @@
 
 namespace RevBayesCore {
     
-    class RobinsonFouldsDistanceStatistic : public TypedFunction< double > {
+    class SymmetricDifferenceStatistic : public TypedFunction< double > {
         
     public:
-        RobinsonFouldsDistanceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2);                                            //!< Default constructor
-        virtual      ~RobinsonFouldsDistanceStatistic(void);                                                         //!< Destructor
+        SymmetricDifferenceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2);                                            //!< Default constructor
+        virtual      ~SymmetricDifferenceStatistic(void);                                                         //!< Destructor
         
         // Basic utility functions
-        RobinsonFouldsDistanceStatistic*                        clone(void) const;                                   //!< Clone object
+        SymmetricDifferenceStatistic*                        clone(void) const;                                   //!< Clone object
         void                                        update(void);                                     //!< Clone the function
         
     protected:

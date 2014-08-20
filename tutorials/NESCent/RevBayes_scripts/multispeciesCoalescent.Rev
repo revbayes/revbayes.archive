@@ -3,14 +3,17 @@
 # RevBayes Example: Species tree inference using the multispecies coalescent.
 #
 # 
-# This file: Specifies the full GTR model with a strict clock and an offset 
-#            exponential distribution as a node calibration.
-#            Here, we run an MCMC on this model.
+# This file: Reads data, specifies the full Multispecies coalescent model, 
+# and then performs inference under it.
+# The species tree is distributed according to a birth-death process.
+# Gene trees are distributed according to the Multispecies coalescent model running along this species tree.
+# We assume a single effective population size for the entire tree.
+# Gene sequences are distributed according to a Continuous Time Markov Chain (GTR) 
+# with a relaxed clock (independent rates), and rate variation across sites.
 #
 # authors: Bastien Boussau and Sebastian Hoehna
 #
 ################################################################################
-
 
 
 
