@@ -14,13 +14,15 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Topology> *t, cons
 }
 
 
-TreeAssemblyFunction::~TreeAssemblyFunction( void ) {
+TreeAssemblyFunction::~TreeAssemblyFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-TreeAssemblyFunction* TreeAssemblyFunction::clone( void ) const {
+TreeAssemblyFunction* TreeAssemblyFunction::clone( void ) const
+{
     return new TreeAssemblyFunction( *this );
 }
 
@@ -57,7 +59,8 @@ void TreeAssemblyFunction::touch(DagNode *toucher)
     //delegate to base class
     TypedFunction< BranchLengthTree >::touch( toucher );
     
-    if ( toucher == brlen ) {
+    if ( toucher == brlen )
+    {
         const std::set<size_t> &touchedIndices = toucher->getTouchedElementIndices();
         touchedNodeIndices.insert(touchedIndices.begin(), touchedIndices.end());
     }
@@ -65,7 +68,8 @@ void TreeAssemblyFunction::touch(DagNode *toucher)
 }
 
 
-void TreeAssemblyFunction::update( void ) {
+void TreeAssemblyFunction::update( void )
+{
     
     if ( touchedNodeIndices.size() > 0 )
     {
