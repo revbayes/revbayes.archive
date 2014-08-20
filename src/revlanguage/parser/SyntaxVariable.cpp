@@ -557,8 +557,6 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
             
             if ( dynamicLookup )
             {
-                throw RbException( "Dynamic element lookups not working yet" );
-                
                 // Make a dynamic element lookup
                 theVar = new Variable( theVar->getRevObject().makeElementLookup( theVar, containerOneOffsetIndexVars ) );
             }

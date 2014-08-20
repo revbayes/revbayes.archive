@@ -851,7 +851,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_workspaceVector<Move>()                   );
         addFunction( "v",         new Func_modelVectorAbstractElement<AbstractCharacterData>()          );
         addFunction( "v",         new Func_modelVectorAbstractElement<AbstractDiscreteCharacterData>()  );
-        addFunction( "v",         new Func_modelVectorAbstractElement<RateMatrix>()                   );
+        addFunction( "v",         new Func_modelVectorAbstractRbElement<RateMatrix>()                   );
         addFunction( "v",         new Func_modelVector<Natural>()                    );
         addFunction( "v",         new Func_modelVector<Integer>()                    );
         addFunction( "v",         new Func_modelVector<Real>()                       );
