@@ -220,13 +220,19 @@ bool TestCharacterHistory::run_exp(void) {
     origin->setValue(rootAge);
     StochasticNode<TimeTree> *tau = NULL;
     
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    
     if (useBdProcess)
     {
         ConstantNode<double> *div = new ConstantNode<double>("diversification", new double(1.0));
         ConstantNode<double> *turn = new ConstantNode<double>("turnover", new double(0.0));
         ConstantNode<double> *rho = new ConstantNode<double>("rho", new double(1.0));
         
-        tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, div, turn, rho, "uniform", "survival", int(names.size()), names, std::vector<Clade>()) );
+        tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, div, turn, rho, "uniform", "survival", taxa, std::vector<Clade>()) );
         
     }
     else
@@ -601,7 +607,12 @@ bool TestCharacterHistory::run_mol(void) {
     //	div->setValue(rng->uniform01() / 1.5);
 	
 	// Birth-death tree
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, birthRate, deathRate, rho, "uniform", "nTaxa", taxa, std::vector<Clade>()) );
     
     tau->setValue( trees[0] );
         

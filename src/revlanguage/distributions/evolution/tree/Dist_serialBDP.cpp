@@ -56,9 +56,17 @@ RevBayesCore::ConstantRateSerialSampledBirthDeathProcess* Dist_serialBDP::create
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-    // the origin
-    RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    }
+    // the root age
+    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+    {
+        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    }
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
