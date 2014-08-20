@@ -144,6 +144,8 @@ void RevBayesCore::RbVectorFunction<valueType>::swapParameterInternal(const DagN
 template <class valueType>
 void RevBayesCore::RbVectorFunction<valueType>::touch( DagNode *toucher )
 {
+    RevBayesCore::TypedFunction< RbVector<valueType> >::touch( toucher );
+    
     for (size_t i = 0; i < parameters.size(); ++i)
     {
         if (toucher == parameters[i])
