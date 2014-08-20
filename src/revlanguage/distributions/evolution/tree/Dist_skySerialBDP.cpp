@@ -61,7 +61,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
     {
         o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
     }
-    // the origin
+    // the root age
     RevBayesCore::TypedDagNode<double>* ra                   = NULL;
     if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
     {
