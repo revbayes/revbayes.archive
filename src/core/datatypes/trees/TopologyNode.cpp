@@ -896,7 +896,6 @@ void TopologyNode::removeTree(Tree *t)
     // only remove the tree if we had a pointer stored to it
     if ( tree == t )
     {
-//        std::cerr << "Removing tree <" << t << "> from topology node " << name << " <" << this << "> " << std::endl;
         tree = NULL;
     }
     
@@ -952,7 +951,6 @@ void TopologyNode::setTree(Tree *t) {
     tree = t;
     for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i)
     {
-//        std::cerr << "Setting tree for topology node " << name << " < " << this << "> to <" << t << ">" << std::endl;
         (*i)->setTree( t );
     }
     

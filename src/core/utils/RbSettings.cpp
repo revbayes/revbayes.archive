@@ -17,7 +17,20 @@
  */
 
 #include "RbSettings.h"
+#include "RbException.h"
+#include "RbFileManager.h"
+
+#include <iostream>
 #include <string>
+#include <sys/stat.h>
+
+#ifdef WIN32
+#	include <dirent.h>
+#   include <unistd.h>
+#else
+#	include <dirent.h>
+#   include <unistd.h>
+#endif
 
 
 
@@ -43,35 +56,87 @@ RbSettings::RbSettings(std::string& defaultFileName) {
 
 
 
-bool RbSettings::getPrintNodeIndex( void ) const {
+bool RbSettings::getPrintNodeIndex( void ) const
+{
     
     return printNodeIndex;
 }
 
 
-double RbSettings::getTolerance( void ) const {
+double RbSettings::getTolerance( void ) const
+{
     
     return tolerance;
 }
 
 
-/** Initialize the user settings */
-void RbSettings::initializeUserSettings(void) {
-
-    tolerance = 10E-10;         // set default value for tolerance comparing doubles
-    printNodeIndex = true;      // print node indices of tree nodes as comments
+const std::string& RbSettings::getWorkingDirectory( void ) const
+{
+    
+    return workingDirectory;
 }
 
 
-void RbSettings::setPrintNodeIndex(bool tf) {
+/** Initialize the user settings */
+#define	MAX_DIR_PATH	2048
+void RbSettings::initializeUserSettings(void)
+{
+
+    tolerance = 10E-10;         // set default value for tolerance comparing doubles
+    printNodeIndex = true;      // print node indices of tree nodes as comments
+
+    // initialize the current directory to be the directory the binary is sitting in
+    char cwd[MAX_DIR_PATH+1];
+	if ( getcwd(cwd, MAX_DIR_PATH+1) )
+    {
+#	ifdef WIN32
+        std::string pathSeparator = "\\";
+#	else
+        std::string pathSeparator = "/";
+#   endif
+        
+        std::string curdir = cwd;
+        
+        if ( curdir.at( curdir.length()-1 ) == pathSeparator[0] )
+        {
+            curdir.erase( curdir.length()-1 );
+        }
+        
+        workingDirectory = curdir;
+	}
+    else
+    {
+        workingDirectory = "";
+    }
+}
+
+
+void RbSettings::setPrintNodeIndex(bool tf)
+{
     
     printNodeIndex = tf;
     
 }
 
 
-void RbSettings::setTolerance(double t) {
+void RbSettings::setTolerance(double t)
+{
     
     tolerance = t;
+    
+}
+
+
+void RbSettings::setWorkingDirectory(const std::string &wd)
+{
+    
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd);
+    
+    if ( !fm.isDirectory() )
+    {
+        throw RbException("Cannot set the current directory to '" + wd + "'.");
+    }
+    
+    workingDirectory = fm.getFullFilePath();
     
 }
