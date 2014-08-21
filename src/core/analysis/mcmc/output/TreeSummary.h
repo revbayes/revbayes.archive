@@ -119,7 +119,7 @@ namespace RevBayesCore {
     inline TimeTree* TreeSummary<TimeTree>::map( int b ) 
     {
         
-        summarize();
+        summarize( b );
         
         double sampleSize = trace.size() - burnin;
         
