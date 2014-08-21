@@ -36,7 +36,7 @@ using namespace boost::assign; // bring 'operator+=()' into scope
 #define ctrl(C) ((C) - '@')
 typedef std::vector<std::string> StringVector;
 
-bool debug = true;
+bool debug = false;
 
 const char* nl = (char*) "\n\r";
 const char* default_prompt = (char*) "RevBayes > ";
@@ -285,20 +285,16 @@ int spaceCallback(const char *buf, size_t len, char c) {
 
 int listSeparatorCallback(const char *buf, size_t len, char c) {
     
-    // first time, previous state is st_def_list
-    // second time, previous state is st_def_arugment
-    StringVector completions = editorMachine.getStateQueue()->back();
-    //std::cout << "\n\rstate before: " << editorMachine.getStateQueue()->back()->getDescription();
     if (editorMachine.processInput(buf)) {
-        //std::cout << "\n\rstate after: " << editorMachine.getStateQueue()->back()->getDescription();
-        //EditorState *func = editorMachine.getStateQueue()->at(editorMachine.getStateQueue()->size() - 2);
+
+        // shouldn't be here if not previous state was defining a list
+        EditorState *func = editorMachine.getStateQueue()->at(editorMachine.getStateQueue()->size() - 2);
         std::string usedArgument = editorMachine.getCurrentState()->getSubject();
-        std::cout << "usedArgument = " + usedArgument + "\n\r";
+
         // pop the used argument from completions        
         StringVector v;
 
         BOOST_FOREACH(std::string s, func->getCompletions()) {
-        //BOOST_FOREACH(std::string s, completions) {
             if (s != usedArgument) {
                 v.push_back(s);
             }
