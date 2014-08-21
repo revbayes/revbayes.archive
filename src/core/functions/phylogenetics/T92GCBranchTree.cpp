@@ -77,14 +77,19 @@ void T92GCBranchTree::recursiveUpdate(const RevBayesCore::TopologyNode &from)   
         */
         
         double gc = gctree->getValue()[index];
-        //  double gc = 0.5 + (gctree->getValue()[index] - 0.5) * 0.001;
+        if ((gc < 0) || (gc > 1))   {
+            std::cerr << "error: gc value : " << gc << '\n';
+            exit(1);
+        }
+        // double gc = 0.5 + (gctree->getValue()[index] - 0.5) * 0.001;
+//        std::cerr << gc << '\n';
         RateMatrix_HKY* matrix = dynamic_cast<RateMatrix_HKY*> (&(*value)[index]);
         std::vector<double> v(4);
         v[0] = v[3] = 0.5 * (1 - gc);
         v[1] = v[2] = 0.5 * gc;
         matrix->setStationaryFrequenciesByCopy(v);
         matrix->setKappa(kappa->getValue());
-        matrix->updateMatrix();
+  //        matrix->updateMatrix();
     }    
     // simulate the val for each child (if any)
     size_t numChildren = from.getNumberOfChildren();
