@@ -356,22 +356,6 @@ distNe := Ne - trueNe
 # To achieve this we need to write some functions:
 clear(i)
 
-function RealPos sumVector ( Simplex xvec ) { 
-#	DI <- 0.0
-#	for (i in 1:xvec.size()) {
-#		DI <- DI + xvec[i] 
-#	}
-	return sum(xvec)
-}
-
-distEqFreq := sumVector(sf[1])
-
-# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
-
-
-
-
 function RealPos diffVectors ( Simplex xvec, Simplex yvec ) { 
 	DI <- 0.0
 	for (i in 1:xvec.size()) {
@@ -389,16 +373,10 @@ function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) {
 }
 
 distEqFreq := diffVectorsOfVectors(trueSf, sf)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distEqFreq)
 	
-# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
+					
 	
-	
-	
-	
-	
-	function RealPos diffVectors ( Real[] xvec, Real[] yvec ) { 
+function RealPos diffVectors ( Real[] xvec, Real[] yvec ) { 
 	DI <- 0.0
 	for (i in 1:xvec.size()) {
 		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
@@ -415,6 +393,8 @@ function RealPos diffVectorsOfVectors ( Real[][] xvecvec, Real[][] yvecvec ) {
 }
 
 
+	
+	
 # Same thing for exchangeability parameters:
 distExchange := diffVectorsOfVectors(trueEr, er)
 monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
@@ -423,9 +403,11 @@ monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
 distRates := diffVectors(trueFamilyRates, familyRates)
 monitors[mntrIndex++] <- screenmonitor(printgen=10, distRates)
 
+
+# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
+	
 # We could do similar things for the few remaining parameters, but really I think that's enough.
-
-
 
 #############
 # THE Model #
