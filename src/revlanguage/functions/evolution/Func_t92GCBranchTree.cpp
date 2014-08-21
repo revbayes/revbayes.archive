@@ -83,9 +83,7 @@ const TypeSpec& Func_t92GCBranchTree::getTypeSpec( void ) const {
 
 
 RevPtr<Variable> Func_t92GCBranchTree::execute() {
-    
-    std::cerr << "execute\n";
-    
+        
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< std::vector<double> >* gcprocess = static_cast<const ModelVector<Probability> &>( args[1].getVariable()->getRevObject() ).getDagNode();
@@ -94,20 +92,12 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
 
     RevBayesCore::TypedDagNode< double >* kappa = static_cast<const RealPos &>( args[3].getVariable()->getRevObject() ).getDagNode();
 
-    std::cerr << "result\n";
-    
     RevBayesCore::T92GCBranchTree* result = new RevBayesCore::T92GCBranchTree( tau, gcprocess, rootgc, kappa );
 
-    std::cerr << "dag\n";
-    
     DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
-    
-    std::cerr << "wrapped result\n";
     
     ModelVectorAbstractElement<RateMatrix>* wrappedresult = new ModelVectorAbstractElement<RateMatrix>( dag );
 
-    std::cerr << "wrapped result ok\n";
-    
     return new Variable( wrappedresult );
 }
 
