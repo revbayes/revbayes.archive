@@ -244,6 +244,7 @@
 #include "Func_citation.h"
 #include "Func_clear.h"
 #include "Func_contributors.h"
+#include "Func_getwd.h"
 #include "Func_help.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
@@ -256,6 +257,7 @@
 #include "Func_range.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
+#include "Func_setwd.h"
 #include "Func_structure.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
@@ -839,6 +841,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
         addFunction( "contributors",             new Func_contributors()             );
+        addFunction( "getwd",                    new Func_getwd()                    );
         addFunction( "help",                     new Func_help()                     );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
@@ -851,6 +854,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "seq",                      new Func_seq<Real>()                );
+        addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
         addFunction( "type",                     new Func_type()                     );
@@ -860,7 +864,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "v",         new Func_workspaceVector<Move>()                   );
         addFunction( "v",         new Func_modelVectorAbstractElement<AbstractCharacterData>()          );
         addFunction( "v",         new Func_modelVectorAbstractElement<AbstractDiscreteCharacterData>()  );
-        addFunction( "v",         new Func_modelVectorAbstractElement<RateMatrix>()                   );
+        addFunction( "v",         new Func_modelVectorAbstractRbElement<RateMatrix>()                   );
         addFunction( "v",         new Func_modelVector<Natural>()                    );
         addFunction( "v",         new Func_modelVector<Integer>()                    );
         addFunction( "v",         new Func_modelVector<Real>()                       );

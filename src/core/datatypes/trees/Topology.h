@@ -17,8 +17,10 @@
 #ifndef Topology_H
 #define Topology_H
 
+#include <set>
 #include <string>
 #include <vector>
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -36,6 +38,7 @@ namespace RevBayesCore {
         virtual Topology*                                   clone(void) const;                                                      //!< Clone object
         
         
+        void                                                addTree(Tree *t);                                                       //!< Add a tree user
         std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getNode(size_t idx);                                                    //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                              //!< Get the node at index
@@ -55,6 +58,7 @@ namespace RevBayesCore {
         const TopologyNode&                                 getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
         bool                                                isBinary(void) const;                                                   //!< Is the BranchLengthTree rooted
         bool                                                isRooted(void) const;                                                   //!< Get a pointer to the root node of the Tree
+        void                                                removeTree(Tree *t);                                                    //!< Remove a tree user
         void                                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         
@@ -71,7 +75,7 @@ namespace RevBayesCore {
         bool                                                rooted;
         size_t                                              numTips;
         size_t                                              numNodes;
-
+        std::set<Tree*>                                     treesUsingThisTopology;                                                 //!< Trees using us
     };
     
     // Global functions using the class

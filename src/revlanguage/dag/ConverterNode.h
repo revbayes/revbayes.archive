@@ -59,7 +59,6 @@ namespace RevLanguage {
         
     private:
         RevPtr<Variable>                        argument;                                           //!< The argument variable
-        bool                                    touched;                                            //!< Are we dirty?
         rlType*                                 convertedObject;                                    //!< The converted object
         const TypeSpec&                         typeSpec;                                           //!< Type specification to convert to
         
@@ -81,7 +80,6 @@ template<typename rlType>
 ConverterNode<rlType>::ConverterNode( const std::string& n, const RevPtr<Variable>& arg, const TypeSpec& ts ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     argument( arg ),
-    touched( true ),
     convertedObject( NULL ),
     typeSpec( ts )
 {
@@ -102,7 +100,6 @@ template<typename rlType>
 ConverterNode<rlType>::ConverterNode( const ConverterNode<rlType>& n ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     argument( n.argument ),
-    touched( true ),
     convertedObject( NULL ),
     typeSpec( n.typeSpec )
 {
@@ -275,7 +272,7 @@ std::set<const RevBayesCore::DagNode*> ConverterNode<rlType>::getParents( void )
 template<typename rlType>
 typename rlType::valueType& ConverterNode<rlType>::getValue( void )
 {
-    if ( touched )
+    if ( this->touched )
         update();
     
     return const_cast<typename rlType::valueType&>( convertedObject->getValue() );
@@ -290,7 +287,7 @@ typename rlType::valueType& ConverterNode<rlType>::getValue( void )
 template<typename rlType>
 const typename rlType::valueType& ConverterNode<rlType>::getValue( void ) const
 {
-    if ( touched )
+    if ( this->touched )
         const_cast<ConverterNode<rlType>*>( this )->update();
     
     return convertedObject->getValue();
@@ -325,9 +322,11 @@ void ConverterNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
     // TODO: Hard-set touched flag to false, potentially unsafe
     // We at least check to make sure that convertedObject is not NULL
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched converter node" << std::endl;
     if ( convertedObject == NULL )
         this->update();
-    touched = false;
+    this->touched = false;
     
     // Pass the call on
     this->keepAffected();
@@ -381,6 +380,11 @@ void ConverterNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) 
 template<typename rlType>
 void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of Converter node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -399,6 +403,11 @@ void ConverterNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 template<typename rlType>
 void ConverterNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // Touch myself
     this->touched = true;
     
@@ -448,7 +457,7 @@ void ConverterNode<rlType>::update()
     convertedObject = static_cast<rlType*>( argument->getRevObject().convertTo( typeSpec ) );
     
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 

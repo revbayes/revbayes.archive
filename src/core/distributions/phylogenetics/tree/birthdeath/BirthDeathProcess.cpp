@@ -185,7 +185,6 @@ std::set<const DagNode*> BirthDeathProcess::getParameters( void ) const
     std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
     
     parameters.insert( rho );
-    parameters.insert( origin );
     
     parameters.erase( NULL );
     return parameters;
@@ -206,9 +205,10 @@ void BirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP)
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if ( oldP == origin ) 
+    else
     {
-        origin = static_cast<const TypedDagNode<double>* >( newP );
+        // delegate the super-class
+        AbstractBirthDeathProcess::swapParameter(oldP, newP);
     }
 
 }

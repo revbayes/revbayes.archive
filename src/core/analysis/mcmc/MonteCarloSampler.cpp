@@ -493,7 +493,7 @@ void MonteCarloSampler::replaceDag(const RbVector<Move> &mvs, const RbVector<Mon
             // error checking
             if ( (*j)->getName() == "" )
             {
-                throw RbException( "Unable to connect move to DAG copy because variable name was lost");
+                throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
             }
             
             DagNode* theNewNode = NULL;

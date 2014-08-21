@@ -34,7 +34,7 @@ namespace RevLanguage {
         Move_TreeScale(void);                                                                                                    //!< Default constructor
         
         // Basic utility functions
-        virtual Move_TreeScale*                          clone(void) const;                                                      //!< Clone object
+        virtual Move_TreeScale*                     clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
@@ -47,7 +47,8 @@ namespace RevLanguage {
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
         RevPtr<const Variable>                      tree;
-        RevPtr<const Variable>                      lambda;
+        RevPtr<const Variable>                      rootAge;
+        RevPtr<const Variable>                      delta;
         RevPtr<const Variable>                      tuning;
         
     };

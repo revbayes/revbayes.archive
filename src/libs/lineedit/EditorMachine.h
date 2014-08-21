@@ -55,7 +55,11 @@ public:
             return;
         }
 
-        if (linePos.back() > buf.size()) {
+        if (queuedStates->back()->getType() == ST_IDLE) {
+            return;
+        }
+
+        if (linePos.back() > buf.length()) {
             cancelState(queuedStates->back());
             linePos.pop_back();
             cmd = cmd.substr(0, linePos.back());
@@ -70,12 +74,24 @@ public:
      * @return 
      */
     bool tryRelease(std::string buf) {
-        StateType type = (queuedStates->back())->getType();
-        if (queuedStates->back()->tryRelease(cmd, type)) {
+
+        bool released = false;
+        
+        // goal: release means put a new state-idle in queue
+//        for(size_t i = queuedStates->size() -1; i > 0; i--){
+//            if(queuedStates->at(i)->tryRelease(cmd, queuedStates->back()->getType())){                
+//                releaseState(queuedStates->back());
+//                released = true;
+//            } else{
+//                break;
+//            }
+//        }
+        // goal: release means the state is removed from queue
+        while (queuedStates->back()->tryRelease(cmd, queuedStates->back()->getType())) {
             releaseState(queuedStates->back());
-            return true;
+            released = true;
         }
-        return false;
+        return released;
     }
 
     /**
@@ -99,8 +115,8 @@ public:
         // try release state
         bool stateReleased = tryRelease(buf);
 
-        bool stateTriggered = true;
         // set new state
+        bool stateTriggered = true;
         if (stateGenericOperator.tryHook(cmd, type)) {
             addState(new StateGenericOperator(stateGenericOperator.getTrigger()), subject);
 
@@ -121,7 +137,8 @@ public:
         }
 
         // update linePos if any change in state happened
-        if (stateReleased || stateTriggered) {
+        //if (stateReleased || stateTriggered) {
+        if (stateTriggered) {
             linePos.push_back(buf.size());
         }
 
@@ -184,7 +201,7 @@ private:
 
     void writeMessage(std::string m, EditorState *state) {
         std::string tab = "";
-        for (int i = 0; i < queuedStates->size(); i++) {
+        for (size_t i = 0; i < queuedStates->size(); i++) {
             tab.append("..");
         }
         //message.append(tab).append(state->getMessage()).append(nl);
@@ -203,6 +220,7 @@ private:
 
     void releaseState(EditorState* e) {
         queuedStates->pop_back();
+        //queuedStates->push_back(new S)
         writeMessage("release", e);
 
         transition = STATE_RELEASED;

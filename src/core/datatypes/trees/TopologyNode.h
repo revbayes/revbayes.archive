@@ -47,6 +47,8 @@ namespace RevBayesCore {
     
     class TopologyNode  {
         
+        friend class Topology;              //!< Give only Topology class access to the private setTree and removeTree functions
+        
     public:
         TopologyNode(size_t indx=0);                                                                                                       //!< Default constructor with optional index
         TopologyNode(const std::string& n, size_t indx=0);                                                                                 //!< Constructor with name and optional index
@@ -92,16 +94,16 @@ namespace RevBayesCore {
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* p, bool enforceNewickRecomp = true);                      //!< Removes a specific child
-        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
         void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                        //!< Sets the node's parent
-        void                                        setTree(Tree *t);
         
     protected:
         
         // helper methods
         virtual std::string                         buildNewickString(void);                                                            //!< compute the newick RlString for a tree rooting at this node
+        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
+        void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
         
         // protected members
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.

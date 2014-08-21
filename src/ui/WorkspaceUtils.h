@@ -28,6 +28,12 @@ typedef std::map<std::string, RevLanguage::RevObject*> TypeTable;
 
 class WorkspaceUtils {
 public:
+    
+    struct FunctionSignature{
+        std::string returnType;
+        std::string name;
+        StringVector arguments;
+    };
 
     //////////// functions //////////////////////
 
@@ -61,19 +67,27 @@ public:
         return makeUnique(result);
     }
 
-    StringVector getFunctionSignatures(std::string name) {
-        StringVector signatures;
-
-        if (!isFunction(name)) {
-            return signatures;
+    std::vector<FunctionSignature> getFunctionSignatures(std::string name) {
+        std::vector<FunctionSignature> result;
+        if (!RevLanguage::Workspace::globalWorkspace().existsFunction(name)) {
+            return result;
         }
 
         FunctionVector v = RevLanguage::Workspace::globalWorkspace().getFunctionTable().findFunctions(name);
+
         for (FunctionVector::iterator it = v.begin(); it != v.end(); it++) {
-            signatures.push_back((*it)->getRevDeclaration());
+            FunctionSignature functionSignature;
+            functionSignature.returnType = (*it)->getReturnType().getType();
+            functionSignature.name = name;
+                    
+            const RevLanguage::ArgumentRules& argRules = (*it)->getArgumentRules();
+            for (size_t i = 0; i < argRules.size(); i++) {
+                functionSignature.arguments.push_back(argRules[i].getArgumentLabel());
+            }
+            result.push_back(functionSignature);
         }
 
-        return signatures;
+        return result;
     }
 
     bool isFunction(std::string name) {
