@@ -126,6 +126,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         double t = rateChangeTimes[i];
         int div = survivors(t);
         lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
+		
+//		std::cout << "t = " << t << "  -- div = " << div << "\n";
+//		std::cout << "sampling = " << sampling[i+1] << "  -- i = " << i << "\n";
+//		std::cout << "sampling size = " << sampling.size() << "   q(i,t) =" << q(i, t) << std::endl;
         
     }
 
@@ -284,7 +288,7 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
     death.push_back(    d[0] );
     fossil.push_back(   f[0] );
     sampling.push_back( s[0] );
-    
+	
     size_t pos = 0;
     for (std::set<double>::const_iterator it = eventTimes.begin(); it != eventTimes.end(); ++it) 
     {
@@ -298,24 +302,34 @@ void PiecewiseConstantSerialSampledBirthDeathProcess::prepareProbComputation( vo
         if ( pos != birthTimes.size() ) 
         {
             indexBirth = pos;
+			birth.push_back( b[indexBirth+1] );
         }
-        birth.push_back( b[indexBirth+1] );
+		else{
+			birth.push_back( b[indexBirth] );
+		}
+        
         
         // add the extinction rate at the rate-change event t
         pos = size_t( find(deathTimes.begin(), deathTimes.end(), t) - deathTimes.begin() );
         if ( pos != deathTimes.size() ) 
         {
             indexDeath = pos;
+			death.push_back( d[indexDeath+1] );
         }
-        death.push_back( d[indexDeath+1] );
+		else{
+			death.push_back( d[indexDeath] );
+		}
         
         // add the fossilization rate at the rate-change event t
         pos = size_t( find(fossilTimes.begin(), fossilTimes.end(), t) - fossilTimes.begin() );
         if ( pos != fossilTimes.size() ) 
         {
             indexFossil = pos;
+			fossil.push_back( f[indexFossil+1] );
         }
-        fossil.push_back( f[indexFossil+1] );
+        else{
+			fossil.push_back( f[indexFossil] );
+		}
         
         // add the sampling probability at the rate-change event t
         pos = size_t( find(samplingTimes.begin(), samplingTimes.end(), t) - samplingTimes.begin() );
@@ -353,7 +367,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     if (i > 0) {
         ti = rateChangeTimes[i-1];
     }
-    
+	   
     double diff = b - d - f;
     double bp   = b*f;
     double dt   = ti - t;
@@ -364,7 +378,9 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double e = exp(A*dt);
     double tmp = ((1.0+B)+e*(1.0-B));
     
-    return 4.0*e / (tmp*tmp);    
+    double tmp2 = 4.0*e / (tmp*tmp);
+	
+	return tmp2;
 }
 
 
@@ -390,6 +406,7 @@ std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciat
         // draw the times
         times->push_back( n );
     }
+	
 	
     return times;
 }

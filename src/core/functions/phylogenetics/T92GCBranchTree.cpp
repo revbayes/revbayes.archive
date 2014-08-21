@@ -14,7 +14,7 @@ using namespace RevBayesCore;
 // constructor(s)
 T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector<double> > *g, const TypedDagNode< double>* r, const TypedDagNode<double>* k): 
 
-    TypedFunction< RbVector<RateMatrix> >( new RbVector< RateMatrix >(t->getValue().getNumberOfNodes()) ),
+    TypedFunction< RbVector<RateMatrix> >( new RbVector< RateMatrix >(t->getValue().getNumberOfNodes(), RateMatrix_HKY() ) ),
     tau(t), gctree(g), rootgc(r), kappa(k) {
     
     this->addParameter( tau );

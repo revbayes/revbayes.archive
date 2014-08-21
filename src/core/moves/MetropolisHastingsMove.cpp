@@ -3,6 +3,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <iomanip>
@@ -169,6 +170,17 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     {
         lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
     }
+	
+	if ( !RbMath::isFinite(lnPosteriorRatio) ) {
+		
+            proposal->undoProposal();
+            
+            // call restore for each node
+            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            {
+                (*i)->restore();
+            }
+	}
     
     
     // finally add the Hastings ratio
