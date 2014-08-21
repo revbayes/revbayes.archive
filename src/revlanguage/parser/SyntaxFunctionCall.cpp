@@ -1,9 +1,11 @@
+#include "AbstractMemberFunction.h"
 #include "Argument.h"
 #include "Environment.h"
 #include "MemberProcedure.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "SyntaxFunctionCall.h"
 #include "Workspace.h"
@@ -182,7 +184,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
         }
         else
         {
-            MemberFunction* theMemberFunction = dynamic_cast<MemberFunction*>( theFunction );
+            AbstractMemberFunction* theMemberFunction = dynamic_cast<AbstractMemberFunction*>( theFunction );
             if ( theMemberFunction != NULL )
             {
                 theMemberFunction->setMemberObject( theVar );
@@ -321,7 +323,7 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
         }
         else
         {
-            MemberFunction* theMemberFunction = dynamic_cast<MemberFunction*>( theFunction );
+            AbstractMemberFunction* theMemberFunction = dynamic_cast<AbstractMemberFunction*>( theFunction );
             if ( theMemberFunction != NULL )
             {
                 theMemberFunction->setMemberObject( theVar );
