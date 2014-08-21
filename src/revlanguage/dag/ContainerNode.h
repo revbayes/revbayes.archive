@@ -36,7 +36,6 @@ namespace RevLanguage {
 
     public:
         ContainerNode(const std::string& n);                                                                            //!< Constructor of empty container node
-        ContainerNode(const std::string& n, const valueType& v);                                                        //!< Construct container from valueType
         ContainerNode(const std::string& n, std::vector<RevObject*> elems, const std::vector<size_t>& lengths);         //!< Construct container from Rev objects
         ContainerNode(const ContainerNode<rlElemType, valueType>& n);                                                   //!< Copy constructor
 
@@ -52,17 +51,21 @@ namespace RevLanguage {
         void                                    push_front(rlElemType* x);                                              //!< Push element onto front
         
         // Public methods
-        ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone
-        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG which is connected to this node
+        void                                    addChild(RevBayesCore::DagNode *child) const;                           //!< Protect NA containers to form part of DAGs
+        ContainerNode<rlElemType,valueType>*    clone(void) const;                                                      //!< Type-safe clone (shallow copy)
+        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
+        ContainerNode<rlElemType,valueType>*    deepCopy(void) const;                                                   //!< Deep copy
         RevPtr<Variable>&                       getElement(size_t index);                                               //!< Return an element
+        RevPtr<const Variable>&                 getElement(size_t index) const;                                         //!< Return an element (const version)
         double                                  getLnProbability(void);                                                 //!< Get ln prob (0.0)
         double                                  getLnProbabilityRatio(void);                                            //!< Get ln prob ratio (0.0)
         valueType&                              getValue(void);                                                         //!< Get the value
         const valueType&                        getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
+        virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void);                                                           //!< Redraw (or not)
         void                                    setName(const std::string& n);                                          //!< Set the name of myself and of elements
+        size_t                                  size(void) const { return elements.size(); }                            //!< Return number of elements
         void                                    update(void);                                                           //!< Update current value
         
         // Parent DAG nodes management functions
@@ -77,7 +80,6 @@ namespace RevLanguage {
         
     private:
         std::vector< RevPtr<Variable> >         elements;                                                               //!< The elements
-        bool                                    touched;                                                                //!< Are we dirty?
         valueType                               value;                                                                  //!< Current value
     };
     
@@ -98,29 +100,9 @@ template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n ) :
     RevBayesCore::DynamicNode<valueType>( n ),
     elements(),
-    touched( false ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
-}
-
-
-/**
- * Constructor of constant value container node. We take a
- * value of valueType and set our elements vector from that
- * value.
- */
-template<typename rlElemType, typename valueType>
-ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, const valueType& v ) :
-    RevBayesCore::DynamicNode<valueType>( n ),
-    elements(),
-    touched( true ),
-    value()
-{
-    this->type = RevBayesCore::DagNode::DETERMINISTIC;
-
-    for ( size_t i = 0; i < v.size(); ++i )
-        this->push_back( new rlElemType( v[i] ) );
 }
 
 
@@ -133,7 +115,6 @@ template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::vector<RevObject*> elems, const std::vector<size_t>& lengths ) :
     RevBayesCore::DynamicNode<valueType>( n ),
     elements(),
-    touched( true ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -151,21 +132,20 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::
 
 
 /**
- * Copy constructor. We make a deep copy here and override cloneDAG, which would
- * otherwise need a shallow copy.
+ * Copy constructor. We make a shallow copy here, as is standard for DAG node classes.
+ * We provide both a clone() function and a deepCopy() function to support ModelContainer
+ * objects that would like to produce element-level deep copies (element clones) instead
+ * of container-level shallow copies (independent containers with identical element
+ * variables). Use the deepCopy() function for the former, and the clone() function for
+ * the latter.
  */
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemType, valueType>& n ) :
     RevBayesCore::DynamicNode<valueType>( n ),
-    elements(),
-    touched( true ),
+    elements( n.elements ),
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
-    
-    // Deep copy constructor
-    for ( std::vector< RevPtr<Variable> >::const_iterator it = n.elements.begin(); it != n.elements.end(); ++it )
-        push_back( static_cast<rlElemType&>( (*it)->getRevObject() ).clone() );
 }
 
 
@@ -176,16 +156,14 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const ContainerNode<rlElemT
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>::~ContainerNode( void )
 {
-   // Deep copy destructor
     while ( elements.size() > 0 )
         pop_back();
 }
 
 
 /**
- * Assignment operator. We make a deep copy here using our
- * own push_back and pop_back functions to ensure proper
- * management of DAG node connections.
+ * Assignment operator. We make a shallow copy here, so that both
+ * containers after assignment share the same element variable pointers.
  */
 template<typename rlElemType, typename valueType>
 ContainerNode<rlElemType, valueType>& ContainerNode<rlElemType, valueType>::operator=( const ContainerNode<rlElemType, valueType>& x )
@@ -194,13 +172,19 @@ ContainerNode<rlElemType, valueType>& ContainerNode<rlElemType, valueType>::oper
     {
         RevBayesCore::DynamicNode<valueType>::operator=( x );
 
-        // Pop old elements (deep copy destructor)
+        // Pop old elements
         while ( elements.size() > 0 )
             pop_back();
 
-        // Push back new elements (deep copy constructor)
-        for ( std::vector< RevPtr<Variable> >::iterator it = x.elements.begin(); it != x.elements.end(); ++it )
-            push_back( (*it)->getRevObject().clone() );
+        // Set new elements
+        elements = x.elements;
+        
+        // Add ourself as a child of the new elements
+        for ( std::vector< RevPtr<Variable> >::iterator it = elements.begin(); it != elements.end(); ++it )
+        {
+            if ( !(*it)->isNAVar() )
+                (*it)->getRevObject().getDagNode()->addChild( this );
+        }
 
         // Tell everybody we have been changed
         this->touch();
@@ -230,29 +214,17 @@ RevBayesCore::DagNode* ContainerNode<rlElemType, valueType>::cloneDAG( std::map<
     if ( newNodes.find( this ) != newNodes.end() )
         return ( newNodes[ this ] );
     
-    // We avoid the conflict between having to make a deep copy in our clone
-    // function and the need to have a shallow copy (identical parents) in
-    // this function by starting out with an empty container, and not filling
-    // it until we have the element clones we need.
+    // We first make an empty container node
     ContainerNode<rlElemType, valueType>* copy = new ContainerNode<rlElemType, valueType>( this->name );
     
     // Add this node and its copy to the map
     newNodes[ this ] = copy;
-    
+
     // Now make sure the copy has its own Rev objects with their DAG nodes being the clones of our parents
     for ( std::vector< RevPtr<Variable> >::const_iterator it = elements.begin(); it != elements.end(); ++it )
     {
-        // Get the i-th parent
-        const RevBayesCore::DagNode *theParent = (*it)->getRevObject().getDagNode();
-        
-        // Get its clone
-        RevBayesCore::DagNode* theParentClone = theParent->cloneDAG( newNodes );
-        
-        // Now we can safely make a copy of the element
-        rlElemType* elemCopy = static_cast<rlElemType&>( (*it)->getRevObject()).clone();
-        
-        // Replace its DAG node with the clone of our parent
-        elemCopy->setDagNode( theParentClone );
+        // Make a DAG clone of the element
+        rlElemType* elemCopy = static_cast< rlElemType*>( static_cast<rlElemType&>( (*it)->getRevObject()).cloneDAG( newNodes ) );
         
         // Push it onto the copy
         copy->push_back( elemCopy );
@@ -262,6 +234,30 @@ RevBayesCore::DagNode* ContainerNode<rlElemType, valueType>::cloneDAG( std::map<
     for( std::set<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
         (*it)->cloneDAG( newNodes );
     
+    return copy;
+}
+
+
+/**
+ * Deep copy function. This function returns a container node with independent copies of
+ * the elements.
+ */
+template<typename rlElemType, typename valueType>
+ContainerNode<rlElemType, valueType>* ContainerNode<rlElemType, valueType>::deepCopy( void ) const
+{
+    // Get an empty container node named after us
+    ContainerNode<rlElemType, valueType>* copy = new ContainerNode<rlElemType, valueType>( this->name );
+    
+    // Populate copy with clones of our elements
+    for ( std::vector< RevPtr<Variable> >::const_iterator it = elements.begin(); it != elements.end(); ++it )
+    {
+        if ( (*it)->isNAVar() )
+            copy->push_back( NULL );
+        else
+            copy->push_back( static_cast<rlElemType&>( (*it)->getRevObject() ).clone() );
+    }
+    
+    // Return the copy
     return copy;
 }
 
@@ -292,7 +288,18 @@ RevPtr<Variable>& ContainerNode<rlElemType, valueType>::getElement( size_t index
 }
 
 
-/** 
+/**
+ * Return a reference to a specific element. This is the const version, so
+ * the caller cannot modify the element.
+ */
+template<typename rlElemType, typename valueType>
+RevPtr<const Variable>& ContainerNode<rlElemType, valueType>::getElement( size_t index ) const
+{
+    return elements[ index ];
+}
+
+
+/**
  * Calculate ln prob.
  * @todo Do we really need this?
  */
@@ -324,7 +331,10 @@ std::set<const RevBayesCore::DagNode*> ContainerNode<rlElemType, valueType>::get
     std::set<const RevBayesCore::DagNode*> parents;
 
     for ( std::vector< RevPtr<Variable> >::const_iterator it = this->elements.begin(); it != this->elements.end(); ++it )
-        parents.insert( (*it)->getRevObject().getDagNode() );
+    {
+        if ( !(*it)->isNAVar() )
+            parents.insert( (*it)->getRevObject().getDagNode() );
+    }
     
     return parents;
 }
@@ -334,8 +344,8 @@ std::set<const RevBayesCore::DagNode*> ContainerNode<rlElemType, valueType>::get
 template<typename rlElemType, typename valueType>
 valueType& ContainerNode<rlElemType, valueType>::getValue( void )
 {
-    if ( touched )
-        update();
+    if ( this->touched )
+        this->update();
 
     return value;
 }
@@ -349,7 +359,7 @@ valueType& ContainerNode<rlElemType, valueType>::getValue( void )
 template<typename rlElemType, typename valueType>
 const valueType& ContainerNode<rlElemType, valueType>::getValue( void ) const {
     
-    if ( touched )
+    if ( this->touched )
         const_cast<ContainerNode<rlElemType, valueType>*>( this )->update();
 
     return value;
@@ -375,19 +385,26 @@ bool ContainerNode<rlElemType, valueType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node. If we have been touched
- * but no one asked for our value, we just leave our touched flag
- * set, which should be safe. We do not want to set the touched
- * flag to false without calling update, as done in 
- * RevBayesCore::DeterministicNode.
+ * Keep the current value of the node. We copy the behavior in
+ * RevBayesCore::DeterministcNode
  *
- * @todo Check whether behavior in RevBayesCore::DeterministicNode is
- *       correct, or if there is some subtle point I have missed -- FR
+ * @todo We should not hard-set the touched flag to false here without
+ *       calling update, unless we can trust the caller to know that
+ *       this is correct behavior.
  */
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-    // We just pass the call on
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    // TODO: Hard-set touched flag to false, potentially unsafe
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched container node" << std::endl;
+    this->touched = false;
+
+    // Pass the call on
     this->keepAffected();
 }
 
@@ -398,8 +415,11 @@ void ContainerNode<rlElemType, valueType>::pop_back( void )
 {
     // Detach our bond to the element DAG node
     RevBayesCore::DagNode* theElementNode = ( *elements.rbegin() )->getRevObject().getDagNode();
-    theElementNode->removeChild( this );
-    theElementNode->decrementReferenceCount();      // Still referenced by variable/RevObject so we need not delete it
+    if ( theElementNode != NULL )
+    {
+        theElementNode->removeChild( this );
+        theElementNode->decrementReferenceCount();      // Still referenced by variable/RevObject so we need not delete it
+    }
 
     // Now get rid of it
     elements.pop_back();
@@ -415,8 +435,11 @@ void ContainerNode<rlElemType, valueType>::pop_front( void )
 {
     // Detach our bond to the element DAG node
     RevBayesCore::DagNode* theElementNode = ( *elements.begin() )->getRevObject().getDagNode();
-    theElementNode->removeChild( this );
-    theElementNode->decrementReferenceCount();      // Still referenced by variable/RevObject so we need not delete it
+    if ( theElementNode != NULL )
+    {
+        theElementNode->removeChild( this );
+        theElementNode->decrementReferenceCount();      // Still referenced by variable/RevObject so we need not delete it
+    }
     
     // Now get rid of it
     elements.erase( elements.begin() );
@@ -427,24 +450,37 @@ void ContainerNode<rlElemType, valueType>::pop_front( void )
 
 
 /**
- * Print struct for user. Because of lazy evaluation we need to make a
- * const cast, but this should be perfectly safe.
+ * Print struct for user.
  */
 template< typename rlElemType, typename valueType >
-void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o ) const
+void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    o << "_dagType      = Container DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
     
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
+    o << "_dagType      = Container DAG node" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents( o, 16, 70, verbose );
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren( o, 16, 70, verbose );
     o << std::endl;
 }
 
@@ -453,10 +489,16 @@ void ContainerNode< rlElemType, valueType >::printStructureInfo( std::ostream& o
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::push_back( rlElemType* x )
 {
-    // Connect the new element
-    RevBayesCore::DagNode* theParent = x->getDagNode();
-    theParent->addChild( this );
-    theParent->incrementReferenceCount();
+    // Connect the new element (beware of NA (NULL) objects)
+    if ( x != NULL )
+    {
+        RevBayesCore::DagNode* theParent = x->getDagNode();
+        if ( theParent != NULL )
+        {
+            theParent->addChild( this );
+            theParent->incrementReferenceCount();
+        }
+    }
     
     // Guard the type of object put in the variable
     Variable* newVar = new Variable( x );
@@ -480,11 +522,17 @@ void ContainerNode<rlElemType, valueType>::push_back( rlElemType* x )
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
 {
-    // Connect the new element
-    RevBayesCore::DagNode* theParent = x->getDagNode();
-    theParent->addChild( this );
-    theParent->incrementReferenceCount();
-    
+    // Connect the new element (beware of NA (NULL) objects)
+    if ( x != NULL )
+    {
+        RevBayesCore::DagNode* theParent = x->getDagNode();
+        if ( theParent != NULL )
+        {
+            theParent->addChild( this );
+            theParent->incrementReferenceCount();
+        }
+    }
+
     // Guard the type of object put in the variable
     Variable* newVar = new Variable( x );
     newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
@@ -528,6 +576,11 @@ void ContainerNode<rlElemType, valueType>::redraw( void )
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+    
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -556,18 +609,26 @@ void ContainerNode<rlElemType, valueType>::setName( const std::string& n )
 }
 
 
-/** Touch this node for recalculation */
+/**
+ * Touch this node for recalculation.
+ *
+ * @todo Can we test here for being touched and only pass the call
+ *       on if we are not touched? It is not safe in DeterministicNode
+ *       so we always pass the call on here, to be safe.
+ */
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-    if ( !this->touched )
-    {
-        // Touch myself
-        this->touched = true;
-    
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-    }
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
+    // Touch myself
+    this->touched = true;
+
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
 }
 
 
@@ -612,10 +673,15 @@ void ContainerNode<rlElemType, valueType>::update()
     size_t i;
     std::vector< RevPtr<Variable> >::iterator it;
     for ( i = 0, it = elements.begin(); it != elements.end(); ++it, ++i )
+    {
+        if ( (*it)->isNAVar() )
+            throw RbException( "Illegal attempt to retrieve value of NA element" );
+
         value.push_back( static_cast<rlElemType&>( (*it)->getRevObject() ).getValue() );
+    }
     
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 

@@ -33,7 +33,7 @@ namespace RevBayesCore {
         size_t                                                  getDim() const {return sigma->getValue().getDim();}
         void                                                    redrawValue(void);
         
-        const TypedDagNode< TimeTree >*                         getTimeTree() const {return tau;}
+        const TimeTree*                         getTimeTree() const {return &tau->getValue();}
         
         // Parameter management functions
         std::set<const DagNode*>                                getParameters(void) const;                                          //!< Return parameters
@@ -54,10 +54,10 @@ namespace RevBayesCore {
         void                                                    flagNodes();        
         void                                                    corruptAll();
         void                                                    recursiveCorruptAll(const TopologyNode& n);
-
+        
         // private members
         const TypedDagNode< TimeTree >*                         tau;
-        const TypedDagNode< MatrixRealSymmetric >*                  sigma;
+        const TypedDagNode< MatrixRealSymmetric >*              sigma;
         
         std::vector<bool>                                       dirtyNodes;
         std::vector<double>                                     nodeLogProbs;

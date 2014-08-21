@@ -54,13 +54,6 @@
     [self setControlsEnabledState];
 }
 
-- (void)dealloc {
-
-	[fileName release];
-	[pathName release];
-	[super dealloc];
-}
-
 - (IBAction)helpButtonAction:(id)sender {
 
 }

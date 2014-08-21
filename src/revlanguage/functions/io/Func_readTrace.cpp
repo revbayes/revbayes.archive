@@ -48,9 +48,10 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
 
     // get the information from the arguments for reading the file
     const RlString&     fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
-    // get the column delimmiter
-    const std::string& delimitter = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-        
+    // get the column delimiter
+    const std::string& delimiter = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    
+    
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn.getValue() );
     if ( !myFileManager.testFile() || !myFileManager.testDirectory() ) {
@@ -111,7 +112,7 @@ RevPtr<Variable> Func_readTrace::execute( void ) {
                 
             // splitting every line into its columns
             std::vector<std::string> columns;
-            StringUtilities::stringSplit(line, delimitter, columns);
+            StringUtilities::stringSplit(line, delimiter, columns);
                 
             // we assume a header at the first line of the file
             if (!hasHeaderBeenRead) {
@@ -182,7 +183,7 @@ const ArgumentRules& Func_readTrace::getArgumentRules( void ) const {
     
     if (!rulesSet) {
         argumentRules.push_back( new ArgumentRule( "file", true, RlString::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "delimitter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
         rulesSet = true;
     }
     

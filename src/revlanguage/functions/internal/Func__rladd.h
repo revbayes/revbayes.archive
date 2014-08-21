@@ -54,8 +54,7 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func__rladd<firstValType
     const firstValType& firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() );
     const secondValType& secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() );
     
-    retType* value = firstArg.clone();
-    value->add( secondArg );
+    retType* value = firstArg.add( secondArg );
     
     return new Variable( value );
 }

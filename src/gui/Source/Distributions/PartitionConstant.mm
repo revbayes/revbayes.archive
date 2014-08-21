@@ -8,6 +8,7 @@
 
 @synthesize partition;
 @synthesize constantParm;
+@synthesize value;
 
 - (PartitionConstant*)clone {
     
@@ -23,8 +24,7 @@
 
 - (id)init {
     
-	[self initWithParm:nil];
-	return self;
+	return [self initWithParm:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)aDecoder {
@@ -34,7 +34,6 @@
         value        = [aDecoder decodeObjectForKey:@"value"];
         partition    = [aDecoder decodeObjectForKey:@"partition"];
         constantParm = [aDecoder decodeObjectForKey:@"constantParm"];
-		[value retain];
 		}
 	return self;
 }
@@ -59,21 +58,6 @@
         constantParm = [pc constantParm];
 		}
     return self;
-}
-
-- (void)setValue:(Value*)v {
-    
-    if (value == v)
-        return;
-    if (value != nil)
-        [value release];
-    value = v;
-    [v retain];
-}
-
-- (Value*)value {
-    
-    return value;
 }
 
 @end

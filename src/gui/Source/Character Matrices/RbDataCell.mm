@@ -13,11 +13,6 @@
 @synthesize numStates;
 @synthesize val;
 
-- (void)dealloc {
-
-	[super dealloc];
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[aCoder encodeBool:isDiscrete    forKey:@"isDiscrete"];
@@ -221,7 +216,6 @@
 		dataType   = [aDecoder decodeIntForKey:@"dataType"];
 		numStates  = [aDecoder decodeIntForKey:@"numStates"];
 		val        = [aDecoder decodeObjectForKey:@"val"];
-		[val retain];
 		}
 	return self;
 }

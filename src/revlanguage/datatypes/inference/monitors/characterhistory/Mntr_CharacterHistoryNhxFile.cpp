@@ -1,7 +1,6 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "BiogeographicTreeHistoryCtmc.h"
-#include "ConstantNode.h"
 #include "TreeCharacterHistoryNhxMonitor.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 #include "OptionRule.h"
@@ -41,7 +40,7 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( samplegen->getRevObject() ).getValue();
-    int mg = static_cast<const Natural &>( samplegen->getRevObject() ).getValue();
+    int mg = static_cast<const Natural &>( maxgen->getRevObject() ).getValue();
     double b = static_cast<const Probability &>( burnin->getRevObject() ).getValue();
     
     RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
@@ -56,7 +55,7 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     bool pr = static_cast<const RlBoolean &>( prior->getRevObject() ).getValue();
     
     bool ap = false; // append disabled for now
-    bool sm = false; // show metadata disabled for now
+    bool sm = true; // show metadata disabled for now
     bool sr = false; // show rates
     
     std::string mt = static_cast<const RlString&>( type->getRevObject() ).getValue();
@@ -156,7 +155,7 @@ void Mntr_CharacterHistoryNhxFile::setConstMemberVariable(const std::string& nam
         samplegen = var;
     }
     else if ( name == "maxgen" ) {
-        samplegen = var;
+        maxgen = var;
     }
     else if ( name == "burnin" ) {
         burnin = var;

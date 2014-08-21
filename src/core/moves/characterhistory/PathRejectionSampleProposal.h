@@ -214,14 +214,18 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         counts[i] = 0;
     fillStateCounts(currState, counts);
 
-//    const treeType& tree = tau->getValue();
     double branchLength = nd.getBranchLength();
     if (nd.isRoot())
     {
         return 0.0;
-        branchLength = 1000.0;
+        branchLength = nd.getAge() * 5;
     }
-    double currAge = (!nd.isRoot() ? nd.getParent().getAge() : 10e200);
+
+    double currAge = 0.0;
+    if (nd.isRoot())
+        currAge = nd.getAge() + branchLength;
+    else
+        currAge = nd.getParent().getAge();
     
     // get sampling ratemap
     const RateMap& rm = qmap->getValue();
@@ -251,12 +255,10 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
         t += dt;
         currAge -= dt * branchLength;
     }
+
     // lnL for final non-event
     double sr = rm.getSumOfRates(nd, currState, counts, currAge);
     lnP += -sr * (1.0 - t) * branchLength;
-    
-    if (nd.isRoot())
-        return 0.0;
     
     return lnP;
 }
@@ -318,7 +320,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     if (node->isRoot())
     {
         return 0.0;
-        branchLength = 1000.0;//2*tree.getTreeLength();
+        branchLength = node->getAge() * 5;
     }
     
     const RateMap& rm = qmap->getValue();
@@ -433,10 +435,10 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
 //        std::cout << *it << " ";
 //    std::cout << "\n";
     
-    if (node->isRoot())
-    {
-        return;
-    }
+//    if (node->isRoot())
+//    {
+//        return;
+//    }
     
     BranchHistory* bh = &p.getHistory(*node);
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh->getHistory();
@@ -454,7 +456,9 @@ void RevBayesCore::PathRejectionSampleProposal<charType, treeType>::preparePropo
     // flag node as dirty
     p.fireTreeChangeEvent(*node);
     
-    storedLnProb = computeLnProposal(*node, *bh);
+    double x = computeLnProposal(*node, *bh);
+    
+    storedLnProb = x;
     
 
 }

@@ -34,7 +34,7 @@
      if ( (self = [super init]) ) 
 		{
         partitionType   = TIP_PARTS;
-        partitionName   = [[NSString alloc] initWithString:@"Tip Nodes"];
+        partitionName   = @"Tip Nodes";
 		taxaInPartition = [[NSMutableArray alloc] init];
 		}
     return self;
@@ -62,8 +62,6 @@
         partitionType   = [aDecoder decodeIntForKey:@"partitionType"];
         partitionName   = [aDecoder decodeObjectForKey:@"partitionName"];
         taxaInPartition = [aDecoder decodeObjectForKey:@"taxaInPartition"];
-        [partitionName retain];
-        [taxaInPartition retain];
 		}
 	return self;
 }

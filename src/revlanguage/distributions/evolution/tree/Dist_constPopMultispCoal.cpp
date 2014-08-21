@@ -56,35 +56,34 @@ Dist_constPopMultispCoal* Dist_constPopMultispCoal::clone(void) const {
 RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistribution( void ) const 
 {
     
-    // get the parameters
-    // species tree
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* RbSpeciesTree       = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
-
-    // taxons
-    std::map <std::string, std::string> g2s;
-    RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> > *t = static_cast<const ModelVector<Taxon> &>( taxons->getRevObject() ).getDagNode(); 
-    for (size_t i = 0 ; i < t->getValue().size(); ++i)  {
-        g2s[t->getValue()[i].getName()] = g2s[t->getValue()[i].getSpeciesName()];
-    }
-
-    // create the internal distribution object
-    RevBayesCore::MultispeciesCoalescent*   d = new RevBayesCore::MultispeciesCoalescent(RbSpeciesTree, g2s);
-
-    // the effective population size
-    RevBayesCore::TypedDagNode<std::vector<double> >* RbNes;
+    // Get the parameters
+    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* st = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    
+    // get the number of nodes for the tree
+    size_t nNodes = st->getValue().getNumberOfNodes();
+    
+    
+    RevBayesCore::MultispeciesCoalescent*   d = new RevBayesCore::MultispeciesCoalescent( st, t );
+    
     if ( Ne->getRevObjectTypeSpec().isDerivedOf( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< std::vector<double> >* neNode = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
+        
+        // sanity check
+        if ( (nNodes-1) != neNode->getValue().size() )
         {
-            RbNes = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
-            d->setNes(RbNes);
-
+            throw RbException( "The number of clock rates does not match the number of branches" );
         }
-        else 
-        {
-            RevBayesCore::TypedDagNode< double >* NeValue = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
-            RevBayesCore::TypedDagNode< double >* RbNe = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
-            d->setNe(RbNe);
-        }
-    //RevBayesCore::TypedDagNode<std::vector< double> >* RbNe       = static_cast<const ModelVector<RealPos> &>( Ne->getRevObject() ).getDagNode();
+        
+        d->setNes( neNode );
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<double>* neNode = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
+        d->setNe( neNode );
+    }
+    
     
     return d;
 }
@@ -143,8 +142,8 @@ const MemberRules& Dist_constPopMultispCoal::getMemberRules(void) const
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
         branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "branchNes"    , true, branchNeTypes ) );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxons"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"    , true, branchNeTypes ) );
+        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxa"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -173,9 +172,9 @@ void Dist_constPopMultispCoal::setConstMemberVariable(const std::string& name, c
     {
         Ne = var;
     }
-    else if ( name == "taxons" ) 
+    else if ( name == "taxa" )
     {
-        taxons = var;
+        taxa = var;
     }
     else 
     {

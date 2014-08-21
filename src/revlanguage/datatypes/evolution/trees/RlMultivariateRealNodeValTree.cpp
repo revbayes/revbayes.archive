@@ -16,6 +16,7 @@
 #include "RlString.h"
 #include "RealPos.h"
 #include "TypeSpec.h"
+#include "RlString.h"
 
 #include <sstream>
 
@@ -76,7 +77,12 @@ RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::st
         return new Variable( new Real( stdev ) );
     }    
     */
-    if ( name == "clampAt" )
+    if (name == "newick") {        
+        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        std::string newick = this->dagNode->getValue().getNewick(k->getValue());
+        return new Variable( new RlString( newick ) );
+    }
+    else if ( name == "clampAt" )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::AbstractCharacterData >* data = static_cast<const AbstractCharacterData &>( args[0].getVariable()->getRevObject() ).getDagNode();
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getDagNode();
@@ -109,44 +115,22 @@ const TypeSpec& MultivariateRealNodeValTree::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& MultivariateRealNodeValTree::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& MultivariateRealNodeValTree::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false )
+    if ( !methodsSet )
     {
-        
-        ArgumentRules* meanArgRules = new ArgumentRules();
-        meanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, meanArgRules ) );
-        
-        ArgumentRules* tipmeanArgRules = new ArgumentRules();
-        tipmeanArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, tipmeanArgRules ) );
-        
-        ArgumentRules* stdevArgRules = new ArgumentRules();
-        stdevArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, stdevArgRules ) );
-        
-        ArgumentRules* rootArgRules = new ArgumentRules();
-        rootArgRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
-        methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), rootArgRules ) );
-        
-        ArgumentRules* clampArgRules = new ArgumentRules();
-        clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
-        clampArgRules->push_back(new ArgumentRule("processIndex", false, Natural::getClassTypeSpec()));
-        clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
-        methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::MultivariateRealNodeContainer>::getMethods() );
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 
@@ -159,6 +143,38 @@ const TypeSpec& MultivariateRealNodeValTree::getTypeSpec( void ) const {
 }
 
 
+/* Make member methods for this class */
+RevLanguage::MethodTable MultivariateRealNodeValTree::makeMethods(void) const
+{
+    
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* argRules = new ArgumentRules();
+    argRules->push_back(new ArgumentRule("index", false, Natural::getClassTypeSpec()));
+    
+    methods.addFunction("mean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("tipMean", new MemberFunction<MultivariateRealNodeValTree,Real>( this, argRules ) );
+    
+    methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
+    
+    methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), argRules ) );
+    
+    methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
+    
+    ArgumentRules* clampArgRules = new ArgumentRules();
+    clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("processIndex", false, Natural::getClassTypeSpec()));
+    clampArgRules->push_back(new ArgumentRule("dataIndex", false, Natural::getClassTypeSpec()));
+    methods.addFunction("clampAt", new MemberProcedure(MultivariateRealNodeValTree::getClassTypeSpec(), clampArgRules ) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::MultivariateRealNodeContainer>::makeMethods() );
+    
+    return methods;
+}
+
+
 /** Print value for user */
 void MultivariateRealNodeValTree::printValue(std::ostream &o) const {
 
@@ -167,7 +183,8 @@ void MultivariateRealNodeValTree::printValue(std::ostream &o) const {
     
     std::fixed( o );
     o.precision( 3 );
-    o << dagNode->getValue();
+    
+    dagNode->printValue( o, "" );
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

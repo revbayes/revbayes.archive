@@ -4,21 +4,21 @@
 
 @interface Node : NSObject <NSCoding> {
 
-    double                             branchLength;
-	NSString*                          name;
-	int                                index;
-    BOOL                               isLeaf;
-    BOOL                               isRoot;
-    Node*                              ancestor;
-	NSMutableArray*                    descendants;
-    float                              x;
-    float                              y;
-    int                                depthFromTip;
-    BOOL                               isNodeSelected;
-    BOOL                               isBranchSelected;
-    NSPoint                            viewCoordinates;
-    int                                state;
-    BOOL                               flag;
+    double            branchLength;
+	NSString*         name;
+	int               index;
+    BOOL              isLeaf;
+    BOOL              isRoot;
+    Node*             ancestor;
+	NSMutableArray*   descendants;
+    float             x;
+    float             y;
+    int               depthFromTip;
+    BOOL              isNodeSelected;
+    BOOL              isBranchSelected;
+    NSPoint           viewCoordinates;
+    int               state;
+    BOOL              flag;
 }
 
 @property (nonatomic)        BOOL      flag;
@@ -34,7 +34,7 @@
 @property (nonatomic)        int       depthFromTip;
 @property (nonatomic)        NSPoint   viewCoordinates;
 @property (nonatomic)        int       state;
-@property (nonatomic,weak)   Node*     ancestor;
+@property (nonatomic,strong) Node*     ancestor;
 
 - (void)addDescendant:(Node*)des;
 - (void)addDescendantAtLeftMostPosition:(Node*)des;

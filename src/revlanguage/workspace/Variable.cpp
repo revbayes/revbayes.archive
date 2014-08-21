@@ -61,10 +61,16 @@ Variable::Variable(const Variable &v) :
     isControlVariable( v.isControlVariable ),
     referencedVariable( v.referencedVariable )
 {
+    
     if ( v.revObject != NULL )
+    {
         setRevObject( v.revObject->clone() );
+    }
     else
+    {
         revObject = NULL;
+    }
+    
 }
 
 
@@ -72,9 +78,11 @@ Variable::~Variable( void )
 {
 #if defined ( DEBUG_MEMORY )
     std::cerr << "Deleting variable '" << name << "' <" << this << ">" << std::endl;
-    if ( !isReferenceVariable && revObject != NULL )
-        delete revObject;
 #endif
+    if ( !isReferenceVariable && revObject != NULL )
+    {
+        delete revObject;
+    }
 }
 
 
@@ -138,11 +146,25 @@ size_t Variable::getReferenceCount(void) const
 }
 
 
+/** Get the referenced variable, if this is a reference variable */
+RevPtr<Variable> Variable::getReferencedVariable(void) const
+{
+    if ( !isReferenceVariable )
+    {
+        throw RbException( "Illegal attempt to get a referenced variable from a non-reference variable" );
+    }
+    
+    return referencedVariable;
+}
+
+
 /* Get the value of the variable */
 RevObject& Variable::getRevObject(void) const
 {
     if ( isReferenceVariable )
+    {
         return referencedVariable->getRevObject();
+    }
     
     if (revObject == NULL)
     {
@@ -176,9 +198,14 @@ void Variable::incrementReferenceCount( void ) const
 bool Variable::isControlVar(void) const
 {
     if ( isReferenceVariable )
+    {
         return referencedVariable->isControlVar();
+    }
     else
+    {
         return isControlVariable;
+    }
+    
 }
 
 
@@ -189,30 +216,50 @@ bool Variable::isReferenceVar(void) const
 }
 
 
-/** Make this variable a reference to another variable. Make sure we delete any object we held before. */
+/**
+ * Make this variable a reference to another variable. Make sure we delete any object we held before.
+ * We also check whether the argument is a reference variable, in which case we retrieve the
+ * referenced variable so that we do not make reference variable chains.
+ */
 void Variable::makeReference(const RevPtr<Variable>& refVar)
 {
     if ( !isReferenceVariable )
     {
         if ( revObject != NULL )
+        {
             delete revObject;
+        }
         
         revObject = NULL;
         isReferenceVariable = true;
         isControlVariable = false;
     }
+
+    if ( refVar->isReferenceVar() )
+    {
+        referencedVariable = refVar->getReferencedVariable();
+    }
+    else
+    {
+        referencedVariable = refVar;
+    }
     
-    referencedVariable = refVar;
 }
 
 
-/* Print value of the variable variable */
+/* Print value of the variable */
 void Variable::printValue(std::ostream& o) const
 {
+    
     if (revObject == NULL)
-        o << "NULL";
+    {
+        o << "NA";
+    }
     else
+    {
         revObject->printValue( o );
+    }
+    
 }
 
 
@@ -235,7 +282,9 @@ void Variable::replaceRevObject( RevObject *newObj ) {
     revObject = newObj;
     
     if ( revObject != NULL )
+    {
         revObject->setName( name );
+    }
     
 }
 
@@ -248,7 +297,9 @@ void Variable::replaceRevObject( RevObject *newObj ) {
 void Variable::setControlVarState(bool flag)
 {
     if ( isReferenceVariable )
+    {
         throw "A reference variable cannot be made a control variable";
+    }
     
     isControlVariable = flag;
 }
@@ -259,7 +310,9 @@ void Variable::setName(std::string const &n) {
     
     name = n;
     if ( revObject != NULL )
+    {
         revObject->setName( n );
+    }
 }
 
 
@@ -285,13 +338,16 @@ void Variable::setRevObject( RevObject *newValue )
  * We set here the required value type spec. An error is thrown if the
  * current Rev object of the variable, if any, is not of the specified type.
  */
-void Variable::setRevObjectTypeSpec(const TypeSpec &ts) {
+void Variable::setRevObjectTypeSpec(const TypeSpec &ts)
+{
     
     const RevObject& theObject = this->getRevObject();
     if ( theObject != RevNullObject::getInstance() )
     {
         if ( !theObject.isTypeSpec( ts ) )
+        {
             throw RbException( "Existing variable object is not of the required type" );
+        }
     }
     
     revObjectTypeSpec = ts;

@@ -26,12 +26,13 @@ namespace RevLanguage {
     template<typename rlType, typename rlElemType>
     class ElementLookupNode : public RevBayesCore::DynamicNode<typename rlElemType::valueType> {
 
-        typedef std::vector< const RevBayesCore::TypedDagNode<typename Natural::valueType>* >::iterator         indexIterator;
-        typedef std::vector< const RevBayesCore::TypedDagNode<typename Natural::valueType>* >::const_iterator   const_indexIterator;
+        typedef std::vector< const RevBayesCore::TypedDagNode<typename Natural::valueType>* >   IndexVector;
+        typedef IndexVector::iterator                                                           indexIterator;
+        typedef IndexVector::const_iterator                                                     const_indexIterator;
     
     public:
         ElementLookupNode(const std::string&                        n,
-                          const rlType*                             var,
+                          const RevPtr<Variable>&                   var,
                           const std::vector< RevPtr<Variable> >&    ind );                                              //!< Basic constructor
         ElementLookupNode(const ElementLookupNode<rlType,rlElemType>& n);                                               //!< Copy constructor
         
@@ -42,12 +43,13 @@ namespace RevLanguage {
         
         // Public methods
         ElementLookupNode<rlType,rlElemType>*   clone(void) const;                                                      //!< Type-safe clone
+        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap) const;   //!< Clone the entire DAG connected to this node
         double                                  getLnProbability(void) { return 0.0; }                                  //!< Get ln prob
         double                                  getLnProbabilityRatio(void) { return 0.0; }                             //!< Get ln prob ratio
         typename rlElemType::valueType&         getValue(void);                                                         //!< Get the value
         const typename rlElemType::valueType&   getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
+        virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void) {}                                                         //!< Redraw (or not)
         void                                    update(void);                                                           //!< Update current value
         
@@ -62,17 +64,14 @@ namespace RevLanguage {
         void                                    touchMe(RevBayesCore::DagNode *toucher);                                                    //!< Touch myself and tell affected nodes value is reset
         
     private:
-        rlType*                                         baseVariable;                                                   //!< The base variable
-        std::vector< const RevBayesCore::TypedDagNode<typename Natural::valueType>* >    oneOffsetIndices;              //!< The indices
-        bool                                            touched;                                                        //!< Are we dirty?
-        typename rlElemType::valueType*                 value;                                                          //!< Current value
+        RevPtr<Variable>                        variable;                                           //!< The base variable
+        IndexVector                             oneOffsetIndices;                                   //!< The indices
+        typename rlElemType::valueType*         value;                                              //!< Current value
     };
     
 }
 
 
-#include "Natural.h"
-#include "RevPtr.h"
 #include "Variable.h"
 
 using namespace RevLanguage;
@@ -84,21 +83,19 @@ using namespace RevLanguage;
  */
 template<typename rlType, typename rlElemType>
 ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const std::string&                        n,
-                                                          const rlType*                             var,
+                                                          const RevPtr<Variable>&                   var,
                                                           const std::vector< RevPtr<Variable> >&    ind ) :
     RevBayesCore::DynamicNode<typename rlElemType::valueType>( n ),
-    baseVariable( var->clone() ),
+    variable( var ),
     oneOffsetIndices(),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
-    // Make sure we have a properly connected shallow copy of the base variable node
-    RevBayesCore::DagNode* origVarNode = var->getDagNode();
-    baseVariable->setDagNode( origVarNode );
-    origVarNode->addChild( this);
-    origVarNode->incrementReferenceCount();
+    // Add us as a child to the variable DAG node
+    RevBayesCore::DagNode* varNode = variable->getRevObject().getDagNode();
+    varNode->addChild( this);
+    varNode->incrementReferenceCount();
     
     // Retrieve the element index nodes and add us as a child to them
     for ( std::vector< RevPtr<Variable> >::const_iterator it = ind.begin(); it != ind.end(); ++it )
@@ -113,26 +110,22 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const std::string&    
 
 
 /**
- * Copy constructor. We make a semi-shallow copy here, that is,
- * the copies will have independent base variables but the base
- * variable objects will share the same internal DAG node. This
- * is necessary for the cloneDAG function to work properly.
+ * Copy constructor. The two copies will point to the same
+ * variable and use the same index nodes.
  */
 template<typename rlType, typename rlElemType>
 ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const ElementLookupNode<rlType, rlElemType>& n ) :
     RevBayesCore::DynamicNode<typename rlElemType::valueType>( n ),
-    baseVariable( n.baseVariable->clone() ),
+    variable( n.variable ),
     oneOffsetIndices( n.oneOffsetIndices ),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 
-    // Make sure we have a properly connected shallow copy of the base variable node
-    RevBayesCore::DagNode* copyVarNode = n.baseVariable->getDagNode();
-    baseVariable->setDagNode( copyVarNode );
-    copyVarNode->addChild( this);
-    copyVarNode->incrementReferenceCount();
+    // Add us as a child to the variable DAG node
+    RevBayesCore::DagNode* varNode = variable->getRevObject().getDagNode();
+    varNode->addChild( this);
+    varNode->incrementReferenceCount();
 
     // Add us as a child to the index variables
     for( indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
@@ -145,19 +138,19 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const ElementLookupNod
 
 
 /**
- * Destructor. We need to delete the base variable and the value. There
- * are also some DAG node management tasks to be performed here.
+ * Destructor. We need to delete the value. There are also
+ * some DAG node management tasks to be performed here.
  */
 template<typename rlType, typename rlElemType>
 ElementLookupNode<rlType, rlElemType>::~ElementLookupNode( void )
 {
     // Detach our bond to the variable DAG node
-    RevBayesCore::DagNode* varNode = baseVariable->getDagNode();
+    RevBayesCore::DagNode* varNode = variable->getRevObject().getDagNode();
     varNode->removeChild( this );
     
-    // The baseVariable will take varNode with it when it dies,
-    // so we need not try to delete it here
-    varNode->decrementReferenceCount();
+    // We adhere to standard even though reference count should not be 0 here
+    if ( varNode->decrementReferenceCount() == 0 )
+        delete varNode;
 
     // Detach our bond to the element indices
     for ( const_indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
@@ -168,8 +161,7 @@ ElementLookupNode<rlType, rlElemType>::~ElementLookupNode( void )
             delete indexNode;
     }
     
-    // Delete the base variable and value
-    delete baseVariable;
+    // Delete the value. The variable will delete itself (smart pointer)
     delete value;
 }
 
@@ -191,12 +183,12 @@ ElementLookupNode<rlType, rlElemType>& ElementLookupNode<rlType, rlElemType>::op
         RevBayesCore::DynamicNode<typename rlType::valueType>::operator=( x );
         
         // Detach our bond to the old variable DAG node
-        RevBayesCore::DagNode* oldVarNode = baseVariable->getDagNode();
+        RevBayesCore::DagNode* oldVarNode = variable->getRevObject().getDagNode();
         oldVarNode->removeChild( this );
         
-        // The baseVariable will take oldVarNode with it when it dies,
-        // so we need not try to delete it here
-        oldVarNode->decrementReferenceCount();
+        // We adhere to standard even though reference count should not be 0 here
+        if ( oldVarNode->decrementReferenceCount() == 0 )
+            delete oldVarNode;
         
         // Detach our bond to the element indices
         for ( indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
@@ -207,16 +199,12 @@ ElementLookupNode<rlType, rlElemType>& ElementLookupNode<rlType, rlElemType>::op
                 delete indexNode;
         }
         
-        // Delete the base variable
-        delete baseVariable;
-
         // Now copy the baseVariable and indices
-        baseVariable = x.baseVariable->clone();
+        variable = x.variable;
         oneOffsetIndices = x.oneOffsetIndices;
         
-        // Make sure we have a properly connected shallow copy of the new base variable node
-        RevBayesCore::DagNode* newVarNode = x.baseVariable.getDagNode();
-        baseVariable->setDagNode( newVarNode );
+        // Add us as a child to the variable DAG node
+        RevBayesCore::DagNode* newVarNode = variable->getRevObject().getDagNode();
         newVarNode->addChild( this);
         newVarNode->incrementReferenceCount();
         
@@ -245,6 +233,91 @@ ElementLookupNode<rlType, rlElemType>* ElementLookupNode<rlType, rlElemType>::cl
 
 
 /**
+ * Clone the entire graph: clone children, swap parents. Because the variable DAG node is
+ * doubly managed by us and by the variable wrapper around the variable object, we need
+ * a special version of the cloneDAG function. Otherwise we cannot distinguish between the
+ * call to swapParent from cloneDAG (where we need to replace the DAG node inside the
+ * variable) and the call from the variable wrapper (where we simply should update the
+ * connections, and the variable wrapper replaces the DAG node inside it).
+ *
+ * @todo For this to be perfectly safe, we need all DAG nodes to be connected to their
+ *       Rev object variables. The hack below (two variables sharing the same DAG node)
+ *       should be safe for the current implementation of model, however, which does
+ *       not expose its model variables to the parser.
+ */
+template<typename rlType, typename rlElemType>
+RevBayesCore::DagNode* ElementLookupNode<rlType, rlElemType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes ) const
+{
+    // Return our clone if we have already been cloned
+    if ( newNodes.find( this ) != newNodes.end() )
+        return ( newNodes[ this ] );
+    
+    // We avoid the conflict between having to make a deep copy in our clone
+    // function and the need to have a shallow copy (identical parents) in
+    // this function by replacing the variable using special code
+    ElementLookupNode<rlType, rlElemType>* copy = this->clone();
+    
+    // Add this node and its copy to the map
+    newNodes[ this ] = copy;
+    
+    // First swap variable using non-standard code
+    
+    // Swap argument variable using non-standard code
+    
+    // Get our variable DAG node
+    const RevBayesCore::DagNode *theVariableNode = variable->getRevObject().getDagNode();
+    
+    // Remove the copy as a child to our variable DAG node so the cloning works
+    theVariableNode->removeChild( copy );
+    
+    // Make sure the copy has its own Rev object variable with its DAG node being the clone of our variable DAG node
+    copy->variable = new Variable( variable->getRevObject().cloneDAG( newNodes ), variable->getName() );
+    
+    // Now swap copy parents: detach the copy node from its old parent and attach it to the new parent
+    // If we called swapParent here, the swapParent function would not find the old parent in its RevObject
+    // variable wrapper because that wrapper has already been exchanged above. Note that we already removed
+    // the copy as a child of the variable DAG node above. Just to conform to the pattern we check for
+    // the need to delete even though the test should never be true here.
+    if ( theVariableNode->decrementReferenceCount() == 0 )
+        delete theVariableNode;
+    RevBayesCore::DagNode* theVariableNodeClone = copy->variable->getRevObject().getDagNode();
+    theVariableNodeClone->addChild( copy );
+    theVariableNodeClone->incrementReferenceCount();
+    
+    // We use the standard code (below) for the index nodes
+    
+    // We need to remove the copy as a child of our index nodes in order to stop recursive calls to
+    // cloneDAG on our copy, its copy, etc, when we call cloneDAG on our index nodes
+    for ( const_indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
+    {
+        (*it)->removeChild( copy );
+    }
+    
+    // Now replace the index nodes of the copy (which are now the same as our parents) with the index node clones
+    for ( const_indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
+    {
+        // Get the i-th index node
+        const RevBayesCore::DagNode *theIndexNode = (*it);
+        
+        // Get its clone if we already have cloned this parent (parameter), then we will get the previously created clone
+        RevBayesCore::DagNode* theIndexNodeClone = theIndexNode->cloneDAG( newNodes );
+        
+        // Add the copy back as a child of this index node so that the swapping works
+        theIndexNode->addChild( copy );
+        
+        // Swap the copy parent with its clone. This will remove the copy again as the child of our index node.
+        copy->swapParent( theIndexNode, theIndexNodeClone);
+    }
+    
+    /* Make sure the children clone themselves */
+    for( std::set<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
+        (*it)->cloneDAG( newNodes );
+    
+    return copy;
+}
+
+
+/**
  * Get the affected nodes.
  * This call is started by the parent. We need to delegate this call to all our children.
  */
@@ -256,7 +329,7 @@ void ElementLookupNode<rlType, rlElemType>::getAffected( std::set<RevBayesCore::
 
 
 /**
- * Get the parents of this node. We simply return the baseVariable DAG node and
+ * Get the parents of this node. We simply return the variable DAG node and
  * all the index DAG nodes.
  */
 template<typename rlType, typename rlElemType>
@@ -264,7 +337,7 @@ std::set<const RevBayesCore::DagNode*> ElementLookupNode<rlType, rlElemType>::ge
 {
     std::set<const RevBayesCore::DagNode*> parents;
 
-    parents.insert( baseVariable->getDagNode() );
+    parents.insert( variable->getRevObject().getDagNode() );
 
     for ( const_indexIterator it = this->oneOffsetIndices.begin(); it != this->oneOffsetIndices.end(); ++it )
         parents.insert( (*it) );
@@ -277,7 +350,7 @@ std::set<const RevBayesCore::DagNode*> ElementLookupNode<rlType, rlElemType>::ge
 template<typename rlType, typename rlElemType>
 typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue( void )
 {
-    if ( touched )
+    if ( this->touched )
         update();
     
     return *value;
@@ -290,9 +363,9 @@ typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue(
  * by the lazy evaluation mechanism.
  */
 template<typename rlType, typename rlElemType>
-const typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue( void ) const {
-    
-    if ( touched )
+const typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue( void ) const
+{
+    if ( this->touched )
         const_cast<ElementLookupNode<rlType, rlElemType>*>( this )->update();
     
     return *value;
@@ -313,8 +386,8 @@ bool ElementLookupNode<rlType, rlElemType>::isConstant( void ) const
             return false;
     }
     
-    // Check the base variable
-    if ( !baseVariable->getDagNode()->isConstant() )
+    // Check the variable
+    if ( !variable->getRevObject().getDagNode()->isConstant() )
         return false;
     
     return true;
@@ -322,19 +395,29 @@ bool ElementLookupNode<rlType, rlElemType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node. If we have been touched
- * but no one asked for our value, we just leave our touched flag
- * set, which should be safe. We do not want to set the touched
- * flag to false without calling update, as done in
- * RevBayesCore::DeterministicNode.
+ * Keep the current value of the node. We copy the behavior in
+ * RevBayesCore::DeterministcNode
  *
- * @todo Check whether behavior in RevBayesCore::DeterministicNode is
- *       correct, or if there is some subtle point I have missed -- FR
+ * @todo We should not hard-set the touched flag to false here without
+ *       calling update, unless we can trust the caller to know that
+ *       this is correct behavior.
  */
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-    // We just pass the call on
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of element lookup node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    // TODO: Hard-set touched flag to false, potentially unsafe
+    // We at least check to make sure the value is not NULL
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched element lookup node" << std::endl;
+    if ( value == NULL )
+        this->update();
+    this->touched = false;
+    
+    // Pass the call on
     this->keepAffected();
 }
 
@@ -344,20 +427,35 @@ void ElementLookupNode<rlType, rlElemType>::keepMe( RevBayesCore::DagNode* affec
  * const cast, but this should be perfectly safe.
  */
 template<typename rlType, typename rlElemType>
-void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o ) const
+void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
     o << "_dagType      = Element lookup DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents( o, 16, 70, verbose );
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren( o, 16, 70, verbose );
     o << std::endl;
 }
 
@@ -371,6 +469,11 @@ void ElementLookupNode<rlType, rlElemType>::printStructureInfo( std::ostream& o 
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of element lookup node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -379,25 +482,10 @@ void ElementLookupNode<rlType, rlElemType>::restoreMe( RevBayesCore::DagNode *re
 }
 
 
-/** Touch this node for recalculation */
-template<typename rlType, typename rlElemType>
-void ElementLookupNode<rlType, rlElemType>::touchMe( RevBayesCore::DagNode *toucher )
-{
-    if ( !this->touched )
-    {
-        // Touch myself
-        this->touched = true;
-        
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-    }
-}
-
-
 /**
- * Swap parent. We get this call just before the base variable is being replaced by another variable
- * and when the DAG is being cloned. We need to make sure we detach ourselves as a child of the old
- * node and add ourselves as a child to the new node.
+ * Swap parent. We get this call just before the variable object is being replaced by another variable
+ * object and when the DAG is being cloned. In the latter algorithm, the swapParent function is not
+ * called (see comments for this function).
  *
  * We throw an error if the old parent cannot be found.
  */
@@ -411,29 +499,50 @@ void ElementLookupNode<rlType, rlElemType>::swapParent(const RevBayesCore::DagNo
         if ( (*it) == oldParent )
         {
             (*it) = static_cast< const RevBayesCore::TypedDagNode<typename Natural::valueType>* >( newParent );
+
             break;
         }
     }
 
     if ( it == oneOffsetIndices.end() )
     {
-        if ( oldParent != baseVariable->getDagNode() )
+        if ( oldParent != variable->getRevObject().getDagNode() )
             throw RbException( "Invalid attempt to swap non-parent" );
-
-        // TODO: Find a more elegant solution that avoids a const_cast
-        baseVariable->setDagNode( const_cast< RevBayesCore::DagNode* >( newParent ) );
     }
 
-    // Detach old parent and adopt new parent
+    // Detach old parent and delete it if needed
     oldParent->removeChild( this );
     if( oldParent->decrementReferenceCount() == 0 )
         delete oldParent;
-
+    
+    // Adopt new parent
     newParent->addChild( this );
     newParent->incrementReferenceCount();
-
+    
     // Tell everybody we have been changed
     this->touch();
+}
+
+
+/**
+ * Touch this node for recalculation.
+ *
+ * @todo Can we test here for being touched and only pass the call
+ *       on if we are not touched? It is not safe in DeterministicNode
+ *       so we always pass the call on here, to be safe.
+ */
+template<typename rlType, typename rlElemType>
+void ElementLookupNode<rlType, rlElemType>::touchMe( RevBayesCore::DagNode *toucher )
+{
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of element lookup node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
+    // Touch myself
+    this->touched = true;
+    
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
 }
 
 
@@ -444,17 +553,21 @@ void ElementLookupNode<rlType, rlElemType>::swapParent(const RevBayesCore::DagNo
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::update()
 {
+    // Free memory
+    delete value;
+    
     // Compute indices
     std::vector<size_t> theOneOffsetIndices;
     for( indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
         theOneOffsetIndices.push_back( size_t( (*it)->getValue() ) );
     
-    RevPtr<Variable> theElement = baseVariable->getElement( theOneOffsetIndices );
+    // Get the element
+    RevPtr<Variable> theElement = variable->getRevObject().getElement( theOneOffsetIndices );
     
     value = RevBayesCore::Cloner<typename rlElemType::valueType, IsDerivedFrom<typename rlElemType::valueType, RevBayesCore::Cloneable>::Is >::createClone( static_cast<rlElemType&>( theElement->getRevObject() ).getValue() );
 
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 

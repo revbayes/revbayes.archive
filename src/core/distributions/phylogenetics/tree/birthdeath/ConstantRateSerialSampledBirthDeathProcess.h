@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class ConstantRateSerialSampledBirthDeathProcess : public AbstractBirthDeathProcess {
         
     public:
-        ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *p, const TypedDagNode<double> *r, 
+        ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *p, const TypedDagNode<double> *r,
                                            double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);        //!< Constructor
         
         // public member functions

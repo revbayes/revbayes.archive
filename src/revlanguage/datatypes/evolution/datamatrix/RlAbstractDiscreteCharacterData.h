@@ -22,13 +22,16 @@ namespace RevLanguage {
         typedef RevBayesCore::AbstractCharacterData valueType;
         
         // Basic utility functions
-        AbstractDiscreteCharacterData*                          clone(void) const;                                                                          //!< Clone object
-        static const std::string&                               getClassType(void);                                                                         //!< Get Rev type
-        static const TypeSpec&                                  getClassTypeSpec(void);                                                                     //!< Get class type spec
-        const TypeSpec&                                         getTypeSpec(void) const;                                                                    //!< Get language type of the object
-        
-        // Member method
-        const RevBayesCore::AbstractDiscreteCharacterData&      getValue(void) const;
+        virtual AbstractDiscreteCharacterData*              clone(void) const;                      //!< Clone object
+        static const std::string&                           getClassType(void);                     //!< Get Rev type
+        static const TypeSpec&                              getClassTypeSpec(void);                 //!< Get class type spec
+        virtual const TypeSpec&                             getTypeSpec(void) const;                //!< Get language type of the object
+
+        // Member method functions
+        virtual const MethodTable&                          getMethods(void) const;                 //!< Get methods
+
+        // Regular functions
+        const RevBayesCore::AbstractDiscreteCharacterData&  getValue(void) const;                   //!< Get value as base class reference
         
     };
     

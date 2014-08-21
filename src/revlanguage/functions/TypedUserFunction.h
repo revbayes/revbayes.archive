@@ -11,7 +11,7 @@
 #define TypedUserFunction_H
 
 #include "TypedFunction.h"
-#include "UserFunctionCall.h"
+#include "UserFunction.h"
 
 #include <iostream>
 
@@ -24,10 +24,12 @@ namespace RevLanguage {
     class TypedUserFunction : public RevBayesCore::TypedFunction<valueType> {
         
     public:
-                                            TypedUserFunction(UserFunctionCall* uFC);                                   //!< Constructor setting user function call
+                                            TypedUserFunction(UserFunction* fxn);                                       //!< Constructor setting user function call
                                             TypedUserFunction(const TypedUserFunction<valueType>& x);                   //!< Copy constructor
         virtual                            ~TypedUserFunction(void);                                                    //!< Virtual destructor
         
+        TypedUserFunction&                  operator=(const TypedUserFunction& x);                                      //!< Assignment operator
+
         // Public methods
         TypedUserFunction<valueType>*       clone(void) const;                                                          //!< Clone the function
         valueType&                          getValue(void);                                                             //!< Get value from Rev object
@@ -39,7 +41,7 @@ namespace RevLanguage {
         void                                swapParameterInternal(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP);    //!< Exchange a parameter
         
     private:
-        UserFunctionCall*                   userFunctionCall;                                                           //!< The user function call
+        UserFunction*                       userFunction;                                                               //!< The user function
         RevPtr<Variable>                    returnVariable;                                                             //!< The object returned by the function
     };
     
@@ -47,26 +49,24 @@ namespace RevLanguage {
 
 #include "AbstractCharacterData.h"
 #include "ContinuousCharacterData.h"
-#include "RateMatrix.h"
-#include "RateMatrix_JC.h"
 #include "RlDeterministicNode.h"
 #include "Variable.h"
 
 using namespace RevLanguage;
 
 
-/** Constructor from pointer to the call of a user-defined function, which we own */
+/** Constructor from pointer to a user-defined function, which we own */
 template <class valueType>
-TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
+TypedUserFunction<valueType>::TypedUserFunction(UserFunction* fxn) :
     RevBayesCore::TypedFunction<valueType>( NULL ),
-    userFunctionCall( uFC ),
+    userFunction( fxn ),
     returnVariable( NULL )
 {
     // Set dirty flag
     this->setDirty( true );
     
     // Add parameters for double book-keeping
-    const std::set<const RevBayesCore::DagNode*>& parameters = userFunctionCall->getParameters();
+    const std::set<const RevBayesCore::DagNode*>& parameters = userFunction->getParameters();
     for ( std::set<const RevBayesCore::DagNode*>::const_iterator it = parameters.begin(); it != parameters.end(); ++it )
         this->addParameter( (*it ) );
 }
@@ -76,24 +76,43 @@ TypedUserFunction<valueType>::TypedUserFunction(UserFunctionCall* uFC) :
 template <class valueType>
 TypedUserFunction<valueType>::TypedUserFunction(const TypedUserFunction<valueType> &x) :
     RevBayesCore::TypedFunction<valueType>( x ),
-    userFunctionCall( x.userFunctionCall->clone() ),
+    userFunction( x.userFunction->clone() ),
     returnVariable( NULL )
 {
     /* Just set dirty flag. No need to add parameters, it happens automatically. */
     this->setDirty( true );
 
     // Add parameters for double book-keeping
-    const std::set<const RevBayesCore::DagNode*>& parameters = userFunctionCall->getParameters();
+    const std::set<const RevBayesCore::DagNode*>& parameters = userFunction->getParameters();
     for ( std::set<const RevBayesCore::DagNode*>::const_iterator it = parameters.begin(); it != parameters.end(); ++it )
         this->addParameter( (*it ) );
 }
 
 
-/** Destructor: Delete userFunctionCall, which we own. The returnVariable is a smart pointer and will be deleted automatically. */
+/** Destructor: Delete userFunction, which we own. The returnVariable is a smart pointer and will be deleted automatically. */
 template <class valueType>
 TypedUserFunction<valueType>::~TypedUserFunction( void )
 {
-    delete userFunctionCall;
+    delete userFunction;
+}
+
+
+/** Assignment operator */
+template <class valueType>
+TypedUserFunction<valueType>& TypedUserFunction<valueType>::operator=(const TypedUserFunction<valueType>& x)
+{
+    if ( this != &x )
+    {
+        RevBayesCore::TypedFunction<valueType>::operator=( &x );
+        
+        /* Delete old user function and get a clone of the new one */
+        delete userFunction;
+        userFunction = x.userFunction->clone();
+
+        // Parameter reassignment should be automatic
+    }
+    
+    return ( *this );
 }
 
 
@@ -160,7 +179,7 @@ void TypedUserFunction<valueType>::touch( RevBayesCore::DagNode* toucher )
 template <class valueType>
 void TypedUserFunction<valueType>::update( void )
 {
-    returnVariable = userFunctionCall->execute();
+    returnVariable = userFunction->executeCode();
     
     this->setDirty( false );
 }

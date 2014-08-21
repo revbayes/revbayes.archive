@@ -10,47 +10,53 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData(void) : ModelObject<RevBayesCore::AbstractCharacterData>(),
-    methods()
+AbstractCharacterData::AbstractCharacterData(void) :
+    ModelObject<RevBayesCore::AbstractCharacterData>()
 {
-    
-    initMethods();
-    
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) : ModelObject<RevBayesCore::AbstractCharacterData>( v ),
-    methods()
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *v) :
+    ModelObject<RevBayesCore::AbstractCharacterData>( v )
 {
-    
-    initMethods();
-    
 }
 
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) : ModelObject<RevBayesCore::AbstractCharacterData>( d ),
-    methods()
+AbstractCharacterData::AbstractCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData> *d) :
+    ModelObject<RevBayesCore::AbstractCharacterData>( d )
 {
-    
-    initMethods();
-    
 }
 
 
 
-AbstractCharacterData& AbstractCharacterData::add(const RevLanguage::AbstractCharacterData &d)
+AbstractCharacterData* AbstractCharacterData::add(const RevObject &d) const
 {
-    dagNode->getValue().add( d.getValue() );
+    const AbstractCharacterData* tmp = dynamic_cast<const AbstractCharacterData*>( &d );
+    if ( tmp != NULL )
+    {
+        return add( *tmp );
+    }
+    else
+    {
+        throw RbException("Cannot add an object of type '" + d.getType() + "' to a character data object.");
+    }
+}
+
+
+
+AbstractCharacterData* AbstractCharacterData::add(const AbstractCharacterData &d) const
+{
+    AbstractCharacterData* cloneObj = clone();
+    cloneObj->getDagNode()->getValue().add( d.getValue() );
     
-    // return a reference to myself
-    return *this;
+    // return the copy
+    return cloneObj;
 }
 
 
 
 AbstractCharacterData* AbstractCharacterData::clone() const
 {
-    
     return new AbstractCharacterData( *this );
 }
 
@@ -368,14 +374,6 @@ const TypeSpec& AbstractCharacterData::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const MethodTable& AbstractCharacterData::getMethods(void) const {
-    
-    return methods;
-}
-
-
-
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& AbstractCharacterData::getTypeSpec(void) const {
     
@@ -385,7 +383,31 @@ const TypeSpec& AbstractCharacterData::getTypeSpec(void) const {
 
 
 /* Get method specifications */
-void AbstractCharacterData::initMethods(void) {
+const MethodTable& AbstractCharacterData::getMethods(void) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( methodsSet == false )
+    {
+        // Make methods
+        myMethods = makeMethods();
+        
+        // Set flag
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
+/**
+ * We make the methods that belong to this abstract class here, to
+ * serve derived classes.
+ */
+MethodTable AbstractCharacterData::makeMethods( void ) const
+{
+    MethodTable methods;
     
     ArgumentRules* ncharArgRules               = new ArgumentRules();
     ArgumentRules* ncharArgRules2              = new ArgumentRules();
@@ -450,14 +472,14 @@ void AbstractCharacterData::initMethods(void) {
     methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
-    // add method for call "size" as a function
+    // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
         
-    // necessary call for proper inheritance
-    methods.setParentTable( &ModelObject<RevBayesCore::AbstractCharacterData>::getMethods() );
-    
-    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::AbstractCharacterData>::makeMethods() );
+
+    return methods;
 }
 
 

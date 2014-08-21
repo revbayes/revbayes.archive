@@ -67,6 +67,26 @@ const TypeSpec& StandardState::getClassTypeSpec(void) {
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& StandardState::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& StandardState::getTypeSpec( void ) const {
     
@@ -78,8 +98,8 @@ const TypeSpec& StandardState::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool StandardState::isConvertibleTo(const TypeSpec& type) const {
+bool StandardState::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 

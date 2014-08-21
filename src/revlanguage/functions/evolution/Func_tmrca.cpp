@@ -11,7 +11,6 @@
 #include "ModelVector.h"
 #include "RlClade.h"
 #include "RlTimeTree.h"
-#include "RateMatrix.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TmrcaStatistic.h"

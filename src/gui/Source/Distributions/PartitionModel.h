@@ -12,6 +12,7 @@
     Parm*                                      randomVariable;
 }
 
+@property (nonatomic,strong) DistributionGui*  distribution;
 @property (nonatomic,strong) TaxonBipartition* partition;
 @property (nonatomic,strong) Parm*             randomVariable;
 

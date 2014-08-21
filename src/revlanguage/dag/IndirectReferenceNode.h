@@ -40,7 +40,7 @@ namespace RevLanguage {
         typename rlType::valueType&             getValue(void);                                                         //!< Get the value
         const typename rlType::valueType&       getValue(void) const;                                                   //!< Get the value (const)
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
-        virtual void                            printStructureInfo(std::ostream& o) const;                              //!< Print structure info
+        virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void) {}                                                         //!< Redraw (or not)
         void                                    update(void);                                                           //!< Update current value
         
@@ -56,7 +56,6 @@ namespace RevLanguage {
         
     private:
         const RevBayesCore::TypedDagNode<typename rlType::valueType>*   referencedNode;                                 //!< DAG node of referenced variable
-        bool                                                            touched;                                        //!< Are we dirty?
         typename rlType::valueType*                                     value;                                          //!< Current value
     };
     
@@ -80,7 +79,6 @@ template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const std::string& n, RevBayesCore::TypedDagNode<typename rlType::valueType>* var ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     referencedNode( var ),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -99,7 +97,6 @@ template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const IndirectReferenceNode<rlType>& n ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
     referencedNode( n.referencedNode ),
-    touched( true ),
     value( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
@@ -198,7 +195,7 @@ std::set<const RevBayesCore::DagNode*> IndirectReferenceNode<rlType>::getParents
 template<typename rlType>
 typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void )
 {
-    if ( touched )
+    if ( this->touched )
         update();
     
     return *value;
@@ -213,7 +210,7 @@ typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void )
 template<typename rlType>
 const typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void ) const {
     
-    if ( touched )
+    if ( this->touched )
         const_cast<IndirectReferenceNode<rlType>*>( this )->update();
     
     return *value;
@@ -233,19 +230,29 @@ bool IndirectReferenceNode<rlType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node. If we have been touched
- * but no one asked for our value, we just leave our touched flag
- * set, which should be safe. We do not want to set the touched
- * flag to false without calling update, as done in
- * RevBayesCore::DeterministicNode.
+ * Keep the current value of the node. We copy the behavior in
+ * RevBayesCore::DeterministcNode
  *
- * @todo Check whether behavior in RevBayesCore::DeterministicNode is
- *       correct, or if there is some subtle point I have missed -- FR
+ * @todo We should not hard-set the touched flag to false here without
+ *       calling update, unless we can trust the caller to know that
+ *       this is correct behavior.
  */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 {
-    // We just pass the call on
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    // TODO: Hard-set touched flag to false, potentially unsafe
+    // We at least check to make sure the value is not NULL
+//    if ( this->touched == true )
+//        std::cerr << "Keeping touched indirect reference node" << std::endl;
+    if ( value == NULL )
+        this->update();
+    this->touched = false;
+    
+    // Pass the call on
     this->keepAffected();
 }
 
@@ -255,20 +262,36 @@ void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
  * const cast, but this should be perfectly safe.
  */
 template< typename rlType >
-void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o ) const
+void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
+
     o << "_dagType      = Indirect reference DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+    }
     
     o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
     
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents( o, 16, 70, verbose );
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren( o, 16, 70, verbose );
     o << std::endl;
 }
 
@@ -282,6 +305,11 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o ) const
 template<typename rlType>
 void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 {
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
     // we probably need to recompute our value; this will clear any touched flags
     this->update();
     
@@ -290,18 +318,26 @@ void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
 }
 
 
-/** Touch this node for recalculation */
+/**
+ * Touch this node for recalculation.
+ *
+ * @todo Can we test here for being touched and only pass the call
+ *       on if we are not touched? It is not safe in DeterministicNode
+ *       so we always pass the call on here, to be safe.
+ */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-    if ( !this->touched )
-    {
-        // Touch myself
-        this->touched = true;
-        
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-    }
+
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
+    // Touch myself
+    this->touched = true;
+    
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
 }
 
 
@@ -348,7 +384,7 @@ void IndirectReferenceNode<rlType>::update()
     value = RevBayesCore::Cloner<typename rlType::valueType, IsDerivedFrom<typename rlType::valueType, RevBayesCore::Cloneable>::Is >::createClone( referencedNode->getValue() );
 
     // We are clean!
-    touched = false;
+    this->touched = false;
 }
 
 

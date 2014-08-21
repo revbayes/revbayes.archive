@@ -50,7 +50,7 @@ oup.clampAt(contData,2)
 
 mymodel <- model(sigma)
 
-monitors[1] <- screenmonitor(printgen=100, separator = "	", sigma, mean, phi, rescaledphi, statvar)
+monitors[1] <- screenmonitor(printgen=100, sigma, mean, phi, rescaledphi, statvar)
 monitors[2] <- filemonitor(filename="oup3.prec",printgen=100, separator = "	", sigma, mean, phi, rescaledphi, statvar)
 monitors[3] <- modelmonitor(filename="oup3.log",printgen=100, separator = "	")
  

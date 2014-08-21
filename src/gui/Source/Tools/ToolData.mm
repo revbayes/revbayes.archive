@@ -31,7 +31,6 @@
     else
         numUnaligned++;
 	[dataMatrices addObject:m];
-	[m release];
     hasInspectorInfo = YES;
 }
 
@@ -49,16 +48,6 @@
 	if (i > [dataMatrices count])
 		return nil;
 	return [dataMatrices objectAtIndex:i];
-}
-
-- (void)dealloc {
-
-    if (dataInspector != nil)
-        [dataInspector release];
-    [dataMatrices release];
-    [dataWorkspaceName release];
-    
-	[super dealloc];
 }
 
 - (NSMutableArray*)getAlignedData {
@@ -116,7 +105,7 @@
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
 		dataMatrices      = [[NSMutableArray alloc] init];
-        dataWorkspaceName = [[NSString alloc] initWithString:@""];
+        dataWorkspaceName = @"";
         dataInspector     = nil;
         
         // check to see if there are any data matrices stored in the tool
@@ -133,8 +122,6 @@
         dataMatrices      = [aDecoder decodeObjectForKey:@"dataMatrices"];
         dataWorkspaceName = [aDecoder decodeObjectForKey:@"dataWorkspaceName"];
         dataInspector     = nil;
-        [dataMatrices retain];
-        [dataWorkspaceName retain];
 
         // check to see if there are any data matrices stored in the tool
         if ([dataMatrices count] > 0)
@@ -175,7 +162,7 @@
         
     // and make a temporary directory to contain the alignments
     NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
               alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
@@ -289,13 +276,10 @@
             [cell setRow:i];
             [cell setColumn:j];
             [rbTaxonData addObservation:cell];
-            [cell release];
             }
         [m addTaxonData:rbTaxonData];
         }
-        
-    //[m print];
-        
+    
     return m;
 }
 
@@ -356,8 +340,6 @@
 
 - (void)removeDataInspector {
 
-    if ( dataInspector != nil )
-        [dataInspector release];
     dataInspector = nil;
 }
 

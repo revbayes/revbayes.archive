@@ -18,6 +18,7 @@
 #include "RbUtil.h"
 #include "RlString.h"
 #include "TypeSpec.h"
+#include "RlMemberFunction.h"
 
 #include <iomanip>
 #include <sstream>
@@ -77,13 +78,47 @@ const TypeSpec& RealSymmetricMatrix::getTypeSpec( void ) const {
 }
 
 
-/** Is convertible to type? */
-/*
-bool RealSymmetricMatrix::isConvertibleTo(const TypeSpec& type) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RealSymmetricMatrix::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    return RevObject::isConvertibleTo(type);
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
 }
-*/
+
+
+/** Make member methods for this class */
+RevLanguage::MethodTable RealSymmetricMatrix::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* covArgRules = new ArgumentRules();
+    covArgRules->push_back(new ArgumentRule("i", false, Natural::getClassTypeSpec()));
+    covArgRules->push_back(new ArgumentRule("j", false, Natural::getClassTypeSpec()));
+    methods.addFunction("covariance", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    methods.addFunction("precision", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    methods.addFunction("correlation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    methods.addFunction("partialCorrelation", new MemberFunction<RealSymmetricMatrix,Real>( this, covArgRules ) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::MatrixRealSymmetric>::makeMethods() );
+    
+    return methods;
+}
+
 
 /** Print value for user */
 void RealSymmetricMatrix::printValue(std::ostream &o) const {
@@ -93,7 +128,8 @@ void RealSymmetricMatrix::printValue(std::ostream &o) const {
     
     std::fixed( o );
     o.precision( 3 );
-    o << dagNode->getValue();
+
+    dagNode->printValue( o, "" );
     
     o.setf( previousFlags );
     o.precision( previousPrecision );

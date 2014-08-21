@@ -118,7 +118,7 @@ public:
 
         return makeUnique(objects);
     }
-    
+
     StringVector getVariableMembers(std::string name);
     bool isVariable(std::string name);
 
@@ -131,7 +131,7 @@ public:
         if (!isType(typeName)) {
             return sv;
         }
-     
+
         RevLanguage::RevObject *type = RevLanguage::Workspace::globalWorkspace().makeNewDefaultObject(typeName);
         RevLanguage::MethodTable &methods = const_cast<RevLanguage::MethodTable&> (type->getMethods());
 

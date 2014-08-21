@@ -56,7 +56,17 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    }
+    // the root age
+    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+    {
+        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    }
     // speciation rates
     RevBayesCore::TypedDagNode<std::vector<double> >* s     = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // speciation rate change times
@@ -70,9 +80,9 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
     // sampling rate change times
     RevBayesCore::TypedDagNode<std::vector<double> >* pt    = static_cast<const ModelVector<RealPos> &>( psiTimes->getRevObject() ).getDagNode();
     // sampling probabilities
-    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<Probability> &>( rho->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* r     = static_cast<const ModelVector<RealPos> &>( rho->getRevObject() ).getDagNode();
     // sampling times
-    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<Probability> &>( rhoTimes->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<std::vector<double> >* rt    = static_cast<const ModelVector<RealPos> &>( rhoTimes->getRevObject() ).getDagNode();
     // time between now and most recent sample
     double tLastSample                          = static_cast<const RealPos &>( tLast->getRevObject() ).getValue();
     // condition
@@ -89,7 +99,7 @@ RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess* Dist_skySerialBDP
     }
     
     // create the internal distribution object
-    RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess(o, s, st, e, et, p, pt, r, rt, tLastSample, cond, taxa, c);
+    RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess*   d = new RevBayesCore::PiecewiseConstantSerialSampledBirthDeathProcess(o, ra, s, st, e, et, p, pt, r, rt, tLastSample, cond, taxa, c);
     
     return d;
 }
@@ -142,15 +152,16 @@ const MemberRules& Dist_skySerialBDP::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"                , true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"                , true, RealPos::getClassTypeSpec(), NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge"               , true, RealPos::getClassTypeSpec(), NULL ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"                , true, ModelVector<RealPos>::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambdaTimes"           , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"                    , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "muTimes"               , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psi"                   , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>( std::vector<double>(0.0) ) ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "psiTimes"              , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"                   , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>(std::vector<double>(0.0)) ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"              , true, ModelVector<Probability>::getClassTypeSpec(), new ModelVector<Probability>() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rho"                   , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>(std::vector<double>(0.0)) ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rhoTimes"              , true, ModelVector<RealPos>::getClassTypeSpec(), new ModelVector<RealPos>() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "timeSinceLastSample"   , true, RealPos::getClassTypeSpec(), new RealPos(0.0) ) );
         std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
@@ -237,6 +248,10 @@ void Dist_skySerialBDP::setConstMemberVariable(const std::string& name, const Re
     else if ( name == "origin" ) 
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "names" ) 
     {

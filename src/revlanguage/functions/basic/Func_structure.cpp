@@ -3,6 +3,8 @@
 #include "DagNode.h"
 #include "Func_structure.h"
 #include "RbException.h"
+#include "RbOptions.h"
+#include "RlBoolean.h"
 #include "RlUserInterface.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
@@ -10,36 +12,48 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_structure::Func_structure( void ) : Function() {
+Func_structure::Func_structure( void ) : Function()
+{
     
 }
 
 
 /** Clone object */
-Func_structure* Func_structure::clone( void ) const {
+Func_structure* Func_structure::clone( void ) const
+{
     
     return new Func_structure( *this );
 }
 
 
 /** Execute function */
-RevPtr<Variable> Func_structure::execute( void ) {
+RevPtr<Variable> Func_structure::execute( void )
+{
     
     std::ostringstream o;
+    
+    bool verbose = static_cast< const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
 
     o << std::endl;
-    o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
-    if ( args[0].getVariable()->isControlVar() )
+    if ( verbose == true )
+    {
+        o << "_variable     = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
+    }
+    else
+    {
+        o << "_variable     = " << args[0].getVariable()->getName() << std::endl;
+    }
+    if ( args[0].getVariable()->isControlVar() && verbose == true )
     {
         o << "_varType      = control" << std::endl;
     }
-    else if ( args[0].getVariable()->isReferenceVar() )
+    else if ( args[0].getVariable()->isReferenceVar() && verbose == true  )
     {
         o << "_varType      = reference" << std::endl;
         o << "_refVar       = " << args[0].getVariable()->getName() << " <" << args[0].getVariable() << ">" << std::endl;
     }
 
-    args[0].getVariable()->getRevObject().printStructure( o );
+    args[0].getVariable()->getRevObject().printStructure( o, verbose );
     o << std::endl;
 
     RBOUT( o.str() );
@@ -50,14 +64,21 @@ RevPtr<Variable> Func_structure::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_structure::getArgumentRules( void ) const {
+const ArgumentRules& Func_structure::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "x", true, RevObject::getClassTypeSpec() ) );
+#if defined (DEBUG_STRUCTURE)
+        argumentRules.push_back( new ArgumentRule( "verbose", true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+#else
+        argumentRules.push_back( new ArgumentRule( "verbose", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
+#endif
         rulesSet = true;
     }
     
@@ -66,7 +87,8 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_structure::getClassType(void) { 
+const std::string& Func_structure::getClassType(void)
+{
     
     static std::string revType = "Func_type";
     

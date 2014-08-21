@@ -5,6 +5,7 @@
 #import "RbData.h"
 #import "Inlet.h"
 #import "InOutlet.h"
+#import "Outlet.h"
 #import "RevBayes.h"
 #import "ToolAlign.h"
 #import "ToolReadData.h"
@@ -55,26 +56,11 @@
 	[controlWindow close];
 }
 
-- (void)dealloc {
-
-    if (clustalTask != nil)
-        [clustalTask release];
-        
-    [clustalAlign release];
-    [clustalScoreType release];
-    [clustalMatrix release];
-    [clustalEndGaps release];
-    [clustalIteration release];
-
-	[controlWindow release];
-    
-	[super dealloc];
-}
-
 - (void)decrementTaskCount {
 
     // @John: I need to comment this out to get it working on my old OS X ... (Sebastian)
-//    OSAtomicDecrement32(&taskCount);
+    // @Sebastian: Update your fucking OSX version.
+    OSAtomicDecrement32(&taskCount);
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -145,7 +131,7 @@
         
     // and make a temporary directory to contain the alignments
     NSString* temporaryDirectory = NSTemporaryDirectory();
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
               alnDirectory = [alnDirectory stringByAppendingString:@"/myAlignments"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
@@ -200,13 +186,7 @@
         }
     
     // free the tasks
-	NSEnumerator* taskEnumerator = [taskArray objectEnumerator];
-	id element;
-	while ( (element = [taskEnumerator nextObject]) )
-		{
-        [(AlignmentTask*)element release];
-        }
-        
+    
     // read the alignments ********************************
     
     // check the workspace and make certain that we use an unused name for the
@@ -372,24 +352,19 @@
         alignmentMethod = [aDecoder decodeIntForKey:@"alignmentMethod"];
             
         // resuscitate Clustal variables here before recreating new windowcontroller
-        clustalAlign = [aDecoder decodeObjectForKey:@"clustalAlign"];
-            [clustalAlign retain];
-        clustalWordLength = [aDecoder decodeIntForKey:@"clustalWordLength"];
-        clustalWindow = [aDecoder decodeIntForKey:@"clustalWindow"];
-        clustalScoreType = [aDecoder decodeObjectForKey:@"clustalScoreType"];
-            [clustalScoreType retain];
-        clustalNumberDiagonals = [aDecoder decodeIntForKey:@"clustalNumberDiagonals"];
-        clustalPairGapPenalty = [aDecoder decodeIntForKey:@"clustalPairGapPenalty"];
-        clustalMatrix = [aDecoder decodeObjectForKey:@"clustalMatrix"];
-            [clustalMatrix retain];
-        clustalGapOpenPenalty = [aDecoder decodeFloatForKey:@"clustalGapOpenPenalty"];
-        clustalEndGaps = [aDecoder decodeObjectForKey:@"clustalEndGaps"];
-            [clustalEndGaps retain];
-        clustalGapExtensionCost = [aDecoder decodeFloatForKey:@"clustalGapExtensionCost"];
+        clustalAlign                = [aDecoder decodeObjectForKey:@"clustalAlign"];
+        clustalWordLength           = [aDecoder decodeIntForKey:@"clustalWordLength"];
+        clustalWindow               = [aDecoder decodeIntForKey:@"clustalWindow"];
+        clustalScoreType            = [aDecoder decodeObjectForKey:@"clustalScoreType"];
+        clustalNumberDiagonals      = [aDecoder decodeIntForKey:@"clustalNumberDiagonals"];
+        clustalPairGapPenalty       = [aDecoder decodeIntForKey:@"clustalPairGapPenalty"];
+        clustalMatrix               = [aDecoder decodeObjectForKey:@"clustalMatrix"];
+        clustalGapOpenPenalty       = [aDecoder decodeFloatForKey:@"clustalGapOpenPenalty"];
+        clustalEndGaps              = [aDecoder decodeObjectForKey:@"clustalEndGaps"];
+        clustalGapExtensionCost     = [aDecoder decodeFloatForKey:@"clustalGapExtensionCost"];
         clustalGapSeparationPenalty = [aDecoder decodeIntForKey:@"clustalGapSeparationPenalty"];
-        clustalIteration = [aDecoder decodeObjectForKey:@"clustalIteration"];
-            [clustalIteration retain];
-        clustalNumberOfIterations = [aDecoder decodeIntForKey:@"clustalNumberOfIterations"];
+        clustalIteration            = [aDecoder decodeObjectForKey:@"clustalIteration"];
+        clustalNumberOfIterations   = [aDecoder decodeIntForKey:@"clustalNumberOfIterations"];
             
         // initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
@@ -456,8 +431,6 @@
         {
         [self taskCompleted];
         }
-     
-    [incomingText release];
 }
 
 - (BOOL)resolveStateOnWindowOK {

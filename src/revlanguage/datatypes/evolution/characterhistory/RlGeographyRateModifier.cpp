@@ -72,33 +72,23 @@ const TypeSpec& RlGeographyRateModifier::getClassTypeSpec(void) {
 }
 
 
-/** Get the methods for this vector class */
-/* Get method specifications */
-const MethodTable& RlGeographyRateModifier::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RlGeographyRateModifier::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-//        // add method for call "x[]" as a function
-//        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-//        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-//        methods.addFunction("[]",  new MemberProcedure( ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
-//        
-//        // add method for call "x[]" as a function
-//        ArgumentRules* sizeArgRules = new ArgumentRules();
-//        methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &ModelObject<RevBayesCore::GeographyRateModifier>::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
-
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */

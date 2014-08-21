@@ -60,6 +60,26 @@ const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void) {
 	return revTypeSpec;
 }
 
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& ContinuousCharacterData::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
+
 /** Get type spec */
 const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
     
@@ -71,8 +91,8 @@ const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type) const {
+bool ContinuousCharacterData::isConvertibleTo(const TypeSpec& type, bool once) const {
     
-    return RevObject::isConvertibleTo(type);
+    return RevObject::isConvertibleTo(type, once);
 }
 

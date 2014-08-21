@@ -327,7 +327,7 @@ const bool ContinuousCharacterData::getHomologyEstablished(void) const
  */
 size_t ContinuousCharacterData::getIndexOfTaxon(const std::string &n) const
 {
-    long pos = find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
+    long pos = std::find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
     
     if ( pos == sequenceNames.size() )
     {
@@ -460,7 +460,9 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
     const std::string& name = sequenceNames[tn];
     const std::map<std::string, ContinuousTaxonData >::iterator& i = taxonMap.find( name ); 

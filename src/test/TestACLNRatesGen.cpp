@@ -109,7 +109,12 @@ bool TestACLNRatesGen::run( void ) {
 	
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, birthRate, deathRate, rho, "uniform", "nTaxa", taxa, std::vector<Clade>()) );
 
     DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	
@@ -227,8 +232,8 @@ bool TestACLNRatesGen::run( void ) {
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(bmNu, 0.75), 4, true ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 0.5), 2, false ) );
     moves.push_back( new MetropolisHastingsMove( new ScaleProposal(rootRate, 1.0), 2, false ) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 1.0, false, 8.0 * (double)numNodes) );
-	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, rootID, 2.0, false, 8.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, 1.0, false, 8.0 * (double)numNodes) );
+	moves.push_back( new ScaleSingleACLNRatesMove( nodeRates, 2.0, false, 8.0 * (double)numNodes) );
 	moves.push_back( new RateAgeACLNMixingMove( treeAndRates, 0.02, false, 2.0 ) ); 
 	
     // add some tree stats to monitor

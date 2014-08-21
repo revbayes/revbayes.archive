@@ -43,7 +43,7 @@
 
 - (void)calculateDistances;
 - (void)closeControlPanel;
-- (void)execute;
+- (BOOL)execute;
 - (void)showControlPanel;
 
 @end

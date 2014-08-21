@@ -56,7 +56,7 @@ namespace RevBayesCore {
         const valueType&                                    getValue(void) const;
         bool                                                isClamped(void) const;                                                      //!< Is this DAG node clamped?
         bool                                                isStochastic(void) const;                                                   //!< Is this DAG node stochastic?
-        void                                                printStructureInfo(std::ostream &o) const;                                  //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
+        void                                                printStructureInfo(std::ostream &o, bool verbose=false) const;              //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         void                                                redraw(void);                                                               //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                        reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
@@ -272,7 +272,6 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
     
     if ( needsProbabilityRecalculation ) 
     {
-        
         // compute and store log-probability
         lnProb = distribution->computeLnProbability();
         
@@ -339,7 +338,11 @@ bool RevBayesCore::StochasticNode<valueType>::isStochastic( void ) const {
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
     
-    if ( this->touched ) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In keepMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if ( this->touched )
     {
         
         storedLnProb = 1.0E6;       // An almost impossible value for the density
@@ -365,25 +368,43 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &o ) const
+void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &o, bool verbose ) const
 {
-    o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
-    o << "_dagType      = Stochastic DAG node" << std::endl;
-    o << "_refCount     = " << this->getReferenceCount() << std::endl;
-
-    o << "_distribution = " << "<" << distribution << ">" << std::endl;
-    o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
-    o << "_lnProb       = " << lnProb << std::endl;
-    if ( this->touched )
-        o << "_storedLnProb = " << storedLnProb << std::endl;    
     
+    if ( verbose == true )
+    {
+        o << "_dagNode      = " << this->name << " <" << this << ">" << std::endl;
+    }
+    else
+    {
+        if ( this->name != "")
+            o << "_dagNode      = " << this->name << std::endl;
+        else
+            o << "_dagNode      = <" << this << ">" << std::endl;
+    }
+    
+    o << "_dagType      = Stochastic DAG node" << std::endl;
+    
+    if ( verbose == true )
+    {
+        o << "_refCount     = " << this->getReferenceCount() << std::endl;
+        o << "_distribution = " << "<" << distribution << ">" << std::endl;
+        o << "_touched      = " << ( this->touched ? "TRUE" : "FALSE" ) << std::endl;
+    }
+    
+    o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
+    o << "_lnProb       = " << const_cast< StochasticNode<valueType>* >( this )->getLnProbability() << std::endl;
+    
+    if ( this->touched && verbose == true)
+    {
+        o << "_storedLnProb = " << storedLnProb << std::endl;
+    }
     o << "_parents      = ";
-    this->printParents(o, 16, 70);
+    this->printParents(o, 16, 70, verbose);
     o << std::endl;
     
     o << "_children     = ";
-    this->printChildren(o, 16, 70);
+    this->printChildren(o, 16, 70, verbose);
     o << std::endl;
 }
 
@@ -414,9 +435,12 @@ void RevBayesCore::StochasticNode<valueType>::reInitializeMe( void )
 template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer) {
     
-    if ( this->touched ) 
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In restoreMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+    
+    if ( this->touched )
     {
-        
         lnProb          = storedLnProb;
         storedLnProb    = 1.0E6;    // An almost impossible value for the density
                         
@@ -504,11 +528,13 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher )
 {
     
+#ifdef DEBUG_DAG_MESSAGES
+    std::cerr << "In touchMe of stochastic node " << this->getName() << " <" << this << ">" << std::endl;
+#endif
+
     if (!this->touched)
     {
-        
         storedLnProb = lnProb;
-        
     }
         
     needsProbabilityRecalculation = true;

@@ -49,21 +49,25 @@ RevPtr<Variable> Func_ls::execute( void ) {
     
     bool printAll = static_cast<const RlBoolean &>( args[0].getVariable()->getRevObject() ).getValue();
     
+    RBOUT( "\n" );
     RBOUT( "User workspace:" );
     RBOUT( "===============" );
     RBOUT( "\n" );
     
-    Workspace::userWorkspace().printValue( std::cout );
-    RBOUT( "\n" );
+    std::ostringstream  o;
+    Workspace::userWorkspace().printValue( o );
+    RBOUT( o.str() );
     
     if ( printAll == true ) {
         
+        RBOUT( "\n" );
         RBOUT( "Global workspace:" );
         RBOUT( "=================" );
         RBOUT( "\n" );
         
-        Workspace::globalWorkspace().printValue( std::cout );
-        RBOUT( "\n" );
+        o.str("");
+        Workspace::globalWorkspace().printValue( o );
+        RBOUT( o.str() );
     }
 
     return NULL;

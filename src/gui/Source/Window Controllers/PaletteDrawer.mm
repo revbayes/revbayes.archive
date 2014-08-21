@@ -24,12 +24,6 @@
     [paletteView setNeedsDisplay:YES];
 }
 
-- (void)dealloc {
-    
-    [myDelegate release];
-    [super dealloc];
-}
-
 - (id)init {
     
     if ( (self = [super init]) ) 

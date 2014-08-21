@@ -16,19 +16,20 @@ namespace RevLanguage {
     class DiscreteTaxonData : public ModelObject<RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> > {
         
     public:
-        DiscreteTaxonData(void);                                                                                                                    //!< Constructor requires character type
-        DiscreteTaxonData(RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v);                                                          //!< Constructor requires character type
+        DiscreteTaxonData(void);                                                                                        //!< Constructor requires character type
+        DiscreteTaxonData(RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> *v);                          //!< Constructor requires character type
         
         typedef RevBayesCore::DiscreteTaxonData<typename rlCharType::valueType> valueType;
         
         // Basic utility functions
-        DiscreteTaxonData*                  clone(void) const;                                                                                  //!< Clone object
-        static const std::string&           getClassType(void);                                                                                 //!< Get Rev type
-        static const TypeSpec&              getClassTypeSpec(void);                                                                             //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                                            //!< Get language type of the object
+        DiscreteTaxonData*                  clone(void) const;                                                          //!< Clone object
+        static const std::string&           getClassType(void);                                                         //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
+        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Member method inits
-        const MethodTable&                  getMethods(void) const;                                             //!< Get methods
+        const MethodTable&                  getMethods(void) const;                                                     //!< Get member methods
+        MethodTable                         makeMethods(void) const;                                                    //!< Make member methods
         RevPtr<Variable>                    executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
                 
     };
@@ -92,6 +93,7 @@ const std::string& RevLanguage::DiscreteTaxonData<rlType>::getClassType(void) {
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getClassTypeSpec(void) { 
@@ -102,31 +104,24 @@ const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getClassTyp
 }
 
 
-/** Get the methods for this vector class */
-/* Get method specifications */
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
 template <typename rlType>
-const RevLanguage::MethodTable& RevLanguage::DiscreteTaxonData<rlType>::getMethods(void) const {
+const RevLanguage::MethodTable& RevLanguage::DiscreteTaxonData<rlType>::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        // add method for call "x[]" as a function
-        ArgumentRules* squareBracketArgRules = new ArgumentRules();
-        squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
-        methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
-        
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
-
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
@@ -137,6 +132,23 @@ const RevLanguage::TypeSpec& RevLanguage::DiscreteTaxonData<rlType>::getTypeSpec
     return typeSpec;
 }
 
+
+/** Make member methods for this class */
+template <typename rlType>
+RevLanguage::MethodTable RevLanguage::DiscreteTaxonData<rlType>::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+    
+    // Add method for call "x[]" as a function
+    ArgumentRules* squareBracketArgRules = new ArgumentRules();
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , true, Natural::getClassTypeSpec() ) );
+    methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::DiscreteTaxonData<typename rlType::valueType> >::makeMethods() );
+    
+    return methods;
+}
 
 
 #endif

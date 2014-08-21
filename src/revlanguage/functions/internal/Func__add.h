@@ -18,7 +18,7 @@
 #ifndef Func__add_H
 #define Func__add_H
 
-#include "TypedFunction.h"
+#include "RlTypedFunction.h"
 
 #include <map>
 #include <string>
