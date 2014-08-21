@@ -65,19 +65,21 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
 
     StringVector specialStrings;
     // important: assign in descending order from longest to shortest strings
-    specialStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=", ",", " ";
+    specialStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=", ",", "(", ")", " ";
 
     std::string specialMatch = "";
     int specialMatchType = 0; // 0 = no match against any operator, 1 = reference assignment operator, 2 = other
     std::string stringBuf = buf + startPos;
     int rPos = 0, _rPos, tmpInt;
+    bool endWithSpace = false;
 
-    // find the most current operator
+    // find the most current operator or control character 
+    // and move cursor (linePos) to the point where it is relevant to match for completion 
+
     BOOST_FOREACH(std::string s, specialStrings) {
 
         _rPos = tmpInt = stringBuf.find(s, rPos); // first match 
-        
-        //tmpInt = _rPos;
+
         while (tmpInt != -1) { // find last match
             _rPos = tmpInt + s.length();
             tmpInt = stringBuf.find(s, tmpInt + s.length());
@@ -86,20 +88,25 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
         if (_rPos > rPos) {
             if (s == "<-&") {
                 specialMatchType = 1;
-            } 
-            else if(s != " " ){
-                specialMatchType = 2;
+                specialMatch = s;
+            } else if (s == " ") {
+                endWithSpace = true;
             }
-            specialMatch = s;
+            else{
+                specialMatchType = 2;
+                specialMatch = s;
+                endWithSpace = false;
+            }
+            
             rPos = _rPos;
         }
     }
     startPos += rPos;
 
     // discard extra space in beginning of string to match against completions
-    while (buf[startPos] == ' ') {
-        startPos++;
-    }
+//    while (buf[startPos] == ' ') {
+//        startPos++;
+//    }
 
     // the string the matching is made against
     std::string compMatch(buf + startPos);
@@ -111,29 +118,36 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
     }
 
     // assemble completions
+    // let state release
+    if (endWithSpace) {
+        if (editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER) {
+            editorMachine.tryRelease(buf);
+        }
+    }
 
     // completions are either already set by the character callback or by some of the special cases here
     StringVector completions;
     if (specialMatchType == 0) {
         completions = editorMachine.getCurrentState()->getCompletions();
-    } else {
-        if (editorMachine.getCurrentState()->getType() == ST_IDLE) {
-            if (specialMatchType == 1) { //reference assignment operator
-                // completion only on user defined objects
-                completions = workspaceUtils.getObjects(false);
 
-            } else { // other operator
-                completions = getDefaultCompletions();
-            }
+    } else {
+        if (specialMatchType == 1) { //reference assignment operator
+            // completion only on user defined objects
+            completions = workspaceUtils.getObjects(false);
+
+        } else if (editorMachine.getCurrentState()->getType() == ST_IDLE) {
+            completions = getDefaultCompletions();
+
         } else if (editorMachine.getCurrentState()->getType() == ST_DEF_ARGUMENT
                 || editorMachine.getCurrentState()->getType() == ST_DEF_LIST) {
-            if(specialMatch != ","){
+            if (specialMatch == ",") {
+                completions = editorMachine.getCurrentState()->getCompletions();
+
+            } else {
                 completions = getDefaultCompletions();
             }
-            else{
-                completions = editorMachine.getCurrentState()->getCompletions();
-            }
-        } else if(editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER){
+
+        } else if (editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER) {
             editorMachine.tryRelease(buf);
         }
     }
@@ -255,6 +269,11 @@ void setDefaultCompletions() {
     }
 }
 
+int spaceCallback(const char *buf, size_t len, char c) {
+    editorMachine.tryRelease(buf);
+    return 0;
+}
+
 /**
  * Retain arguments in tab complete but remove already used ones.
  * 
@@ -265,17 +284,21 @@ void setDefaultCompletions() {
  */
 
 int listSeparatorCallback(const char *buf, size_t len, char c) {
-
+    
+    // first time, previous state is st_def_list
+    // second time, previous state is st_def_arugment
+    StringVector completions = editorMachine.getStateQueue()->back();
+    //std::cout << "\n\rstate before: " << editorMachine.getStateQueue()->back()->getDescription();
     if (editorMachine.processInput(buf)) {
-
-        // shouldn't be here if not previous state was defining a list
-        EditorState *func = editorMachine.getStateQueue()->at(editorMachine.getStateQueue()->size() - 2);
+        //std::cout << "\n\rstate after: " << editorMachine.getStateQueue()->back()->getDescription();
+        //EditorState *func = editorMachine.getStateQueue()->at(editorMachine.getStateQueue()->size() - 2);
         std::string usedArgument = editorMachine.getCurrentState()->getSubject();
-
+        std::cout << "usedArgument = " + usedArgument + "\n\r";
         // pop the used argument from completions        
         StringVector v;
 
         BOOST_FOREACH(std::string s, func->getCompletions()) {
+        //BOOST_FOREACH(std::string s, completions) {
             if (s != usedArgument) {
                 v.push_back(s);
             }
@@ -339,11 +362,33 @@ int bracketCallback(const char *buf, size_t len, char c) {
             BOOST_FOREACH(std::string param, workspaceUtils.getFunctionParameters(subject)) {
                 editorMachine.getCurrentState()->addCompletion(param);
             }
+
         } else { // member method
 
             BOOST_FOREACH(std::string param, workspaceUtils.getMethodParameters(type, subject)) {
                 editorMachine.getCurrentState()->addCompletion(param);
             }
+        }
+        std::vector<WorkspaceUtils::FunctionSignature> signatures = workspaceUtils.getFunctionSignatures(subject);
+        if (signatures.size() <= 0) {
+            std::cout << "\n\rno such function\n\r";
+        } else {
+
+            BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, signatures) {
+                std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
+
+                for (size_t i = 0; i < sign.arguments.size(); i++) {
+                    std::cout << sign.arguments[i];
+                    if (i < sign.arguments.size() - 1) {
+                        std::cout << ", ";
+                    }
+                }
+            }
+
+            std::cout << ")\n\r";
+            linenoiceSetCursorPos(0);
+            std::cout << prompt << buf;
+            std::cout.flush();
         }
     }
     return 0;
@@ -508,9 +553,10 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
     linenoiseSetCharacterCallback(dotCallback, '.');
     linenoiseSetCharacterCallback(bracketCallback, ')');
     linenoiseSetCharacterCallback(bracketCallback, '(');
-    linenoiseSetCharacterCallback(assignCallback, '=');
+    //linenoiseSetCharacterCallback(assignCallback, '=');
     linenoiseSetCharacterCallback(quotationCallback, '"');
     linenoiseSetCharacterCallback(listSeparatorCallback, ',');
+    //linenoiseSetCharacterCallback(spaceCallback, ' ');
 
     linenoiseSetCharacterCallback(escapeCallback, 27);
     linenoiseSetCharacterCallback(backspaceCallback, ctrl('H')); // works in netbeans pseudo terminal
