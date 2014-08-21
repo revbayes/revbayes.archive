@@ -29,16 +29,20 @@ class RbSettings {
                                        static RbSettings settings = RbSettings();
 									   return settings;
                                        }
-        
+   
+        void                        initializeUserSettings(void);                       //!< Initialize the user settings to default values
+    
+    
         // Access functions
         bool                        getPrintNodeIndex(void) const;                      //!< Retrieve the flag whether we should print node indices 
         double                      getTolerance(void) const;                           //!< Retrieve the tolerance for comparing doubles
-        
+        const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
+    
         // setters
         void                        setPrintNodeIndex(bool tf);                         //!< Set the flag whether we should print node indices
         void                        setTolerance(double t);                             //!< Set the tolerance for comparing double
-        void                        initializeUserSettings(void);                       //!< Initialize the user settings to default values
-
+        void                        setWorkingDirectory(const std::string &wd);         //!< Set the current working directory
+    
     private:
                                     RbSettings(void);                                   //!< Default constructor
                                     RbSettings(const RbSettings& s) {}                  //!< Prevent copy
@@ -50,6 +54,8 @@ class RbSettings {
 		// Variables that have user settings
         double                      tolerance;                                          //!< Tolerance for comparison of doubles
         bool                        printNodeIndex;                                     //!< Should the node index of a tree be printed as a comment?
+        std::string                 workingDirectory;
+    
 };
 
 #endif

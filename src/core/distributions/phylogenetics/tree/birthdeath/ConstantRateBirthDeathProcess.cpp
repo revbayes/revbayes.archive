@@ -12,9 +12,9 @@
 
 using namespace RevBayesCore;
 
-ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
+ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                      const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, ro, r, ss, cdt, tn, c ),
+                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( org, ra, r, ss, cdt, tn, c ),
     speciation( s ),
     extinction( e )
 {
@@ -105,6 +105,7 @@ std::set<const DagNode*> ConstantRateBirthDeathProcess::getParameters( void ) co
     parameters.insert( extinction );
     
     parameters.erase( NULL );
+    
     return parameters;
 }
 

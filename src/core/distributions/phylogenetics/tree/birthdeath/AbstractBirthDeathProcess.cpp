@@ -3,7 +3,9 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbException.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "Topology.h"
@@ -37,6 +39,11 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     startsAtRoot(  origin == NULL )
 
 {
+    
+    if ( (origin == NULL && rootAge == NULL) || (origin != NULL && rootAge != NULL) )
+    {
+        throw RbException("You have to condition either on the origin or on the root age.");
+    }
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
@@ -185,6 +192,16 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         {
             return RbConstants::Double::neginf;
         }
+        
+        const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
+        
+        for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+        {
+            if ( ra < (*it)->getAge() )
+            {
+                return RbConstants::Double::neginf;
+            }
+        }
     }
     
     
@@ -275,6 +292,21 @@ int AbstractBirthDeathProcess::diversity(double t) const
 
 
 /**
+ * Get the affected nodes by a change of this node.
+ * If the root age has changed than we need to call get affected again.
+ */
+void AbstractBirthDeathProcess::getAffected(std::set<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+{
+    
+    if ( affecter == rootAge)
+    {
+        dagNode->getAffectedNodes( affected );
+    }
+    
+}
+
+
+/**
  * Get the age of the internal nodes meassured since the time of the most recent tip.
  * We get the ages from the nodes and simply subtruct these from the age of the most recent tip.
  *
@@ -352,6 +384,11 @@ std::vector<double>* AbstractBirthDeathProcess::getAgesOfTipsFromMostRecentSampl
  */
 void AbstractBirthDeathProcess::keepSpecialization(DagNode *affecter)
 {
+    
+    if ( affecter == rootAge )
+    {
+        dagNode->keepAffected();
+    }
     
 }
 
@@ -496,8 +533,15 @@ std::set<const DagNode*> AbstractBirthDeathProcess::getParameters( void ) const
 {
     std::set<const DagNode*> parameters;
     
-    parameters.insert( origin );
-    parameters.insert( rootAge );
+    if ( origin != NULL )
+    {
+        parameters.insert( origin );
+    }
+    
+    if ( rootAge != NULL )
+    {
+        parameters.insert( rootAge );
+    }
     
     parameters.erase( NULL );
     return parameters;
@@ -515,6 +559,7 @@ void AbstractBirthDeathProcess::restoreSpecialization(DagNode *affecter)
     if ( affecter == rootAge )
     {
         value->setAge(value->getRoot().getIndex(), rootAge->getValue() );
+        dagNode->restoreAffected();
     }
     
 }
@@ -553,6 +598,7 @@ void AbstractBirthDeathProcess::touchSpecialization(DagNode *affecter)
     if ( affecter == rootAge )
     {
         value->setAge(value->getRoot().getIndex(), rootAge->getValue() );
+        dagNode->touchAffected();
     }
     
 }

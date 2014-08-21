@@ -2,6 +2,7 @@
 #include "DagNode.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <stdio.h>
@@ -71,6 +72,12 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         
         // Calculate acceptance ratio
         double lnR = heat * lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio;
+	
+		if ( !RbMath::isFinite(lnR) ) {
+		
+            reject();
+			
+		}
         
         if (lnR >= 0.0)
         {
