@@ -185,22 +185,11 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         if (cladoState == 0)
             ss << "s";
         else if (cladoState == 1)
-        {
-         
-            
             ss << "p";
-            
-        }
         else if (cladoState == 2)
             ss << "a";
         else
-        {
-            
-            
-            true;
-            
             ss << "NA";
-        }
         
     }
     else if (infoStr=="bud_state")
@@ -228,7 +217,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         {
             if (i != 0)
                 ss << ",";
-            ss << i << ":" << v[i];
+//            ss << i << ":" << v[i];
+            ss << v[i];
         }
     }
     else if (infoStr=="state_betw")
@@ -253,12 +243,14 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         {
             if (i != 0)
                 ss << ",";
-            ss << i << ":{";
+//            ss << i << ":{";
+            ss << "{";
             for (size_t j = 0; j < numStates; j++)
             {
                 if (j != 0)
                     ss << ",";
-                ss << j << ":" << v[numStates*i + j];
+//                ss << j << ":" << v[numStates*i + j];
+                ss << v[numStates*i + j];
             }
             ss << "}";
         }
@@ -328,7 +320,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         characterStream << ",sb={" << buildCharacterHistoryString(n,"state_betw") << "}";
         
         // event history
-        characterStream << ",&ch={" << buildCharacterHistoryString(n,"events") << "}";
+        characterStream << ",ev={" << buildCharacterHistoryString(n,"events") << "}";
         
         // ... whatever else
         characterStream << "]";
