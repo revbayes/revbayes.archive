@@ -1,9 +1,11 @@
+#include "AbstractMemberFunction.h"
 #include "Argument.h"
 #include "Environment.h"
 #include "MemberProcedure.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
+#include "RlMemberFunction.h"
 #include "RlString.h"
 #include "SyntaxFunctionCall.h"
 #include "Workspace.h"
@@ -171,11 +173,30 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
             
         Function* theFunction = mt.getFunction( functionName, args, true ).clone();
         theFunction->processArguments(args, true);
-        MemberProcedure* theMemberProcedure = static_cast<MemberProcedure*>( theFunction );
-        theMemberProcedure->setMemberObject( theVar );
         
-        // Evaluate the function (call the static evaluation function)
-        funcReturnValue = theMemberProcedure->execute();
+        MemberProcedure* theMemberProcedure = dynamic_cast<MemberProcedure*>( theFunction );
+        if ( theMemberProcedure != NULL )
+        {
+            theMemberProcedure->setMemberObject( theVar );
+            
+            // Evaluate the function (call the dynamic evaluation function)
+            funcReturnValue = theMemberProcedure->execute();
+        }
+        else
+        {
+            AbstractMemberFunction* theMemberFunction = dynamic_cast<AbstractMemberFunction*>( theFunction );
+            if ( theMemberFunction != NULL )
+            {
+                theMemberFunction->setMemberObject( theVar );
+                
+                // Evaluate the function (call the dynamic evaluation function)
+                funcReturnValue = theMemberFunction->execute();
+            }
+            else
+            {
+                throw RbException("Could convert member function.");
+            }
+        }
         
         delete theFunction;
     }
@@ -291,11 +312,30 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
 //        }
         theFunction = mt.getFunction( functionName, args, false ).clone();
         theFunction->processArguments( args, false );
-        MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( theFunction );
-        theMemberFunction->setMemberObject( theVar );
         
-        // Evaluate the function (call the dynamic evaluation function)
-        funcReturnValue = theMemberFunction->execute();
+        MemberProcedure* theMemberProcedure = dynamic_cast<MemberProcedure*>( theFunction );
+        if ( theMemberProcedure != NULL )
+        {
+            theMemberProcedure->setMemberObject( theVar );
+            
+            // Evaluate the function (call the dynamic evaluation function)
+            funcReturnValue = theMemberProcedure->execute();
+        }
+        else
+        {
+            AbstractMemberFunction* theMemberFunction = dynamic_cast<AbstractMemberFunction*>( theFunction );
+            if ( theMemberFunction != NULL )
+            {
+                theMemberFunction->setMemberObject( theVar );
+                
+                // Evaluate the function (call the dynamic evaluation function)
+                funcReturnValue = theMemberFunction->execute();
+            }
+            else
+            {
+                throw RbException("Could convert member function.");
+            }
+        }
         
         // Delete the member function clone
         delete theFunction;
