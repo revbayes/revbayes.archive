@@ -12,7 +12,7 @@
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "Topology.h"
-#include "symmetricDifferenceStatistic.h"
+#include "SymmetricDifferenceStatistic.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
