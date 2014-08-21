@@ -75,6 +75,7 @@ const MemberRules& Mntr_File::getMemberRules(void) const {
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
+        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         filemonitorMemberRules.push_back( new ArgumentRule("filename", true, RlString::getClassTypeSpec() ) );
         filemonitorMemberRules.push_back( new ArgumentRule("printgen", true, Natural::getClassTypeSpec(), new Natural(1) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("separator", true, RlString::getClassTypeSpec(), new RlString("\t") ) );
@@ -84,7 +85,6 @@ const MemberRules& Mntr_File::getMemberRules(void) const {
         filemonitorMemberRules.push_back( new ArgumentRule("append", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("chainIdx", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("chainHeat", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
-        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
