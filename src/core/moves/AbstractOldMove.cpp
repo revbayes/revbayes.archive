@@ -2,6 +2,7 @@
 #include "DagNode.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbException.h"
 #include "RbMathLogic.h"
 
 #include <cmath>
@@ -22,10 +23,15 @@ AbstractOldMove::~AbstractOldMove() {
 }
 
 
-void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
+void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool priorOnly )
+{
     
     if ( isGibbs() )
     {
+        if ( raiseLikelihoodOnly || priorOnly || heat < 1.0 )
+        {
+            throw RbException("Cannot perform Gibbs move because the likelihood is perturbed for this Monte Carlo sampler.");
+        }
         // do Gibbs proposal
         performGibbs();
         // theMove->accept(); // Not necessary, because Gibbs samplers are automatically accepted.
@@ -60,7 +66,12 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
             {
                 if ( (*it)->isClamped() )
                 {
-                    lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                    
+                    if ( priorOnly == false)
+                    {
+                        lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                    }
+                    
                 }
                 else
                 {
