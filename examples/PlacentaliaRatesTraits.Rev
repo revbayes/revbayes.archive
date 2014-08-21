@@ -6,8 +6,7 @@
 
 # read the sequence data
 # the readCharacter function returns a vector of matrices. We just take the first one
-dataArray <- readCharacterData("data/plac73_4fold.nex")
-data <- dataArray[1]
+data <- readCharacterData("data/plac73_4fold.nex")
 
 # get some useful variables from the data
 taxaCount <- data.ntaxa()
@@ -15,8 +14,7 @@ names <- data.names()
 nSites <- data.nchar()[1]
 
 # read the quantitative trait data 
-contDataArray <- readCharacterData("data/plac73lhtlog.nex")
-contData <- contDataArray[1]
+contData <- readCharacterData("data/plac73lhtlog.nex")
 contData
 
 # get some useful variables from the data
@@ -84,23 +82,22 @@ for (i in 1:nTraits)	{
 	br.clampAt(contData,i+1,i)
 }
 
-"stats for cov"
+#"stats for cov"
 # get useful functions of the covariance matrix
 # these are just specific examples
-
-var1 := sigma.covariance(1,1)
-cov12 := sigma.covariance(1,2)
-cor12 := sigma.correlation(1,2)
-parcor12 := sigma.partialCorrelation(1,2)
+#var1 := sigma.covariance(1,1)
+#cov12 := sigma.covariance(1,2)
+#cor12 := sigma.correlation(1,2)
+#parcor12 := sigma.partialCorrelation(1,2)
 
 # get useful outputs from the brownian process
 
-for (i in 1:covdim)	{
-
-	# mean and stdev of each trait
-	meanbr[i] := br.mean(i)
-	stdevbr[i] := br.stdev(i)
-}
+#for (i in 1:covdim)	{
+#
+#	# mean and stdev of each trait
+#	meanbr[i] := br.mean(i)
+#	stdevbr[i] := br.stdev(i)
+#}
 
 "subs"
 
@@ -137,9 +134,9 @@ seq.clamp(data)
 
 mymodel <- model(kappa)
 
-monitors[1] <- screenmonitor(printgen=100, var1, cov12, height, meanbr)
-#monitors[1] <- screenmonitor(printgen=10, var1, cov12, cor12, parcor12, meanbr, stdevbr, height)
-monitors[2] <- filemonitor(filename="placrlhtd1.cov",printgen=100, separator = "	", sigma,meanbr)
+monitors[1] <- screenmonitor(printgen=100, sigma)
+#monitors[1] <- screenmonitor(printgen=100, var1, cov12, height, meanbr)
+monitors[2] <- filemonitor(filename="placrlhtd1.cov",printgen=100, separator = "	", sigma)
 monitors[3] <- filemonitor(filename="placrlhtd1.tree",printgen=100, separator = "	", tau)
 monitors[4] <- modelmonitor(filename="placrlhtd1.log",printgen=100, separator = "	")
  

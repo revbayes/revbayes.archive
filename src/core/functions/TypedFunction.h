@@ -179,9 +179,7 @@ void RevBayesCore::TypedFunction<valueType>::setDeterministicNode(DeterministicN
 template <class valueType>
 void RevBayesCore::TypedFunction<valueType>::setDirty(bool flag)
 {
-    
     dirty = flag;
-
 }
 
 

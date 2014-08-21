@@ -30,12 +30,13 @@
 
 #For conveniency, we define a data folder in which we will save the output of our work.
 dataFolder<-"/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/examples/test/"
+setwd(dataFolder)
 
-
-# Let's simulate a species tree with 10 taxa, 10 gene trees, 10 alleles per species, and along each gene tree one gene alignment 500 bases long
+# Let's simulate a species tree with 10 taxa, 10 gene trees, 5 alleles per species, 
+# and along each gene tree one gene alignment 500 bases long.
 n_species <- 10
 n_genes <- 10
-n_alleles <- 10
+n_alleles <- 5
 n_sites <- 500
 n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 
@@ -49,14 +50,17 @@ for (i in 1:n_genes) {
 }
 
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
-speciation <- 2
-extinction <- 0.3
-tree_height <- 0.008
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0,100.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+tree_height.setValue(0.008)
 
 # Species tree from birth-death process
 speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
 
-# Making a backup for future reference
+# Making a backup for future reference:
 trueSpeciesTree <- speciesTree
 
 ###########################################
@@ -72,7 +76,8 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne <- 0.004
+Ne ~ gamma(shape=0.1,rate=0.1)
+Ne.setValue(0.004)
 
 # Simulate gene trees
 for (i in 1:n_genes) {
@@ -82,7 +87,7 @@ for (i in 1:n_genes) {
    geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
 }
 
-#For fun, let's look at the symmetric differences between the simulated gene tree topologies:
+# For fun, let's look at the symmetric differences between the simulated gene tree topologies:
 ndiff <- 1
 for (i in 1:(n_genes-1)) {
 	for (j in (i+1):n_genes) {
@@ -91,13 +96,13 @@ for (i in 1:(n_genes-1)) {
 	}
 }
 
-#The distances show that the gene trees are very dissimilar, because the maximum symmetric difference is 
-#2*(number of internal branches), which is equal to:
+# The distances show that the gene trees are very dissimilar, because the maximum symmetric difference is 
+# 2*(number of internal branches), which is equal to:
 maxDiff <- 2 * (n_species*n_alleles - 2)
 
-# Making a backup for future reference
+# Making a backup for future reference:
 trueGeneTrees <- geneTrees
-
+trueNe <- Ne
 
 #######################
 # Substitution Models #
@@ -116,21 +121,30 @@ for (i in 1:n_genes) {
 
 }
 
+# Making a backup for future reference:
+for (i in 1:n_genes) {
+	trueEr[i] <- er[i]
+	trueSf[i] <- sf[i]
+}
+
 
 ###############
 # Clock Model #
 ###############
 
-# Here we assume a simple relaxed clock model, but which takes quite a few parameters.
-# Each branch of each gene tree has its own rate parameter.
+# Here we assume a simple strict clock model. 
+# However, each gene family can have its own rate of evolution.
 # Those rate parameters are drawn independently from an exponential distribution.
-# This makes it possible to have large differences in rates of evolution between neighbouring branches, 
-# and also to have huge differences between rates associated to a given branch in two different gene families. 
+# This makes it possible to have large differences in rates of evolution between two different gene families. 
 
 for (i in 1:n_genes) {
-  branchRates[i] ~ exponential(1.0)
+  familyRates[i] ~ exponential(1.0)
 }
 
+# Making a backup for future reference:
+for (i in 1:n_genes) {
+  trueFamilyRates[i] <- familyRates[i] 
+}
 
 
 #############################
@@ -145,7 +159,9 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+#  shapeBis[i] := shape[i]
+#  norm_gamma_rates[i] := discretizeGamma( shape[i], shapeBis[i], 4, false )
+	norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
@@ -158,7 +174,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
 }
 
 
@@ -170,16 +186,16 @@ for (i in 1:n_genes) {
 
 # We need to save the species tree, the gene trees, and the gene alignments
 # Saving the species tree
-write(speciesTree, filename=dataFolder+"speciesTree")
+write(speciesTree, filename="speciesTree")
 
 # Saving the gene trees
 for (i in 1:n_genes) {
-	write(geneTrees[i], filename=dataFolder+"geneTree_"+i)
+	write(geneTrees[i], filename="geneTree_"+i)
 }
 
 # Saving the gene alignments
 for (i in 1:n_genes) {
-	writeFasta(alns[i], filename=dataFolder+"alignment_"+i+".fasta")
+	writeFasta(alns[i], filename="alignment_"+i+".fasta")
 }
 
 
@@ -199,14 +215,44 @@ for (i in 1:n_genes) {
 }
 
 
-#####################################################
-# Transforming constant nodes into stochastic nodes #
-#####################################################
+################################
+# Changing the starting values #
+################################
 
-# Now the parameters of the birth-death process are not fixed, but are a random variable (aka a stochastic node)
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-org ~ unif(0,100.0)
+# We want to start from random values, not the values used in the simulation.
+
+# Redrawing the parameters of the birth-death process:
+speciation.redraw()
+extinction.redraw()
+tree_height.redraw()
+
+# Redrawing the species tree:
+speciesTree.redraw()
+
+# Redrawing the parameter Ne:
+Ne.redraw()
+
+
+# Redrawing the gene trees:
+for (i in 1:n_genes) {
+   geneTrees[i].redraw()
+}
+
+# Redrawing the parameters of the substitution models:
+for (i in 1:n_genes) {
+  er[i].redraw()
+  sf[i].redraw()
+}
+
+# Idem for the family-wise rates of sequence evolution:
+for (i in 1:n_genes) {
+  familyRates[i].redraw()
+}
+
+# Idem for the family-wise across-site rate variation parameters:
+for (i in 1:n_genes) {
+  shape[i].redraw()
+}
 
 
 ####################
@@ -214,7 +260,7 @@ org ~ unif(0,100.0)
 ####################
 
 # We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, 
-# the parameter Ne, the rates on the gene trees, the parameters of the substitution models.
+# the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
 
 moveIndex <- 0
 
@@ -222,27 +268,49 @@ moveIndex <- 0
 # moves for the birth-death parameters
 moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
 moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
-moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
+moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
 
 
-# moves on the tree
+# moves on the tree topology and node ages
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
 moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
 moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
-moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
+#moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
 moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
 moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 
+# moves on the gene tree topologies and node ages
+for (i in 1:n_genes) {
+
+   moves[moveIndex++] <- mvNNI(geneTrees[i], 1.0)
+   moves[moveIndex++] <- mvFNPR(geneTrees[i], 1.0)
+   moves[moveIndex++] <- mvSubtreeScale(geneTrees[i], 5.0)
+#   moves[moveIndex++] <- mvTreeScale(geneTrees[i], 1.0, true, 3.0)
+   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTrees[i], 10.0)
+   moves[moveIndex++] <- mvRootTimeSlide(geneTrees[i], 1.0, true, 3.0)
+
+}
+
+# move on Ne, the effective population size
+moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
+
+# moves on the parameters of the substitution models
+for (i in 1:n_genes) {
+  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
+  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
+}
+
+# moves on the family-wise rates
+for (i in 1:n_genes) {
+  moves[moveIndex++] <- mvScale(familyRates[i], lambda=0.8, tune=true, weight=3.0)
+}
+
+# moves on the across-sites rate variation parameters:
+for (i in 1:n_genes) {
+  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
+}
 
 
-#############
-# THE Model #
-#############
-
-# We define our model.
-# We can use any node of our model as a handle, here we chose to use the species tree.
- 
-mymodel <- model(speciesTree)
 
 
 
@@ -255,20 +323,100 @@ mymodel <- model(speciesTree)
 
 mntrIndex <- 0
 
-# One monitor to backup the parameters, in case we want to stop and restart the analysis
-monitors[mntrIndex++] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+# One monitor to backup the parameters, in case we want to stop and restart the analysis:
+monitors[mntrIndex++] <- modelmonitor(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
 
-# One monitor to print the species trees sampled in the course of the MCMC
-monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
-gene <- ["cytB", "G3P", "myo", "ODC"]
+# One monitor to print the species trees sampled in the course of the MCMC:
+monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
-# One monitor for each gene family tree.
+# One monitor for each gene family tree:
 for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
+   monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
 }
 
-# One simple monitor that will output on the screen one parameter, Ne
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne)
+# We also want to monitor how far we are from the true values, which we have because we rely on simulations.
+# First, we can compute the distance between the reconstructed and the true species tree:
+distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
+
+# Same thing for the gene trees:
+for (i in 1:n_genes) {
+	distGeneTree[i] := symDiff (trueGeneTrees[i], geneTrees[i])
+}
+
+# We get one average value for all gene trees:
+meanDistGeneTree := mean(distGeneTree)
+
+# We can also look at the parameter values
+# For Ne:
+distNe := Ne - trueNe
+
+
+
+# For equilibrium values of the GTR matrices, we want one index of how far we are.
+# To achieve this we need to write some functions:
+clear(i)
+
+function RealPos diffVectors ( Simplex xvec, Simplex yvec ) { 
+	DI <- 0.0
+	for (i in 1:xvec.size()) {
+		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
+	}
+	return DI
+}
+
+function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) { 
+	DA <- 0.0
+	for (i in 1:xvecvec.size()) {
+		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
+	}
+	return xvecvec[2]
+}
+
+distEqFreq := diffVectorsOfVectors(trueSf, sf)
+	
+					
+	
+function RealPos diffVectors ( Real[] xvec, Real[] yvec ) { 
+	DI <- 0.0
+	for (i in 1:xvec.size()) {
+		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
+	}
+	return DI
+}
+
+function RealPos diffVectorsOfVectors ( Real[][] xvecvec, Real[][] yvecvec ) { 
+	DA <- 0.0
+	for (i in 1:xvecvec.size()) {
+		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
+	}
+	return DA
+}
+
+
+	
+	
+# Same thing for exchangeability parameters:
+distExchange := diffVectorsOfVectors(trueEr, er)
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
+	
+# Same thing for the family-wise rates
+distRates := diffVectors(trueFamilyRates, familyRates)
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distRates)
+
+
+# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
+	
+# We could do similar things for the few remaining parameters, but really I think that's enough.
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# We can use any node of our model as a handle, here we choose to use the species tree.
+ 
+mymodel <- model(speciesTree)
 
 
 
@@ -285,7 +433,7 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 # and the tuning interval for tuning parameters of moves on scalar variables.
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
-mymcmc.burnin(generations=200,tuningInterval=100)
+# mymcmc.burnin(generations=200,tuningInterval=100)
 mymcmc.run(generations=400)
 
 
@@ -306,153 +454,12 @@ mymcmc.run(generations=400)
 
 
 
-###################
-###################
-###################
-###################
-###################
-###################
-###################
-###################
+#########################################################
+#########################################################
+#########################################################
+######################  THE END  ########################
+#########################################################
+#########################################################
+#########################################################
 
-
-
-
-# read in the character data
-filenames <- v("data/Cettiidae_cytb.nex", "data/Cettiidae_G3P.nex", "data/Cettiidae_myo.nex", "data/Cettiidae_ODC.nex")
-
-n_genes <- filenames.size()
-for (i in 1:n_genes) {
-  data[i] <- readCharacterData(filenames[i])
-  n_sites[i] <- data[i].nchar(1)
-}
-
-# read in the mapping between sequence names and species names
-taxa <- readTaxonData("data/Cettiidae_taxon_data.txt")
-
-
-# Get some useful variables from the data, like species names and number of species. We need these later on.
-for (i in 1:taxa.size()) {
-   speciesNames[i] <- taxa[i].getSpeciesName()
-}
-speciesNames.unique() # remove redundancy in species names
-n_species <- speciesNames.size()
-
-
-
-
-
-
-
-
-#speciation ~ exponential(10.0)
-#extinction ~ exponential(10.0)
-#org ~ unif(0,100.0)
-
-moveIndex <- 0
-
-# moves for the birth-death paramaters
-moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
-moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
-moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
-
-
-# moves on the tree
-moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
-moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
-moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
-moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
-moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
-moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
-
-
-
-
-
-
-
-
-
-
-taxaFileNames <- ["data/Cettiidae_cytb_taxon_data.txt", "data/Cettiidae_G3P_taxon_data.txt", "data/Cettiidae_myo_taxon_data.txt", "data/Cettiidae_ODC_taxon_data.txt"]
-
-
-# We assume a single effective population size for the entire species tree.
-# We could also assume different parameters for each branch of the species tree.
-Ne ~ gamma(shape=1.0,rate=1.0)
-moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
-
-for (i in 1:n_genes) {
-
-   taxa <- readTaxonData(taxaFileNames[i])
-
-   # The gene tree from the multispecies coalescent process
-   # Note that if Ne had been a vector of effective population sizes, 
-   # allowing 1 parameter per branch of the species tree, the same line would work.
-   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
-
-   # moves on the tree
-   moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
-   moves[moveIndex++] <- mvFNPR(geneTree[i], 1.0)
-   moves[moveIndex++] <- mvSubtreeScale(geneTree[i], 5.0)
-   moves[moveIndex++] <- mvTreeScale(geneTree[i], 1.0, true, 3.0)
-   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTree[i], 10.0)
-   moves[moveIndex++] <- mvRootTimeSlide(geneTree[i], 1.0, true, 3.0)
-
-}
-
-
-
-
-
-
-
-
-
-
-
-for (i in 1:n_genes) {
-  er_prior[i] <- v(1,1,1,1,1,1)
-  er[i] ~ dnDirichlet(er_prior[i])
-  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
-
-  sf_prior[i] <- v(1,1,1,1)
-  sf[i] ~ dnDirichlet(sf_prior[i])
-  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
-
-  Q[i] := gtr(er[i],sf[i]) 
-
-}
-
-
-
-
-for (i in 1:n_genes) {
-  branchRates[i] ~ exponential(1.0)
-  moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
-}
-
-
-
-
-
-
-
-for (i in 1:n_genes) {
-
-  shape_prior[i] <- 0.05 
-  shape[i] ~ dnExponential( shape_prior[i] )
-  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
-  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
-
-}
-
-
-
-
-
-for (i in 1:n_genes) {
-  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
-  phyloSeq[i].clamp(data[i])
-}
 
