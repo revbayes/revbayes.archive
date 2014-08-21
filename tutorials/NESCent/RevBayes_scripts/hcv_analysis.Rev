@@ -14,11 +14,12 @@ names <- D.names()
 
 
 ## Priors from Stadler et al. (2013)
-origin ~ dnLnorm(1.0, 1.25)
+origin ~ dnNorm(325.0,10.0)
 origin
 
-origin.setValue(treeHeight(T) * 1.2)
-origin
+origin.setValue(325.0)
+
+or_t := abs(origin)
 
 
 ## Setting the vector of parameter change times
@@ -28,8 +29,10 @@ change_times <- n_intervals - 1
 ## This produces a vector of relative times from youngest -> oldest 
 ## The absolute times are a function of the origin time
 for(i in 1:change_times){
-	p_rel_times[i] <- abs((i * (1.0 / n_intervals))) 
-	p_abs_times[i] := origin * p_rel_times[i]
+	p_rel_times[i] <- (i * (1.0 / n_intervals))
+	p_abs_times[i] := abs(origin * p_rel_times[i])
+	p_rel_times_rev[i] <- 1.0 - (i * (1.0 / n_intervals)) 
+	p_abs_times_rev[i] := abs(origin * p_rel_times_rev[i])
 }
 
 
@@ -38,40 +41,40 @@ p_abs_times
 s[1] <- 0.0 # samplingProportion (or psi)
 
 ## Creating vectors of m deterministic nodes for the changing parameters
-## R0 and delta (delta = becomeUninfectiousRate in BEAST2)
+## RNm and delta (delta = becomeUninfectiousRate in BEAST2)
 for(i in 1:n_intervals){
 	delta[i] ~ dnLnorm(1.0, 1.25) # delta : mu = delta - s*delta
 	delta[i].setValue(1.0)
-	R0[i] ~ dnLnorm(1.0, 1.25)
-	R0[i].setValue(2.0)
-	lambda[i] := R0[i] * delta[i]
+	RNm[i] ~ dnLnorm(1.0, 1.25)
+	RNm[i].setValue(2.0)
+	lambda[i] := RNm[i] * delta[i]
 }
 							
 
 delta
-R0
+RNm
 lambda
 
 ## These data are contemporary, so only 1 value for rho
-rho[1] ~ dnBeta(1.0, 9999.0)
+rho[1] ~ dnBeta(1.0, 999.0)
 rho[1].setValue(1e-6)
 
 ## some deterministic nodes to monitor
-rn_0 := R0[1]
+rn_0 := RNm[1]
 uir_0 := delta[1]
 l_0 := lambda[1]
 
 
 # the BD-skyline model
-tau ~ dnSkySerialBDP(origin=origin, lambda=lambda, lambdaTimes=p_abs_times,
+tau ~ dnSkySerialBDP(origin=or_t, lambda=lambda, lambdaTimes=p_abs_times,
 					 mu=delta, muTimes=p_abs_times,
 					 psi=s,
 					 rho=rho,
 					 timeSinceLastSample=0.0,
-					 condition="survival", names=names)
+					 condition="nTaxa", names=names)
 
 ## The current model does not initialize properly
-tau.setValue(T)
+##tau.setValue(T)
 
 
 th := treeHeight(tau)
@@ -87,35 +90,59 @@ e <- v(1,1,1,1,1,1)
 sf ~ dirichlet(bf)
 er ~ dirichlet(e)
 
-sf
+#sf.setValue(simplex( 1,1,1,1 )) 
 
-er
+#er.setValue(simplex( 1,1,1,1,1,1 ))
 
 Q := gtr(er,sf)
 
+shape ~ dnExponential( 0.1 )
+gamma_rates := discretizeGamma( shape, shape, 4 )
+
 ## putting it all together
-phySeq ~ phyloCTMC(tree=tau, Q=Q, branchRates=clock_rate, nSites=n_sites, type="DNA")
+phySeq ~ phyloCTMC(tree=tau, Q=Q, siteRates=gamma_rates, branchRates=clock_rate, nSites=n_sites, type="DNA")
 phySeq.clamp(D)
+
+R0_1 := RNm[10]
+R0_2 := RNm[9]
+R0_3 := RNm[8]
+R0_4 := RNm[7]
+R0_5 := RNm[6]
+R0_6 := RNm[5]
+R0_7 := RNm[4]
+R0_8 := RNm[3]
+R0_9 := RNm[2]
+R0_10 := RNm[1]
+
+BUR_1 := delta[10]
+BUR_2 := delta[9]
+BUR_3 := delta[8]
+BUR_4 := delta[7]
+BUR_5 := delta[6]
+BUR_6 := delta[5]
+BUR_7 := delta[4]
+BUR_8 := delta[3]
+BUR_9 := delta[2]
+BUR_10 := delta[1]
 
 
 ## specifying moves
 mi <- 0
 for(i in 1:n_intervals){
-	moves[mi++] <- mvScale(delta[i], lambda=0.5, tune=false, weight=2.0)
-	moves[mi++] <- mvScale(R0[i], lambda=0.5, tune=false, weight=2.0)
-	moves[mi++] <- mvScale(delta[i], lambda=1.5, tune=false, weight=2.0)
-	moves[mi++] <- mvScale(R0[i], lambda=1.5, tune=false, weight=2.0)
+	moves[mi++] <- mvScale(delta[i], lambda=1.5, tune=true, weight=2.0)
+	moves[mi++] <- mvScale(RNm[i], lambda=1.5, tune=true, weight=2.0)
 }
-moves[mi++] <- mvScale(rho[1], lambda=0.01, tune=false, weight=3.0)
+moves[mi++] <- mvScale(rho[1], lambda=0.75, tune=true, weight=3.0)
+moves[mi++] <- mvScale(shape, lambda=0.75, tune=true, weight=3.0)
 moves[mi++] <- mvOriginTimeSlide(origin, tau, delta=3.75, tune=true, weight=3.0)
 moves[mi++] <- mvOriginTimeSlide(origin, tau, delta=10.0, tune=false, weight=1.0)
 moves[mi++] <- mvOriginTimeSlide(origin, tau, delta=0.75, tune=false, weight=1.0)
 moves[mi++] <- mvNodeTimeSlideUniform(tau, weight=30.0)
 moves[mi++] <- mvRootTimeSlide(tau, delta=3.75, tune=true, weight=5.0)
-moves[mi++] <- mvTreeScale(tau, 1.0, true, 3.0)
+#moves[mi++] <- mvTreeScale(tau, 1.0, true, 3.0)
 moves[mi++] <- mvNNI(tau, weight=8.0)
 moves[mi++] <- mvNarrow(tau, weight=8.0)
-moves[mi++] <- mvFNPR(tau, weight=8.0)
+#moves[mi++] <- mvFNPR(tau, weight=8.0)
 moves[mi++] <- mvSubtreeScale(tau, weight=5.0)
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
@@ -124,14 +151,18 @@ mymodel <- model(er)
 
 monitors[1] <- filemonitor(filename="hcv_skybdp.log", posterior=true, prior=true, 
 							likelihood=true, printgen=10,
-							origin, th, rho, R0, delta, lambda, er, sf, p_abs_times)
-monitors[2] <- filemonitor(filename="hcv_skybdp.trees",printgen=10, tau)
-monitors[3] <- screenmonitor(printgen=10, origin, rho, th, rn_0, uir_0)
+							origin, th, rho, lambda, er, sf, shape, p_abs_times_rev,
+							R0_1, R0_2, R0_3, R0_4, R0_5, R0_6, R0_7, R0_8, 
+							R0_9, R0_10,
+							BUR_1, BUR_2, BUR_3, BUR_4, BUR_5, BUR_6, BUR_7, BUR_8, 
+							BUR_9, BUR_10)
+monitors[2] <- filemonitor(filename="hcv_skybdp.trees",printgen=10, separator="	", tau)
+monitors[3] <- screenmonitor(printgen=10, origin, rho, th, R0_1, BUR_1)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-#mymcmc.burnin(generations=1000,tuningInterval=100)
+#mymcmc.burnin(generations=5000,tuningInterval=200)
 mymcmc.run(generations=40000)
 
-##mymcmc.operatorSummary()
+#mymcmc.operatorSummary()
 
