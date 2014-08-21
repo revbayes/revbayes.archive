@@ -80,6 +80,7 @@ for (i in 1:nTraits)	{
 
 bf <- v(1,1,1,1)
 pi ~ dirichlet(bf)
+pi
 
 # moves on the substitution process parameters
 moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
@@ -89,6 +90,7 @@ index <- index + 1
 # rate variation along the tree
 rootval <- 0
 rate := expbranchtree(tree=tau,process=br,offset=rootval,1)
+rate
 
 "gc"
 gctree := tanhBranchTree(tree=tau,process=br,offset=rootval,traitindex=2)
@@ -96,9 +98,9 @@ gctree := tanhBranchTree(tree=tau,process=br,offset=rootval,traitindex=2)
 gctree
 
 tstv ~ exponential(1)
+tstv
 
 rootgc ~ beta(alpha=1,beta=1)
-rootgc
 
 "matrix tree"
 
