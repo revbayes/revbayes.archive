@@ -47,6 +47,7 @@ namespace RevBayesCore {
         const std::string&      getFileName(void) const;                                                                            //!< Returns the name of the file (could be empty)
         const std::string&      getFilePath(void) const;                                                                            //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;
+        std::string             getFullFilePath(void) const;                                                                            //!< Returns the name of the path
         std::string             getLastPathComponent(std::string& s);
         std::string             getStringByDeletingLastPathComponent(std::string& s);
         bool                    isDirectory(void) const;                                                                            //!< Is this a directory
@@ -56,7 +57,6 @@ namespace RevBayesCore {
         bool                    listDirectoryContents(const std::string& dirpath);                                                  //!< Recursively lists the contents of the directory passed in as the argument dirpath
         bool                    openFile(std::ifstream& strm);                                                                      //!< Open file for input
         bool                    openFile(std::ofstream& strm);                                                                      //!< Open file for output
-        void                    setCurrentDirectory(const std::string &s);                                                          //!< Setter function for the variable curDirectory
         void                    setFileName(const std::string &s);                                                                  //!< Setter function for the fileName
         void                    setFilePath(const std::string &s);                                                                  //!< Setter function for the filePath
         bool                    setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv);                                 //!< Recursively fills in a string vector with the contents of the directory filePath
@@ -66,13 +66,11 @@ namespace RevBayesCore {
 
     private:
 
-        std::string             findCurrentDirectory(void);                                                                         //!< Fills in the default directory name
         bool                    isDirectoryPresent(const std::string &mp) const;                                                    //!< Checks for presence of a directory
         bool                    isFilePresent(const std::string &fn) const;                                                         //!< Checks for the presence of a file
         bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                  //!< Checks for the presence of a file
         bool                    parsePathFileNames(std::string s);                                                                  //!< Divides a string into the file path and file name
     
-        std::string             curDirectory;                                                                                       //!< string with default directory
         std::string             fileName;                                                                                           //!< string with file name       
         std::string             filePath;                                                                                           //!< string with file path
         std::string             fullFileName;

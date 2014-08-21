@@ -17,6 +17,7 @@
 
 #include "RbException.h"
 #include "RbFileManager.h"
+#include "RbSettings.h"
 #include "StringUtilities.h"
 
 
@@ -60,8 +61,6 @@ RbFileManager::RbFileManager( void )
     }
     fullFileName += pathSeparator + fileName;
     
-    // initialize the current directory to be the directory the binary is sitting in
-    setCurrentDirectory( findCurrentDirectory() );
 }
 
 
@@ -76,12 +75,12 @@ RbFileManager::RbFileManager(std::string s)
 #   endif
 
     // make certain the current file/path information is empty
-    setCurrentDirectory("");
+//    setCurrentDirectory("");
 	setFileName("");
 	setFilePath("");
 
     // initialize the current directory to be the directory the binary is sitting in
-    setCurrentDirectory( findCurrentDirectory() );
+//    setCurrentDirectory( findCurrentDirectory() );
     
     // set the path and file for the string
     parsePathFileNames(s);
@@ -164,31 +163,9 @@ void RbFileManager::formatError(std::string& errorStr)
 }
 
 
-/** Finds the current (default) directory of the process */
-#define	MAX_DIR_PATH	2048
-std::string RbFileManager::findCurrentDirectory(void) 
-{
-
-	char cwd[MAX_DIR_PATH+1];
-	if ( !getcwd(cwd, MAX_DIR_PATH+1) )
-    {
-		return "";
-	}
-    std::string curdir = cwd;
-	
-	if ( curdir.at( curdir.length()-1 ) == pathSeparator[0] )
-    {
-		curdir.erase( curdir.length()-1 );
-	}
-    
-	return curdir;
-    
-}
-
-
 const std::string& RbFileManager::getCurrentDirectory( void ) const 
 {
-    return curDirectory;
+    return RbSettings::userSettings().getWorkingDirectory();
 }
 
 
@@ -207,6 +184,19 @@ const std::string& RbFileManager::getFilePath( void ) const
 const std::string& RbFileManager::getFullFileName( void ) const
 {
     return fullFileName;
+}
+
+
+std::string RbFileManager::getFullFilePath( void ) const
+{
+//    DIR* d = opendir( fullFileName.c_str() );
+//    struct dirent *ent;
+//    while((ent = readdir(d)) != NULL)
+//    {
+//        std::cout << (ent->d_name) << std::endl;
+//    }
+//    std::string tmp = d->d_name;
+    return RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
 }
 
 
@@ -516,11 +506,6 @@ std::string RbFileManager::getStringByDeletingLastPathComponent(std::string& s)
     }
     
     return "";
-}
-
-void RbFileManager::setCurrentDirectory(std::string const &s)
-{
-    curDirectory = s;
 }
 
 void RbFileManager::setFileName(std::string const &s)
