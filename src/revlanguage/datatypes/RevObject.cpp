@@ -25,7 +25,6 @@
 #include "RlUtils.h"
 #include "RlString.h"
 #include "TypeSpec.h"
-#include "Workspace.h"
 
 #include <sstream>
 #include <stdio.h>
@@ -65,6 +64,14 @@ RevObject* RevObject::add(const RevObject &rhs) const
     
     return NULL;
 }
+
+
+/** Clone the model DAG connected to this object. */
+RevObject* RevObject::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const
+{
+    throw RbException( "Rev object with no DAG node should not be included in model DAG" );
+}
+
 
 /** The default implementation does nothing because we don't have an internal object */
 void RevObject::constructInternalObject( void ) {
@@ -199,38 +206,24 @@ RevPtr<Variable> RevObject::getMember(const std::string& name) const
 }
 
 
-/** 
- * Get method specifications of all member objects. 
- * We support two methods:
- * 1) memberNames()
- * 2) get("name")
+/**
+ * Get common member methods. This function is used by all
+ * Rev member objects, which only use the common member
+ * methods.
  */
-const MethodTable& RevObject::getMethods(void) const
+const MethodTable& RevObject::getMethods( void ) const
 {
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable methods = MethodTable();
-    static bool        methodsSet = false;
-    
-    if ( methodsSet == false ) {
-        
-        ArgumentRules* getMembersArgRules = new ArgumentRules();
-        ArgumentRules* getMethodsArgRules = new ArgumentRules();
-        ArgumentRules* getArgRules = new ArgumentRules();
-        
-        // add the 'members()' method
-        methods.addFunction("members", new MemberProcedure(RlUtils::Void, getMembersArgRules) );
-        
-        // add the 'members()' method
-        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
-        
-        // add the 'memberNames()' method
-        getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
-        methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         
         methodsSet = true;
-    }   
+    }
     
-    return methods;
+    return myMethods;
 }
 
 
@@ -250,7 +243,7 @@ const std::string& RevObject::getType( void ) const
 RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 {
     
-    throw RbException("RevLanguage only objects cannot be used inside DAG's!");
+    throw RbException("RevLanguage only objects cannot be used inside DAG's! You tried to access the DAG node of a '" + getClassType() + "'.");
     
     return NULL;
 }
@@ -323,7 +316,7 @@ bool RevObject::isConstant( void ) const
 
 
 /** Is convertible to type? */
-bool RevObject::isConvertibleTo(const TypeSpec& type) const
+bool RevObject::isConvertibleTo(const TypeSpec& type, bool once) const
 {
     
     return false;
@@ -350,6 +343,35 @@ void RevObject::makeConstantValue( void )
 
 
 /**
+ * Convert a model object to a conversion object, the value of which is determined by a type
+ * conversion from a specified variable. By default we throw an error, since we do not have
+ * a DAG node and cannot perform the requested action.
+ */
+void RevObject::makeConversionValue( RevPtr<Variable> var )
+{
+    throw RbException( "Object without DAG node cannot be made a conversion value" );
+}
+
+
+/**
+ * Convert the object to a deterministic object with a userdefined Rev function inside it.
+ */
+void RevObject::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
+{
+    std::ostringstream msg;
+    msg << "The type '" << getClassType() << "' not supported in deterministic nodes (yet)";
+    throw RbException( msg );
+}
+
+
+/** Get a deterministic lookup of an element. Default implementation throws an error */
+RevObject* RevObject::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& indices )
+{
+    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
+}
+
+
+/**
  * Make a new object that is an indirect deterministic reference to the object.
  * The default implementation throws an error.
  */
@@ -362,20 +384,30 @@ RevObject* RevObject::makeIndirectReference(void)
 
 
 /**
- * Convert the object to a deterministic object with a userdefined Rev function inside it.
+ * Make methods common to all member objects.
+ * We support two methods:
+ * 1) memberNames()
+ * 2) get("name")
  */
-void RevObject::makeDeterministicValue( UserFunctionCall* call, UserFunctionArgs* args )
+MethodTable RevObject::makeMethods(void) const
 {
-    std::ostringstream msg;
-    msg << "The type '" << getClassType() << "' not supported in deterministic nodes (yet)";
-    throw RbException( msg );
-}
-
-
-/** Get a deterministic lookup of an element. Default implementation throws an error */
-RevObject* RevObject::makeElementLookup( const std::vector< RevPtr<Variable> >& indices )
-{
-    throw RbException( "Object of type '" + this->getType() + "' does not have elements");
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* getMembersArgRules = new ArgumentRules();
+    ArgumentRules* getMethodsArgRules = new ArgumentRules();
+    ArgumentRules* getArgRules = new ArgumentRules();
+    
+    // Add the 'members()' method
+    methods.addFunction("members", new MemberProcedure(RlUtils::Void, getMembersArgRules) );
+    
+    // Add the 'methods()' method
+    methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+    
+    // Add the 'get("name")' method
+    getArgRules->push_back( new ArgumentRule( "name", true, RlString::getClassTypeSpec() ) );
+    methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
+    
+    return methods;
 }
 
 
@@ -396,12 +428,37 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 
 
 /**
+ * Print the member object information, if any. We
+ * use member rules and the method table to access
+ * the information.
+ */
+void RevObject::printMemberInfo( std::ostream &o ) const
+{
+    const ArgumentRules& memberRules = getMemberRules();
+    for ( size_t i = 0; i < memberRules.size(); ++i )
+    {
+        o << ".";
+        memberRules[i].printValue( o );
+        o << std::endl;
+    }
+    
+    const MethodTable& methods = getMethods();
+    for ( MethodTable::const_iterator it = methods.begin(); it != methods.end(); ++it )
+    {
+        o << "." << (*it).first << " = ";
+        (*it).second->printValue( o );
+        o << std::endl;
+    }
+}
+
+
+/**
  * Print the structural information for this object. Here we print the
  * type and type spec, as well as the value. Objects that have more
  * complex structure need to override this function, best by calling
  * it first and then provide the additional information.
  */
-void RevObject::printStructure( std::ostream &o ) const
+void RevObject::printStructure( std::ostream &o, bool verbose ) const
 {
     o << "_RevType      = " << getType() << std::endl;
     o << "_RevTypeSpec  = " << getTypeSpec() << std::endl;
@@ -410,6 +467,7 @@ void RevObject::printStructure( std::ostream &o ) const
     std::ostringstream o1;
     printValue( o1 );
     o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+
 }
 
 

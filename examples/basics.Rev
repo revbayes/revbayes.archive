@@ -11,6 +11,7 @@
 5 * 5				# Multiplication
 10 / 2				# Division
 2^3				# Exponentiation
+# 5 % 2                           # Modulo 
 
 #############
 # Functions #
@@ -52,6 +53,16 @@ c				# printing the value of 'c'
 d				# printing the value of 'd'
 e
 
+a += 2                          # addition assignment
+a *= 4                          # multiplication assignment
+a -= 3                          # subtraction assignment
+a /= 5.0                        # division assignment
+
+++a                             # (pre) increment
+a++                             # (post) increment
+--a                             # (pre) decrement
+a--                             # (post) decrement
+
 # Variable assignment: stochastic
 lambda <- 1			# assign constant node 'lambda' with value '1'
 x ~ exponential(lambda)		# create stochastic node with exponential distribution and parameter 'lambda'
@@ -70,7 +81,7 @@ y ~ norm(mu,sigma)
 # loops
 sum <- 0
 for (i in 1:100) {
-sum <- sum + i
+  sum <- sum + i
 }
 sum
 
@@ -79,8 +90,8 @@ fib[1] <- 1
 fib[2] <- 1
 j <- 3
 while (j <= 10) {
-fib[j] <- fib[j - 1] + fib[j - 2]
-j++
+  fib[j] <- fib[j - 1] + fib[j - 2]
+  j++
 }
 fib
 

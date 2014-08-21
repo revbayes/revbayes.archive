@@ -55,7 +55,17 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
     // get the parameters
     
     // the origin
-    RevBayesCore::TypedDagNode<double>* o       = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* o                   = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    }
+    // the root age
+    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
+    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
+    {
+        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    }
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( initialLambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -74,7 +84,7 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
     }
     
     // create the internal distribution object
-    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, s, k, cond, taxa, c);
+    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, ra, s, k, cond, taxa, c);
     
     return d;
 }
@@ -129,7 +139,8 @@ const MemberRules& Dist_divDepYuleProcess::getMemberRules(void) const
     {
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , true, RealPos::getClassTypeSpec() ) );
         distcBirthDeathMemberRules.push_back( new ArgumentRule( "capacity", true, Natural::getClassTypeSpec() ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec() ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin", true, RealPos::getClassTypeSpec(), NULL ) );
+        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge", true, RealPos::getClassTypeSpec(), NULL ) );
         std::vector<RlString> optionsCondition;
         optionsCondition.push_back( RlString("time") );
         optionsCondition.push_back( RlString("survival") );
@@ -188,6 +199,10 @@ void Dist_divDepYuleProcess::setConstMemberVariable(const std::string& name, con
     else if ( name == "origin" ) 
     {
         origin = var;
+    }
+    else if ( name == "rootAge" )
+    {
+        rootAge = var;
     }
     else if ( name == "nTaxa" ) 
     {

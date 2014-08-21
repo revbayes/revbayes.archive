@@ -14,6 +14,7 @@
 #include "ModelVector.h"
 #include "RealPos.h"
 #include "RlMultivariateRealNodeValTree.h"
+#include "RlRealNodeValTree.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -46,9 +47,13 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec() ) );
+
+        std::vector<TypeSpec> types;
+        types.push_back(MultivariateRealNodeValTree::getClassTypeSpec());
+        types.push_back(RealNodeValTree::getClassTypeSpec());
+        argumentRules.push_back(new ArgumentRule("process", true, types));
         argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "traitindex", true, Natural::getClassTypeSpec() , new Natural(0)) );
         
         rulesSet = true;
     }
@@ -97,19 +102,33 @@ RevPtr<Variable> Func_expBranchTree::execute() {
     
     
     RevBayesCore::TypedDagNode< RevBayesCore::TimeTree >* tau = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::TypedDagNode< RevBayesCore::MultivariateRealNodeContainer >* mvprocess = 0;
+    RevBayesCore::TypedDagNode< RevBayesCore::RealNodeContainer >* uniprocess = 0;
     
-    RevBayesCore::TypedDagNode< RevBayesCore::MultivariateRealNodeContainer >* process = static_cast<const MultivariateRealNodeValTree &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    const MultivariateRealNodeValTree* mv = dynamic_cast<const MultivariateRealNodeValTree *>( &(args[1].getVariable()->getRevObject()) ); 
+    const RealNodeValTree* uni = dynamic_cast<const RealNodeValTree *>( &(args[1].getVariable()->getRevObject()) ); 
+    if (mv) {
+        mvprocess = static_cast<const MultivariateRealNodeValTree &>( args[1].getVariable()->getRevObject() ).getDagNode();
+    }
+    else    {
+        if (! uni)  {
+            std::cerr << "error: dcast into univariate did not work\n";
+            exit(1);
+        }
+        uniprocess = static_cast<const RealNodeValTree &> (args[1].getVariable()->getRevObject()).getDagNode();
+    }
 
     RevBayesCore::TypedDagNode< double >* offset = static_cast<const Real &>( args[2].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &>( args[3].getVariable()->getRevObject() ).getDagNode();
-
-    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, process, offset, traitindex );
+    RevBayesCore::TypedDagNode< int >* traitindex = static_cast<const Integer &> (args[3].getVariable()->getRevObject()).getDagNode();
+    
+    RevBayesCore::ExponentialBranchTree* result = new RevBayesCore::ExponentialBranchTree( tau, mvprocess, uniprocess, offset, traitindex );
 
     DeterministicNode<std::vector<double> >* dag = new DeterministicNode<std::vector<double> >("", result, this->clone());
     
     ModelVector<RealPos>* wrappedresult = new ModelVector<RealPos>(dag);
-    
+
     return new Variable( wrappedresult );
 }
 

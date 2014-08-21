@@ -31,18 +31,21 @@ namespace RevLanguage {
     class AminoAcidState : public ModelObject<RevBayesCore::AminoAcidState> {
         
     public:
-        AminoAcidState(void);                                                          //!< Default constructor
-        AminoAcidState(const RevBayesCore::AminoAcidState &d);                                                            //!< Construct from AminoAcid
+        AminoAcidState(void);                                                                                   //!< Default constructor
+        AminoAcidState(const RevBayesCore::AminoAcidState &d);                                                  //!< Construct from AminoAcid
         
         // Operators
         
         // Basic utility functions
-        AminoAcidState*                       clone(void) const;                                                      //!< Clone object
-        RevObject*               convertTo(const TypeSpec& type) const;                                  //!< Convert to type
+        AminoAcidState*                 clone(void) const;                                                      //!< Clone object
+        RevObject*                      convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         const TypeSpec&                 getTypeSpec(void) const;                                                //!< Get language type of the object
-        bool                            isConvertibleTo(const TypeSpec& type) const;                            //!< Is convertible to type?
+        bool                            isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
+        
+        // Member methods
+        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
         
     };
     

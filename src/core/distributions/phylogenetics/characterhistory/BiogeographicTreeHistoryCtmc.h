@@ -135,13 +135,16 @@ namespace RevBayesCore {
 
 
 
+#include "RbConstants.h"
+
 template<class charType, class treeType>
 RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool forbidExt, bool useClado) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar ) {
     
     // initialize with default parameters
 //    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
 //    heterogeneousClockRates     = NULL;
-    rootFrequencies             = NULL;
+//    rootFrequencies             = NULL;
+    rootFrequencies             = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(2, 1.0));
     siteRates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
@@ -233,7 +236,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     {
         return 0.0;
     }
-    else if (counts[1] == 0 && forbidExtinction)
+    
+    if (counts[1] == 0 && forbidExtinction)
     {
         return RbConstants::Double::neginf;
     }
@@ -244,16 +248,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         
 //        const treeType& tree = this->tau->getValue();
         double branchLength = node.getBranchLength();
-        double currAge = (node.isRoot() ? 1e10 : node.getParent().getAge());
-        double startAge = currAge;
+        double currAge = (node.isRoot() ? this->tau->getValue().getRoot().getAge()*5 : node.getParent().getAge());
+//        double startAge = currAge;
         double endAge = node.getAge();
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
-        
-//        if (nodeIndex==1)
-//        {
-//            std::vector<double> glr = rm.getHomogeneousGainLossRates();
-//            std::cout << "glr " << glr[0] << " " << glr[1] << "\n";
-//        }
 
         // handle stratified/epoch models
         const std::vector<double>& epochs = rm.getEpochs();
@@ -267,8 +265,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
       
         bool useEpoch = true;
         bool debug = !true;
-        if (debug) std::cout << "--lnL--\n";
-        if (debug) std::cout << "BranchStart  ("  << startAge << " to " << endAge << ")\n" << "  a=" << currAge << "\n";
+//        if (debug) std::cout << "--lnL--\n";
+//        if (debug) std::cout << "BranchStart  ("  << startAge << " to " << endAge << ")\n" << "  a=" << currAge << "\n";
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
@@ -278,7 +276,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
             
             // reject extinction
             unsigned s = (*it_h)->getState();
-            if (counts[1] == 1 && s == 0 && forbidExtinction)
+            if (counts[1] == 0 && forbidExtinction)
             {
                 
                 return RbConstants::Double::neginf;
@@ -352,7 +350,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         {
             double sr = rm.getSumOfRates(node, currState, counts, currAge);
             lnL += -sr * ( (1.0 - t) * branchLength );
-            if (debug) std::cout << "EndBranch   " << epochIdx << ":" << epochEndAge << ")\n" << "  a=" << currAge << " lnL=" << lnL << " sr=" << sr << " tr=" << "wait "<< " da=" << currAge-epochEndAge << "\n";        }
+            if (debug) std::cout << "EndBranch   " << epochIdx << ":" << epochEndAge << ")\n" << "  a=" << currAge << " lnL=" << lnL << " sr=" << sr << " tr=" << "wait "<< " da=" << currAge-epochEndAge << "\n";
+        }
         if (debug) std::cout << "-------\n\n";
 
 //        if (debug) std::cout << lnL << "\n";
@@ -364,6 +363,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         }
         return lnL;
     }
+    
+    
+    // @Michael: My compiler complained about reaching the end of a non-void function. (Sebastian)
+    return RbConstants::Double::nan;
 }
 
 
@@ -1015,7 +1018,6 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFreq
     if ( f != NULL )
     {
         // set the value
-        //        branchHeterogeneousSubstitutionMatrices = true;
         rootFrequencies = f;
         
         // add the parameter

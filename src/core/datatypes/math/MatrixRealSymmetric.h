@@ -13,12 +13,13 @@
 
 #include "MatrixReal.h"
 #include "EigenSystem.h"
+#include "MemberObject.h"
 
 namespace RevBayesCore {
     
     class EigenSystem;
     
-    class MatrixRealSymmetric : public MatrixReal {
+    class MatrixRealSymmetric : public MatrixReal, public MemberObject<double> {
         
     public:
                                             MatrixRealSymmetric(void);                                              //!< Default constructor required by revlanguae use
@@ -36,12 +37,20 @@ namespace RevBayesCore {
         double                              getLogDet() const;
         
         size_t                              getDim() const;
-        
+        bool                                isNull() const;
+                
         void                                touch();
         void                                update() const;
         
         bool                                isUpdated() const {return eigenflag;}
         
+        double                              getCovariance(size_t k, size_t l) const;
+        double                              getPrecision(size_t k, size_t l) const;
+        double                              getCorrel(size_t k, size_t l) const;
+        double                              getPartialCorrel(size_t k, size_t l) const;
+        
+        void                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
+
         
         
         virtual MatrixRealSymmetric*            clone(void) const;

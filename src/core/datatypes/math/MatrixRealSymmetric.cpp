@@ -14,6 +14,7 @@
 #include "RbConstants.h"
 #include "RbStatisticsHelper.h"
 #include "DistributionNormal.h"
+#include "TypedDagNode.h"
 
 #include <iomanip>
 
@@ -45,6 +46,12 @@ size_t MatrixRealSymmetric::getDim() const  {
     
     return getNumberOfColumns();
 }
+
+bool MatrixRealSymmetric::isNull() const  {
+    
+    return ((getDim() == 1) && ((*this)[0][0] == 0));
+}
+
 
 double MatrixRealSymmetric::getLogDet()  const {
     
@@ -225,7 +232,134 @@ void MatrixRealSymmetric::update()  const {
     }
 }
 
+double MatrixRealSymmetric::getCovariance(size_t k, size_t l)  const {
 
+    if (k>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    if (l>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    return (*this)[k][l];
+}
+
+double MatrixRealSymmetric::getPrecision(size_t k, size_t l)  const {
+
+    if (k>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    if (l>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    update();
+    return inverse[k][l];
+}
+
+double MatrixRealSymmetric::getCorrel(size_t k, size_t l)  const {
+
+    if (k>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    if (l>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    return (*this)[k][l] / sqrt((*this)[k][k] * (*this)[l][l]);
+}
+
+double MatrixRealSymmetric::getPartialCorrel(size_t k, size_t l)  const {
+
+    if (k>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    if (l>getDim())  {
+        std::cerr << "index out of range\n";
+        throw(0);
+    }
+    update();
+    return - inverse[k][l] / sqrt(inverse[k][k] * inverse[l][l]);
+}
+
+void MatrixRealSymmetric::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
+{
+    
+    if ( n == "covariance" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
+        rv = getCovariance(k->getValue()-1,l->getValue()-1);
+    }
+    else if ( n == "precision" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
+        rv = getPrecision(k->getValue()-1,l->getValue()-1);
+    }
+    else if ( n == "correlation" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
+        rv = getCorrel(k->getValue()-1,l->getValue()-1);
+    }
+    else if ( n == "partialCorrelation" )
+    {
+        const TypedDagNode< int >* k = static_cast<const TypedDagNode<int> *>( args[0] );
+        const TypedDagNode< int >* l = static_cast<const TypedDagNode<int> *>( args[1] );
+        rv = getPartialCorrel(k->getValue()-1,l->getValue()-1);
+    }
+    else    {
+        throw RbException("A MultivariateRealNodeContainer object does not have a member method called '" + n + "'.");
+    }
+}
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetric& x) {
+
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << "[ ";
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < x.getNumberOfRows(); i++) 
+    {
+        /*
+        if (i == 0)
+            o << "[ ";
+        else 
+            o << "  ";
+        */
+        
+        o << "[ ";
+        for (size_t j = 0; j < x.getNumberOfColumns(); ++j) 
+        {
+            if (j != 0)
+                o << ", ";
+            o << x[i][j];
+        }
+        o <<  " ]";
+        
+        if (i != x.getNumberOfRows()-1)
+            o << " , ";
+        
+    }
+    
+    o << " ] ";    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
+    return o;
+}
+
+    
+/*
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetric& x) {
     
     std::streamsize previousPrecision = o.precision();
@@ -255,5 +389,6 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixRealSymmetri
     
     return o;
 }
+*/
 
 

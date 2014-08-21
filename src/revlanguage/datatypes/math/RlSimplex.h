@@ -13,7 +13,7 @@
 namespace RevLanguage {
     
     /**
-     * @brief Simplex: class for simplex variables
+     * @brief Rev simplex variable class
      *
      * This class is derived from ModelVector<RealPos> and inherits all
      * its indexing and type conversion functionality. The only changes
@@ -21,17 +21,6 @@ namespace RevLanguage {
      * that are not applicable to simplices (sort, unique) and to override
      * the two functions providing assignment or external modification
      * abilities to the parser (findOrCreateElement, getElement).
-     *
-     * @brief Declaration of TypedContainer
-     *
-     * (c) Copyright 2009- under GPL version 3
-     * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
-     * @author The RevBayes Development Core Team
-     * @license GPL version 3
-     * @version 1.0
-     * @since 2009-12-04, version 1.0
-     *
-     * $Id: Container.h 1746 2012-08-06 18:14:22Z hoehna $
      */
     
     class Simplex : public ModelVector<RealPos> {
@@ -49,13 +38,16 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get language type of the object
         
-        // Container functions overridden here to protect from assignment or external modification
-        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t> oneOffsetIndices);    //!< Find or create element variable
-        RevPtr<Variable>                            getElement(const std::vector<size_t> oneOffsetIndices);             //!< Get element variable
+        // ModelVector functions overridden here to protect from assignment or external modification
+        RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);   //!< Find or create element variable
+        RevPtr<Variable>                            getElement(size_t oneOffsetIndex);                                  //!< Get element variable
 
         // ModelVector functions that we override here to stop inappropriate actions
         void                                        sort(void);                                                         //!< Sort vector
         void                                        unique(void);                                                       //!< Remove consecutive duplicates
+        
+        // Member methods
+        const MethodTable&                          getMethods(void) const;                                             //!< Get member methods
 
     private:
         std::vector<double>*                        makeNormalizedValue(const std::vector<double>& v);                  //!< Help function

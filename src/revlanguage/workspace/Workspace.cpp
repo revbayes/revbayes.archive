@@ -24,10 +24,12 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RevAbstractType.h"
 #include "RevObject.h"
 #include "RbUtil.h"
 #include "RbOptions.h"         // For debug defines
 #include "RlDistribution.h"
+#include "StringUtilities.h"
 #include "Function.h"
 #include "UserInterface.h"
 #include "Workspace.h"
@@ -195,8 +197,10 @@ const TypeTable& Workspace::getTypeTable( void ) const
 
 
 /**
- * Use the template object in the type table to make a default instance of
- * a specified Rev type. Throw an error if the type is abstract.
+ * Use the template object in the type table to make an example instance of
+ * a specified Rev type. If the type is abstract, we provide an example
+ * object of a non-abstract derived type by using the RevAbstractType
+ * functionality.
  */
 RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
     
@@ -212,7 +216,10 @@ RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
     else
     {
         if ( it->second->isAbstract() )
-            throw RbException( "No default instance of abstract type '" + type + "'" );
+        {
+            RevAbstractType* theAbstractType = static_cast< RevAbstractType* >( it->second );
+            return theAbstractType->makeExampleObject();
+        }
         
         return it->second->clone();
     }
@@ -261,7 +268,7 @@ Container* Workspace::makeNewEmptyContainer( const std::string& elemType, size_t
     // Get its type specification
     const TypeSpec& elemTypeSpec = it->second->getTypeSpec();
 
-    // 
+    // Successivly promote elements until we find a suitable container type
     const TypeSpec* parentElement = elemTypeSpec.getParentTypeSpec();
     while ( parentElement != NULL )
     {
@@ -293,8 +300,9 @@ void Workspace::printValue(std::ostream& o) const {
         for ( it = variableTable.begin(); it != variableTable.end(); it++)
         {
             o << (*it).first << " = ";
-            (*it).second->printValue( o );
-            o << std::endl;
+            std::ostringstream t;
+            (*it).second->printValue( t );
+            o << StringUtilities::oneLiner( t.str(), 60 ) << std::endl;
         }
         o << std::endl;
     }

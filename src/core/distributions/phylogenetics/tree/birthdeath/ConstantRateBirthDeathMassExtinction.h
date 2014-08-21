@@ -28,10 +28,10 @@ namespace RevBayesCore {
     class ConstantRateBirthDeathMassExtinction : public BirthDeathProcess {
         
     public:
-        ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *s, const TypedDagNode<double> *e, 
+        ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                       const TypedDagNode<std::vector<double> > *met, const TypedDagNode<std::vector<double> > *mep, 
                                       const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, 
-                                      unsigned int nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);        
+                                      const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         
         // public member functions
         ConstantRateBirthDeathMassExtinction*               clone(void) const;                                                                                  //!< Create an independent clone
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;
         double                                              pSurvival(double start, double end) const;
-        std::vector<double>                                 simSpeciations(size_t n, double origin, double r) const;
+        std::vector<double>*                                simSpeciations(size_t n, double origin, double r) const;
         
         // members
         const TypedDagNode<double>*                         speciation;

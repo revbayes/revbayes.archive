@@ -55,7 +55,13 @@ bool TestBirthDeath::run( void ) {
     
     TimeTree* t = trees[0];
     ConstantNode<double>* origin = new ConstantNode<double>( "origin", new double( t->getRoot().getAge()*2.0 ) );
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, lambda, mu, rho, "uniform", "survival", int(t->getNumberOfTips()), t->getTipNames(), std::vector<Clade>()) );
+    std::vector<std::string> names = t->getTipNames();
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, lambda, mu, rho, "uniform", "survival", taxa, std::vector<Clade>()) );
     std::cout << "tau:\t" << tau->getValue() << std::endl;
     
     // attach the data

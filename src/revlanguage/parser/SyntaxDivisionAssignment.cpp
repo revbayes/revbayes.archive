@@ -145,6 +145,26 @@ bool SyntaxDivisionAssignment::isAssignment( void ) const
 
 
 /**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The assignment is safe
+ * if its lhs and rhs expressions are safe, and the
+ * assignment is not to an external variable.
+ */
+bool SyntaxDivisionAssignment::isFunctionSafe( const Environment& env ) const
+{
+    // Check lhs and rhs expressions
+    if ( !lhsExpression->isFunctionSafe( env ) || !rhsExpression->isFunctionSafe( env ) )
+        return false;
+    
+    // Check whether assignment is to external variable (not function-safe)
+    if ( lhsExpression->retrievesExternVar( env ) )
+        return false;
+    
+    // All tests passed
+    return true;
+}
+
+/**
  * Print info about the syntax element
  */
 void SyntaxDivisionAssignment::printValue(std::ostream& o) const

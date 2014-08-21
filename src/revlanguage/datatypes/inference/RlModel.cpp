@@ -106,7 +106,11 @@ void Model::printValue(std::ostream &o) const {
         (*it)->printValue( o1, ", " );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
-        (*it)->printStructureInfo( o );
+#if defined (DEBUG_STRUCTURE)
+        (*it)->printStructureInfo( o, true );
+#else
+        (*it)->printStructureInfo( o, false );
+#endif
 
         o << std::endl;
     }

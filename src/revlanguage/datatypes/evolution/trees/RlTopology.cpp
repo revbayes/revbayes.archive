@@ -98,27 +98,22 @@ const TypeSpec& Topology::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& Topology::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& Topology::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-        ArgumentRules* nnodesArgRules = new ArgumentRules();
-        methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
-        
-        ArgumentRules* namesArgRules = new ArgumentRules();
-        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 
@@ -128,5 +123,24 @@ const TypeSpec& Topology::getTypeSpec( void ) const {
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
+}
+
+
+/* Make member methods for this class */
+RevLanguage::MethodTable Topology::makeMethods( void ) const
+{
+    MethodTable methods = MethodTable();
+    
+    ArgumentRules* nnodesArgRules = new ArgumentRules();
+    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
+    
+    ArgumentRules* namesArgRules = new ArgumentRules();
+    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+    
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::Topology>::makeMethods() );
+    
+    // Return methods
+    return methods;
 }
 

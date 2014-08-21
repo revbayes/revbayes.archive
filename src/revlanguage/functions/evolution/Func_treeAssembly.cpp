@@ -8,7 +8,6 @@
 
 #include "Func_treeAssembly.h"
 #include "ModelVector.h"
-#include "RateMatrix.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBranchLengthTree.h"

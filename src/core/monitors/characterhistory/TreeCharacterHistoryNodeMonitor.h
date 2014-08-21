@@ -230,6 +230,29 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         }
     
     }
+    else if (infoStr=="events")
+    {
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        std::vector<CharacterEvent*> characters = bh.getParentCharacters();
+        
+        std::vector<unsigned> v(numStates*numStates,0);
+        double ndAge = n->getAge();
+        double brLen = n->getBranchLength();
+        for (it = evts.begin(); it != evts.end(); it++)
+        {
+            if (it != evts.begin())
+                ss << ",";
+            
+            ss << "{";
+            ss << "s:" << (*it)->getState() << ",";
+            ss << "a:" << ndAge + brLen * (*it)->getTime() << ",";
+            ss << "t:" << (*it)->getTime() << ",";
+            ss << "i:" << (*it)->getIndex() << "";
+            ss << "}";
+
+        }
+    }
     
     return ss.str();
 
@@ -264,6 +287,9 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         // # events
         characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";
         characterStream << ",&state_betw={" << buildCharacterHistoryString(n,"state_betw") << "}";
+        
+        // event history
+        characterStream << ",&events=[" << buildCharacterHistoryString(n,"events") << "]";
         
         // ... whatever else
         characterStream << "]";

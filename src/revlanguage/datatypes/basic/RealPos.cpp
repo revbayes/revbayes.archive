@@ -16,7 +16,7 @@ RealPos::RealPos( void ) : Real( 1.0 ) {
 /** Construct from double */
 RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
     
-    if ( x->getValue() < 0.0 )
+    if ( !x->isNAValue() && x->getValue() < 0.0 )
         throw RbException( "Nonpositive value for " + getClassType() );
 }
 
@@ -169,6 +169,26 @@ const TypeSpec& RealPos::getClassTypeSpec(void) {
     
 	return revTypeSpec; 
 }
+
+
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const MethodTable& RealPos::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
+    
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
+        methodsSet = true;
+    }
+    
+    return myMethods;
+}
+
 
 /** Get type spec */
 const TypeSpec& RealPos::getTypeSpec( void ) const {

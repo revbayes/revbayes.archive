@@ -48,19 +48,6 @@
         }
 }
 
-- (void)dealloc {
-
-    NSLog(@"WindowControllerPartitionSelector dealloc");
-    NSLog(@" 1 ");
-    [taxonList release];
-    NSLog(@" 2 ");
-	[firstTaxonList  release];
-    NSLog(@" 3 ");
-    [secondTaxonList release];
-    //[bpName release];
-	[super dealloc];
-}
-
 - (IBAction)firstTaxaSetsButtonAction:(id)sender {
     
 	if ( [[firstTaxaSetsButton titleOfSelectedItem] isEqualToString:@"All Taxa"] == YES )

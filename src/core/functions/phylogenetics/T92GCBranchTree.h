@@ -43,7 +43,7 @@ namespace RevBayesCore {
         */
         
     private:
-
+        
         /*
         void                                                flagNodes();
         void                                                corruptAll();

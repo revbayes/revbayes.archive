@@ -54,6 +54,7 @@ namespace RevLanguage {
         RevPtr<const Variable>                                              rhoTimes;
         RevPtr<const Variable>                                              tLast;
         RevPtr<const Variable>                                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const Variable>                                              rootAge;                                                                             //!< The time of the process since the origin
         RevPtr<const Variable>                                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const Variable>                                              taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const Variable>                                              constraints;                                                                        //!< Topological constraints that will be used for calibrations

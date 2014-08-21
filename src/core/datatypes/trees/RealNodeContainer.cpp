@@ -197,31 +197,43 @@ void RealNodeContainer::recursiveGetStatsOverTips(const TopologyNode& from, doub
     
 }
 
-/*
-std::ostream& RevBayesCore::operator<<(std::ostream& os, const RealNodeContainer& x) {
 
-    os << std::fixed;
-    os << std::setprecision(4);
-        
-    x.printBranchContrasts(os);
-    os << '\t';
+std::string RealNodeContainer::getNewick() const {
+
+    return recursiveGetNewick(getTimeTree()->getRoot());
+}
+
+std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) const {
+
+    std::ostringstream s;
     
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getMean(i) << '\t';
+    if (from.isTip())   {
+        s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+    }
+    else    {
+        s << "(";
+        // propagate forward
+        size_t numChildren = from.getNumberOfChildren();
+        for (size_t i = 0; i < numChildren; ++i) {
+            s << recursiveGetNewick(from.getChild(i));
+            if (i < numChildren-1)  {
+                s << ",";
+            }
+        }
+        s << ")";
+    }
+    s << (*this)[from.getIndex()];
+    if (!from.isRoot()) {
+        s << ":";
+        s << getTimeTree()->getBranchLength(from.getIndex());
     }
     
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getStdev(i) << '\t';
-    }    
-    
-    for (size_t i=0; i<x.getDim(); i++)   {
-        os << x.getRootVal(i);
-        if (i < x.getDim() -1)  {
-            os << '\t';
-        }
-    }    
-    
+    return s.str();
+}
+
+std::ostream& RevBayesCore::operator<<(std::ostream& os, const RealNodeContainer& x) {
+
+    os << x.getNewick();
     return os;
 }
 
-*/

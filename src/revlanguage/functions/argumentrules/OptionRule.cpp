@@ -20,7 +20,6 @@
 #include "Integer.h"
 #include "RbUtil.h"
 #include "RlString.h"
-#include "Workspace.h"
 
 #include <sstream>
 #include <typeinfo>

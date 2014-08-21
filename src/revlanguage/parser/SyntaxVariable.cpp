@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "Argument.h"
+#include "ConverterNode.h"
 #include "Environment.h"
 #include "Integer.h"
 #include "ModelVector.h"
@@ -53,30 +54,6 @@ SyntaxVariable::SyntaxVariable( SyntaxElement* expr, std::list<SyntaxElement*>* 
     expression( expr ),
     index( indx ),
     baseVariable( NULL )
-{
-}
-
-
-/** Construct from base variable (member object), identifier and index */
-SyntaxVariable::SyntaxVariable( SyntaxVariable* baseVar, const std::string &n, std::list<SyntaxElement*>* indx ) :
-    SyntaxElement(),
-    identifier( n ),
-    functionCall( NULL ),
-    expression( NULL ),
-    index( indx ),
-    baseVariable( baseVar )
-{
-}
-
-
-/** Construct from base variable (member object), function call and index */
-SyntaxVariable::SyntaxVariable( SyntaxVariable* baseVar, SyntaxFunctionCall* fxnCall, std::list<SyntaxElement*>* indx ) :
-    SyntaxElement(),
-    identifier( "" ),
-    functionCall( fxnCall ),
-    expression( NULL ),
-    index( indx ),
-    baseVariable( baseVar )
 {
 }
 
@@ -201,12 +178,12 @@ SyntaxVariable* SyntaxVariable::clone () const
  * variable is part of a left-hand side expression, and when it is part
  * of a static right-hand side expression.
  */
-std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
+std::vector<size_t> SyntaxVariable::computeStaticIndex( Environment& env ) const
 {
     std::vector<size_t> oneOffsetIndices;
     
     size_t count = 1;
-    for ( std::list<SyntaxElement*>::iterator it = index->begin(); it != index->end(); ++it, ++count )
+    for ( std::list<SyntaxElement*>::const_iterator it = index->begin(); it != index->end(); ++it, ++count )
     {
         if ( (*it) == NULL )
         {
@@ -214,71 +191,14 @@ std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
         }
         else
         {
+            // Evaluate the index variable statically
             RevPtr<Variable> indexVar = (*it)->evaluateContent( env );
-            
-            if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
-            {
-                // Get a Natural one-offset index
-                size_t oneOffsetIndex = static_cast<Natural &>( indexVar->getRevObject() ).getValue();
 
-                // Check validity
-                if ( oneOffsetIndex < 1 )
-                {
-                    std::ostringstream msg;
-                    msg << "Index " << count << " for ";
-                    if ( baseVariable != NULL )
-                        msg << baseVariable->getFullName( env ) << ".";
-                    msg << identifier;
-                    msg << " smaller than 1";
-                    throw RbException( msg );
-                }
-                
-                // Push the value onto integer index
-                oneOffsetIndices.push_back( oneOffsetIndex );
-            }
-            
-            else if ( indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) )
-            {
-                // Convert to Natural
-                RevObject* theNaturalIndex = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
-                size_t oneOffsetIndex = static_cast<Natural*>( theNaturalIndex )->getValue();
-                delete theNaturalIndex;
+            // Get the index
+            size_t oneOffsetIndex = getIndex( indexVar, env );
 
-                // Check validity
-                if ( oneOffsetIndex < 1 )
-                {
-                    std::ostringstream msg;
-                    msg << "Index " << count << " for ";
-                    if ( baseVariable != NULL )
-                        msg << baseVariable->getFullName( env ) << ".";
-                    msg << identifier;
-                    msg << " smaller than 1";
-                    throw RbException( msg );
-                }
-                
-                // Push the value onto integer index
-                oneOffsetIndices.push_back( oneOffsetIndex );
-            }
-            
-            else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) )
-            {
-                throw RbException( "String indexes not supported (yet)");
-#if 0
-                //Push string index onto string index vector
-                stringIndex.push_back( static_cast<RlString&>( indexVar->getRevObject() ).getValue() );
-#endif
-            }
-            
-            else
-            {
-                std::ostringstream msg;
-                msg << "Index " << count << " for ";
-                if ( baseVariable != NULL )
-                    msg << baseVariable->getFullName( env ) << ".";
-                msg << identifier;
-                msg << " of wrong type (neither " << Natural::getClassType() << " nor " << RlString::getClassType() << ")";
-                throw RbException( msg );
-            }
+            // Push it onto the vector
+            oneOffsetIndices.push_back( oneOffsetIndex );
         }
     }
     
@@ -289,8 +209,6 @@ std::vector<size_t> SyntaxVariable::computeIndex( Environment& env )
 
 /**
  * Evaluate the dynamic content of the one-offset index variables.
- *
- * @todo Add dynamic type conversion
  */
 std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment& env )
 {
@@ -302,16 +220,22 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
         RevPtr<Variable> theIndex = ( *it )->evaluateDynamicContent( env );
     
         // We ensure that the variables are of type Natural or can be converted to Natural numbers.
-        // No sense in checking indices against permissible range here; errors are thrown later if
-        // we are out of range by the container or member object.
-        // TODO: This is static type conversion, needs to be replaced with dynamic type conversion
+        // No sense in checking indices against permissible range here; errors are thrown later by
+        // the container or member object if we are out of range.
         if ( !theIndex->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
         {
-            if (theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec() ) )
+            if( theIndex->getRevObject().isConstant() && theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), true ) &&
+                Natural::getClassTypeSpec().isDerivedOf( theIndex->getRevObjectTypeSpec() ) )
             {
-                RevObject* convObj = theIndex->getRevObject().convertTo( Natural::getClassTypeSpec() );
-                
-                theIndex = new Variable( convObj );
+                // Type promotion
+                theIndex->setRevObject( theIndex->getRevObject().convertTo( Natural::getClassTypeSpec() ) );
+                theIndex->setRevObjectTypeSpec( Natural::getClassTypeSpec() );
+            }
+            else if ( theIndex->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), false ) )
+            {
+                // Dynamic type conversion
+                ConverterNode<Natural>* converterNode = new ConverterNode<Natural>( "", theIndex, Natural::getClassTypeSpec() );
+                theIndex = new Variable( new Natural( converterNode ) );
             }
             else
                 throw RbException( "No known conversion of type '" + theIndex->getRevObject().getType() + "' to 'Natural', required for index");
@@ -337,8 +261,8 @@ std::vector< RevPtr<Variable> > SyntaxVariable::computeDynamicIndex( Environment
  * then there will always be a list of indices, whereas the list of indices is
  * optional for an identifier.
  */
-RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
-    
+RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env)
+{
     RevPtr<Variable> theVar;
     
     if ( baseVariable == NULL )
@@ -361,72 +285,66 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
     }
     else
     {
+        // Note that the function call is always NULL if there is
+        // a base variable, because any variables that are base to
+        // the function call are handled by the function call. Note
+        // also that generic expressions can only occur in base
+        // variables, so we need not worry about any expression if
+        // we are not a base variable.
+        
         // Get the base variable
         theVar = baseVariable->evaluateContent( env );
         
-        if ( functionCall != NULL )
-        {
-            // Get the return variable of the function call
-            functionCall->setBaseVariable( baseVariable );
-            theVar = functionCall->evaluateContent( env );
-            functionCall->removeBaseVariable();   // Otherwise double deletion...
-        }
-        else
-        {
-            // Find member variable
-            theVar = theVar->getRevObject().getMember( identifier );
-        }
+        // Find member variable
+        theVar = theVar->getRevObject().getMember( identifier );
     }
     
     // Get static index
-    std::vector< size_t > oneOffsetIndices = computeIndex( env );
+    std::vector< size_t > oneOffsetIndices = computeStaticIndex( env );
     
     // Get element if indices are provided.
-    if ( !oneOffsetIndices.empty() )
+    while ( !oneOffsetIndices.empty() )
     {
+        // Get the element...
         if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
-            theVar = theVar->getRevObject().getElement( oneOffsetIndices );
+        {
+            // ... from a container
+
+            // Get the container indices
+            std::vector<size_t> containerOneOffsetIndices;
+            for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
+            {
+                if ( !oneOffsetIndices.empty() )
+                {
+                    containerOneOffsetIndices.push_back( oneOffsetIndices[0] );
+                    oneOffsetIndices.erase( oneOffsetIndices.begin() );
+                }
+                else
+                    containerOneOffsetIndices.push_back( 0 );
+            }
+
+            // Get the element using the getElement function
+            theVar = theVar->getRevObject().getElement( containerOneOffsetIndices );
+        }
         else
         {
-            // Find the index operator
+            // ... or from a subscript operator
+            
+            // Note that we do not name the element here; either the member object gives out
+            // a variable it names itself, or it gives out a temporary variable copy, which
+            // should not be named
+            
+            // Create the single argument for the index operator
+            std::vector<Argument> args;
+            RevPtr<Variable> indexVar = new Variable( new Natural( oneOffsetIndices[0] ) );
+            args.push_back( Argument( indexVar ) );
 
-            // TODO: This is the old code, see if it is possible to find
-            // a more elegant solution
-
-            // iterate over the index
-            for ( std::list<SyntaxElement*>::const_iterator it= index->begin(); it!=index->end(); it++)
-            {
-                SyntaxElement*         indexSyntaxElement     = *it;
-                RevPtr<Variable>       indexVar               = indexSyntaxElement->evaluateContent(env);
-
-                // create the new variable name
-                std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
-                
-                // convert the value into a member object
-                RevObject &mObject = theVar->getRevObject();
-                
-                // get the method table for this member object
-                // \TODO: We should not allow const casts
-                MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
-                
-                // create the arguments which consist only of the single paramater inside the square brackets
-                std::vector<Argument> args;
-                args.push_back( Argument( indexVar ) );
-                
-                // get the member function with name "[]"
-                MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
-                theMemberFunction->processArguments( args );
-                // We need to clone because otherwise we overwrite all methods for this object
-                
-                // set the member object for the member function
-                theMemberFunction->setMemberObject( theVar );
-                
-                theVar = theMemberFunction->execute();
-                if ( theVar->getName() == "" )
-                    theVar->setName( varName );
-
-                delete theMemberFunction;
-            }
+            // Get the variable using the subscript operator function
+            // TODO: This needs to be made generic for user-defined member objects
+            theVar = theVar->getRevObject().executeMethod( "[]", args );
+            
+            // Erase the index
+            oneOffsetIndices.erase( oneOffsetIndices.begin() );
         }
     }
 
@@ -445,7 +363,7 @@ RevPtr<Variable> SyntaxVariable::evaluateContent( Environment& env) {
 RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std::string& elemType )
 {
     // Get static index. No dynamic evaluation here
-    std::vector<size_t> oneOffsetIndices = computeIndex( env );
+    std::vector<size_t> oneOffsetIndices = computeStaticIndex( env );
     
     RevPtr<Variable> theVar;
     
@@ -476,71 +394,66 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
             }
         }
     }
-    else {
-
+    else
+    {
+        // Note that the function call is always NULL if there is
+        // a base variable, because any variables that are base to
+        // the function call are handled by the function call. Note
+        // also that generic expressions can only occur in base
+        // variables, so we need not worry about any expression if
+        // we are not a base variable.
+        
         // Get the base variable. Note that we do not create the variable in this case.
         theVar = baseVariable->evaluateContent( env );
 
-        if ( functionCall != NULL )
-        {
-            // Get the return variable of the function call
-            functionCall->setBaseVariable( baseVariable );
-            theVar = functionCall->evaluateContent( env );
-            functionCall->removeBaseVariable();     // Otherwise double deletion...
-        }
-        else
-        {
-            // Find member variable based on its name
-            theVar = theVar->getRevObject().getMember( identifier );
-        }
+        // Find member variable based on its name
+        theVar = theVar->getRevObject().getMember( identifier );
     }
     
-    // Get element of a container if indices are provided
-    if ( !oneOffsetIndices.empty() )
+    // Get element if indices are provided.
+    while ( !oneOffsetIndices.empty() )
     {
+        // Get the element...
         if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
-            theVar = theVar->getRevObject().findOrCreateElement( oneOffsetIndices );
+        {
+            // ... from a container
+            
+            // Get the container indices
+            std::vector<size_t> containerOneOffsetIndices;
+            for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
+            {
+                if ( !oneOffsetIndices.empty() )
+                {
+                    containerOneOffsetIndices.push_back( oneOffsetIndices[0] );
+                    oneOffsetIndices.erase( oneOffsetIndices.begin() );
+                }
+                else
+                    containerOneOffsetIndices.push_back( 0 );
+            }
+            
+            // Get the element using the findOrCreateElement function
+            theVar = theVar->getRevObject().findOrCreateElement( containerOneOffsetIndices );
+        }
         else
         {
-            // Find the index operator
+            // ... or from a subscript operator
             
-            // TODO: This is the old code, see if it is possible to find
-            // a more elegant solution
+            // Note that we do not name the element here; either the member object gives out
+            // a variable it names itself, or it gives out a temporary variable copy, which
+            // should not be named. A subscript operator cannot be used to assign to a non-
+            // existing variable.
             
-            // iterate over the index
-            for ( std::list<SyntaxElement*>::const_iterator it= index->begin(); it!=index->end(); it++)
-            {
-                SyntaxElement*         indexSyntaxElement     = *it;
-                RevPtr<Variable>       indexVar               = indexSyntaxElement->evaluateContent(env);
-                
-                // create the new variable name
-                std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
-                
-                // convert the value into a member object
-                RevObject &mObject = theVar->getRevObject();
-                
-                // get the method table for this member object
-                // \TODO: We should not allow const casts
-                MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
-                
-                // create the arguments which consist only of the single paramater inside the square brackets
-                std::vector<Argument> args;
-                args.push_back( Argument( indexVar ) );
-                
-                // get the member function with name "[]"
-                MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
-                theMemberFunction->processArguments( args );
-                // We need to clone because otherwise we overwrite all methods for this object
-                
-                // set the member object for the member function
-                theMemberFunction->setMemberObject( theVar );
-                
-                theVar = theMemberFunction->execute();
-                if ( theVar->getName() == "" )
-                    theVar->setName( varName );
-                
-                delete theMemberFunction;
-            }
+            // Create the single argument for the index operator
+            std::vector<Argument> args;
+            RevPtr<Variable> indexVar = new Variable( new Natural( oneOffsetIndices[0] ) );
+            args.push_back( Argument( indexVar ) );
+            
+            // Get the variable using the subscript operator function
+            // TODO: This needs to be made generic for user-defined member objects
+            theVar = theVar->getRevObject().executeMethod( "[]", args );
+            
+            // Erase the index
+            oneOffsetIndices.erase( oneOffsetIndices.begin() );
         }
     }
 
@@ -564,8 +477,8 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
  * from dynamic evaluation of the index variables. These need to be put
  * in a dynamic lookup variable.
  */
-RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
-    
+RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
+{
     RevPtr<Variable> theVar;
     
     if ( baseVariable == NULL )
@@ -586,82 +499,102 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env) {
             theVar = env.getVariable( identifier );
         }
     }
-    else {
+    else
+    {
+        // Note that the function call is always NULL if there is
+        // a base variable, because any variables that are base to
+        // the function call are handled by the function call. Note
+        // also that generic expressions can only occur in base
+        // variables, so we need not worry about any expression if
+        // we are not a base variable.
         
         // Get the base variable
         theVar = baseVariable->evaluateDynamicContent( env );
         
-        if ( functionCall == NULL )
+        // Find member variable (no dynamic version of identifier)
+        theVar = theVar->getRevObject().getMember( identifier );
+    }
+
+    // Get dynamic index
+    std::vector< RevPtr<Variable> > oneOffsetIndexVars = computeDynamicIndex( env );
+    
+    // Check if we need a dynamic lookup
+    // TODO: Make sure we check for any named upstream constant DAG nodes that can be changed by user
+    bool dynamicLookup = false;
+    for ( std::vector< RevPtr<Variable> >::iterator it = oneOffsetIndexVars.begin(); it != oneOffsetIndexVars.end(); ++it )
+    {
+        if ( !(*it)->getRevObject().isConstant() || (*it)->getName() != "" )
         {
-            // Get the return variable of the function call
-            functionCall->setBaseVariable( baseVariable );
-            theVar = functionCall->evaluateDynamicContent( env );
-            functionCall->removeBaseVariable();     // Otherwise double deletion
-        }
-        else
-        {
-            // Find member variable (no dynamic version of identifier)
-            theVar = theVar->getRevObject().getMember( identifier );
+            dynamicLookup = true;
+            break;
         }
     }
     
-    // Get index
-    std::vector< RevPtr<Variable> > oneOffsetIndices = computeDynamicIndex( env );
-    
-    // Get dynamic element of a container if indices are provided. Otherwise we
-    // need an indirect reference. Note that if we have a function call, then we
-    // always have indices; this is a syntactic requirement because otherwise the
-    // syntax element will be a function call and not a variable. This means that
-    // we do not have to test for functionCall being NULL in the second branch.
-    if ( !oneOffsetIndices.empty() )
+    // If the variable we are looking up things in does not have a DAG node, we do not need a dynamic lookup regardless
+    if ( theVar->getRevObject().hasDagNode() == false )
+        dynamicLookup = false;
+
+    // Get dynamic element from container or subscript operator
+    while ( !oneOffsetIndexVars.empty() )
     {
+        // Get the element...
         if ( theVar->getRevObject().isTypeSpec( Container::RevObject::getClassTypeSpec() ) )
-            theVar = new Variable( theVar->getRevObject().makeElementLookup( oneOffsetIndices ) );
+        {
+            // ... from a container
+            
+            // Get the container index variables
+            std::vector< RevPtr<Variable> > containerOneOffsetIndexVars;
+            for ( size_t i = 0; i < theVar->getRevObject().getDim(); ++i )
+            {
+                if ( !oneOffsetIndexVars.empty() )
+                {
+                    containerOneOffsetIndexVars.push_back( oneOffsetIndexVars[0] );
+                    oneOffsetIndexVars.erase( oneOffsetIndexVars.begin() );
+                }
+                else
+                    containerOneOffsetIndexVars.push_back( new Variable( new Natural( 0 ) ) );
+            }
+            
+            if ( dynamicLookup )
+            {
+                // Make a dynamic element lookup
+                theVar = new Variable( theVar->getRevObject().makeElementLookup( theVar, containerOneOffsetIndexVars ) );
+            }
+            else
+            {
+                // We want a static element lookup
+
+                // Get the container indices statically
+                std::vector<size_t> containerOneOffsetIndices;
+                for ( size_t i = 0; i < containerOneOffsetIndexVars.size(); ++i )
+                {
+                    containerOneOffsetIndices.push_back( getIndex( containerOneOffsetIndexVars[i], env ) );
+                }
+                
+                // Get the element using the getElement function
+                theVar = theVar->getRevObject().getElement( containerOneOffsetIndices );
+            }
+        }
         else
         {
-            // Find the index operator
+            // ... or from a subscript operator
             
-            // TODO: This is the old code, see if it is possible to find
-            // a more elegant solution.
+            // Note that we do not name the element here; either the member object gives out
+            // a variable it names itself, or it gives out a temporary variable copy, which
+            // should not be named
             
-            // TODO: This is not correct for the dynamic evaluation case.
-            // It uses static evaluation of the index variables, and does
-            // not produce a lookup variable.
+            // Create the single argument for the index operator (statically always for now)
+            std::vector<Argument> args;
+            args.push_back( Argument( new Variable( new Natural( getIndex( oneOffsetIndexVars[0], env ) ) ) ) );
+
+           // Get the variable using the subscript operator function
+            // TODO: This needs to be made generic for user-defined member objects
+            // TODO: This needs to check that there is a subscript operator function and not procedure,
+            // and then return a dynamic element lookup
+            theVar = theVar->getRevObject().executeMethod( "[]", args );
             
-            // iterate over the index
-            for ( std::list<SyntaxElement*>::const_iterator it= index->begin(); it!=index->end(); it++)
-            {
-                SyntaxElement*         indexSyntaxElement     = *it;
-                RevPtr<Variable>       indexVar               = indexSyntaxElement->evaluateContent(env);
-                
-                // create the new variable name
-                std::string varName = theVar->getName() + "[" + indexVar->getRevObject().toString() + "]";
-                
-                // convert the value into a member object
-                RevObject &mObject = theVar->getRevObject();
-                
-                // get the method table for this member object
-                // \TODO: We should not allow const casts
-                MethodTable& mt = const_cast<MethodTable&>( mObject.getMethods() );
-                
-                // create the arguments which consist only of the single paramater inside the square brackets
-                std::vector<Argument> args;
-                args.push_back( Argument( indexVar ) );
-                
-                // get the member function with name "[]"
-                MemberProcedure* theMemberFunction = static_cast<MemberProcedure*>( mt.getFunction( "[]", args ).clone() );
-                theMemberFunction->processArguments( args );
-                // We need to clone because otherwise we overwrite all methods for this object
-                
-                // set the member object for the member function
-                theMemberFunction->setMemberObject( theVar );
-                
-                theVar = theMemberFunction->execute();
-                if ( theVar->getName() == "" )
-                    theVar->setName( varName );
-                
-                delete theMemberFunction;
-            }
+            // Erase the index
+            oneOffsetIndexVars.erase( oneOffsetIndexVars.begin() );
         }
     }
     
@@ -694,6 +627,89 @@ std::string SyntaxVariable::getFullName( Environment& env ) const
         theName << "[...]";
 
     return theName.str();
+}
+
+
+/** Get an index from an index variable in a static context */
+size_t SyntaxVariable::getIndex( const RevPtr<Variable>& indexVar, Environment& env ) const
+{
+    if ( indexVar->getRevObject().isTypeSpec( Natural::getClassTypeSpec() ) )
+    {
+        // Get a Natural one-offset index
+        size_t oneOffsetIndex = static_cast<Natural &>( indexVar->getRevObject() ).getValue();
+        
+        // Check validity
+        if ( oneOffsetIndex < 1 )
+        {
+            std::ostringstream msg;
+            msg << "Index for ";
+            if ( baseVariable != NULL )
+                msg << baseVariable->getFullName( env ) << ".";
+            msg << identifier;
+            msg << " smaller than 1";
+            throw RbException( msg );
+        }
+        
+        // Return the index
+        return oneOffsetIndex;
+    }
+    else if ( indexVar->getRevObject().isConvertibleTo( Natural::getClassTypeSpec(), true ) )
+    {
+        // Convert to Natural
+        RevObject* theNaturalIndex = indexVar->getRevObject().convertTo( Natural::getClassTypeSpec() );
+        size_t oneOffsetIndex = static_cast<Natural*>( theNaturalIndex )->getValue();
+        delete theNaturalIndex;
+        
+        // Check validity
+        if ( oneOffsetIndex < 1 )
+        {
+            std::ostringstream msg;
+            msg << "Index for ";
+            if ( baseVariable != NULL )
+                msg << baseVariable->getFullName( env ) << ".";
+            msg << identifier;
+            msg << " smaller than 1";
+            throw RbException( msg );
+        }
+        
+        // Return the index
+        return oneOffsetIndex;
+    }
+    else if ( indexVar->getRevObject().isTypeSpec( RlString::getClassTypeSpec() ) )
+    {
+        throw RbException( "String indexes not supported (yet)");
+    }
+    else
+    {
+        std::ostringstream msg;
+        msg << "Index for ";
+        if ( baseVariable != NULL )
+            msg << baseVariable->getFullName( env ) << ".";
+        msg << identifier;
+        msg << " of wrong type (neither " << Natural::getClassType() << " nor " << RlString::getClassType() << ")";
+        throw RbException( msg );
+    }
+}
+
+
+/**
+ * Is the syntax element safe for use in a function ( as
+ * opposed to a procedure)? The variable element is safe
+ * if it does not include an expression that is not function-
+ * safe.
+ */
+bool SyntaxVariable::isFunctionSafe( const Environment& env ) const
+{
+    if ( functionCall != NULL && !functionCall->isFunctionSafe( env ) )
+        return false;
+    
+    if ( expression != NULL && !expression->isFunctionSafe( env ) )
+        return false;
+
+    if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env ) )
+        return false;
+    
+    return true;
 }
 
 
@@ -737,5 +753,55 @@ void SyntaxVariable::printValue(std::ostream& o) const
         baseVariable->printValue(o);
         o << std::endl;
     }
+}
+
+
+/**
+ * Check whether this syntax element retrieves an external variable.
+ * In certain contexts, this leads to statements that are not function-
+ * safe. This function is used during compilation when checking whether
+ * a statement is safe for inclusion in a function.
+ *
+ * If there is a base variable, we delegate to the base variable because
+ * it is the first element in the base variable / variable expression
+ * chain that determines whether an external variable is retrieved.
+ *
+ * A function-call variable expression never retrieves an external variable
+ * unless it is a procedure call. In the latter case, an external variable
+ * may be returned but the variable expression is not function-safe
+ * anyway (see the function isFunctionSafe()), so we do not care about
+ * this possibility here.
+ *
+ * A generic variable expression may retrieve an external variable. This
+ * is the case in variable expressions of the type '(a)[1]', where 'a'
+ * is an external variable. Therefore we need to ask the expression
+ * whether it retrieves an external variable.
+ *
+ * If this element is a named variable expression, we simply check the
+ * external environment to see whether the variable exists there.
+ */
+bool SyntaxVariable::retrievesExternVar( const Environment& env ) const
+{
+    if ( baseVariable != NULL )
+        return baseVariable->retrievesExternVar( env );
+    
+    if ( expression!= NULL )
+        return expression->retrievesExternVar( env );
+    
+    if ( functionCall == NULL )
+    {
+        // Named variable; look for it in the environment
+        if ( env.existsVariable( identifier ) )
+            return true;
+    }
+    
+    return false;
+}
+
+
+/** Set base variable of the variable expression */
+void SyntaxVariable::setBaseVariable( SyntaxVariable* var )
+{
+    baseVariable = var;
 }
 

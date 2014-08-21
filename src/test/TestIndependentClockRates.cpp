@@ -58,7 +58,9 @@ TestIndependentClockRates::~TestIndependentClockRates() {
 }
 
 bool TestIndependentClockRates::run( void ) {
-	
+    alignmentFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_GTRG.nex";
+    treeFilename = "/Users/tracyh/Code/RevBayes_proj/tests/time_trees/tt_CLK_true_relx.tre";
+
 	std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     std::cout << data[0] << std::endl;
@@ -74,30 +76,42 @@ bool TestIndependentClockRates::run( void ) {
 	// #######################################
 	
 	//   Constant nodes
+	//   Constant nodes
 	ConstantNode<double> *dLambda = new ConstantNode<double>("div_rate", new double(1.0 / 5.0));		// Exponential rate for prior on div
-	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
-	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
+    //	ConstantNode<double> *turnA   = new ConstantNode<double>("turn_alpha", new double(2.0));			// Beta distribution alpha
+    //	ConstantNode<double> *turnB   = new ConstantNode<double>("turn_beta", new double(2.0));				// Beta distribution beta
+	ConstantNode<double> *turnA   = new ConstantNode<double>("turn.uni_min", new double(0.0));			// Uniform distribution min
+	ConstantNode<double> *turnB   = new ConstantNode<double>("turn.uni_max", new double(1.0));				// Uniform distribution max
     ConstantNode<double> *rho     = new ConstantNode<double>("rho", new double(1.0));					// assume 100% sampling for now
+    //	ConstantNode<double> *meanOT  = new ConstantNode<double>("meanOT", new double(trees[0]->getRoot().getAge()*1.5));
+    //	ConstantNode<double> *stdOT   = new ConstantNode<double>("stdOT", new double(10.0));
     ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( trees[0]->getRoot().getAge()*2.0 ) );
-//    ConstantNode<double> *origin  = new ConstantNode<double>( "origin", new double( 2.0 ) );
-	
+    
 	//   Stochastic nodes
+    //    StochasticNode<double> *origin  = new StochasticNode<double>( "origin", new NormalDistribution(meanOT, stdOT) );
     StochasticNode<double> *div   = new StochasticNode<double>("diversification", new ExponentialDistribution(dLambda));
-    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
-	
+    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new UniformDistribution(turnA, turnB));
+    //    StochasticNode<double> *turn  = new StochasticNode<double>("turnover", new BetaDistribution(turnA, turnB));
+    
 	//   Deterministic nodes
 	//    birthRate = div / (1 - turn)
 	DeterministicNode<double> *birthRate = new DeterministicNode<double>("birth_rate", new BirthRateConstBDStatistic(div, turn));
 	//    deathRate = (div * turn) / ( 1 - turn)
 	DeterministicNode<double> *deathRate = new DeterministicNode<double>("death_rate", new DeathRateConstBDStatistic(div, turn));
 	// For some datasets with large root ages, if div>1.0 (or so), the probability is NaN
-//	RandomNumberGenerator* rng = GLOBAL_RNG;
-//	div->setValue(rng->uniform01() / 1.5);
-	
+    //	RandomNumberGenerator* rng = GLOBAL_RNG;
+    //	div->setValue(rng->uniform01() / 1.5);
+    
 	// Birth-death tree
     std::vector<std::string> names = data[0]->getTaxonNames();
-    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, birthRate, deathRate, rho, "uniform", "nTaxa", int(names.size()), names, std::vector<Clade>()) );
-//	tau->setValue( trees[0] );
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        taxa.push_back( Taxon( names[i] ) );
+    }
+    StochasticNode<TimeTree> *tau = new StochasticNode<TimeTree>( "tau", new ConstantRateBirthDeathProcess(origin, NULL, birthRate, deathRate, rho, "uniform", "nTaxa", taxa, std::vector<Clade>()) );
+	DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
+	tau->setValue( trees[0] );
 	
 	
 	// ##############################################
@@ -170,7 +184,6 @@ bool TestIndependentClockRates::run( void ) {
 	}
 	
     // add some tree stats to monitor
-    DeterministicNode<double> *treeHeight = new DeterministicNode<double>("TreeHeight", new TreeHeightStatistic(tau) );
 	DeterministicNode<double> *meanBrRate = new DeterministicNode<double>("MeanBranchRate", new MeanVecContinuousValStatistic(branchRates) );
 	
     /* add the monitors */
@@ -178,13 +191,13 @@ bool TestIndependentClockRates::run( void ) {
     std::vector<DagNode*> monitoredNodes;
 	monitoredNodes.push_back( meanBrRate );
 	monitoredNodes.push_back( treeHeight );
-    monitors.push_back( new ScreenMonitor( monitoredNodes, 10, " \t" ) );
+	monitoredNodes.push_back( pi );
+    monitors.push_back( new ScreenMonitor( monitoredNodes, 10) );
 	
 	monitoredNodes.push_back( div );
 	monitoredNodes.push_back( turn );
 	monitoredNodes.push_back( birthRate );
 	monitoredNodes.push_back( deathRate );
-	monitoredNodes.push_back( pi );
     monitoredNodes.push_back( er );
 	monitoredNodes.push_back( branchRates );
 	
@@ -200,7 +213,7 @@ bool TestIndependentClockRates::run( void ) {
     /* instantiate the model */
     Model myModel = Model(q);
     
-	mcmcGenerations = 100000;
+	mcmcGenerations = 10000;
 
     /* instiate and run the MCMC */
     Mcmc myMcmc = Mcmc( myModel, moves, monitors );

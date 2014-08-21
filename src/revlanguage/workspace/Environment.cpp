@@ -12,7 +12,7 @@ using namespace RevLanguage;
 
 /** Construct environment with NULL parent */
 Environment::Environment(void) :
-    functionTable(new FunctionTable()),
+    functionTable(),
     numUnnamedVariables(0),
     parentEnvironment(NULL),
     variableTable()
@@ -22,7 +22,7 @@ Environment::Environment(void) :
 
 /** Construct environment with parent */
 Environment::Environment(Environment* parentEnv) :
-    functionTable(new FunctionTable(&parentEnv->getFunctionTable())),
+    functionTable(&parentEnv->getFunctionTable()),
     numUnnamedVariables(0),
     parentEnvironment(parentEnv),
     variableTable()
@@ -68,6 +68,30 @@ Environment& Environment::operator=(const Environment &x)
     }
 
     return *this;
+}
+
+
+/** Add alias to variable to frame. */
+void Environment::addAlias( const std::string& name, const RevPtr<Variable>& theVar )
+{
+    
+    /* Throw an error if the name string is empty. */
+    if ( name == "" )
+        throw RbException("Invalid attempt to add unnamed reference variable to frame.");
+    
+    /* Throw an error if the variable exists. Note that we cannot use the function
+     existsVariable because that function looks recursively in parent frames, which
+     would make it impossible to hide global variables. */
+    if ( variableTable.find( name ) != variableTable.end() )
+        throw RbException( "Variable " + name + " already exists in frame" );
+    
+    /* Insert new alias to variable in variable table (we do not and should not name it) */
+    variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
+    
+#ifdef DEBUG_WORKSPACE
+    printf("Inserted \"%s\" (alias of \"%s\") in frame\n", name.c_str(), theVar->getName() );
+#endif
+    
 }
 
 
@@ -313,10 +337,11 @@ const Function& Environment::getFunction(const std::string& name)
     return functionTable.getFunction(name);
 }
 
+
 /* Get function. This call will throw an error if the function is missing. */
-Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args)
+Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once)
 {
-    return functionTable.getFunction(name, args);
+    return functionTable.getFunction(name, args, once);
 }
 
 
@@ -391,6 +416,15 @@ const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
     return it->second;
 }
 
+
+/**
+ * Is the function with the name 'fxnName' a procedure? Simply ask the
+ * function table.
+ */
+bool Environment::isProcedure(const std::string& fxnName) const
+{
+    return functionTable.isProcedure( fxnName );
+}
 
 /**
  * Is Environment same or parent of otherEnvironment? We use this function

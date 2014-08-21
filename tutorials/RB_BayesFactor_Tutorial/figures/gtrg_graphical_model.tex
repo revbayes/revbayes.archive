@@ -1,0 +1,62 @@
+\begin{tikzpicture}
+\node[black,draw=black,line width=2pt, dashed,dash pattern=on 7pt off 2pt,shape=rectangle,inner sep=30mm,rounded corners=1cm, rectangle split, rectangle split horizontal, rectangle split parts=3, rectangle split empty part height=9ex] (tp) at (-2,-2.5) { \nodepart {two}  };
+\node [font=\Large] at (tp.text) [above=3.5]{root};
+\node [font=\Large] at (tp.two) [above=3.5]{internal};
+\node [font=\Large] at (tp.three) [above=3.5]{tip};
+\node [obnode] (tn) at ($(tp.three)-(0,1.2)$) {$\mathcal{S}_{ij}$};
+\node [snode] (in) at ($(tp.two)-(0,1.2)$) {$\mathcal{S}_{ij}$};
+\node [snode] (rn) at ($(tp.text)-(0,1.2)$) {$\mathcal{S}_{ij}$};
+\node [font=\scriptsize,snode] (pin) at ($(in)+(0,2.5)$) {$\mathcal{S}_{\tilde{p}(i)j}$};
+\node [font=\scriptsize,snode] (ptn) at ($(tn)+(0,2.5)$) {$\mathcal{S}_{\tilde{p}(i)j}$};
+\draw [taro] (ptn) -- (tn) ;
+\draw [taro] (pin) -- (in) ;
+\node (a1) at ($(rn)-(2,0)$) { };
+\node (a2) at ($(tn)+(2,0)$) { };
+\node [detnode] (rj) at ($(tn)+(5,0)$) {$r_{j}$};
+\draw [taro] (rj) edge[bend right=20](in) ;
+\draw [taro] (rj) edge[bend right=20](rn) ;
+\draw [taro] (rj) -- (tn) ;
+\node[rectangle,dashed, very thick, inner sep=6mm, draw=black!100, fit = (tn) (in) (ptn) (a1) (a2) (rj)] (siteplate) {};
+\node at ($(rj)+(0.2,-0.8)$) {$j \in N$};
+\node [detnode] (gamma) at ($(rj)+(4,0)$) {$\gamma_{k}$};
+\node[rectangle,dashed, very thick, inner sep=10mm, draw=black!100, fit = (gamma)] (rateplate) {};
+\node[anchor=south east,inner sep=7pt] at (rateplate.south east) {$k \in \{1,\ldots,4\}$};
+\node [snode] (alpha) at ($(gamma)+(-1,2.5)$) {$\alpha$};
+\node [detnode] (beta) at ($(gamma)+(1,2.5)$) {$\beta$};
+\draw [dtaro] (alpha) -- (gamma) ;
+\draw [dtaro] (alpha) -- (beta) ;
+\draw [dtaro] (beta) -- (gamma) ;
+\node [constnode] (a) at ($(alpha)+(0,2)$) {$a$};
+\draw [taro] (a) -- (alpha) ;
+%\node [constnode] (p) at ($(gamma)-(0,4)$) {$p$};
+\draw [dtaro] (gamma) -- (rj) ;
+%\draw [taro] (p) -- (rj) ;
+\node at ($(tp.text)-(-2.0,2.6)$) {$i =$ root};
+\node at ($(tp.two)-(-2.0,2.6)$) {$i \in$ internals};
+\node at ($(tp.three)-(-2.25,2.6)$) {$i \in$ tips};
+\node [detnode] (qn) at ($(tp)-(0,5)$) {$Q$};
+\draw [taro] (qn) -- (in) ;
+\draw [taro] (qn) edge[bend right] (tn) ;
+\draw [taro] (qn) edge[bend left] (rn) ;
+\node [snode] (en) at ($(qn)-(2,1)$) {$\theta$};
+\node [snode] (bn) at ($(qn)-(-2,1)$) {$\pi$};
+\draw [dtaro] (en) -- (qn) ;
+\draw [dtaro] (bn) -- (qn) ;
+\node [constnode] (pen) at ($(en)-(1.5,0)$) {$e$};
+\node [constnode] (pbn) at ($(bn)-(-1.5,0)$) {$b$};
+\draw [taro] (pen) -- (en) ;
+\draw [taro] (pbn) -- (bn) ;
+\node [snode] (lin) at ($(in)+(-2,4.5)$) {$\nu_i$};
+\node [snode] (ltn) at ($(tn)+(-2,4.5)$) {$\nu_i$};
+\draw [taro] (lin) edge[bend right](in) ;
+\draw [taro] (ltn) edge[bend right](tn) ;
+\coordinate (Middle) at ($(lin)!0.5!(ltn)$);
+\node [constnode] (lamb) at ($(Middle)+(0,2.25)$) {$\lambda$};
+\draw [taro] (lamb) edge[bend left](ltn) ;
+\draw [taro] (lamb) edge[bend right](lin) ;
+\node[snode,inner sep=2mm] (topo) at ($(tp)+(-11,0)$) {\Large $\Psi$};
+\draw[-,line width=2pt] (topo) -- (tp) ;
+\end{tikzpicture}
+
+
+

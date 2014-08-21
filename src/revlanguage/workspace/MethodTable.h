@@ -30,24 +30,20 @@ namespace RevLanguage {
     class Function;
 
     class MethodTable : public FunctionTable {
-    public:
-        MethodTable(MethodTable* parent = NULL); //!< Empty table
 
-        virtual ~MethodTable() {
-        } //!< Destructor doesn't need to do anything
+    public:
+        MethodTable(MethodTable* parent = NULL);                                            //!< Constructor of empty table
+        virtual         ~MethodTable() {}                                                   //!< Virtual destructor
 
         // Assignment operator
-        MethodTable& operator=(const MethodTable& x); //!< Assignment operator 
+        MethodTable&    operator=(const MethodTable& x);                                    //!< Assignment operator
 
         // Basic utility functions
+        MethodTable*    clone(void) const { return new MethodTable(*this); }                //!< Clone object
 
-        MethodTable* clone(void) const {
-            return new MethodTable(*this);
-        } //!< Clone object
-
-        // MethodTable function (we just set the name of MemberProcedure objects here)
-        void addFunction(const std::string name, Function *func); //!< Add function; set name if appropriate
-
+        // MethodTable functions
+        void            insertInheritedMethods(const MethodTable& inheritedMethods);        //!< Insert inherited methods
+        
     };
 
 }

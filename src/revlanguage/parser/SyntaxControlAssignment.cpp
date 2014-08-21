@@ -91,7 +91,8 @@ RevPtr<Variable> SyntaxControlAssignment::evaluateContent( Environment& env )
     if ( !value.getTypeSpec().isDerivedOf( theSlot->getRevObjectTypeSpec() ) )
     {
         // We are not of a derived type (or the same type) so we need to cast
-        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec() ) )
+        // This is a one-time type conversion, so we set the once flag to true
+        if (value.isConvertibleTo( theSlot->getRevObjectTypeSpec(), true ) )
         {
             newValue = value.convertTo( theSlot->getRevObjectTypeSpec() );
         }
@@ -130,6 +131,27 @@ bool SyntaxControlAssignment::isAssignment( void ) const
     return true;
 }
 
+
+
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The assignment is safe
+ * if its lhs and rhs expressions are safe, and the
+ * assignment is not to an external variable.
+ */
+bool SyntaxControlAssignment::isFunctionSafe( const Environment& env ) const
+{
+    // Check lhs and rhs expressions
+    if ( !lhsExpression->isFunctionSafe( env ) || !rhsExpression->isFunctionSafe( env ) )
+        return false;
+
+    // Check whether assignment is to external variable (not function safe)
+    if ( lhsExpression->retrievesExternVar( env ) )
+        return false;
+
+    // All tests passed
+    return true;
+}
 
 
 /** Print info about the syntax element */

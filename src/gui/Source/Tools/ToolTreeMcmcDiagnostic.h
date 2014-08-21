@@ -7,6 +7,6 @@
 
 }
 
-- (void)execute;
+- (BOOL)execute;
 
 @end

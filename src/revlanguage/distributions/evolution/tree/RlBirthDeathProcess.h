@@ -44,6 +44,7 @@ namespace RevLanguage {
     
         // members        
         RevPtr<const Variable>                              origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const Variable>                              rootAge;                                                                             //!< The time of the process since the origin
         RevPtr<const Variable>                              rho;                                                                                //!< The sampling probability of a species at present
         RevPtr<const Variable>                              samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
         RevPtr<const Variable>                              condition;                                                                          //!< The condition of the process (none/survival/#Taxa)

@@ -41,10 +41,36 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<double
     return o;
 }
 
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::vector<double> >& x) {
+    o << "(";
+    for (std::vector<std::vector<double> >::const_iterator it = x.begin(); it != x.end(); ++it) {
+        if ( it != x.begin() ) {
+            o << ", ";
+        }
+        o << *it;
+    }
+    o << ")";
+    
+    return o;
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<int>& x) {
     o << "(";
     for (std::vector<int>::const_iterator it = x.begin(); it != x.end(); ++it) {
+        if ( it != x.begin() ) {
+            o << ", ";
+        }
+        o << *it;
+    }
+    o << ")";
+    
+    return o;
+}
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<std::vector<int> >& x) {
+    o << "(";
+    for (std::vector<std::vector<int> >::const_iterator it = x.begin(); it != x.end(); ++it) {
         if ( it != x.begin() ) {
             o << ", ";
         }
@@ -140,7 +166,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const std::vector<Trace>
 }
 
 
-std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::vector<int>& y) 
+std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::vector<int>& y)
 {
     
     size_t n = x.size();
@@ -152,7 +178,7 @@ std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::v
     
     std::vector<int> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] + y[i];
     }
@@ -161,7 +187,7 @@ std::vector<int> RevBayesCore::operator+(const std::vector<int>& x, const std::v
 }
 
 
-std::vector<double> RevBayesCore::operator+(const std::vector<double>& x, const std::vector<double>& y) 
+std::vector<double> RevBayesCore::operator+(const std::vector<double>& x, const std::vector<double>& y)
 {
     
     size_t n = x.size();
@@ -173,7 +199,7 @@ std::vector<double> RevBayesCore::operator+(const std::vector<double>& x, const 
     
     std::vector<double> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] + y[i];
     }
@@ -182,7 +208,7 @@ std::vector<double> RevBayesCore::operator+(const std::vector<double>& x, const 
 }
 
 
-std::vector<int> RevBayesCore::operator-(const std::vector<int>& x, const std::vector<int>& y) 
+std::vector<int> RevBayesCore::operator-(const std::vector<int>& x, const std::vector<int>& y)
 {
     
     size_t n = x.size();
@@ -194,7 +220,7 @@ std::vector<int> RevBayesCore::operator-(const std::vector<int>& x, const std::v
     
     std::vector<int> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] - y[i];
     }
@@ -203,7 +229,7 @@ std::vector<int> RevBayesCore::operator-(const std::vector<int>& x, const std::v
 }
 
 
-std::vector<double> RevBayesCore::operator-(const std::vector<double>& x, const std::vector<double>& y) 
+std::vector<double> RevBayesCore::operator-(const std::vector<double>& x, const std::vector<double>& y)
 {
     
     size_t n = x.size();
@@ -215,7 +241,7 @@ std::vector<double> RevBayesCore::operator-(const std::vector<double>& x, const 
     
     std::vector<double> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] - y[i];
     }
@@ -224,7 +250,7 @@ std::vector<double> RevBayesCore::operator-(const std::vector<double>& x, const 
 }
 
 
-std::vector<int> RevBayesCore::operator*(const std::vector<int>& x, const std::vector<int>& y) 
+std::vector<int> RevBayesCore::operator*(const std::vector<int>& x, const std::vector<int>& y)
 {
     
     size_t n = x.size();
@@ -236,7 +262,7 @@ std::vector<int> RevBayesCore::operator*(const std::vector<int>& x, const std::v
     
     std::vector<int> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] * y[i];
     }
@@ -245,7 +271,7 @@ std::vector<int> RevBayesCore::operator*(const std::vector<int>& x, const std::v
 }
 
 
-std::vector<double> RevBayesCore::operator*(const std::vector<double>& x, const std::vector<double>& y) 
+std::vector<double> RevBayesCore::operator*(const std::vector<double>& x, const std::vector<double>& y)
 {
     
     size_t n = x.size();
@@ -257,7 +283,7 @@ std::vector<double> RevBayesCore::operator*(const std::vector<double>& x, const 
     
     std::vector<double> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] * y[i];
     }
@@ -266,7 +292,7 @@ std::vector<double> RevBayesCore::operator*(const std::vector<double>& x, const 
 }
 
 
-std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std::vector<int>& y) 
+std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std::vector<int>& y)
 {
     
     size_t n = x.size();
@@ -278,7 +304,7 @@ std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std
     
     std::vector<double> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] / double(y[i]);
     }
@@ -287,7 +313,7 @@ std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std
 }
 
 
-std::vector<double> RevBayesCore::operator/(const std::vector<double>& x, const std::vector<double>& y) 
+std::vector<double> RevBayesCore::operator/(const std::vector<int>& x, const std::vector<double>& y)
 {
     
     size_t n = x.size();
@@ -299,7 +325,49 @@ std::vector<double> RevBayesCore::operator/(const std::vector<double>& x, const 
     
     std::vector<double> z(n,0);
     
-    for (size_t i = 0; i < n; ++i) 
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] / y[i];
+    }
+    
+    return z;
+}
+
+
+std::vector<double> RevBayesCore::operator/(const std::vector<double>& x, const std::vector<int>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only divide vectors of same size!");
+    }
+    
+    std::vector<double> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
+    {
+        z[i] = x[i] / y[i];
+    }
+    
+    return z;
+}
+
+
+std::vector<double> RevBayesCore::operator/(const std::vector<double>& x, const std::vector<double>& y)
+{
+    
+    size_t n = x.size();
+    
+    if ( n != y.size() )
+    {
+        throw RbException("Can only divide vectors of same size!");
+    }
+    
+    std::vector<double> z(n,0);
+    
+    for (size_t i = 0; i < n; ++i)
     {
         z[i] = x[i] / y[i];
     }

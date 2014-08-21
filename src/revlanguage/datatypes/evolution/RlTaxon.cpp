@@ -71,10 +71,10 @@ void Taxon::constructInternalObject( void )
 /* Map calls to member methods */
 RevLanguage::RevPtr<RevLanguage::Variable> Taxon::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-//    if (name == "nnodes") {
-//        size_t n = this->value->getValue().getNumberOfNodes();
-//        return new Natural( n );
-//    }
+    if (name == "getSpeciesName") {
+        std::string n = this->dagNode->getValue().getSpeciesName();
+        return RevPtr<Variable>( new Variable( new RlString( n ) ) );
+    }
 //    else if (name == "names") {
 //        const std::vector<std::string>& n = this->value->getValue().getNames();
 //        return new ModelVector<RlString>( n );
@@ -91,7 +91,8 @@ const MemberRules& Taxon::getMemberRules(void) const {
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         modelMemberRules.push_back( new ArgumentRule("taxonName", true, RlString::getClassTypeSpec() ) );
         modelMemberRules.push_back( new ArgumentRule("speciesName", true, RlString::getClassTypeSpec() ) );
       //  modelMemberRules.push_back( new ArgumentRule("date", true, RlDate::getClassTypeSpec() ) );
@@ -120,27 +121,22 @@ const TypeSpec& Taxon::getClassTypeSpec(void) {
 }
 
 
-/* Get method specifications */
-const RevLanguage::MethodTable& Taxon::getMethods(void) const {
+/**
+ * Get member methods. We construct the appropriate static member
+ * function table here.
+ */
+const RevLanguage::MethodTable& Taxon::getMethods( void ) const
+{
+    static MethodTable  myMethods   = MethodTable();
+    static bool         methodsSet  = false;
     
-    static MethodTable    methods                     = MethodTable();
-    static bool           methodsSet                  = false;
-    
-    if ( methodsSet == false ) {
-        
-//        ArgumentRules* nnodesArgRules = new ArgumentRules();
-//        methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),       nnodesArgRules              ) );
-//        
-//        ArgumentRules* namesArgRules = new ArgumentRules();
-//        methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-        
-        // necessary call for proper inheritance
-        methods.setParentTable( &RevObject::getMethods() );
+    if ( !methodsSet )
+    {
+        myMethods = makeMethods();
         methodsSet = true;
     }
     
-    
-    return methods;
+    return myMethods;
 }
 
 
@@ -172,4 +168,23 @@ void Taxon::setConstMemberVariable(const std::string& name, const RevPtr<const V
         RevObject::setConstMemberVariable(name, var);
     }
 }
+
+
+/** Make methods for this class */
+RevLanguage::MethodTable Taxon::makeMethods(void) const
+{ 
+    MethodTable methods = MethodTable();
+        
+    ArgumentRules* speciesNameArgRules = new ArgumentRules();
+    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
+
+//    ArgumentRules* namesArgRules = new ArgumentRules();
+//    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+        
+    // Insert inherited methods
+    methods.insertInheritedMethods( ModelObject<RevBayesCore::Taxon>::makeMethods() );
+
+    return methods;
+}
+
 

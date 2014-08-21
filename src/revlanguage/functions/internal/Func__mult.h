@@ -32,7 +32,7 @@ namespace RevLanguage {
         Func__mult( void );
         
         // Basic utility functions
-        Func__mult*                                       clone(void) const;                                                              //!< Clone the object
+        Func__mult*                                     clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

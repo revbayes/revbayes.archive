@@ -393,19 +393,19 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
     // write tree string
     std::string treeStr = "";
     treeStr = buildExtendedNewick(); //buildExtendedNewick(&tree->getValue().getRoot());
-    std::cout << treeStr << "\n";
-    std::cout << "nhxStr\n" << treeStr << "\n";
+//    std::cout << treeStr << "\n";
+//    std::cout << "nhxStr\n" << treeStr << "\n";
     nhxStrm << "tree TREE1 = " << treeStr << ";\n";
     nhxStrm << "End;\n";
     
-    std::cout << "[";
-    for (size_t i = 0; i < numCharacters; i++)
-    {
-        if (i != 0)
-            std::cout << ",";
-        std::cout << (double)childCharacterCounts[0][i] / numSamples;
-    }
-    std::cout << "]\n";
+//    std::cout << "[";
+//    for (size_t i = 0; i < numCharacters; i++)
+//    {
+//        if (i != 0)
+//            std::cout << ",";
+//        std::cout << (double)childCharacterCounts[0][i] / numSamples;
+//    }
+//    std::cout << "]\n";
     
     return nhxStrm.str();
 }

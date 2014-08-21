@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#import "Outlet.h"
 #import "ToolData.h"
 @class WindowControllerMatrixFilter;
 
