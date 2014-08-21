@@ -44,6 +44,7 @@ index <- index + 1
 # of parameters kappa * I3 and 5 degrees of freedom
 
 kappa ~ exponential(1.0)
+kappa.setValue(0.1)
 
 df <- nTraits+4
 covdim <- nTraits+2
@@ -77,31 +78,7 @@ for (i in 1:nTraits)	{
 	br.clampAt(contData,i+2,i)
 }
 
-#"stats for cov"
-# get useful functions of the covariance matrix
-# these are just specific examples
-
-#var1 := sigma.covariance(1,1)
-#cov12 := sigma.covariance(1,2)
-#cor12 := sigma.correlation(1,2)
-#parcor12 := sigma.partialCorrelation(1,2)
-
-# get useful outputs from the brownian process
-
-#for (i in 1:covdim)	{
-
-#	# mean and stdev of each trait
-#	meanbr[i] := br.mean(i)
-#	stdevbr[i] := br.stdev(i)
-#}
-
-"subs"
-
-# substition models
-# constant hypernodes
 bf <- v(1,1,1,1)
-
-# nuclear partition
 pi ~ dirichlet(bf)
 
 # moves on the substitution process parameters
@@ -118,19 +95,15 @@ gctree := tanhBranchTree(tree=tau,process=br,offset=rootval,traitindex=2)
 
 gctree
 
-kappa ~ exponential(0.1)
+tstv ~ exponential(1)
 
 rootgc ~ beta(alpha=1,beta=1)
 rootgc
 
 "matrix tree"
 
-matrixtree := t92GCBranchTree(tree=tau,gctree=gctree,rootgc=rootgc,kappa=kappa)
+matrixtree := t92GCBranchTree(tree=tau,gctree=gctree,rootgc=rootgc,kappa=tstv)
 
-
-pi
-
-kappa
 
 "subs"
 # the sequence evolution models
