@@ -153,7 +153,7 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::doAllocateAuxMove( void ) {
 				lnProb.push_back( log(numSeated) + tabLnL );
 			}
 			else{
-				tableVals[j] = NULL;
+				tableVals[j] = 0.0;
 				numPerTab[j] = 0;
 			}
 		}

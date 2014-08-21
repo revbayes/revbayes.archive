@@ -432,7 +432,7 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
  * use member rules and the method table to access
  * the information.
  */
-void RevObject::printMemberInfo( std::ostream &o ) const
+void RevObject::printMemberInfo( std::ostream &o, bool verbose ) const
 {
     const ArgumentRules& memberRules = getMemberRules();
     for ( size_t i = 0; i < memberRules.size(); ++i )
