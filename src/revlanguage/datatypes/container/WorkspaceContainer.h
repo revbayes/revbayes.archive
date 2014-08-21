@@ -37,7 +37,7 @@ namespace RevLanguage {
         virtual void                                printValue(std::ostream& o) const = 0;                              //!< Print value for user
         
         // Basic utility function you may want to override
-        virtual void                                printStructure(std::ostream& o) const;                              //!< Print structure of language object for user
+        virtual void                                printStructure(std::ostream& o, bool verbose=false) const;          //!< Print structure of language object for user
 
         // Container functions you have to override
         RevPtr<Variable>                            findOrCreateElement(const std::vector<size_t>& oneOffsetIndices) = 0;   //!< Find or create element variable
