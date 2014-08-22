@@ -182,7 +182,7 @@ bool TestMultispeciesCoalescent::run( void ) {
 
 	//Moves for node heights only
     moves.push_back( new SubtreeScale( spTree_inf, 10.0 ) );
-    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
+//    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( spTree_inf, 10.0 ) );
     moves.push_back( new RootTimeSlide( spTree_inf, 1.0, false, 5.0 ) );
     
