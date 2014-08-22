@@ -279,6 +279,8 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     heterogeneousRateMatrices   = n.heterogeneousRateMatrices;
     rootFrequencies             = n.rootFrequencies;
     siteRates                   = n.siteRates;
+    siteRatesProbs              = n.siteRatesProbs;
+    pInv                        = n.pInv;
     
     
     // flags specifying which model variants we use
@@ -1064,12 +1066,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
     {
-        delete homogeneousClockRate;
+//        delete homogeneousClockRate;
         homogeneousClockRate = NULL;
     }
     else // heterogeneousClockRate != NULL
     {
-        delete heterogeneousClockRates;
+//        delete heterogeneousClockRates;
         heterogeneousClockRates = NULL;
     }
     
@@ -1094,12 +1096,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
     {
-        delete homogeneousClockRate;
+//        delete homogeneousClockRate;
         homogeneousClockRate = NULL;
     }
     else // heterogeneousClockRate != NULL
     {
-        delete heterogeneousClockRates;
+//        delete heterogeneousClockRates;
         heterogeneousClockRates = NULL;
     }
     
@@ -1124,15 +1126,15 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( pInv != NULL )
     {
-        delete homogeneousClockRate;
-        homogeneousClockRate = NULL;
+//        delete pInv;
+        pInv = NULL;
     }
     
     // set the value
     pInv = r;
     
     // redraw the current value
-    if ( this->dagNode != NULL || !this->dagNode->isClamped() )
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -1158,7 +1160,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     homogeneousRateMatrix = rm;
     
     // redraw the current value
-    if ( this->dagNode != NULL || !this->dagNode->isClamped() )
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -1184,7 +1186,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     heterogeneousRateMatrices = rm;
     
     // redraw the current value
-    if ( this->dagNode != NULL || !this->dagNode->isClamped() )
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -1214,7 +1216,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     
     // redraw the current value
-    if ( this->dagNode != NULL || !this->dagNode->isClamped() )
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
@@ -1250,7 +1252,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     
     // redraw the current value
-    if ( this->dagNode != NULL || !this->dagNode->isClamped() )
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
     {
         this->redrawValue();
     }
