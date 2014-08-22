@@ -16,21 +16,25 @@
 
 using namespace RevBayesCore;
 
-NearestNeighborInterchange::NearestNeighborInterchange(StochasticNode<TimeTree> *v, double w) : SimpleMove( v, w), variable( v ) {
+NearestNeighborInterchange::NearestNeighborInterchange(StochasticNode<TimeTree> *v, double w) : SimpleMove( v, w),
+    variable( v )
+{
     
 }
 
 
 
 /* Clone object */
-NearestNeighborInterchange* NearestNeighborInterchange::clone( void ) const {
+NearestNeighborInterchange* NearestNeighborInterchange::clone( void ) const
+{
     
     return new NearestNeighborInterchange( *this );
 }
 
 
 
-const std::string& NearestNeighborInterchange::getMoveName( void ) const {
+const std::string& NearestNeighborInterchange::getMoveName( void ) const
+{
     static std::string name = "NNI";
     
     return name;
@@ -38,7 +42,8 @@ const std::string& NearestNeighborInterchange::getMoveName( void ) const {
 
 
 /** Perform the move */
-double NearestNeighborInterchange::performSimpleMove( void ) {
+double NearestNeighborInterchange::performSimpleMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -85,17 +90,23 @@ double NearestNeighborInterchange::performSimpleMove( void ) {
     // Note: the Hastings ratio needs to be there because one of the nodes might be a tip and hence not scaled!
     double my_new_age;
     double lnHastingsratio;
-    if ( node->isTip() ) {
+    if ( node->isTip() )
+    {
         my_new_age = my_age;
         lnHastingsratio = 0.0;
-    } else {
+    }
+    else
+    {
         my_new_age = gparent_age * rng->uniform01();
         lnHastingsratio = log( gparent_age / parent_age);
     }
     double uncles_new_age;
-    if ( uncle->isTip() ) {
+    if ( uncle->isTip() )
+    {
         uncles_new_age = uncles_age;
-    } else {
+    }
+    else
+    {
         uncles_new_age = parent_age * rng->uniform01();
         lnHastingsratio += log( parent_age / gparent_age);
     }
@@ -108,7 +119,8 @@ double NearestNeighborInterchange::performSimpleMove( void ) {
 }
 
 
-void NearestNeighborInterchange::rejectSimpleMove( void ) {
+void NearestNeighborInterchange::rejectSimpleMove( void )
+{
         
     // undo the proposal
     TopologyNode& parent = storedUncle->getParent();
@@ -136,7 +148,8 @@ void NearestNeighborInterchange::rejectSimpleMove( void ) {
 }
 
 
-void NearestNeighborInterchange::swapNode(DagNode *oldN, DagNode *newN) {
+void NearestNeighborInterchange::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
     SimpleMove::swapNode(oldN, newN);
     

@@ -42,7 +42,7 @@ namespace RevBayesCore {
         
     protected:
         //protected methods that are overwritten from the base class
-        void                                                    performMove(double heat, bool raiseLikelihoodOnly);                                     //!< Perform the move.
+        void                                                    performMove(double heat, bool raiseLikelihoodOnly, bool priorOnly=false);               //!< Perform the move.
         void                                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
         
     private:

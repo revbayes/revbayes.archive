@@ -73,6 +73,8 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     // present time 
     double org = origin->getValue();
     
+//    double ra = value->getRoot().getAge();
+    
     // retrieved the speciation times
     std::vector<double>* agesInternalNodes  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
@@ -98,6 +100,11 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
             lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
         }
         
+//        if ( lnProbTimes > 100 )
+//        {
+//            std::cerr << "holala" << std::endl;
+//        }
+        
     }
     
     for (size_t i = 0; i < numTaxa-1; ++i) 
@@ -112,6 +119,11 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         double t = (*agesInternalNodes)[i];
         size_t index = l(t);
         lnProbTimes += log( q(index,t+timeSinceLastSample) * birth[index] );
+        
+//        if ( lnProbTimes > 100 )
+//        {
+//            std::cerr << "holala" << std::endl;
+//        }
     }
     
     for (size_t i = 0; i < rateChangeTimes.size(); ++i) 
@@ -126,15 +138,30 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         double t = rateChangeTimes[i];
         int div = survivors(t);
         lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
+        
+//        if ( lnProbTimes > 100 )
+//        {
+//            std::cout << "t = " << t << "  -- div = " << div << "\n";
+//            std::cout << "sampling = " << sampling[i+1] << "  -- i = " << i << "\n";
+//            std::cout << "sampling size = " << sampling.size() << "   q(i,t) =" << q(i, t) << std::endl;
+//            std::cerr << "holala" << std::endl;
+//        }
 		
-//		std::cout << "t = " << t << "  -- div = " << div << "\n";
-//		std::cout << "sampling = " << sampling[i+1] << "  -- i = " << i << "\n";
-//		std::cout << "sampling size = " << sampling.size() << "   q(i,t) =" << q(i, t) << std::endl;
         
     }
 
     
+    
+//    double test = log( q(rateChangeTimes.size(), org ) );
+//    if ( test > 100 )
+//    {
+//        std::cerr << "holala" << std::endl;
+//    }
     lnProbTimes += log( q(rateChangeTimes.size(), org ) );
+//    if ( lnProbTimes > 100 )
+//    {
+//        std::cerr << "holala" << std::endl;
+//    }
     
     delete agesInternalNodes;
     delete agesTips;
@@ -376,11 +403,15 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
     
     double e = exp(A*dt);
-    double tmp = ((1.0+B)+e*(1.0-B));
+//    double tmp = ((1.0+B)+e*(1.0-B));
     
-    double tmp2 = 4.0*e / (tmp*tmp);
+//    double tmp2 = 4.0*e / (tmp*tmp);
+//    double tmp2 = (e/tmp)*(4.0/tmp);
+    
+//    double test2 = (4 * e) / (e * (1 - B) + (1 + B) / e) / (e * (1 - B) + (1 + B));
+    double test2 = (4 ) / ((1 - B) + (1 + B) / e) / ((1 - B) + (1 + B) / e);
 	
-	return tmp2;
+	return test2;
 }
 
 

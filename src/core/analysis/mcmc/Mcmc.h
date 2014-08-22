@@ -28,9 +28,8 @@ namespace RevBayesCore {
         
         // public methods
         Mcmc*                                               clone(void) const;
-        void                                                monitor(unsigned long g);
-        virtual unsigned long                               nextCycle(bool advanceCycle);
         virtual void                                        run(size_t g);
+        virtual void                                        runPriorSampler(size_t g);
 
     protected:
 

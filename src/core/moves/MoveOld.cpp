@@ -109,7 +109,8 @@ void MoveOld::performGibbs(void)
     numAccepted++;
     
     // call accept for each node
-    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i) {
+    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+    {
         (*i)->keep();
     }
     
@@ -154,7 +155,8 @@ void MoveOld::printSummary( std::ostream &o ) const
     
     // print the weight
     int w_length = 4 - (int)log10(weight);
-    for (int i = 0; i < w_length; ++i) {
+    for (int i = 0; i < w_length; ++i)
+    {
         o << " ";
     }
     o << weight;
@@ -162,7 +164,8 @@ void MoveOld::printSummary( std::ostream &o ) const
     
     // print the number of tries
     int t_length = 9 - (int)log10(numTried);
-    for (int i = 0; i < t_length; ++i) {
+    for (int i = 0; i < t_length; ++i)
+    {
         o << " ";
     }
     o << numTried;
@@ -172,7 +175,8 @@ void MoveOld::printSummary( std::ostream &o ) const
     int a_length = 9;
     if (numAccepted > 0) a_length -= (int)log10(numAccepted);
     
-    for (int i = 0; i < a_length; ++i) {
+    for (int i = 0; i < a_length; ++i)
+    {
         o << " ";
     }
     o << numAccepted;
@@ -183,7 +187,8 @@ void MoveOld::printSummary( std::ostream &o ) const
     if (numTried == 0) ratio = 0;
     int r_length = 5;
     
-    for (int i = 0; i < r_length; ++i) {
+    for (int i = 0; i < r_length; ++i)
+    {
         o << " ";
     }
     o << ratio;
