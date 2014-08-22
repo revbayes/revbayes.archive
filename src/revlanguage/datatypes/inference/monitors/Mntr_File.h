@@ -46,7 +46,7 @@ namespace RevLanguage {
         
         void                                        setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
         
-        std::set<RevPtr<const Variable> >           vars;
+        std::vector<RevPtr<const Variable> >        vars;
         RevPtr<const Variable>                      filename;
         RevPtr<const Variable>                      printgen;
         RevPtr<const Variable>                      separator;

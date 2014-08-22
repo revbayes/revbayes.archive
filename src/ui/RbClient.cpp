@@ -707,10 +707,10 @@ void RbClient::notifyGetFileComplete(HttpResponse httpResponse, RepositoryInfo r
 
         fs::path saveDir = getWd();
         saveDir /= "downloads";
-        std::cout << "Save file to '" + saveDir.string() + "' Y/N ?:";
-        char ch;
-        std::cin.get(ch);
-        if (ch == 'y' || ch == 'Y') {
+        std::cout << "Save file to '" + saveDir.string() + "' Y/N ?: (Y) ";
+        char answer;
+        std::cin.get(answer);
+        if (answer == 'y' || answer == 'Y' || answer == '\n') {
 
             if (Filesystem::saveToFile(httpResponse.data.at(0), saveDir.string(), httpResponse.data.at(1))) {
                 std::cout << "File saved!" << nl;
