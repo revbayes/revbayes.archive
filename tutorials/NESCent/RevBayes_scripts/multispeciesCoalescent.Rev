@@ -67,8 +67,8 @@ speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=n_species
 # moves on the tree
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
 moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
-moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
-moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
+#moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+#moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
 moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
 moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 
@@ -99,8 +99,8 @@ for (i in 1:n_genes) {
    # moves on the tree
    moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
    moves[moveIndex++] <- mvFNPR(geneTree[i], 1.0)
-   moves[moveIndex++] <- mvSubtreeScale(geneTree[i], 5.0)
-   moves[moveIndex++] <- mvTreeScale(geneTree[i], 1.0, true, 3.0)
+   #moves[moveIndex++] <- mvSubtreeScale(geneTree[i], 5.0)
+   #moves[moveIndex++] <- mvTreeScale(geneTree[i], 1.0, true, 3.0)
    moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTree[i], 10.0)
    moves[moveIndex++] <- mvRootTimeSlide(geneTree[i], 1.0, true, 3.0)
 

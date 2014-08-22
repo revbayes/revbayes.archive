@@ -8,6 +8,7 @@ D <- readCharacterData("data/Primates.nex")[1]
 taxaCount <- D.ntaxa()
 nSites <- D.nchar()[1]
 names <- D.names()
+nBranches <- 2*taxaCount - 2
 
 # Birth-Death process priors
 diversification ~ exponential(0.1)
@@ -31,40 +32,32 @@ moves[8] <- mNodeTimeSlideUniform(tau, weight=10.0)
 moves[9] <- mRootTimeSlide(tau, delta=1.0, tune=true, weight=3.0)
 
 # substition model priors
-bf <- v(1,1,1,1)
 e <- v(1,1,1,1,1,1)
-pi ~ dirichlet(bf)
 er ~ dirichlet(e)
 
-# let's set some "reasonable" starting values
-# first we look what we had
-pi
-er
-# You could comment these out and see how the convergence of the MCMC is influenced by the starting values.
-# Usually these starting values will lead to much faster convergence
-pi.setValue( simplex(1,1,1,1) )
-er.setValue( simplex(1,1,1,1,1,1) )
-# now check the new values
-pi
-er
+bf <- v(1,1,1,1)
+for (i in 1:nBranches)	{
+
+	pi[i] ~ dirichlet(bf)
+	Q[i] := gtr(er,pi[i])
+}
+
+rootpi ~ dirichlet(bf)
 
 # moves on the substitution process parameters
 # first some moves only changing one value of the simplex
-moves[10] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=4.0)
-moves[11] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=6.0)
-
-# the rate matrix
-Q := gtr(er,pi)
+#moves[10] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=4.0)
+moves[10] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=6.0)
 
 clockRate <- 1.0
 
 # the sequence evolution model
-seq ~ substModel(tree=tau, Q=Q, branchRates=clockRate, nSites=nSites, type="DNA")
+seq ~ substModel(tree=tau, Q=Q, rootFrequencies=rootpi, branchRates=clockRate, nSites=nSites, type="DNA")
 
 # attach the data
 seq.clamp(D)
 
-mymodel <- model(pi)
+mymodel <- model(rootpi)
 
 monitors[1] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
 monitors[2] <- filemonitor(filename="gtr_clock.trees",printgen=10, separator = "	", tau)

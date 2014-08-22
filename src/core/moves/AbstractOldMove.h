@@ -24,7 +24,7 @@ namespace RevBayesCore {
         virtual                                                ~AbstractOldMove(void);                                                                     //!< Destructor
         
         // pure virtual public methods
-        void                                                    perform(double heat, bool raiseLikelihoodOnly);                                         //!< Perform the move.
+        void                                                    perform(double heat, bool raiseLikelihoodOnly, bool priorOnly=false);                   //!< Perform the move.
         
         virtual void                                            accept(void) = 0;
         virtual void                                            autoTune(void) = 0;                                                                     //!< Automatic tuning of the move.

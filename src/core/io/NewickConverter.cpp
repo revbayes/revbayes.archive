@@ -121,10 +121,10 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         
         // read the optional node parameters
         if ( ss.peek() == '[' ) {
-            ss.ignore();
             
             do {
                 
+                ss.ignore();
                 // ignore the '&' before parameter name
                 if ( ss.peek() == '&') 
                 {
@@ -202,10 +202,11 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     
     // read the optional node parameters
     if ( char( ss.peek() ) == '[' ) {
-        ss.ignore();
         
         do {
             
+            ss.ignore();
+
             // ignore the '&' before parameter name
             if ( char( ss.peek() ) == '&') 
             {

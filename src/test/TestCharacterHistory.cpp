@@ -165,10 +165,10 @@ bool TestCharacterHistory::run_exp(void) {
     bool useBdProcess               = !true;
     
     bool forbidExtinction           = true;
-    bool useCladogenesis            = !true;
-    bool useDistances               = !true;
-    bool useAdjacency               = !true;
-    bool useAvailable               = !true;
+    bool useCladogenesis            = true;
+    bool useDistances               = true;
+    bool useAdjacency               = true;
+    bool useAvailable               = true;
     bool useRootFreqs               = !true;
     
     
@@ -177,8 +177,8 @@ bool TestCharacterHistory::run_exp(void) {
     // binary characters
     std::string fn = "";
 //    fn = "vireya.nex";
-//    fn = "psychotria_range.nex";
-    fn = "16tip_100areas.nex";
+    fn = "psychotria_range.nex";
+//    fn = "16tip_100areas.nex";
     std::string in_fp = "/Users/mlandis/Documents/code/revbayes-code/examples/data/";
     std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(in_fp + fn);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
@@ -186,6 +186,7 @@ bool TestCharacterHistory::run_exp(void) {
     
     // tree
     std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( in_fp + fn );
+//    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( "/Users/mlandis/Desktop/test_tree.txt" );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;
     size_t numNodes = trees[0]->getNumberOfNodes();
@@ -193,10 +194,10 @@ bool TestCharacterHistory::run_exp(void) {
     // geo by epochs
     std::string afn="";
 //    afn = "malesia_static.atlas.txt";
-//    afn = "hawaii_dynamic.atlas.txt";
+    afn = "hawaii_dynamic.atlas.txt";
 //    afn = "hawaii_static.atlas.txt";
 //    afn = "hawaii_dynamic_ss.atlas.txt";
-    afn = "100area.atlas.txt";
+//    afn = "100area.atlas.txt";
     TimeAtlasDataReader tsdr(in_fp + afn,'\t');
     const TimeAtlas* ta = new TimeAtlas(&tsdr);
     

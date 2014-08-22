@@ -2,6 +2,7 @@
 #define MemberFunction_H
 
 #include "TypedFunction.h"
+#include "TypedDagNode.h"
 
 namespace RevBayesCore {
     
