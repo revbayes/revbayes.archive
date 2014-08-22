@@ -386,7 +386,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
         distMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
         
         distMemberRules.push_back( new ArgumentRule( "siteRates"    , true, ModelVector<RealPos>::getClassTypeSpec(), NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "pInv"    , true, ModelVector<RealPos>::getClassTypeSpec(), new Probability(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "pInv"    , true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
         
         distMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec(), new Natural(10) ) );
         
