@@ -16,21 +16,31 @@
 
 using namespace RevBayesCore;
 
-OriginTimeSlide::OriginTimeSlide( StochasticNode<double> *ot, StochasticNode<TimeTree> *tre, double d, bool t, double w) : SimpleMove( ot, w, t), variable( ot ), tree( tre ), delta( d ) {
+OriginTimeSlide::OriginTimeSlide( StochasticNode<double> *ot, StochasticNode<TimeTree> *tre, double d, bool t, double w) : CompoundMove( std::vector<DagNode*>(), w, t),
+    variable( ot ),
+    tree( tre ),
+    delta( d )
+{
+    
+    nodes.insert( tree );
+    nodes.insert( variable );
+    
     
 }
 
 
 
 /* Clone object */
-OriginTimeSlide* OriginTimeSlide::clone( void ) const {
+OriginTimeSlide* OriginTimeSlide::clone( void ) const
+{
     
     return new OriginTimeSlide( *this );
 }
 
 
 
-const std::string& OriginTimeSlide::getMoveName( void ) const {
+const std::string& OriginTimeSlide::getMoveName( void ) const
+{
     static std::string name = "OriginTimeSlide";
     
     return name;
@@ -38,14 +48,13 @@ const std::string& OriginTimeSlide::getMoveName( void ) const {
 
 
 /** Perform the move */
-double OriginTimeSlide::performSimpleMove( void ) {
+double OriginTimeSlide::performCompoundMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     TimeTree& tau = tree->getValue();
-	
-	
     
     TopologyNode& root = tau.getRoot();
     
@@ -65,7 +74,8 @@ double OriginTimeSlide::performSimpleMove( void ) {
     double my_new_age = my_age + ( delta * ( u - 0.5 ) );
     
     // check if the new age is lower than the minimum
-    if ( my_new_age < child_Age ) {
+    if ( my_new_age < child_Age )
+    {
         my_new_age = child_Age - (my_new_age - child_Age);
     }
     
@@ -75,17 +85,18 @@ double OriginTimeSlide::performSimpleMove( void ) {
 }
 
 
-void OriginTimeSlide::printParameterSummary(std::ostream &o) const {
+void OriginTimeSlide::printParameterSummary(std::ostream &o) const
+{
     o << "delta = " << delta;
 }
 
 
-void OriginTimeSlide::rejectSimpleMove( void ) {
+void OriginTimeSlide::rejectCompoundMove( void )
+{
     
     
     // undo the proposal
     variable->setValue( new double(storedAge) );
-    
     
 #ifdef ASSERTIONS_TREE
     if ( fabs(storedAge - node.getAge()) > 1E-8 ) {
@@ -96,22 +107,34 @@ void OriginTimeSlide::rejectSimpleMove( void ) {
 }
 
 
-void OriginTimeSlide::swapNode(DagNode *oldN, DagNode *newN) {
+void OriginTimeSlide::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
-    SimpleMove::swapNode(oldN, newN);
+    CompoundMove::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<double>* >(newN) ;
+    if ( variable == oldN )
+    {
+        variable = static_cast<StochasticNode<double>* >(newN);
+    }
+    else if ( tree == oldN )
+    {
+        tree = static_cast<StochasticNode<TimeTree>* >(newN);
+    }
 }
 
 
-void OriginTimeSlide::tune( void ) {
+void OriginTimeSlide::tune( void )
+{
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.234 ) {
+    if ( rate > 0.234 )
+    {
         delta *= (1.0 + ((rate-0.234)/0.766) );
     }
-    else {
+    else
+    {
         delta /= (2.0 - rate/0.234 );
     }
+    
 }
 
