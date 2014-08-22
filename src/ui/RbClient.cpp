@@ -1,8 +1,12 @@
+
+#include <iterator>
+
 #include "RbClient.h"
 #include "Parser.h"
 #include "Workspace.h"
 #include "WorkspaceUtils.h"
 #include "TerminalFormatter.h"
+#include "RbSettings.h"
 
 
 #include <stdio.h>
@@ -53,6 +57,21 @@ Configuration *config;
 void setDefaultCompletions();
 StringVector getDefaultCompletions();
 
+std::string getWd() {
+    RbSettings& s = RbSettings::userSettings();
+    const std::string& wd = s.getWorkingDirectory();
+    return wd;
+}
+
+StringVector getFileList(std::string relativePath) {
+    StringVector v;
+
+    BOOST_FOREACH(std::string s, Filesystem::getFileList(getWd(), relativePath)) {
+        v.push_back(s);
+    }
+    return v;
+}
+
 /**
  * Assemble tab completion data
  * 
@@ -65,7 +84,7 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
 
     StringVector specialStrings;
     // important: assign in descending order from longest to shortest strings
-    specialStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=", ",", "(", ")", " ";
+    specialStrings += "<-&", "<-", "<<-", ":=", "++", "--", "+=", "-=", "*=", "/=", "&&", "||", "~", "+", "-", "*", "/", "^", "!", "=", ",", "(", ")", " ", "#";
 
     std::string specialMatch = "";
     int specialMatchType = 0; // 0 = no match against any operator, 1 = reference assignment operator, 2 = other
@@ -91,22 +110,26 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
                 specialMatch = s;
             } else if (s == " ") {
                 endWithSpace = true;
-            }
-            else{
+            } else if (s == "#") {
+                specialMatchType = 3;
+                specialMatch = s;
+                endWithSpace = false;
+                break;
+            } else {
                 specialMatchType = 2;
                 specialMatch = s;
                 endWithSpace = false;
             }
-            
+
             rPos = _rPos;
         }
     }
     startPos += rPos;
 
     // discard extra space in beginning of string to match against completions
-//    while (buf[startPos] == ' ') {
-//        startPos++;
-//    }
+    //    while (buf[startPos] == ' ') {
+    //        startPos++;
+    //    }
 
     // the string the matching is made against
     std::string compMatch(buf + startPos);
@@ -130,6 +153,8 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
     if (specialMatchType == 0) {
         completions = editorMachine.getCurrentState()->getCompletions();
 
+    } else if (specialMatchType == 3) { // a comment
+        completions.clear();
     } else {
         if (specialMatchType == 1) { //reference assignment operator
             // completion only on user defined objects
@@ -150,6 +175,11 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
         } else if (editorMachine.getCurrentState()->getType() == ST_ACCESSING_MEMBER) {
             editorMachine.tryRelease(buf);
         }
+    }
+
+    // file lookup is dynamic and has to be set for each tab
+    if (editorMachine.getCurrentState()->getType() == ST_DEF_STRING) {
+        completions = getFileList(buf + editorMachine.getLinePos());
     }
 
     StringVector matches;
@@ -199,7 +229,7 @@ void printData(StringVector v, int columns, int columnWidth = 20, int indentatio
 /**
  * General guidance how to use the terminal
  */
-void printGeneralHelp() {
+int printGeneralHelp(const char *buf, size_t len, char c) {
     linenoiseClearScreen();
     linenoiceSetCursorPos(0);
 
@@ -244,6 +274,10 @@ void printGeneralHelp() {
     std::cout << nl << TerminalFormatter::makeUnderlined("Available commands") << nl;
     printData(cmd, 2);
 
+
+
+    return 0;
+
 }
 
 StringVector getDefaultCompletions() {
@@ -256,6 +290,10 @@ StringVector getDefaultCompletions() {
     BOOST_FOREACH(std::string obj, workspaceUtils.getObjects(true)) {
         c.push_back(obj);
     }
+
+    c.push_back("repo_list");
+    c.push_back("repo_get");
+
     return c;
 }
 
@@ -284,7 +322,7 @@ int spaceCallback(const char *buf, size_t len, char c) {
  */
 
 int listSeparatorCallback(const char *buf, size_t len, char c) {
-    
+
     if (editorMachine.processInput(buf)) {
 
         // shouldn't be here if not previous state was defining a list
@@ -382,10 +420,10 @@ int bracketCallback(const char *buf, size_t len, char c) {
             }
 
             std::cout << ")\n\r";
-            linenoiceSetCursorPos(0);
-            std::cout << prompt << buf;
-            std::cout.flush();
         }
+        linenoiceSetCursorPos(0);
+        std::cout << prompt << buf;
+        std::cout.flush();
     }
     return 0;
 }
@@ -420,9 +458,14 @@ int quotationCallback(const char *buf, size_t len, char c) {
 
     if (editorMachine.processInput(buf)) {
 
-        BOOST_FOREACH(std::string s, Filesystem::getFileList(opt->getIncludePaths(), ".Rev")) {
+        BOOST_FOREACH(std::string s, getFileList("")) {
             editorMachine.getCurrentState()->addCompletion(s);
         }
+
+        //std::cout << "\n\rcmd: " << editorMachine.getCmd() << "\n\r";
+        //std::cout << "\n\rlinepos: " << editorMachine.getLinePos() << "\n\r";        
+        //std::cout.flush();
+
     }
     return 0;
 }
@@ -441,7 +484,7 @@ int escapeCallback(const char *buf, size_t len, char c) {
 
     // general info
     if (len <= 0) {
-        printGeneralHelp();
+        printGeneralHelp(buf, len, c);
     }
 
     // completions
@@ -558,6 +601,9 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
     linenoiseSetCharacterCallback(backspaceCallback, ctrl('H')); // works in netbeans pseudo terminal
     linenoiseSetCharacterCallback(backspaceCallback, 0x7f); // works in gnome terminal
 
+    /* help */
+    linenoiseSetCharacterCallback(printGeneralHelp, '?');
+
 
     /* Load history from file. The history file is just a plain text file
      * where entries are separated by newlines. */
@@ -579,16 +625,15 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
         cmd = line;
         boost::trim(cmd);
 
-        if (cmd == "clr") {
+        if (cmd == "clr" || cmd == "clear") {
             linenoiseClearScreen();
-        } else if (cmd == "?") {
-            printGeneralHelp();
         } else if (cmd == "debug=false") {
             debug = false;
         } else if (cmd == "debug=true") {
             debug = true;
         } else if (repoClient.processCommand(config->getRepositories(), cmd)) {
 
+        } else if (cmd == "?") {
         } else {
             // interpret Rev statement
             if (result == 0 || result == 2) {
@@ -636,7 +681,7 @@ void RbClient::notifyGetIndexComplete(HttpResponse httpResponse, RepositoryInfo 
         std::cout << nl << "The request to fetch index from '" << revRepository.GetName() << "' failed: \n" << httpResponse.exception << nl;
 
     } else {
-        linenoiseClearScreen();
+        //linenoiseClearScreen();
         std::cout << nl << TerminalFormatter::makeUnderlined("File index of '" + revRepository.GetName() + "'") << nl;
 
         for (int i = 0; i < httpResponse.data.size() - 1; i += 2) {
@@ -660,12 +705,14 @@ void RbClient::notifyGetFileComplete(HttpResponse httpResponse, RepositoryInfo r
         std::string tmp = "    " + boost::regex_replace(httpResponse.data.at(1), boost::regex("\n"), "\n    ");
         std::cout << tmp << nl << nl;
 
-        std::string filename = config->getDownloadDir() + Filesystem::directorySeparator() + httpResponse.data.at(0);
-        std::cout << "Save file to '" + filename + "' Y/N ?:";
+        fs::path saveDir = getWd();
+        saveDir /= "downloads";
+        std::cout << "Save file to '" + saveDir.string() + "' Y/N ?:";
         char ch;
         std::cin.get(ch);
         if (ch == 'y' || ch == 'Y') {
-            if (Filesystem::saveToFile(httpResponse.data.at(0), config->getDownloadDir(), httpResponse.data.at(1))) {
+
+            if (Filesystem::saveToFile(httpResponse.data.at(0), saveDir.string(), httpResponse.data.at(1))) {
                 std::cout << "File saved!" << nl;
             } else {
                 std::cout << "Something went wrong and the file couldn't be saved!" << nl;

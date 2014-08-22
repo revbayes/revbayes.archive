@@ -123,7 +123,7 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
+void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly, bool priorOnly )
 {
     // Propose a new value
     proposal->prepareProposal();
@@ -152,7 +152,11 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
         if ( (*it)->isClamped() )
         {
             
-            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+            if ( priorOnly == false )
+            {
+                lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+            }
+            
         }
         else
         {
@@ -171,7 +175,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
         lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
     }
 	
-	if ( !RbMath::isFinite(lnPosteriorRatio) ) {
+	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
 		
             proposal->undoProposal();
             

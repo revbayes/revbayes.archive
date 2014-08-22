@@ -53,18 +53,20 @@ double CompoundMove::performMove( double &probRatio ) {
     std::set<DagNode* > affectedNodes;
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
+        DagNode *theNode = *it;
+        
         // touch each node
-        (*it)->touch();
+        theNode->touch();
     
         // calculate the probability ratio for the node we just changed
         //std::cout << (*it)->getName() << " " << (*it)->getLnProbabilityRatio() << " " << (*it)->getLnProbability() << "\n";
             
-        probRatio += (*it)->getLnProbabilityRatio();
+        probRatio += theNode->getLnProbabilityRatio();
  
         if ( probRatio != RbConstants::Double::inf && probRatio != RbConstants::Double::neginf )
         {
             // should contain unique nodes, since it is a set
-            (*it)->getAffectedNodes(affectedNodes);
+            theNode->getAffectedNodes(affectedNodes);
         }
     }
     

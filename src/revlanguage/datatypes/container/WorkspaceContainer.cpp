@@ -84,11 +84,11 @@ const TypeSpec& WorkspaceContainer::getClassTypeSpec(void)
 
 
 /** Print structure of language object for user */
-void WorkspaceContainer::printStructure( std::ostream& o ) const
+void WorkspaceContainer::printStructure( std::ostream& o, bool verbose ) const
 {
-    Container::printStructure( o );
+    Container::printStructure( o, verbose );
     
-    printMemberInfo( o );
+    printMemberInfo( o, verbose );
 }
 
 

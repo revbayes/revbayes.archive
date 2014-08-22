@@ -70,7 +70,6 @@ namespace RevBayesCore {
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "VectorIndexOperator.h"
 
 #include <cmath>
 

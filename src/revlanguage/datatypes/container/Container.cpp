@@ -27,7 +27,6 @@
 #include "RevPtr.h"
 #include "TypeSpec.h"
 #include "Variable.h"
-#include "VectorIndexOperator.h"
 
 #include <algorithm>
 

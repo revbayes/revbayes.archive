@@ -164,7 +164,9 @@ void Model::addSourceNode(const DagNode *sourceNode)
     
     // check that the source node is a valid pointer
     if (sourceNode == NULL)
+    {
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
+    }
     
     // copy the entire graph connected to the source node
     // only if the node is not contained already in the nodesMap will it be copied.
