@@ -255,6 +255,7 @@
 #include "Func_printSeed.h"
 #include "Func_quit.h"
 #include "Func_range.h"
+#include "Func_rep.h"
 #include "Func_seed.h"
 #include "Func_seq.h"
 #include "Func_setwd.h"
@@ -852,6 +853,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "range",                    new Func_range()                    );
+        addFunction( "seq",                      new Func_rep<Integer>()             );
+        addFunction( "seq",                      new Func_rep<Real>()                );
+        addFunction( "seq",                      new Func_rep<Natural>()             );
+        addFunction( "seq",                      new Func_rep<RealPos>()             );
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "seq",                      new Func_seq<Real>()                );
