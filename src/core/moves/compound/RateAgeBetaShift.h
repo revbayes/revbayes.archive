@@ -25,7 +25,7 @@ namespace RevBayesCore {
         void                                    swapNode(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
         
     protected:
-        void                                    performMove(double heat, bool raiseLikelihoodOnly, bool priorOnly=false);           //!< Perform move
+        void                                    performMove(double heat, bool raiseLikelihoodOnly);                                 //!< Perform move
         void                                    tune(void);
         
     private:
