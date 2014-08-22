@@ -175,7 +175,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly,
         lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
     }
 	
-	if ( !RbMath::isFinite(lnPosteriorRatio) ) {
+	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
 		
             proposal->undoProposal();
             

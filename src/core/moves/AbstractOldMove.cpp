@@ -84,7 +84,9 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
         // Calculate acceptance ratio
         double lnR = heat * lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio;
 	
-		if ( !RbMath::isFinite(lnR) ) {
+		if ( !RbMath::isAComputableNumber(lnR) )
+        {
+//            std::cerr << "Infinite lnR for move " << getMoveName() << ":\t\t" << lnR << std::endl;
 		
             reject();
 			
@@ -94,7 +96,9 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
         {
 #ifdef DEBUG_MCMC_DETAILS
             std::cerr << "Accepting move" << std::endl;
-#endif
+#endif            
+//            std::cerr << "Accepting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
+
             accept();
         }
         else if (lnR < -300.0)
@@ -102,6 +106,8 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
 #ifdef DEBUG_MCMC_DETAILS
             std::cerr << "Rejecting move" << std::endl;
 #endif
+//            std::cerr << "Rejecting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
+
             reject();
         }
         else
@@ -114,6 +120,9 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
 #ifdef DEBUG_MCMC_DETAILS
                 std::cerr << "Accepting move" << std::endl;
 #endif
+                
+//                std::cerr << "Accepting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
+
                 accept();
             }
             else
@@ -121,6 +130,9 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
 #ifdef DEBUG_MCMC_DETAILS
                 std::cerr << "Rejecting move" << std::endl;
 #endif
+                
+//                std::cerr << "Rejecting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
+
                 reject();
             }
         }
