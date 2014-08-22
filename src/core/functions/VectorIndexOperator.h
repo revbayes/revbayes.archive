@@ -71,7 +71,8 @@ RevBayesCore::VectorIndexOperator<valueType>::~VectorIndexOperator( void ) {
 
 
 template <class valueType>
-RevBayesCore::VectorIndexOperator<valueType>* RevBayesCore::VectorIndexOperator<valueType>::clone( void ) const {
+RevBayesCore::VectorIndexOperator<valueType>* RevBayesCore::VectorIndexOperator<valueType>::clone( void ) const
+{
     return new VectorIndexOperator<valueType>( *this );
 }
 
@@ -97,10 +98,12 @@ void RevBayesCore::VectorIndexOperator<valueType>::update( void )
 template <class valueType>
 void RevBayesCore::VectorIndexOperator<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if (oldP == vector) {
+    if (oldP == vector)
+    {
         vector = static_cast<const TypedDagNode<std::vector<valueType> >* >( newP );
     }
-    else if (oldP == index) {
+    else if (oldP == index)
+    {
         index = static_cast<const TypedDagNode<int>* >( newP );
     }
     

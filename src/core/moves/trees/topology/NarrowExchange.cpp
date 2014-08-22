@@ -17,21 +17,25 @@
 
 using namespace RevBayesCore;
 
-NarrowExchange::NarrowExchange(StochasticNode<TimeTree> *v, double w) : SimpleMove( v, w), variable( v ) {
+NarrowExchange::NarrowExchange(StochasticNode<TimeTree> *v, double w) : SimpleMove( v, w),
+    variable( v )
+{
     
 }
 
 
 
 /* Clone object */
-NarrowExchange* NarrowExchange::clone( void ) const {
+NarrowExchange* NarrowExchange::clone( void ) const
+{
     
     return new NarrowExchange( *this );
 }
 
 
 
-const std::string& NarrowExchange::getMoveName( void ) const {
+const std::string& NarrowExchange::getMoveName( void ) const
+{
     static std::string name = "NarrowExchange";
     
     return name;
@@ -39,7 +43,8 @@ const std::string& NarrowExchange::getMoveName( void ) const {
 
 
 /** Perform the move */
-double NarrowExchange::performSimpleMove( void ) {
+double NarrowExchange::performSimpleMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -58,7 +63,8 @@ double NarrowExchange::performSimpleMove( void ) {
     TopologyNode& grandparent = parent.getParent();
     TopologyNode* uncle = &grandparent.getChild( 0 );
     // check if we got the correct child
-    if ( uncle == &parent ) {
+    if ( uncle == &parent )
+    {
         uncle = &grandparent.getChild( 1 );
     }
     
@@ -66,7 +72,8 @@ double NarrowExchange::performSimpleMove( void ) {
     double parent_age   = parent.getAge();
     double uncles_age   = uncle->getAge();
     
-    if( uncles_age < parent_age ) {
+    if( uncles_age < parent_age )
+    {
         failed = false;
     
         // now we store all necessary values
@@ -82,7 +89,9 @@ double NarrowExchange::performSimpleMove( void ) {
         uncle->setParent( &parent );
     
         return 0.0;
-    } else {
+    }
+    else
+    {
         failed = true;
         return RbConstants::Double::neginf;
     }
