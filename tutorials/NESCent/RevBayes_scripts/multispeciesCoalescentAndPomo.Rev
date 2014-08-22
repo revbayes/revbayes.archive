@@ -453,6 +453,8 @@ mymcmc.run(generations=400)
 
 
 
+
+
 ###########################################################
 ###########################################################
 ####### Performing inference under the POMO model #########
@@ -463,6 +465,11 @@ mymcmc.run(generations=400)
 # The POMO model bypasses estimating gene trees altogether.
 # It assumes complete independence between sites of an alignment (no linkage).
 # Therefore it can be used on a concatenate of all the alignments.
+
+
+######################
+# Preparing the data #
+######################
 
 # First, concatenating the alignments:
 concatenate<-alns[1]
@@ -483,6 +490,42 @@ virtual_population_size <- 10
 # Now, we need to convert the DNA alignment into an alignment in the correct POMO state space.
 
 pomoConcatenate <- pomoStateConvert(concatenate, virtual_population_size, taxa)
+
+
+#######################
+# Preparing the model #
+#######################
+
+# Now we have the data for doing inference using the POMO model.
+# To define a POMO model, one needs several components.
+
+# First, one needs to define a transition matrix for DNA mutations.
+# Here we are going to use a GTR matrix. 
+# So we define the GTR matrix.
+
+er_prior <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_prior)
+
+sf_prior <- v(1,1,1,1)
+sf ~ dnDirichlet(sf_prior)
+
+Q := gtr(er,sf) 
+
+# Second, one needs the proportion of polymorphic sites at the root
+root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+
+# Third, one needs root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
+root_base_frequencies ~ dnDirichlet(sf_prior)
+
+# Fourth, one can have different fitnesses for A, C, G, T. 
+# Here, we are going to assume that all 4 bases have the same fitness.
+base_fitnesses <- (1, 1, 1, 1)
+
+# Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
+
+P := pomo(Q, root_polymorphism_proportion, base_fitnesses)
+
+
 
 
 #########################################################
