@@ -57,13 +57,18 @@ Mcmc* Mcmc::clone( void ) const
 }
 
 
-void Mcmc::run(size_t kIterations) {
+void Mcmc::run(size_t kIterations)
+{
     
     /* Let user know what we are doing */
     if ( generation == 0 )
+    {
         std::cout << "Running MCMC simulation for " << kIterations << " iterations" << std::endl;
+    }
     else
+    {
         std::cout << "Appending " << kIterations << " iterations to previous MCMC simulation of " << generation << " iterations" << std::endl;
+    }
     
     if ( scheduleType == "single" )
     {
@@ -113,7 +118,8 @@ void Mcmc::run(size_t kIterations) {
 
 
 
-void Mcmc::runPriorSampler(size_t kIterations) {
+void Mcmc::runPriorSampler(size_t kIterations)
+{
     
     /* Let user know what we are doing */
     if ( generation == 0 )
@@ -161,7 +167,7 @@ void Mcmc::runPriorSampler(size_t kIterations) {
     // Run the chain
     for (int k=1; k<=kIterations; k++)
     {
-        nextCycle(true,true);
+        nextCycle(true);
         
         // Monitor
         monitor(generation);
