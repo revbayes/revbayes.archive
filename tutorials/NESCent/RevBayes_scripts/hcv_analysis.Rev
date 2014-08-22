@@ -59,11 +59,6 @@ lambda
 rho[1] ~ dnBeta(1.0, 999.0)
 rho[1].setValue(1e-6)
 
-## some deterministic nodes to monitor
-rn_0 := RNm[1]
-uir_0 := delta[1]
-l_0 := lambda[1]
-
 
 # the BD-skyline model
 tau ~ dnSkySerialBDP(origin=or_t, lambda=lambda, lambdaTimes=p_abs_times,
