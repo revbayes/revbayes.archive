@@ -47,13 +47,18 @@ for(i in 1:n_intervals){
 	delta[i].setValue(1.0)
 	RNm[i] ~ dnLnorm(1.0, 1.25)
 	RNm[i].setValue(2.0)
-	lambda[i] := RNm[i] * delta[i]
+	##lambda[i] := RNm[i] * delta[i]
 }
-							
+
+lambda := RNm * delta
 
 delta
 RNm
 lambda
+
+m_d := mean(delta)
+m_r := mean(RNm)
+m_l := mean(lambda)
 
 ## These data are contemporary, so only 1 value for rho
 rho[1] ~ dnBeta(1.0, 999.0)
@@ -69,7 +74,7 @@ tau ~ dnSkySerialBDP(origin=or_t, lambda=lambda, lambdaTimes=p_abs_times,
 					 condition="nTaxa", names=names)
 
 ## The current model does not initialize properly
-##tau.setValue(T)
+tau.setValue(T)
 
 
 th := treeHeight(tau)
@@ -134,10 +139,10 @@ moves[mi++] <- mvOriginTimeSlide(origin, tau, delta=10.0, tune=false, weight=1.0
 moves[mi++] <- mvOriginTimeSlide(origin, tau, delta=0.75, tune=false, weight=1.0)
 moves[mi++] <- mvNodeTimeSlideUniform(tau, weight=30.0)
 moves[mi++] <- mvRootTimeSlide(tau, delta=3.75, tune=true, weight=5.0)
-#moves[mi++] <- mvTreeScale(tau, 1.0, true, 3.0)
+##moves[mi++] <- mvTreeScale(tau, 1.0, true, 3.0)
 moves[mi++] <- mvNNI(tau, weight=8.0)
 moves[mi++] <- mvNarrow(tau, weight=8.0)
-#moves[mi++] <- mvFNPR(tau, weight=8.0)
+moves[mi++] <- mvFNPR(tau, weight=8.0)
 moves[mi++] <- mvSubtreeScale(tau, weight=5.0)
 moves[mi++] <- mvSimplexElementScale(er, alpha=10.0, tune=true, weight=3.0)
 moves[mi++] <- mvSimplexElementScale(sf, alpha=10.0, tune=true, weight=3.0)
@@ -152,7 +157,7 @@ monitors[1] <- filemonitor(filename="hcv_skybdp.log", posterior=true, prior=true
 							BUR_1, BUR_2, BUR_3, BUR_4, BUR_5, BUR_6, BUR_7, BUR_8, 
 							BUR_9, BUR_10)
 monitors[2] <- filemonitor(filename="hcv_skybdp.trees",printgen=10, separator="	", tau)
-monitors[3] <- screenmonitor(printgen=10, origin, rho, th, R0_1, BUR_1)
+monitors[3] <- screenmonitor(printgen=10, origin, m_l, th, m_r, m_d)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
