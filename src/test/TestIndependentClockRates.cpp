@@ -172,7 +172,7 @@ bool TestIndependentClockRates::run( void ) {
 	moves.push_back( new NarrowExchange( tau, 10.0 ) );
 	moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
 	moves.push_back( new SubtreeScale( tau, 5.0 ) );
-	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+//	moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
 	moves.push_back( new RootTimeSlide( tau, 50.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new SimplexMove( er, 450.0, 6, 0, true, 2.0, 1.0 ) );

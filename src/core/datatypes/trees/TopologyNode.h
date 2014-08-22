@@ -39,6 +39,7 @@
 #include "Clade.h"
 
 #include <vector>
+#include <map>
 #include <string>
 
 namespace RevBayesCore {
@@ -65,6 +66,7 @@ namespace RevBayesCore {
         void                                        addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                        addChild(TopologyNode* c, bool enforceNewickRecomp = true);                         //!< Adds a child node
         void                                        addNodeParameter(const std::string &n, double p);
+        void                                        addNodeParameter(const std::string &n, const std::string &p);
         void                                        addParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                        clearBranchParameters(void);
         virtual const std::string&                  computeNewick(void);                                                                //!< Compute the newick string for this clade
@@ -83,7 +85,12 @@ namespace RevBayesCore {
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
-        size_t                                      getNumberOfNodesInSubtree(bool tips) const;                                         //!< Get the number of nodes contained in this subtree.
+        size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
+        
+        std::string                                 getNodeField(std::string key) const;
+        size_t                                      getNodeFieldNumber() const;
+        
+        //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
@@ -119,6 +126,9 @@ namespace RevBayesCore {
         bool                                        newickNeedsRefreshing;
         std::vector<std::string>                    nodeComments;
         std::vector<std::string>                    branchComments;
+        
+        std::map<std::string,std::string>           nodeFields;
+//        std::map<std::string,std::string>           branchFields;
         
     };
     
