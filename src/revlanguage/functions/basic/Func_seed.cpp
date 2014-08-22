@@ -21,19 +21,22 @@
 
 using namespace RevLanguage;
 
-Func_seed::Func_seed() : Function() {
+Func_seed::Func_seed() : Function()
+{
     
 }
 
 /* Clone object */
-Func_seed* Func_seed::clone( void ) const {
+Func_seed* Func_seed::clone( void ) const
+{
     
     return new Func_seed( *this );
 }
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<Variable> Func_seed::execute( void ) {
+RevPtr<Variable> Func_seed::execute( void )
+{
     
     std::vector<unsigned int> s;
     const Natural &val1 = static_cast<const Natural &>( args[0].getVariable()->getRevObject() );

@@ -41,6 +41,10 @@ namespace RevBayesCore {
         // overloaded operators
         Mcmc&                                               operator=(const Mcmc &m);
         
+        // pure virtual public methods
+        virtual void                                        run(size_t g) = 0;
+        
+        
         // public methods
         void                                                burnin(size_t g, size_t ti);
         Mcmc*                                               clone(void) const;
@@ -51,10 +55,9 @@ namespace RevBayesCore {
         RbVector<Monitor>&                                  getMonitors(void);
         bool                                                isChainActive(void);
         void                                                monitor(unsigned long g);
-        virtual unsigned long                               nextCycle(bool advanceCycle);
+        virtual unsigned long                               nextCycle(bool advanceCycle, bool priorOnly=false);
         void                                                printOperatorSummary(void) const;
         void                                                redrawChainState(void);
-        virtual void                                        run(size_t g);
         void                                                setChainActive(bool tf);
         void                                                setChainHeat(double v);                                                                 //!< Set the heating temparature of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain

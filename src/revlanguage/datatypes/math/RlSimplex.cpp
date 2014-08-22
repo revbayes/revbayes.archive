@@ -6,7 +6,6 @@
 #include "RbException.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
-#include "VectorIndexOperator.h"
 
 using namespace RevLanguage;
 

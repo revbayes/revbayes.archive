@@ -313,7 +313,10 @@ std::string MultivariateRealNodeContainer::recursiveGetNewick(const TopologyNode
 
 std::string MultivariateRealNodeContainer::getNewick() const {
 
-    return recursiveGetNewick(getTimeTree()->getRoot());
+    std::ostringstream s;
+    s << recursiveGetNewick(getTimeTree()->getRoot());
+    s << ";";
+    return s.str();
 }
 
 std::string MultivariateRealNodeContainer::recursiveGetNewick(const TopologyNode& from) const {
@@ -337,16 +340,17 @@ std::string MultivariateRealNodeContainer::recursiveGetNewick(const TopologyNode
     }
     s << "[";
     for (size_t k=0; k<getDim(); k++)   {
+        s << "&X" << k+1 << "=";
         s << (*this)[from.getIndex()][k];
         if (k < getDim() -1)    {
             s << ",";
         }
     }
     s << "]";
-    if (!from.isRoot()) {
+//    if (!from.isRoot()) {
         s << ":";
         s << getTimeTree()->getBranchLength(from.getIndex());
-    }
+//    }
     
     return s.str();
 }
