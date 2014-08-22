@@ -162,8 +162,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         
         for (size_t i = 0; i < characters.size(); i++)
         {
-            if (i != 0)
-                ss << ",";
+//            if (i != 0) ss << ",";
             ss << characters[i]->getState();
         }
     }
@@ -172,8 +171,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
         {
-            if (i != 0)
-                ss << ",";
+//            if (i != 0) ss << ",";
             ss << characters[i]->getState();
         }
     }
@@ -305,22 +303,22 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         characterStream << "index=" << n->getIndex();
         
         // character history
-        characterStream << ",nd={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << ";nd=" << buildCharacterHistoryString(n,"child") << "";
         if (!n->isTip())
         {
-            characterStream << ",ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
-            characterStream << ",ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
+            characterStream << ";ch0=" << buildCharacterHistoryString(&n->getChild(0),"parent") << "";
+            characterStream << ";ch1=" << buildCharacterHistoryString(&n->getChild(1),"parent") << "";
             
-            characterStream << ",cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
-            characterStream << ",bn=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
+            characterStream << ";cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
+            characterStream << ";bn=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
         }
         
         // # events
-        characterStream << ",si={" << buildCharacterHistoryString(n,"state_into") << "}";
-        characterStream << ",sb={" << buildCharacterHistoryString(n,"state_betw") << "}";
+//        characterStream << ",si={" << buildCharacterHistoryString(n,"state_into") << "}";
+//        characterStream << ",sb={" << buildCharacterHistoryString(n,"state_betw") << "}";
         
         // event history
-        characterStream << ",ev={" << buildCharacterHistoryString(n,"events") << "}";
+        characterStream << ";ev={" << buildCharacterHistoryString(n,"events") << "}";
         
         // ... whatever else
         characterStream << "]";
