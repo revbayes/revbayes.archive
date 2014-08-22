@@ -403,15 +403,32 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
     
     double e = exp(A*dt);
-//    double tmp = ((1.0+B)+e*(1.0-B));
+    double tmp = ((1.0+B)+e*(1.0-B));
     
 //    double tmp2 = 4.0*e / (tmp*tmp);
-//    double tmp2 = (e/tmp)*(4.0/tmp);
+    double tmp2 = (e/tmp)*(4.0/tmp);
     
-//    double test2 = (4 * e) / (e * (1 - B) + (1 + B) / e) / (e * (1 - B) + (1 + B));
-    double test2 = (4 ) / ((1 - B) + (1 + B) / e) / ((1 - B) + (1 + B) / e);
+    // (4 * Math.exp(Ai[index] * (t - ti))) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index])) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index]));
+    
+    // (4 * e) / (e * (1 - B) + (1 + B)) / (e * (1 - B) + (1 + B));
+    double test2 = (4 * e) / (e * (1 - B) + (1 + B)) / (e * (1 - B) + (1 + B));
+    double test3 = (4 ) / ((1 - B) + (1 + B) / e) / ((1 - B) + (1 + B) / e);
+    
+//    if ( fabs( tmp2 - test2 ) > 1E-8 || fabs( tmp2 - test3 ) > 1E-8 || fabs( test3 - test2 ) > 1E-8 )
+//    {
+//        std::cerr << "Numerical problems ..." << std::endl;
+//    }
+    
+    if ( e < 1E-6 )
+    {
+        return test3;
+    }
+    else //if ( fabs(B + 1.0) < 1E-4)
+    {
+        return test2;
+    }
 	
-	return test2;
+//	return test2;
 }
 
 
