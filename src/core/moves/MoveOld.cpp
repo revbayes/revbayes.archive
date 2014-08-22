@@ -10,12 +10,22 @@
 
 using namespace RevBayesCore;
 
-MoveOld::MoveOld( DagNode *n, double w, bool t ) : AbstractOldMove(), weight( w ), numAccepted( 0 ), numTried( 0 ), autoTuning( t ) {
+MoveOld::MoveOld( DagNode *n, double w, bool t ) : AbstractOldMove(),
+    weight( w ),
+    numAccepted( 0 ),
+    numTried( 0 ),
+    autoTuning( t )
+{
     nodes.insert( n );
 }
 
 
-MoveOld::MoveOld( std::vector<DagNode*> n, double w, bool t ) : AbstractOldMove(), weight( w ), numAccepted( 0 ), numTried( 0 ), autoTuning( t ) {
+MoveOld::MoveOld( std::vector<DagNode*> n, double w, bool t ) : AbstractOldMove(),
+    weight( w ),
+    numAccepted( 0 ),
+    numTried( 0 ),
+    autoTuning( t )
+{
 
     for (std::vector<DagNode*>::iterator it = n.begin(); it != n.end(); it++)
     {
