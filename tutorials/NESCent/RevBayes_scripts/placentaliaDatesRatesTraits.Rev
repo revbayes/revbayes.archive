@@ -1,0 +1,170 @@
+#
+# Tutorial -- the phylogenetic comparative method
+# Correlation analysis: rates, dates and life-history traits in placental mammals
+# Nicolas Lartillot -- July 2014
+#
+
+######### 
+# data
+#########
+
+# read the quantitative trait data 
+contData <- readCharacterData("data/plac40lhtlog.nex")
+
+# get some useful variables from the data
+contTaxaCount <- contData.ntaxa()
+nTraits <- contData.nchar()[1]
+
+"number of traits to analyze"
+nTraits
+
+# read the sequence data
+# the readCharacter function returns a vector of matrices. We just take the first one
+data <- readCharacterData("data/plac40_4fold.nex")
+
+# get some useful variables from the data
+taxaCount <- data.ntaxa()
+names <- data.names()
+nSites <- data.nchar()[1]
+"number of sites of the alignment"
+nSites
+
+######### 
+# tree  
+#########
+
+# create a tree whose tips match the taxon names given by the dataset
+tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
+
+# work under fixed topology
+# set tau equal to externally given tree
+treeArray <- readTrees("data/chronoplac40.tree")
+fixedTree <- treeArray[1]
+tau.setValue(fixedTree)
+
+index <- 1
+
+# moves on the tree: only relative dates
+moves[index] <- mSubtreeScale(tau, weight=5.0)
+index <- index + 1
+moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+index <- index + 1
+
+# if we wanted to, we could also move the tree topology
+# and integrate over the posterior induced by the sequence data
+# but mixing is currently a bit challenging 
+# moves[index] <- mNNI(tau, weight=5.0)
+# index <- index + 1
+# moves[index] <- mFNPR(tau, weight=5.0)
+# index <- index + 1
+
+######### 
+# traits
+#########
+
+# covariance matrix of dimension nTraits + 1
+# first entry will be log of substitution rate
+# then all other entries will stand for the life-history traits
+
+# covariance matrix is inverse Wishart of parameters kappa * Identity and df = nTraits+3 degrees of freedom
+# where kappa is itself a scaling factor
+
+kappa ~ exponential(1.0)
+df <- nTraits+3
+covdim <- nTraits+1
+
+sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
+
+# moves on kappa
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+# multivariate Brownian process along the tree
+br ~ mvtBrownian(tau,sigma=sigma)
+
+# conjugate Gibbs move on covariance matrix
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
+index <- index + 1
+
+# moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=1) 
+index <- index + 1
+
+# first component of the Brownian model gives the *log* of the substitution rate
+# so we take the exponential and average over branches
+# traitindex = 1: because we want to take the exponential of the first component of the multivariate Brownian process
+branchrates := expbranchtree(tree=tau,process=br,traitindex=1)
+
+# other copmonents of the Brownian process correspond to life-history traits
+# so we clamp the process at the tips of the tree, at the values observed in extant taxa
+# you need to do this trait by trait
+for (i in 1:nTraits)	{
+
+	# here we say that the (i+1)th entry of the Brownian process should map to the ith. quantitative trait
+	br.clampAt(contData,i+1,i)
+}
+
+# get useful functions of the covariance matrix
+# here we want,say, the partial correlation between substitution rate and longevity (i.e. controlling for body mass and maturity)
+parcor14 := sigma.partialCorrelation(1,4)
+
+# get useful outputs from the brownian process
+
+for (i in 1:covdim)	{
+
+	# mean and stdev of the log rate (i=1) and then each trait
+	meanbr[i] := br.mean(i)
+	stdevbr[i] := br.stdev(i)
+}
+
+
+######### 
+# substitution process
+#########
+
+# equilibrium frequencies 
+bf <- v(1,1,1,1)
+pi ~ dirichlet(bf)
+
+# exchangeabilities
+e <- v(1,1,1,1,1,1)
+er ~ dirichlet(e)
+
+# moves on the substitution process parameters
+moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+moves[index] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+
+# rate matrix
+Q := gtr(er,pi)
+
+# create the sequence evolution model
+seq ~ substModel(tree=tau, Q=Q, branchRates=branchrates, nSites=nSites, type="DNA")
+
+# condition on sequence alignment
+seq.clamp(data)
+
+# create model
+mymodel <- model(kappa)
+
+# screen monitor: sigma, meanbr and stdevbr, for checking convergence 
+monitors[1] <- screenmonitor(printgen=10, parcor14, meanbr, stdevbr)
+
+# monitoring the covariance matrix
+monitors[2] <- filemonitor(filename="output/placdatesratestraits.cov",printgen=10, separator = "	", sigma)
+
+# monitoring the brownian evolutionary history
+monitors[3] <- filemonitor(filename="output/placdatesratestraits.traits",printgen=10, separator = "	", br)
+
+monitors[4] <- modelmonitor(filename="output/placdatesratestraits.log",printgen=10, separator = "	")
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=100,tuningInterval=100)
+
+mymcmc.run(100000)
+
+
