@@ -9,7 +9,7 @@
 
 #include "PomoRateMatrixFunction.h"
 #include "Func_pomo.h"
-#include "RateMatrix_pomo.h"
+#include "RateMatrix_Pomo.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
