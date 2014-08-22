@@ -117,7 +117,7 @@ bool TestGtrModel::run( void ) {
     moves.push_back( new NarrowExchange( tau, 10.0 ) );
     moves.push_back( new FixedNodeheightPruneRegraft( tau, 2.0 ) );
     moves.push_back( new SubtreeScale( tau, 5.0 ) );
-    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
+//    moves.push_back( new TreeScale( tau, 1.0, true, 2.0 ) );
     moves.push_back( new NodeTimeSlideUniform( tau, 30.0 ) );
     moves.push_back( new RootTimeSlide( tau, 1.0, true, 2.0 ) );
     moves.push_back( new SimplexMove( er, 10.0, 1, 0, true, 2.0 ) );
