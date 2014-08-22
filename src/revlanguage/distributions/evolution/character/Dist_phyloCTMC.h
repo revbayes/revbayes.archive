@@ -90,8 +90,17 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< double >* pInvNode = static_cast<const Probability &>( pInv->getRevObject() ).getDagNode();
+    
+    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = NULL;
+    if ( siteRates != NULL && siteRates->getRevObject() != RevNullObject::getInstance() )
+    {
+        siteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+    }
+    RevBayesCore::TypedDagNode< double >* pInvNode = NULL;
+    if ( pInv != NULL && pInv->getRevObject() != RevNullObject::getInstance() )
+    {
+        pInvNode = static_cast<const Probability &>( pInv->getRevObject() ).getDagNode();
+    }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
@@ -150,7 +159,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -204,7 +213,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -258,7 +267,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -326,7 +335,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 ) 
         {
             dist->setSiteRates( siteRatesNode );
         }

@@ -34,7 +34,7 @@ namespace RevBayesCore {
         virtual const std::string&                              getMoveName(void) const = 0;                                                            //!< Get the name of the move for summary printing
         virtual double                                          getUpdateWeight(void) const = 0;                                                        //!< Get update weight of InferenceMove
         virtual bool                                            isActive(unsigned long gen) const = 0;                                                  //!< Is this move active?
-        virtual void                                            perform(double heat, bool raiseLikelihoodOnly, bool priorOnly=false) = 0;               //!< Perform the move.
+        virtual void                                            perform(double heat, bool raiseLikelihoodOnly) = 0;                                     //!< Perform the move.
         virtual void                                            printSummary(std::ostream &o) const = 0;                                                //!< Print the move summary
         virtual void                                            resetCounters(void) = 0;                                                                //!< Reset the counters such as numTried and numAccepted.
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;                                             //!< Swap the pointers to the variable on which the move works on.

@@ -86,17 +86,17 @@ mymodel <- model(kappa)
 
 # create the monitors
 # on screen, we will monitor only the correlation coefficient and the mean value of each trait
-monitors[1] <- screenmonitor(printgen=100, cor12, meanbr)
+monitors[1] <- screenmonitor(printgen=10, cor12, meanbr)
 # a file monitor just for the covariance matrix
-monitors[2] <- filemonitor(filename="output/placlht2.cov",printgen=100, separator = "	", sigma)
+monitors[2] <- filemonitor(filename="output/plactraits.cov",printgen=10, separator = "	", sigma)
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[3] <- filemonitor(filename="output/placlht2.traits",printgen=100, separator = "	", br)
+monitors[3] <- filemonitor(filename="output/plactraits.traits",printgen=10, separator = "	", br)
 # a model monitor
-monitors[4] <- modelmonitor(filename="output/placlht2.log",printgen=100, separator = "	")
+monitors[4] <- modelmonitor(filename="output/plactraits.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=1000,tuningInterval=100)
+mymcmc.burnin(generations=100,tuningInterval=100)
 
 mymcmc.run(100000)
 
