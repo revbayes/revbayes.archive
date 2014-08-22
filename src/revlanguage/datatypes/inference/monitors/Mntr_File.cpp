@@ -34,10 +34,14 @@ void Mntr_File::constructInternalObject( void ) {
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
-    std::set<RevBayesCore::DagNode *> n;
-    for (std::set<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
+    
+    // sort, remove duplicates, the create monitor vector
+    sort( vars.begin(), vars.end() );
+    vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
+    std::vector<RevBayesCore::DagNode *> n;
+    for (std::vector<RevPtr<const Variable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::DagNode* node = (*i)->getRevObject().getDagNode();
-        n.insert( node );
+        n.push_back( node );
     }
     bool pp = static_cast<const RlBoolean &>( posterior->getRevObject() ).getValue();
     bool l = static_cast<const RlBoolean &>( likelihood->getRevObject() ).getValue();
@@ -111,7 +115,7 @@ void Mntr_File::printValue(std::ostream &o) const {
 void Mntr_File::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
     
     if ( name == "" ) {
-        vars.insert( var );
+        vars.push_back( var );
     }
     else if ( name == "filename" ) {
         filename = var;

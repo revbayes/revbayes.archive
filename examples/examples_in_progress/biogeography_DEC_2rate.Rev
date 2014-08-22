@@ -76,8 +76,8 @@ moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo"
 
 # standard monitors
 monitors[1] <- screenmonitor(printgen=10, glr, dp)
-monitors[2] <- modelmonitor(filename=out_fp+out_str+".parameters.txt", printgen=10)
-
+#monitors[2] <- modelmonitor(filename=out_fp+out_str+".parameters.txt", printgen=10)
+monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt",printgen=10,glr,dp)
 # character history monitors
 monitors[3] <- mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tree, printgen=10, style="events")
 monitors[4] <- mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=M, tree=tree, printgen=10, style="counts")
