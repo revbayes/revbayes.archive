@@ -82,7 +82,7 @@ public:
             // make sure we have a cache set
             if (fileCache.size() <= 0) {
                 repoObserver->notifyError("Cache not set, initializing now... Try download again when complete!");
-                processCommand(repositories, "repo-list");
+                processCommand(repositories, "repo_list");
                 return true;
             }
 
