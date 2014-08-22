@@ -319,7 +319,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
     
     //Moves for node heights of the species tree only
     moves.push_back( new SubtreeScale( spTree_inf, 10.0 ) );
-    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
+//    moves.push_back( new TreeScale( spTree_inf, 1.0, true, 10.0 ) );
     moves.push_back( new NodeTimeSlideUniform( spTree_inf, 10.0 ) );
     moves.push_back( new RootTimeSlide( spTree_inf, 1.0, false, 5.0 ) );
     
@@ -335,7 +335,7 @@ bool TestMultispeciesCoalescentWithSequences::run( void ) {
 
         //Moves for node heights of the species tree only
         moves.push_back(new SubtreeScale(geneTrees_inf[i], 10.0));
-        moves.push_back(new TreeScale(geneTrees_inf[i], 1.0, true, 10.0));
+//        moves.push_back(new TreeScale(geneTrees_inf[i], 1.0, true, 10.0));
         moves.push_back(new NodeTimeSlideUniform(geneTrees_inf[i], 10.0));
         moves.push_back(new RootTimeSlide(geneTrees_inf[i], 1.0, false, 5.0));
     }
