@@ -37,8 +37,9 @@ namespace RevBayesCore {
         
     public:
         RateMatrix_Pomo(size_t n);                                                  //!< Construct rate matrix with n states
-        RateMatrix_Pomo(size_t n,  const size_t vps, const std::vector<double> mr, const std::vector<double> sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
-        RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
+        RateMatrix_Pomo(size_t n,  const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc);  //!< Construct rate matrix with n states, a vector of mutation rates, and a vector of selection coefficients
+        
+        RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &mm, const std::vector<double> sc);  //!< Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients
         RateMatrix_Pomo(const RateMatrix_Pomo& m);                                  //!< Copy constructor
         virtual                         ~RateMatrix_Pomo(void);                     //!< Destructor
         

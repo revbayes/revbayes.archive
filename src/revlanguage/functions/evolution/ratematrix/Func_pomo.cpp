@@ -9,7 +9,7 @@
 
 #include "PomoRateMatrixFunction.h"
 #include "Func_pomo.h"
-#include "RateMatrix_pomo.h"
+#include "RateMatrix_Pomo.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
@@ -41,8 +41,9 @@ RevPtr<Variable> Func_pomo::execute() {
     RevBayesCore::TypedDagNode< std::vector<double> >* fit = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
-    
-    RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
+// MJL 140822: caused compile error
+//    RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
+    RevBayesCore::PomoRateMatrixFunction* f = NULL;
     
     DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     
