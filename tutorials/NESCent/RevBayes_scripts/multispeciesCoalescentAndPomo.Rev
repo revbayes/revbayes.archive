@@ -199,11 +199,11 @@ for (i in 1:n_genes) {
 }
 
 
-######################################
-######################################
-####### Performing inference #########
-######################################
-######################################
+########################################################################
+########################################################################
+####### Performing inference under the Multispecies Coalescent #########
+########################################################################
+########################################################################
 
 
 
@@ -444,7 +444,7 @@ mymcmc.run(generations=400)
 
 # Now, we will analyze the tree output.
 # Let us start by reading in the tree trace
- treetrace <- readTreeTrace("gtr_clock.trees")
+ treetrace <- readTreeTrace("multispeciesCoalescent_clock_species.trees")
 # and get the summary of the tree trace
  treetrace.summarize()
 
@@ -452,6 +452,37 @@ mymcmc.run(generations=400)
  mapTree(treetrace,"primates_clock_MAP.tre")
 
 
+
+###########################################################
+###########################################################
+####### Performing inference under the POMO model #########
+###########################################################
+###########################################################
+
+# Now we're going to analyze the same data, but this time using the POMO model.
+# The POMO model bypasses estimating gene trees altogether.
+# It assumes complete independence between sites of an alignment (no linkage).
+# Therefore it can be used on a concatenate of all the alignments.
+
+# First, concatenating the alignments:
+concatenate<-alns[1]
+for (i in 2:n_genes) {
+	concatenate <- concatenate + alns[i]
+}
+
+# The POMO models works in a state space that differs from the 4 DNA states.
+# In addition to the 4 states, it includes polymorphic states.
+# Specifically, it includes 2-state polymorphisms: AC AG AT CG CT GT.
+# And it models real populations by a virtual population of size n individuals.
+# The result is a model working in a state space of size 4 + 6 * n states.
+# First, let's decide on the size of the virtual population.
+# De Maio, Schlötterer and Kosiol (2013) consider 10 is already pretty good.
+
+virtual_population_size <- 10
+
+# Now, we need to convert the DNA alignment into an alignment in the correct POMO state space.
+
+pomoConcatenate <- pomoStateConvert(concatenate, virtual_population_size, taxa)
 
 
 #########################################################

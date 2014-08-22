@@ -122,7 +122,7 @@ const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void)
 /** 
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the homogeneous birth-death process are:
+ * The member rules of the Multispecies Coalescent process are:
  * (1) Species tree.
  * (2) Population size.
  * (3) Gene name to species name map.
