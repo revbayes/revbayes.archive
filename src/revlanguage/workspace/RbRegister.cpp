@@ -271,6 +271,7 @@
 #include "Func_t92GCBranchTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_phyloRateMultiplier.h"
+#include "Func_polymorphicStateConverter.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
@@ -883,6 +884,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "tanhBranchTree",              new Func_tanhBranchTree()            );
         addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
+        addFunction( "pomoStateConvert",            new Func_polymorphicStateConverter() );
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );

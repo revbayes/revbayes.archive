@@ -98,7 +98,7 @@ void MrcaIndexStatistic::update( void ) {
         throw RbException("MrcaIndex-Statistics can only be applied if clade is present.");
     }
     
-    int mrcaIndexIdx = index;
+    int mrcaIndexIdx = int(index);
     *value = mrcaIndexIdx;
 }
 

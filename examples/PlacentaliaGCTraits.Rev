@@ -6,7 +6,7 @@
 
 # read the sequence data
 # the readCharacter function returns a vector of matrices. We just take the first one
-data <- readCharacterData("data/plac73_4fold.nex")
+data <- readCharacterData("data/plac40_4fold.nex")
 
 # get some useful variables from the data
 taxaCount <- data.ntaxa()
@@ -14,7 +14,7 @@ names <- data.names()
 nSites <- data.nchar()[1]
 
 # read the quantitative trait data 
-contData <- readCharacterData("data/plac73lhtlog.nex")
+contData <- readCharacterData("data/plac40lhtlog.nex")
 
 # get some useful variables from the data
 contTaxaCount <- contData.ntaxa()
@@ -28,7 +28,7 @@ tau ~ uniformTimeTree( originTime = 200.0, taxonNames = names)
 
 # work under fixed topology
 # set tau equal to externally given tree
-treeArray <- readTrees("data/chronoplac73.tree")
+treeArray <- readTrees("data/chronoplac40.tree")
 fixedTree <- treeArray[1]
 tau.clamp(fixedTree)
 
@@ -44,6 +44,7 @@ index <- index + 1
 # of parameters kappa * I3 and 5 degrees of freedom
 
 kappa ~ exponential(1.0)
+kappa.setValue(0.1)
 
 df <- nTraits+4
 covdim <- nTraits+2
@@ -77,71 +78,44 @@ for (i in 1:nTraits)	{
 	br.clampAt(contData,i+2,i)
 }
 
-#"stats for cov"
-# get useful functions of the covariance matrix
-# these are just specific examples
-
-#var1 := sigma.covariance(1,1)
-#cov12 := sigma.covariance(1,2)
-#cor12 := sigma.correlation(1,2)
-#parcor12 := sigma.partialCorrelation(1,2)
-
-# get useful outputs from the brownian process
-
-#for (i in 1:covdim)	{
-
-#	# mean and stdev of each trait
-#	meanbr[i] := br.mean(i)
-#	stdevbr[i] := br.stdev(i)
-#}
-
-"subs"
-
-# substition models
-# constant hypernodes
 bf <- v(1,1,1,1)
-e <- v(1,1,1,1,1,1)
-
-# nuclear partition
 pi ~ dirichlet(bf)
-er ~ dirichlet(e)
+#pi
 
 # moves on the substitution process parameters
 moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
 index <- index + 1
-moves[index] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
-index <- index + 1
 
-# rate matrix
-Q := gtr(er,pi)
-
-"exp rates"
+#"exp rates"
 # rate variation along the tree
 rootval <- 0
 rate := expbranchtree(tree=tau,process=br,offset=rootval,1)
+#rate
 
-"gc"
+#"gc"
 gctree := tanhBranchTree(tree=tau,process=br,offset=rootval,traitindex=2)
 
-gctree
+#gctree
 
-kappa ~ exponential(0.1)
+tstv ~ exponential(1)
+#tstv
 
 rootgc ~ beta(alpha=1,beta=1)
 
-rootgc
+#"matrix tree"
 
-"matrix tree"
+matrixtree := t92GCBranchTree(tree=tau,gctree=gctree,rootgc=rootgc,kappa=tstv)
 
-matrixtree := t92GCBranchTree(tree=tau,gctree=gctree,rootgc=rootgc,kappa=kappa)
 
-"subs"
+#"subs"
 # the sequence evolution models
-seq ~ substModel(tree=tau, Q=matrixtree, branchRates=rate, nSites=nSites, type="DNA")
+seq ~ substModel(tree=tau, Q=matrixtree, rootFrequencies=pi, branchRates=rate, nSites=nSites, type="DNA")
+
+#"subs ok"
 
 seq.clamp(data)
 
-"mymodel"
+#"mymodel"
 
 mymodel <- model(kappa)
 
