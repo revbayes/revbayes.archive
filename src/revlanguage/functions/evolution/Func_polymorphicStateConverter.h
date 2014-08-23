@@ -30,7 +30,7 @@ namespace RevLanguage {
         Func_polymorphicStateConverter( void );
         
         // Basic utility functions
-        Func_polymorphicStateConverter*                                clone(void) const;                                                              //!< Clone the object
+        Func_polymorphicStateConverter*                 clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
