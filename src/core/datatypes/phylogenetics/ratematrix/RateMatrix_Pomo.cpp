@@ -26,13 +26,25 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), m
 }
 
 /** Construct rate matrix with n states, virtual population size, mutation rates, selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> mr, const std::vector<double> sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i) {
         mu.push_back(temp);
         s.push_back(1.0);
     }
     setMutationRates(mr);
+    setSelectionCoefficients(sc);
+    updateMatrix();
+}
+
+/** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+    std::vector<double> temp (4, 0.0);
+    for (size_t i = 0; i<4 ; ++i) {
+        mu.push_back(temp);
+        s.push_back(1.0);
+    }
+    setMutationRates(mm);
     setSelectionCoefficients(sc);
     updateMatrix();
 }
@@ -626,6 +638,23 @@ void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
     mu[3][0] = mr[9];
     mu[3][1] = mr[10];
     mu[3][2] = mr[11];
+}
+
+
+void RateMatrix_Pomo::setMutationRates(const RateMatrix& mm) {
+    
+    mu[0][1] = mm[0][1];
+    mu[0][2] = mm[0][2];
+    mu[0][3] = mm[0][3];
+    mu[1][0] = mm[1][0];
+    mu[1][2] = mm[1][2];
+    mu[1][3] = mm[1][3];
+    mu[2][0] = mm[2][0];
+    mu[2][1] = mm[2][1];
+    mu[2][3] = mm[2][3];
+    mu[3][0] = mm[3][0];
+    mu[3][1] = mm[3][1];
+    mu[3][2] = mm[3][2];
 }
 
 

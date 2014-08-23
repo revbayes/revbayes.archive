@@ -12,23 +12,25 @@
 using namespace RevBayesCore;
 
 
-AbstractOldMove::AbstractOldMove() {
+AbstractOldMove::AbstractOldMove()
+{
     
     
 }
 
 
-AbstractOldMove::~AbstractOldMove() {
+AbstractOldMove::~AbstractOldMove()
+{
     
 }
 
 
-void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool priorOnly )
+void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
 {
     
     if ( isGibbs() )
     {
-        if ( raiseLikelihoodOnly || priorOnly || heat < 1.0 )
+        if ( raiseLikelihoodOnly || heat < 1.0 )
         {
             throw RbException("Cannot perform Gibbs move because the likelihood is perturbed for this Monte Carlo sampler.");
         }
@@ -67,15 +69,14 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
                 if ( (*it)->isClamped() )
                 {
                     
-                    if ( priorOnly == false)
-                    {
-                        lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-                    }
+                    lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
                     
                 }
                 else
                 {
+                    
                     lnPriorRatio += (*it)->getLnProbabilityRatio();
+                
                 }
             }
         }
@@ -86,7 +87,6 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
 	
 		if ( !RbMath::isAComputableNumber(lnR) )
         {
-//            std::cerr << "Infinite lnR for move " << getMoveName() << ":\t\t" << lnR << std::endl;
 		
             reject();
 			
@@ -97,7 +97,6 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
 #ifdef DEBUG_MCMC_DETAILS
             std::cerr << "Accepting move" << std::endl;
 #endif            
-//            std::cerr << "Accepting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
 
             accept();
         }
@@ -106,7 +105,6 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
 #ifdef DEBUG_MCMC_DETAILS
             std::cerr << "Rejecting move" << std::endl;
 #endif
-//            std::cerr << "Rejecting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
 
             reject();
         }
@@ -121,8 +119,6 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
                 std::cerr << "Accepting move" << std::endl;
 #endif
                 
-//                std::cerr << "Accepting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
-
                 accept();
             }
             else
@@ -131,8 +127,6 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly, bool prior
                 std::cerr << "Rejecting move" << std::endl;
 #endif
                 
-//                std::cerr << "Rejecting move " << getMoveName() << " with lnR:\t\t" << lnR << std::endl;
-
                 reject();
             }
         }

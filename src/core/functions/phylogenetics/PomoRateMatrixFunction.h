@@ -33,7 +33,11 @@ namespace RevBayesCore {
     class PomoRateMatrixFunction : public TypedFunction<RateMatrix> {
 
     public:
-        PomoRateMatrixFunction(const TypedDagNode< unsigned int > *ps, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< std::vector<double>  > *sc);
+        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< std::vector<double>  > *sc);
+        
+// MJL 140822: caused compile error
+//        PomoRateMatrixFunction(const TypedDagNode< int > *ps, const TypedDagNode< RateMatrix > *mr, const TypedDagNode< std::vector<double>  > *sc);
+
         virtual                                            ~PomoRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -47,9 +51,11 @@ namespace RevBayesCore {
         
         // members
 
-        const TypedDagNode< unsigned int >*                 populationSize;
-        const TypedDagNode<std::vector<double> >*           mutationRates;
-        const TypedDagNode<std::vector<double> >*           selectionCoefficients;
+        const TypedDagNode< int >*                 populationSize;
+        const TypedDagNode< std::vector<double> >*           mutationRates;
+        const TypedDagNode< RateMatrix >*                   mutationMatrix;
+
+        const TypedDagNode<std::vector<double> >*    selectionCoefficients;
         
     };
     
