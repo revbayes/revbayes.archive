@@ -32,7 +32,10 @@ namespace RevBayesCore {
     class PomoRootFrequenciesFunction : public TypedFunction< std::vector<double> > {
         
     public:
-        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< unsigned int > *ps);
+        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< int > *ps);
+        
+        PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< int > *ps);
+
         virtual                                            ~PomoRootFrequenciesFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -48,7 +51,14 @@ namespace RevBayesCore {
         const TypedDagNode< std::vector<double> >*           fixedNucleotideRootFrequencies;
         const TypedDagNode< double >*                        frequencyOfPolymorphismsAtTheRoot;
         const TypedDagNode< std::vector<double> >*           mutationRates;
-        const TypedDagNode< unsigned int >*                  populationSize;
+        const TypedDagNode< RateMatrix >*                    mutationMatrix;
+        const TypedDagNode< int >*                  populationSize;
+        bool                                                 useMutationMatrix;
+
+        // Private member functions
+        std::vector<double> setMutationRates(const RateMatrix& mm) ;
+
+        
     };
     
 }
