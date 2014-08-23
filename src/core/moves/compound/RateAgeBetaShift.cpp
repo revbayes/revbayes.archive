@@ -55,7 +55,7 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const {
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly, bool priorOnly )
+void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
 {
     
     // Get random number generator
@@ -139,8 +139,7 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly, bool 
     
     if ( fabs(lnProbRatio) > 1E-8 )
     {
-//        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
-        std::cout << "Likelihood shortcut computation failed in rate-age-proposal." << std::endl;
+        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
     }
     
     double hastingsRatio = backward - forward;

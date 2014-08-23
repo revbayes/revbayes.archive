@@ -55,7 +55,7 @@ namespace RevBayesCore {
         RbVector<Monitor>&                                  getMonitors(void);
         bool                                                isChainActive(void);
         void                                                monitor(unsigned long g);
-        virtual unsigned long                               nextCycle(bool advanceCycle, bool priorOnly=false);
+        virtual unsigned long                               nextCycle(bool advanceCycle);
         void                                                printOperatorSummary(void) const;
         void                                                redrawChainState(void);
         void                                                setChainActive(bool tf);
