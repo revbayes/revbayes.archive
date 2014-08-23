@@ -50,7 +50,7 @@ def get_events(lines):
                 events[ taxon_index ][ k ].append(v)
     return events
 
-def get_best_n(d,idx,n=5,p='posterior'):
+def get_best(d,idx,n=10,f=None,p='posterior'):
     if idx < 0:
         print('ERROR: idx < 0')
     if idx > len(d):
@@ -59,6 +59,14 @@ def get_best_n(d,idx,n=5,p='posterior'):
         print('WARNING: p=\'' + p + '\' invalid, set p=\'posterior\'')
         p = 'posterior'
     K = d[idx][p]
+    if n < 0:
+        print('ERROR: n < 0')
+    if f is not None:
+        if f > 1.:
+            f = 1.
+        if f < 0.:
+            print('ERROR: f < 0.')
+        n = f * len(K)
     best = sorted(range(len(K)), key=lambda x: K[x])[-n:][::-1]
     ret = {}
     for k in d[idx].keys():
@@ -67,3 +75,83 @@ def get_best_n(d,idx,n=5,p='posterior'):
         for k in d[idx].keys():
             ret[k].append(d[idx][k][i])
     return(ret)
+
+def get_gain_loss(d, freqs=True):
+    num_char = len(d['nd'][0])
+    v = []
+    for i in range(2):
+        v.append([0.]*num_char)
+    n = 0
+    for ev in d['ev']:
+        n += 1
+        if len(ev) is 0:
+            next
+        else:
+            for e in ev:
+                v[e['state']][e['idx']] += 1.
+    if freqs:
+        for i in range(2):
+            for j in range(num_char):
+                v[i][j] = v[i][j] / n
+    return(v)
+
+
+def get_area_pair(d,freqs=True,k='nd'):
+    
+    num_char = len(d[k][0])
+    v = []
+    for i in range(num_char):
+        v.append([0.]*num_char)
+   
+    if not d.has_key(k) or k not in ['nd','ch0','ch1']:
+        print('ERROR: \'' + k + '\' invalid key')
+        return
+
+    n = 0
+    for x in d[k]:
+        n += 1
+        for i in range(num_char):
+            for j in range(i,num_char):
+                if x[i] is 1 and x[j] is 1:
+                    v[i][j] += 1.
+                    v[j][i] = v[i][j]
+    if freqs:
+        for i in range(num_char):
+            for j in range(num_char):
+                v[i][j] = v[i][j] / n
+    return(v)
+
+def get_clado_state(d,freqs=True,includeNarrow=True):
+
+    if not d.has_key('ch0') or not d.has_key('ch1'):
+        print('ERROR: no cladogenic state recorded')
+        return
+
+    num_char = len(d['nd'][0])
+    v = {'s':0.,'a':0.,'p':0.}
+   
+    n = 0
+    for i,x in enumerate(d['cs']):
+        if includeNarrow:
+            n += 1
+            v[x] += 1
+        elif sum(d['nd'][i]) > 1:
+            n += 1
+            v[x] += 1
+
+
+    for k in v.keys():
+        v[k] = v[k]/n
+
+    #for x,y in zip(d['ch0'],d['ch1']):
+    #    n += 1
+    #    for i in range(num_char):
+    #        for j in range(i,num_char):
+    #            if x[i] is 1 and x[j] is 1:
+    #                v[i][j] += 1.
+    #                v[j][i] = v[i][j]
+    #if freqs:
+    #    for i in range(num_char):
+    #        for j in range(num_char):
+    #            v[i][j] = v[i][j] / n
+    return(v)
