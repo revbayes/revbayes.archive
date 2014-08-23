@@ -238,7 +238,7 @@ int printGeneralHelp(const char *buf, size_t len, char c) {
     StringVector cmd;
     cmd.push_back("?");
     cmd.push_back("Print this screen");
-    cmd.push_back("clr");
+    cmd.push_back("clr or clear");
     cmd.push_back("Clear screen");
     cmd.push_back("");
     cmd.push_back("");
@@ -254,9 +254,9 @@ int printGeneralHelp(const char *buf, size_t len, char c) {
     cmd.push_back("Recursive search of previous commands");
     cmd.push_back("");
     cmd.push_back("");
-    cmd.push_back("repo-list");
+    cmd.push_back("repo_list");
     cmd.push_back("Show files in web repositories");
-    cmd.push_back("repo-get <int>");
+    cmd.push_back("repo_get <index_number>");
     cmd.push_back("Download a file with the given index number");
     cmd.push_back("");
     cmd.push_back("");
@@ -405,7 +405,7 @@ int bracketCallback(const char *buf, size_t len, char c) {
         }
         std::vector<WorkspaceUtils::FunctionSignature> signatures = workspaceUtils.getFunctionSignatures(subject);
         if (signatures.size() <= 0) {
-            std::cout << "\n\rno such function\n\r";
+            //std::cout << "\n\rno such function\n\r";
         } else {
 
             BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, signatures) {
@@ -602,7 +602,7 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
     linenoiseSetCharacterCallback(backspaceCallback, 0x7f); // works in gnome terminal
 
     /* help */
-    linenoiseSetCharacterCallback(printGeneralHelp, '?');
+    //linenoiseSetCharacterCallback(printGeneralHelp, '?');
 
 
     /* Load history from file. The history file is just a plain text file
@@ -634,6 +634,7 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
         } else if (repoClient.processCommand(config->getRepositories(), cmd)) {
 
         } else if (cmd == "?") {
+            printGeneralHelp("", 0, 'c');
         } else {
             // interpret Rev statement
             if (result == 0 || result == 2) {
