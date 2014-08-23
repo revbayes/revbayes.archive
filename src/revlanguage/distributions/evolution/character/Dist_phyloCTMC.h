@@ -40,6 +40,7 @@ namespace RevLanguage {
         RevPtr<const Variable>                          rate;
         RevPtr<const Variable>                          siteRates;
         RevPtr<const Variable>                          rootFrequencies;
+        RevPtr<const Variable>                          pInv;
         RevPtr<const Variable>                          nSites;
         RevPtr<const Variable>                          type;
         
@@ -79,7 +80,8 @@ RevLanguage::Dist_phyloCTMC<treeType>* RevLanguage::Dist_phyloCTMC<treeType>::cl
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::Dist_phyloCTMC<treeType>::createDistribution( void ) const {
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLanguage::Dist_phyloCTMC<treeType>::createDistribution( void ) const
+{
     
     // get the parameters
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
@@ -88,7 +90,17 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+    
+    RevBayesCore::TypedDagNode< std::vector<double> >* siteRatesNode = NULL;
+    if ( siteRates != NULL && siteRates->getRevObject() != RevNullObject::getInstance() )
+    {
+        siteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+    }
+    RevBayesCore::TypedDagNode< double >* pInvNode = NULL;
+    if ( pInv != NULL && pInv->getRevObject() != RevNullObject::getInstance() )
+    {
+        pInvNode = static_cast<const Probability &>( pInv->getRevObject() ).getDagNode();
+    }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< std::vector< double > > *rf = NULL;
@@ -104,6 +116,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
+        
+        // set the probability for invariant site (by default this pInv=0.0)
+        dist->setPInv( pInvNode );
         
         // set the clock rates
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
@@ -144,7 +159,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -158,6 +173,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
+        // set the probability for invariant site (by default this pInv=0.0)
+        dist->setPInv( pInvNode );
+        
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
@@ -195,7 +213,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -209,6 +227,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
+        // set the probability for invariant site (by default this pInv=0.0)
+        dist->setPInv( pInvNode );
+        
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
@@ -246,7 +267,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -274,6 +295,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
+        // set the probability for invariant site (by default this pInv=0.0)
+        dist->setPInv( pInvNode );
+        
         if ( rate->getRevObject().isTypeSpec( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< std::vector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
@@ -311,7 +335,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
             dist->setRateMatrix( rm );
         }
         
-        if ( siteRatesNode->getValue().size() > 0 ) 
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 ) 
         {
             dist->setSiteRates( siteRatesNode );
         }
@@ -350,30 +374,31 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getClassType
 template <class treeType>
 const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMemberRules(void) const {
     
-    static MemberRules distCharStateEvolutionMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"           , true, treeType::getClassTypeSpec() ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"           , true, treeType::getClassTypeSpec() ) );
         
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateMatrix::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"              , true, rateMatrixTypes ) );
         
         // optional argument for the root frequencies
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "rootFrequencies", true, Simplex::getClassTypeSpec(), NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", true, Simplex::getClassTypeSpec(), NULL ) );
         
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "branchRates"    , true, branchRateTypes, new RealPos(1.0) ) );
         
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "siteRates"    , true, ModelVector<RealPos>::getClassTypeSpec(), defaultSiteRates ) );
+        distMemberRules.push_back( new ArgumentRule( "siteRates"    , true, ModelVector<RealPos>::getClassTypeSpec(), defaultSiteRates ) );
+        distMemberRules.push_back( new ArgumentRule( "pInv"    , true, Probability::getClassTypeSpec(), new Probability(0.0) ) );
         
-        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec(), new Natural(10) ) );
+        distMemberRules.push_back( new ArgumentRule( "nSites"         , true, Natural::getClassTypeSpec(), new Natural(10) ) );
         
         std::vector<RlString> options;
         options.push_back( RlString("DNA") );
@@ -381,17 +406,18 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getMember
         options.push_back( RlString("AA") );
         options.push_back( RlString("Protein") );
         options.push_back( RlString("Standard") );
-        distCharStateEvolutionMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
         
         rulesSet = true;
     }
     
-    return distCharStateEvolutionMemberRules;
+    return distMemberRules;
 }
 
 
 template <class treeType>
-const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -401,7 +427,8 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getTypeSpec(
 
 /** Print value for user */
 template <class treeType>
-void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const {
+void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const
+{
     
     o << "Character-State-Evolution-Along-Tree Process(tree=";
     if ( tree != NULL ) {
@@ -422,8 +449,14 @@ void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const {
         o << "?";
     }
     o << ", siteRates=";
-    if ( rate != NULL ) {
+    if ( siteRates != NULL ) {
         o << siteRates->getName();
+    } else {
+        o << "?";
+    }
+    o << ", pInv=";
+    if ( pInv != NULL ) {
+        o << pInv->getName();
     } else {
         o << "?";
     }
@@ -434,12 +467,14 @@ void RevLanguage::Dist_phyloCTMC<treeType>::printValue(std::ostream& o) const {
         o << "?";
     }
     o << ")";
+    
 }
 
 
 /** Set a member variable */
 template <class treeType>
-void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var)
+{
     
     if ( name == "tree" ) 
     {
@@ -461,6 +496,10 @@ void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::st
     {
         siteRates = var;
     }
+    else if ( name == "pInv" )
+    {
+        pInv = var;
+    }
     else if ( name == "nSites" ) 
     {
         nSites = var;
@@ -469,9 +508,11 @@ void RevLanguage::Dist_phyloCTMC<treeType>::setConstMemberVariable(const std::st
     {
         type = var;
     }
-    else {
+    else
+    {
         Distribution::setConstMemberVariable(name, var);
     }
+    
 }
 
 

@@ -2,6 +2,7 @@
 #include "DagNode.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbException.h"
 #include "RbMathLogic.h"
 
 #include <cmath>
@@ -11,21 +12,28 @@
 using namespace RevBayesCore;
 
 
-AbstractOldMove::AbstractOldMove() {
+AbstractOldMove::AbstractOldMove()
+{
     
     
 }
 
 
-AbstractOldMove::~AbstractOldMove() {
+AbstractOldMove::~AbstractOldMove()
+{
     
 }
 
 
-void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
+void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
+{
     
     if ( isGibbs() )
     {
+        if ( raiseLikelihoodOnly || heat < 1.0 )
+        {
+            throw RbException("Cannot perform Gibbs move because the likelihood is perturbed for this Monte Carlo sampler.");
+        }
         // do Gibbs proposal
         performGibbs();
         // theMove->accept(); // Not necessary, because Gibbs samplers are automatically accepted.
@@ -60,11 +68,15 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
             {
                 if ( (*it)->isClamped() )
                 {
+                    
                     lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
+                    
                 }
                 else
                 {
+                    
                     lnPriorRatio += (*it)->getLnProbabilityRatio();
+                
                 }
             }
         }
@@ -73,7 +85,8 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         // Calculate acceptance ratio
         double lnR = heat * lnLikelihoodRatio + lnPriorRatio + lnHastingsRatio;
 	
-		if ( !RbMath::isFinite(lnR) ) {
+		if ( !RbMath::isAComputableNumber(lnR) )
+        {
 		
             reject();
 			
@@ -83,7 +96,8 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
         {
 #ifdef DEBUG_MCMC_DETAILS
             std::cerr << "Accepting move" << std::endl;
-#endif
+#endif            
+
             accept();
         }
         else if (lnR < -300.0)
@@ -91,6 +105,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
 #ifdef DEBUG_MCMC_DETAILS
             std::cerr << "Rejecting move" << std::endl;
 #endif
+
             reject();
         }
         else
@@ -103,6 +118,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
 #ifdef DEBUG_MCMC_DETAILS
                 std::cerr << "Accepting move" << std::endl;
 #endif
+                
                 accept();
             }
             else
@@ -110,6 +126,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly ) {
 #ifdef DEBUG_MCMC_DETAILS
                 std::cerr << "Rejecting move" << std::endl;
 #endif
+                
                 reject();
             }
         }
