@@ -70,7 +70,7 @@ def get_best(d,idx,n=10,f=None,p='posterior'):
     best = sorted(range(len(K)), key=lambda x: K[x])[-n:][::-1]
     ret = {}
     for k in d[idx].keys():
-        ret[k] = [] 
+        ret[k] = []
     for i in best:
         for k in d[idx].keys():
             ret[k].append(d[idx][k][i])
@@ -143,15 +143,40 @@ def get_clado_state(d,freqs=True,includeNarrow=True):
     for k in v.keys():
         v[k] = v[k]/n
 
-    #for x,y in zip(d['ch0'],d['ch1']):
-    #    n += 1
-    #    for i in range(num_char):
-    #        for j in range(i,num_char):
-    #            if x[i] is 1 and x[j] is 1:
-    #                v[i][j] += 1.
-    #                v[j][i] = v[i][j]
-    #if freqs:
-    #    for i in range(num_char):
-    #        for j in range(num_char):
-    #            v[i][j] = v[i][j] / n
+    return(v)
+
+
+# not quite right...
+# 1) prob allopatry splits two areas given a certain age
+def get_allopatry_prob(d,freqs=True):
+    
+    if not d.has_key('ch0') or not d.has_key('ch1'):
+        print('ERROR: no cladogenic state recorded')
+        return
+
+    num_char = len(d['nd'][0])
+
+    v = {}
+    n = 0
+    for k in range(len(d['nd'])):
+        if d['cs'][k] == 'a':
+            nd_s = "".join([str(x) for x in d['nd']])
+            if not v.has_key(nd_s):
+                v[nd_s] = {}
+            for y,z in zip(d['ch0'],d['ch1']):
+                print(y,z,d['nd'][k])
+                n += 1
+                ch0_s = "".join([str(x) for x in y])
+                ch1_s = "".join([str(x) for x in z])
+                y_tmp = y
+                if ch0_s > ch1_s:
+                    y_tmp = [ a*2 for a in y_tmp ]
+                b = [ sum(a) for a in zip(y_tmp,z) ]
+                #print b
+
+            if freqs:
+                for i in range(num_char):
+                    for j in range(num_char):
+                        v[i][j] = v[i][j] / n
+
     return(v)
