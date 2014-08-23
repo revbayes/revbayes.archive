@@ -34,7 +34,6 @@ monitors[2] <- screenmonitor(printgen=10, alpha, beta)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-mymcmc.burnin(generations=1000,tuningInterval=100)
 mymcmc.run(generations=3000)
 
 
