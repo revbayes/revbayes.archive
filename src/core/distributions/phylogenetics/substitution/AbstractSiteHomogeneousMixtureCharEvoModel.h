@@ -340,7 +340,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
 {
     
-//    compressed = false;
+    compressed = false;
     
     charMatrix.clear();
     gapMatrix.clear();
@@ -531,11 +531,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     
     // reset the vector if a site is invariant
     siteInvariant.resize( numPatterns );
+    size_t length = charMatrix.size();
     for (size_t i=0; i<numPatterns; ++i)
     {
         bool inv = true;
         unsigned long c = charMatrix[0][i];
-        for (size_t j=1; j<numNodes; ++j)
+        for (size_t j=1; j<length; ++j)
         {
             if ( c != charMatrix[j][i] )
             {
@@ -1148,10 +1149,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
     {
+//        delete homogeneousRateMatrix;
         homogeneousRateMatrix = NULL;
     }
     else // heterogeneousRateMatrix != NULL
     {
+//        delete heterogeneousRateMatrices;
         heterogeneousRateMatrices = NULL;
     }
     
@@ -1174,10 +1177,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
     {
+//        delete homogeneousRateMatrix;
         homogeneousRateMatrix = NULL;
     }
     else // heterogeneousRateMatrix != NULL
     {
+//        delete heterogeneousRateMatrices;
         heterogeneousRateMatrices = NULL;
     }
     
@@ -1201,6 +1206,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( rootFrequencies != NULL )
     {
+//        delete rootFrequencies;
         rootFrequencies = NULL;
     }
     
@@ -1230,6 +1236,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( siteRates != NULL )
     {
+//        delete siteRates;
         siteRates = NULL;
     }
     

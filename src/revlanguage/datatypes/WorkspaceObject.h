@@ -76,7 +76,9 @@ RevLanguage::WorkspaceObject<rbType>::WorkspaceObject(rbType *v) : RevObject(), 
 
 
 template <typename rbType>
-RevLanguage::WorkspaceObject<rbType>::WorkspaceObject(const WorkspaceObject &v) : RevObject( v ), value( NULL ) {
+RevLanguage::WorkspaceObject<rbType>::WorkspaceObject(const WorkspaceObject &v) : RevObject( v ),
+    value( NULL )
+{
     
     if ( v.value != NULL )
     {
