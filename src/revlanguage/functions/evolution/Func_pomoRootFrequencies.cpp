@@ -96,7 +96,7 @@ const TypeSpec& Func_pomoRootFrequencies::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_pomoRootFrequencies::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = AbstractCharacterData::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = Simplex::getClassTypeSpec();
     
     return returnTypeSpec;
 }

@@ -45,10 +45,10 @@ void PomoRateMatrixFunction::update( void )
     std::vector<double> r ;
     if (useMutationMatrix) {
         // get the information from the arguments for reading the file
-        setMutationRates( mutationMatrix->getValue() );
+        r = setMutationRates( mutationMatrix->getValue() );
     } else {
         // get the information from the arguments for reading the file
-       r = mutationRates->getValue();
+        r = mutationRates->getValue();
 
     }
 

@@ -199,260 +199,6 @@ for (i in 1:n_genes) {
 }
 
 
-########################################################################
-########################################################################
-####### Performing inference under the Multispecies Coalescent #########
-########################################################################
-########################################################################
-
-
-
-############################################
-# Clamping the model to our simulated data #
-############################################
-for (i in 1:n_genes) {
-	alns[i].clamp(alns[i])
-}
-
-
-################################
-# Changing the starting values #
-################################
-
-# We want to start from random values, not the values used in the simulation.
-
-# Redrawing the parameters of the birth-death process:
-speciation.redraw()
-extinction.redraw()
-tree_height.redraw()
-
-# Redrawing the species tree:
-speciesTree.redraw()
-
-# Redrawing the parameter Ne:
-Ne.redraw()
-
-
-# Redrawing the gene trees:
-for (i in 1:n_genes) {
-   geneTrees[i].redraw()
-}
-
-# Redrawing the parameters of the substitution models:
-for (i in 1:n_genes) {
-  er[i].redraw()
-  sf[i].redraw()
-}
-
-# Idem for the family-wise rates of sequence evolution:
-for (i in 1:n_genes) {
-  familyRates[i].redraw()
-}
-
-# Idem for the family-wise across-site rate variation parameters:
-for (i in 1:n_genes) {
-  shape[i].redraw()
-}
-
-
-####################
-# Setting up moves #
-####################
-
-# We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, 
-# the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
-
-moveIndex <- 0
-
-
-# moves for the birth-death parameters
-moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
-moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
-moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
-
-
-# moves on the tree topology and node ages
-moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
-moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
-moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
-#moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
-moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
-moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
-
-# moves on the gene tree topologies and node ages
-for (i in 1:n_genes) {
-
-   moves[moveIndex++] <- mvNNI(geneTrees[i], 1.0)
-   moves[moveIndex++] <- mvFNPR(geneTrees[i], 1.0)
-   moves[moveIndex++] <- mvSubtreeScale(geneTrees[i], 5.0)
-#   moves[moveIndex++] <- mvTreeScale(geneTrees[i], 1.0, true, 3.0)
-   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTrees[i], 10.0)
-   moves[moveIndex++] <- mvRootTimeSlide(geneTrees[i], 1.0, true, 3.0)
-
-}
-
-# move on Ne, the effective population size
-moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
-
-# moves on the parameters of the substitution models
-for (i in 1:n_genes) {
-  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
-  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
-}
-
-# moves on the family-wise rates
-for (i in 1:n_genes) {
-  moves[moveIndex++] <- mvScale(familyRates[i], lambda=0.8, tune=true, weight=3.0)
-}
-
-# moves on the across-sites rate variation parameters:
-for (i in 1:n_genes) {
-  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
-}
-
-
-
-
-
-
-############
-# Monitors #
-############
-
-# We define a few monitors to keep track of how things go.
-
-mntrIndex <- 0
-
-# One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
-
-# One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
-
-# One monitor for each gene family tree:
-for (i in 1:n_genes) {
-   monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
-}
-
-# We also want to monitor how far we are from the true values, which we have because we rely on simulations.
-# First, we can compute the distance between the reconstructed and the true species tree:
-distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
-
-# Same thing for the gene trees:
-for (i in 1:n_genes) {
-	distGeneTree[i] := symDiff (trueGeneTrees[i], geneTrees[i])
-}
-
-# We get one average value for all gene trees:
-meanDistGeneTree := mean(distGeneTree)
-
-# We can also look at the parameter values
-# For Ne:
-distNe := Ne - trueNe
-
-
-
-# For equilibrium values of the GTR matrices, we want one index of how far we are.
-# To achieve this we need to write some functions:
-clear(i)
-
-function RealPos diffVectors ( Simplex xvec, Simplex yvec ) { 
-	DI <- 0.0
-	for (i in 1:xvec.size()) {
-		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
-	}
-	return DI
-}
-
-function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) { 
-	DA <- 0.0
-	for (i in 1:xvecvec.size()) {
-		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
-	}
-	return xvecvec[2]
-}
-
-distEqFreq := diffVectorsOfVectors(trueSf, sf)
-	
-					
-	
-function RealPos diffVectors ( Real[] xvec, Real[] yvec ) { 
-	DI <- 0.0
-	for (i in 1:xvec.size()) {
-		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
-	}
-	return DI
-}
-
-function RealPos diffVectorsOfVectors ( Real[][] xvecvec, Real[][] yvecvec ) { 
-	DA <- 0.0
-	for (i in 1:xvecvec.size()) {
-		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
-	}
-	return DA
-}
-
-
-	
-	
-# Same thing for exchangeability parameters:
-distExchange := diffVectorsOfVectors(trueEr, er)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
-	
-# Same thing for the family-wise rates
-distRates := diffVectors(trueFamilyRates, familyRates)
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distRates)
-
-
-# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
-	
-# We could do similar things for the few remaining parameters, but really I think that's enough.
-
-#############
-# THE Model #
-#############
-
-# We define our model.
-# We can use any node of our model as a handle, here we choose to use the species tree.
- 
-mymodel <- model(speciesTree)
-
-
-
-########
-# MCMC #
-########
-
-# We create the MCMC object
-mymcmc <- mcmc(mymodel, monitors, moves)
-
-
-# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
-# the number of iterations that will be considered for analysis, 
-# and the tuning interval for tuning parameters of moves on scalar variables.
-# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
-# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
-# mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=400)
-
-
-
-###################
-# Output analyses #
-###################
-
-# Now, we will analyze the tree output.
-# Let us start by reading in the tree trace
- treetrace <- readTreeTrace("multispeciesCoalescent_clock_species.trees")
-# and get the summary of the tree trace
- treetrace.summarize()
-
-# We output the Maximum A Posteriori tree
- mapTree(treetrace,"primates_clock_MAP.tre")
-
-
-
 
 
 ###########################################################
@@ -489,8 +235,8 @@ virtual_population_size <- 10
 
 # Now, we need to convert the DNA alignment into an alignment in the correct POMO state space.
 
-pomoConcatenate <- pomoStateConvert(concatenate, virtual_population_size, taxa)
-
+pomo_concatenate <- pomoStateConvert(concatenate, virtual_population_size, taxa)
+concatenate_n_sites <- pomo_concatenate.nchar()[1]
 
 #######################
 # Preparing the model #
@@ -530,14 +276,134 @@ root_base_frequencies ~ dnDirichlet(sf_prior)
 
 # Now we have all the elements to construct root frequencies for all the states:
 root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size)
+#simplex_root_frequencies := simplex(root_frequencies[1], root_frequencies[2], root_frequencies[3], root_frequencies[4])
 
 
-#########################################################
-#########################################################
-#########################################################
-######################  THE END  ########################
-#########################################################
-#########################################################
-#########################################################
+# Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
+shape_prior <- 0.05 
+shape ~ dnExponential( shape_prior )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+
+# We do not assume variation among branches in rates
+branch_rates <- 1.0
+
+# We do not assume a proportion of invariant
+p_inv ~ beta(alpha=1,beta=1)
+p_inv.setValue(0.0)
+
+###################
+# PhyloCTMC Model #
+###################
+
+# To link all the parts of the model together we use the phyloCTMC object.
+
+aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFrequencies=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="DNA")
+
+aln.clamp(pomo_concatenate)
+
+################################
+# Changing the starting values #
+################################
+
+# We want to start from random values, not the values used in the simulation.
+
+# Redrawing the parameters of the birth-death process:
+speciation.redraw()
+extinction.redraw()
+tree_height.redraw()
+
+# Redrawing the species tree:
+speciesTree.redraw()
+
+####################
+# Setting up moves #
+####################
+
+# We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, 
+# the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
+
+moveIndex <- 0
+
+# moves for the birth-death parameters
+moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
+moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
+moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
+
+
+# moves on the tree topology and node ages
+moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
+moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
+moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+#moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
+moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
+moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
+
+# moves on the parameters of the substitution model
+moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
+
+# moves on the 4 fitness values
+moves[moveIndex++] <- mvScale(base_fitnesses[1],1,true,1.0)
+moves[moveIndex++] <- mvScale(base_fitnesses[2],1,true,1.0)
+moves[moveIndex++] <- mvScale(base_fitnesses[3],1,true,1.0)
+moves[moveIndex++] <- mvScale(base_fitnesses[4],1,true,1.0)
+
+# moves on the parameters of the root frequencies
+moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvSimplexElementScale(root_polymorphism_proportion, alpha=10, tune=true, weight=2) 
+
+# moves on the across-sites rate variation parameter:
+moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
+
+
+############
+# Monitors #
+############
+
+# We define a few monitors to keep track of how things go.
+
+mntrIndex <- 0
+
+# One monitor to backup the parameters, in case we want to stop and restart the analysis:
+monitors[mntrIndex++] <- modelmonitor(filename="pomo_clock.log",printgen=10, separator = "	")
+
+# One monitor to print the species trees sampled in the course of the MCMC:
+monitors[mntrIndex++] <- filemonitor(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
+
+# We also want to monitor how far we are from the true values, which we have because we rely on simulations.
+# First, we can compute the distance between the reconstructed and the true species tree:
+distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
+
+
+# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+	
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# We can use any node of our model as a handle, here we choose to use the species tree.
+ 
+mymodel <- model(speciesTree)
+
+
+
+########
+# MCMC #
+########
+
+# We create the MCMC object
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+
+# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
+# the number of iterations that will be considered for analysis, 
+# and the tuning interval for tuning parameters of moves on scalar variables.
+# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
+# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
+# mymcmc.burnin(generations=200,tuningInterval=100)
+mymcmc.run(generations=400)
 
 
