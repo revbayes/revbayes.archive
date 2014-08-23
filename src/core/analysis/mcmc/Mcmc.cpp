@@ -148,7 +148,7 @@ void Mcmc::runPriorSampler(size_t kIterations)
     }
     
     // Initialize objects used in run
-    initializeChain();
+    initializeChain( true );
     initializeMonitors();
     
     if ( generation == 0 )
