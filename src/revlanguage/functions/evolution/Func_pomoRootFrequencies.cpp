@@ -48,7 +48,7 @@ RevPtr<Variable> Func_pomoRootFrequencies::execute() {
     
     DeterministicNode< std::vector< double >  > *detNode = new DeterministicNode< std::vector< double >  >("", pomorf, this->clone());
     
-    ModelVector<RealPos>* value = new ModelVector<RealPos>( detNode );
+    Simplex* value = new Simplex( detNode );
     
     return new Variable( value );
 

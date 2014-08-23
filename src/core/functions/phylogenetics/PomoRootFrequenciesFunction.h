@@ -52,7 +52,7 @@ namespace RevBayesCore {
         const TypedDagNode< double >*                        frequencyOfPolymorphismsAtTheRoot;
         const TypedDagNode< std::vector<double> >*           mutationRates;
         const TypedDagNode< RateMatrix >*                    mutationMatrix;
-        const TypedDagNode< int >*                  populationSize;
+        const TypedDagNode< int >*                          populationSize;
         bool                                                 useMutationMatrix;
 
         // Private member functions
