@@ -41,7 +41,6 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     newick(""),
     newickNeedsRefreshing( true )
 {
-    
 }
 
 
@@ -78,7 +77,6 @@ tree( NULL )
 /** Destructor */
 TopologyNode::~TopologyNode(void)
 {
-    
     // we do not own the parent so we do not delete it
     
     // free memory of children
