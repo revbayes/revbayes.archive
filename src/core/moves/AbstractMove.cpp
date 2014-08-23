@@ -79,7 +79,7 @@ void AbstractMove::perform( double heat, bool raiseLikelihoodOnly )
     numTried++;
     
     // delegate to derived class
-    performMove(heat,raiseLikelihoodOnly);
+    performMove(heat, raiseLikelihoodOnly);
     
 }
 

@@ -70,7 +70,6 @@ namespace RevBayesCore {
 
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "VectorIndexOperator.h"
 
 #include <cmath>
 
@@ -112,7 +111,7 @@ void RevBayesCore::RbMixtureDistribution<mixtureType>::executeMethod(const std::
     
     if ( n == "getAllocationIndex" )
     {
-        rv = index;
+        rv = int(index);
     }
     else
     {

@@ -116,13 +116,14 @@ RevPtr<Variable> SyntaxConstantAssignment::evaluateContent( Environment& env )
     // Fill the slot with newValue
     theSlot->setRevObject( newValue );
     
+    
 #ifdef DEBUG_PARSER
     env.printValue(std::cerr);
 #endif
     
     // We return the rhs variable itself as the semantic value of the
     // assignment statement. It can be used in further assignments.
-    return theVariable;
+    return theSlot;
 }
 
 

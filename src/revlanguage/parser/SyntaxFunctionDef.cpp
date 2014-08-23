@@ -19,8 +19,8 @@ SyntaxFunctionDef::SyntaxFunctionDef( const std::string&            type,
     code( stmts ),
     functionName( name ),
     formalArgs( formals ),
-    isProcedureDef( isProcDef ),
-    returnType( RlUtils::Void )
+    returnType( RlUtils::Void ),
+    isProcedureDef( isProcDef )
 {
     if ( type == "" )
         returnType = RevObject::getClassTypeSpec();
@@ -33,8 +33,8 @@ SyntaxFunctionDef::SyntaxFunctionDef( const std::string&            type,
 SyntaxFunctionDef::SyntaxFunctionDef( const SyntaxFunctionDef& x ) :
     SyntaxElement( x ),
     functionName( x.functionName ),
-    isProcedureDef( x.isProcedureDef ),
-    returnType( x.returnType )
+    returnType( x.returnType ),
+    isProcedureDef( x.isProcedureDef )
 {
     for ( std::list<SyntaxFormal*>::const_iterator it = x.formalArgs->begin(); it != x.formalArgs->end(); ++it )
         formalArgs->push_back( (*it)->clone() );

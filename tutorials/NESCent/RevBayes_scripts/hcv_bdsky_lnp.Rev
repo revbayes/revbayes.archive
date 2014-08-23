@@ -105,6 +105,9 @@ th := treeHeight(tau)
 
 ## BEAST2 lnpr = -276.4880335
 
+## with old q() this returns -276.489
+## with new q() this returns -834.284
+
 tau.lnProb  ## sometimes this returns -276.489
 
 

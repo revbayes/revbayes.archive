@@ -12,6 +12,7 @@
 
 #include "AbstractCharacterData.h"
 #include "AbstractTreeHistoryCtmc.h"
+#include "BiogeographicTreeHistoryCtmc.h"
 #include "DagNode.h"
 #include "Model.h"
 #include "Monitor.h"
@@ -161,8 +162,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         
         for (size_t i = 0; i < characters.size(); i++)
         {
-            if (i != 0)
-                ss << ",";
+//            if (i != 0) ss << ",";
             ss << characters[i]->getState();
         }
     }
@@ -171,10 +171,31 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         for (size_t i = 0; i < characters.size(); i++)
         {
-            if (i != 0)
-                ss << ",";
+//            if (i != 0) ss << ",";
             ss << characters[i]->getState();
         }
+    }
+    else if (infoStr=="clado_state")
+    {
+        BiogeographicTreeHistoryCtmc<charType, treeType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p);
+        int cladoState = q->getCladogenicState(*n);
+        
+        if (cladoState == 0)
+            ss << "s";
+        else if (cladoState == 1)
+            ss << "p";
+        else if (cladoState == 2)
+            ss << "a";
+        else
+            ss << "NA";
+        
+    }
+    else if (infoStr=="bud_state")
+    {
+        BiogeographicTreeHistoryCtmc<charType, treeType>* q = static_cast<BiogeographicTreeHistoryCtmc<charType, treeType>* >(p);
+        int budState = (q)->getBuddingState(*n);
+        
+        ss << ( budState == 1 ? n->getIndex() : n->getParent().getChild(1).getIndex() );
     }
     else if (infoStr=="state_into")
     {
@@ -194,7 +215,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         {
             if (i != 0)
                 ss << ",";
-            ss << i << ":" << v[i];
+//            ss << i << ":" << v[i];
+            ss << v[i];
         }
     }
     else if (infoStr=="state_betw")
@@ -219,12 +241,14 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         {
             if (i != 0)
                 ss << ",";
-            ss << i << ":{";
+//            ss << i << ":{";
+            ss << "{";
             for (size_t j = 0; j < numStates; j++)
             {
                 if (j != 0)
                     ss << ",";
-                ss << j << ":" << v[numStates*i + j];
+//                ss << j << ":" << v[numStates*i + j];
+                ss << v[numStates*i + j];
             }
             ss << "}";
         }
@@ -239,15 +263,16 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         std::vector<unsigned> v(numStates*numStates,0);
         double ndAge = n->getAge();
         double brLen = n->getBranchLength();
+        
         for (it = evts.begin(); it != evts.end(); it++)
         {
             if (it != evts.begin())
                 ss << ",";
             
             ss << "{";
-            ss << "s:" << (*it)->getState() << ",";
-            ss << "a:" << ndAge + brLen * (*it)->getTime() << ",";
             ss << "t:" << (*it)->getTime() << ",";
+            ss << "a:" << ndAge - brLen * (*it)->getTime() << ",";
+            ss << "s:" << (*it)->getState() << ",";
             ss << "i:" << (*it)->getIndex() << "";
             ss << "}";
 
@@ -274,22 +299,26 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
     
     if (showMetadata)
     {
-        characterStream << "[";
+        characterStream << "[&";
+        characterStream << "index=" << n->getIndex();
         
         // character history
-        characterStream << "&pa={" << buildCharacterHistoryString(n,"child") << "}";
+        characterStream << ";nd=" << buildCharacterHistoryString(n,"child") << "";
         if (!n->isTip())
         {
-            characterStream << ",&ch0={" << buildCharacterHistoryString(&n->getChild(0),"parent") << "}";
-            characterStream << ",&ch1={" << buildCharacterHistoryString(&n->getChild(1),"parent") << "}";
+            characterStream << ";ch0=" << buildCharacterHistoryString(&n->getChild(0),"parent") << "";
+            characterStream << ";ch1=" << buildCharacterHistoryString(&n->getChild(1),"parent") << "";
+            
+            characterStream << ";cs=" << buildCharacterHistoryString(&n->getChild(0),"clado_state");
+            characterStream << ";bn=" << buildCharacterHistoryString(&n->getChild(0),"bud_state");
         }
         
         // # events
-        characterStream << ",&state_into={" << buildCharacterHistoryString(n,"state_into") << "}";
-        characterStream << ",&state_betw={" << buildCharacterHistoryString(n,"state_betw") << "}";
+//        characterStream << ",si={" << buildCharacterHistoryString(n,"state_into") << "}";
+//        characterStream << ",sb={" << buildCharacterHistoryString(n,"state_betw") << "}";
         
         // event history
-        characterStream << ",&events=[" << buildCharacterHistoryString(n,"events") << "]";
+        characterStream << ";ev={" << buildCharacterHistoryString(n,"events") << "}";
         
         // ... whatever else
         characterStream << "]";

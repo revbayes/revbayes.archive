@@ -30,7 +30,8 @@ Mcmc* Mcmc::clone(void) const {
 }
 
 
-void Mcmc::constructInternalObject( void ) {
+void Mcmc::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -51,7 +52,15 @@ RevPtr<Variable> Mcmc::executeMethod(std::string const &name, const std::vector<
     {
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        value->run( gen );
+        bool prior = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
+        if ( prior == true )
+        {
+            value->runPriorSampler( gen );
+        }
+        else
+        {
+            value->run( gen );
+        }
         
         return NULL;
     } 
@@ -127,6 +136,7 @@ const MethodTable& Mcmc::getMethods(void) const {
     if ( methodsSet == false ) {
         ArgumentRules* runArgRules = new ArgumentRules();
         runArgRules->push_back( new ArgumentRule("generations", true, Natural::getClassTypeSpec()) );
+        runArgRules->push_back( new ArgumentRule("underPrior", true, RlBoolean::getClassTypeSpec(), new RlBoolean(false) ) );
         methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
         
         ArgumentRules* burninArgRules = new ArgumentRules();

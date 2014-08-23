@@ -137,9 +137,9 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
         lnProbRatio += (*it)->getLnProbabilityRatio();
     }
     
-    if ( fabs(lnProbRatio) > 1E-6 ) {
-//        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
-        std::cout << "Likelihood shortcut computation failed in rate-age-proposal." << std::endl;
+    if ( fabs(lnProbRatio) > 1E-8 )
+    {
+        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
     }
     
     double hastingsRatio = backward - forward;

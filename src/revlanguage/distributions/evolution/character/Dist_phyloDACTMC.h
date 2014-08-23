@@ -22,6 +22,9 @@ namespace RevLanguage {
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
+//        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
+//        RevPtr<RevLanguage::Variable>                   executeMethod(std::string const &name, const std::vector<Argument> &args);
+//        MethodTable                                     makeMethods(void) const;
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
@@ -100,6 +103,28 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     return d;
 }
 
+///* Map calls to member methods */
+//template <class treeType>
+//RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Dist_phyloDACTMC<treeType>::executeMethod(std::string const &name, const std::vector<Argument> &args) {
+//    
+//    if (name == "printBranchHistory")
+//    {
+//        // get the member with give index
+//        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+//        
+////        if (this->dagNode->getValue().getHistories().size() < (size_t)(index.getValue()) )
+////        {
+////            throw RbException("Index out of bounds in []");
+////        }
+////
+////        const RevBayesCore::DiscreteTaxonData<typename charType::valueType>& element = static_cast< RevBayesCore::DiscreteCharacterData<typename charType::valueType>& >( this->dagNode->getValue() ).getTaxonData(size_t(index.getValue()) - 1);
+////        
+////        return new Variable( new DiscreteTaxonData<charType>( new RevBayesCore::DiscreteTaxonData<typename charType::valueType>( element ) ) );
+////        return new Variable( new Dist_phyloDACTMC<treeType>( new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType>() ) );
+//    }
+//    
+//    return TypedDistribution< AbstractDiscreteCharacterData >::executeMethod( name, args );
+//}
 
 
 /* Get Rev type of object */
@@ -148,6 +173,21 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
     return distCharStateEvolutionMemberRules;
 }
 
+//template <class treeType>
+//const RevLanguage::MethodTable& RevLanguage::Dist_phyloDACTMC<treeType>::getMethods( void ) const
+//{
+//    static MethodTable  myMethods   = MethodTable();
+//    static bool         methodsSet  = false;
+//    
+//    if ( !methodsSet )
+//    {quit
+//        myMethods = makeMethods();
+//        methodsSet = true;
+//    }
+//    
+//    return myMethods;
+//}
+
 
 template <class treeType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getTypeSpec( void ) const {
@@ -157,6 +197,23 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDACTMC<treeType>::getTypeSpe
     return ts;
 }
 
+//
+///* Make member methods for this class */
+//template <class treeType>
+//RevLanguage::MethodTable RevLanguage::Dist_phyloDACTMC<treeType>::makeMethods(void) const
+//{
+//    
+//    MethodTable methods = MethodTable();
+//    
+//    ArgumentRules* argRules = new ArgumentRules();
+//    
+//    methods.addFunction("printBranchHistory", new DistributionMemberFunction<Dist_phyloDACTMC<treeType>, Natural>( this, argRules ) );
+//    
+//    // Insert inherited methods
+//    methods.insertInheritedMethods( TypedDistribution<AbstractDiscreteCharacterData>::makeMethods() );
+//    
+//    return methods;
+//}
 
 /** Print value for user */
 template <class treeType>

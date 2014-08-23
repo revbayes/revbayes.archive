@@ -63,7 +63,7 @@ public:
 //        }
 //        std::cout << "\n";
 
-        if (rc.cmd == "repo-list") {
+        if (rc.cmd == "repo_list") {
             // reset global file index and start a new
             globalFileIndex = 0;
 
@@ -77,12 +77,12 @@ public:
             }
             return true;
 
-        } else if (rc.cmd == "repo-get") {
+        } else if (rc.cmd == "repo_get") {
 
             // make sure we have a cache set
             if (fileCache.size() <= 0) {
                 repoObserver->notifyError("Cache not set, initializing now... Try download again when complete!");
-                processCommand(repositories, "repo-list");
+                processCommand(repositories, "repo_list");
                 return true;
             }
 

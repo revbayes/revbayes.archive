@@ -709,7 +709,8 @@ Finally, we can compute the Bayes factor, which is simply the ratio of marginal 
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > exp(-45.5) / exp(-46.7)
+RevBayes > exp(-44.7692) / exp(-49.5586)
+   120.229
 \end{lstlisting}
 \end{snugshade}
 
@@ -754,7 +755,7 @@ In this case, you may want to re-run the analysis with different arguments for t
 This tab-delimited file contains parameter samples from the posterior distribution.
 As with the {\tt ScreenMonitor}, columns are model or parameter values and rows are MCMC cycles.
 
-\begin{snugshade}
+\begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
 0	-50.3513	-50.7006	0.349325	0.249602	0.141818	0.0116311
@@ -766,15 +767,55 @@ Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
 
 ...
 \end{lstlisting}
-\end{snugshade}
+\end{framed}
 
 \subsection{Biogeographic event counts from {\tt mnCharHistoryNewick}}
 
+\begin{framed}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
+Iteration	Posterior	Likelihood	Prior	t0	t1	b0_s0	b0_s1	b1_s0	b1_s1	b2_s0	b2_s1	...
+0		-89.5384	-88.3926	-1.1458	24	24	1	0	1	1	2	2	...
+10		-72.5159	-73.7833	1.26734	16	17	1	0	1	1	1	1	...
+20		-61.3417	-63.5838	2.24210	14	12	0	0	1	1	1	1	...
+30		-68.5929	-69.9865	1.39352	15	16	1	1	0	0	0	0	...
+40		-58.2748	-59.1617	0.88684	11	13	0	0	0	0	0	0	...
+50		-79.7814	-81.0356	1.25418	21	19	3	2	1	1	0	0	...
+
+...
+\end{lstlisting}
+\end{framed}
 
 \subsection{Biogeographic event histories from {\tt mnCharHistoryNewick}}
 
+\begin{framed}
+\begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
+Iteration	Posterior	Likelihood	Prior	Tree
+0	-89.5384	-88.3926	-1.1458	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:0} ...
+10	-72.5159	-73.7833	1.26734	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
+20	-61.3417	-63.5838	2.24210	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
+30	-68.5929	-69.9865	1.39352	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
+40	-58.2748	-59.1617	0.88684	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:0} ...
+50	-79.7814	-81.0356	1.25418	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:1} ...
 
+...
+\end{lstlisting}
+\end{framed}
 
+Each iteration records the data-augmented character history (stochastic mapping) using metadata labels, which, for an internal node, looks like
+
+\begin{snugshade}
+\begin{lstlisting}
+[&index=24,nd={1,1,0,0},ch0={0,1,0,0},ch1={1,0,0,0},cs=a,bn=24,si={0:0,1:1},sb={0:{0:0,1:1},1:{0:0,1:0}},ev={{t:0.94997,a:4.59972,s:1,i:1}}]
+\end{lstlisting}
+\end{snugshade}
+
+There are two parts to the stochastic mapping.
+First, the range before the speciation event, {\tt nd}, and the daughter ranges following the speciation event, {\tt ch0} and {\tt ch1}.
+The cladogenic event type is allopatric, {\tt cs=a}, where {\tt cs=s} is for sympatry (narrow or wide) and {\tt cs=p} is for peripatry.
+The events that occur along the lineage leading to the node are recorded in {\tt events}, where each event has a state, absolute age, time (relative to the absolute branch length), and character index.
+For this posterior sample of the character history, area 1 was gained at age 4.59972, which is near the tips of the tree.
+
+Because this data is very high-dimensional, we'll use an external data exploration tool to look at range evolution.
 
 \subsection{New Hampshire extended format file (\texttt{my\_run.nhx})}
 

@@ -57,8 +57,10 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
-        
-        argumentRules.push_back( new ArgumentRule( "", true, RealPos::getClassTypeSpec() ) );
+        std::vector<TypeSpec> types;
+        types.push_back( RealPos::getClassTypeSpec() );
+        types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "", true, types ) );
         argumentRules.push_back( new Ellipsis (     RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
