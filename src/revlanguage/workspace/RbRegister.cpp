@@ -292,6 +292,7 @@
 #include "Func_jones.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
+#include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_wag.h"
@@ -914,6 +915,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "jones",    new Func_jones()   );
         addFunction( "mtMam",    new Func_mtMam()   );
         addFunction( "mtRev",    new Func_mtRev()   );
+        addFunction( "pomo",     new Func_pomo()   );
         addFunction( "rtRev",    new Func_rtRev()   );
         addFunction( "vt",       new Func_vt()      );
         addFunction( "wag",      new Func_wag()     );
