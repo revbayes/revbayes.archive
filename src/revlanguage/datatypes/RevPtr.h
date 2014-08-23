@@ -52,13 +52,15 @@ private:
 
 
 template <typename ptrType>
-RevLanguage::RevPtr<ptrType>::RevPtr(ptrType* inPtr) {
+RevLanguage::RevPtr<ptrType>::RevPtr(ptrType* inPtr) : mPtr( NULL )
+{
     
     initializePointer(inPtr);
 }
 
 template <typename ptrType>
-RevLanguage::RevPtr<ptrType>::RevPtr(const RevPtr<ptrType>& src) {
+RevLanguage::RevPtr<ptrType>::RevPtr(const RevPtr<ptrType>& src) : mPtr( NULL )
+{
     
     initializePointer(src.mPtr);
 }

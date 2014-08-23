@@ -233,7 +233,8 @@ void MonteCarloSampler::getOrderedStochasticNodes(const DagNode* dagNode,  std::
     return;
 }
 
-void MonteCarloSampler::initializeChain( void ) {
+void MonteCarloSampler::initializeChain( bool priorOnly )
+{
     
     std::vector<DagNode *>& dagNodes = model.getDagNodes();
     std::vector<DagNode *> orderedStochNodes;
@@ -252,6 +253,7 @@ void MonteCarloSampler::initializeChain( void ) {
     // first we touch all nodes so that the likelihood is dirty
     for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
     {
+        (*i)->setPriorOnly( priorOnly );
         (*i)->touch();
     }
     
@@ -396,7 +398,7 @@ void MonteCarloSampler::monitor(unsigned long g)
 
 
 
-unsigned long MonteCarloSampler::nextCycle(bool advanceCycle, bool priorOnly)
+unsigned long MonteCarloSampler::nextCycle(bool advanceCycle)
 {
     
 #ifdef DEBUG_MCMC
@@ -437,7 +439,7 @@ unsigned long MonteCarloSampler::nextCycle(bool advanceCycle, bool priorOnly)
 #endif
         
         // Perform the move
-        theMove.perform( chainHeat, false, priorOnly);
+        theMove.perform( chainHeat, false);
         
 #ifdef DEBUG_MCMC
 #ifdef DEBUG_MCMC_DETAILS

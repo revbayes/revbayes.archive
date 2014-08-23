@@ -186,6 +186,39 @@ void TopologyNode::addNodeParameter(std::string const &n, double p)
 }
 
 
+void TopologyNode::addNodeParameter(std::string const &n, std::string const &p)
+{
+    
+    std::stringstream o;
+    o << n << "=" << std::atof(p.c_str());
+    std::string comment = o.str();
+    nodeComments.push_back( comment );
+    
+    nodeFields[n] = p;
+    
+    newickNeedsRefreshing = true;
+    
+}
+
+std::string TopologyNode::getNodeField(std::string key) const   {
+
+    std::map<std::string,std::string>::const_iterator i = nodeFields.find(key);
+
+    if (i == nodeFields.end())  {
+        std::cerr << "no node field with key : " << key << '\n';
+        throw(0);
+    }
+    
+    return i->second;
+    
+}
+
+size_t TopologyNode::getNodeFieldNumber() const   {
+    
+    return nodeFields.size();
+    
+}
+
 void TopologyNode::addParameter(std::string const &n, const std::vector<double> &p, bool internalOnly)
 {
     

@@ -82,6 +82,16 @@ namespace RevBayesCore {
         void                                                                redrawValue(void);
         void                                                                reInitialized(void);
         
+        void                                                                setClockRate(const TypedDagNode< double > *r);
+        void                                                                setClockRate(const TypedDagNode< std::vector< double > > *r);
+        void                                                                setPInv(const TypedDagNode< double > *);
+        void                                                                setRateMatrix(const TypedDagNode< RateMatrix > *rm);
+        void                                                                setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm);
+        void                                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
+        void                                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
+        
+        
+        
         // Parameter management functions. You need to override both if you have additional parameters
         virtual std::set<const DagNode*>                                    getParameters(void) const;                                          //!< Return parameters
         virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
@@ -92,6 +102,9 @@ namespace RevBayesCore {
         void                                                                rescale(size_t nodeIndex);
         void                                                                resizeLikelihoodVectors(void);
 
+        virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
+        virtual const std::vector<double>&                                  getRootFrequencies(void) const;
+                
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
@@ -102,8 +115,6 @@ namespace RevBayesCore {
         virtual void                                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m) = 0;
         virtual void                                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r) = 0;
         virtual void                                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx) = 0;
-        virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen) = 0;
-        virtual const std::vector<double>&                                  getRootFrequencies(void) = 0;
         
         // members
         double                                                              lnProb;
@@ -123,6 +134,7 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned long> >                            charMatrix;
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<size_t>                                                 patternCounts;
+        std::vector<bool>                                                   siteInvariant;
         size_t                                                              numPatterns;
         bool                                                                compressed;
         
@@ -140,6 +152,23 @@ namespace RevBayesCore {
         bool                                                                usingAmbiguousCharacters;
         bool                                                                treatUnknownAsGap;
         bool                                                                treatAmbiguousAsGaps;
+        
+        // members
+        const TypedDagNode< double >*                                       homogeneousClockRate;
+        const TypedDagNode< std::vector< double > >*                        heterogeneousClockRates;
+        const TypedDagNode< RateMatrix >*                                   homogeneousRateMatrix;
+        const TypedDagNode< RbVector< RateMatrix > >*                       heterogeneousRateMatrices;
+        const TypedDagNode< std::vector< double > >*                        rootFrequencies;
+        const TypedDagNode< std::vector< double > >*                        siteRates;
+        const TypedDagNode< std::vector< double > >*                        siteRatesProbs;
+        const TypedDagNode< double >*                                       pInv;
+        
+        
+        // flags specifying which model variants we use
+        bool                                                                branchHeterogeneousClockRates;
+        bool                                                                branchHeterogeneousSubstitutionMatrices;
+        bool                                                                rateVariationAcrossSites;
+
         
     private:
         // private methods
@@ -180,6 +209,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     gapMatrix(),
     patternCounts(),
     numPatterns( numSites ),
+    siteInvariant( numSites, false ),
     compressed( c ),
     changedNodes( std::vector<bool>(numNodes,false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
@@ -187,6 +217,23 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     treatUnknownAsGap( true ),
     treatAmbiguousAsGaps( true )
 {
+    
+    // initialize with default parameters
+    homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
+    heterogeneousClockRates     = NULL;
+    homogeneousRateMatrix       = new ConstantNode<RateMatrix>("rateMatrix", new RateMatrix_JC( numChars ) );
+    heterogeneousRateMatrices   = NULL;
+    rootFrequencies             = NULL;
+    siteRates                   = NULL;
+    siteRatesProbs              = NULL;
+    pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
+    
+    
+    // flags specifying which model variants we use
+    branchHeterogeneousClockRates               = false;
+    branchHeterogeneousSubstitutionMatrices     = false;
+    rateVariationAcrossSites                    = false;
+
     
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -216,6 +263,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
     numPatterns( n.numPatterns ),
+    siteInvariant( n.siteInvariant ),
     compressed( n.compressed ),
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
@@ -223,6 +271,22 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     treatUnknownAsGap( n.treatUnknownAsGap ),
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps )
 {
+    
+    // initialize with default parameters
+    homogeneousClockRate        = n.homogeneousClockRate;
+    heterogeneousClockRates     = n.heterogeneousClockRates;
+    homogeneousRateMatrix       = n.homogeneousRateMatrix;
+    heterogeneousRateMatrices   = n.heterogeneousRateMatrices;
+    rootFrequencies             = n.rootFrequencies;
+    siteRates                   = n.siteRates;
+    siteRatesProbs              = n.siteRatesProbs;
+    pInv                        = n.pInv;
+    
+    
+    // flags specifying which model variants we use
+    branchHeterogeneousClockRates               = n.branchHeterogeneousClockRates;
+    branchHeterogeneousSubstitutionMatrices     = n.branchHeterogeneousSubstitutionMatrices;
+    rateVariationAcrossSites                    = n.rateVariationAcrossSites;
 
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -253,7 +317,10 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::~A
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
         if ( tau->decrementReferenceCount() == 0 )
+        {
             delete tau;
+        }
+        
     }
     
     // free the partial likelihoods
@@ -273,7 +340,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
 {
     
-//    compressed = false;
+    compressed = false;
     
     charMatrix.clear();
     gapMatrix.clear();
@@ -462,6 +529,24 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         }
     }
     
+    // reset the vector if a site is invariant
+    siteInvariant.resize( numPatterns );
+    size_t length = charMatrix.size();
+    for (size_t i=0; i<numPatterns; ++i)
+    {
+        bool inv = true;
+        unsigned long c = charMatrix[0][i];
+        for (size_t j=1; j<length; ++j)
+        {
+            if ( c != charMatrix[j][i] )
+            {
+                inv = false;
+                break;
+            }
+        }
+        siteInvariant[i] = inv;
+    }
+    
     // finally we resize the partial likelihood vectors to the new pattern counts
     this->resizeLikelihoodVectors();
     
@@ -594,7 +679,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 {
     
     // test
-    this->computeLnProbability();
+    // SH-20140822: Who and why is this in here?
+//    this->computeLnProbability();
     
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
@@ -915,30 +1001,331 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 }
 
 
+template<class charType, class treeType>
+const std::vector<double>& RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::getRootFrequencies( void ) const
+{
+    
+    if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
+    {
+        return rootFrequencies->getValue();
+    }
+    else
+    {
+        return homogeneousRateMatrix->getValue().getStationaryFrequencies();
+    }
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen)
+{
+    
+    // first, get the rate matrix for this branch
+    const RateMatrix *rm;
+    if ( this->branchHeterogeneousSubstitutionMatrices == true )
+    {
+        rm = &this->heterogeneousRateMatrices->getValue()[nodeIdx];
+    }
+    else
+    {
+        rm = &this->homogeneousRateMatrix->getValue();
+    }
+    
+    // second, get the clock rate for the branch
+    double branchTime;
+    if ( this->branchHeterogeneousClockRates == true )
+    {
+        branchTime = this->heterogeneousClockRates->getValue()[nodeIdx] * brlen;
+    }
+    else
+    {
+        branchTime = this->homogeneousClockRate->getValue() * brlen;
+    }
+    
+    // and finally compute the per site rate transition probability matrix
+    if ( this->rateVariationAcrossSites == true )
+    {
+        const std::vector<double> &r = this->siteRates->getValue();
+        for (size_t i = 0; i < this->numSiteRates; ++i)
+        {
+            rm->calculateTransitionProbabilities( branchTime * r[i], this->transitionProbMatrices[i] );
+        }
+    }
+    else
+    {
+        rm->calculateTransitionProbabilities( branchTime, this->transitionProbMatrices[0] );
+    }
+    
+}
+
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< double > *r)
+{
+    
+    // remove the old parameter first
+    if ( homogeneousClockRate != NULL )
+    {
+//        delete homogeneousClockRate;
+        homogeneousClockRate = NULL;
+    }
+    else // heterogeneousClockRate != NULL
+    {
+//        delete heterogeneousClockRates;
+        heterogeneousClockRates = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousClockRates = false;
+    homogeneousClockRate = r;
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setClockRate(const TypedDagNode< std::vector< double > > *r)
+{
+    
+    // remove the old parameter first
+    if ( homogeneousClockRate != NULL )
+    {
+//        delete homogeneousClockRate;
+        homogeneousClockRate = NULL;
+    }
+    else // heterogeneousClockRate != NULL
+    {
+//        delete heterogeneousClockRates;
+        heterogeneousClockRates = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousClockRates = true;
+    heterogeneousClockRates = r;
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setPInv(const TypedDagNode< double > *r)
+{
+    
+    // remove the old parameter first
+    if ( pInv != NULL )
+    {
+//        delete pInv;
+        pInv = NULL;
+    }
+    
+    // set the value
+    pInv = r;
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RateMatrix > *rm) {
+    
+    // remove the old parameter first
+    if ( homogeneousRateMatrix != NULL )
+    {
+//        delete homogeneousRateMatrix;
+        homogeneousRateMatrix = NULL;
+    }
+    else // heterogeneousRateMatrix != NULL
+    {
+//        delete heterogeneousRateMatrices;
+        heterogeneousRateMatrices = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousSubstitutionMatrices = false;
+    homogeneousRateMatrix = rm;
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRateMatrix(const TypedDagNode< RbVector< RateMatrix > > *rm) {
+    
+    // remove the old parameter first
+    if ( homogeneousRateMatrix != NULL )
+    {
+//        delete homogeneousRateMatrix;
+        homogeneousRateMatrix = NULL;
+    }
+    else // heterogeneousRateMatrix != NULL
+    {
+//        delete heterogeneousRateMatrices;
+        heterogeneousRateMatrices = NULL;
+    }
+    
+    // set the value
+    branchHeterogeneousSubstitutionMatrices = true;
+    heterogeneousRateMatrices = rm;
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setRootFrequencies(const TypedDagNode< std::vector< double > > *f)
+{
+    
+    // remove the old parameter first
+    if ( rootFrequencies != NULL )
+    {
+//        delete rootFrequencies;
+        rootFrequencies = NULL;
+    }
+    
+    if ( f != NULL )
+    {
+        // set the value
+        //        branchHeterogeneousSubstitutionMatrices = true;
+        rootFrequencies = f;
+    }
+    else
+    {
+        branchHeterogeneousSubstitutionMatrices = false;
+    }
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+template<class charType, class treeType>
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::setSiteRates(const TypedDagNode< std::vector< double > > *r) {
+    
+    // remove the old parameter first
+    if ( siteRates != NULL )
+    {
+//        delete siteRates;
+        siteRates = NULL;
+    }
+    
+    if ( r != NULL )
+    {
+        // set the value
+        rateVariationAcrossSites = true;
+        siteRates = r;
+        this->numSiteRates = r->getValue().size();
+        this->resizeLikelihoodVectors();
+    }
+    else
+    {
+        // set the value
+        rateVariationAcrossSites = false;
+        siteRates = NULL;
+        this->numSiteRates = 1;
+        this->resizeLikelihoodVectors();
+        
+    }
+    
+    // redraw the current value
+    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+}
+
+
 /** Get the parameters of the distribution */
 template<class charType, class treeType>
 std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::getParameters( void ) const
 {
-    std::set<const DagNode*> parameters;
+    std::set<const DagNode*> parameters = std::set<const DagNode*>();
     
     parameters.insert( tau );
+    parameters.insert( homogeneousClockRate );
+    parameters.insert( heterogeneousClockRates );
+    parameters.insert( homogeneousRateMatrix );
+    parameters.insert( heterogeneousRateMatrices );
+    parameters.insert( rootFrequencies );
+    parameters.insert( siteRates );
+    parameters.insert( siteRatesProbs );
+    parameters.insert( pInv );
     
     parameters.erase( NULL );
     return parameters;
 }
 
 
-/**
- * Swap a parameter of the distribution. We receive this call just before being replaced by a variable,
- * in which case the variable deletes the old parameter. We also receive this call during the cloning of
- * a DAG. Also in that case it is safe to leave the memory management of the tau parameter to others,
- * namely to the destructor of the original distribution owning the old parameter.
- */
+/** Swap a parameter of the distribution */
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter( const DagNode *oldP, const DagNode *newP )
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
-    // we only have the topology here as the parameter
-    if (oldP == tau) 
+    
+    if (oldP == homogeneousClockRate)
+    {
+        homogeneousClockRate = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == heterogeneousClockRates)
+    {
+        heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+    }
+    else if (oldP == homogeneousRateMatrix)
+    {
+        homogeneousRateMatrix = static_cast<const TypedDagNode< RateMatrix >* >( newP );
+    }
+    else if (oldP == heterogeneousRateMatrices)
+    {
+        heterogeneousRateMatrices = static_cast<const TypedDagNode< RbVector< RateMatrix > >* >( newP );
+    }
+    else if (oldP == rootFrequencies)
+    {
+        rootFrequencies = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+    }
+    else if (oldP == siteRates)
+    {
+        siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+    }
+    else if (oldP == siteRatesProbs)
+    {
+        siteRatesProbs = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+    }
+    else if (oldP == pInv)
+    {
+        pInv = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == tau)
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau->decrementReferenceCount();
@@ -947,23 +1334,69 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         tau->incrementReferenceCount();
         numNodes = tau->getValue().getNumberOfNodes();
     }
+    
 }
 
-
 template<class charType, class treeType>
-void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter )
-{
+void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter != tau ) 
+    if ( affecter == heterogeneousClockRates )
     {
-        for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it) 
+        const std::set<size_t> &indices = heterogeneousClockRates->getTouchedElementIndices();
+        
+        // maybe all of them have been touched or the flags haven't been set properly
+        if ( indices.size() == 0 )
+        {
+            // just delegate the call
+            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+        }
+        else
+        {
+            const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
+            // flag recomputation only for the nodes
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
+            {
+                this->recursivelyFlagNodeDirty( *nodes[*it] );
+            }
+        }
+    }
+    else if ( affecter == heterogeneousRateMatrices )
+    {
+        
+        const std::set<size_t> &indices = heterogeneousRateMatrices->getTouchedElementIndices();
+        
+        // maybe all of them have been touched or the flags haven't been set properly
+        if ( indices.size() == 0 )
+        {
+            // just delegate the call
+            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+        }
+        else
+        {
+            const std::vector<TopologyNode *> &nodes = this->tau->getValue().getNodes();
+            // flag recomputation only for the nodes
+            for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it)
+            {
+                this->recursivelyFlagNodeDirty( *nodes[*it] );
+            }
+        }
+    }
+    else if ( affecter == rootFrequencies )
+    {
+        
+        const TopologyNode &root = this->tau->getValue().getRoot();
+        this->recursivelyFlagNodeDirty( root );
+    }
+    else if ( affecter != tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
+    {
+        for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
         {
             (*it) = true;
         }
-        
+            
         // flip the active likelihood pointers
-        for (size_t index = 0; index < changedNodes.size(); ++index) 
+        for (size_t index = 0; index < changedNodes.size(); ++index)
         {
             if ( changedNodes[index] == false )
             {
@@ -974,6 +1407,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     
 }
+
+
 
 
 #endif
