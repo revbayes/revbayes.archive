@@ -358,7 +358,14 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
         storedLnProb = 1.0E6;       // An almost impossible value for the density
         if ( needsProbabilityRecalculation ) 
         {
-            lnProb = distribution->computeLnProbability();
+            if ( !this->priorOnly || !this->clamped )
+            {
+                lnProb = distribution->computeLnProbability();
+            }
+            else
+            {
+                lnProb = 0.0;
+            }
         }
         
         distribution->keep( affecter );

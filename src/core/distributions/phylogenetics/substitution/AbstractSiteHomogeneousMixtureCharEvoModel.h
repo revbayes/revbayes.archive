@@ -679,7 +679,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 {
     
     // test
-    this->computeLnProbability();
+    // SH-20140822: Who and why is this in here?
+//    this->computeLnProbability();
     
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
