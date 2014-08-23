@@ -26,7 +26,7 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n) : AbstractRateMatrix( n ), N( 10 ), m
 }
 
 /** Construct rate matrix with n states, virtual population size, mutation rates, selection coefficients */
-RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> mr, const std::vector<double> sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<double> &mr, const std::vector<double> &sc) : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
     std::vector<double> temp (4, 0.0);
     for (size_t i = 0; i<4 ; ++i) {
         mu.push_back(temp);
@@ -37,19 +37,17 @@ RateMatrix_Pomo::RateMatrix_Pomo(size_t n, const size_t vps, const std::vector<d
     updateMatrix();
 }
 
-// MJL 140822: caused compile error
-///** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
-//
-//RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
-//    std::vector<double> temp (4, 0.0);
-//    for (size_t i = 0; i<4 ; ++i) {
-//        mu.push_back(temp);
-//        s.push_back(1.0);
-//    }
-//    setMutationRates(mm);
-//    setSelectionCoefficients(sc);
-//    updateMatrix();
-//}
+/** Construct rate matrix with n states, a matrix of mutation rates, and a vector of selection coefficients */
+RateMatrix_Pomo::RateMatrix_Pomo(size_t n,  const size_t vps, const RateMatrix &mm, const std::vector<double> sc)  : AbstractRateMatrix( n ), N( vps ), matrixSize( n ){
+    std::vector<double> temp (4, 0.0);
+    for (size_t i = 0; i<4 ; ++i) {
+        mu.push_back(temp);
+        s.push_back(1.0);
+    }
+    setMutationRates(mm);
+    setSelectionCoefficients(sc);
+    updateMatrix();
+}
 
 
 /** Copy constructor */

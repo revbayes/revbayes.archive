@@ -52,7 +52,7 @@ const ArgumentRules& Func_expBranchTree::getArgumentRules( void ) const {
         types.push_back(MultivariateRealNodeValTree::getClassTypeSpec());
         types.push_back(RealNodeValTree::getClassTypeSpec());
         argumentRules.push_back(new ArgumentRule("process", true, types));
-        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec(), new Real(0) ) );
         argumentRules.push_back( new ArgumentRule( "traitindex", true, Natural::getClassTypeSpec() , new Natural(0)) );
         
         rulesSet = true;
