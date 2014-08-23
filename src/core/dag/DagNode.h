@@ -80,6 +80,7 @@ namespace RevBayesCore {
         void                                                        restore(void);
         virtual void                                                restoreAffected(void);                                                                      //!< Restore value of affected nodes recursively
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
+        virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
         void                                                        touch(void);
         virtual void                                                touchAffected(void);                                                                        //!< Touch affected nodes (flag for recalculation)
 
@@ -106,6 +107,7 @@ namespace RevBayesCore {
         mutable std::set<DagNode*>                                  children;                                                                                   //!< The children in the model graph of this node
         std::string                                                 name;
         std::set<size_t>                                            touchedElements;
+        bool                                                        priorOnly;
         DagNodeTypes                                                type;
 
     

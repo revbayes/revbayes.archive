@@ -6,8 +6,8 @@
 
 using namespace RevBayesCore;
 
-PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< unsigned int > *ps) : TypedFunction< std::vector<double> > ( new std::vector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationRates(mr), populationSize(ps)  {
-    
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode<std::vector<double> > *mr, const TypedDagNode< int > *ps) : TypedFunction< std::vector<double> > ( new std::vector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationRates(mr), populationSize(ps)  {
+    useMutationMatrix = false;
     for (size_t i = 0; i < 4+6* (populationSize->getValue()-1); ++i) {
         static_cast< std::vector<double>* >(value)->push_back(0.0);
     }
@@ -17,6 +17,21 @@ PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode<std:
     addParameter( mutationRates );
     addParameter( populationSize );
 
+    update();
+}
+
+
+PomoRootFrequenciesFunction::PomoRootFrequenciesFunction(const TypedDagNode<std::vector<double> > *fnrf, const TypedDagNode< double > *fopar, const TypedDagNode< RateMatrix > *mm, const TypedDagNode< int > *ps): TypedFunction< std::vector<double> > ( new std::vector<double> () ), fixedNucleotideRootFrequencies( fnrf ), frequencyOfPolymorphismsAtTheRoot( fopar ), mutationMatrix( mm ), populationSize(ps)  {
+    useMutationMatrix = true;
+    for (size_t i = 0; i < 4+6* (populationSize->getValue()-1); ++i) {
+        static_cast< std::vector<double>* >(value)->push_back(0.0);
+    }
+    // add the lambda parameter as a parent
+    addParameter( fixedNucleotideRootFrequencies );
+    addParameter( frequencyOfPolymorphismsAtTheRoot );
+    addParameter( mutationMatrix );
+    addParameter( populationSize );
+    
     update();
 }
 
@@ -35,11 +50,18 @@ PomoRootFrequenciesFunction* PomoRootFrequenciesFunction::clone( void ) const
 
 void PomoRootFrequenciesFunction::update( void )
 {
+    std::vector<double> mr ;
+    if (useMutationMatrix) {
+        mr = setMutationRates( mutationMatrix->getValue() );
+    }
+    else {
+        mr = mutationRates->getValue();
+    }
     
     // get the information from the arguments for reading the file
     const std::vector<double>& fnrf = fixedNucleotideRootFrequencies->getValue();
     const double& fopar = frequencyOfPolymorphismsAtTheRoot->getValue();
-    const std::vector<double>& mr = mutationRates->getValue();
+    
     const unsigned int& ps = populationSize->getValue();
     
     double OneMinusFopar = 1 - fopar;
@@ -93,10 +115,29 @@ void PomoRootFrequenciesFunction::swapParameterInternal(const DagNode *oldP, con
     }
     else if (oldP == populationSize)
     {
-        populationSize = static_cast<const TypedDagNode< unsigned int >* >( newP );
+        populationSize = static_cast<const TypedDagNode< int >* >( newP );
     }
 
     
+}
+
+
+
+std::vector<double> PomoRootFrequenciesFunction::setMutationRates(const RateMatrix& mm) {
+    std::vector<double> r;
+    r.push_back( mm[0][1] );
+    r.push_back( mm[0][2] );
+    r.push_back( mm[0][3] );
+    r.push_back( mm[1][0] );
+    r.push_back( mm[1][2] );
+    r.push_back( mm[1][3] );
+    r.push_back( mm[2][0] );
+    r.push_back( mm[2][1] );
+    r.push_back( mm[2][3] );
+    r.push_back( mm[3][0] );
+    r.push_back( mm[3][1] );
+    r.push_back( mm[3][2] );
+    return r;
 }
 
 

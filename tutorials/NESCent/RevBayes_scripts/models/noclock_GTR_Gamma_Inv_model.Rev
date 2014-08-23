@@ -1,10 +1,11 @@
 ################################################################################
 #
 # RevBayes Example: Phylogeny inference using the general time reversible
-#                   substitution model.
+#                   substitution model with rate variation among sites and
+#                   invariant sites.
 #
 # 
-# This file: Specifies the a GTR subtitution model with uncorrelated, exponentially
+# This file: Specifies the a GTR+gamma+I subtitution model with uncorrelated, exponentially
 #            distributed branch lengths. The tree is unrooted.
 #            Here, we run an MCMC on this model.
 #
@@ -50,7 +51,7 @@ mi <- 0
 numNodes <- tau.nnodes()
 for (i in 1:numNodes) {
   # We use here the exponential distribution with rate 1.0 as the branch length prior
-  brlens[i] ~ dnExponential(1.0)
+  brlens[i] ~ dnExponential(10.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[mi++] <- mvScale(brlens[i]) 
@@ -89,6 +90,25 @@ Q := gtr(er,sf)
 
 
 
+#############################
+# Among Site Rate Variation #
+#############################
+
+# As for the substitution model and the clock model above, 
+# we assume that each gene family has its own set of parameters. 
+
+shape_prior <- 0.05 
+shape ~ dnExponential( shape_prior )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+moves[mi++] <- mvScale(shape)
+
+p_inv ~ dnBeta(1,1)
+moves[mi++] <- mvSlide(p_inv)
+moves[mi++] <- mvScale(p_inv)
+
+
+
+
 ###############
 # Clock Model #
 ###############
@@ -107,7 +127,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ substModel(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
+seq ~ substModel(tree=psi, Q=Q, siteRates=norm_gamma_rates, pInv=p_inv, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)
@@ -124,39 +144,6 @@ seq.clamp(data)
 mymodel <- model(Q)
 
 
-
-
-############
-# Monitors #
-############
-
-
-monitors[1] <- modelmonitor(filename="output/gtr_non-clock.log",printgen=10, separator = "	")
-monitors[2] <- filemonitor(filename="output/gtr_non-clock.trees",printgen=10, separator = "	", psi)
-monitors[3] <- screenmonitor(printgen=10, tree_length)
-
-
-
-########
-# MCMC #
-########
-
- 
-mymcmc <- mcmc(mymodel, monitors, moves)
-
-mymcmc.run(generations=500)
-
-
-
-###################
-# Output analyses #
-###################
-
-# Now, we will analyze the tree output.
-# Let us start by reading in the tree trace
-treetrace <- readTreeTrace("output/gtr_non-clock.trees","non-clock")
-# and get the summary of the tree trace
-treetrace.summarize()
 
 
 

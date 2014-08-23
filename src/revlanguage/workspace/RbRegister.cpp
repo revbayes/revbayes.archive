@@ -273,6 +273,7 @@
 #include "Func_mrcaIndex.h"
 #include "Func_phyloRateMultiplier.h"
 #include "Func_polymorphicStateConverter.h"
+#include "Func_pomoRootFrequencies.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeHeight.h"
@@ -291,6 +292,7 @@
 #include "Func_jones.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
+#include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_wag.h"
@@ -853,10 +855,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "q",                        new Func_quit()                     );
         addFunction( "quit",                     new Func_quit()                     );
         addFunction( "range",                    new Func_range()                    );
-        addFunction( "seq",                      new Func_rep<Integer>()             );
-        addFunction( "seq",                      new Func_rep<Real>()                );
-        addFunction( "seq",                      new Func_rep<Natural>()             );
-        addFunction( "seq",                      new Func_rep<RealPos>()             );
+        addFunction( "rep",                      new Func_rep<Integer>()             );
+        addFunction( "rep",                      new Func_rep<Real>()                );
+        addFunction( "rep",                      new Func_rep<Natural>()             );
+        addFunction( "rep",                      new Func_rep<RealPos>()             );
         addFunction( "seed",                     new Func_seed()                     );
         addFunction( "seq",                      new Func_seq<Integer>()             );
         addFunction( "seq",                      new Func_seq<Real>()                );
@@ -890,6 +892,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "t92GCBranchTree",             new Func_t92GCBranchTree()            );
         addFunction( "phyloRateMultiplier",         new Func_phyloRateMultiplier()      );
         addFunction( "pomoStateConvert",            new Func_polymorphicStateConverter() );
+        addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
         addFunction( "symDiff",                     new Func_symmetricDifference()      );
         addFunction( "tmrca",                       new Func_tmrca()                    );
         addFunction( "treeAssembly",                new Func_treeAssembly()             );
@@ -912,6 +915,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "jones",    new Func_jones()   );
         addFunction( "mtMam",    new Func_mtMam()   );
         addFunction( "mtRev",    new Func_mtRev()   );
+        addFunction( "pomo",     new Func_pomo()   );
         addFunction( "rtRev",    new Func_rtRev()   );
         addFunction( "vt",       new Func_vt()      );
         addFunction( "wag",      new Func_wag()     );

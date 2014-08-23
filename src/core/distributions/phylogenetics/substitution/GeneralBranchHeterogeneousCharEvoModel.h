@@ -216,13 +216,28 @@ void RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<charType, treeType>::c
     double p_inv = this->pInv->getValue();
     double oneMinusPInv = 1.0 - p_inv;
     std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
-    for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+    if ( p_inv > 0.0 )
     {
-        if ( this->siteInvariant[site] )
+        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
-            this->lnProb += log( p_inv ) * *patterns;
+            if ( this->siteInvariant[site] )
+            {
+                this->lnProb += log( p_inv + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+            }
+            else
+            {
+                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+            }
         }
-        this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+    }
+    else
+    {
+        
+        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+        {
+            this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
+        }
+        
     }
     // normalize the log-probability
     this->lnProb -= log( this->numSiteRates ) * this->numSites;
