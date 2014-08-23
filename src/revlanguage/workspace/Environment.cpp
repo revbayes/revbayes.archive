@@ -17,6 +17,7 @@ Environment::Environment(void) :
     parentEnvironment(NULL),
     variableTable()
 {
+    
 }
 
 
@@ -27,6 +28,7 @@ Environment::Environment(Environment* parentEnv) :
     parentEnvironment(parentEnv),
     variableTable()
 {
+    
 }
 
 
@@ -39,7 +41,10 @@ Environment::Environment(const Environment &x) :
 {
     // Make a deep copy of the variable table by making sure we have clones of the variables
     for ( VariableTable::iterator i = variableTable.begin(); i != variableTable.end(); i++ )
+    {
         i->second = i->second->clone();
+    }
+    
 }
 
 
@@ -77,13 +82,17 @@ void Environment::addAlias( const std::string& name, const RevPtr<Variable>& the
     
     /* Throw an error if the name string is empty. */
     if ( name == "" )
+    {
         throw RbException("Invalid attempt to add unnamed reference variable to frame.");
+    }
     
     /* Throw an error if the variable exists. Note that we cannot use the function
      existsVariable because that function looks recursively in parent frames, which
      would make it impossible to hide global variables. */
     if ( variableTable.find( name ) != variableTable.end() )
+    {
         throw RbException( "Variable " + name + " already exists in frame" );
+    }
     
     /* Insert new alias to variable in variable table (we do not and should not name it) */
     variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
@@ -103,8 +112,10 @@ bool Environment::addFunction(const std::string& name, Function* func)
 #endif
 
     if (existsVariable(name))
+    {
         throw RbException("There is already a variable named '" + name + "' in the workspace");
-
+    }
+    
     functionTable.addFunction(name, func);
 
     return true;
@@ -128,13 +139,17 @@ void Environment::addReference( const std::string& name, const RevPtr<Variable>&
     
     /* Throw an error if the name string is empty. */
     if ( name == "" )
+    {
         throw RbException("Invalid attempt to add unnamed reference variable to frame.");
+    }
     
     /* Throw an error if the variable exists. Note that we cannot use the function
      existsVariable because that function looks recursively in parent frames, which
      would make it impossible to hide global variables. */
     if ( variableTable.find( name ) != variableTable.end() )
+    {
         throw RbException( "Variable " + name + " already exists in frame" );
+    }
     
     /* Insert new reference variable in variable table */
     RevPtr<Variable> theRef = new Variable( theVar );
@@ -154,14 +169,18 @@ void Environment::addVariable( const std::string& name, const RevPtr<Variable>& 
     
     /* Throw an error if the name string is empty. */
     if ( name == "" )
+    {
         throw RbException("Invalid attempt to add unnamed variable to frame.");
-
+    }
+    
     /* Throw an error if the variable exists. Note that we cannot use the function
         existsVariable because that function looks recursively in parent frames, which
         would make it impossible to hide global variables. */
     if ( variableTable.find( name ) != variableTable.end() )
+    {
         throw RbException( "Variable " + name + " already exists in frame" );
-
+    }
+    
     /* Insert new variable in variable table */
     variableTable.insert( std::pair<std::string, RevPtr<Variable> >( name, theVar ) );
     theVar->setName( name );
@@ -237,7 +256,9 @@ void Environment::eraseVariable(const std::string& name)
     std::map<std::string, RevPtr<Variable> >::iterator it = variableTable.find(name);
 
     if ( it == variableTable.end() )
+    {
         throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist in environment");
+    }
     else
     {
         // Free the memory for the variable (smart pointer, so happens automatically) and
@@ -258,8 +279,12 @@ void Environment::eraseVariable(const RevPtr<Variable>& var) {
     VariableTable::iterator it;
     for ( it=variableTable.begin(); it != variableTable.end(); ++it )
     {
+        
         if ( it->second == var )
+        {
             break;
+        }
+        
     }
     
     if ( it == variableTable.end() )
@@ -280,6 +305,7 @@ void Environment::eraseVariable(const RevPtr<Variable>& var) {
  */
 RevPtr<Variable> Environment::executeFunction(const std::string& name, const std::vector<Argument>& args)
 {
+    
     return functionTable.executeFunction(name, args);
 }
 
@@ -297,10 +323,16 @@ bool Environment::existsVariable(const std::string& name) const
 {
     if (variableTable.find(name) == variableTable.end())
     {
+        
         if (parentEnvironment != NULL)
+        {
             return parentEnvironment->existsVariable(name);
+        }
         else
+        {
             return false;
+        }
+        
     }
 
     return true;
@@ -321,19 +353,22 @@ std::string Environment::generateUniqueVariableName(void)
 /** Return variable table (const) */
 const VariableTable& Environment::getVariableTable(void) const
 {
+    
     return variableTable;
 }
 
 
 /** Return variable table */
 VariableTable& Environment::getVariableTable(void) {
-                    return variableTable;
+    
+    return variableTable;
 }
 
 
 /** Get function. This call will throw an error if the name is missing or present multiple times. */
 const Function& Environment::getFunction(const std::string& name)
 {
+    
     return functionTable.getFunction(name);
 }
 
@@ -341,18 +376,23 @@ const Function& Environment::getFunction(const std::string& name)
 /* Get function. This call will throw an error if the function is missing. */
 Function& Environment::getFunction(const std::string& name, const std::vector<Argument>& args, bool once)
 {
+    
     return functionTable.getFunction(name, args, once);
 }
 
 
 /** Return the function table (const) */
-const FunctionTable& Environment::getFunctionTable(void) const {
+const FunctionTable& Environment::getFunctionTable(void) const
+{
+
     return functionTable;
 }
 
 
 /** Return the function table */
-FunctionTable& Environment::getFunctionTable(void) {
+FunctionTable& Environment::getFunctionTable(void)
+{
+
     return functionTable;
 }
 
@@ -386,10 +426,16 @@ RevPtr<Variable>& Environment::getVariable(const std::string& name)
     
     if ( variableTable.find(name) == variableTable.end() )
     {
+        
         if ( parentEnvironment != NULL )
+        {
             return parentEnvironment->getVariable( name );
+        }
         else
+        {
             throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
+        }
+        
     }
     
 #ifdef DEBUG_WORKSPACE
@@ -407,10 +453,16 @@ const RevPtr<Variable>& Environment::getVariable(const std::string& name) const
     
     if ( variableTable.find(name) == variableTable.end() )
     {
+        
         if ( parentEnvironment != NULL )
+        {
             return const_cast<const Environment*>( parentEnvironment )->getVariable( name );
+        }
         else
+        {
             throw RbException(RbException::MISSING_VARIABLE, "Variable " + name + " does not exist");
+        }
+        
     }
     
     return it->second;
@@ -437,11 +489,15 @@ bool Environment::isSameOrParentOf(const Environment& otherEnvironment) const
 {
 
     if ( this == &otherEnvironment )
+    {
         return true;
-
+    }
+    
     if ( otherEnvironment.parentEnvironment == NULL )
+    {
         return false;
-
+    }
+    
     return isSameOrParentOf( otherEnvironment.parentEnvironment );
 }
 
