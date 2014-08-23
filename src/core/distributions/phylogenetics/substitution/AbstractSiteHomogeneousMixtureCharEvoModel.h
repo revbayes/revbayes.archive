@@ -5,6 +5,7 @@
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
+#include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
@@ -1340,6 +1341,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
+    bool touchAll = false;
+    
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == heterogeneousClockRates )
     {
@@ -1348,8 +1351,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )
         {
-            // just delegate the call
-            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+            // just flag everyting for recomputation
+            touchAll = true;
         }
         else
         {
@@ -1369,8 +1372,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )
         {
-            // just delegate the call
-            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+            // just flag everyting for recomputation
+            touchAll = true;
         }
         else
         {
@@ -1390,11 +1393,16 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     else if ( affecter != tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
+        touchAll = true;
+    }
+    
+    if ( touchAll )
+    {
         for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
         {
             (*it) = true;
         }
-            
+        
         // flip the active likelihood pointers
         for (size_t index = 0; index < changedNodes.size(); ++index)
         {
