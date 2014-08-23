@@ -76,26 +76,7 @@ public:
         }
         return path;
     }
-
-    /**
-     * List all files (optionally filtered by extension) in the given list of directories.
-     * 
-     * @param directories   directories in which to search
-     * @param extension     full extension including the dot, eg .rev, .exe, ...
-     * @return 
-     */
-    static StringVector getFileList(StringVector directories, std::string extension = "") {
-        StringVector result;
-
-        BOOST_FOREACH(std::string s, directories) {
-
-            BOOST_FOREACH(std::string _s, getFileList(s, extension)) {
-                result.push_back(_s);
-            }
-        }
-        return result;
-    }
-
+    
     /**
      * List all files  in the given directory.
      * 

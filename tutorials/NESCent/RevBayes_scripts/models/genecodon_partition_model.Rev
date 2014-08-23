@@ -1,14 +1,19 @@
 ################################################################################
 #
-# RevBayes Exercise: Calculating Marginal Liklihoods and Bayes Factors to test
-#  data partitioning strategies
+# RevBayes Exercise: Data partitioning strategies
 # 
 # This file: Specifies the full model parameters and moves for a 2-gene
-#        partition model
+#        partition model with codon specific substitution models
 #
 # authors: Tracy A. Heath, Michael Landis, and Sebastian Hoehna
 #
 ################################################################################
+
+
+
+#######################
+# Reading in the Data #
+#######################
 
 
 # read in the character data
@@ -41,8 +46,8 @@ n_branches <- 2 * n_species - 3
 
 
 #################################
-# Subsitution Model #
-#   Loop over each partition   #
+#      Substitution Model       #
+#   Loop over each partition    #
 #################################
   
 mi <- 0
@@ -65,6 +70,19 @@ for (i in 1:n_parts){
 
 }
 
+# create a rate multiplier for each partitition that scales the tree
+#part_rate_mult_prior <- rep(n_parts,1)
+#part_rate_mult ~ dnDirichlet( part_rate_mult_prior )
+#
+#moves[mi++] <- mvSimplexElementScale(part_rate_mult, alpha=10, tune=true, weight=2.0)
+
+
+
+##############
+# Tree model #
+##############
+
+
 # Specify a uniform topology prior
 topology ~ uniformTopology(n_species, names)
 
@@ -76,26 +94,38 @@ moves[mi++] <- mvNNI(topology, weight=10.0)
 # create a random variable for each branch length using a for loop
 for (i in 1:n_branches) {
   # We use here the exponential distribution with rate 1.0 as the branch length prior
-  br_lens[i] ~ dnExponential(1.0)
+  br_lens[i] ~ dnExponential(10.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
   moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
 }
 
-nb <- n_branches * 1.0
-#tree_length := mean(br_lens) * nb
-tree_length := br_lens[1]
+# create a deterministic variable for monitoring purposes
+tree_length := sum(br_lens)
 
 # Build the tree by combining the topology with the branch length.
 phylogeny := treeAssembly(topology, br_lens)
 
 
 
+
+
+###################
+# PhyloCTMC Model #
+###################
+
 for (i in 1:n_parts){
+#  phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], clockRate=part_rate_mult[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i] ~ phyloCTMC(tree=phylogeny, Q=Q[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
   phyloSeq[i].clamp(data[i])
 }
 
+
+
+
+#############
+# THE Model #
+#############
 
 mymodel <- model(topology)
 

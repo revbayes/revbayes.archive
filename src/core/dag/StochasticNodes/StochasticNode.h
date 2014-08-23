@@ -217,7 +217,8 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
 
 
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::clamp(valueType *val) {
+void RevBayesCore::StochasticNode<valueType>::clamp(valueType *val)
+{
     // clamp the node with the value
     // we call set value because some derived classes might have special implementations for setting values (e.g. mixtures)
     setValue( val );
@@ -229,7 +230,8 @@ void RevBayesCore::StochasticNode<valueType>::clamp(valueType *val) {
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>::clone( void ) const {
+RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>::clone( void ) const
+{
     
     return new StochasticNode<valueType>( *this );
 }
@@ -241,7 +243,8 @@ RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+void RevBayesCore::StochasticNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+{
     
     // insert this node as one of the affected
     affected.insert( this );
@@ -273,7 +276,14 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
     if ( needsProbabilityRecalculation ) 
     {
         // compute and store log-probability
-        lnProb = distribution->computeLnProbability();
+        if ( !this->priorOnly || !this->clamped )
+        {
+            lnProb = distribution->computeLnProbability();
+        }
+        else
+        {
+            lnProb = 0.0;
+        }
         
         // reset flag
         needsProbabilityRecalculation = false;
@@ -348,7 +358,14 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter ) {
         storedLnProb = 1.0E6;       // An almost impossible value for the density
         if ( needsProbabilityRecalculation ) 
         {
-            lnProb = distribution->computeLnProbability();
+            if ( !this->priorOnly || !this->clamped )
+            {
+                lnProb = distribution->computeLnProbability();
+            }
+            else
+            {
+                lnProb = 0.0;
+            }
         }
         
         distribution->keep( affecter );

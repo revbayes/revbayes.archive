@@ -5,6 +5,7 @@
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RateMatrix.h"
+#include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
@@ -340,7 +341,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
 {
     
-//    compressed = false;
+    compressed = false;
     
     charMatrix.clear();
     gapMatrix.clear();
@@ -531,11 +532,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     
     // reset the vector if a site is invariant
     siteInvariant.resize( numPatterns );
+    size_t length = charMatrix.size();
     for (size_t i=0; i<numPatterns; ++i)
     {
         bool inv = true;
         unsigned long c = charMatrix[0][i];
-        for (size_t j=1; j<numNodes; ++j)
+        for (size_t j=1; j<length; ++j)
         {
             if ( c != charMatrix[j][i] )
             {
@@ -678,7 +680,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 {
     
     // test
-    this->computeLnProbability();
+    // SH-20140822: Who and why is this in here?
+//    this->computeLnProbability();
     
     // reset all flags
     for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it) 
@@ -1148,10 +1151,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
     {
+//        delete homogeneousRateMatrix;
         homogeneousRateMatrix = NULL;
     }
     else // heterogeneousRateMatrix != NULL
     {
+//        delete heterogeneousRateMatrices;
         heterogeneousRateMatrices = NULL;
     }
     
@@ -1174,10 +1179,12 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
     {
+//        delete homogeneousRateMatrix;
         homogeneousRateMatrix = NULL;
     }
     else // heterogeneousRateMatrix != NULL
     {
+//        delete heterogeneousRateMatrices;
         heterogeneousRateMatrices = NULL;
     }
     
@@ -1201,6 +1208,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( rootFrequencies != NULL )
     {
+//        delete rootFrequencies;
         rootFrequencies = NULL;
     }
     
@@ -1230,6 +1238,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     // remove the old parameter first
     if ( siteRates != NULL )
     {
+//        delete siteRates;
         siteRates = NULL;
     }
     
@@ -1332,6 +1341,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
 template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( DagNode* affecter ) {
     
+    bool touchAll = false;
+    
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if ( affecter == heterogeneousClockRates )
     {
@@ -1340,8 +1351,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )
         {
-            // just delegate the call
-            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+            // just flag everyting for recomputation
+            touchAll = true;
         }
         else
         {
@@ -1361,8 +1372,8 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )
         {
-            // just delegate the call
-            AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::touchSpecialization( affecter );
+            // just flag everyting for recomputation
+            touchAll = true;
         }
         else
         {
@@ -1382,11 +1393,16 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     }
     else if ( affecter != tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     {
+        touchAll = true;
+    }
+    
+    if ( touchAll )
+    {
         for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
         {
             (*it) = true;
         }
-            
+        
         // flip the active likelihood pointers
         for (size_t index = 0; index < changedNodes.size(); ++index)
         {
