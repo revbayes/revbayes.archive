@@ -59,6 +59,7 @@ namespace RevBayesCore {
         void                                                setRootFrequencies(const TypedDagNode< std::vector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< std::vector< double > > *r);
         void                                                setDistancePower(const TypedDagNode<double>* dp);
+        void                                                setCladogenicStateFrequencies(const TypedDagNode<std::vector<double> >* csf);
 
         // ambiguous characters at tips
         const std::vector<double>&                          getTipProbs(const TopologyNode& nd);
@@ -113,6 +114,7 @@ namespace RevBayesCore {
         const TypedDagNode< std::vector< double > >*        siteRates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
+        const TypedDagNode< std::vector< double > >*        cladogenicStateFreqs;
         std::vector<std::vector<double> >                   tipProbs;
         std::vector<double>                                 epochs;
         
@@ -148,6 +150,10 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     siteRates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
+    
+    std::vector<double> csfInit = std::vector<double>(3, 0.0);
+    csfInit[0] = 1.0;
+    cladogenicStateFreqs        = new ConstantNode<std::vector<double> >("cladoStateFreqs", new std::vector<double>(csfInit));
     tipProbs.clear();
     redrawCount                 = 0;
     
@@ -181,6 +187,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     siteRates                   = d.siteRates;
     homogeneousRateMap          = d.homogeneousRateMap;
     heterogeneousRateMaps       = d.heterogeneousRateMaps;
+    cladogenicStateFreqs        = d.cladogenicStateFreqs;
 //    distancePower               = d.distancePower;
     tipProbs                    = d.tipProbs;
     redrawCount                 = d.redrawCount;
@@ -232,9 +239,16 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 	unsigned int n0 = (unsigned)(this->numSites - n1);
     unsigned counts[2] = { n0, n1 };
     
+    
+    if (!node.isTip() && cladogenicEvents)
+    {
+        const std::vector<double>& cladoProbs = cladogenicStateFreqs->getValue();
+        lnL +=  log( cladoProbs[ cladogenicState[ node.getChild(0).getIndex() ] ] );
+    }
+    
     if (node.isRoot())
     {
-        return 0.0;
+        return lnL;
     }
     
     if (counts[1] == 0 && forbidExtinction)
@@ -355,6 +369,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         if (debug) std::cout << "-------\n\n";
 
 //        if (debug) std::cout << lnL << "\n";
+        
         
         if (lnL != lnL)
         {
@@ -1069,6 +1084,31 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
 }
 
 template<class charType, class treeType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicStateFrequencies(const TypedDagNode< std::vector< double > > *csf) {
+    
+    if (csf != NULL)
+    {
+        cladogenicEvents = true;
+//        this->addParameter( cladogenicStateFreqs );
+        cladogenicStateFreqs = csf;
+    }
+    else
+    {
+        cladogenicEvents = false;
+//        this->removeParameter( cladogenicStateFreqs );
+        cladogenicStateFreqs = NULL;
+        
+    }
+    
+    // redraw the current value
+    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    {
+        this->redrawValue();
+    }
+    
+}
+    
+template<class charType, class treeType>
 const std::vector<std::vector<double> >& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getTipProbs(void)
 {
     return tipProbs;
@@ -1308,6 +1348,7 @@ std::set<const RevBayesCore::DagNode*> RevBayesCore::BiogeographicTreeHistoryCtm
     parameters.insert( heterogeneousRateMaps );
     parameters.insert( rootFrequencies );
     parameters.insert( siteRates );
+    parameters.insert( cladogenicStateFreqs );
     
     parameters.erase( NULL );
     return parameters;
@@ -1333,6 +1374,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParamet
     else if (oldP == siteRates)
     {
         siteRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+    }
+    else if (oldP == cladogenicStateFreqs)
+    {
+        cladogenicStateFreqs = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
     }
     else
     {

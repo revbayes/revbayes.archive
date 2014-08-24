@@ -100,14 +100,6 @@ for (i in 1:nTraits)	{
 # here we will monitor the correlation coefficient between trait 1 and trait 2 (sexual maturity and body mass)
 cor12 := sigma.correlation(1,2)
 
-# other possible examples
-# covariance
-# cov12 := sigma.covariance(1,2)
-# variance per unit of time of body mass evolution
-# var2 := sigma.covariance(2,2)
-# partial correlation coefficient between variations in maturity and mass (controlled for the other trait, i.e. longevity)
-# parcor12 := sigma.partialCorrelation(1,2)
-
 # get useful outputs from the brownian process
 # the mean and the variance across the tree, for each trait
 for (i in 1:nTraits)	{
@@ -118,33 +110,6 @@ for (i in 1:nTraits)	{
 ######### 
 # substitution process
 #########
-
-# rate of variation of the log of the rate of substitution
-nu ~ exponential(0.1)
-
-# moves on nu
-moves[index] <- mScale(nu, lambda=2.0, tune=true, weight=3.0)
-index <- index + 1
-
-# Brownian motion also can have systematic trend, called drift
-# here, we do not want drift, so we set it equal to 0
-drift <- 0
-
-# create Brownian process along the tree
-lograte ~ brownian(tau,sigma=nu,drift=drift)
-
-# moves on the Brownian process
-moves[index] <- mvRealNodeValTreeSliding(process=lograte,lambda=1,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=1,tune=true,weight=10) 
-index <- index + 1
-moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=0.1,tune=true,weight=10) 
-index <- index + 1
-
-# two useful summary statistics for checking convergence
-# mean and std dev of variation of the process along the tree
-meanlograte := lograte.mean()
-stdevlograte := lograte.stdev()
 
 # equilibrium frequencies 
 bf <- v(1,1,1,1)
@@ -166,10 +131,13 @@ Q := gtr(er,pi)
 # in the lognormal clock, rates across branches are given by the exponential of the Brownian motion
 # specifically, the rate along a branch is the mean of the exponential of the value of the Brownian motion at both ends
 
-branchrates := expBranchTree(tree=tau,process=lograte);
+clockRate ~ exponential(0.1)
+
+moves[index] <- mScale(clockRate, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
 
 # create the sequence evolution model
-seq ~ substModel(tree=tau, Q=Q, branchRates=branchrates, nSites=nSites, type="DNA")
+seq ~ substModel(tree=tau, Q=Q, branchRates=clockRate, nSites=nSites, type="DNA")
 
 # condition on sequence alignment
 seq.clamp(seqData)
@@ -187,19 +155,16 @@ mymodel <- model(kappa)
 # create the monitors
 
 # on screen, we will monitor only the correlation coefficient and the mean value of each trait
-monitors[1] <- screenmonitor(printgen=10, nu, meanlograte, stdevlograte, cor12, meanbr)
+monitors[1] <- screenmonitor(printgen=10, clockRate, cor12, meanbr)
 
 # a file monitor just for the covariance matrix
-monitors[2] <- filemonitor(filename="output/placdatestraits.cov",printgen=10, separator = "	", sigma)
+monitors[2] <- filemonitor(filename="output/placdatestraitsclock.cov",printgen=10, separator = "	", sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[3] <- filemonitor(filename="output/placdatestraits.traits",printgen=10, separator = "	", br)
-
-# monitoring the *instant* values of the *log* of the rate at each node of the tree
-monitors[4] <- filemonitor(filename="output/placdatestraits.lograte",printgen=10, separator = "	", lograte)
+monitors[3] <- filemonitor(filename="output/placdatestraitsclock.traits",printgen=10, separator = "	", br)
 
 # a model monitor
-monitors[5] <- modelmonitor(filename="output/placdatestraits.log",printgen=10, separator = "	")
+monitors[4] <- modelmonitor(filename="output/placdatestraitsclock.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
