@@ -70,13 +70,14 @@ RevPtr<Variable> Func_ls::execute( void ) {
         
         s.str("");
         VariableTable::const_iterator it;
-        std::ostringstream t;
+        std::ostringstream t1, t2;
         for ( it = variables.begin(); it != variables.end(); ++it )
         {
-            t.str("");
-            t << (*it).first << " = ";
-            (*it).second->printValue( t );
-            s << StringUtilities::oneLiner( t.str(), 75 ) << std::endl;
+            t1.str("");
+            t1 << (*it).first << " = ";
+            t2.str("");
+            (*it).second->printValue( t2 );
+            s << t1.str() << StringUtilities::oneLiner( t2.str(), 75 - t1.str().size() ) << std::endl;
         }
         
         s << std::endl;
