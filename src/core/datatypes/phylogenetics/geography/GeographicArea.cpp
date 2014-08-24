@@ -173,3 +173,15 @@ void GeographicArea::swapReachableAreas(GeographicArea* oldArea, GeographicArea*
         reachableAreas.erase(it);
     reachableAreas.insert(newArea);
 }
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const GeographicArea& x) {
+    
+    std::stringstream s;
+    
+    // Generate nice header
+    o << std::endl;
+    s << "GeographicArea" << std::endl;
+    o << s.str();
+    
+    return o;
+}

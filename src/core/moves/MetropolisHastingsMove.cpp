@@ -182,61 +182,63 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
                 (*i)->restore();
             }
 	}
-    
-    
-    // finally add the Hastings ratio
-    double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-    
-    if (lnAcceptanceRatio >= 0.0)
+    else
     {
-        numAccepted++;
-        
-        // call accept for each node
-        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-        {
-            (*i)->keep();
-        }
-        
-    }
-    else if (lnAcceptanceRatio < -300.0)
-    {
-        proposal->undoProposal();
-        
-        // call restore for each node
-        for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-        {
-            (*i)->restore();
-        }
-    }
-    else 
-    {
-        double r = exp(lnAcceptanceRatio);
-        // Accept or reject the move
-        double u = GLOBAL_RNG->uniform01();
-        if (u < r) 
+    
+        // finally add the Hastings ratio
+        double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
+    
+        if (lnAcceptanceRatio >= 0.0)
         {
             numAccepted++;
-            
+        
             // call accept for each node
             for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
             {
                 (*i)->keep();
             }
-            
-            proposal->cleanProposal();
+        
         }
-        else 
+        else if (lnAcceptanceRatio < -300.0)
         {
             proposal->undoProposal();
-            
+        
             // call restore for each node
             for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
             {
                 (*i)->restore();
             }
         }
-    }
+        else
+        {
+            double r = exp(lnAcceptanceRatio);
+            // Accept or reject the move
+            double u = GLOBAL_RNG->uniform01();
+            if (u < r)
+            {
+                numAccepted++;
+            
+                // call accept for each node
+                for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+                {
+                    (*i)->keep();
+                }
+            
+                proposal->cleanProposal();
+            }
+            else
+            {
+                proposal->undoProposal();
+            
+                // call restore for each node
+                for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+                {
+                    (*i)->restore();
+                }
+            }
+        }
 
+    }
 
 }
 

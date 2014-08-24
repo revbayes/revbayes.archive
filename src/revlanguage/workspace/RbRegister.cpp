@@ -648,6 +648,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // brownian motion
         addDistribution( "dnBrownian",              new Dist_brownian() );
         addDistribution( "brownian",                new Dist_brownian() );
+        addDistribution( "Brownian",                new Dist_brownian() );
         addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
@@ -1211,6 +1212,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("pnorm", new DistributionFunctionCdf( new Dist_norm() ) );
         addFunction("qnorm", new DistributionFunctionQuantile( new Dist_norm() ) );
         addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_norm() ) );
+        
+        //
+        addFunction("dpoisson", new DistributionFunctionPdf<Natural>( new Dist_poisson() ) );
+        addFunction("rpoisson", new DistributionFunctionRv<Natural>( new Dist_poisson() ) );
         
         // uniform distribution
         addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );
