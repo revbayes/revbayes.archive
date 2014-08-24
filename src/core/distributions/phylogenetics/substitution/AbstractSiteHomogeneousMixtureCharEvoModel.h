@@ -136,6 +136,7 @@ namespace RevBayesCore {
         std::vector<std::vector<bool> >                                     gapMatrix;
         std::vector<size_t>                                                 patternCounts;
         std::vector<bool>                                                   siteInvariant;
+        std::vector<size_t>                                                 invariantSiteIndex;
         size_t                                                              numPatterns;
         bool                                                                compressed;
         
@@ -211,6 +212,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     patternCounts(),
     numPatterns( numSites ),
     siteInvariant( numSites, false ),
+    invariantSiteIndex( numSites, 0 ),
     compressed( c ),
     changedNodes( std::vector<bool>(numNodes,false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
@@ -265,6 +267,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     patternCounts( n.patternCounts ),
     numPatterns( n.numPatterns ),
     siteInvariant( n.siteInvariant ),
+    invariantSiteIndex( n.invariantSiteIndex ),
     compressed( n.compressed ),
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
@@ -532,11 +535,28 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     
     // reset the vector if a site is invariant
     siteInvariant.resize( numPatterns );
+    invariantSiteIndex.resize( numPatterns );
     size_t length = charMatrix.size();
     for (size_t i=0; i<numPatterns; ++i)
     {
         bool inv = true;
         unsigned long c = charMatrix[0][i];
+        
+//        unsigned long val = c;
+//        size_t d = 0;
+//        while ( val > 0 ) // there are still observed states left
+//        {
+//            // remove this state from the observed states
+//            val >>= 1;
+//            
+//            // increment the pointer to the next transition probability
+//            ++d;
+//        } // end-while over all observed states for this character
+//        
+//        invariantSiteIndex[i] = d;
+
+        invariantSiteIndex[i] = c;
+        
         for (size_t j=1; j<length; ++j)
         {
             if ( c != charMatrix[j][i] )
@@ -545,6 +565,7 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
                 break;
             }
         }
+        
         siteInvariant[i] = inv;
     }
     

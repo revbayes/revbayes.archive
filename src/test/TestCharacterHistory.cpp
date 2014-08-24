@@ -284,6 +284,10 @@ bool TestCharacterHistory::run_exp(void) {
     // gtr model priors
     ConstantNode<std::vector<double> > *pi_pr = new ConstantNode<std::vector<double> >( "pi_rf", new std::vector<double>(2,1.0) );
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(pi_pr) );
+    
+    // cladogenic state frequencies
+    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(3,1.0) );
+    StochasticNode<std::vector<double> > *csf = new StochasticNode<std::vector<double> >( "csf", new DirichletDistribution(csf_pr) );
 
     
     
@@ -297,6 +301,7 @@ bool TestCharacterHistory::run_exp(void) {
         brmf_likelihood->setRootFrequencies(pi);
     
     DeterministicNode<RateMap> *q_likelihood = new DeterministicNode<RateMap>("Q_like", brmf_likelihood);
+
     
     // Q-map used to sample path histories
     BiogeographyRateMapFunction* brmf_sample = new BiogeographyRateMapFunction(numAreas, false);
@@ -309,9 +314,13 @@ bool TestCharacterHistory::run_exp(void) {
     
     DeterministicNode<RateMap> *q_sample = new DeterministicNode<RateMap>("Q_sample", brmf_sample);
     
+    
+   
+    
     // and the character model
     BiogeographicTreeHistoryCtmc<StandardState, TimeTree> *biogeoCtmc = new BiogeographicTreeHistoryCtmc<StandardState, TimeTree>(tau, 2, numAreas, usingAmbiguousCharacters, forbidExtinction, useCladogenesis);
     biogeoCtmc->setRateMap(q_likelihood);
+    biogeoCtmc->setCladogenicStateFrequencies(csf);
     if (data.size() == 2 && usingAmbiguousCharacters)
         biogeoCtmc->setTipProbs( data[1] );
     
@@ -369,6 +378,13 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new SimplexMove( pi, 100.0, 2, 0, true, 2.0 ) );
     }
     
+    if (useCladogenesis)
+    {
+        moves.push_back( new SimplexMove( csf, 250.0, 3, 0, true, 2.0, 1.0 ) );
+        moves.push_back( new SimplexMove( csf, 200.0, 1, 0, false, 1.0 ) );
+        
+    }
+    
     moves.push_back( new VectorScaleMove(glr_stoch, 0.5, false, 2.0));
     moves.push_back( new VectorScaleMove(glr_stoch, 0.1, false, 4.0));
     for( size_t i=0; i<2; i++)
@@ -377,7 +393,6 @@ bool TestCharacterHistory::run_exp(void) {
         moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[i], 0.5), 4.0, !true ) );
     
     }
-    
 //
     //            moves.push_back( new MetropolisHastingsMove( new ScaleProposal(glr_nonConst[0], 0.1), 1.0, !true ) );
     
@@ -446,6 +461,8 @@ bool TestCharacterHistory::run_exp(void) {
     monitoredNodes.insert( glr_vector );
     if (useRootFreqs)
         monitoredNodes.insert( pi );
+    if (useCladogenesis)
+        monitoredNodes.insert( csf );
     
     monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );

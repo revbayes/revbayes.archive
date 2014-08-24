@@ -1,0 +1,111 @@
+\usepackage[]{authblk}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{longtable}
+\usepackage{hanging}
+\usepackage{indentfirst}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{upgreek}
+\usepackage{framed}
+\usepackage{ textcomp }
+\usepackage[weather]{ifsym}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{soul}
+\usepackage{amsmath, amsfonts,amssymb,mathrsfs}
+\usepackage{fancyhdr}
+\usepackage[compact]{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\setlength{\evensidemargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+\setlength{\tabcolsep}{0in}
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{7in}
+\setlength{\topmargin}{0in}
+\setlength{\topskip}{0in}
+\setlength{\voffset}{0in}
+%\setstretch{2}
+%\raggedright
+\parskip = 0.15in
+\pagestyle{plain}
+\setlength{\parindent}{0cm}
+
+\definecolor{citescol}{RGB}{194,101,1}
+%\definecolor{citescol}{RGB}{73,0,165}
+\definecolor{urlscol}{RGB}{0,150,206}
+%\definecolor{urlscol}{RGB}{0,107,124}
+%\definecolor{linkscol}{RGB}{187,24,0}
+\definecolor{linkscol}{RGB}{149,0,207}
+%\definecolor{linkscol}{RGB}{73,0,165}
+\definecolor{mycol}{RGB}{25,23,191}
+\definecolor{outputcol}{RGB}{34,139,34}
+\definecolor{tcol}{RGB}{165,0,14}
+
+
+%\def\Fld@bordercolor{1 0 0}
+%\renewcommand*{\DefaultHeightofTextMultiline}{6\baselineskip} 
+%\renewcommand*{\LayoutTextField}[2]{\makebox[6em][l]{#1 }%
+%  \raisebox{\baselineskip}{\raisebox{-\height}{#2}}}
+%\def\LayoutChoiceField#1#2{\makebox[6em][l]{#1 }#2}
+
+%\LayoutTextField{label}{field}
+
+\DeclareMathAlphabet{\msfsl}{T1}{cmr}{m}{it}
+\DeclareMathAlphabet{\msyf}{OMX}{pcr}{m}{it}
+\newcommand{\alf}{\upalpha}
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+
+\newcommand{\levelone}[1]{
+\bigskip
+\noindent{\LARGE{\textsc{#1}}}
+\vspace {0.05in}
+}
+
+\newcommand{\leveltwo}[1]{
+\bigskip
+\noindent{\Large{\textit{#1}}}
+\vspace {-1mm}
+}
+
+\newcommand{\descriptionhead}[1]{
+\noindent{\textbf{\textit{#1}}}\\ \vspace{-7mm}
+}
+
+\newcommand{\dhead}[1]{
+\noindent{\textbf{\textit{#1 --}}}
+}
+
+
+\newcommand{\exs}[1]{
+\vspace{-4mm}
+\begin{itemize}
+\item #1 \\ \vspace{-8mm}
+\end{itemize}
+}
+
+\newcommand{\nbo}[1]{{\color{red}{#1}}}
+
+
+\newcommand{\stepbullet}{\noindent \textbullet \ }
+\newcommand{\mi}[1]{\textbf{\textit{#1}}}
+
+
+\newcommand{\levelthree}[1]{\textit{#1 --}}
+
+%\newcommand{\bowtiecirclefig}{{\rlap{\rlap{{\textbf{\BigCircle}}}{\FilledTriangleLeft}}\FilledTriangleRight}}
+
+\bibliographystyle{bib_tex/mbe}
+\bibpunct[; ]{(}{)}{;}{a}{,}{;}
+
+
+\usepackage[breaklinks]{hyperref}
+\usepackage[all]{hypcap}
+\hypersetup{colorlinks=true,linkcolor=linkscol,citecolor=citescol,urlcolor=urlscol}
+
