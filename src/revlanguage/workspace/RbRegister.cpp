@@ -648,6 +648,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // brownian motion
         addDistribution( "dnBrownian",              new Dist_brownian() );
         addDistribution( "brownian",                new Dist_brownian() );
+        addDistribution( "Brownian",                new Dist_brownian() );
         addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
