@@ -26,15 +26,6 @@ Func_tanhBranchTree* Func_tanhBranchTree::clone( void ) const {
     return new Func_tanhBranchTree(*this);
 }
 
-/*
-RevBayesCore::HyperbolicTangentBranchTree* HyperbolicTangentBranchTree::createFunction(void) const {
-    
-    // todo: implement this or find better solution (Sebastian)
-    throw RbException("Missing implemention in HyperbolicTangentBranchTree::createFunction");
-    
-    return NULL;
-}
-*/
 
 /* Get argument rules */
 const ArgumentRules& Func_tanhBranchTree::getArgumentRules( void ) const {
@@ -47,8 +38,8 @@ const ArgumentRules& Func_tanhBranchTree::getArgumentRules( void ) const {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "process", true, RevLanguage::MultivariateRealNodeValTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "offset", true, Real::getClassTypeSpec() , new Real(0)) );
+        argumentRules.push_back( new ArgumentRule( "traitindex", true, Integer::getClassTypeSpec(), new Natural(0) ) );
         
         rulesSet = true;
     }
