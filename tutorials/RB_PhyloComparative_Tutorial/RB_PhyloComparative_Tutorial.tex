@@ -1,85 +1,322 @@
-\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
-\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
-\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
-%\geometry{landscape}                		% Activate for for rotated page geometry
-%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
-\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
-								% TeX will automatically convert eps --> pdf in pdflatex		
-\usepackage{amssymb}
+\documentclass[usletter]{article}
+\usepackage[latin1]{inputenc}
+%\usepackage[french]{babel}
+%\usepackage{t1enc}
+%\usepackage[francais]{babel}
 
-\usepackage{natbib}
+\usepackage{vmargin}
+\usepackage{amssymb,amstext,amsmath}
+\usepackage{hyperref}
+\usepackage{epsfig}
+\usepackage{array}
+\usepackage{color}
+\usepackage{xspace}
 
+\usepackage{latexsym}
 
-\title{RevBayes Tutorial -- Phylogenetic and comparative models}
-\author{Nicolas Lartillot}
-\date{\today}							% Activate to display a given date or no date
+\usepackage{tikz} 
+
+\usepgflibrary{shapes.misc} 
+
+\newcommand{\cmd}[1]{\texttt{#1}}
+
+%\newtheorem{command}{Command}{\bfseries}{\normalfont}
+
+\renewcommand{\baselinestretch}{1.5}
+
+\title{RevBayes -- Phylogenies and the comparative method}
+
 
 \begin{document}
 \maketitle
-%\section{}
-%\subsection{}
 
-\section{Overview}
+\section*{Introduction}
 
-\subsection{The comparative method}
-
-The aim of the comparative method is the analysis of trait evolution at the macroevolutionary scale.
-Traits can be morphological, behavioral or can be related to the life-history strategies of the organisms that bear them.
-%They can be discrete (typically, presence of absence of particular morphological structures, number of vertebrae or segments, reproductive strategies, such as autogamy or allogamy) or continuous (body size, or life-history traits such as longevity or age at sexual maturity).
+The subject of the comparative method is the analysis of trait evolution at the macroevolutionary scale.
+Traits can be morphological, behavioral or can be related to the life-history strategies (e.g. longevity).
 In a comparative context, many different questions can be addressed: tempo and mode of evolution, correlated evolution of multiple quantitative traits, trends and bursts, changes in evolutionary mode correlated with major key innovations in some groups, etc.
 
-\subsection{The role of phylogenies in comparative analyses}
-
-In order to correctly formalize comparative questions, the underlying phylogeny should always be be explicitly accounted for. This point is clearly illustrated by the problem of establishing whether two traits (say, body mass and longevity in mammals) are correlated.
-As is well known, just plotting longevity versus body mass and fitting a regression line to this XY-plot will not be a valid approach to assess the significance and the strength of the correlation, since this would not account for the non-independence between data points induced by the evolutionarily relatedness of the species.
-Instead, one should explicitly model the joint evolution of the two traits of interest along the phylogeny and then estimate the strength of the correlation directly as a parameter of the evolutionary process itself.
-
-Practically speaking, correctly formalizing a comparative question therefore requires to have access to the underlying phylogeny.
-Traditionally, this has been (and is still most often) done by first estimating the phylogeny and the divergence times using a separate phylogenetic reconstruction software. In a second step, this phylogeny is used as an input to the comparative method.
-Doing this, however, raises a certain number of methodological problems.
+In order to correctly formalize comparative questions, the underlying phylogeny should always be be explicitly accounted for. This point is clearly illustrated, in particular, by the independent contrast method (ref Felsenstein). Practically speaking, this is most often done by first estimating the phylogeny and the divergence times using a separate phylogenetic reconstruction software. In a second step, this time-calibrated phylogeny is used as an input to the comparative method.
+Doing this, however, raises a certain number of methodological problems:
 \begin{itemize}
 \item
-the uncertainty about phylogenetic reconstruction and, perhaps even more importantly, about divergence times, is ignored at the level of the comparative analysis. In some cases, this could result in artifactually significant or decepteively strong results.
+the uncertainty about the phylogeny (and about divergence times) is ignored
 \item
-the traits themselves may have something to say about the phylogenetic tree or about divergence times: after all, what we call phylogenetic inertia in the context of the comparative method, and which is usually considered as a nuisance, is also a genuine source of information about the evolutionary relatedness of species. As such, it could be used as a primary source of information, along with genetic sequence data, for reconstructing the phylogeny.
+the traits themselves may have something to say about the phylogeny
 \item
-the phylogenetic reconstruction software will often typically assume that the rate of substitution is not constant across the phylogeny (the so-called relaxed molecular clock).
-The rate of substitution, and more generally the parameters of the substitution process, could therefore also be seen as quantitative traits of sorts. As such, they could also be subjected to a comparative analysis, just as what would have been done with body-size or longevity.
+the rate of substitution, and more generally the parameters of the substitution process, can also be seen as quantitative traits, amenable to a comparative analysis.
 \end{itemize}
+All these points are not easily formalized in the context of the step-wise approach mentioned above.
+Instead, what all this suggests is that phylogenetic reconstruction, molecular dating and the comparative method should all be considered jointly, in the context of one single overarching probabilistic model.
 
-\subsection{An integrative comparative approach}
-
-All these considerations suggest that, ultimately, phylogenetic reconstruction, molecular dating and the comparative method should all be considered jointly, in the context of one single overarching probabilistic model.
-The modular nature of RevBayes provides a natural framework for attempting this integration.
-
+The modular structure of RevBayes makes it a natural framework for attempting this integration.
 The aim of the present tutorial is to guide you through a series of examples where this integration is achieved, step by step.
-This can also be considered as one first example of the more general perspective of integrative modeling, which can be recruited in many other contexts.
+It can also be considered as an example of the more general perspective of \emph{integrative modeling}, which can be recruited in many other contexts.
 
-\section{Practical exercises on the classical comparative method}
+\section*{Data and files}
 
-\subsection{Univariate models: Brownian versus OU evolution of traits}
-
-Possible exercises (all this, using fixed, externally provided, time-calibrated phylogenies)
+In the \cmd{data} folder, you will find the following files
 \begin{itemize}
 \item
-fitting a simple univariate Brownian model to body mass evolution in some mammalian group; estimate ancestral state, with credible interval. Recover a set of trees from the posterior distribution, with trait values attached to nodes in newick format. Use this to output a color-coded reconstruction of the evolutionary history of the trait (this requires a special string-output, implemented via a method in RealNodeValContainer). Emphasize uncertainty in ancestral inference. 
+\cmd{plac40lhtlog.nex}: 3 life-history traits (age at sexual maturity, body mass, maximum recorded lifespan) for 40 placental mammals. The traits have been log-transformed.
 \item
-trends: put a uniform prior on the trend of the Brownian motion, over a short interval symmetric around 0: show that the posterior distribution is also uniform. Obviously, the model is not identifiable.
+\cmd{plac40\_4fold.nex}: an alignment made of a concatenation of 17 nuclear genes in 40 placental mammals (only the four-fold degenerate third coding positions)
 \item
-Now use a phylogeny with fossils as tips. In that case, it becomes possible to estimate a trend: thanks to the data-through-time structure. Draw posterior marginal distribution on trend parameter: show that the posterior probability density at 0 can be used to indirectly derive a Bayes factor (Dickey-Savage ratio). More simply, the fact that the posterior distibution is (or is not) concentrated on one single side of the origin is in itself the most straightforward qualitative criterion to assess the empirical support in favor of the presence of a systematic trend. 
-\item
-fit an OU process:
-try to find an interesting case where the OU process is indeed supported, and where this makes sense, in terms of the underlying macro-evolutionary process (e.g. that could be interpreted in terms of stabilizing selection).
-\item
-in the case of body mass in mammals, the OU process will have a very low rate of return of equilibrium $\phi$. Typically, $\phi T \sim 0.1$, where $T$ is the depth of the phylogeny. This means that the mean relaxation time of the process is of the order of $10 T$: thus, for all practical means, the process of body-size evolution is effectively Brownian. Present this criterion (compare relaxation time of the process with the depth of the phylogeny) as an indirect method for comparing Brownian and OUP -- in fact, more insightful than Bayes factors.
+\cmd{chronoplac40.tree}: a time-calibrated phylogeny, which has been obtained by running another software program.
+On the cluster, and if you are logged under an X-terminal, you can visualize this tree using the \cmd{njplot} command (ref):
+\\
+\cmd{njplot chronoplac40.tree}
 \end{itemize}
 
-\subsection{Multivariate models: correlated evolution of quantitative traits}
+\section{Correlated evolution of traits using a fixed phylogeny}
 
-Exercises (still using a fixed pre-defined phylogeny)
+We would like to estimate the correlation between the $K=3$ life-history traits, such as given in the \cmd{plac40lhtlog.nex} file, and this, while properly taking into account phylogenetic inertia. 
+To do so, we will assume that the traits jointly evolve along the phylogeny as a \emph{multivariate Brownian process}.
+We will estimate the \emph{covariance matrix} of this process. The empirical support in favor of positive or negative correlations between pairs of traits will then be formalized in terms of posterior probabilities of having positive or negative entries in this covariance matrix.
+As a by-product of this correlation analysis, we will also obtain a marginal ancestral reconstruction of the traits along the entire phylogeny, which we will then visualize using graphical software programs.
+
+In a first step, we will ignore phylogenetic uncertainty.
+Thus, we will assume that the Brownian process describing trait evolution will run along a fixed phylogeny, such as specified in the file \cmd{chronoplac40.tree}.
+
+\subsection*{The model and the priors}
+
+A multivariate Brownian process $X(t)$, of dimension $K$ (here $K=3$),
+is entirely parameterized by its starting value ($X(0)$ at the root of the phylogeny) and a $K \times K$ covariance matrix, which we will call $\Sigma$. A positive entry between two traits, say $\Sigma_{12} > 0$, means that when trait 1 increases, trait 2 also tends to increase. Conversely, a negative entry means that the two traits tend to undergo variation in opposite directions.
+As for the diagonal entries (e.g. $\Sigma_{11}$), they represent the variance per unit of time (i.e. the speed of evolution) of each trait considered marginally.
+%In a Bayesian context, the empirical support in favor of the existence of a postive (resp\. negative) correlation between 2 traits can therefore be obtained by measuring the posterior probability that the corresponding entry of $\Sigma$ is positive (resp\. negative). Using Monte Carlo method, we will obtain sampled from the joint posterior distribution
+
+On $\Sigma$, we will assume an inverse-Wishart prior:
+\begin{eqnarray*}
+\Sigma &\sim& W^{-1}(\Sigma_0, d)
+\end{eqnarray*}
+The inverse Wishart distribution has two parameters: a symmetric matrix $\Sigma_0$ of same dimension as $\Sigma$, and a natural number $d \ge K+1$ (the number of degrees of freedom). Roughly speaking, the inverse Wishart prior is centered on $\frac{1}{d} \Sigma_0$ and is all the more concentrated around this center than $d$ is large.
+The choice of this prior is primarily motivated by the fact that it is analytically conjugate to the multivariate normal distribution and, therefore, is very convenient when used for the covariance matrix of a (log-normal) Brownian motion.
+
+Since we want a diffuse prior, we will use a small value for $d$, e.g. $d=K+2$.
+In addition, we want the prior to be centered on a diagonal matrix (i.e. we want to be a priori \emph{equi-poised} with respect to either positive or negative correlations among traits). We may also want our prior to be invariant by linear reparameterizations of traits (linear transformations on the logarithm of life-history traits are equivalent to allometric re-parameterizations of the traits considered in natural units). This invariance will hold if and only if $\Sigma_0$ is proportional to the identity matrix, i.e. if $\Sigma_0 = \kappa I_K$, for some positive real number $\kappa$. This number $\kappa$ will set the amplitude of the variation per unit of time of the traits. Since we have no idea about the scale of $\kappa$, it is therefore natural to use a \emph{scale-invariant}, or \emph{log-uniform} prior (due to Jeffreys):
+\begin{eqnarray*}
+\kappa &\sim& 1/\kappa
+\end{eqnarray*}
+Note that, in the present context, where we don't know anything about the \emph{scale} of $\kappa$, a uniform prior on $\kappa$ would not have been optimal (why?).
+Note also that the log-uniform prior is improper. We can make it proper by truncating it (e.g. $\kappa$ is log-uniform over 12 orders of magnitude, that is, over $[10^{-6}, 10^{6}]$).
+
+Concerning the Brownian process $X(t)$, we still have to define a prior on its starting value $X(0)$ at the root of the phylogeny. We may want this prior to be invariant upon changing the units in which the traits are measured, so as to be insensitive to the fact that, for example, body mass has been given in kilograms, and not in grams. In that case, our prior should be invariant by translation, i.e. should be improper uniform. Currently, this is the only prior implemented in RevBayes for the starting value of a multivariate Brownian process running along a phylogeny.
+
+Finally, the tree topology is, as mentioned above, fixed to some externally given phylogeny. However, in order to fully specify the model in RevBayes, we will still need to define a prior on this tree: here, we will simply use a uniform prior, both on the topology and on divergence times.
+
+With this, the entire model is specified: tree $\tau$, scale $\kappa$, covariance matrix $\Sigma$ and Brownian process $X(t)$:
+\begin{eqnarray*}
+\tau &\sim& \text{Uniform}
+\\
+\kappa &\sim& \text{Log-uniform}
+\\
+\Sigma &\sim& W^{-1}(\Sigma_0 = \kappa I_K , \, d = K+2)
+\\
+X &\sim& \text{Brownian}(\tau, \, \Sigma)
+\end{eqnarray*}
+Constraining $\tau$ based on an externally-provided phylogeny and conditioning the model on empirical data by clamping $X(t)$ at the tips of the phylogeny to the values provided in the trait data matrix, we can then run a MCMC to sample from the joint posterior distribution on $\kappa, \Sigma$ and $X$. Once this is done, we can estimate marginal posterior probabilities (e.g. for positive or negative covariance among traits) in terms of frequencies at which entries of the matrix have been sampled as positive or negative. We can also obtain posterior means, medians or credible intervals for the value of body mass or other life-history traits for specific ancestors along the phylogeny.
+
+\subsection*{Programming the model in RevBayes}
+
+Just doing what has been explained in the last subsection, but now in the RevBayes language:
 \begin{itemize}
 \item
-take the 73-taxon placental dataset, with 3 life-history traits from AnAge (body mass, longevity and sexual maturity).
+load trait data:
+\\
+\cmd{contData <- readCharacterData("data/plac40lhtlog.nex")}
+\item
+get number of traits, number of taxa and taxon names:
+\\
+\cmd{
+nTraits <- contData.nchar()[1]
+\\
+nTaxa <- contData.ntaxa()
+\\
+names <- contData.names()
+}
+\item
+define a uniformly-distirbuted time-tree:
+\\
+\cmd{tau $\sim$ uniformTimeTree(originTime = 1.0, taxonNames = names)}
+\item
+set this tree equal to the one defined in \cmd{chronoplac40.tree}:
+\\
+\cmd{treeArray <- readTrees("data/chronoplac40.tree")
+\\
+fixedTree <- treeArray[1]
+\\
+tau.setValue(fixedTree)}
+\item
+define $\kappa$:
+\\
+\cmd{kappa $\sim$ logUniform(1e-6, 1e6)}
+\item
+define the number of degrees of freedom as $d = K+2$:
+\\
+\cmd{df <- nTraits+2}
+\item
+define the covariance matrix $\Sigma$ as inverse Wishart:
+\\
+\cmd{sigma $\sim$ invWishart(dim=nTraits, kappa=kappa, df=df)}
+\\
+note that we are using here a special constructor for the inverse Wishart: when a natural number and a positive real number are given, it is implicitly assumed that the matrix-valued parameter is $\kappa I_dim$.
+\item
+define the multivariate Brownian process:
+\\
+\cmd{x $\sim$ mvtBrownian(tau,sigma)}
+\item
+condition the Brownian model on quantitative trait data,
+i.e. clamp the process at the tips of the tree, at the values observed in extant taxa,
+such as given by \cmd{contData}. This needs to be done trait by trait:
+\\
+\cmd{
+for (i in 1:nTraits)    \{
+        br.clampAt(contData,i,i)
+\}
+}
+\\
+Here, we give twice the index \cmd{i}: the first corresponds to the entry of the Brownian process, and the second one to the column of the data matrix. In some cases (as we will see below), the Brownian process and the data matrix may not be of same dimension, and therefore, it will be useful to be able to specify arbitrary maps between them.
+\end{itemize}
+The model is now entirely specified. We can define the moves on its parameters:
+\begin{itemize}
+\item
+initialize a running index for storing moves:
+\\
+\cmd{index <- 1}
+\item
+push a scaling move on $\kappa$:
+\\
+\cmd{
+moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+\\
+index <- index + 1
+}
+\item
+a sliding move on the Brownian process
+\\
+\cmd{
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,
+\\
+tune=true,weight=100)
+\\
+index <- index + 1
+}
+\item
+a global translation move on the Brownian process: this move applies a random translation across the entire phylogeny, for one trait taken at random among the $K$ taits:
+\\
+\cmd{
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,
+\\
+tune=true,weight=1)
+\\
+index <- index + 1
+}
+Note that the translation move concerns the entire phylogeny: therefore, its tuning parameter is smaller than that used for the single-node sliding move above.
+\item
+finally, a conjugate Gibbs move for $\Sigma$: as it turns out, conditional on $\kappa$ and the Brownian process $X$, it is possible to directly resample $\Sigma$ from its conditional posterior distribution (see ref Lartillot Poujol). In RevBayes, this is implemented as follows:
+\\
+\cmd{
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br,
+\\
+kappa=kappa, df=df, weight=1)
+\\
+index <- index + 1
+}
+\end{itemize}
+Before creating the model, we need to define a few summary statistics, which we want to track during MCMC, either to monitor convergence or for obtaining interesting outputs.
+First, suppose you are specifically interested in the covariance and the correlation coefficient associated with the joint variation of body-size (trait 2) and longevity (trait 3). You may also be interested in the \emph{partial} correlation coefficient between body mass and longevity, i.e. while controlling for variation in age at sexual maturity. These three quantities can be singled out and named as follows:
+\begin{itemize}
+\item
+the covariance:
+\\
+\cmd{
+cov23 := sigma.covariance(2,3)
+}
+\item
+the correlation coefficient:
+\\
+\cmd{
+cor23 := sigma.correlation(2,3)
+}
+\item
+the partial correlation:
+\\
+\cmd{
+parcor23 := sigma.partialCorrelation(2,3)
+}
+\item
+note that the variance per unit of time of, say, log body mass is given by the diagonal entry:
+\\
+\cmd{
+var2 := sigma.covariance(2,2)
+}
+\item
+we can also get all correlation coefficients as a vector:
+\begin{verbatim}
+corrindex <- 1
+for (i in 1:nTraits)    {
+    for (j in i+1:nTraits) {
+        correl[corrindex] := sigma.correlation(i,j)
+        corrindex <- corrindex + 1
+    }
+}
+\end{verbatim}
+\item
+we could be interested in tracking several summary statistics also for the Brownian motion, in particular the mean and the standard deviation along the tree, separately for each trait:
+\begin{verbatim}
+for (i in 1:nTraits)    {
+        meanbr[i] := X.mean(i)
+        stdevbr[i] := X.stdev(i)
+}
+\end{verbatim}
+\end{itemize}
+After creating the model, all these new variables (\cmd{cor12}, \cmd{correl}, \cmd{meanbr}, etc) can be monitored, along with $\Sigma$, $X$ and $\kappa$:
+\begin{itemize}
+\item
+create the model
+\\
+\cmd{
+mymodel <- model(kappa)
+}
+\item
+make a screen monitor that tracks correlation coefficients and mean Brownian values:
+\\
+\cmd{
+monitors[1] <- screenmonitor(printgen=10, correl, meanbr)
+}
+\item
+a file monitor for $\Sigma$ and the correlation coefficients:
+\\
+\cmd{
+monitors[2] <- filemonitor(filename="output/plactraits.cov",printgen=10, separator = "  ", sigma, correl)
+}
+\item
+a file monitor for the ancestral reconstruction of traits:
+\\
+\cmd{
+monitors[3] <- filemonitor(filename="output/plactraits.traits",printgen=10, separator = "       ", X)
+}
+\item
+and a general model monitor:
+\\
+\cmd{
+monitors[4] <- modelmonitor(filename="output/plactraits.log",printgen=10, separator = " ")
+}
+\end{itemize}
+We can finally create a mcmc, burn it in and run it for a good 100 000 cycles:
+\\
+\cmd{
+mymcmc <- mcmc(mymodel, monitors, moves)
+\\
+mymcmc.burnin(generations=100,tuningInterval=100)
+\\
+mymcmc.run(100000)
+}
+
+
+\begin{itemize}
+\item
+take the 40-taxon placental dataset, with 3 life-history traits (body mass, longevity and sexual maturity) taken from the AnAge database (ref).
 \item
 fit a Brownian motion of dimension 3
 \item
@@ -88,17 +325,9 @@ estimate covariance matrix. Identify diagonal elements with the variance paramet
 output posterior distribution on: covariance parameters, correlation coefficients
 \item
 output partial correlation coefficient between, say, maturity and longevity when controlling for body size.
-\item
-\emph{all this requires outputting the inverse of the covariance matrix, as well as its separate entries, all this on demand (thus, some functions still to be defined)}
 \end{itemize}
 
-\subsection{Further directions}
-
-Emphasize that what is currently available in revbayes is but a small part of what can be done in the context of the comparative method. In this respect, mention the already existing software programs: BayesTraits, Ape, everything currently existing in the R environment. Also briefly mention the connections with GLS and maximum likelihood.
-
-However, the main advantage of RevBayes is that we can now integrate the comparative method with the phylogenetic models, as will now be done.
-
-\section{Accounting for uncertainty in phylogeny and divergence times}
+\section*{Accounting for uncertainty in phylogeny and divergence times}
 
 The models implemented in the last section are structured as follows:
 \begin{itemize}
@@ -232,4 +461,11 @@ ultimately, no need to restrict oneself to Brownian motions: more general proces
 \bibliography{allbib}
 
 \end{document}  
+
+
+\subsection{Further directions}
+
+Emphasize that what is currently available in revbayes is but a small part of what can be done in the context of the comparative method. In this respect, mention the already existing software programs: BayesTraits, Ape, everything currently existing in the R environment. Also briefly mention the connections with GLS and maximum likelihood.
+
+However, the main advantage of RevBayes is that we can now integrate the comparative method with the phylogenetic models, as will now be done.
 
