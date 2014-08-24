@@ -108,16 +108,25 @@ for (i in 1:nTraits)	{
 
 # get useful functions of the covariance matrix
 # here we want,say, the partial correlation between substitution rate and longevity (i.e. controlling for body mass and maturity)
+k<- 1
+for (i in 1:covdim)	{
+	for (j in i+1:covdim)	{
+		correl[k] := sigma.correlation(i,j)
+		parcorrel[k] := sigma.partialCorrelation(i,j)
+		k <- k+1
+	}
+}
+
 parcor14 := sigma.partialCorrelation(1,4)
 
 # get useful outputs from the brownian process
 
-#for (i in 1:covdim)	{
+for (i in 1:covdim)	{
 
 	# mean and stdev of the log rate (i=1) and then each trait
-#	meanbr[i] := br.mean(i)
-#	stdevbr[i] := br.stdev(i)
-#}
+	meanbr[i] := br.mean(i)
+	stdevbr[i] := br.stdev(i)
+}
 
 
 ######### 
