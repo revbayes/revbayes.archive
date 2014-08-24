@@ -105,10 +105,16 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
             size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
             for (size_t i = 0; i < nChars; i++)
             {
+                
                 if (i % 3 == (n-1))
+                {
                     v.includeCharacter(i);
+                }
                 else
+                {
                     v.excludeCharacter(i);
+                }
+                
             }
         }
         
@@ -117,18 +123,26 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         {
             const ModelVector<Natural>& x = static_cast<const ModelVector<Natural>&>( argument );
             if (x.size() == 0)
+            {
                 return NULL;
-          
+            }
+            
             for (size_t i = 0; i < nChars; i++)
+            {
                 v.excludeCharacter(i);
+            }
             
             for (size_t i = 0; i < x.size(); i++)
             {
                 size_t n = x[i];
                 for (size_t j = 0; j < nChars; j++)
                 {
+                    
                     if (j % 3 == (n-1))
+                    {
                         v.includeCharacter(j);
+                    }
+                    
                 }
             }
         }
@@ -173,7 +187,10 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         size_t nChars = v.getNumberOfCharacters();
         
         for (size_t i = 0; i < nChars; i++)
+        {
             v.includeCharacter(i);
+        }
+        
         return NULL;
         
     }
@@ -200,9 +217,13 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 {
                     
                     if (this->dagNode->getValue().isHomologyEstablished() == true)
+                    {
                         numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() ) );
+                    }
                     else
+                    {
                         numChar->push_back( Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) ) );
+                    }
                     
                 }
             }
@@ -229,9 +250,13 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 {
                     
                     if (this->dagNode->getValue().isHomologyEstablished() == true)
+                    {
                         numChar = new Natural( this->dagNode->getValue().getNumberOfIncludedCharacters() );
+                    }
                     else
+                    {
                         numChar = new Natural( this->dagNode->getValue().getNumberOfIncludedCharacters(i) );
+                    }
                     
                 }
                 return new Variable( numChar );
@@ -337,7 +362,9 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
                 
                 std::cout << s;
                 if ( (j+1) % 100 == 0 && (j+1) != nc )
+                {
                     std::cout << std::endl << "   ";
+                }
                 
             }
             
@@ -358,7 +385,8 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
 
 
 /* Get Rev type of object */
-const std::string& AbstractCharacterData::getClassType(void) { 
+const std::string& AbstractCharacterData::getClassType(void)
+{
     
     static std::string revType = "AbstractCharacterData";
     
@@ -366,7 +394,8 @@ const std::string& AbstractCharacterData::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& AbstractCharacterData::getClassTypeSpec(void) { 
+const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
