@@ -30,9 +30,10 @@ fBurn           <- 0.2
 #   glr[1]: 1->0, glr[2]: 0->1
 for (i in 1:2) { glr[i] ~ dnExponential(10.0) }
 
-# Distance-dependence
-#    dp is the distance-dependence power parameter
+# dp is the distance-dependence power parameter, beta
 dp          ~ dnExponential(10.0)
+
+# grm is the geographical rate modifier function, eta
 grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
 
 # Q models the dispersal-extinction process (CTMC)
@@ -78,8 +79,7 @@ moves[8] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", wei
 
 # standard monitors
 monitors[1] <- screenmonitor(printgen=10, glr, csf, dp)
-#monitors[2] <- modelmonitor(filename=out_fp+out_str+".parameters.txt", printgen=10)
-monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt",printgen=10,glr,dp)
+monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt", printgen=10, glr, csf, dp)
 
 # character history monitors
 monitors[3] <- mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tree, printgen=10, style="events")
