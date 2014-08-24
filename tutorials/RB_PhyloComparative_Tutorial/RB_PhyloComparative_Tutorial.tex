@@ -291,8 +291,8 @@ is entirely parameterized by its starting value ($X(0)$ at the root of the phylo
 %to distinguish them from their scalar counterparts of the previous section).
 A positive entry between two traits, say $\Sigma_{12} > 0$, means that when trait 1 increases, trait 2 also tends to increase. Conversely, a negative entry means that the two traits tend to undergo variation in opposite directions.
 As for the diagonal entries (e.g. $\Sigma_{11}$), they represent the variance per unit of time (i.e. the rate of evolution) of each trait considered marginally,
-thus very much like the $\sigma$ parameter of the previous section.
-(in fact, when $K=1$, the matrix becomes a scalar and is therefore really equivalent to the scalar parameter $\sigma$ of the univariate model).
+thus very much like $\sigma^2$ (\emph{not} $\sigma$) in the univariate model of the previous section.
+%In fact, when $K=1$, the matrix becomes a scalar and is therefore really equivalent to the scalar parameter $\sigma^2$ of the univariate model (note the little difference: $\Sigma$ is the covariance, whereas $\sigma$ the standard deviation -- at least, this is the usual practice).
 
 On $\Sigma$, we will assume an inverse-Wishart prior:
 \begin{eqnarray*}
@@ -550,11 +550,11 @@ Starting from the model implemented in the last section, we now want to account 
 \item
 two data sets are loaded: one for sequence data and one for quantitative traits
 \item
-a tree is defined, with some prior on it (here, uniform, but this could be a birth death prior)
+a tree is defined (here, with a uniform prior, but this could be a birth death or anything else)
 \item
-a comparative model is defined over the tree (just as described in the previous section)
+a Brownian model is defined over the tree (just as described in the previous section)
 \item
-the comparative model is conditioned on the quantitative trait data
+the Brownian model is conditioned on the quantitative trait data
 \item
 a substitution model is defined over the same tree
 \item
@@ -604,6 +604,10 @@ e <- v(1,1,1,1,1,1)
 \\
 er $\sim$ dirichlet(e)
 \\
+\# rate matrix
+\\
+Q := gtr(er,pi)
+\\
 \# global substitution rate (strict clock)
 \\
 clockRate $\sim$ exponential(0.1)
@@ -647,44 +651,45 @@ index <- index + 1
 }
 \end{itemize}
 
-Note that, if you do not include topology moves, it is important that you 
-set the tree equal to the one defined in \cmd{chronoplac40.tree}.
-In fact , even if you move the tree topology,
-you may want to accelerate your burn-in by starting from this externally-provided tree
+Note that, if you do not include topology moves, it is essential that you 
+set the tree equal to an externally-provided reasonable tree topology (e.g. the one defined in \cmd{chronoplac40.tree}).
+In fact, even if you move the tree topology,
+you may still want to speed up convergence of the MCMC by starting from this externally-provided tree
 (which is then not anymore a hard constraint, but merely a reasonable starting point).
 
-Note also that the simple strict-clock and site-homogeneous model considered here is not so good.
-Although integrating over uncertainty about trees is nice in principle,
-if this is done using a poor model, as is the case here,
-this may ultimately be worse than using a fixed tree that has itself been separately estimated using a more reasonable model.
+Note also that the simple strict-clock and the site-homogeneous model considered here are not so good.
+Although integrating over uncertainty about the phylogeny when doing a comparative analysis is nice in principle,
+doing it using a poor model, as is done here,
+may ultimately be worse than using a fixed tree that has itself been separately estimated using a more reasonable model.
 But of course, nothing prevents us from making a joint analysis in RevBayes
-that relies on a better substitution model -- in particular, using a relaxed clock.
+that relies on a more reasonable substitution model -- in particular, using a relaxed clock.
 
 \section{Autocorrelated relaxed molecular clock}
 
-In the previous model, no consideration was brought/given to the problem of rate variation among lineages: we (rather bluntly) used a strict clock. This is of course problematic, in particular at the phylogenetic scale considered here (placental mammals), where we know that there is substantial rate variation. In addition, we know that substitution rates are auto-correlated in the present case: typically, entire orders, such as rodents, are fast evolving, whereas other orders like Cetartiodactyla, are slowly evolving. In other words, nearby lineages along the phylogeny tend to be characterized by similar substitution rates.
+In the previous model, no consideration was given to the problem of rate variation among lineages --
+we bluntly used a strict clock. This is of course problematic, in particular at the phylogenetic scale considered here (placental mammals), where we know that there is substantial rate variation. In addition, we know that substitution rates across branches are \emph{auto-correlated} in the present case: typically, entire orders, such as rodents, are fast evolving, whereas other orders like Cetartiodactyla are slowly evolving. In other words, nearby lineages along the phylogeny tend to be characterized by similar substitution rates.
 
-You have probably already seen an autocorrelated relaxed clock model (ACLN) in the molecular dating session. Here, we will derive the autocorrelated clock in a slightly different way. This derivation will be less straightforward, but more useful for what we want to do next.
-Fundamentally, the auto-correlated clock is a model where the logarithm of the instant substitution rate is itself a Brownian motion. Thus, it is exactly like a univariate quantitative trait, such as the logarithm of body mass (section \ref{univariate}). Since the Brownian motion describes the evolution of the log of the rate, we need to exponentiate this Brownian process in order to obtain substitution rates, which can then be plugged into the substitution model.
+You have perhaps already seen an autocorrelated relaxed clock model in the molecular dating session (ACLN). Here, we will derive the autocorrelated clock in a slightly different way. This derivation will be less straightforward, but more useful for what we want to do next.
+Fundamentally, the auto-correlated clock is a model where the logarithm of the instant substitution rate is itself a Brownian motion. Thus, it is exactly like a univariate quantitative trait, such as the logarithm of body mass (section \ref{univariate}). Since the Brownian motion describes the evolution of the log of the rate, we need to exponentiate this Brownian process and average over branches in order to obtain branch-specific substitution rates, which can then be plugged into the substitution model.
 
 \subsection*{Programming the model in RevBayes}
 
-Compared to the model described in the last section, the only new feature is this: instead of defining a simple \cmd{clockRate} variable, we now define a univariate Brownian motion along the tree, using the tools introduced in section \ref{univariate}:
+Compared to the model described in the last section, the only new feature is this: instead of defining a simple scalar \cmd{clockRate} variable, we now define a univariate Brownian motion along the tree, using the tools introduced in section \ref{univariate}:
 \begin{itemize}
 \item
 define \cmd{nu}, the "rate of evolution of the rate of substitution":
 \\
-\cmd{nu $\sim$ logUniform(1e-6, 1e6)}
+\cmd{nu $\sim$ \text{Exponential}(0.001)}
 \item
-define the univariate Brownian process \cmd{lograte}:
+define the univariate Brownian process describing the instant (log) substitution rate:
 \\
 \cmd{lograte $\sim$ brownian(tau,nu)}
 \item
-exponentiate this Brownian process:
+exponentiate and average this Brownian process over branches using \cmd{expBranchTree}:
 \\
 \cmd{branchrates := expBranchTree(tree=tau, process=lograte)}
-\\
-Specifically, \cmd{expBranchTree} is a deterministic function that calculates branchwise averages of the exponential of the real-valued process given as its parameter (here, \cmd{lograte}).
+%\\
+%Specifically, \cmd{expBranchTree} is a deterministic function that calculates branchwise averages of the exponential of %the real-valued process given as its parameter (here, \cmd{lograte}).
 \item
 plug these rates into the substModel object, as the branchRates parameter:
 \\
@@ -692,7 +697,7 @@ plug these rates into the substModel object, as the branchRates parameter:
 \item
 condition the model on the sequence and trait data and run the program.
 \end{itemize}
-Note that, since \cmd{lograte} is, technically, a quantitative trait, you can also reconstruct its evolution along the phylogeny. In particular, you can estimate the ancestral substitution rate in the last common ancestor of placental mammals or visualize its variation over the entire tree using \cmd{njplot} or some other graphical display (just as for body mass).
+Note that, since \cmd{lograte} is, technically, a quantitative trait, you can also reconstruct its evolution along the phylogeny. In particular, you can estimate the substitution rate in the last common ancestor of placental mammals or visualize rate variation over the entire tree using \cmd{njplot} or some other graphical display (just as for body mass).
 
 Note also that, here, we do not have included any fossil information: we are merely doing \emph{relative} dating. We will see at the end of this tutorial how fossil information can be integrated.
 
@@ -716,15 +721,24 @@ We have just seen that the logarithm of the substitution rate can be seen as a q
 To do so, we just need to define a multivariate Brownian process of dimension 4.
 By convention, we will consider that the first dimension of this process
 corresponds to the log of the substitution rate,
-while the other 3 dimensions of the process (2 to 4) will map to the quantitative traits defined by the data matrix.
+while the other 3 dimensions of the process (2 to 4) will map to the quantitative traits defined by the data matrix
+\citep{Lartillot:2011p55}.
 
 \subsection*{Programming the model in RevBayes}
 
-You now have all the tools to implement this model entirely by yourself, except for one little detail: you now need to exponentiate one specific component of a multivariate process. Thus, assuming that \cmd{X} is your 4-dimensional process, you need to tell the \cmd{expBranchTree} function that you want to exponentiate the first component of the process (\cmd{traitIndex=1}):
+You now have all the tools to implement this model entirely by yourself, except for one little detail: you now need to exponentiate one specific component of a multivariate process (as opposed to exponentiating a univariate process, as we did in the previous section). Thus, assuming that \cmd{X} is your 4-dimensional process, you need to tell the \cmd{expBranchTree} function that you want to exponentiate the first component of the process (with the \cmd{traitIndex=1} option):
 \\
 \cmd{branchrates := expBranchTree(tree=tau, process=x, traitIndex=1)}
 \\
-Also, be careful with the mapping of the quantitative traits: you need to map trait $i$ to entry $i+1$ of the Brownian process.
+Also, be careful with the mapping of the quantitative traits: you need to map trait $i$ to entry $i+1$ of the Brownian process:
+\\
+\cmd{
+for (i in 1:nTraits)    \{
+        X.clampAt(contData,i+1,i)
+\}
+}
+\\
+
 
 
 \subsection*{Exercises}
@@ -737,7 +751,7 @@ investigate the correlation between substitution rate and life-history traits
 \item
 multiple regression: controlling for body mass, do you still get some support for a correlation between longevity and substitution rate variation?
 \item
-conversely, controlling for longevity, do you get supported correlations between substitution rate and body mass (or age at sexual maturity?)
+conversely, controlling for longevity, do you get supported correlations of the substitution rate and body mass (or with age at sexual maturity?)
 \item
 how much of the variation in substitution rate is explained by longevity?
 \item
@@ -746,7 +760,7 @@ reconstruct ancestral body size, and compare with the ancestral reconstruction o
 
 \section{A comparative analysis of variation in GC content}
 
-Apart from the overall substitution rate, any other aspect of the substitution process (transition-transversion ratio, dN/dS, equilbirium frequencies, etc) could in principle display variation among lineages. These various aspects of the substitution  process could therefore be modeled exactly like the substitution rate, i.e. as Brownian processes.
+Apart from the overall substitution rate, any other aspect of the substitution process (transition-transversion ratio, dN/dS, equilbirium frequencies, etc) could in principle display variation among lineages. These various aspects of the substitution  process could therefore be modeled exactly like the substitution rate, i.e. as Brownian processes -- or as components of a multivariate Brownian process.
 In this section, we will focus on compositional variation, and more particularly variation in equilibirium GC content between species.
 %, or better, as components of a single large multivariate Brownian process that would combine together substitution parameters and quantitative traits such as body mass.
 %In some sense, we will integrate together non-homogeneous models of sequence evolution and trait evoluiton, essentially by formalizing non-homogeneous models of sequence evolution as a particular application of the comparative method
@@ -766,7 +780,7 @@ G&\kappa \, \frac{1 - \gamma}{2}  &  \frac{\gamma}{2}  & - & \frac{1 - \gamma}{2
 T& \frac{1 - \gamma}{2} & \kappa \, \frac{\gamma}{2}  &  \frac{\gamma}{2}  & -
 \end{array} \right)
 \end{eqnarray*}
-The model has two parameters: the transition-transversion rate $\kappa$ and the equilbrium GC content $\gamma$. In the following, we will assume that $\kappa$ is constant across the tree. In contrast, $\gamma$ will be allowed to vary among lineages, jointly with the overall substitution rate.
+The model has two parameters: the transition-transversion rate $\kappa$ and the equilbrium GC content $\gamma$. In the following, we will assume that $\kappa$ is constant across the tree (although unknown, and thus endowed with a diffuse prior). In contrast, $\gamma$ will be allowed to vary among lineages, jointly with the overall substitution rate.
 Technically, since $\gamma$ is strictly between 0 and 1, its log-it transform $\ln \frac{\gamma}{1 - \gamma}$ will range over the entire real line. Therefore, we could propose that the log-it transform of $\gamma$ evolves accoding to a Brownian motion.
 
 Putting everything together, we will therefore propose a multivariate Brownian motion $X(t)$, of dimension $K+2$, where $K$ is the number of quantitative traits, and such that:
@@ -790,6 +804,8 @@ In other words, the instant rate of substitution $r(t)$ is the exponential of th
 
 There is a slight complication here: in a non-homogeneous model, independently of the rate matrices across branches, we also need to specify the nucleotide frequencies from which the sequence at the root of the tree is sampled. We will call this frequency vector $\pi$, and we will put a Dirichlet prior on $\pi$.
 
+This model has been described in \cite{Lartillot:OUn7WLs9}.
+
 \subsection*{Programming the model in RevBayes}
 
 Assuming that \cmd{X} is the multivariate Brownian process:
@@ -803,7 +819,13 @@ define the branch equilibrium GC as the hyperbolic tangent of the second compone
 \\
 \cmd{branchGC := tanhBranchTree(tree=tau, process=X, traitIndex=2)}
 \item
-for $k=1..K$, map trait $k$ onto entry $k+2$ of $X$
+for $k=1..K$, map trait $k$ onto entry $k+2$ of $X$:
+\\
+\cmd{
+for (k in 1:nTraits)    \{
+        X.clampAt(contData,k+2,k)
+\}
+}
 \item
 define the transition-transversion ratio; usually, this ratio is of the order of 1-10, so we will use an exponential prior of mean 10:
 \\
@@ -811,7 +833,7 @@ define the transition-transversion ratio; usually, this ratio is of the order of
 \item
 define a vector of branch-specific T92 substitution matrices:
 \\
-\cmd{branchMatrices := t92GCBranchTree(tree=tau,gctree=branchGC,rootgc=rootgc,kappa=tstv)}
+\cmd{branchMatrices := t92GCBranchTree(tree=tau,branchGC=branchGC,tstv=tstv)}
 \item
 create a Dirichlet-distributed vector of equilbirium frequencies over nucleotides:
 \\
@@ -834,7 +856,7 @@ branchRates=branchrates, nSites=nSites, type="DNA")
 
 \begin{itemize}
 \item
-write the entire model
+program the model in RevBayes
 \item
 run the model on the large placental dataset \cmd{plac73\_4fold.nex},
 using the extended matrix of quantitative traits \cmd{plac73lhtkaryo.nex} (combining life-history and karyotypic traits, see Data section above)
@@ -855,46 +877,59 @@ what could be the underlying biological cause?
 \end{itemize}
 
 
+\section{Towards integrative macro-evolution modeling}
+
+The modeling approach proposed above is just one example of the integration of multiple domains of macroevolutionary studies that could be done with RevBayes.
+In the following, we outline some possible extensions or variations, based on the integrative modeling philosophy.
+
+\subsection*{Using fossil data}
+
+Fossils have much to say about several aspects of the models and questions we have considered thus far.
+They represent a valuable source of information about divergence times but also about ancestral traits.
+In particular, fossil calibrations could be used in the context of each of the models that have been considered in sections 3 to 6, thus allowing us to do not just relative, but absolute, dating. In principle, any of the approaches that you have seen during the dating session of the workshop could be adapted to the present situation. It is just a matter of gathering the relevant information about mammalian fossils.
+
+More ambitiously, the \emph{total evidence dating} method \citep{Ronquist:2012ea} could be extended so as to now include, not just discrete morphological characters, but also quantitative traits, for both extant and extinct taxa. Morphological characters would be modeled using discrete $M_k$ models, while quantitative traits would be described by multivariate Brownian processes, just as in the previous sections.
+
+\subsection*{Beyond Brownian models}
+
+Throughout this tutorial, we have exclusively considered undirected Brownian models.
+However, many other models could be used,
+and this,
+both for quantitative traits and for substitution rates or substitution parameters.
+Right now, there are at least two other models available in RevBayes:
+the Brownian model with systematic trend and the Ornstein-Uhlenbeck process.
+
+One possible application of the Brownian model with trend would be to test for the existence of a systematic trend in increasing body size (i.e. Cope's rule) during animal, vertebrate or mammalian evolution \citep{Alroy:1998p270}. Note, however, that systematic trends cannot be estimated using only extant taxa (at least using purely anagenetic processes of evolution, such as considered here): the model would not be identifiable.
+If we have fossil data, on the other hand, we can estimate a trend:
+the model will then essentially rely on the average-mass-through-time distribution across the entire geological range.
+
+Technically, to model body size evolution with drift, we would just need to:
+\begin{itemize}
+\item
+define a drift parameter, with a diffuse prior centered on 0:
+\\
+\cmd{
+copestrend $\sim$ norm(0,10)
+}
+\item
+create a (univariate) Brownian motion with drift:
+\\
+\cmd{logmass $\sim$ brownian(tau,sigma,drift=copestrend)}
+\item
+move the trend parameter during the MCMC, using a regular sliding move:
+\\
+\cmd{moves[index] <- mvSlide(copestrend, delta=2.0, tune=true, weight=3.0)
+\\
+index <- index + 1}
+\end{itemize}
+After running the model, the posterior distribution on Cope's trend parameter can be visualized and quantified, and the empirical support in favor of Cope's rule can be assessed by estimating the posterior probability that this trend parameter is positive.
+
+
 \bibliographystyle{natbib}
 
 \bibliography{allbib}
 
 \end{document}  
-
-
-
-
-\section{Towards integrative macro-evolution modeling}
-
-SOME WORK STILL NEEDED HERE 
-The modeling approach proposed above is just one example of the integration of multiple domains of macroevolutionary studies that could be done with RevBayes.
-In the following, we outline some possible extensions or variations, based on the same modeling philosophy.
-
-
-\subsection*{Rates and traits with fossil calibrations}
-
-Make a calibrated analysis: either using "focal dating", based on Tracy's method. The 5 to 7 few fossil calibrations typically used for mammals could easily be recruited in this context.
-
-\subsection*{Using comparative data about fossils}
-
-\subsection*{Systematic trends: Cope's rule}
-
-One account for a possible systematic trend in body size evolution (i.e. Cope's rule) by using a Brownian motion with drift. Note, however, that systematic trends cannot be estimated using only extant taxa (at least with a simple comparative model such as the one constructed above). If you have fossil data, on the other hand, you can estimate a trend. To do this, you should use a time-calibrated phylogeny with fossils (as tips sampled in the past) and include estimated fossil body masses in the matrix of quantitative traits. Then, in addition to what has been described above, you would just need to define a drift parameter, with a diffuse prior centered on 0:
-\\
-\cmd{
-copestrend $\sim$ norm(0,10)
-}
-\\
-and create a Brownian motion with drift:
-\\
-\cmd{logmass $\sim$ brownian(tau,sigma,drift=copestrend)}
-\\
-Of course, you would need to move the trend parameter (using a regular sliding move). After running the model, you could visualize the posterior distribution on this trend parameter and assess the empirical support in favor of Cope's rule by estimating the posterior probability that this trend parameter is positive.
-
-
-\subsection*{Total evidence}
-
-Alternatively, undertake a more ambitious and more extensive total evidence approach. The obvious problem here is that the approach requires a good fossil sampling, with a good matrix of both discrete and continuous traits. Getting those data is probably a fair amount of work in itself. But the outcome could be very exciting: in particular, adding body size information about fossils!
 
 \subsection*{Testing diversification models}
 
