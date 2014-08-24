@@ -37,11 +37,14 @@ glr[2] := r
 dp          ~ dnExponential(10.0)
 grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
 
-# Q_like is used to compute likelihoods
-Q_like      := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+# Q models the dispersal-extinction process (CTMC)
+Q           := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+
+# C models the cladogenic events
+C           ~ dnDirichlet([1,1,1])
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
-M           ~  dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+M           ~  dnPhyloDACTMC(tree=tree, Q=Q, C=C, type="biogeo", forbidExtinction=true, useCladogenesis=true)
 
 # attach observation to M
 M.clamp(data)
