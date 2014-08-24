@@ -146,9 +146,7 @@ def get_clado_state(d,freqs=True,includeNarrow=True):
     return(v)
 
 
-# not quite right...
-# 1) prob allopatry splits two areas given a certain age
-def get_allopatry_prob(d,freqs=True):
+def get_clado_prob(d,freqs=True):
     
     if not d.has_key('ch0') or not d.has_key('ch1'):
         print('ERROR: no cladogenic state recorded')
@@ -160,23 +158,30 @@ def get_allopatry_prob(d,freqs=True):
     n = 0
     for k in range(len(d['nd'])):
         if d['cs'][k] == 'a':
-            nd_s = "".join([str(x) for x in d['nd']])
+            n += 1
+            nd_s = "".join([str(x) for x in d['nd'][k]])
             if not v.has_key(nd_s):
                 v[nd_s] = {}
-            for y,z in zip(d['ch0'],d['ch1']):
-                print(y,z,d['nd'][k])
-                n += 1
-                ch0_s = "".join([str(x) for x in y])
-                ch1_s = "".join([str(x) for x in z])
-                y_tmp = y
-                if ch0_s > ch1_s:
-                    y_tmp = [ a*2 for a in y_tmp ]
-                b = [ sum(a) for a in zip(y_tmp,z) ]
-                #print b
+            y = d['ch0'][k]
+            z = d['ch1'][k]
+            print(y,z,d['nd'][k])
+            ch0_s = "".join([str(x) for x in y])
+            ch1_s = "".join([str(x) for x in z])
+            y_tmp = y
+            z_tmp = z
+            if ch0_s < ch1_s:
+                y_tmp = [ a*2 for a in y_tmp ]
+            else:
+                z_tmp = [ a*2 for a in z_tmp ]
+            b = [ sum(a) for a in zip(y_tmp,z_tmp) ]
+            b_s = "".join([str(x) for x in b])
+            if not v[nd_s].has_key(b_s):
+                v[nd_s][b_s] = 0.
+            v[nd_s][b_s] += 1.
 
-            if freqs:
-                for i in range(num_char):
-                    for j in range(num_char):
-                        v[i][j] = v[i][j] / n
+    if freqs:
+        for ki in v.keys() :
+            for kj in v[ki].keys():
+                v[ki][kj] = v[ki][kj] / n
 
     return(v)
