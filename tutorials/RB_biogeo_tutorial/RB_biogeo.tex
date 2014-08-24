@@ -719,6 +719,19 @@ A value less than one would indicate the first model, the simple model, had a la
 But that's not the case, the value is greater than one, and the complex two-rate model is favored.
 Similar to frequentist interpretations of significance for p-values, there is no universal and objective criterion of significance with Bayes Factors, but most would agree a factor of 10 (or 0.1) indicates strong support for one model over the other.
 
+In the next section, we'll take some special interest in the 19th branch, the most recent common ancestor of {\it P. mauiensis} and {\it P. hawaiiensis}.
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > names = tree.names()
+RevBayes > names[18]
+   P_mauiensis_Eke
+RevBayes > names[19]
+   P_hawaiiensis_WaikamoiL1
+RevBayes > mrcaIndex(tree=tree,clade=clade(names[18],names[19]))
+   19
+\end{lstlisting}
+\end{snugshade}
+
 \section{Output}
 
 \subsection{Sampled parameters from {\tt ScreenMonitor}}
@@ -731,16 +744,16 @@ Every 20 iterations, this monitor re-prints the column headers.
 RevBayes > my_mcmc.run(generations=10000)
 Running MCMC simulation for 10000 iterations
 The simulator uses 7 different moves in a random
-move schedule with 228 moves per iteration
+move schedule with 227 moves per iteration
 
 Iteration    |      Posterior   |     Likelihood   |          Prior   |             dp   |         glr[1]   |         glr[2]
 ------------------------------------------------------------------------------------------------------------------------------
-0            |       -50.3513   |       -50.7006   |       0.349325   |      0.0116311   |       0.249602   |       0.141818
-10           |       -78.7372   |       -72.2327   |       -6.50447   |      0.0245285   |       0.475911   |       0.251751
-20           |       -70.4544   |       -68.9325   |       -1.52188   |      0.0275606   |       0.367347   |        0.10967
-30           |        -52.659   |       -51.6395   |       -1.01953   |      0.0164911   |        0.40243   |      0.0550032
-40           |       -48.2586   |       -49.6759   |         1.4173   |      0.0380796   |       0.275415   |       0.049383
-50           |       -51.7166   |       -50.9097   |      -0.806903   |       0.050249   |        0.28971   |       0.140213
+0            |       -62.0361   |       -62.7415   |       0.705411   |       0.088045   |        0.42587   |        0.10632
+10           |       -70.7471   |       -67.1729   |       -3.57427   |       0.390041   |       0.485809   |       0.172352
+20           |       -55.9579   |       -55.2502   |      -0.707682   |      0.0961152   |       0.509127   |       0.156301
+30           |       -85.1181   |       -86.6207   |        1.50257   |      0.0539629   |       0.335096   |        0.15146
+40           |       -38.3381   |       -40.4898   |        2.15172   |      0.0146533   |       0.339345   |       0.121605
+50           |        -93.582   |        -88.499   |       -5.08294   |      0.0172905   |       0.776815   |       0.404963
 
 ...
 \end{lstlisting}
@@ -758,44 +771,74 @@ As with the {\tt ScreenMonitor}, columns are model or parameter values and rows 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
-0	-50.3513	-50.7006	0.349325	0.249602	0.141818	0.0116311
-10	-78.7372	-72.2327	-6.50447	0.475911	0.251751	0.0245285
-20	-70.4544	-68.9325	-1.52188	0.367347	0.109670	0.0275606
-30	-52.6590	-51.6395	-1.01953	0.402430	0.0550032	0.0164911
-40	-48.2586	-49.6759	1.417300	0.275415	0.049383	0.0380796
-50	-51.7166	-50.9097	-0.806903	0.289710	0.140213	0.050249
+0	-62.0361	-62.7415	0.705411	0.425870	0.106320	0.0880450
+10	-70.7471	-67.1729	-3.57427	0.485809	0.172352	0.3900410
+20	-55.9579	-55.2502	-0.707682	0.509127	0.156301	0.0961152
+30	-85.1181	-86.6207	1.502570	0.335096	0.151460	0.0539629
+40	-38.3381	-40.4898	2.151720	0.339345	0.121605	0.0146533
+50	-93.5820	-88.4990	-5.08294	0.776815	0.404963	0.0172905
 
 ...
 \end{lstlisting}
 \end{framed}
+
+Open Tracer, select the fields for the posterior probability and area gain rate, {\tt glr[2]}, then click the Joint-Marginal tab.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=3in]{figures/joint_rgain_posterior}
+\end{figure}
+
+Here, we see a strong negative correlation between the posterior probability and the area gain rate, which is expected.
 
 \subsection{Biogeographic event counts from {\tt mnCharHistoryNewick}}
 
+Recording stochastic mappings in a Tracer-compatible format requires some summarization.
+This monitor generates a tab-delimited file where the number of events of each type for each branch is recorded.
+
+Open {\tt bg\_2rate.counts.txt}.
+
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-Iteration	Posterior	Likelihood	Prior	t0	t1	b0_s0	b0_s1	b1_s0	b1_s1	b2_s0	b2_s1	...
-0		-89.5384	-88.3926	-1.1458	24	24	1	0	1	1	2	2	...
-10		-72.5159	-73.7833	1.26734	16	17	1	0	1	1	1	1	...
-20		-61.3417	-63.5838	2.24210	14	12	0	0	1	1	1	1	...
-30		-68.5929	-69.9865	1.39352	15	16	1	1	0	0	0	0	...
-40		-58.2748	-59.1617	0.88684	11	13	0	0	0	0	0	0	...
-50		-79.7814	-81.0356	1.25418	21	19	3	2	1	1	0	0	...
-
+Iteration	Posterior	Likelihood	Prior	t_s0	t_s1	t_c0	t_c1	t_c2	b0_s0	b0_s1	b0_c	...
+0	-60.5999	-60.2078	-0.392113	16	14	37	0	0	1	1	0	...
+10	-62.4151	-61.9919	-0.42319	16	14	31	6	0	1	0	1	...
+20	-86.6285	-82.9437	-3.68483	26	23	37	0	0	2	2	0	...
+30	-49.4231	-50.3783	0.955262	12	12	35	2	0	1	1	0	...
+40	-100.982	-95.9841	-4.99809	36	31	35	0	2	1	1	0	...
+50	-80.9566	-76.9377	-4.01884	24	23	37	0	0	2	2	0	...
 ...
 \end{lstlisting}
 \end{framed}
 
+For example, {\tt b2\_s1} gives the number of areas that are gained for the branch leading to the node indexed 2.
+{\tt b2\_c} gives the cladogenic event type that gives rise to the node indexed 2, where sympatry, peripatry, and allopatry are recorded as {\tt 0}, {\tt 1}, and {\tt 2} respectively. The columns {\tt t\_s0} and {\tt t\_s1} give the sum of events over all branches. {\tt t\_c0}, {\tt t\_c1}, and {\tt t\_c2} give the total number of sympatric, peripatric, and allopatric cladogenic events over the entire tree.
+
+Because the expected number of gain events should be proportional to the area gain rate, we expect to see the same negative correlation between posterior probability and number of events as we did with the posterior and rate in the {\tt parameters.txt} file.
+
+Open Tracer, select the fields for the posterior probability and the number of gained areas over the tree, {\tt t1}, then click the Joint-Marginal tab.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=3in]{figures/joint_ngain_posterior}
+\end{figure}
+
+
 \subsection{Biogeographic event histories from {\tt mnCharHistoryNewick}}
+
+For more detailed data exploration, this analysis also provides annotated Newick strings with the complete character mappings for the tree.
+
+Open {\tt bg\_2rate.events.txt}.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 Iteration	Posterior	Likelihood	Prior	Tree
-0	-89.5384	-88.3926	-1.1458	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:0} ...
-10	-72.5159	-73.7833	1.26734	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
-20	-61.3417	-63.5838	2.24210	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
-30	-68.5929	-69.9865	1.39352	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:0,1:0} ...
-40	-58.2748	-59.1617	0.88684	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:0} ...
-50	-79.7814	-81.0356	1.25418	((((((((P_hawaiiensis_WaikamoiL1[&pa={0,0,1,0},&state_into={0:1,1:1} ...
+0	-60.5999	-60.2078	-0.392113	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.92 ...
+10	-62.4151	-61.9919	-0.42319	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.09 ...
+20	-86.6285	-82.9437	-3.68483	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.30 ...
+30	-49.4231	-50.3783	0.955262	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={}]:1.08 ...
+40	-100.982	-95.9841	-4.99809	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.16 ...
+50	-80.9566	-76.9377	-4.01884	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={}]:1.08 ...
 
 ...
 \end{lstlisting}
@@ -805,19 +848,83 @@ Each iteration records the data-augmented character history (stochastic mapping)
 
 \begin{snugshade}
 \begin{lstlisting}
-[&index=24,nd={1,1,0,0},ch0={0,1,0,0},ch1={1,0,0,0},cs=a,bn=24,si={0:0,1:1},sb={0:{0:0,1:1},1:{0:0,1:0}},ev={{t:0.94997,a:4.59972,s:1,i:1}}]
+[&index=19;nd=0110;pa=0100;ch0=0010;ch1=0110;cs=p;bn=18;ev={{t:0.139594,a:0.974127,s:1,i:2}}]
 \end{lstlisting}
 \end{snugshade}
 
-There are two parts to the stochastic mapping.
-First, the range before the speciation event, {\tt nd}, and the daughter ranges following the speciation event, {\tt ch0} and {\tt ch1}.
-The cladogenic event type is allopatric, {\tt cs=a}, where {\tt cs=s} is for sympatry (narrow or wide) and {\tt cs=p} is for peripatry.
-The events that occur along the lineage leading to the node are recorded in {\tt events}, where each event has a state, absolute age, time (relative to the absolute branch length), and character index.
-For this posterior sample of the character history, area 1 was gained at age 4.59972, which is near the tips of the tree.
+{\tt index=19} indicates this branch leads to the node indexed 19.
+The branch began in the ancestral state {\tt pa=0100} and terminated in the state {\tt nd=0110}.
+Since this node is not a tip node, it represents a speciation event, so the daughter ranges are also given, {\tt ch0=0010} and {\tt ch1=0110}.
+The cladogenic state for this speciation event was peripatric, {\tt cs=p}, rather than sympatric (wide or narrow; {\tt s}) or allopatric ({\tt a}).
+Anagenic dispersal and extinction events occurring along the lineage leading to node 19 are recorded in {\tt events}, where each event has a time (relative to the absolute branch length), absolute age, state (into), and character index ({\tt t}, {\tt a}, {\tt s}, {\\t i}, resp.).
+For this posterior sample of the character history for the branch leading to node 19, area 2 was gained at age 0.974127, which is near the tips of the tree.
 
-Because this data is very high-dimensional, we'll use an external data exploration tool to look at range evolution.
+To manipulate this data format, we'll use Python scripts. Below are a few examples of interesting posterior features.
+
+Open a python console and read in the events.
+
+\begin{snugshade}
+\begin{lstlisting}
+> python27
+
+...
+
+>>> import bg_parse
+>>> ll=read_events()
+>>> dd=get_events(ll)
+\end{lstlisting}
+\end{snugshade}
+
+
+Each branch is a dictionary whose keys are various parts of the MCMC state and whose values the MCMC samples.
+\begin{snugshade}
+\begin{lstlisting}
+>>> dd[19].keys()
+['ch1', 'iteration', 'bn', 'nd', 'ch0', 'prior', 'posterior', 'cs', 'ev', 'likelihood']
+>>> dd[19]['posterior'][0:5]
+[-60.5999, -62.4151, -86.6285, -49.4231, -100.982]
+>>> dd[19]['cs'][0:5]
+['s', 'p', 's', 's', 's']
+\end{lstlisting}
+\end{snugshade}
+
+To get the $n=1$ highest-valued sample for a branch by its posterior value
+\begin{snugshade}
+\begin{lstlisting}
+>>> get_best(dd[19],n=1,p='posterior')
+{'prior': [2.25647], 'iteration': [940], 'bn': [18], 'nd': [[0, 0, 1, 0]], 'ch0': [[0, 0, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-36.9044], 'cs': ['s'], 'ev': [[{'age': 0.705193, 'state': 1, 'idx': 2, 'time': 0.477281}, {'age': 0.607798, 'state': 0, 'idx': 1, 'time': 0.599575}]], 'likelihood': [-39.1609]}
+\end{lstlisting}
+\end{snugshade}
+
+To get the probability that area $i$ and area $j$ are both part of the species range as the branch for node 19 terminates, just before the speciation event
+\begin{snugshade}
+\begin{lstlisting}
+>>> get_area_pair(dd[19],k='nd')
+[[0.07892107892107893, 0.014985014985014986, 0.06793206793206794, 0.0],
+[0.014985014985014986, 0.3956043956043956, 0.3546453546453546, 0.0],
+[0.06793206793206794, 0.3546453546453546, 0.952047952047952, 0.0],
+[0.0, 0.0, 0.0, 0.0]]
+\end{lstlisting}
+\end{snugshade}
+showing area 3 was occupied with probability 0.95 and both areas 2 and 3 were occupied with probability 0.35.
+
+If the range is size one during a speciation event, the cladogenic event state is always sympatric, ``s''.
+But given the opportunity for non-sympatric events, i.e. that the range is larger than size one, we can get the probability of cladogenic state using
+For the probability for cladogenic event state given the range was larger than size one
+\begin{snugshade}
+\begin{lstlisting}
+>>> get_clado_state(dd[19],minSize=1)
+{'a': 0.027972027972027972, 'p': 0.2037962037962038, 's': 0.7682317682317682}
+>>> get_clado_state(dd[19],minSize=2)
+{'a': 0.0673076923076923, 'p': 0.49038461538461536, 's': 0.4423076923076923}
+\end{lstlisting}
+\end{snugshade}
+
+For more examples, see {\tt bg\_parse.py}
 
 \subsection{New Hampshire extended format file (\texttt{my\_run.nhx})}
+
+Because this data is very high-dimensional, we'll use an external data exploration tool to look at range evolution.
 
 This file summarizes the input and output from a BayArea analysis using NEXUS format containing a New Hampshire eXtended (NHX) tree string.
 NHX allows you to annotate nodes in a Newick string with meta-information, which BayArea uses to report the probabilities in the \texttt{my\_run.area\_probs.txt} file.
@@ -837,7 +944,7 @@ Phylowood generates interactive animations to explore biogeographic reconstructi
 
 \noindent \\ \impmark Open \texttt{http://mlandis.github.io/phylowood}.
 
-\noindent \\ \impmark Drag and drop \texttt{my\_run.nhx} into the text field.
+\noindent \\ \impmark Drag and drop \texttt{bg\_2rate.nhx.txt} into the text field.
 
 \begin{figure}[H]
 \centering
@@ -850,11 +957,11 @@ There are three control panels to help you filter data: the media panel, the map
 The media buttons correspond to Beginning, Slow/Rewind, Play, Stop, Fast Forward, Ending (from left to right).
 The animation will play the timeframe corresponding to the slider.
 
-\noindent \\ \impmark Drag the slider to the time marked ``-1.1'' in the upper right corner.
+\noindent \\ \impmark Drag the slider to the right (the present).
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=4in]{figures/phw_1_1ma}
+\includegraphics[width=4in]{figures/phw_all}
 \end{figure}
 
 \noindent \\ \impmark Pan and zoom around the map.\\
@@ -863,6 +970,7 @@ Marker colors correspond to the phylogenetic lineages in the phylogeny panel.
 Markers are split into slices and (loosely) sorted phylogenetically, so nearby slices are generally closely related.
 At divergence events, a marker's radius is proportional to the marginal posterior probability the node was present in the area at that time.
 Between divergence events, marker's radius is simply an interpolation of the values at the two endpoints.
+Some information about geological constraints and cladogenic events is lost.
 
 \noindent \\ \impmark Mouseover an area to learn which lineage it belongs to and its presence probability. \\
 
@@ -880,7 +988,7 @@ Phylowood also offers a masking effect that persists until an unmask command is 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=4in]{figures/phw_mask}
+\includegraphics[width=4in]{figures/phw_br19}
 \end{figure}
 
 Now that the masking effects are in place, you're free to interact with other map components.
@@ -888,61 +996,61 @@ In addition, the area of marker sizes is only distributed among unmasked lineage
 
 \noindent \\ \impmark Visit \texttt{https://github.com/mlandis/phylowood/wiki} to learn more about Phylowood.
 
-
-\subsection{BayArea-Fig}
-
-BayArea-Fig is a simple Javascript utility to help generate ancestral range reconstruction figures for publications.
-BayArea 1.0.2 does not automatically generate the NEXUS settings block for BayArea-Fig, so I added the following block to \texttt{my\_run.nhx}.
-
-%\noindent \\ \impmark  Add the following code after the \texttt{\#NEXUS} header in \texttt{my\_run.nhx} and save the file.
-\begin{framed}
-\begin{lstlisting}
-Begin bayarea-fig;
-	mapheight 100
-	mapwidth 150
-	canvasheight 2000
-	canvaswidth 2000
-	minareaval 0.1
-	areacolors blue red
-	areatypes 0 1 0 0 0 1 1 0 0 0 0 1 1 1 0 0 0 0 1 1 1 1 0 0 0 0 1 1 1 1 1 1 1
-	areanames West East
-End;
-\end{lstlisting}
-\end{framed}
-
-\noindent \\ \impmark  Open \texttt{http://mlandis.github.io/bayarea-fig} in a web browser.
-
-\noindent \\ \impmark  Drag and drop \texttt{my\_run.nhx} into the text field. \\
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=4in]{figures/bayarea-fig}
-\end{figure}
-
-The generated figure reports the marginal area probabilities for each node in the phylogeny with a miniature map.
-Because of the limited real estate in the figure, you may only wish to show a subset of ancestral ranges.
-
-\noindent \\ \impmark  Click unwanted ancestral ranges to delete them. \\
-
-Depending on the purpose for the figure, you may wish to alter its size.
-The \texttt{mapheight}, \texttt{mapwidth}, \texttt{canvasheight}, and \texttt{canvaswidth} settings give the height and widths for the node-maps and the entire figure, respectively.
-
-If you would like to differentiate areas (e.g. East from West, as above), give an ordered list of colors using the \texttt{areacolors} setting.
-Next, in the order areas appear in the $\texttt{GEO}$ block, provide \texttt{areatypes} a list of assigments to area types.
-In the above example ``0'' corresponds to the 0th \texttt{areacolors} group, ``blue'', and ``1'' corresponds to the 1st group, ``red''.
-
-\noindent \\ \impmark Add a new color as the third \texttt{areacolors} entry. Add ``Tasmania'' as a third entry to \texttt{areanames}. Change the last area in \texttt{areatypes} to equal 2. \\
-
-We've seen that ancestral range reconstructions contain a great deal of uncertainty.
-Filtering out low probability ranges may make your figure easier to interpret.
-If the marginal probability of presence for a node-area pair is less than \texttt{minareaval}, it is not shown.
-The probabilities and the threshold value are shown in the upper left corner.
-
-After arranging your figure, you'll want to save it to file.
-How to accomplish this varies across operating systems and web browsers.
-Generally, the figure is most easily saved from the browser by printing the file to pdf.
-In this case the image size is equal to the paper size.
-If the standard $8.5 \times 11$ inch image is too small, you will need to create and apply a sufficiently large custom paper size.
+%
+%\subsection{BayArea-Fig}
+%
+%BayArea-Fig is a simple Javascript utility to help generate ancestral range reconstruction figures for publications.
+%BayArea 1.0.2 does not automatically generate the NEXUS settings block for BayArea-Fig, so I added the following block to \texttt{my\_run.nhx}.
+%
+%%\noindent \\ \impmark  Add the following code after the \texttt{\#NEXUS} header in \texttt{my\_run.nhx} and save the file.
+%\begin{framed}
+%\begin{lstlisting}
+%Begin bayarea-fig;
+%	mapheight 100
+%	mapwidth 150
+%	canvasheight 2000
+%	canvaswidth 2000
+%	minareaval 0.1
+%	areacolors blue red
+%	areatypes 0 1 0 0 0 1 1 0 0 0 0 1 1 1 0 0 0 0 1 1 1 1 0 0 0 0 1 1 1 1 1 1 1
+%	areanames West East
+%End;
+%\end{lstlisting}
+%\end{framed}
+%
+%\noindent \\ \impmark  Open \texttt{http://mlandis.github.io/bayarea-fig} in a web browser.
+%
+%\noindent \\ \impmark  Drag and drop \texttt{my\_run.nhx} into the text field. \\
+%
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=4in]{figures/bayarea-fig}
+%\end{figure}
+%
+%The generated figure reports the marginal area probabilities for each node in the phylogeny with a miniature map.
+%Because of the limited real estate in the figure, you may only wish to show a subset of ancestral ranges.
+%
+%\noindent \\ \impmark  Click unwanted ancestral ranges to delete them. \\
+%
+%Depending on the purpose for the figure, you may wish to alter its size.
+%The \texttt{mapheight}, \texttt{mapwidth}, \texttt{canvasheight}, and \texttt{canvaswidth} settings give the height and widths for the node-maps and the entire figure, respectively.
+%
+%If you would like to differentiate areas (e.g. East from West, as above), give an ordered list of colors using the \texttt{areacolors} setting.
+%Next, in the order areas appear in the $\texttt{GEO}$ block, provide \texttt{areatypes} a list of assigments to area types.
+%In the above example ``0'' corresponds to the 0th \texttt{areacolors} group, ``blue'', and ``1'' corresponds to the 1st group, ``red''.
+%
+%\noindent \\ \impmark Add a new color as the third \texttt{areacolors} entry. Add ``Tasmania'' as a third entry to \texttt{areanames}. Change the last area in \texttt{areatypes} to equal 2. \\
+%
+%We've seen that ancestral range reconstructions contain a great deal of uncertainty.
+%Filtering out low probability ranges may make your figure easier to interpret.
+%If the marginal probability of presence for a node-area pair is less than \texttt{minareaval}, it is not shown.
+%The probabilities and the threshold value are shown in the upper left corner.
+%
+%After arranging your figure, you'll want to save it to file.
+%How to accomplish this varies across operating systems and web browsers.
+%Generally, the figure is most easily saved from the browser by printing the file to pdf.
+%In this case the image size is equal to the paper size.
+%If the standard $8.5 \times 11$ inch image is too small, you will need to create and apply a sufficiently large custom paper size.
 
 \bibliography{bayes}
 

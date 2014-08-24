@@ -12,6 +12,7 @@
 #include "Cloneable.h"
 #include "GeographicArea.h"
 #include "TimeAtlasDataReader.h"
+#include <string>
 
 namespace RevBayesCore {
     class TimeAtlas : public Cloneable
@@ -25,6 +26,7 @@ namespace RevBayesCore {
         
         std::vector<double>                             getEpochs(void) const;
         std::vector<std::vector<GeographicArea*> >      getAreas(void) const;
+        std::string                                     getFilename(void) const;
         
     protected:
         std::vector<std::vector<GeographicArea*> >      areas;
@@ -33,6 +35,7 @@ namespace RevBayesCore {
     private:
         unsigned                                        numAreas;
         unsigned                                        numEpochs;
+        std::string                                     filename;
         
     };
     
