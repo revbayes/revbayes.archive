@@ -50,15 +50,11 @@ def get_events(lines):
                 events[ taxon_index ][ k ].append(v)
     return events
 
-def get_best(d,idx,n=10,f=None,p='posterior'):
-    if idx < 0:
-        print('ERROR: idx < 0')
-    if idx > len(d):
-        print('ERROR: idx > len(d)')
+def get_best(d,idx,f=None,p='posterior'):
     if p not in ['posterior','prior','likelihood']:
         print('WARNING: p=\'' + p + '\' invalid, set p=\'posterior\'')
         p = 'posterior'
-    K = d[idx][p]
+    K = d[p]
     if n < 0:
         print('ERROR: n < 0')
     if f is not None:
@@ -69,11 +65,11 @@ def get_best(d,idx,n=10,f=None,p='posterior'):
         n = f * len(K)
     best = sorted(range(len(K)), key=lambda x: K[x])[-n:][::-1]
     ret = {}
-    for k in d[idx].keys():
+    for k in d.keys():
         ret[k] = []
     for i in best:
         for k in d[idx].keys():
-            ret[k].append(d[idx][k][i])
+            ret[k].append(d[k][i])
     return(ret)
 
 def get_gain_loss(d, freqs=True):
@@ -89,6 +85,8 @@ def get_gain_loss(d, freqs=True):
         else:
             for e in ev:
                 v[e['state']][e['idx']] += 1.
+    if freqs and n == 0:
+        return([0.]*num_char)
     if freqs:
         for i in range(2):
             for j in range(num_char):
@@ -96,7 +94,7 @@ def get_gain_loss(d, freqs=True):
     return(v)
 
 
-def get_area_pair(d,freqs=True,k='nd'):
+def get_area_pair(d,k='nd',freqs=True):
     
     num_char = len(d[k][0])
     v = []
@@ -115,13 +113,15 @@ def get_area_pair(d,freqs=True,k='nd'):
                 if x[i] is 1 and x[j] is 1:
                     v[i][j] += 1.
                     v[j][i] = v[i][j]
+    if freqs and n == 0:
+        return([0.]*num_char)
     if freqs:
         for i in range(num_char):
             for j in range(num_char):
                 v[i][j] = v[i][j] / n
     return(v)
 
-def get_clado_state(d,freqs=True,includeNarrow=True):
+def get_clado_state(d,minSize=1,freqs=True):
 
     if not d.has_key('ch0') or not d.has_key('ch1'):
         print('ERROR: no cladogenic state recorded')
@@ -132,14 +132,12 @@ def get_clado_state(d,freqs=True,includeNarrow=True):
    
     n = 0
     for i,x in enumerate(d['cs']):
-        if includeNarrow:
-            n += 1
-            v[x] += 1
-        elif sum(d['nd'][i]) > 1:
+        if sum(d['nd'][i]) >= minSize:
             n += 1
             v[x] += 1
 
-
+    if freqs and n == 0:
+        return([0.]*num_char)
     for k in v.keys():
         v[k] = v[k]/n
 
@@ -179,6 +177,8 @@ def get_clado_prob(d,freqs=True):
                 v[nd_s][b_s] = 0.
             v[nd_s][b_s] += 1.
 
+    if freqs and n == 0:
+        return([0.]*num_char)
     if freqs:
         for ki in v.keys() :
             for kj in v[ki].keys():
