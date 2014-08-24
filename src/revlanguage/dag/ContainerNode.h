@@ -103,6 +103,7 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n ) :
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
+    std::cerr << "Creating empy container node <" << this << ">" << std::endl;
 }
 
 
@@ -118,6 +119,7 @@ ContainerNode<rlElemType, valueType>::ContainerNode( const std::string &n, std::
     value()
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
+    std::cerr << "Creating container node from vector of Rev objects <" << this << ">" << std::endl;
     
     if ( lengths.size() != 1 || lengths[0] != elems.size() )
         throw RbException( "Invalid lengths specification in ContainerNode" );

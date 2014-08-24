@@ -1132,8 +1132,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "round",     new Func_round<Real,Integer>()  );
         addFunction( "round",     new Func_round<RealPos,Natural>()  );
 		
-        // simplex constructor function
+        // simplex constructor function (from RealPos ellipsis argument values)
         addFunction( "simplex",   new Func_simplex()                  );
+
+        // simplex constructor function (from vector of RealPos values)
+        addFunction( "simplex",   new Func_normalize()                );
 
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
