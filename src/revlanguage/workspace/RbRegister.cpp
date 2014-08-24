@@ -1209,6 +1209,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("qnorm", new DistributionFunctionQuantile( new Dist_norm() ) );
         addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_norm() ) );
         
+        //
+        addFunction("dpoisson", new DistributionFunctionPdf<Natural>( new Dist_poisson() ) );
+        addFunction("rpoisson", new DistributionFunctionRv<Natural>( new Dist_poisson() ) );
+        
         // uniform distribution
         addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );
         addFunction("punif", new DistributionFunctionCdf( new Dist_unif() ) );
