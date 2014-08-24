@@ -33,14 +33,16 @@ for (i in 1:2) { glr[i] ~ dnExponential(10.0) }
 # Distance-dependence
 #    dp is the distance-dependence power parameter
 dp          ~ dnExponential(10.0)
-#dp          ~ dnNorm(0.0,1.0)
 grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, useAvailable=true, useDistance=true)
 
-# Q_like is used to compute likelihoods
-Q_like      := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+# Q models the dispersal-extinction process (CTMC)
+Q           := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+
+# csf models the cladogenic state frequencies (sympatry, peripatry, allopatry)
+csf         ~ dnDirichlet([1,1,1])
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
-M           ~  dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+M           ~  dnPhyloDACTMC(tree=tree, Q=Q, C=csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)
 
 # attach observation to M
 M.clamp(data)
@@ -60,13 +62,13 @@ n_nodes  <- tree.nnodes()
 moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
 moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
 moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=5.0)
-#moves[3] <- mvSlide(x=dp, delta=0.5, tune=false, weight=5.0)
+moves[4] <- mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 
 # data augmentation moves
-moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-moves[5] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-moves[6] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
-moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+moves[5] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+moves[6] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+moves[7] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+moves[8] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
 
 
 
@@ -75,9 +77,10 @@ moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo"
 ############
 
 # standard monitors
-monitors[1] <- screenmonitor(printgen=10, glr, dp)
+monitors[1] <- screenmonitor(printgen=10, glr, csf, dp)
 #monitors[2] <- modelmonitor(filename=out_fp+out_str+".parameters.txt", printgen=10)
 monitors[2] <- filemonitor(filename=out_fp+out_str+".parameters.txt",printgen=10,glr,dp)
+
 # character history monitors
 monitors[3] <- mnCharHistoryNewick(filename=out_fp+out_str+".events.txt", ctmc=M, tree=tree, printgen=10, style="events")
 monitors[4] <- mnCharHistoryNewick(filename=out_fp+out_str+".counts.txt", ctmc=M, tree=tree, printgen=10, style="counts")
