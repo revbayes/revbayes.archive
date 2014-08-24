@@ -214,6 +214,23 @@ The $\beta$ parameter rescales the importance of geographic distance between two
 Importantly, $\eta(\cdot) = 1$ when $\beta=0$, meaning geographic distance between areas is irrelevant.
 Moreover, when $\beta > 0$, $\eta(\cdot) < 1$ when area $a$ is relatively distant and $\eta(\cdot) > 1$ when area $a$ is relatively close.
 
+In addition to dispersal and extinction, the DEC model allows cladogenic range evolution events.
+For each internal node in the three, one of two events can occur: peripatry or allopatry.
+Say the range of a species approaching an internal node, i.e. that is about to speciate, is 1110.
+Under peripatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
+Under allopatric cladogenesis, the ancestral range is split evenly among daughter lineages, e.g. one lineage may inherit 1100 and the other inherit 0010.
+Only under peripatric cladogenesis where the ancestral range is size one do both daughter lineages inherit the same range; this cladogenesis is sometimes called narrow sympatric cladogenesis.
+Widespread sympatric cladogenesis is allowed, where both daughter lineages inherit the entire ancestral species range \citep{landis13}.
+For a complete description on cladogenic events, see \citet{matzke14}.
+Ideally, the probability of cladogenic events is linked to a birth-death process (see \citet{goldberg11}), but the DEC model ignores speciation events hidden by extinction or incomplete taxon sampling and assigns equal probabilities to all cladogenic event types. 
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5in]{figures/bg_dec_dag}
+\caption{Graphical model of DEC.}
+\end{figure}
+
 Let's consider what happens to the size of \textbf{Q} when the number of areas, $N$, becomes large.
 For three areas, \textbf{Q} is size $8 \times 8$.
 For ten areas, \textbf{Q} is size $1024 \times 1024$, which approaches the largest size matrix that can be exponentiated in a practical amount of time.
@@ -456,23 +473,31 @@ RevBayes > grm := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAvailable=true, 
 \end{snugshade}
 
 Now we need a deterministic node to represent the rate matrix, {\bf Q}.
-To determine the value of this node, we'll use the function {\tt fnBiogeoDEC} to assign our model parameters to transition rates as described in the introduction.
+To determine the value of this node, we'll use the function {\tt fnBiogeoDE} to assign our model parameters to transition rates as described in the introduction.
 As input, we'll pass our gain and loss rates, {\tt glr}, and our geographical rate modifier, {\tt grm}.
 In addition, we'll inform the function of the number of areas in our analysis and whether we will allow species to be absent in all areas (i.e. have the null range).
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > Q_like := fnBiogeoDEC(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+RevBayes > Q := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+\end{lstlisting}
+\end{snugshade}
+
+To extract some information for the frequencies of different cladogenic event types (sympatric, peripatric, allopatric), we will create a Dirichlet-distributed stochastic node.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > csf ~ dnDirichlet([1,1,1])
 \end{lstlisting}
 \end{snugshade}
 
 For the model's final node, we create the stochastic node for the continuous-time Markov chain (CTMC).
 This node's distribution is {\tt dnPhyloDACTMC} where {\tt DA} indicates the CTMC uses data-augmentation to compute the likelihood rather than Felsenstein's pruning algorithm.
-To create the distribution, we must pass it our {\tt tree} and {\tt Q\_like} objects, but additionally inform the distribution that it will be using a biogeographic model, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), and that it will assign zero probability to a transition away from the null range state.
+To create the distribution, we must pass it our {\tt tree} and {\tt Q} objects, but additionally inform the distribution that it will be using a biogeographic model, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), and that it will assign zero probability to a transition away from the null range state.
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > M ~ dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+RevBayes > M ~ dnPhyloDACTMC(tree=tree, Q=Q, C=csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)
 \end{lstlisting}
 \end{snugshade}
 
@@ -518,9 +543,10 @@ The arguments for {\tt mvScale} are fairly typical as far as RevBayes {\tt Move}
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=2.0)
-RevBayes > moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=2.0)
-RevBayes > moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=2.0)
+RevBayes > moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
+RevBayes > moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
+RevBayes > moves[3] <- mvScale(x=dp, 	 lambda=0.5, tune=false, weight=5.0)
+RevBayes > moves[4] <- mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 \end{lstlisting}
 \end{snugshade}
 
@@ -548,10 +574,10 @@ Let's create the character history moves as follows.
 \begin{snugshade}
 \begin{lstlisting}
 RevBayes > n_nodes  <- tree.nnodes()
-RevBayes > moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-RevBayes > moves[5] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-RevBayes > moves[6] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
-RevBayes > moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+RevBayes > moves[5] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+RevBayes > moves[6] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+RevBayes > moves[7] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+RevBayes > moves[8] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
 \end{lstlisting}
 \end{snugshade}
 
@@ -565,7 +591,7 @@ The first two {\tt Monitor} objects are fairly standard and found in most RevBay
 RevBayes > mnScreen
    Mntr_Screen function (RevObject ..., Natural printgen, Bool posterior, Bool
    likelihood, Bool prior)
-RevBayes > monitors[1] <- mnScreen(printgen=10, glr, dp, pi)
+RevBayes > monitors[1] <- mnScreen(printgen=10, glr, dp, csf)
 RevBayes > mnModel
    Mntr_Model function (String filename, Natural printgen, String separator,
    Bool posterior, Bool likelihood, Bool prior, Bool append, Bool
@@ -787,6 +813,7 @@ Open Tracer, select the fields for the posterior probability and area gain rate,
 \begin{figure}[H]
 \centering
 \includegraphics[width=3in]{figures/joint_rgain_posterior}
+\caption{Joint-marginal distribution of posterior and area gain rate, $\lambda_1$.}
 \end{figure}
 
 Here, we see a strong negative correlation between the posterior probability and the area gain rate, which is expected.
@@ -821,6 +848,7 @@ Open Tracer, select the fields for the posterior probability and the number of g
 \begin{figure}[H]
 \centering
 \includegraphics[width=3in]{figures/joint_ngain_posterior}
+\caption{Joint-marginal distribution of posterior and number dispersal events summed over the tree.}
 \end{figure}
 
 
@@ -949,6 +977,7 @@ Phylowood generates interactive animations to explore biogeographic reconstructi
 \begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figures/phw_mrca}
+\caption{Phylowood frame showing posterior ancestral range of root node.}
 \end{figure}
 
 \noindent \\ \impmark Click the Play button to view the animation. \\
@@ -962,6 +991,7 @@ The animation will play the timeframe corresponding to the slider.
 \begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figures/phw_all}
+\caption{Phylowood frame showing distribution of extant taxon ranges.}
 \end{figure}
 
 \noindent \\ \impmark Pan and zoom around the map.\\
@@ -989,6 +1019,7 @@ Phylowood also offers a masking effect that persists until an unmask command is 
 \begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figures/phw_br19}
+\caption{Phylowood frame highlighting the posterior range for the most recent common ancestor of {\it P. mauiensis} and {\it P. hawaiiensis}.}
 \end{figure}
 
 Now that the masking effects are in place, you're free to interact with other map components.

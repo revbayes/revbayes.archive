@@ -1,15 +1,24 @@
 \begin{tikzpicture}
 % modules
 \node [obmod] (ctmc_da)   at (0,0)                     {\begin{tabular}{c}CTMC\\(data aug)\end{tabular}};
-\node [obmod] (ctmc_me)   at ($(ctmc_da)-(4,0)$)       {\begin{tabular}{c}CTMC\\(mtx exp)\end{tabular}};
-\node [smod] (gtr)        at ($(ctmc_me)-(-1.33,2)$)   {GTR};
-\node [smod] (igr)        at ($(ctmc_me)-(1.33,2)$)    {IGR};
-\node [smod] (dec)        at ($(ctmc_da)-(0,2)$)       {DEC};
-\node [smod] (tree)       at ($(ctmc_da)-(2,-2)$)      {Tree};
+\node [smod] (clado)      at ($(ctmc_da)-(2,-2)$)       {Clado};
+\node [smod] (tree)       at ($(ctmc_da)-(-2,-2)$)      {Tree};
+% Q_DEC
+\node [detnode]    (qn_dec)          at ($(ctmc_da)-(0,2)$)        {$Q_{DEC}$};
+\node [snode]      (glr_dec)         at ($(qn_dec)-(1.5,2)$)        {$\lambda$};
+\node [constnode]  (glrpr_dec)       at ($(glr_dec)-(0,2)$)         {$\lambda_0$};
+\draw [taro]       (glrpr_dec)       -- (glr_dec);
+\draw [taro]       (glr_dec)         -- (qn_dec);
+\node [detnode]    (ddd_dec)         at ($(qn_dec)-(-1.5,2)$)      { $\eta$ };
+\node [snode]      (beta_dec)        at ($(ddd_dec)-(-1,2)$)        { $\beta$ };
+\node [constnode]  (betapr_dec)      at ($(beta_dec)-(0,2)$)       { $\beta_0$ };
+\node [constnode]  (geo_dec)         at ($(ddd_dec)-(1,2)$)       { $G$ };
+\draw [taro]       (betapr_dec)      -- (beta_dec);
+\draw [taro]       (beta_dec)        -- (ddd_dec);
+\draw [taro]       (ddd_dec)         -- (qn_dec);
+\draw [taro]       (geo_dec)         -- (ddd_dec);
+\draw [taro] (qn_dec) -- (ctmc_da) ;
 % edges
-\draw [taro] (gtr)        -- (ctmc_me);
-\draw [taro] (dec)        -- (ctmc_da);
-\draw [taro] (igr)        -- (ctmc_me);
-\draw [taro] (tree)       -- (ctmc_me);
+\draw [taro] (clado)        -- (ctmc_da);
 \draw [taro] (tree)       -- (ctmc_da);
 \end{tikzpicture}
