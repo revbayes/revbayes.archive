@@ -241,7 +241,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         {
             
             std::ostringstream msg;
-            msg << "Argument mismatch for function call '" << name << "'(";
+            msg << "Argument mismatch for function call '" << name << "' with arguments (";
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
