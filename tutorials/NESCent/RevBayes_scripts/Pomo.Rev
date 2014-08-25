@@ -76,7 +76,7 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.1,rate=0.1)
+Ne ~ gamma(shape=0.5,rate=0.5)
 Ne.setValue(0.004)
 
 # Simulate gene trees
@@ -289,7 +289,7 @@ branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
 p_inv ~ beta(alpha=1,beta=1)
-p_inv.setValue(0.0)
+p_inv.setValue(0.000001)
 
 ###################
 # PhyloCTMC Model #
@@ -386,6 +386,17 @@ monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
 #############
 
 # We define our model.
+# First we need to get rid of several variables that are not part of the Pomo model.
+clear(alns)
+clear(geneTrees)
+clear(Ne)
+clear(familyRates)
+clear(trueEr)
+clear(trueFamilyRates)
+clear(trueGeneTrees)
+clear(trueNe)
+clear(trueSf)
+
 # We can use any node of our model as a handle, here we choose to use the species tree.
  
 mymodel <- model(speciesTree)
