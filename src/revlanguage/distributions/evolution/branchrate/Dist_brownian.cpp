@@ -70,7 +70,7 @@ const MemberRules& Dist_brownian::getMemberRules(void) const {
     {
         dist.push_back( new ArgumentRule( "tree" , true, TimeTree::getClassTypeSpec() ) );
         dist.push_back( new ArgumentRule( "sigma", true, RealPos::getClassTypeSpec() ) );
-        dist.push_back( new ArgumentRule( "drift", true, Real::getClassTypeSpec() ) );
+        dist.push_back( new ArgumentRule( "drift", true, Real::getClassTypeSpec(), new Real(0) ) );
         rulesSet = true;
     }
     

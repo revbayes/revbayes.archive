@@ -12,14 +12,13 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector<double> > *g, const TypedDagNode< double>* r, const TypedDagNode<double>* k): 
+T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedDagNode< std::vector<double> > *g, const TypedDagNode<double>* k): 
 
     TypedFunction< RbVector<RateMatrix> >( new RbVector< RateMatrix >(t->getValue().getNumberOfNodes()-1, RateMatrix_HKY() ) ),
-    tau(t), gctree(g), rootgc(r), kappa(k) {
+    tau(t), gctree(g), kappa(k) {
     
     this->addParameter( tau );
     this->addParameter( gctree );
-    this->addParameter( rootgc );   
     this->addParameter( kappa );   
 
     update();    
@@ -28,7 +27,7 @@ T92GCBranchTree::T92GCBranchTree(const TypedDagNode< TimeTree > *t, const TypedD
 T92GCBranchTree::T92GCBranchTree(const T92GCBranchTree &n):
 
     TypedFunction< RbVector< RateMatrix > >( n ),
-        tau(n.tau), gctree( n.gctree ), rootgc( n.rootgc ), kappa( n.kappa) {
+        tau(n.tau), gctree( n.gctree ), kappa( n.kappa) {
     
 }
 
@@ -48,10 +47,6 @@ void T92GCBranchTree::swapParameterInternal(const DagNode *oldP, const DagNode *
         gctree = static_cast< const TypedDagNode<std::vector<double> > * >( newP );
     }
 
-    if (oldP == rootgc) {
-        rootgc = static_cast<const TypedDagNode< double >* >(newP);
-    }
-    
     if (oldP == kappa) {
         kappa = static_cast<const TypedDagNode< double >* >(newP);
     }

@@ -54,6 +54,7 @@ namespace RevBayesCore {
         std::set<GeographicArea*>   reachableAreas;
     };
 
+    std::ostream&                                       operator<<(std::ostream& o, const GeographicArea& x);
 }
 
 #endif /* defined(__rb_mlandis__GeographicArea__) */

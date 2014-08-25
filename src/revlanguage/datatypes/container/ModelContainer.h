@@ -268,7 +268,7 @@ RevLanguage::RevObject* RevLanguage::ModelContainer<rlType, dim, rbType>::cloneD
     theClone->setDagNode( NULL );
     
     RevBayesCore::DagNode* theNodeClone = dagNode->cloneDAG( nodesMap );
-    
+
     theClone->setDagNode( theNodeClone );
     
     return theClone;

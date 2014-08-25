@@ -221,7 +221,7 @@ bool TestPomoModel::run( void ) {
     // POMO model priors
     
     //Size of the virtual population
-    ConstantNode<unsigned int> *popSize = new ConstantNode<unsigned int>("populationSize", new unsigned int(virtualPopulationSize));
+    ConstantNode<int> *popSize = new ConstantNode<int>("populationSize", new int(virtualPopulationSize));
     
     // the parameters for the mutation rates
     ConstantNode<std::vector<double> > *e = new ConstantNode<std::vector<double> >( "e", new std::vector<double>(12,1.0) ); //All 12 possible mutations
