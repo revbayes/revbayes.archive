@@ -45,7 +45,8 @@ std::string RbVersion::getHeader( void ) const {
     header += "\n";
     header += "RevBayes is a collaborative project with many contributors.\n";
     header += "Type 'contributors()' for more information. Type 'citation()'\n";
-    header += "for information on how to cite RevBayes.\n";
+    header += "for information on how to cite RevBayes. Type history for a\n";
+    header += "brief account of the development history.\n";
     header += "\n";
     header += "For help on using RevBayes, type 'help()'. To quit RevBayes\n";
     header += "type 'quit()' or 'q()'.\n";
