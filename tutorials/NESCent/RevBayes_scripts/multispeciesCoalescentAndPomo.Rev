@@ -45,7 +45,7 @@ n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 ######################
 
 # Species names
-for (i in 1:n_genes) {
+for (i in 1:n_species) {
 	s_names[i] <- "Species_"+i
 }
 
