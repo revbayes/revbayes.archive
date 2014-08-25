@@ -66,7 +66,7 @@ const TypeSpec& Func_t92GCBranchTree::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_t92GCBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ModelVector<RateMatrix>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
@@ -104,7 +104,7 @@ void Func_t92GCBranchTree::printValue(std::ostream& o) const {
     o << " t92GCbranchtree(";
    
     o << "tree=";
-    if ( args[0].getVariable() != NULL ) {
+    if ( argsProcessed && args[0].getVariable() != NULL ) {
         o << args[0].getVariable()->getName();
     } else {
         o << "?";
@@ -112,7 +112,7 @@ void Func_t92GCBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "branchGC=";
-    if ( args[1].getVariable() != NULL ) {
+    if ( argsProcessed && args[1].getVariable() != NULL ) {
         o << args[1].getVariable()->getName();
     } else {
         o << "?";
@@ -120,7 +120,7 @@ void Func_t92GCBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "tstv=";
-    if ( args[3].getVariable() != NULL ) {
+    if ( argsProcessed && args[2].getVariable() != NULL ) {
         o << args[3].getVariable()->getName();
     } else {
         o << "?";

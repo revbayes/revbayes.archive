@@ -230,12 +230,11 @@ bool IndirectReferenceNode<rlType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node. We copy the behavior in
- * RevBayesCore::DeterministcNode
+ * Keep the current value of the node.
  *
- * @todo We should not hard-set the touched flag to false here without
- *       calling update, unless we can trust the caller to know that
- *       this is correct behavior.
+ * @note We cannot change the touched flag, because if we have been
+ *       touched and not updated, we need to stay touched until
+ *       someone asks for our value.
  */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
@@ -243,14 +242,6 @@ void IndirectReferenceNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-    
-    // TODO: Hard-set touched flag to false, potentially unsafe
-    // We at least check to make sure the value is not NULL
-//    if ( this->touched == true )
-//        std::cerr << "Keeping touched indirect reference node" << std::endl;
-    if ( value == NULL )
-        this->update();
-    this->touched = false;
     
     // Pass the call on
     this->keepAffected();

@@ -38,6 +38,9 @@ namespace RevLanguage {
        
         // Basic utility functions you have to override
         virtual ModelObject*                    clone(void) const = 0;                                                      //!< Clone object
+        static const std::string&               getClassType(void);                                                         //!< Get Rev type (static)
+        static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get Rev type spec (static)
+        virtual const TypeSpec&                 getTypeSpec(void) const = 0;                                                //!< Get Rev type spec (instance)
     
         // Utility functions you might want to override
         virtual RevPtr<Variable>                executeMethod(const std::string& name, const std::vector<Argument>& args);  //!< Override to map member methods to internal functions
@@ -294,6 +297,25 @@ RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::ModelObject<rbType>::exe
     }
     
     return RevObject::executeMethod( name, args );
+}
+
+
+template <typename rbType>
+const std::string& RevLanguage::ModelObject<rbType>::getClassType(void) {
+    
+    static std::string revType = "ModelObject";
+    
+	return revType;
+}
+
+
+/** Get class type spec describing type of object */
+template <typename rlType>
+const RevLanguage::TypeSpec& RevLanguage::ModelObject<rlType>::getClassTypeSpec(void) {
+    
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
+    
+	return revTypeSpec;
 }
 
 

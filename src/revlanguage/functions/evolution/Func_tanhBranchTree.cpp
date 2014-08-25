@@ -110,7 +110,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << " tanhbranchtree(";
    
     o << "tree=";
-    if ( args[0].getVariable() != NULL ) {
+    if ( argsProcessed && args[0].getVariable() != NULL ) {
         o << args[0].getVariable()->getName();
     } else {
         o << "?";
@@ -118,7 +118,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "process=";
-    if ( args[1].getVariable() != NULL ) {
+    if ( argsProcessed && args[1].getVariable() != NULL ) {
         o << args[1].getVariable()->getName();
     } else {
         o << "?";
@@ -126,7 +126,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "offset=";
-    if ( args[2].getVariable() != NULL ) {
+    if ( argsProcessed && args[2].getVariable() != NULL ) {
         o << args[2].getVariable()->getName();
     } else {
         o << "?";
@@ -134,7 +134,7 @@ void Func_tanhBranchTree::printValue(std::ostream& o) const {
     o << ", ";
     
     o << "traitindex=";
-    if ( args[3].getVariable() != NULL ) {
+    if ( argsProcessed && args[3].getVariable() != NULL ) {
         o << args[3].getVariable()->getName();
     } else {
         o << "?";

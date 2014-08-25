@@ -296,13 +296,16 @@ void Workspace::printValue(std::ostream& o) const {
     if ( variableTable.size() > 0 )
     {
         o << "Variable table:" << std::endl;
+        o << "===============" << std::endl << std::endl;
+
         VariableTable::const_iterator it;
         for ( it = variableTable.begin(); it != variableTable.end(); it++)
         {
-            o << (*it).first << " = ";
+            std::ostringstream s;
+            s << (*it).first << " = ";
             std::ostringstream t;
             (*it).second->printValue( t );
-            o << StringUtilities::oneLiner( t.str(), 60 ) << std::endl;
+            o << StringUtilities::oneLiner( t.str(), 75 - s.str().length() ) << std::endl;
         }
         o << std::endl;
     }
@@ -313,12 +316,14 @@ void Workspace::printValue(std::ostream& o) const {
     if (s.str().size() > 0 )
     {
         o << "Function table:" << std::endl;
+        o << "===============" << std::endl << std::endl;
         o << s.str() << std::endl;
     }
 
     if ( typeTable.size() > 0 )
     {
         o << "Type table:" << std::endl;
+        o << "===========" << std::endl << std::endl;
         std::map<std::string, RevObject *>::const_iterator i;
         for (i=typeTable.begin(); i!=typeTable.end(); i++)
         {
