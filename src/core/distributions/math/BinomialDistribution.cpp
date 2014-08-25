@@ -7,7 +7,6 @@ using namespace RevBayesCore;
 
 BinomialDistribution::BinomialDistribution(const TypedDagNode<int> *m, const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 0 ) ), n( m ), p( q ) {
     
-    std::cout << n->getValue() << " " << p->getValue() << std::endl;
     *value = RbStatistics::Binomial::rv(n->getValue(), p->getValue(), *GLOBAL_RNG);
 }
 
