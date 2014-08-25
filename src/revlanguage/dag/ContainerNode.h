@@ -385,12 +385,11 @@ bool ContainerNode<rlElemType, valueType>::isConstant( void ) const
 
 
 /**
- * Keep the current value of the node. We copy the behavior in
- * RevBayesCore::DeterministcNode
+ * Keep the current value of the node.
  *
- * @todo We should not hard-set the touched flag to false here without
- *       calling update, unless we can trust the caller to know that
- *       this is correct behavior.
+ * @note We cannot change the touched flag, because if we have been
+ *       touched and not updated, we need to stay touched until
+ *       someone asks for our value.
  */
 template<typename rlElemType, typename valueType>
 void ContainerNode<rlElemType, valueType>::keepMe( RevBayesCore::DagNode* affecter )
@@ -398,11 +397,6 @@ void ContainerNode<rlElemType, valueType>::keepMe( RevBayesCore::DagNode* affect
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of container node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-    
-    // TODO: Hard-set touched flag to false, potentially unsafe
-//    if ( this->touched == true )
-//        std::cerr << "Keeping touched container node" << std::endl;
-    this->touched = false;
 
     // Pass the call on
     this->keepAffected();

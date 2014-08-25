@@ -301,10 +301,8 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-    
-    // we just mark ourselves as clean
-    this->touched = false;
-    
+
+    // allow specialized recovery in functions
     function->keep( affecter );
     
     // delegate call
