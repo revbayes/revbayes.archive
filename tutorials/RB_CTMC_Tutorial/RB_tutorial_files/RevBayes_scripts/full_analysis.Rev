@@ -1,18 +1,16 @@
 
-source("RevBayes_scripts/mcmc_run_uniform.Rev")
+source("RevBayes_scripts/mcmc_run_nonclock_JC.Rev")
 clear()
 
-source("RevBayes_scripts/marLnL_calc_uniform.Rev")
+source("RevBayes_scripts/mcmc_run_nonclock_HKY.Rev")
 clear()
 
-source("RevBayes_scripts/mcmc_run_twogene.Rev")
+source("RevBayes_scripts/mcmc_run_nonclock_GTR.Rev")
 clear()
 
-source("RevBayes_scripts/marLnL_calc_twogene.Rev")
+source("RevBayes_scripts/mcmc_run_nonclock_GTR_Gamma.Rev")
 clear()
 
-source("RevBayes_scripts/mcmc_run_genecodon.Rev")
-clear()
+source("RevBayes_scripts/mcmc_run_nonclock_GTR_Gamma_pInv.Rev")
 
-source("RevBayes_scripts/marLnL_calc_genecodon.Rev") 
 q()
