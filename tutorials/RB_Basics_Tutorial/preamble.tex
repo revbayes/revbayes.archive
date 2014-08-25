@@ -9,7 +9,6 @@
 \usepackage{upgreek}
 \usepackage{framed}
 \usepackage{ textcomp }
-\usepackage{ wasysym }
 \usepackage{natbib}
 \usepackage{url}
 \usepackage{soul}
@@ -124,3 +123,6 @@
 \newcommand{\PhyloBayes}{\texttt{PhyloBayes}}
 \newcommand{\PAML}{\texttt{PAML}}
 
+\let\otheriint\iint
+\let\iint\relax
+\usepackage{ wasysym }
