@@ -154,6 +154,24 @@ typename rlType::valueType ModelVector<rlType>::operator[]( size_t index ) const
 
 
 /**
+ * Clear the vector.
+ */
+template <typename rlType>
+void ModelVector<rlType>::clear( void )
+{
+    this->dagNode->getValue().clear();
+}
+
+
+/** Get a type-safe clone of the object */
+template <typename rlType>
+ModelVector<rlType>* ModelVector<rlType>::clone() const
+{
+    return new ModelVector<rlType>( *this );
+}
+
+
+/**
  * Convert to object of another type. Here we use the setElements function
  * of the Container base class to do generic type conversion in all cases
  * where the elements are individually convertible to the desired element
@@ -200,25 +218,6 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
     
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
     return this->ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::convertTo( type );
-}
-
-
-
-/**
- * Clear the vector.
- */
-template <typename rlType>
-void ModelVector<rlType>::clear( void )
-{
-    this->dagNode->getValue().clear();
-}
-
-
-/** Get a type-safe clone of the object */
-template <typename rlType>
-ModelVector<rlType>* ModelVector<rlType>::clone() const
-{
-    return new ModelVector<rlType>( *this );
 }
 
 

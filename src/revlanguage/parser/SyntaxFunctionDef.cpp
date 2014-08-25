@@ -3,6 +3,7 @@
 #include "RbUtil.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
+#include "UserProcedure.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -90,7 +91,12 @@ SyntaxFunctionDef* SyntaxFunctionDef::clone( void ) const
 
 
 
-/** Get semantic value: insert a user-defined function or procedure in the user workspace */
+/**
+ * Get semantic value: insert a user-defined function or procedure in the user workspace.
+ *
+ * @todo Deal with local variables hiding external variables. Ask if user wants to replace
+ *       an existing function or procedure.
+ */
 RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
 {
     // Get argument rules from the formals
@@ -106,7 +112,13 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
         for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
         {
             if ( !(*it)->isFunctionSafe( env ) )
-                throw RbException( "The code is not function-safe." );
+            {
+                std::ostringstream msg;
+                msg << "The code of the function includes statements that modify or potentially modify" << std::endl;
+                msg << "external variables. This is not allowed in a function. Either modify the code" << std::endl;
+                msg << "of your function, or redefine it as a procedure." << std::endl;
+                throw RbException( msg.str() );
+            }
         }
 
         // Finally check whether last statement (if there is one) retrieves an external variable
@@ -124,7 +136,7 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
     // Create the function
     Function* theFunction;
     if ( isProcedureDef )
-        theFunction = new UserFunction( argRules, returnType, stmts );  // UserProcedure( argRules, returnType, stmts );
+        theFunction = new UserProcedure( argRules, returnType, stmts );
     else
         theFunction = new UserFunction( argRules, returnType, stmts );
     
