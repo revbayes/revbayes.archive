@@ -45,14 +45,14 @@ n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 ######################
 
 # Species names
-for (i in 1:n_genes) {
+for (i in 1:n_species) {
 	s_names[i] <- "Species_"+i
 }
 
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
 speciation ~ exponential(10.0)
 extinction ~ exponential(10.0)
-tree_height ~ unif(0,100.0)
+tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.008)
@@ -71,12 +71,11 @@ trueSpeciesTree <- speciesTree
 for (i in 1:n_species) {
 	for (j in 1:n_alleles) {
 		taxa[(i-1)*n_alleles+j] <- taxon(taxonName=s_names[i]+"_"+j, speciesName=s_names[i])
-#		g_names[(i-1)*n_alleles+j] <- s_names[i]+"_"+j
 	}
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.1,rate=0.1)
+Ne ~ gamma(shape=0.5,rate=0.5)
 Ne.setValue(0.004)
 
 # Simulate gene trees
@@ -289,7 +288,7 @@ branch_rates <- 1.0
 
 # We do not assume a proportion of invariant
 p_inv ~ beta(alpha=1,beta=1)
-p_inv.setValue(0.0)
+p_inv.setValue(0.000001)
 
 ###################
 # PhyloCTMC Model #
@@ -386,6 +385,17 @@ monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
 #############
 
 # We define our model.
+# First we need to get rid of several variables that are not part of the Pomo model.
+clear(alns)
+clear(geneTrees)
+clear(Ne)
+clear(familyRates)
+clear(trueEr)
+clear(trueFamilyRates)
+clear(trueGeneTrees)
+clear(trueNe)
+clear(trueSf)
+
 # We can use any node of our model as a handle, here we choose to use the species tree.
  
 mymodel <- model(speciesTree)
@@ -406,6 +416,6 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 # mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=400)
+mymcmc.run(generations=40000)
 
 

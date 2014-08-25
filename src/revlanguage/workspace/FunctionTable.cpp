@@ -241,7 +241,7 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
         {
             
             std::ostringstream msg;
-            msg << "Argument mismatch for function call '" << name << "'(";
+            msg << "Argument mismatch for function call '" << name << "' with arguments (";
             // print the passed arguments
             for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); it++) 
             {
@@ -521,14 +521,7 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
 
         s << i->first << " = ";
         
-        s << i->second->getReturnType().getType() << " function ";
-        
-        const RevLanguage::ArgumentRules& argRules = i->second->getArgumentRules();
-        
-        s << "(";
-        for ( std::vector<ArgumentRule *>::const_iterator i = argRules.begin(); i != argRules.end(); i++ )
-            (*i)->printValue( s );
-        s << ")" << std::endl;
+        i->second->printValue( s );
         
         o << StringUtilities::oneLiner( s.str(), 70 ) << std::endl;
     }

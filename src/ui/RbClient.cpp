@@ -63,10 +63,10 @@ std::string getWd() {
     return wd;
 }
 
-StringVector getFileList(std::string relativePath) {
+StringVector getFileList(std::string path) {
     StringVector v;
 
-    BOOST_FOREACH(std::string s, Filesystem::getFileList(getWd(), relativePath)) {
+    BOOST_FOREACH(std::string s, Filesystem::getFileList(getWd(), path)) {
         v.push_back(s);
     }
     return v;
@@ -182,6 +182,25 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
         completions = getFileList(buf + editorMachine.getLinePos());
     }
 
+    // print function signature(s) if applicable    
+    if (editorMachine.getCurrentState()->getType() == ST_DEF_LIST) {        
+        BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, workspaceUtils.getFunctionSignatures(editorMachine.getCurrentState()->getSubject())) {
+            std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
+
+            for (size_t i = 0; i < sign.arguments.size(); i++) {
+                std::cout << sign.arguments[i];
+                if (i < sign.arguments.size() - 1) {
+                    std::cout << ", ";
+                }
+            }
+        }
+        std::cout << ")\n\r";
+    }
+
+
+
+
+
     StringVector matches;
     for (unsigned int i = 0; i < completions.size(); i++) {
         if (boost::starts_with(completions[i], compMatch)) {
@@ -195,6 +214,11 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
     bufferInfo.completions = completions;
     bufferInfo.matchingCompletions = matches;
     bufferInfo.compMatch = compMatch;
+
+    // make sure any output is displayed correctly
+    linenoiceSetCursorPos(0);
+    std::cout << prompt << buf;
+    std::cout.flush();
 
     return bufferInfo;
 }
@@ -269,12 +293,8 @@ int printGeneralHelp(const char *buf, size_t len, char c) {
     cmd.push_back("...");
     cmd.push_back("");
 
-
-
     std::cout << nl << TerminalFormatter::makeUnderlined("Available commands") << nl;
     printData(cmd, 2);
-
-
 
     return 0;
 
@@ -403,27 +423,6 @@ int bracketCallback(const char *buf, size_t len, char c) {
                 editorMachine.getCurrentState()->addCompletion(param);
             }
         }
-        std::vector<WorkspaceUtils::FunctionSignature> signatures = workspaceUtils.getFunctionSignatures(subject);
-        if (signatures.size() <= 0) {
-            //std::cout << "\n\rno such function\n\r";
-        } else {
-
-            BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, signatures) {
-                std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
-
-                for (size_t i = 0; i < sign.arguments.size(); i++) {
-                    std::cout << sign.arguments[i];
-                    if (i < sign.arguments.size() - 1) {
-                        std::cout << ", ";
-                    }
-                }
-            }
-
-            std::cout << ")\n\r";
-        }
-        linenoiceSetCursorPos(0);
-        std::cout << prompt << buf;
-        std::cout.flush();
     }
     return 0;
 }
