@@ -327,6 +327,27 @@ bool DagNode::isConstant( void ) const
 }
 
 
+/**
+ * This function returns true if the DAG node is
+ * a constant node that is not modifiable by the user.
+ * This occurs when the node is unnamed and all parents
+ * are immutable.
+ */
+bool DagNode::isImmutable( void ) const
+{
+    const std::set<const DagNode*>& parents = getParents();
+    
+    if ( getName() != "" )
+        return false;
+    
+    for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+        if ( !(*it)->isImmutable() )
+            return false;
+    
+    return true;
+}
+
+
 /** Is this a non-applicable (NA) value? */
 bool DagNode::isNAValue( void ) const
 {
