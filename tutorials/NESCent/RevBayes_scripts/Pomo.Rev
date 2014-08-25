@@ -52,7 +52,7 @@ for (i in 1:n_genes) {
 # Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
 speciation ~ exponential(10.0)
 extinction ~ exponential(10.0)
-tree_height ~ unif(0,100.0)
+tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.008)
@@ -406,6 +406,6 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 # mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=400)
+mymcmc.run(generations=40000)
 
 
