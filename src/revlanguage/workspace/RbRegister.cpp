@@ -203,6 +203,7 @@
 #include "Dist_beta.h"
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
+#include "Dist_binomial.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_gamma.h"
@@ -246,6 +247,7 @@
 #include "Func_contributors.h"
 #include "Func_getwd.h"
 #include "Func_help.h"
+#include "Func_history.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
@@ -648,6 +650,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // brownian motion
         addDistribution( "dnBrownian",              new Dist_brownian() );
         addDistribution( "brownian",                new Dist_brownian() );
+        addDistribution( "Brownian",                new Dist_brownian() );
         addDistribution( "ornsteinUhlenbeck",       new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOUP",                   new Dist_ornsteinUhlenbeck() );
         addDistribution( "dnOrnsteinUhlenbeck",     new Dist_ornsteinUhlenbeck() );
@@ -730,6 +733,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // bernoulli distribution
         addDistribution( "dnBernoulli",     new Dist_bernoulli() );
         addDistribution( "bernoulli",       new Dist_bernoulli() );
+
+        // binomial distribution
+        addDistribution( "dnBinomial",     new Dist_binomial() );
+        addDistribution( "binomial",       new Dist_binomial() );
         
         // beta distribution
         addDistribution( "dnBeta",          new Dist_beta() );
@@ -847,6 +854,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "contributors",             new Func_contributors()             );
         addFunction( "getwd",                    new Func_getwd()                    );
         addFunction( "help",                     new Func_help()                     );
+        addFunction( "history",                  new Func_history()                  );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
@@ -1132,8 +1140,11 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "round",     new Func_round<Real,Integer>()  );
         addFunction( "round",     new Func_round<RealPos,Natural>()  );
 		
-        // simplex constructor function
+        // simplex constructor function (from RealPos ellipsis argument values)
         addFunction( "simplex",   new Func_simplex()                  );
+
+        // simplex constructor function (from vector of RealPos values)
+        addFunction( "simplex",   new Func_normalize()                );
 
 		// square root function
         addFunction( "sqrt",      new Func_sqrt()  );
@@ -1175,6 +1186,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new Dist_bernoulli() ) );
         addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new Dist_bernoulli() ) );
         
+        // binomial distribution
+        addFunction("dbinomial", new DistributionFunctionPdf<Natural>( new Dist_binomial() ) );
+        addFunction("rbinomial", new DistributionFunctionRv<Natural>( new Dist_binomial() ) );
+
         // beta distribution
         addFunction("dbeta", new DistributionFunctionPdf<Probability>( new Dist_beta() ) );
         //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
@@ -1208,6 +1223,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("pnorm", new DistributionFunctionCdf( new Dist_norm() ) );
         addFunction("qnorm", new DistributionFunctionQuantile( new Dist_norm() ) );
         addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_norm() ) );
+        
+        //
+        addFunction("dpoisson", new DistributionFunctionPdf<Natural>( new Dist_poisson() ) );
+        addFunction("rpoisson", new DistributionFunctionRv<Natural>( new Dist_poisson() ) );
         
         // uniform distribution
         addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );

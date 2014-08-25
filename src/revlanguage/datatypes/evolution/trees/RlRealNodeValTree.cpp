@@ -71,6 +71,8 @@ RevLanguage::RevPtr<Variable> RealNodeValTree::executeMethod(std::string const &
         return new Variable( new Real( 0 ) );
     }
 
+    std::cerr << "sending to core execute method\n";
+    
     return ModelObject<RevBayesCore::RealNodeContainer>::executeMethod( name, args );
 }
 
@@ -126,7 +128,7 @@ RevLanguage::MethodTable RealNodeValTree::makeMethods( void ) const
     methods.addFunction("stdev", new MemberFunction<RealNodeValTree,RealPos>(  this, stdevArgRules ) );
     
     ArgumentRules* rootArgRules = new ArgumentRules();
-    methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), rootArgRules ) );
+    methods.addFunction("rootVal", new MemberFunction<RealNodeValTree,RealPos>(  this, rootArgRules ) );
     
     ArgumentRules* clampArgRules = new ArgumentRules();
     clampArgRules->push_back(new ArgumentRule("data", false, AbstractCharacterData::getClassTypeSpec()));
