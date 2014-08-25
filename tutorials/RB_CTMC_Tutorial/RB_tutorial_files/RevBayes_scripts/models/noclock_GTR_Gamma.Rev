@@ -3,7 +3,7 @@
 # RevBayes Exercise: Bayesian inference of phylogeny under different 
 #                    subsitution models.
 # 
-# This file: Specifies the full GTR+Gamma+pInv model with parameters and moves 
+# This file: Specifies the full GTR+Gamma model with parameters and moves 
 #            for a single, uniform partition model
 #
 # authors: Tracy A. Heath, Michael Landis, Sebastian Hoehna and Brian R. Moore
@@ -43,7 +43,7 @@ mi <- 0
 # Substitution Model #
 ######################
 
-#### specify the GTR+G+I substitution model applied uniformly to all sites ###
+#### specify the GTR+G substitution model applied uniformly to all sites ###
 er_prior <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(er_prior)
 moves[mi++] <- mvSimplexElementScale(er)
@@ -73,13 +73,6 @@ norm_gamma_rates := discretizeGamma( alpha, alpha, 4, false )
 moves[mi++] <- mvScale(alpha)
 
 
-# the probability of a site being invariable
-pinvar ~ beta(1,1)
-# add moves for the probability if a site being invariable
-moves[mi++] <- mvScale(pinvar)
-moves[mi++] <- mvSlide(pinvar)
-
-
 
 
 
@@ -91,7 +84,7 @@ moves[mi++] <- mvSlide(pinvar)
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mi++] <- mvNNI(topolog)
+moves[mi++] <- mvNNI(topology)
 
 
 #### Specify a prior and moves on the branch lengths #### 
@@ -101,7 +94,7 @@ for (i in 1:n_branches) {
   br_lens[i] ~ dnExponential(10.0)
   
   # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
-  moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
+  moves[mi++] <- mvScale(br_lens[i]) 
 }
 
 TL := sum(br_lens)
@@ -129,7 +122,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ substModel(tree=psi, Q=Q, siteRates=norm_gamma_rates, pInv=p_inv, branchRates=clockRate, type="DNA")
+seq ~ substModel(tree=psi, Q=Q, siteRates=norm_gamma_rates, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)

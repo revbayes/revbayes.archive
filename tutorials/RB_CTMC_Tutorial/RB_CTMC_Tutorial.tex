@@ -74,11 +74,15 @@
 \section*{Overview}
 
 
-This tutorial demonstrates how to set up and perform an analysis that calculates Bayes factors to select among different 
-partition configurations of aligned DNA sequences. 
-After selecting the model that is best supported by the data, the exercise continues with basic inference of an unrooted 
-tree topology and branch lengths using Markov chain Monte Carlo (MCMC). 
+This tutorial demonstrates how to set up and perform an analysis for different substitution models. 
+You will create a phylogenetic model for the evolution of DNA sequences under a JC, HKY85, GTR, GTR+Gamma and GTR+Gamma+I substitution model.
+For all these models you will perform an MCMC run to estimate phylogeny and other model parameters.
 
+\subsection*{Requirements}
+We assume that you have completed the following tutorials:
+\begin{itemize}
+\item RB\_Basics\_Tutorial
+\end{itemize}
 
 
 
@@ -89,7 +93,7 @@ tree topology and branch lengths using Markov chain Monte Carlo (MCMC).
 \FloatBarrier
 \section{Exercise: Character Evolution under various Substitution Models}
 
-\subsection{Introduction}
+%\subsection{Introduction}
 %
 %
 %\bigskip
@@ -100,22 +104,20 @@ tree topology and branch lengths using Markov chain Monte Carlo (MCMC).
 \bigskip
 \subsection{Getting Started}
 
-%This is an in-depth tutorial on model selection and data partitioning in RevBayes and this document contains a lot of information. We will \textbf{walk through} the unpartitioned model section (Section \ref{secUnif}) and the remaining sections will be available for you to try on your own. 
-
-This tutorial assumes that you have already downloaded, compiled, and installed RevBayes. 
-We also recommend that---if you are working on a Unix machine---you put the {\tt rb} binary in your path.
-
-For the exercises outlined in this tutorial, we will use RevBayes interactively by typing commands in the command-line console.
+For the exercises outlined in this tutorial, we will use \RevBayes~interactively by typing commands in the command-line console.
 The format of this exercise uses \colorbox{shadecolor}{\tt lavender blush shaded boxes} to delineate important steps. 
-The various RevBayes commands and syntax are specified using \cl{typewriter text}. And the specific commands that you should type (or copy/paste) into RevBayes are indicated by shaded box and prompt. For example, after opening the RevBayes program, you can load your data file:
+The various \RevBayes~commands and syntax are specified using \cl{typewriter text}. 
+And the specific commands that you should type (or copy/paste) into \RevBayes~are indicated by shaded box and prompt. 
+For example, after opening the \RevBayes~program, you can load your data file:
 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > data_atpB <- readCharacterData("data/conifer_atpB.nex")[1]
+RevBayes > data_ITS <- readCharacterData("data/fagus_ITS.nex")
 \end{lstlisting}
 \end{snugshade*}}
 
-For this command, type in the command and its options:\\ \cl{data\_atpB <- readCharacterData("data/conifer\_atpB.nex")[1]}. \textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
+For this command, type in the command and its options:\\ \cl{data\_ITS <- readCharacterData("data/fagus\_ITS.nex")}. 
+\textbf{DO NOT} type in ``\cl{RevBayes >}'', the prompt is simply included to replicate what you see on your screen. 
 
 Multi-line entries, particularly loops, will often be displayed in boxes without the \cl{RevBayes >} prompt so that they can be copied and pasted wholly. 
 {\tt \begin{snugshade*}
@@ -125,16 +127,6 @@ for( i in 1:12 ){
 }
 \end{lstlisting}
 \end{snugshade*}}
-
-
-%Screen output resulting from the execution of a function or command will be in \colorbox{shadecolor}{\textcolor{outputcol}{\cl{forest green typewriter text in a shaded box}}}: 
-%
-%{\tt\begin{snugshade*}
-%{\textcolor{outputcol}{ 
-%\begin{lstlisting}
-%Successfully read one character matrix from file `data/conifer\_dna.nex'
-%\end{lstlisting}}}
-%\end{snugshade*}}
 
 
 This tutorial also includes hyperlinks: bibliographic citations are {\textcolor{citescol}{burnt orange}} and link to the full citation in the references, external URLs are {\textcolor{urlscol}{cerulean}}, and internal references to figures and equations are {\textcolor{linkscol}{purple}}.
@@ -147,29 +139,46 @@ In addition, we have provided the output files for every exercise so you can ver
 }
 
 
-\exs{Open the file \cl{data/conifer\_atpB.nex} in your text editor. This file contains the sequences for the atpB gene sampled from 9 species (Box 1). The elements of the \cl{DATA} block indicate the type of data, number of taxa, and length of the sequences.}
+\exs{Open the file \cl{data/fagus\_ITS.nex} in your text editor. This file contains the sequences for the ITS gene sampled from 13 species (Box 1). The elements of the \cl{DATA} block indicate the type of data, number of taxa, and length of the sequences.}
 
 
 \begin{center}
-Box 1: A fragment of the NEXUS file containing the atpB sequences for this exercise. \\
+Box 1: A fragment of the NEXUS file containing the ITS sequences for this exercise. \\
 \end{center}
 {\tt \scriptsize \begin{framed}
 \begin{lstlisting}
 #NEXUS 
 
 Begin data;
-	Dimensions ntax=9 nchar=1394;
-	Format datatype=dna gap=-;
-	Matrix
-Ginkgo_biloba            TTATTGGTCCAGTACTGGATGTAGCTTTTCCCCCGGGCAATATGCCTAATATTTACAATTCTTTG...
-Araucaria_araucana       -----GGTCCGGTACTGGATGTATCTTTTCCTCCAGATGAAATGCCCTATATTTACAATTCTTTG...
-Cedrus_deodara           TCATTGGCCCAGTACTGGA?GTCTCTTTTCCTCCAGGTAATATGCCTAATATTTACAATTCATTG...
-Cupressus_arizonica      -----------------GATGTATCTTTCCCTCCAGGTAGTATGCCTAGAATTTACAATTCTTTG...
-Juniperus_communis       -----------------------------------------------------------------...
-Pinus_densiflora         TCATTGGCCCAGTACTGGATGTCTCTTTTCCTCCAGGTAATATGCCTAATATTTACAATTCATTG...
-Podocarpus_chinensis     TCATCGGCCCTGTACTGGATGTATCTTTTCCTCCAGATGGTATGCCTTTTATTTACAATTCTTTA...
-Sciadopitys_verticillata TCATTGGTCCAGTACTAGATGTATCTTTCCCTCCAGGCAATATGCCTAGAATTTACAATTCTTTG...
-Taxus_baccata            TTATCGGCCCAGTACTAGATGTCTCTTTTCCTCCAGGTAATATGCCTAAAATTTACAATTCCTTA...
+Dimensions ntax=13 nchar=673;
+Format datatype=DNA missing=? gap=-;
+Matrix
+Trig_excelsa   
+TCGAAACCTG...
+Fagus_engleriana   
+TCGAAACCTG...
+Fagus_crenata1   
+TCGAAACCTG...
+Fagus_japonica2   
+TCGAAACCTG...
+Fagus_japonica1   
+TCGAAACCTG...
+Fagus_orientalis   
+TCGAAACCTG...
+Fagus_sylvatica   
+TCGAAACCTG...
+Fagus_lucida1   
+TCGAAACCTG...
+Fagus_lucida2   
+TCGAAACCTG...
+Fagus_crenata2   
+TCGAAACCTG...
+Fagus_grandifolia   
+TCGAAACCTG...
+Fagus_mexicana   
+TCGAAACCTG...
+Fagus_longipetiolata   
+TCGAAACCTG...
 	;
 End;
 \end{lstlisting}
@@ -178,12 +187,6 @@ End;
 \exs{Also note that ``pre-cooked'' output files are provided in the download. Throughout this tutorial, you can use those files to summarize output if you do not have time to run the full analyses yourself.}
 
 
-%\exs{Open the Rev file, \taha{Rev file name}, in a text editor.  This file contains 
-%all of the commands required to perform the necessary analyses to explore various
-%partition schemes (unpartitioned, partitioned by gene region, and partitioned by
-%gene region$+$codon position).  The details of each command are described in adjacent comments, after a \cl{\#}; {\it e.g.}, \cl{\# this is a Rev comment}. }
-
-%Typically, we would perform these analyses by simply sourcing these files in RevBayes. For the purposes of this exercise, however, we will walk through the different steps interactively in the command line.
 
 \bigskip
 \subsection{Launch RevBayes}
@@ -192,52 +195,7 @@ Execute the RevBayes binary. If this program is in your path, then you can simpl
 
 \exs{\cl{\$ rb}}
 
-When you execute the program, you will see the program information, including the current version number and functions that will provide information about the program --- \cl{contributors()} and \cl{license()}. % --- and a command reference \cl{help}. 
-%Execute the \cl{help()} function by typing:
-%
-%{\tt \begin{snugshade*}
-%\begin{lstlisting}
-
-%RevBayes > help()
-%\end{lstlisting}
-%\end{snugshade*}}
-
-%\taha{will there be help information by this time?}
-%
-%This displays a list of the different elements and commands available in RevBayes. The \cl{help} command also provides more detailed information about each of these items.
-%
-%For example, we can view the \cl{help()} information about the \cl{log()} function:
-%
-
-Currently, the help-system of RevBayes is virtually nonexistent. This will not always be the case, but is par for the course when using new/experimental software. 
-The most complete help file available is for the \cl{mcmc()} function. Display the help for this function using the \cl{?} symbol:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ?mcmc
-\end{lstlisting}
-\end{snugshade*}}
-
-Additionally, RevBayes will print the correct usage of a function if it is executed without any arguments:
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mcmc()
-   Error:   Argument mismatch for call to function 'mcmc'( ). Correct usage is:
-   MCMC function (Model model, VectorRbPointer<Monitor> monitors,
-   VectorRbPointer<Move> moves, String moveschedule = sequential|random|single)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-%allows you to save all of the screen output from your analysis to a log file. 
-%The \cl{help} information for this command displays all of the available options for specifying screen logging.
-%We are going to log our screen output to a file called \cl{conifer-partn-log.txt}.
-%\mbcl{log start filename=conifer-partn-log.txt}
-%
-%Next, load the sequences into the program using the \cl{execute} command.
-%\mbcl{execute conifer\_dna.nex}
-
-%\bigskip
-%\subsubsection*{Load the Sequences}% \& Specify the Outgroup}
+When you execute the program, you will see the program information, including the current version number and functions that will provide information about the program --- \cl{contributors()} and \cl{license()}. 
 
 
 
@@ -253,7 +211,7 @@ The first section of this exercise involves
 (3) summarizing the MCMC output by computing the maximum a posteriori tree, and
 (4) estimating the marginal likelihood of the model using stepping-stone and path sampling. 
 
-All of the files for this analysis are provided for you and you can run these without significant effort using the \cl{source()} function in the RevBayes console:
+All of the files for this analysis are provided for you and you can run these without significant effort using the \cl{source()} function in the \RevBayes~console:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > source("RevBayes_scripts/quick_uniform.Rev")
@@ -305,13 +263,6 @@ RevBayes > data
 \end{snugshade*}}
 
 
-%\taha{can we specify an outgroup?}
-
-%Now that RevBayes has read in our data, we can define our outgroup taxon. Unless a clock-based analysis is specified, MrBayes v3.2 infers {\em unrooted} trees, however trees are written to output files as rooted trees (unrooted trees are not phylogenies as they do not specify a temporal direction). 
-%Accordingly, this command specifies how we would like our trees written to file.
-%If we do not specify an outgroup, the trees will be rooted on the first species in the data matrix by default. 
-%\mbcl{outgroup Ginkgo\_biloba}
-
 Next we will specify some useful variables based on our dataset. The variable \cl{data} has \textit{member functions} that we can use to retrieve information about the dataset. 
 These include the number of species (\cl{n\_species}), the tip labels (\cl{names}), and the number of internal branches (\cl{n\_branches}).
 Each of these variables will be necessary for setting up different parts of our model.
@@ -331,21 +282,6 @@ The first step in this exercise involves estimating the marginal likelihood of o
 This corresponds to the assumption that the process that gave rise to our data was homogeneous across all sites. 
 Specifically, we will assume that both genes evolved under the same GTR$+\Gamma$ model (Fig.~\ref{pipeline}). 
 
-%\taha{describe setting up model and some background on GTR...}
-
-%The \cl{lset} command is used to specify the details of our sequence model. 
-%\mbcl{lset nst=6 rates=gamma}
-
-%This command specifies a substitution matrix with six relative substitution rates (GTR) with gamma-distributed rate variation across sites. 
-%Because models are specified this way, it is apparent that some types of DNA models are not available in MrBayes. Thus, with the \cl{nst} element of the \cl{lset} command, we can specify the JC69 or F81 models (\cl{nst=1}), the K2P or HKY models (\cl{nst=2}), or the GTR model (\cl{nst=6}).
-%
-%The Bayesian perspective views parameters as random variables, which requires that we specify a prior probability density that describes the precise nature of that random variation. 
-%Accordingly, we need to specify priors for all of the parameters of the specified nucleotide substitution model. 
-%The command for modifying priors is the \cl{prset} command. 
-%
-%Use the \cl{help} command to view the list of priors available for modification:
-%
-%\mbcl{help prset}
 
 First, we will define and specify a prior on the exchangeability rates of the GTR model. We will use a flat Dirichlet prior distribution on these six rates. To do this, we must begin by defining a constant node that specifies the vector of concentration values of the Dirichlet prior using the \cl{v()} function:
 {\tt \begin{snugshade*}
@@ -709,655 +645,9 @@ RevBayes > mapTree(treetrace,"output/conifer_uniform_map.tre")
 \end{lstlisting}
 \end{snugshade*}}
 
-%If you calculated the Bayes factors to determine the relative support for the uniform model and found that there was strong evidence supporting this model over others (hint: this is not true if you proceed with this tutorial and evaluate the other models), then you will want to select the uniform model for your MCMC analysis and estimate the tree.
 
 
-\bigskip
-{\large \textcolor{mycol}{\textsc{Estimating the Marginal Likelihood}}}
 
-Typically, model comparison is performed prior to running the full MCMC analysis under a model. 
-If you calculated the Bayes factors to determine the relative support for the uniform model and found that there was strong evidence supporting this model over others (hint: this is not true if you proceed with this tutorial), then it would be worth your time to proceed with the MCMC steps outlined above. 
-The following steps will describe using stepping-stone and path sampling methods on a set of power posteriors to estimate marginal likelihoods under the uniform model. 
-
-With a fully specified model, we can set up the \cl{powerPosterior()} analysis to create a file of `powers' and likelihoods from which we can estimate the marginal likelihood using stepping-stone or path sampling. 
-This method computes a vector of powers from a beta distribution, then executes an MCMC run for each power step while raising the likelihood to that power. In this implementation, the vector of powers starts with 1, sampling the likelihood close to the posterior and incrementally sampling closer and closer to the prior as the power decreases. 
-
-
-
-%\textbf{\textit{Clear Workspace and Load the Data and Model}}
-
-Just to be safe, it is better to clear the workspace and re-load the data and model:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > clear()
-RevBayes > source("RevBayes_scripts/uniform_partition_model.Rev")
-\end{lstlisting}
-\end{snugshade*}}
-
-
-First, we create the variable containing the power posterior. This requires us to provide a model and vector of moves, as well as an output file name. The \cl{cats} argument sets the number of power steps.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > pow_p <- powerPosterior(mymodel, moves, "pow_p_uniform.out", cats=50) 
-\end{lstlisting}
-\end{snugshade*}}
-
-We can start the power posterior by first burning in the chain and and discarding the first 10000 states.  
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > pow_p.burnin(generations=10000,tuningInterval=1000)
-\end{lstlisting}
-\end{snugshade*}}
-
-Now execute the run with the \cl{.run()} function:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > pow_p.run(generations=1000)  
-\end{lstlisting}
-\end{snugshade*}}
-
-Once the power posteriors have been saved to file, create a stepping stone sampler. This function can read any file of power posteriors and compute the marginal likelihood using stepping-stone sampling. 
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file="pow_p_uniform.out", powerColumnName="power", likelihoodColumnName="likelihood")
-\end{lstlisting}
-\end{snugshade*}}
-
-Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ss} variable and record the value in Table \ref{ssTable}.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ss.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
-
-Path sampling is an alternative to stepping-stone sampling and also takes the same power posteriors as input. 
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ps <- pathSampler(file="pow_p_uniform.out", powerColumnName="power", likelihoodColumnName="likelihood")
-\end{lstlisting}
-\end{snugshade*}}
-
-Compute the marginal likelihood under stepping-stone sampling using the member function \cl{marginal()} of the \cl{ps} variable and record the value in Table \ref{ssTable}.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ps.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
-
-
-%%%%%%%%
-
-\vspace{5mm}
-
-{\begin{framed}
-\begin{center}
-Stop here or continue on to evaluate partitioned models...
-\end{center}
-\end{framed}}
-
-
-
-\bigskip
-\subsection{Partitioning by Gene Region}\label{secByGene}
-
-The uniform model used in the previous section assumes that all sites in the alignment evolved under the same process described by a shared tree, branch length proportions, and parameters of the GTR+$\Gamma$ substitution model.
-However, our alignment contains two distinct gene regions---atpB and rbcL---so we may wish to explore the possibility that the substitution process differs between these two gene regions.
-This requires that we first specify the data partitions corresponding to these two genes, then define an independent substitution model for each data partition. 
-
-\textbf{\textit{Clear Workspace and Reload Data}}
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > clear()
-\end{lstlisting}
-\end{snugshade*}}
-
-Since we wish to avoid individually specifying each parameter of the GTR+$\Gamma$ model for each of our data partitions, we can \textit{loop} over our datasets and create vectors of nodes.
-To do this, we begin by creating a vector of data file names:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > filenames <- v("data/conifer_atpB.nex", "data/conifer_rbcL.nex")
-\end{lstlisting}
-\end{snugshade*}}
-
-Set a variable for the number of partitions:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > n_parts <- filenames.size()
-\end{lstlisting}
-\end{snugshade*}}
-
-And create a vector of data matrices called \cl{data}:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-for (i in 1:n_parts){
-   data[i] <- readCharacterData(filenames[i])[1]
-}
-\end{lstlisting}
-\end{snugshade*}}
-
-Next, we can initialize some important variables. This does require, however, that both of our alignments have the same number of species and matching tip names.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > n_species <- data[1].ntaxa()
-RevBayes > names <- data[1].names()
-RevBayes > n_branches <- 2 * n_species - 3
-\end{lstlisting}
-\end{snugshade*}}
-
-
-\textbf{\textit{Specify the Parameters by Looping Over Partitions}}
-
-We can avoid creating unique names for every node in our model if we use a \cl{for} loop to iterate over our partitions. Thus, we will only have to type in our entire GTR+$\Gamma$ model parameters once. 
-This will produce a vector for each of the unlinked parameters --- e.g., there will be a vector of \cl{shape} nodes where the stochastic node for the first partition (atpB) will be \cl{shape[1]} and the stochastic node for the second partition (rbcL) will be called \cl{shape[2]}.
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-mi <- 0 # an iterator for the move vector
-for (i in 1:n_parts){
-  ## index i=1 : atpB gene ##
-  ## index i=2 : rbcL gene ##
-  
-  # Exchangeability rates #
-  er_prior[i] <- v(1,1,1,1,1,1)
-  er[i] ~ dnDirichlet(er_prior[i])
-  moves[mi++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
-
-  # Stationary base frequencies #
-  sf_prior[i] <- v(1,1,1,1)
-  sf[i] ~ dnDirichlet(sf_prior[i])
-  moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
-
-  # Instantaneous rate matrix (deterministic) #
-  Q[i] := gtr(er[i],sf[i]) 
-
-  # Gamma-dist site rates #
-  shape_prior[i] <- 0.05 
-  shape[i] ~ dnExponential( shape_prior[i] )
-  gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4 )
-  moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
-}
-\end{lstlisting}
-\end{snugshade*}}
-
-
-\textbf{\textit{Uniform Topology and Branch Lengths}}
-
-Our two genes evolve under different GTR rate matrices with different mean-one gamma distributions on the site rates.
-However, we do assume that they share a single topology and set of branch lengths.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-# Unrooted tree topology distribution #
-topology ~ dnUniformTopology(n_species, names)
-
-# Tree topology moves #
-moves[mi++] <- mvNNI(topology, weight=10.0)
-moves[mi++] <- mvSPR(topology, weight=5.0)
-
-#### Specify a prior and moves on the branch lengths #### 
-# Create a vector of branch-length variables using a for loop #
-for (i in 1:n_branches) {
-  br_lens[i] ~ dnExponential(10.0)
-  moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
-}
-
-# A deterministic node for the tree length #
-tree_length := sum(br_lens)
-
-# Build the tree by combining the topology with br_lens #
-phylogeny := treeAssembly(topology, br_lens)
-\end{lstlisting}
-\end{snugshade*}}
-
-\textbf{\textit{Putting it All Together}}
-
-Since we have a rate matrix and a site-rate model for each partition, we must create a phylogenetic CTMC for each gene. 
-Additionally, we must fix the values of these nodes by attaching their respective data matrices.
-These two nodes are linked by the \cl{phylogeny} node and their log-likelihoods are added to get the likelihood of the whole DAG.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-for (i in 1:n_parts){
-  phyloSeq[i] ~ dnPhyloCTMC(tree=phylogeny, Q=Q[i], siteRates=gamma_rates[i], nSites=data[i].nchar(1), type="DNA")
-  phyloSeq[i].clamp(data[i])
-}
-\end{lstlisting}
-\end{snugshade*}}
-
-
-And we can pass in a single, shared node to wrap up our model DAG:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mymodel <- model(topology)
-\end{lstlisting}
-\end{snugshade*}}
-
-\subsubsection*{Estimating the Marginal Likelihood}
-
-Now run the power posterior analysis on the two-gene model.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > pow_p <- powerPosterior(mymodel, moves, file="pow_p_twogene.out", cats=50) 
-RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)
-RevBayes > pow_p.run(generations=1000)  
-\end{lstlisting}
-\end{snugshade*}}
-
-Calculate the marginal likelihoods under stepping-stone sampling:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file="pow_p_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood")
-RevBayes > ss.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
-
-And under path sampling:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ps <- pathSampler(file="pow_p_twogene.out", powerColumnName="power", likelihoodColumnName="likelihood")
-RevBayes > ps.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
-
-Record the marginal likelihoods in Table \ref{ssTable}.
-
-
-
-\bigskip
-\subsection{Partitioning by Codon Position and by Gene}\label{secExtremeP}
-
-Because of the genetic code, we often find that different positions within a codon (first, second, and third) evolve at different rates.
-Thus, using our knowledge of biological data, we can devise a third approach that further partitions our alignment. 
-For this exercise, we will partition sites within the rbcL gene by codon position.
-
-\textbf{\textit{Clear Workspace and Reload Data}}
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > clear()
-RevBayes > data[1] <- readCharacterData("data/conifer_atpB.nex")[1]
-RevBayes > data_rbcL <- readCharacterData("data/conifer_rbcL.nex")[1]
-\end{lstlisting}
-\end{snugshade*}}
-
-\textbf{\textit{Specify Data Matrices for Each Codon Position}}
-
-We must now add our codon-partitions to the \cl{data} vector that already contains the matrix for atpB in the first index. 
-Thus, the second index will be the rbcL codon position 1. 
-We can create this by calling the helper function \cl{setCodonPartition()}, which is a member function of the data matrix. 
-We are assuming that the gene is \textit{in frame}, meaning the first column in your alignment is a first codon position. 
-The \cl{setCodonPartition()} function takes a single argument, the position of the alignment you wish to extract. 
-It then returns every third column, starting at the index provided as an argument.
-
-Before we can use the use the \cl{setCodonPartition()} function, we must first populate the position in the \cl{data} matrix with some sequences. 
-Then we call the member function of \cl{data[2]} to exclude all but the 1$^{st}$ positions.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > data[2] <- data_rbcL
-RevBayes > data[2].setCodonPartition(1)
-\end{lstlisting}
-\end{snugshade*}}
-
-Assign the 2$^{nd}$ codon positions to \cl{data[3]}:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > data[3] <- data_rbcL
-RevBayes > data[3].setCodonPartition(2)
-\end{lstlisting}
-\end{snugshade*}}
-
-Assign the 3$^{rd}$ codon positions to \cl{data[4]}:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > data[4] <- data_rbcL
-RevBayes > data[4].setCodonPartition(3)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-
-Now we can query the vector of data matrices to get the size, which is 4:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > n_parts <- data.size()
-\end{lstlisting}
-\end{snugshade*}}
-
-And set the special variables from the data:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > n_species <- data[1].ntaxa()
-RevBayes > names <- data[1].names()
-RevBayes > n_branches <- 2 * n_species - 3
-\end{lstlisting}
-\end{snugshade*}}
-
-
-
-
-\textbf{\textit{Specify the Parameters by Looping Over Partitions}}
-
-Setting up the GTR+$\Gamma$ model is just like in the two-gene analysis, except this time \cl{n\_parts} is equal to 4, so now our vectors of stochastic nodes should all contain nodes for each of the partitions.
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-mi <- 0 # an iterator for the move vector
-for (i in 1:n_parts){
-  ## index i=1 : atpB gene
-  ## index i=2 : rbcL gene position 1
-  ## index i=3 : rbcL gene position 2
-  ## index i=4 : rbcL gene position 3
-
-  # Exchangeability rates #
-  er_prior[i] <- v(1,1,1,1,1,1)
-  er[i] ~ dnDirichlet(er_prior[i])
-  moves[mi++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
-
-  # Stationary base frequencies #
-  sf_prior[i] <- v(1,1,1,1)
-  sf[i] ~ dnDirichlet(sf_prior[i])
-  moves[mi++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
-
-  # Instantaneous rate matrix (deterministic) #
-  Q[i] := gtr(er[i],sf[i]) 
-
-  # Gamma-dist site rates #
-  shape_prior[i] <- 0.05 
-  shape[i] ~ dnExponential( shape_prior[i] )
-  gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4 )
-  moves[mi++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
-}
-\end{lstlisting}
-\end{snugshade*}}
-
-
-\textbf{\textit{Uniform Topology and Branch Lengths}}
-
-We are still assuming that the genes share a single topology and branch lengths.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-# Unrooted tree topology distribution #
-topology ~ dnUniformTopology(n_species, names)
-
-# Tree topology moves #
-moves[mi++] <- mvNNI(topology, weight=10.0)
-moves[mi++] <- mvSPR(topology, weight=5.0)
-
-#### Specify a prior and moves on the branch lengths #### 
-# Create a vector of branch-length variables using a for loop #
-for (i in 1:n_branches) {
-  br_lens[i] ~ dnExponential(10.0)
-  moves[mi++] <- mvScale(br_lens[i],lambda=1,tune=true,weight=1) 
-}
-
-# A deterministic node for the tree length #
-tree_length := sum(br_lens)
-
-# Build the tree by combining the topology with br_lens #
-phylogeny := treeAssembly(topology, br_lens)
-\end{lstlisting}
-\end{snugshade*}}
-
-\textbf{\textit{Putting it All Together}}
-
-We must specify a phylogenetic CTMC node for each of our partition models.
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-for (i in 1:n_parts){
-  phyloSeq[i] ~ dnPhyloCTMC(tree=phylogeny, Q=Q[i], siteRates=gamma_rates[i], nSites=data[i].nchar(1), type="DNA")
-  phyloSeq[i].clamp(data[i])
-}
-\end{lstlisting}
-\end{snugshade*}}
-
-
-And then wrap up the DAG using the \cl{model()} function:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mymodel <- model(topology)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-\subsubsection*{Estimating the Marginal Likelihood}
-
-Sample likelihoods from the set of power posteriors:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > pow_p <- powerPosterior(mymodel, moves, file="pow_posterior_genecodon.out", cats=50) 
-RevBayes > pow_p.burnin(generations=1000,tuningInterval=100)
-RevBayes > pow_p.run(generations=1000)  
-\end{lstlisting}
-\end{snugshade*}}
-
-Compute the stepping-stone estimate of the marginal likelihood:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ss <- steppingStoneSampler(file="pow_posterior_genecodon.out", powerColumnName="power", likelihoodColumnName="likelihood")
-RevBayes > ss.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
-
-Compute the path-sampling estimate of the marginal likelihood:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > ps <- pathSampler(file="pow_posterior_genecodon.out", powerColumnName="power", likelihoodColumnName="likelihood")
-RevBayes > ps.marginal() 
-\end{lstlisting}
-\end{snugshade*}}
-
-Now record the marginal likelihoods in Table \ref{ssTable}.
-
-
-
-\bigskip
-\subsection{Compute Bayes Factors and Select Model}
-
-
-Now that we have estimates of the marginal likelihood under each of our different models, we can evaluate their relative plausibility using Bayes factors.
-Use Table \ref{ssTable} to summarize the marginal log-likelihoods estimated using the stepping-stone and path-sampling methods.
-\begin{Form}
-\begin{table}[h]
-\centering
-\caption{\small Estimated marginal likelihoods for different partition configurations$^*$.}
-\begin{tabular}{l c c c c}
-\hline
-\multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{Marginal lnL estimates}} \\ 
-\cline{3-5}
-\multicolumn{1}{l}{\textbf{Partition}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
-\hline
-\ref{secUnif} uniform ($M_1$) & \hspace{15mm} & \TextField[name=m1,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml2,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
-\hline
-\ref{secByGene} moderate ($M_2$) & \hspace{3mm} &\TextField[name=ml3,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}   & \hspace{3mm} & \TextField[name=ml4,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
-\hline
-\ref{secExtremeP} extreme ($M_3$) & \hspace{3mm} & \TextField[name=ml5,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml6,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
-\hline
-{\footnotesize{$^*$you can edit this table}}\\
-\end{tabular}
-\label{ssTable}
-\end{table}
-\end{Form}
-
-Phylogenetics software programs log-transform the likelihood to avoid \href{http://en.wikipedia.org/wiki/Arithmetic_underflow}{underflow}, because multiplying likelihoods results in numbers that are too small to be held in computer memory.
-Thus, we must use a different form of equation \ref{bfFormula} to calculate the ln-Bayes factor (we will denote this value $\mathcal{K}$):
-\begin{align}\label{LNbfFormula}
-\mathcal{K}=\ln[BF(M_0,M_1)] = \ln[\mathbb{P}(\mathbf X \mid M_0)]-\ln[\mathbb{P}(\mathbf X \mid M_1)],
-\end{align}
-where $\ln[\mathbb{P}(\mathbf X \mid M_0)]$ is the \textit{marginal lnL} estimate for model $M_0$. 
-The value resulting from equation \ref{LNbfFormula} can be converted to a raw Bayes factor by simply taking the exponent of $\cal{K}$
-\begin{align}\label{LNbfFormula2}
-BF(M_0,M_1) = e^{\cal{K}}.
-\end{align}
-Alternatively, you can interpret the strength of evidence in favor of $M_0$ using the $\cal{K}$ and skip equation \ref{LNbfFormula2}. 
-In this case, we evaluate the $\cal{K}$ in favor of model $M_0$ against model $M_1$ so that:
-\begin{center}
-\begin{tabular}{l}
-if $\mathcal{K} > 1$, then model $M_0$ wins\\
-if $\mathcal{K} < -1$, then model $M_1$ wins.
-\end{tabular}
-\end{center}
-Thus, values of $\mathcal{K}$ around 0 indicate ambiguous support. 
-
-%Alternatively, you can refer to a different scale for interpreting the $\ln[BF(M_0,M_1)]$ described by \citet{kass95}.
-%\begin{table}[h]
-%\centering
-%\caption{\small The scale for interpreting $log_e$ Bayes factors by \citet{kass95}.} 
-%\begin{tabular}{l c r}
-%\hline
-%\multicolumn{1}{l}{\textbf{$2\ln[BF(M_0, M_1)]$}} & \multicolumn{1}{r}{ } &\multicolumn{1}{r}{{Strength of evidence \textit{against} $M_0$}} \\ 
-%\hline
-%0 to 2 & \hspace{8mm} & Not worth more than a bare mention\\
-%2 to 6 & \hspace{8mm} & Positive\\
-%6 to 10 & \hspace{8mm} & Strong\\
-%$>10$ & \hspace{8mm} & Very strong\\
-%\hline
-%\end{tabular}
-%\label{bftable2}
-%\end{table}
-
-
-
-Using the values you entered in Table \ref{ssTable} and equation \ref{LNbfFormula},  calculate the ln-Bayes factors (using $\mathcal{K}$) for the different model comparisons. 
-Enter your answers in Table \ref{bfTable} using the stepping-stone and the path-sampling estimates of the marginal log likelihoods. 
-
-\begin{Form}
-\begin{table}[h!]
-\centering
-\caption{\small Bayes factor calculation$^*$.}
-\begin{tabular}{l c c c c}
-\hline
-\multicolumn{1}{l}{\textbf{ }} &\multicolumn{1}{r}{\textbf{ }} & \multicolumn{3}{c}{\textbf{ln-Bayes Factor} ($\mathcal{K}$)} \\ 
-\cline{3-5}
-\multicolumn{1}{l}{\textbf{Model comparison}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Stepping-stone}} & \multicolumn{1}{r}{\hspace{3mm}} & \multicolumn{1}{c}{\textit{Path sampling}} \\ 
-\hline
-$M_1,M_2$ & \hspace{15mm} & \TextField[name=ml7,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{}  & \hspace{15mm} & \TextField[name=ml8,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
-\hline
-$M_2,M_3$ & \hspace{3mm} & \TextField[name=ml9,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml10,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
-\hline
-$M_1,M_3$ & \hspace{3mm} &  \TextField[name=ml11,backgroundcolor={.85 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml12,backgroundcolor={.85 .85 .85},color={0 0 1},height=4ex]{} \\
-\hline
-Supported model? & \hspace{3mm} &  \TextField[name=ml13,backgroundcolor={1 .85 .85},color={1 0 0},height=4ex]{} & \hspace{3mm} & \TextField[name=ml14,backgroundcolor={.85 .85 1},color={0 0 1},height=4ex]{} \\
-\hline
-{\footnotesize{$^*$you can edit this table}}\\
-\end{tabular}
-\label{bfTable}
-\end{table}
-\end{Form}
-
-Once you complete Table \ref{bfTable}, you will notice that the Bayes factor comparison indicates strong evidence in support of the highly partitioned model using both the stepping-stone and path sampling estimates of the marginal likelihoods. 
-However, this does not mean that model $M_3$ is the \textit{true} partition model.
-We only considered three out of the many, many possible partitions for 2,659 sites (the number of possible partitions can be viewed if you compute the \href{http://www.wolframalpha.com/input/?i=bell+number(2659)}{$2659^{th}$ Bell number}). 
-Given the strength of support for the highly partitioned model, it is possible that further partitioning is warranted for these data. 
-In particular, partitioning the dataset by codon position for both atpB \textit{and} rbcL is an important next step for this exercise (consider taking some time on your own to test this model). 
-
-Because of the computational costs of computing marginal likelihoods and the vast number of possible partitioning strategies, it is not feasible to evaluate all of them. 
-New methods based on nonparametric Bayesian models have recently been applied to address this problem \citep{lartillot04,huelsenbeck07b,wuCH2013}. 
-These approaches use an infinite mixture model \citep[the Dirichlet process;][]{ferguson73,antoniak74} that places non-zero probability on \textit{all} of the countably-infinite possible partitions for a set of sequences. 
-Bayesian phylogenetic inference under these models is implemented in the program \href{http://megasun.bch.umontreal.ca/People/lartillot/www/index.htm}{PhyloBayes} \citep{Lartillot2009} and the \href{https://code.google.com/p/subst-bma/}{subst-bma} plug-in for \href{http://beast2.cs.auckland.ac.nz/index.php/Main_Page}{BEAST2} \citep{wuCH2013}.
-
-
-% $$B_{1,2} = e^{ln(B_{12})}$$
-% $$ln(MlnL_1) - ln(MlnL_2)$$
-
-%When you complete Table \ref{bfTable} and evaluate the Bayes factors using \citet{jeffreys61} scale in Table \ref{bftable}, you will notice that no single model model stands out as ``strongly supported''. 
-%Every Bayes factor comparison is ``barely worth mentioning''. 
-
-Note that Bayes factors based on comparison of HM-based marginal likelihoods 
-often \textit{strongly} favor the most extremely partitioned mixed model. 
-In fact, the harmonic mean estimator has been shown to provide unreliable estimates of marginal likelihoods, compared to more robust approaches \citep{lartillot06,xie11,fan11}.
-Based on these studies, it is recommended that you avoid %never, ever, ever
-using HM-derived marginal likelihoods for Bayes factor comparisons.
-%base Bayes factors on comparisons of HM-derived marginal likelihoods. 
-(The Canadian Bayesian Radford Neal says the harmonic mean is the ``\href{http://radfordneal.wordpress.com/2008/08/17/the-harmonic-mean-of-the-likelihood-worst-monte-carlo-method-ever/}{worst Monte Carlo method ever}''.)
-
-
-
-\bigskip
-\subsection{Perform MCMC Analysis Under Preferred Model}
-
-\textbf{\textit{Clear Workspace and Load the Data and Model}}
-
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > clear()
-RevBayes > source("RevBayes_scripts/<preferred>_partition_model.Rev")
-\end{lstlisting}
-\end{snugshade*}}
-
-\textbf{\textit{Specify Monitors}}
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > monitors[1] <- mnModel(filename="conifer_prefmodel_mcmc.log", printgen=100)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > monitors[2] <- mnFile(filename="conifer_prefmodel_mcmc.trees",printgen=100, phylogeny)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > monitors[3] <- mnScreen(printgen=10, separator = " | ", tree_length)
-\end{lstlisting}
-\end{snugshade*}}
-
-\textbf{\textit{Initialize and Run MCMC}}
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mymcmc <- mcmc(mymodel, monitors, moves)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mymcmc.burnin(generations=10000,tuningInterval=1000)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mymcmc.run(generations=30000)
-\end{lstlisting}
-\end{snugshade*}}
-
-
-\bigskip
-\subsection{Summarize and Analyze MCMC Output}
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > treetrace <- readTreeTrace("conifer_prefmodel_mcmc.trees")
-RevBayes > treetrace.summarize()
-\end{lstlisting}
-\end{snugshade*}}
-
-
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > mapTree(treetrace,"conifer_prefmodel_MAP.tre")
-\end{lstlisting}
-\end{snugshade*}}
-
-
-
-
-The trees in these files are also annotated with various branch- or node-specific parameters or statistics in an extended Newick format called NHX. 
-We can use FigTree to visualize these summary trees. 
-\exs{Open the summary tree in FigTree: \cl{conifer\_prefmodel\_MAP.tre}.}
-\exs{Use the tools on the side panel to display the posterior probabilities as node labels. }
-
-%\begin{figure}[h]
-%\centering
-%\fbox{\includegraphics[width=4in,angle=0]{figures/tree_uniform_analysis.eps}}
-%\caption{\small The summary tree from the uniform analysis, with posterior probabilities labeled at nodes. \taha{need to make a new figure}}
-%\label{uniformFigTree}
-%\end{figure}
 
 \bigskip
 \subsection*{Batch Mode}
@@ -1384,6 +674,7 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \item Tracy Heath (email: \href{mailto:tracyh@berkeley.edu}{tracyh@berkeley.edu}) \\\vspace{-8mm}
 \item Michael Landis (email: \href{mailto:mlandis@berkeley.edu}{mlandis@berkeley.edu}) \\\vspace{-8mm} 
 \item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
+\item Brian R. Moore (email: \href{mailto:brianmoore@ucdavis.edu}{brianmoore@ucdavis.edu}) \\\vspace{-8mm}
 \end{itemize}
 
 \href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics[scale=0.8]{figures/ccby.eps}} This tutorial was written by \href{http://phylo.bio.ku.edu/content/tracy-heath}{Tracy Heath}, \href{http://michaeljameslandis.com/}{Michael Landis}, and Sebastian H\"{o}hna; licensed under a \href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}. 

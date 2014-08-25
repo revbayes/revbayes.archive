@@ -40,7 +40,7 @@ monitors[2] <- screenmonitor(printgen=10, eta, lambda, gamma, theta)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-mymcmc.run(generations=3000)
+mymcmc.run(generations=10000)
 
 
 

@@ -17,7 +17,7 @@ monitors[3] <- screenmonitor(printgen=10, alpha, TL)
 
 mymcmc <- mcmc(mymodel, monitors, moves)
 
-mymcmc.run(generations=50000,underPrior=true)
+mymcmc.run(generations=5000,underPrior=true)
 
 
 # Now, we will analyze the tree output.
