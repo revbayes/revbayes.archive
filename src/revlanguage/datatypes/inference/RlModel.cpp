@@ -103,7 +103,13 @@ void Model::printValue(std::ostream &o) const {
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
         if ( (*it)->getName() != "" )
+        {
+#ifdef DEBUG_STRUCTURE
             o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
+#else
+            o << (*it)->getName() << ":" << std::endl;
+#endif
+        }
         else
             o << "<" << (*it) << "> :" << std::endl;
         
