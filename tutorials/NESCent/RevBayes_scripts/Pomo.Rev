@@ -158,9 +158,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-#  shapeBis[i] := shape[i]
-#  norm_gamma_rates[i] := discretizeGamma( shape[i], shapeBis[i], 4, false )
-	norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
