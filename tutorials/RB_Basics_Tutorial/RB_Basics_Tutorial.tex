@@ -554,7 +554,7 @@ First, you can call the vector function.
     RevBayes > v <- v(1,2,3)                    # create a vector
 \end{lstlisting}
 \end{snugshade*}}
-An interesting side note here is that we can use the same name for a variable as for a function; the variable \cl{v} and the function \cl{v(\ldots)}.
+Interestingly, we can use the same name for a variable as for a function: the variable \cl{v} and the function \cl{v(\ldots)}.
 Both will still be fully functional and our interpreter checks if you asked for a function or a variable.
 
 Second, you can use the square bracket notation.
@@ -571,7 +571,7 @@ And third, you can implicitly create the vector by assigning elements.
     RevBayes > z[3] <-3                  
 \end{lstlisting}
 \end{snugshade*}} 
-The implicit creation does not need to create the variable before.
+The implicit creation does not need to instantiate the variable beforehand.
 There are other useful built-in functions that produce vectors.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
@@ -600,8 +600,8 @@ If you don't remember what the methods were called, or if this object has any me
     RevBayes > v.methods()                 
 \end{lstlisting}
 \end{snugshade*}} 
-This is very, very useful in general.
-So for a vector we can get the size --- the number of elements --- by calling
+In general, this is very, very useful.
+So for a vector we can get the size --- the number of elements --- by calling its member function:
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > v.size()                 
@@ -639,7 +639,7 @@ A simple example is a \cl{for} loop that computes the sum of
     RevBayes > sum
 \end{lstlisting}
 \end{snugshade*}}
-Another example using a \cl{for} loop is the computation of the Fibonacci numbers.
+Another example using a \cl{for} loop is the computation of the \href{http://en.wikipedia.org/wiki/Fibonacci_number}{Fibonacci number} for a given integer. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # Fibonacci series using a for loop
@@ -667,7 +667,7 @@ The \cl{while} loop continues to execute the statement(s) until the condition is
 \end{lstlisting}
 \end{snugshade*}}
 
-\subsubsection*{User defined function}
+\subsubsection*{User Defined Functions}
 In \Rev~you can write your own functions as well.
 The syntax for writing function is:
 {\tt \begin{snugshade*}
@@ -675,7 +675,7 @@ The syntax for writing function is:
     RevBayes > function <return value type> <function name> (<list of arguments>) { <statements> }
 \end{lstlisting}
 \end{snugshade*}}
-As a simple example, let us write the function that computes the square of a number.
+As a simple example, let's write a function that computes the square of a number.
 We expect that the function takes in any real number.
 The type of real number is \cl{Real}.
 Since the square is always a positive real number, we choose the return to be \cl{RealPos}
@@ -692,8 +692,7 @@ Now we can call our own function the same way as we call other already built-in 
     RevBayes > a
 \end{lstlisting}
 \end{snugshade*}}
-As an exercise to become more familiar with user-defined function, let us write some more functions.
-First, we add a function that computes the factorial of a natural number.
+As an exercise, let's write a function that computes the factorial of a natural number.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # function for computing the factorial
@@ -708,7 +707,7 @@ First, we add a function that computes the factorial of a natural number.
     RevBayes > b
 \end{lstlisting}
 \end{snugshade*}}
-Here you see that within your own function you can call you function as well, which is commonly called recursive function calls.
+Here you see that within your own function you can call your function as well, which is commonly called recursive function calls.
 
 Now let us write a recursive function for the sum of numbers which we computed before using a \cl{for} loop.
 {\tt \begin{snugshade*}
