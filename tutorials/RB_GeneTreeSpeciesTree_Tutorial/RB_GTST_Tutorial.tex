@@ -105,6 +105,24 @@ This is useful to model differences in rates of duplication, loss or transfer am
 In RevBayes so far only models of incomplete lineage sorting have been implemented (models of duplication and loss and transfer will soon be added).
 Thanks to RevBayes modular design, there is quite a lot of flexibility in specifying the model, for instance by allowing different parameters to different branches of the species tree, and the gene tree-species tree model could be combined to other types of models, for instance models of trait evolution.
 
+
+\subsection*{Gene tree discordance is a problem for species tree reconstruction}
+There are several approaches to species tree reconstruction: concatenation and supertree approaches, which have been used for quite some time now, and more recently methods that rely on gene tree-species tree models.\begin{enumerate}
+\item Concatenation simply consists in taking all gene alignments, concatenating them into one super alignment, and then analyzing it as if it were a single gene sequence.
+Its main assumption is therefore that all sites of all genes have evolved according to the same species tree.
+This assumption is not correct because all the processes of discord presented above conspire to make gene trees different from the species tree.
+In practice, this matters: for instance, one can prove that in the presence of incomplete lineage sorting, in some particular area of the parameter space, concatenation will return an incorrect species tree.
+Another example might be found in prokaryotic phylogenetics, where the quest for a tree of life has been very frustrating, to the point that many doubt that one could find a meaningful species tree representing vertical descent.
+Recent models incorporating lateral gene transfer allow tackling this question in a more principled way.
+\item Supertree approaches differ from concatenation notably by discarding sequence information once individual gene trees have been built.
+They combine individual gene trees to obtain a species tree.
+Most supertree methods are not based on an explicit model of the processes causing discordance between gene trees and species tree (although there are exceptions, notably modelling incomplete lineage sorting, see below).
+Instead, they aim at finding a tree that would best describe the distribution of gene trees, according to some fairly arbitrary criterion.
+In practice, these methods have been found to provide reasonable results in many cases, but in simulations are less accurate than concatenation.
+\item Methods that rely on gene tree-species tree models appear very promising as they explicitly model the processes of discord, and can be combined with a model of sequence evolution, models of the co-evolution between gene trees, models of trait evolution... 
+\end{enumerate}
+
+
 \subsection*{Modelling incomplete lineage sorting: the multispecies coalescent}
 Incomplete lineage sorting is a population-level process.
 In a species, at a given time, there are several alleles for a given locus in the genome.
@@ -284,13 +302,22 @@ For instance \citet{demaio} estimate 4 base fitness parameters, which they use t
 In the RevBayes implementation of POMO, base fitnesses can be estimated as well.
 
 \bigskip
-\section*{Inference using the multispecies coalescent and the POMO model}
+\section*{Inference using the multispecies coalescent, the POMO model, and basic concatenation}
 In this section we will perform inference using both the multispecies coalescent and the POMO model.
 Depending on your machine and on the size of the data, successful inference may take some time.
 If this tutorial is done in a classroom environment, it may be wise to convene with a friend that one tries the multispecies coalescent model while the other one tries the POMO model, and that results will be shared.
 
+\subsection*{Inference using the multispecies coalescent }
+We are going to do inference on simulated data, as produced during .
+
+
+\subsection*{Inference using the POMO model }
+
+
+\subsection*{Inference using basic concatenation }
+
 \bigskip
-\subsection*{Batch Mode}
+\section*{Batch Mode}
 
 If you wish to run this exercise in batch mode, the files are provided for you. 
 
