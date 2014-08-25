@@ -175,8 +175,8 @@ echo '
 
 
 # utility for generating help html files.
-add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenerator.cpp)
-target_link_libraries(help-html-generator rb-parser rb-core libs ${Boost_LIBRARIES})
+#add_executable(help-html-generator ${PROJECT_SOURCE_DIR}/ui/utils/HelpHtmlGenerator.cpp)
+#target_link_libraries(help-html-generator rb-parser rb-core libs ${Boost_LIBRARIES})
 
 
 ' >> $HERE/CMakeLists.txt
