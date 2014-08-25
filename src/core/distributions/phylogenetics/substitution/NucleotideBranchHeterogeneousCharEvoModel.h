@@ -197,8 +197,10 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
         
         for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
-            this->lnProb += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+            this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
         }
+        
+        this->lnProb -= log( this->numSiteRates ) * this->numSites;
         
     }
     
@@ -328,8 +330,11 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
         
         for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
-            this->lnProb += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+            this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
         }
+        
+        // normalize
+        this->lnProb -= log( this->numSiteRates ) * this->numSites;
         
     }
     
