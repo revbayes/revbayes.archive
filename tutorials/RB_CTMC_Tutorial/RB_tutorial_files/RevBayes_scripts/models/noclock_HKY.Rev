@@ -106,7 +106,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ substModel(tree=psi, Q=Q, branchRates=clockRate, type="DNA")
+seq ~ substModel(tree=phylogeny, Q=Q, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)
