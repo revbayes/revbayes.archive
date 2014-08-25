@@ -27,7 +27,7 @@ tau ~ cBDP(origin=org, diversification, turnover, nTaxa=taxaCount, names=names)
 #moves[mi++] <- mNNI(tau, weight=1.0)
 #moves[mi++] <- mFNPR(tau, weight=1.0)
 #moves[mi++] <- mSubtreeScale(tau, weight=5.0)
-moves[mi++] <- mTreeScale(tau, lambda=1.0, tune=true, weight=3.0)
+#moves[mi++] <- mTreeScale(tau, lambda=1.0, tune=true, weight=3.0)
 moves[mi++] <- mNodeTimeSlideUniform(tau, weight=30.0)
 moves[mi++] <- mRootTimeSlide(tau, delta=1.0, tune=true, weight=3.0)
 

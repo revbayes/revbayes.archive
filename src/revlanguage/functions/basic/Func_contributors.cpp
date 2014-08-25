@@ -36,11 +36,55 @@ Func_contributors* Func_contributors::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_contributors::execute( void ) {
-    
+RevPtr<Variable> Func_contributors::execute( void )
+{
+    // Hard-wrapped to 80 columns wide, assuming three-character indent in RBOUT
+#if 0
+    RBOUT( "00000011111111112222222222333333333344444444445555555555666666666677777777778" );
+    RBOUT( "45678901234567890123456789012345678901234567890123456789012345678901234567890" );
+#endif
     
     RBOUT( "\n" );
-    RBOUT( "More info coming soon..." );
+    RBOUT( "Contributors\n" );
+    RBOUT( "============\n" );
+    RBOUT( "\n" );
+    RBOUT( "Sebastian Höhna\n" );
+    RBOUT( "Department of Evolution and Ecology,\n" );
+    RBOUT( "University of California, Davis, USA" );
+    RBOUT( "Sebastian.Hoehna@gmail.com\n" );
+    RBOUT( "\n" );
+    RBOUT( "Fredrik Ronquist\n" );
+    RBOUT( "Department of Bioinformatics and Genetics,\n" );
+    RBOUT( "Swedish Museum of Natural History, Stockholm, Sweden" );
+    RBOUT( "fredrik.ronquist@nrm.se\n" );
+    RBOUT( "\n" );
+    RBOUT( "John P. Huelsenbeck\n" );
+    RBOUT( "Department of Integrative Biology,\n" );
+    RBOUT( "University of California, Berkeley, USA" );
+    RBOUT( "johnh@berkeley.edu\n" );
+    RBOUT( "\n" );
+    RBOUT( "Michael J. Landis\n" );
+    RBOUT( "Department of Integrative Biology,\n" );
+    RBOUT( "University of California, Berkeley, USA" );
+    RBOUT( "mlandis@berkeley.edu\n" );
+    RBOUT( "\n" );
+    RBOUT( "Tracy A. Heath\n" );
+    RBOUT( "Department of Integrative Biology,\n" );
+    RBOUT( "University of California, Berkeley, USA" );
+    RBOUT( "tracyh@berkeley.edu\n" );
+    RBOUT( "\n" );
+    RBOUT( "Bastien Boussau\n" );
+    RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
+    RBOUT( "Université de Lyon, Villeurbanne, France" );
+    RBOUT( "boussau@gmail.com\n" );
+    RBOUT( "\n" );
+    RBOUT( "Nicolas Lartillot\n" );
+    RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
+    RBOUT( "Université de Lyon, Villeurbanne, France" );
+    RBOUT( "nicolas.lartillot@univ-lyon1.fr\n" );
+    RBOUT( "\n" );
+    RBOUT( "\n" );
+    RBOUT( "\n" );
     RBOUT( "\n" );
     
     return NULL;

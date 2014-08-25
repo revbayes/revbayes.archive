@@ -120,23 +120,17 @@ for (i in 1:nTraits)	{
 #########
 
 # rate of variation of the log of the rate of substitution
-nu ~ exponential(0.1)
+nu ~ exponential(0.01)
 
 # moves on nu
 moves[index] <- mScale(nu, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
-# Brownian motion also can have systematic trend, called drift
-# here, we do not want drift, so we set it equal to 0
-drift <- 0
-
 # create Brownian process along the tree
-lograte ~ brownian(tau,sigma=nu,drift=drift)
+lograte ~ brownian(tau,nu)
 
 # moves on the Brownian process
 moves[index] <- mvRealNodeValTreeSliding(process=lograte,lambda=1,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=1,tune=true,weight=10) 
 index <- index + 1
 moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=0.1,tune=true,weight=10) 
 index <- index + 1
@@ -199,7 +193,7 @@ monitors[3] <- filemonitor(filename="output/placdatestraits.traits",printgen=10,
 monitors[4] <- filemonitor(filename="output/placdatestraits.lograte",printgen=10, separator = "	", lograte)
 
 # a model monitor
-monitors[4] <- modelmonitor(filename="output/placdatestraits.log",printgen=10, separator = "	")
+monitors[5] <- modelmonitor(filename="output/placdatestraits.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 

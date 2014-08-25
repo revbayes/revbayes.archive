@@ -35,9 +35,8 @@ const ArgumentRules& Func_t92GCBranchTree::getArgumentRules( void ) const {
     if ( !rulesSet ) {
         
         argumentRules.push_back( new ArgumentRule( "tree", true, RevLanguage::TimeTree::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "gctree", true, RevLanguage::ModelVector<Probability>::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "rootgc", true, Probability::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "kappa", true, RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "branchGC", true, RevLanguage::ModelVector<Probability>::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "tstv", true, RealPos::getClassTypeSpec() ) );
         
         rulesSet = true;
     }
@@ -88,11 +87,9 @@ RevPtr<Variable> Func_t92GCBranchTree::execute() {
     
     RevBayesCore::TypedDagNode< std::vector<double> >* gcprocess = static_cast<const ModelVector<Probability> &>( args[1].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< double >* rootgc = static_cast<const Probability &>( args[2].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* kappa = static_cast<const RealPos &>( args[2].getVariable()->getRevObject() ).getDagNode();
 
-    RevBayesCore::TypedDagNode< double >* kappa = static_cast<const RealPos &>( args[3].getVariable()->getRevObject() ).getDagNode();
-
-    RevBayesCore::T92GCBranchTree* result = new RevBayesCore::T92GCBranchTree( tau, gcprocess, rootgc, kappa );
+    RevBayesCore::T92GCBranchTree* result = new RevBayesCore::T92GCBranchTree( tau, gcprocess, kappa );
 
     DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* dag = new DeterministicNode<RevBayesCore::RbVector<RevBayesCore::RateMatrix> >("", result, this->clone());
     
@@ -107,31 +104,23 @@ void Func_t92GCBranchTree::printValue(std::ostream& o) const {
     o << " t92GCbranchtree(";
    
     o << "tree=";
-    if ( args[0].getVariable() != NULL ) {
+    if ( argsProcessed && args[0].getVariable() != NULL ) {
         o << args[0].getVariable()->getName();
     } else {
         o << "?";
     }
     o << ", ";
     
-    o << "gctree=";
-    if ( args[1].getVariable() != NULL ) {
+    o << "branchGC=";
+    if ( argsProcessed && args[1].getVariable() != NULL ) {
         o << args[1].getVariable()->getName();
     } else {
         o << "?";
     }
     o << ", ";
     
-    o << "rootgc=";
-    if ( args[2].getVariable() != NULL ) {
-        o << args[2].getVariable()->getName();
-    } else {
-        o << "?";
-    }
-    o << ", ";
-    
-    o << "kappa=";
-    if ( args[3].getVariable() != NULL ) {
+    o << "tstv=";
+    if ( argsProcessed && args[2].getVariable() != NULL ) {
         o << args[3].getVariable()->getName();
     } else {
         o << "?";

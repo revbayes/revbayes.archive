@@ -175,13 +175,32 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
     } // end-for over all mixtures (=rate categories)
     
     // sum the log-likelihoods for all sites together
+    double p_inv = this->pInv->getValue();
+    double oneMinusPInv = 1.0 - p_inv;
     std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
-    for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+    if ( p_inv > 0.0 )
     {
-        this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
+        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+        {
+            if ( this->siteInvariant[site] )
+            {
+                this->lnProb += log( p_inv * f[ this->invariantSiteIndex[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+            }
+            else
+            {
+                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+            }
+        }
     }
-    // normalize the log-probability
-    this->lnProb -= log( this->numSiteRates ) * this->numSites;
+    else
+    {
+        
+        for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
+        {
+            this->lnProb += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
+        }
+        
+    }
     
 //#   if defined (SSE_ENABLED)
 //    delete [] tmp;
@@ -296,11 +315,11 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
         {
             if ( this->siteInvariant[site] )
             {
-                this->lnProb += log( p_inv + oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+                this->lnProb += log( p_inv * f[ this->invariantSiteIndex[site] ] + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
             }
             else
             {
-                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] ) * *patterns;
+                this->lnProb += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
             }
         }
     }
@@ -309,12 +328,10 @@ void RevBayesCore::NucleotideBranchHeterogeneousCharEvoModel<charType, treeType>
         
         for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
-            this->lnProb += log( per_mixture_Likelihoods[site] ) * *patterns;
+            this->lnProb += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
         }
         
     }
-    // normalize the log-probability
-    this->lnProb -= log( this->numSiteRates ) * this->numSites;
     
     //#   if defined (SSE_ENABLED)
     //    delete [] tmp;

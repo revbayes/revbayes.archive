@@ -42,8 +42,8 @@ RevPtr<Variable> Func_pomo::execute() {
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
 // MJL 140822: caused compile error
-//    RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
-    RevBayesCore::PomoRateMatrixFunction* f = NULL;
+    RevBayesCore::PomoRateMatrixFunction* f = new RevBayesCore::PomoRateMatrixFunction( n, q, fit );
+//    RevBayesCore::PomoRateMatrixFunction* f = NULL;
     
     DeterministicNode<RevBayesCore::RateMatrix> *detNode = new DeterministicNode<RevBayesCore::RateMatrix>("", f, this->clone());
     

@@ -154,8 +154,12 @@ valueType& TypedUserFunction<valueType>::getValue(void)
 
 
 /**
- * Swap internal parameters. Nothing to do in this class because it keeps reference variables to the arguments,
- * so they change automatically when the referenced variables change.
+ * Swap internal parameters.
+ * 
+ * If the call comes from our arguments, there is nothing to do in this class because we keep reference
+ * variables to the arguments, so they change automatically when the referenced variables change.
+ *
+ * If the call comes during DAG cloning, we need to replace the variables with appropriate clones...
  */
 template <class valueType>
 void TypedUserFunction<valueType>::swapParameterInternal(const RevBayesCore::DagNode *oldP, const RevBayesCore::DagNode *newP)

@@ -10,7 +10,7 @@
 #include "Func_polymorphicStateConverter.h"
 #include "ModelVector.h"
 #include "Natural.h"
-#include "RlAbstractCharacterData.h"
+#include "RlAbstractDiscreteCharacterData.h"
 #include "RlDnaState.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
@@ -52,9 +52,9 @@ RevPtr<Variable> Func_polymorphicStateConverter::execute() {
 
 
     
-    AbstractCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
+    AbstractDiscreteCharacterData PomoAln = c->convertData( aln->getValue(), n->getValue(), gene2species ) ;
         
-    return new Variable( new AbstractCharacterData( PomoAln ) );
+    return new Variable( new AbstractDiscreteCharacterData( PomoAln ) );
 }
 
 
@@ -67,7 +67,7 @@ const ArgumentRules& Func_polymorphicStateConverter::getArgumentRules( void ) co
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "aln", true, AbstractCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "aln", true, AbstractDiscreteCharacterData::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "virtualNe"    , true, Natural::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "taxa"  , true, ModelVector<Taxon>::getClassTypeSpec() ) );
 
@@ -97,7 +97,7 @@ const TypeSpec& Func_polymorphicStateConverter::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_polymorphicStateConverter::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = AbstractCharacterData::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = AbstractDiscreteCharacterData::getClassTypeSpec();
     
     return returnTypeSpec;
 }

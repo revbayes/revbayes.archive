@@ -511,21 +511,25 @@ sf ~ dnDirichlet(sf_prior)
 
 Q := gtr(er,sf) 
 
-# Second, one needs the proportion of polymorphic sites at the root
-root_polymorphism_proportion ~ beta(alpha=1,beta=1)
-
-# Third, one needs root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
-root_base_frequencies ~ dnDirichlet(sf_prior)
-
-# Fourth, one can have different fitnesses for A, C, G, T. 
+# Second, one can have different fitnesses for A, C, G, T. 
 # Here, we are going to assume that all 4 bases have the same fitness.
-base_fitnesses <- (1, 1, 1, 1)
+base_fitnesses <- v(1, 1, 1, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
-P := pomo(Q, root_polymorphism_proportion, base_fitnesses)
+P := pomo(Q, base_fitnesses, virtual_population_size)
 
+# We also need to define root frequencies for all the states.
+# To do that we need two variables:
 
+# First, the proportion of polymorphic sites at the root
+root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+
+# Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
+root_base_frequencies ~ dnDirichlet(sf_prior)
+
+# Now we have all the elements to construct root frequencies for all the states:
+root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size)
 
 
 #########################################################
