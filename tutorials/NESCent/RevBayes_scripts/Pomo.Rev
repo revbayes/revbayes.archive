@@ -45,7 +45,7 @@ n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 ######################
 
 # Species names
-for (i in 1:n_genes) {
+for (i in 1:n_species) {
 	s_names[i] <- "Species_"+i
 }
 
@@ -71,7 +71,6 @@ trueSpeciesTree <- speciesTree
 for (i in 1:n_species) {
 	for (j in 1:n_alleles) {
 		taxa[(i-1)*n_alleles+j] <- taxon(taxonName=s_names[i]+"_"+j, speciesName=s_names[i])
-#		g_names[(i-1)*n_alleles+j] <- s_names[i]+"_"+j
 	}
 }
 
