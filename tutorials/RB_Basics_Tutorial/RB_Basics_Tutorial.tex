@@ -62,7 +62,7 @@
 \renewcommand{\headrulewidth}{0.5pt}
 \headsep = 20pt
 \lhead{ }
-\rhead{\textsc {RevBayes Tutorial --- Rev basics \& regression models}}
+\rhead{\textsc {RevBayes Tutorial --- Rev Basics \& Regression Models}}
 
 \thispagestyle{plain}
 \begin{center}
@@ -74,11 +74,11 @@
 \section*{Overview}
 
 \RevBayes~has as a central idea that any statistical model, for example a phylogenetic model, is composed of smaller parts that can be decomposed and put back together in a modular fashion. This comes from considering (phylogenetic) models as \textit{probabilistic graphical models}, which lends flexibility and enhances the capabilities of the program. 
-Users interact with \RevBayes via an interactive shell.
+Users interact with \RevBayes~ via an interactive shell.
 Users communicate commands using a language specifically designed for \RevBayes, called \Rev; an R-like language (complete with control statements, user-defined functions, and loops) that enables the user to build up (phylogenetic) models from simple parts (random variables, transformations, models, and constants of different sorts).
  
 
-This tutorial demonstrates the basic syntactical feature of \RevBayes~and \Rev~and shows to set up and perform an analysis on toy statistical models for linear regression. 
+This tutorial demonstrates the basic syntactical features of \RevBayes~and \Rev~and shows to set up and perform an analysis on toy statistical models for linear regression. 
 This tutorial focuses on explaining probabilistic graphical models and the language \Rev.
 A good reference for probabilistic graphical models for Bayesian phylogenetic inference is given in  \citep{hoehnaGM2014}.
 The statistical examples are borrowed from a fourth year statistics course taught in the fall term 2011 at Stockholm University.
@@ -103,7 +103,7 @@ These variables correspond to random variables and may depend on other variables
 c) Deterministic nodes (dotted circles) indicate variables that are determined by a specific function applied to another variable. 
 They can be thought of as variable transformations. 
 d) Observed states are placed in clamped stochastic nodes, represented by gray-shaded circles. e) Replication over a set of variables is indicated by enclosing the replicated nodes in a plate (dashed rectangle). 
-[Replicated from Fig.~1 in \citet{hoehnaGM2014}.]
+[Partially reproduced from Fig.~1 in \citet{hoehnaGM2014}.]
 }
 \label{gmnotation}
 \end{figure}
@@ -152,6 +152,7 @@ The strong type requirements ensures that you build meaningful model graphs.
 For example, the variance parameter of a normal distribution needs to be a positive number, and thus you can only use variables that are positive real numbers.
 We do automatic type conversion, although some parts of it are still under construction.
 
+\bigskip
 \subsubsection*{Specifying Models}
 
 \begin{table}[h!]
@@ -322,13 +323,13 @@ Continue on to the next page to start the exercise...
 %
 \newpage
 \FloatBarrier
-\section{Exercise: Basic Rev commands}
+\section{Exercise: Basic Rev Commands}
 
 \subsection{Introduction}
 
 The first section of this exercise involves 
 \begin{enumerate}
-\item Create the different types of variables.
+\item Creating different types of variables.
 \item Learning about functions. 
 \end{enumerate}
 
@@ -340,10 +341,10 @@ RevBayes > source("RevBayes_scripts/basics.Rev")
 \end{snugshade*}}
 
 
-Let us start now with the basic concepts for the interactive use of \RevBayes~with \Rev~(the language of \RevBayes). 
+Let's start with the basic concepts for the interactive use of \RevBayes~with \Rev~(the language of \RevBayes). 
 You should try to execute the statements step by step, look at the output and try to understand what and why things are happening. 
 We start with some simple concepts to get familiar and used to \RevBayes. 
-By now you should have executed \RevBayes and you should see the command prompt waiting for input. 
+By now you should have executed \RevBayes~and you should see the command prompt waiting for input. 
 The best exercise is to write these statements exactly in \RevBayes. 
 
 \Rev~is an interpreted language for statistical computing and analyses in evolutionary biology. Therefore, the basics are simple mathematical operations, such as 
@@ -366,9 +367,9 @@ The statements will be executed as if you wrote each on a single line.
 \end{lstlisting}
 \end{snugshade*}}
     
-Here you can see that comments always start with the symbol '\#'. 
-Everything after the '\#'-symbol will be ignored.
-Additionally to these simple mathematical operations we provide some standard math functions which can be called by
+Here you can see that comments always start with the symbol `\cl{\#}'. 
+Everything after the `\cl{\#}'-symbol will be ignored.
+In addition to these simple mathematical operations, we provide some standard math functions which can be called by:
     
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
@@ -379,14 +380,14 @@ Additionally to these simple mathematical operations we provide some standard ma
     RevBayes > power(2,2)                       # power function: power(a,b) = a^b
 \end{lstlisting}
 \end{snugshade*}}
-Notice that \Rev~ is case-sensitive. That means, \Rev~ distinguishes for upper and lower case letter for both, variable names and function names. For example, only the first of these two calls will work
+Notice that \Rev~is case-sensitive. That means \Rev~distinguishes upper and lower case letterd for both variable names and function names. For example, only the first of these two calls will work
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > exp(1)                           # correct lower case name
     RevBayes > Exp(1)                           # wrong upper case name
 \end{lstlisting}
 \end{snugshade*}}
-Moreover, we provide functions for the common statistical distribution.
+Moreover, we provide functions for the common statistical distributions.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # distribution functions
@@ -404,7 +405,7 @@ If you do not remember what the parameter or parameter names of a function are, 
 \end{lstlisting}
 \end{snugshade*}}
 
-The next, and very important feature of \RevBayes~is how to declare variables. 
+The next, and very important feature of \RevBayes~is variable declaration. 
 We have three types of variables, namely constant, deterministic and stochastic variables, which represent the same three types of DAG nodes. 
 Here we show how to construct the different variables and how they behave differently. 
 First, we focus on the difference between constant and deterministic variables: 
@@ -509,17 +510,17 @@ Similarly, we create a random variable \cl{y} from a normal distribution by
     RevBayes > mu <- 0
     RevBayes > sigma <- 1
     RevBayes > y ~ norm(mu,sigma)	
-    RevBayes > y.probability                    # print the probability if 'y'
+    RevBayes > y.probability                    # print the probability of 'y'
     RevBayes > y.lnProbability                  # print the log-probability if 'y'
     RevBayes > str(y)                           # printing all the information of 'y'
 \end{lstlisting}
 \end{snugshade*}}
-Now we know we know everything you need to know about creating the different types of variables and how these behave differently.
+Now you know everything there is about creating the different types of variables and the different ways in which these variables behave.
 
 
 
 \subsubsection*{Simple variable manipulation and other types of assignments}
-\Rev provides some convenience variable manipulation operations that are equivalent to variable manipulations in other programming languages such as C/C++, Java and Python.
+\Rev~provides some convenience variable manipulation operations that are equivalent to variable manipulations in other programming languages such as C/C++, Java and Python.
 You can increment (\cl{++}) and decrement (\cl{--}) a variable.
 The increment operation increases the current value of a variable by 1 and the decrement operation decreases the value by 1.
 A post increment (\cl{a++}) increases the value after returning the value, that is, the old value is returned.
@@ -544,7 +545,7 @@ Additionally, you can use addition (\cl{a += b}), subtraction (\cl{a -= b}), mul
 These variable manipulations will come in very handy for indices of vectors/arrays.
 
 \subsubsection*{Vectors}
-Common values in \RevBayes are of scalar types.
+Common values in \RevBayes~are of scalar types.
 That means, that not everything is a vector by default.
 Instead, you can create a vector using three different ways.
 First, you can call the vector function.
@@ -553,7 +554,7 @@ First, you can call the vector function.
     RevBayes > v <- v(1,2,3)                    # create a vector
 \end{lstlisting}
 \end{snugshade*}}
-An interesting side note here is that we can use the same name for a variable as for a function; the variable \cl{v} and the function \cl{v(\ldots)}.
+Interestingly, we can use the same name for a variable as for a function: the variable \cl{v} and the function \cl{v(\ldots)}.
 Both will still be fully functional and our interpreter checks if you asked for a function or a variable.
 
 Second, you can use the square bracket notation.
@@ -570,7 +571,7 @@ And third, you can implicitly create the vector by assigning elements.
     RevBayes > z[3] <-3                  
 \end{lstlisting}
 \end{snugshade*}} 
-The implicit creation does not need to create the variable before.
+The implicit creation does not need to instantiate the variable beforehand.
 There are other useful built-in functions that produce vectors.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
@@ -580,7 +581,7 @@ There are other useful built-in functions that produce vectors.
 \end{lstlisting}
 \end{snugshade*}} 
 
-Vectors in \Rev belong to the class of objects that have members and/or methods.
+Vectors in \Rev~belong to the class of objects that have members and/or methods.
 You can get the member of such a member-object by calling
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
@@ -599,8 +600,8 @@ If you don't remember what the methods were called, or if this object has any me
     RevBayes > v.methods()                 
 \end{lstlisting}
 \end{snugshade*}} 
-This is very, very useful in general.
-So for a vector we can get the size --- the number of elements --- by calling
+In general, this is very, very useful.
+So for a vector we can get the size --- the number of elements --- by calling its member function:
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > v.size()                 
@@ -638,7 +639,7 @@ A simple example is a \cl{for} loop that computes the sum of
     RevBayes > sum
 \end{lstlisting}
 \end{snugshade*}}
-Another example using a \cl{for} loop is the computation of the Fibonacci numbers.
+Another example using a \cl{for} loop is the computation of the \href{http://en.wikipedia.org/wiki/Fibonacci_number}{Fibonacci number} for a given integer. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # Fibonacci series using a for loop
@@ -666,7 +667,7 @@ The \cl{while} loop continues to execute the statement(s) until the condition is
 \end{lstlisting}
 \end{snugshade*}}
 
-\subsubsection*{User defined function}
+\subsubsection*{User Defined Functions}
 In \Rev~you can write your own functions as well.
 The syntax for writing function is:
 {\tt \begin{snugshade*}
@@ -674,7 +675,7 @@ The syntax for writing function is:
     RevBayes > function <return value type> <function name> (<list of arguments>) { <statements> }
 \end{lstlisting}
 \end{snugshade*}}
-As a simple example, let us write the function that computes the square of a number.
+As a simple example, let's write a function that computes the square of a number.
 We expect that the function takes in any real number.
 The type of real number is \cl{Real}.
 Since the square is always a positive real number, we choose the return to be \cl{RealPos}
@@ -691,8 +692,7 @@ Now we can call our own function the same way as we call other already built-in 
     RevBayes > a
 \end{lstlisting}
 \end{snugshade*}}
-As an exercise to become more familiar with user-defined function, let us write some more functions.
-First, we add a function that computes the factorial of a natural number.
+As an exercise, let's write a function that computes the factorial of a natural number.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # function for computing the factorial
@@ -707,7 +707,7 @@ First, we add a function that computes the factorial of a natural number.
     RevBayes > b
 \end{lstlisting}
 \end{snugshade*}}
-Here you see that within your own function you can call you function as well, which is commonly called recursive function calls.
+Here you see that within your own function you can call your function as well, which is commonly called recursive function calls.
 
 Now let us write a recursive function for the sum of numbers which we computed before using a \cl{for} loop.
 {\tt \begin{snugshade*}
@@ -724,7 +724,7 @@ Now let us write a recursive function for the sum of numbers which we computed b
     RevBayes > c
 \end{lstlisting}
 \end{snugshade*}}
-We can do the same for our favorite example of the Fibonacci series.
+We can do the same for our favorite example, the Fibonacci series.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # function for computing the fibonacci series
@@ -780,7 +780,7 @@ For simplicity, we choose uniform priors for $\alpha$ and $\beta$.
 \alpha & \sim & \text{Uniform}(-10,10)\\
 \beta &  \sim & \text{Uniform}(-10,10)
 \end{eqnarray*}
-The probability density can be computed in \RevBayes for a single year by
+The probability density can be computed in \RevBayes~for a single year by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > dpoisson(y[i],exp(alpha+beta*x[i]))
@@ -928,7 +928,7 @@ Then we create the parameters with their prior distributions.
 \end{lstlisting}
 \end{snugshade*}}
 It may be good to set some reasonable starting values especially if you choose is very uninformative prior distribution.
-If by chance you had starting values that gave a likelihood of -Inf, then \RevBayes will try several times to propose new starting values drawn from the prior distribution.
+If by chance you had starting values that gave a likelihood of -Inf, then \RevBayes~will try several times to propose new starting values drawn from the prior distribution.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
     RevBayes > # let us use reasonable starting value
@@ -1178,14 +1178,13 @@ You can carry out these batch commands by providing the file name when you execu
 
 Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \begin{itemize}
+\item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
 \item Tracy Heath (email: \href{mailto:tracyh@berkeley.edu}{tracyh@berkeley.edu}) \\\vspace{-8mm}
 \item Michael Landis (email: \href{mailto:mlandis@berkeley.edu}{mlandis@berkeley.edu}) \\\vspace{-8mm} 
-\item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
 \end{itemize}
 
-\href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics[scale=0.8]{figures/ccby.eps}} This tutorial was written by \href{http://phylo.bio.ku.edu/content/tracy-heath}{Tracy Heath}, \href{http://michaeljameslandis.com/}{Michael Landis}, and Sebastian H\"{o}hna; licensed under a \href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}. 
-(This tutorial is based on the \href{http://treethinkers.org/tutorials/phylogenetic-inference-using-mrbayes-v3-2/}{Phylogenetic Inference using MrBayes v3.2} tutorial written by Tracy Heath, Conor Meehan, and Brian Moore and some content is reproduced here.
-Mark Holder, Ben Liebeskind, Emily McTavish, and April Wright provided helpful comments.)
+\href{http://creativecommons.org/licenses/by/4.0/}{\includegraphics[scale=0.8]{figures/ccby.eps}} This tutorial was written by Sebastian H\"{o}hna, \href{http://phylo.bio.ku.edu/content/tracy-heath}{Tracy Heath}, and \href{http://michaeljameslandis.com/}{Michael Landis}; licensed under a \href{http://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International License}. 
+%(Mark Holder, Ben Liebeskind, Emily McTavish, and April Wright provided helpful comments.)
 
 Version dated: \today
 
