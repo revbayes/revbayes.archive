@@ -203,6 +203,7 @@
 #include "Dist_beta.h"
 #include "Dist_bimodalLnorm.h"
 #include "Dist_bimodalNorm.h"
+#include "Dist_binomial.h"
 #include "Dist_dirichlet.h"
 #include "Dist_exponential.h"
 #include "Dist_gamma.h"
@@ -731,6 +732,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // bernoulli distribution
         addDistribution( "dnBernoulli",     new Dist_bernoulli() );
         addDistribution( "bernoulli",       new Dist_bernoulli() );
+
+        // binomial distribution
+        addDistribution( "dnBinomial",     new Dist_binomial() );
+        addDistribution( "binomial",       new Dist_binomial() );
         
         // beta distribution
         addDistribution( "dnBeta",          new Dist_beta() );
@@ -1179,6 +1184,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new Dist_bernoulli() ) );
         addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new Dist_bernoulli() ) );
         
+        // binomial distribution
+        addFunction("dbinomial", new DistributionFunctionPdf<Natural>( new Dist_binomial() ) );
+        addFunction("rbinomial", new DistributionFunctionRv<Natural>( new Dist_binomial() ) );
+
         // beta distribution
         addFunction("dbeta", new DistributionFunctionPdf<Probability>( new Dist_beta() ) );
         //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
