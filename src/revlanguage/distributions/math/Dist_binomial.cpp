@@ -37,7 +37,7 @@ Dist_binomial* Dist_binomial::clone( void ) const {
 RevBayesCore::BinomialDistribution* Dist_binomial::createDistribution( void ) const {
     
     // get the parameters
-    RevBayesCore::TypedDagNode<int>*    vn = static_cast<const Natural     &>( p->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<int>*    vn = static_cast<const Natural     &>( n->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* vp = static_cast<const Probability &>( p->getRevObject() ).getDagNode();
     RevBayesCore::BinomialDistribution* d  = new RevBayesCore::BinomialDistribution( vn, vp );
     return d;
