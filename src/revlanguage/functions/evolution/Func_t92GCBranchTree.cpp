@@ -66,7 +66,7 @@ const TypeSpec& Func_t92GCBranchTree::getClassTypeSpec(void) {
 /* Get return type */
 const TypeSpec& Func_t92GCBranchTree::getReturnType( void ) const {
     
-    static TypeSpec returnTypeSpec = ModelVector<RateMatrix>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec();
     
     return returnTypeSpec;
 }
