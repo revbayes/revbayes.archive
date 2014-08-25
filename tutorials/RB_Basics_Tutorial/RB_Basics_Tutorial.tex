@@ -387,7 +387,7 @@ Notice that \Rev~is case-sensitive. That means \Rev~distinguishes upper and lowe
     RevBayes > Exp(1)                           # wrong upper case name
 \end{lstlisting}
 \end{snugshade*}}
-Moreover, we provide functions for the common statistical distribution.
+Moreover, we provide functions for the common statistical distributions.
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > # distribution functions
@@ -405,7 +405,7 @@ If you do not remember what the parameter or parameter names of a function are, 
 \end{lstlisting}
 \end{snugshade*}}
 
-The next, and very important feature of \RevBayes~is how to declare variables. 
+The next, and very important feature of \RevBayes~is variable declaration. 
 We have three types of variables, namely constant, deterministic and stochastic variables, which represent the same three types of DAG nodes. 
 Here we show how to construct the different variables and how they behave differently. 
 First, we focus on the difference between constant and deterministic variables: 
@@ -510,17 +510,17 @@ Similarly, we create a random variable \cl{y} from a normal distribution by
     RevBayes > mu <- 0
     RevBayes > sigma <- 1
     RevBayes > y ~ norm(mu,sigma)	
-    RevBayes > y.probability                    # print the probability if 'y'
+    RevBayes > y.probability                    # print the probability of 'y'
     RevBayes > y.lnProbability                  # print the log-probability if 'y'
     RevBayes > str(y)                           # printing all the information of 'y'
 \end{lstlisting}
 \end{snugshade*}}
-Now we know we know everything you need to know about creating the different types of variables and how these behave differently.
+Now you know everything there is about creating the different types of variables and the different ways in which these variables behave.
 
 
 
 \subsubsection*{Simple variable manipulation and other types of assignments}
-\Rev provides some convenience variable manipulation operations that are equivalent to variable manipulations in other programming languages such as C/C++, Java and Python.
+\Rev~provides some convenience variable manipulation operations that are equivalent to variable manipulations in other programming languages such as C/C++, Java and Python.
 You can increment (\cl{++}) and decrement (\cl{--}) a variable.
 The increment operation increases the current value of a variable by 1 and the decrement operation decreases the value by 1.
 A post increment (\cl{a++}) increases the value after returning the value, that is, the old value is returned.
@@ -545,7 +545,7 @@ Additionally, you can use addition (\cl{a += b}), subtraction (\cl{a -= b}), mul
 These variable manipulations will come in very handy for indices of vectors/arrays.
 
 \subsubsection*{Vectors}
-Common values in \RevBayes are of scalar types.
+Common values in \RevBayes~are of scalar types.
 That means, that not everything is a vector by default.
 Instead, you can create a vector using three different ways.
 First, you can call the vector function.
@@ -581,7 +581,7 @@ There are other useful built-in functions that produce vectors.
 \end{lstlisting}
 \end{snugshade*}} 
 
-Vectors in \Rev belong to the class of objects that have members and/or methods.
+Vectors in \Rev~belong to the class of objects that have members and/or methods.
 You can get the member of such a member-object by calling
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
@@ -781,7 +781,7 @@ For simplicity, we choose uniform priors for $\alpha$ and $\beta$.
 \alpha & \sim & \text{Uniform}(-10,10)\\
 \beta &  \sim & \text{Uniform}(-10,10)
 \end{eqnarray*}
-The probability density can be computed in \RevBayes for a single year by
+The probability density can be computed in \RevBayes~for a single year by
 {\tt \begin{snugshade*}
 \begin{lstlisting}    
     RevBayes > dpoisson(y[i],exp(alpha+beta*x[i]))
@@ -929,7 +929,7 @@ Then we create the parameters with their prior distributions.
 \end{lstlisting}
 \end{snugshade*}}
 It may be good to set some reasonable starting values especially if you choose is very uninformative prior distribution.
-If by chance you had starting values that gave a likelihood of -Inf, then \RevBayes will try several times to propose new starting values drawn from the prior distribution.
+If by chance you had starting values that gave a likelihood of -Inf, then \RevBayes~will try several times to propose new starting values drawn from the prior distribution.
 {\tt \begin{snugshade*}
 \begin{lstlisting} 
     RevBayes > # let us use reasonable starting value
