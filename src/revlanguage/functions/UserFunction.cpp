@@ -107,10 +107,7 @@ RevPtr<Variable> UserFunction::execute( void )
 
     if ( retVal->hasDagNode() )
     {
-        UserFunction* fxn = this->clone();
-        UserFunction* code = this->clone();
-        
-        retVal->makeDeterministicValue( fxn, code );
+        retVal->makeUserFunctionValue( this->clone() );
 
         return new Variable( retVal );
     }
