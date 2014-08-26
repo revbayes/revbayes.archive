@@ -504,7 +504,7 @@ We specified a 6-parameter Dirichlet prior on the relative rates of the GTR mode
 Then, we create the same simplex move as for the base frequencies.
 {\tt\small \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > moves[1] <- mvSimplexElementScale(er) 
+RevBayes > moves[2] <- mvSimplexElementScale(er) 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -659,7 +659,7 @@ RevBayes > phylogeny := treeAssembly(topology, br_lens)
 
 Now that we have initialized virtually all of our model parameters and we can link all of the parts in the stochastic node that will be clamped by the data. 
 The sequence substitution model is a distribution called the \textit{phylogenetic continuous-time Markov chain} and we use the \cl{dnPhyloCTMC} constructor function to create this node.
-This distribution requires several input arguments: (1) the \cl{tree} with branch lengths, (2) the instantaneous rate matrix \cl{Q}, the node characterizing the rate variation across sites (though \cl{siteRates} can be omitted if you do not assume rate variation across sites), and (3) the \cl{type} of character data.
+This distribution requires several input arguments: (1) the \cl{tree} with branch lengths, (2) the instantaneous rate matrix \cl{Q}, the node characterizing the rate variation across sites (though \cl{siteRates} can be omitted if you do not assume rate variation across sites), (3) the probability of a site being invariant, and (4) the \cl{type} of character data.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > phyloSeq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, siteRates=gamma_rates, pInv=pinvar, type="DNA")
@@ -792,6 +792,7 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 \item Tracy Heath (email: \href{mailto:tracyh@berkeley.edu}{tracyh@berkeley.edu}) \\\vspace{-8mm}
 \item Michael Landis (email: \href{mailto:mlandis@berkeley.edu}{mlandis@berkeley.edu}) \\\vspace{-8mm} 
 \item Sebastian H\"{o}hna (email: \href{mailto:sebastian.hoehna@gmail.com}{sebastian.hoehna@gmail.com})
+\\\vspace{-8mm} 
 \item Brian R. Moore (email: \href{mailto:brianmoore@ucdavis.edu}{brianmoore@ucdavis.edu}) \\\vspace{-8mm}
 \end{itemize}
 
