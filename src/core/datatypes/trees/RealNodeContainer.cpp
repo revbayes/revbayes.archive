@@ -107,7 +107,7 @@ void RealNodeContainer::recursiveClampAt(const TopologyNode& from, const Continu
         if (data->getCharacter(dataindex,l).getMean() != -1000) {
            (*this)[index] = data->getCharacter(dataindex,l).getMean();
             clampVector[index] = true;
-            std::cerr << "taxon : " << index << '\t' << taxon << " trait value : " << (*this)[index] << '\n';
+            //std::cerr << "taxon : " << index << '\t' << taxon << " trait value : " << (*this)[index] << '\n';
         }
         else    {
             std::cerr << "taxon : " << taxon << " is missing for trait " << l+1 << '\n';
@@ -213,9 +213,9 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
     
     if (from.isTip())   {
         s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
-        std::cerr << from.getIndex() << '\t' << getTimeTree()->getTipNames()[from.getIndex()] << "_";
-        std::cerr << (*this)[from.getIndex()] << '\n';
-        exit(1);
+//        std::cerr << from.getIndex() << '\t' << getTimeTree()->getTipNames()[from.getIndex()] << "_";
+//        std::cerr << (*this)[from.getIndex()] << '\n';
+//        exit(1);
     }
     else    {
         s << "(";
@@ -230,7 +230,7 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
         s << ")";
     }
     s << (*this)[from.getIndex()];
-    if (from.isTip() && (! isClamped(from.getIndex()))) {
+/*    if (from.isTip() && (! isClamped(from.getIndex()))) {
         std::cerr << "leaf is not clamped\n";
         // get taxon index
         size_t index = from.getIndex();
@@ -239,7 +239,7 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
         std::cerr << "taxon : " << index << '\t' << taxon << '\n';
         std::cerr << " trait value : " << (*this)[index] << '\n';        
         exit(1);
-    }
+    }*/
 //    if (!from.isRoot()) {
         s << ":";
         s << getTimeTree()->getBranchLength(from.getIndex());
