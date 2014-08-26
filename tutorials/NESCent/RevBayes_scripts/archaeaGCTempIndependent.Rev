@@ -60,65 +60,40 @@ index <- index + 1
 # covariance matrix is inverse Wishart of parameters kappa * Identity and df = nTraits+3 degrees of freedom
 # where kappa is itself a scaling factor
 
-kappa ~ exponential(1.0)
-df <- nTraits+4
-covdim <- nTraits+2
-
-Sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
+sigmarate ~ exponential(0.1)
+#sigmagc ~ exponential(0.1)
+sigmatemp ~ exponential(0.1)
 
 # moves on kappa
-moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
+moves[index] <- mScale(sigmarate, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+#moves[index] <- mScale(sigmagc, lambda=2.0, tune=true, weight=3.0)
+#index <- index + 1
+moves[index] <- mScale(sigmatemp, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
 # multivariate Brownian process along the tree
-X ~ mvtBrownian(tau,sigma=Sigma)
+lograte ~ brownian(tau,sigmarate)
+#logitgc ~ brownian(tau,sigmagc)
+temp ~ brownian(tau,sigmatemp)
 
-# conjugate Gibbs move on covariance matrix
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+moves[index] <- mvRealNodeValTreeSliding(process=lograte,lambda=10,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=1,tune=true,weight=1) 
+index <- index + 1
+#moves[index] <- mvRealNodeValTreeSliding(process=logitgc,lambda=10,tune=true,weight=100) 
+#index <- index + 1
+#moves[index] <- mvRealNodeValTreeTranslation(process=logitgc,lambda=1,tune=true,weight=1) 
+#index <- index + 1
+moves[index] <- mvRealNodeValTreeSliding(process=temp,lambda=10,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvRealNodeValTreeTranslation(process=temp,lambda=1,tune=true,weight=1) 
 index <- index + 1
 
-# moves on the Brownian process
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=1,tune=true,weight=1) 
-index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
-index <- index + 1
+temp.clampAt(contData,1)
 
-# first and second components of the Brownian model map to substitution rate and gc content (see below)
-# other copmonents of the Brownian process correspond to life-history traits
-# so we clamp the process at the tips of the tree, at the values observed in extant taxa
-# you need to do this trait by trait
-for (i in 1:nTraits)	{
-
-	# here we say that the (i+2)th entry of the Brownian process should map to the ith. quantitative trait
-	X.clampAt(contData,i+2,i)
-}
-
-# get useful functions of the covariance matrix
-for (i in 1:covdim)	{
-	var[i] := Sigma.covariance(i,i)
-}
-
-k <- 1;
-for (i in 1:(covdim-1))	{
-	for (j in (i+1):covdim)	{
-		correl[k] := Sigma.correlation(i,j)
-		pCorrel[k] := Sigma.partialCorrelation(i,j)
-		k <- k+1
-	}
-}
-
-# get useful outputs from the brownian process
-
-for (i in 1:covdim)	{
-	# mean and stdev of the log rate (i=1), logit gc (i=2) and then each trait
-	meanX[i] := X.mean(i)
-	stdevX[i] := X.stdev(i)
-	rootX[i] := X.rootVal(i)
-}
+meantemp := temp.mean()
+roottemp := temp.rootVal()
 
 ######### 
 # substitution process
@@ -133,12 +108,12 @@ moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
 index <- index + 1
 
 # first component of the Brownian model gives the *log* of the substitution rate
-branchrates := expbranchtree(tree=tau,process=X,traitindex=1)
+branchrates := expbranchtree(tree=tau,process=lograte)
 
 # second component of the Brownian model gives the *logit* of the equilibrium GC content
 # thus GC = tanh(X_2(t)), where X is the Brownian motion
 # tanh is the hyperbolic tangent: tanh(x) = exp(x) / (1 + exp(x))
-branchGC := tanhBranchTree(tree=tau,process=X,traitindex=2)
+#branchGC := tanhBranchTree(tree=tau,process=logitgc)
 
 # the transition / transversion ratio
 tstv ~ exponential(0.1)
@@ -147,38 +122,39 @@ tstv ~ exponential(0.1)
 # defined by a transition/transversion ratio and an equilibrium GC
 # so, we use branchGC, which gives a GC for each branch
 # we combine it with the global ts/tv ratio
-branchMatrices := t92GCBranchTree(tree=tau,branchGC=branchGC,tstv=tstv)
+#branchMatrices := t92GCBranchTree(tree=tau,branchGC=branchGC,tstv=tstv)
 
+# exchangeabilities
+e <- v(1,1,1,1,1,1)
+er ~ dirichlet(e)
+
+# rate matrix
+Q := gtr(er,pi)
 
 # create the sequence evolution model
-seq ~ substModel(tree=tau, Q=branchMatrices, rootFrequencies=pi, branchRates=branchrates, nSites=nSites, type="DNA")
+seq ~ substModel(tree=tau, Q=Q, rootFrequencies=pi, branchRates=branchrates, nSites=nSites, type="DNA")
+#seq ~ substModel(tree=tau, Q=branchMatrices, rootFrequencies=pi, branchRates=branchrates, nSites=nSites, type="DNA")
 
 # condition on sequence alignment
 seq.clamp(seqData)
 
 # create model
-mymodel <- model(kappa)
+mymodel <- model(sigmarate)
 
 # screen monitor
-monitors[1] <- screenmonitor(printgen=10, correl, meanX, rootX)
+monitors[1] <- screenmonitor(printgen=10, meantemp, roottemp)
 
 # similar monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/archaeagctemp1.trace", printgen=100, separator = "	", correl, var, meanX, rootX)
-
-# file monitors for the correlation and partial correlation coefficients
-monitors[3] <- filemonitor(filename="output/archaeagctemp1.correl",printgen=100, separator = "	", correl, pCorrel)
-
-# a file monitor just for the covariance matrix
-monitors[4] <- filemonitor(filename="output/archaeagctemp1.cov",printgen=100, separator = "	", Sigma)
+monitors[2] <- filemonitor(filename="output/archaeagctempindependent2.trace", printgen=100, separator = "	", meantemp, roottemp)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- filemonitor(filename="output/archaeagctemp1.traits",printgen=100, separator = "	", X)
+monitors[3] <- filemonitor(filename="output/archaeagctempindependent2.temp",printgen=100, separator = "	", temp)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[6] <- filemonitor(filename="output/archaeagctemp1.trees",printgen=100, separator = "	", tau)
+monitors[4] <- filemonitor(filename="output/archaeagctempindependent2.trees",printgen=100, separator = "	", tau)
 
 # a model monitor
-monitors[7] <- modelmonitor(filename="output/archaeagctemp1.log",printgen=100, separator = "	")
+monitors[5] <- modelmonitor(filename="output/archaeagctempindependent2.log",printgen=100, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
