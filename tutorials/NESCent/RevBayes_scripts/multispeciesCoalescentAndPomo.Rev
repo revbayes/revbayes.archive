@@ -159,9 +159,7 @@ for (i in 1:n_genes) {
 
   shape_prior[i] <- 0.05 
   shape[i] ~ dnExponential( shape_prior[i] )
-#  shapeBis[i] := shape[i]
-#  norm_gamma_rates[i] := discretizeGamma( shape[i], shapeBis[i], 4, false )
-	norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
 
 }
 
@@ -264,7 +262,6 @@ for (i in 1:n_genes) {
 
 moveIndex <- 0
 
-
 # moves for the birth-death parameters
 moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
 moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
@@ -281,14 +278,12 @@ moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 
 # moves on the gene tree topologies and node ages
 for (i in 1:n_genes) {
-
    moves[moveIndex++] <- mvNNI(geneTrees[i], 1.0)
    moves[moveIndex++] <- mvFNPR(geneTrees[i], 1.0)
    moves[moveIndex++] <- mvSubtreeScale(geneTrees[i], 5.0)
    moves[moveIndex++] <- mvTreeScale(geneTrees[i], delta=1.0, tune=true, weight=3.0)
    moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTrees[i], 10.0)
    moves[moveIndex++] <- mvRootTimeSlide(geneTrees[i], 1.0, true, 3.0)
-
 }
 
 # move on Ne, the effective population size
@@ -356,23 +351,6 @@ distNe := Ne - trueNe
 # To achieve this we need to write some functions:
 clear(i)
 
-function RealPos diffVectors ( Simplex xvec, Simplex yvec ) { 
-	DI <- 0.0
-	for (i in 1:xvec.size()) {
-		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
-	}
-	return DI
-}
-
-function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) { 
-	DA <- 0.0
-	for (i in 1:xvecvec.size()) {
-		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
-	}
-	return xvecvec[2]
-}
-
-distEqFreq := diffVectorsOfVectors(trueSf, sf)
 	
 					
 	
@@ -392,8 +370,18 @@ function RealPos diffVectorsOfVectors ( Real[][] xvecvec, Real[][] yvecvec ) {
 	return DA
 }
 
+function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) { 
+	DA <- 0.0
+	for (i in 1:xvecvec.size()) {
+		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
+	}
+	return xvecvec[2]
+}
 
-	
+
+
+distEqFreq := diffVectorsOfVectors(trueSf, sf)
+
 	
 # Same thing for exchangeability parameters:
 distExchange := diffVectorsOfVectors(trueEr, er)
@@ -501,6 +489,10 @@ concatenate_n_sites <- pomo_concatenate.nchar()[1]
 # Here we are going to use a GTR matrix. 
 # So we define the GTR matrix.
 
+clear(er_prior)
+clear(sf_prior)
+clear(Q)
+
 er_prior <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(er_prior)
 
@@ -575,6 +567,7 @@ speciesTree.redraw()
 # the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
 
 moveIndex <- 0
+clear(moves)
 
 # moves for the birth-death parameters
 moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
@@ -617,6 +610,8 @@ moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 # We define a few monitors to keep track of how things go.
 
 mntrIndex <- 0
+
+clear(monitors)
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
 monitors[mntrIndex++] <- modelmonitor(filename="pomo_clock.log",printgen=10, separator = "	")
