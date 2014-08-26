@@ -86,20 +86,20 @@ project(RevBayes)
 if [ "$mavericks" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -stdlib=libstdc++")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libstdc++")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall")
 '  >> "$HERE/CMakeLists.txt"
 
 elif [ "$win" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -static -msse -msse2 -msse3")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -static -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -g -pg -msse -msse2 -msse3 -lpthread")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -g -pg")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 fi
 

@@ -432,7 +432,13 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
 }
 
 
-/** touch this node for recalculation */
+/**
+ * touch this node for recalculation.
+ *
+ * @todo The touchAffected() call only needs to be executed if the node
+ *       has not been touched before the entry to this function. The
+ *       touchFunction call always needs to be executed.
+ */
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
@@ -444,28 +450,11 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
     // We need to touch the function anyways because it might not be filthy enough.
     // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
-//    if ( !this->isFunctionDirty() )
-//    {
-        // Essential for lazy evaluation
-        this->touchFunction( toucher );
+    // Essential for lazy evaluation
+    this->touchFunction( toucher );
         
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-//    }
-
-//#if 0
-//    // Uncomment this code if you do not want to use lazy evaluation
-//
-//    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
-//    function->touch( toucher );
-//    
-//    // @todo: until now we update directly without lazy evaluation
-//    this->update();
-//    
-//    // we call the affected nodes every time
-//    this->touchAffected();
-//#endif
-
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
 }
 
 

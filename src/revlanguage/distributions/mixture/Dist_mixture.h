@@ -184,7 +184,7 @@ RevLanguage::MethodTable Dist_mixture<valType>::makeMethods(void) const
     
     MethodTable methods = MethodTable();
     
-    ArgumentRules* argRules = new ArgumentRules();
+//    ArgumentRules* argRules = new ArgumentRules();
     
 //    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_mixture<valType> , Natural>( this, argRules ) );
     

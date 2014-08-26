@@ -99,7 +99,6 @@ DagNode& DagNode::operator=(const DagNode &d)
 
 void DagNode::addChild(DagNode *child) const
 {
-
     children.insert( child );
 }
 
@@ -328,23 +327,27 @@ bool DagNode::isConstant( void ) const
 
 
 /**
- * This function returns true if the DAG node is
- * a constant node that is not modifiable by the user.
- * This occurs when the node is unnamed and all parents
- * are immutable.
+ * This function returns true if the DAG node is a node
+ * that is modifiable by the user through assignment.
+ * This occurs when the node is unnamed and none of the
+ * parents are assignable.
+ *
+ * @todo This is a language feature but it is terribly
+ *       convenient to implement it here. See if there
+ *       is a way to move it to the language layer.
  */
-bool DagNode::isImmutable( void ) const
+bool DagNode::isAssignable( void ) const
 {
     const std::set<const DagNode*>& parents = getParents();
     
     if ( getName() != "" )
-        return false;
+        return true;
     
     for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
-        if ( !(*it)->isImmutable() )
-            return false;
+        if ( (*it)->isAssignable() )
+            return true;
     
-    return true;
+    return false;
 }
 
 
