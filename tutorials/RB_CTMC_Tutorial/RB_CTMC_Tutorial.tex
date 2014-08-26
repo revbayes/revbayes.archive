@@ -337,24 +337,6 @@ RevBayes > Q <- JC(4)
 \subsubsection*{Hasegawa-Kishino-Yano (HKY)  substitution process model}
 
 
-
-We can use the same type of distribution as a prior on the 4 stationary frequencies ($\pi_A, \pi_C, \pi_G, \pi_T$) since these parameters also represent proportions. 
-Specify a flat Dirichlet prior density on the base frequencies:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > pi_prior <- v(1,1,1,1) 
-RevBayes > sf ~ dnDirichlet(sf_prior)
-\end{lstlisting}
-\end{snugshade*}}
-
-The node \cl{sf} represents the $\pi$ node in Figure \ref{gtrgmfig}.
-Now add the simplex scale move on the stationary frequencies to the moves vector:
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > moves[2] <- mvSimplexElementScale(pi)  
-\end{lstlisting}
-\end{snugshade*}}
-
 First, we will define and specify a prior on the base frequencies rates of the HKY model. 
 We will use a flat Dirichlet prior distribution on these four frequencies. 
 To do this, we must begin by defining a constant node that specifies the vector of concentration values of the Dirichlet prior using the \cl{v()} function:
@@ -367,44 +349,42 @@ RevBayes > pi_prior <- v(1,1,1,1)
 
 The constant node \cl{pi\_prior} corresponds to the node labeled $b$ in the graphical model depicted in Figure \ref{gtrgmfig}. 
 The vector function, \cl{v()}, creates a vector of six values. 
-Display the current value of \cl{er\_prior} by simply typing the variable name:
+Display the current value of \cl{pi\_prior} by simply typing the variable name:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > er_prior
-       [ 1, 1, 1, 1, 1, 1 ]
+RevBayes > pi_prior
+       [ 1, 1, 1, 1 ]
 \end{lstlisting}
 \end{snugshade*}}
-This node defines the parameters of the Dirichlet prior distribution on the exchangeability rates.
-Thus, we can create a stochastic node for the exchangeability rates using the \cl{dnDirichlet()} function, which takes a vector of values as an argument and the \cl{\rbdn} operator. 
-Together, these create a stochastic node named \cl{er} ($\theta$ in Figure \ref{gtrgmfig}): 
+This node defines the parameters of the Dirichlet prior distribution on the base frequencies.
+Thus, we can create a stochastic node for the base frequencies using the \cl{dnDirichlet()} function, which takes a vector of values as an argument and the \cl{\rbdn} operator. 
+Together, these create a stochastic node named \cl{er} ($\pi$ in Figure \ref{gtrgmfig}): 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > er ~ dnDirichlet(er_prior)
+RevBayes > pi ~ dnDirichlet(pi_prior)
 \end{lstlisting}
 \end{snugshade*}}
 
 
 The Dirichlet distribution assigns probability densities to grouped parameters: {\it e.g.}, those that measure proportions and must sum to 1. 
-Above, we specified a 6-parameter Dirichlet prior on the relative rates of the GTR model, where the placement of each value specified represents one of the 6 relative rates: 
-(1) $A\leftrightarrows C$, 
-(2) $A\leftrightarrows G$, 
-(3) $A\leftrightarrows T$, 
-(4) $C\leftrightarrows G$, 
-(5) $C\leftrightarrows T$, 
-(6) $G\leftrightarrows T$. 
-The input parameters of a Dirichlet distribution are called shape parameters or concentration parameters and a value is specified for each of the 6 GTR rates. 
+Above, we specified a 4-parameter Dirichlet prior on the base frequencies of the HKY model, where the placement of each value specified represents one of the 4 frequencies: 
+(1) $\pi_A$, 
+(2) $\pi_C$, 
+(3) $\pi_G$, 
+(4) $\pi_T$.
+The input parameters of a Dirichlet distribution are called shape parameters or concentration parameters and a value is specified for each of the 4 HKY frequencies. 
 The expectation and variance for each variable are related to the sum of the shape parameters.
-The prior above is a `flat' or symmetric Dirichlet since all of the shape parameters are equal (1,1,1,1,1,1), thus we are specifying a model that allows for equal rates of change between nucleotides, such that the expected rate for each is equal to $\frac{1}{6}$ \citep{zwickl04}.
-Figure \ref{dirichletFig}a shows the probability density of each rate under this model.
-If we parameterized the Dirichlet distribution such that all of the parameters were equal to 100, this would also specify a prior with an expectation of equal exchangeability rates (Figure \ref{dirichletFig}b). 
-However, by increasing the shape parameters of the Dirichlet distribution, \cl{er\_prior <- v(100,100,100,100,100,100)}, would heavily restrict the MCMC from sampling sets of GTR rates in which the values were not equal or very nearly equal ({\it i.e.}, this is a very {\em informative} prior). 
-We can consider a different Dirichlet parameterization if we had strong prior belief that transitions and transversions occurred at different rates.
-In this case, we could specify a more informative prior density: \cl{er\_prior <- v(4,8,4,4,8,4)}. 
-Under this model, the expected rate for transversions would be $\frac{4}{32}$ and the expected rate for transitions would equal $\frac{8}{32}$, and there would be greater prior probability on sets of GTR rates that matched this configuration (Figure \ref{dirichletFig}c). 
-An alternative informative prior would be one where we assumed that each of the 6 GTR rates had a different value conforming to a Dirichlet(2,4,6,8,10,12). 
+The prior above is a `flat' or symmetric Dirichlet since all of the shape parameters are equal (1,1,1,1), thus we are specifying a model that allows for equal frequencies of nucleotides, such that the expected rate for each is equal to $\frac{1}{4}$ \citep{zwickl04}.
+Figure \ref{dirichletFig}a shows the probability density of each frequency under this model.
+If we parameterized the Dirichlet distribution such that all of the parameters were equal to 100, this would also specify a prior with an expectation of equal base frequencies (Figure \ref{dirichletFig}b). 
+However, by increasing the shape parameters of the Dirichlet distribution, \cl{pi\_prior <- v(100,100,100,100)}, would heavily restrict the MCMC from sampling sets of HKY frequencies in which the values were not equal or very nearly equal ({\it i.e.}, this is a very {\em informative} prior). 
+We can consider a different Dirichlet parameterization if we had strong prior belief that the GC content is very high.
+In this case, we could specify a more informative prior density: \cl{pi\_prior <- v(4,8,8,4)}. 
+Under this model, the expected GC frequency would be $\frac{16}{24}$ (Figure \ref{dirichletFig}c). 
+An alternative informative prior would be one where we assumed that each of the 4 HKY frequencies had a different value conforming to a Dirichlet(2,4,6,8). 
 This would lead to a different prior probability density for each rate parameter (Figure \ref{dirichletFig}d).
-Without strong prior knowledge about the pattern of relative rates, however, we can better capture our statistical uncertainty with a vague prior on the GTR rates. 
-Notably, all patterns of relative rates have the same probability density under \cl{er\_prior <- v(1,1,1,1,1,1)}.
+Without strong prior knowledge about the pattern of base frequencies, however, we can better capture our statistical uncertainty with a vague prior on the HKY base frequencies. 
+Notably, all patterns of base frequencies have the same probability density under \cl{pi\_prior <- v(1,1,1,1)}.
 \begin{figure}[h!]
 \centering
 \fbox{\includegraphics[width=5in,angle=-90]{figures/dirichlet_rates.eps}}
@@ -413,28 +393,28 @@ Notably, all patterns of relative rates have the same probability density under 
 \end{figure}
 
 For each stochastic node in our model, we must also specify a proposal mechanism if we wish to sample that value. 
-The Dirichlet prior on our parameter \cl{er} creates a \href{http://en.wikipedia.org/wiki/Simplex}{\textit{simplex}} of values that sum to 1. 
+The Dirichlet prior on our parameter \cl{pi} creates a \href{http://en.wikipedia.org/wiki/Simplex}{\textit{simplex}} of values that sum to 1. 
 In \RevBayes, there are many different proposal mechanisms -- called \textit{moves} -- and each move operates on a specific data type (called RevType). 
-Check the RevType of the variable \cl{er} using the \cl{structure()} function:
+Check the RevType of the variable \cl{pi} using the \cl{structure()} function:
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > structure(er)
+RevBayes > structure(pi)
 
-  _variable     = er <0x7ffed8449370>
-  _RevType      = Simplex
-  _RevTypeSpec  = [ Simplex, RealPos[], ModelContainer, Container, RevObject ]
-  _value        = [ 0.00308506, 0.491487, 0.186317, 0.0275106, 0.1982...
-  _size         = 6
-  _dagNode      = er <0x7ffed8448bb0>
-  _dagType      = Stochastic DAG node
-  _refCount     = 1
-  _distribution = <0x7ffed8448cf0>
-  _touched      = TRUE
-  _clamped      = FALSE
-  _lnProb       = -inf
-  _storedLnProb = 6.95325e-310
-  _parents      = [ er_prior <0x7ffed8449250> ]
-  _children     = [  ]
+   _variable     = pi <0x7fc5b1e08000>
+   _RevType      = Simplex
+   _RevTypeSpec  = [ Simplex, Container, RevObject ]
+   _value        = [ 0.124413, 0.812981, 0.0150606, 0.0475456 ]
+   _size         = 4
+   _dagNode      = pi <0x7fc5b1e07290>
+   _dagType      = Stochastic DAG node
+   _refCount     = 1
+   _distribution = <0x7fc5b1e079f0>
+   _touched      = TRUE
+   _clamped      = FALSE
+   _lnProb       = -inf
+   _storedLnProb = 1.25594e-308
+   _parents      = [ pi_prior <0x7fc5b1e07e60> ]
+   _children     = [  ]
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -444,11 +424,11 @@ Much of this information is helpful primarily for troubleshooting and debugging 
 We must create a vector containing all of the moves for each of our stochastic nodes. 
 This vector will be passed in to the function constructing our MCMC or power posterior runs.
 All moves in the Rev language are called \cl{mv*}, where \cl{*} is a wild card for the move name. 
-Initialize the first element of our vector of moves by setting the proposal on the exchangeability rates:
+Initialize the first element of our vector of moves by setting the proposal on the base frequencies:
 
 {\tt\small \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > moves[1] <- mvSimplexElementScale(er) 
+RevBayes > moves[1] <- mvSimplexElementScale(pi) 
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -456,11 +436,29 @@ RevBayes > moves[1] <- mvSimplexElementScale(er)
 The various proposal mechanisms available in \RevBayes~each require specific input arguments. 
 The \cl{mvSimplexElementScale} move can only operate on a simplex and the first argument is the stochastic node that you wish to update. 
 
-We can finish setting up this part of the model by creating a deterministic node for the GTR rate matrix \cl{Q}. 
-The \cl{gtr()} function takes a set of exchangeability rates and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
+
+The second parameter of the HKY model is the transition-transversion rate, \cl{kappa}.
+For the transition transversion rate we choose a lognormal prior distribution.
+{\tt\small \begin{snugshade*}
+\begin{lstlisting}
+kappa ~ dnLnorm(1.0,1.25)
+\end{lstlisting}
+\end{snugshade*}}
+
+Again, we need to add move changing the transition-transversion rate during the MCMC.
+We choose here a simple scaling proposal.
+{\tt\small \begin{snugshade*}
+\begin{lstlisting}
+RevBayes > moves[2] <- mvScale(kappa) 
+\end{lstlisting}
+\end{snugshade*}}
+
+
+We can finish setting up this part of the model by creating a deterministic node for the HKY rate matrix \cl{Q}. 
+The \cl{hky()} function takes a transition-transversion rate and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > Q := gtr(er,pi)
+RevBayes > Q := hky(kappa,pi)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -468,27 +466,24 @@ RevBayes > Q := gtr(er,pi)
 
 \subsubsection*{General Time Reversible (GTR) substitution process model}
 
-First, we will define and specify a prior on the exchangeability rates of the GTR model. 
-We will use a flat Dirichlet prior distribution on these six rates. 
-To do this, we must begin by defining a constant node that specifies the vector of concentration values of the Dirichlet prior using the \cl{v()} function:
+First, we replicate the prior distribution and creation of the base frequency variable.
+{\tt\small \begin{snugshade*}
+\begin{lstlisting}
+RevBayes > pi_prior <- v(1,1,1,1) 
+RevBayes > pi ~ dnDirichlet(pi_prior)
+RevBayes > moves[1] <- mvSimplexElementScale(pi) 
+\end{lstlisting}
+\end{snugshade*}}
+
+Then, we will define and specify a flat prior on the exchangeability rates of the GTR model. 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > er_prior <- v(1,1,1,1,1,1) 
 \end{lstlisting}
 \end{snugshade*}}
 
-
-The constant node \cl{er\_prior} corresponds to the node labeled $e$ in the graphical model depicted in Figure \ref{gtrgmfig}. 
-The vector function, \cl{v()}, creates a vector of six values. 
-Display the current value of \cl{er\_prior} by simply typing the variable name:
-{\tt \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > er_prior
-       [ 1, 1, 1, 1, 1, 1 ]
-\end{lstlisting}
-\end{snugshade*}}
 This node defines the parameters of the Dirichlet prior distribution on the exchangeability rates.
-Thus, we can create a stochastic node for the exchangeability rates using the \cl{dnDirichlet()} function, which takes a vector of values as an argument and the \cl{\rbdn} operator. 
+Thus, we can create a stochastic node for the exchangeability rates using the \cl{dnDirichlet()} function. 
 Together, these create a stochastic node named \cl{er} ($\theta$ in Figure \ref{gtrgmfig}): 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
@@ -497,68 +492,16 @@ RevBayes > er ~ dnDirichlet(er_prior)
 \end{snugshade*}}
 
 
-The Dirichlet distribution assigns probability densities to grouped parameters: {\it e.g.}, those that measure proportions and must sum to 1. 
-Above, we specified a 6-parameter Dirichlet prior on the relative rates of the GTR model, where the placement of each value specified represents one of the 6 relative rates: 
+We specified a 6-parameter Dirichlet prior on the relative rates of the GTR model, where the placement of each value specified represents one of the 6 relative rates: 
 (1) $A\leftrightarrows C$, 
 (2) $A\leftrightarrows G$, 
 (3) $A\leftrightarrows T$, 
 (4) $C\leftrightarrows G$, 
 (5) $C\leftrightarrows T$, 
 (6) $G\leftrightarrows T$. 
-The input parameters of a Dirichlet distribution are called shape parameters or concentration parameters and a value is specified for each of the 6 GTR rates. 
-The expectation and variance for each variable are related to the sum of the shape parameters.
-The prior above is a `flat' or symmetric Dirichlet since all of the shape parameters are equal (1,1,1,1,1,1), thus we are specifying a model that allows for equal rates of change between nucleotides, such that the expected rate for each is equal to $\frac{1}{6}$ \citep{zwickl04}.
-Figure \ref{dirichletFig}a shows the probability density of each rate under this model.
-If we parameterized the Dirichlet distribution such that all of the parameters were equal to 100, this would also specify a prior with an expectation of equal exchangeability rates (Figure \ref{dirichletFig}b). 
-However, by increasing the shape parameters of the Dirichlet distribution, \cl{er\_prior <- v(100,100,100,100,100,100)}, would heavily restrict the MCMC from sampling sets of GTR rates in which the values were not equal or very nearly equal ({\it i.e.}, this is a very {\em informative} prior). 
-We can consider a different Dirichlet parameterization if we had strong prior belief that transitions and transversions occurred at different rates.
-In this case, we could specify a more informative prior density: \cl{er\_prior <- v(4,8,4,4,8,4)}. 
-Under this model, the expected rate for transversions would be $\frac{4}{32}$ and the expected rate for transitions would equal $\frac{8}{32}$, and there would be greater prior probability on sets of GTR rates that matched this configuration (Figure \ref{dirichletFig}c). 
-An alternative informative prior would be one where we assumed that each of the 6 GTR rates had a different value conforming to a Dirichlet(2,4,6,8,10,12). 
-This would lead to a different prior probability density for each rate parameter (Figure \ref{dirichletFig}d).
-Without strong prior knowledge about the pattern of relative rates, however, we can better capture our statistical uncertainty with a vague prior on the GTR rates. 
-Notably, all patterns of relative rates have the same probability density under \cl{er\_prior <- v(1,1,1,1,1,1)}.
-\begin{figure}[h!]
-\centering
-\fbox{\includegraphics[width=5in,angle=-90]{figures/dirichlet_rates.eps}}
-\caption{\small Four different examples of Dirichlet priors on exchangeability rates.}
-\label{dirichletFig}
-\end{figure}
 
-For each stochastic node in our model, we must also specify a proposal mechanism if we wish to sample that value. 
-The Dirichlet prior on our parameter \cl{er} creates a \href{http://en.wikipedia.org/wiki/Simplex}{\textit{simplex}} of values that sum to 1. 
-In \RevBayes, there are many different proposal mechanisms -- called \textit{moves} -- and each move operates on a specific data type (called RevType). 
-Check the RevType of the variable \cl{er} using the \cl{structure()} function:
-{\tt \small \begin{snugshade*}
-\begin{lstlisting}
-RevBayes > structure(er)
 
-  _variable     = er <0x7ffed8449370>
-  _RevType      = Simplex
-  _RevTypeSpec  = [ Simplex, RealPos[], ModelContainer, Container, RevObject ]
-  _value        = [ 0.00308506, 0.491487, 0.186317, 0.0275106, 0.1982...
-  _size         = 6
-  _dagNode      = er <0x7ffed8448bb0>
-  _dagType      = Stochastic DAG node
-  _refCount     = 1
-  _distribution = <0x7ffed8448cf0>
-  _touched      = TRUE
-  _clamped      = FALSE
-  _lnProb       = -inf
-  _storedLnProb = 6.95325e-310
-  _parents      = [ er_prior <0x7ffed8449250> ]
-  _children     = [  ]
-\end{lstlisting}
-\end{snugshade*}}
-
-The \cl{structure()} function -- which has an accepted abbreviation of \cl{str()} -- is verbose and provides a lot of information that may at first appear confusing. 
-Much of this information is helpful primarily for troubleshooting and debugging purposes, however, the components that you may want to look at are: \cl{RevType}, \cl{value}, \cl{dagType}, \cl{clamped}, \cl{lnProb}, and the names of the \cl{variable}, \cl{parents}, and \cl{children}.
-
-We must create a vector containing all of the moves for each of our stochastic nodes. 
-This vector will be passed in to the function constructing our MCMC or power posterior runs.
-All moves in the Rev language are called \cl{mv*}, where \cl{*} is a wild card for the move name. 
-Initialize the first element of our vector of moves by setting the proposal on the exchangeability rates:
-
+Then, we create the same simplex move as for the base frequencies.
 {\tt\small \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > moves[1] <- mvSimplexElementScale(er) 
@@ -566,10 +509,8 @@ RevBayes > moves[1] <- mvSimplexElementScale(er)
 \end{snugshade*}}
 
 
-The various proposal mechanisms available in \RevBayes~each require specific input arguments. 
-The \cl{mvSimplexElementScale} move can only operate on a simplex and the first argument is the stochastic node that you wish to update. 
 
-We can finish setting up this part of the model by creating a deterministic node for the GTR rate matrix \cl{Q}. 
+We finish setting up this part of the model by creating a deterministic node for the GTR rate matrix \cl{Q}. 
 The \cl{gtr()} function takes a set of exchangeability rates and a set of base frequencies to compute the rate matrix used when calculating the likelihood of our model.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
@@ -644,7 +585,23 @@ moves[3] <- mvScale(shape)\end{lstlisting}
 
 \subsection*{A model for invariant sites}
 
+Under the invariant site model, every site of our sequence has the chance \cl{pinvar} to be invariant.
+That mean, with probability \cl{pinvar} we do not observe any change along the phylogeny.
+Here we specify a \cl{beta(1,1)} prior distribution on \cl{pinvar}.
+The \cl{beta(1,1)} is equivalent to a uniform distribution, but has the nice advantage in \Rev~that a random variable from a beta distribution is of type \textit{Probability}.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+RevBayes > pinvar ~ beta(1,1)
+\end{lstlisting}
+\end{snugshade*}}
 
+We can also apply two different moves to the probability of a site being invariant:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+RevBayes > moves[4] <- mvScale(pinvar)
+RevBayes > moves[5] <- mvSlide(pinvar)
+\end{lstlisting}
+\end{snugshade*}}
 
 \subsection*{Tree Topology and Branch Lengths}
 
@@ -663,8 +620,8 @@ Often the different moves explore parameter space in a different way and nothing
 For the unrooted tree topology, we can use both a nearest-neighbor interchange move (\cl{mvNNI}) and a subtree-prune and regrafting move (\cl{mvSPR}). These moves do not have tuning parameters associated with them, thus you only need to pass in the \cl{topology} node and \cl{weight} 
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > moves[4] <- mvNNI(topology)
-RevBayes > moves[5] <- mvSPR(topology)
+RevBayes > moves[6] <- mvNNI(topology)
+RevBayes > moves[7] <- mvSPR(topology)
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -673,7 +630,7 @@ Next we have to create a stochastic node for each of the $2N-3$ branches in our 
 We can do this using a \cl{for} loop --- this is a plate in our graphical model. In this loop, we can create each branch-length node and assign each move. Copy this entire block of \Rev~code into the console:
 {\tt \small \begin{snugshade*}
 \begin{lstlisting}
-mi <- 5
+mi <- 7
 for (i in 1:n_branches) {
    br_lens[i] ~ dnExponential(10.0)
    moves[mi++] <- mvScale(br_lens[i]) 
@@ -705,7 +662,7 @@ The sequence substitution model is a distribution called the \textit{phylogeneti
 This distribution requires several input arguments: (1) the \cl{tree} with branch lengths, (2) the instantaneous rate matrix \cl{Q}, the node characterizing the rate variation across sites (though \cl{siteRates} can be omitted if you do not assume rate variation across sites), and (3) the \cl{type} of character data.
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-RevBayes > phyloSeq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, siteRates=gamma_rates, type="DNA")
+RevBayes > phyloSeq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, siteRates=gamma_rates, pInv=pinvar, type="DNA")
 \end{lstlisting}
 \end{snugshade*}}
 
@@ -716,7 +673,7 @@ Once the character evolution model has been created, we can attach our sequence 
 RevBayes > phyloSeq.clamp(data)
 \end{lstlisting}
 \end{snugshade*}}
-When this function is called, RevBayes sets each of the stochastic nodes representing the tip nodes of the tree to the sequence corresponding to that species in the alignment. 
+When this function is called, \RevBayes~sets each of the stochastic nodes representing the tip nodes of the tree to the sequence corresponding to that species in the alignment. 
 This essentially tells the program that this is where the DAG ends and the states of the tip nodes are fixed. 
 
 Now we can wrap up the whole model to conveniently access the DAG. To do this, we only need to give the \cl{model()} function a single node. With this node, the \cl{model()} function can find all of the other nodes by following the arrows in the graphical model:
@@ -788,9 +745,9 @@ When the analysis is complete, you will have the monitor files in your output di
 
 \textbf{\textit{Summarize the MCMC Output}}
 
-Methods for visualizing the marginal densities of parameter values are not currently available in RevBayes. Thus, it is important to use programs like Tracer \citep{rambaut09} to evaluate mixing and non-convergence. (RevBayes does, however, have a tool for convergence assessment called \cl{beca}.)
+Methods for visualizing the marginal densities of parameter values are not currently available in \RevBayes. Thus, it is important to use programs like Tracer \citep{rambaut09} to evaluate mixing and non-convergence. (\RevBayes~does, however, have a tool for convergence assessment called \cl{beca}.)
 
-RevBayes can also summarize the tree samples by reading in the tree-trace file:
+\RevBayes~can also summarize the tree samples by reading in the tree-trace file:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 RevBayes > treetrace <- readTreeTrace("output/fagus_noclock_GTR_Gamma_pInv_posterior.trees")
