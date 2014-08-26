@@ -626,6 +626,7 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
         } else {
             // interpret Rev statement
             if (result == 0 || result == 2) {
+                prompt = default_prompt;
                 commandLine = cmd;
                 editorMachine.reset();
 
