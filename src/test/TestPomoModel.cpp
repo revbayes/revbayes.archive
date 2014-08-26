@@ -297,8 +297,7 @@ bool TestPomoModel::run( void ) {
     for (size_t i = 0; i< concatenatedSimSeqsPol->getNumberOfTaxa(); ++i) {
         std::cout <<concatenatedSimSeqsPol->getTaxonNameWithIndex(i) << " : "<< concatenatedSimSeqsPol->getTaxonData(i).getCharacter(0) << " : "<< concatenatedSimSeqsPol->getTaxonData(i).getCharacter(0).getNumberOfStates() <<std::endl;
     }
-    
-    
+        
     GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree>(tau, 58, true, concatenatedSimSeqsPol->getNumberOfCharacters());
     phyloCTMC->setClockRate( clockRate );
     phyloCTMC->setRateMatrix( q );

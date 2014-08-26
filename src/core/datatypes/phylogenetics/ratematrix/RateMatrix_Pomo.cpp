@@ -264,11 +264,12 @@ void RateMatrix_Pomo::buildRateMatrix(void)
             f2 = s[3];
         }
         
-        for (size_t i = 1; i <= 8 ; ++i){
-            for (size_t j = i+1; j<= 9; j++){
+        for (size_t i = 4; i < N ; ++i){
+            for (size_t j = i+1; j < N; j++){
                 if ( j==(i+1) ){
-                    (*theRateMatrix)[4+i+9*k-1][4+j+9*k-1] = (f1*i/(f1*i + f2*(N-i)) * (N-i)/N);
-                    (*theRateMatrix)[4+j+9*k-1][4+i+9*k-1] = (f2*j/(f2*j + f1*(N-j)) * (N-j)/N);
+                    (*theRateMatrix)[i+Nminus1*k][j+Nminus1*k] = (f1*i/(f1*i + f2*(N-i)) * (N-i)/N);
+                    std::cout << "Hehe " << 4+j+Nminus1*k-1 << " HHH " <<4+i+Nminus1*k-1 <<std::endl;
+                    (*theRateMatrix)[j+Nminus1*k][i+Nminus1*k] = (f2*j/(f2*j + f1*(N-j)) * (N-j)/N);
                 }
                 /*else{
                     (*theRateMatrix)[4+i+9*k,4+j+9*k] = M[4+j+9*k, 4+i+9*k] = 0;
