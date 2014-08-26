@@ -39,6 +39,7 @@ Func_contributors* Func_contributors::clone( void ) const {
 RevPtr<Variable> Func_contributors::execute( void )
 {
     // Hard-wrapped to 80 columns wide, assuming three-character indent in RBOUT
+    // Use the lines below to count columns, if you wish
 #if 0
     RBOUT( "00000011111111112222222222333333333344444444445555555555666666666677777777778" );
     RBOUT( "45678901234567890123456789012345678901234567890123456789012345678901234567890" );
@@ -100,7 +101,10 @@ RevPtr<Variable> Func_contributors::execute( void )
     RBOUT( "people involved up to the summer of 2014.\n" );
     RBOUT( "\n" );
     RBOUT( "You can find the contact details of core contributors using the 'contacts()'\n" );
-    RBOUT( "function or through the program website (http://revbayes.net).\n" );
+    RBOUT( "function or through the program website (http://revbayes.net). The github\n" );
+    RBOUT( "page https://github.com/revbayes/revbayes/graphs/contributors shows all code\n" );
+    RBOUT( "contributions since the RevBayes code repository was started on SourceForge\n" );
+    RBOUT( "in August of 2009. The repository was moved to github in July of 2014.\n" );
     RBOUT( "\n" );
 
     return NULL;
