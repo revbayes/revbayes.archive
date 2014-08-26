@@ -120,6 +120,7 @@ UserFunctionNode<rlType>::~UserFunctionNode( void )
     const std::set<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
     for ( std::set<const RevBayesCore::DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it )
     {
+        (*it)->removeChild( this );
         if ( (*it)->decrementReferenceCount() == 0 )
             delete (*it);
     }
@@ -144,6 +145,7 @@ UserFunctionNode<rlType>& UserFunctionNode<rlType>::operator=( const UserFunctio
         const std::set<const RevBayesCore::DagNode*>& oldParents = userFunction->getParameters();
         for ( std::set<const RevBayesCore::DagNode*>::iterator it = oldParents.begin(); it != oldParents.end(); ++it )
         {
+            (*it)->removeChild( this );
             if ( (*it)->decrementReferenceCount() == 0 )
                 delete (*it);
         }
