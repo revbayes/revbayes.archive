@@ -194,6 +194,26 @@ void Variable::incrementReferenceCount( void ) const
 }
 
 
+/**
+ * Is the variable or any of its members (upstream DAG nodes) assignable, that is,
+ * modifiable by the user? For them to be assignable, they have to be named, otherwise
+ * there is no chance for the user to change them.
+ */
+bool Variable::isAssignable( void ) const
+{
+    // Check if we are assignable
+    if ( name != "" )
+        return true;
+    
+    // Ask our object for assignable upstream variables
+    if ( revObject != NULL && revObject->isAssignable() )
+        return true;
+    
+    // No possibility left to modify us
+    return false;
+}
+
+
 /** Return the internal flag signalling whether the variable is currently a control variable */
 bool Variable::isControlVar(void) const
 {

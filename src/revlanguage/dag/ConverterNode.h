@@ -323,6 +323,8 @@ void ConverterNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
     std::cerr << "In keepMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
     
+    this->touched = true;
+    
     // Pass the call on
     this->keepAffected();
 }
@@ -400,7 +402,7 @@ void ConverterNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
 
 #ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+    std::cerr << "In touchMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
     
     // Touch myself
