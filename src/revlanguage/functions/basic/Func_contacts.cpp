@@ -41,40 +41,31 @@ RevPtr<Variable> Func_contacts::execute( void )
     RBOUT( "University of California, Davis, USA" );
     RBOUT( "Sebastian.Hoehna@gmail.com\n" );
     RBOUT( "\n" );
-    
     RBOUT( "Fredrik Ronquist\n" );
     RBOUT( "Department of Bioinformatics and Genetics,\n" );
     RBOUT( "Swedish Museum of Natural History, Stockholm, Sweden" );
     RBOUT( "fredrik.ronquist@nrm.se\n" );
     RBOUT( "\n" );
-    
-    RBOUT( "Bastien Boussau\n" );
-    RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
-    RBOUT( "Université de Lyon, Villeurbanne, France" );
-    RBOUT( "boussau@gmail.com\n" );
-    RBOUT( "\n" );
-
-    RBOUT( "Tracy A. Heath\n" );
-    RBOUT( "Department of Integrative Biology,\n" );
-    RBOUT( "University of California, Berkeley, USA" );
-    RBOUT( "tracyh@berkeley.edu\n" );
-    RBOUT( "\n" );
-
     RBOUT( "John P. Huelsenbeck\n" );
     RBOUT( "Department of Integrative Biology,\n" );
     RBOUT( "University of California, Berkeley, USA" );
-    RBOUT( "and" );
-    RBOUT( "Department of Biology,\n" );
-    RBOUT( "King Abdulaziz University, Jeddah, Saudi Arabia" );
     RBOUT( "johnh@berkeley.edu\n" );
     RBOUT( "\n" );
-    
     RBOUT( "Michael J. Landis\n" );
     RBOUT( "Department of Integrative Biology,\n" );
     RBOUT( "University of California, Berkeley, USA" );
     RBOUT( "mlandis@berkeley.edu\n" );
     RBOUT( "\n" );
-    
+    RBOUT( "Tracy A. Heath\n" );
+    RBOUT( "Department of Integrative Biology,\n" );
+    RBOUT( "University of California, Berkeley, USA" );
+    RBOUT( "tracyh@berkeley.edu\n" );
+    RBOUT( "\n" );
+    RBOUT( "Bastien Boussau\n" );
+    RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
+    RBOUT( "Université de Lyon, Villeurbanne, France" );
+    RBOUT( "boussau@gmail.com\n" );
+    RBOUT( "\n" );
     RBOUT( "Nicolas Lartillot\n" );
     RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
     RBOUT( "Université de Lyon, Villeurbanne, France" );
