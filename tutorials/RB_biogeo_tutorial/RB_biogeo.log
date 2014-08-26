@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.4-0.9998 (TeX Live 2012) (format=xelatex 2012.6.30)  24 AUG 2014 11:23
+This is XeTeX, Version 3.1415926-2.4-0.9998 (TeX Live 2012) (format=xelatex 2012.6.30)  25 AUG 2014 12:13
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1058,45 +1058,45 @@ Package natbib Warning: Citation `xi11' on page 15 undefined on input line 686.
 Package Listings Warning: Unknown column format `texcl' on input line 769.
 
 
-Package Listings Warning: Unknown column format `texcl' on input line 798.
+Package Listings Warning: Unknown column format `texcl' on input line 797.
 
 File: figures/joint_rgain_posterior.pdf Graphic file (type QTm)
 <use  "figures/joint_rgain_posterior.pdf" > [17]
 
-Package Listings Warning: Unknown column format `texcl' on input line 829.
+Package Listings Warning: Unknown column format `texcl' on input line 827.
 
 File: figures/joint_ngain_posterior.pdf Graphic file (type QTm)
 <use  "figures/joint_ngain_posterior.pdf" > [18]
 
-Package Listings Warning: Unknown column format `texcl' on input line 862.
+Package Listings Warning: Unknown column format `texcl' on input line 860.
 
 [19] [20]
 LaTeX Font Info:    Font shape `EU1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `EU1/lmtt/b/n' tried instead on input line 953.
+(Font)              Font shape `EU1/lmtt/b/n' tried instead on input line 951.
 File: figures/phw_mrca.png Graphic file (type QTm)
  <use  "figures/phw_mrca.png" > [21]
-Underfull \hbox (badness 10000) in paragraph at lines 983--984
+Underfull \hbox (badness 10000) in paragraph at lines 981--982
 
  []
 
 File: figures/phw_all.png Graphic file (type QTm)
 <use  "figures/phw_all.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 997--998
+Underfull \hbox (badness 10000) in paragraph at lines 995--996
 
  []
 
 [22]
-Underfull \hbox (badness 10000) in paragraph at lines 1005--1006
+Underfull \hbox (badness 10000) in paragraph at lines 1003--1004
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1012--1013
+Underfull \hbox (badness 10000) in paragraph at lines 1010--1011
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1017--1018
+Underfull \hbox (badness 10000) in paragraph at lines 1015--1016
 
  []
 
@@ -1105,22 +1105,22 @@ File: figures/phw_br19.png Graphic file (type QTm)
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1096.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1094.
 [24]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1096.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1094.
  (./RB_biogeo.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1096.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1096.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1094.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1094.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1096.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1094.
  ) 
 Here is how much of TeX's memory you used:
  22529 strings out of 494004
  426381 string characters out of 3150890
- 556038 words of memory out of 3000000
+ 572038 words of memory out of 3000000
  25465 multiletter control sequences out of 15000+200000
  10710 words of font info for 70 fonts, out of 3000000 for 9000
  1144 hyphenation exceptions out of 8191

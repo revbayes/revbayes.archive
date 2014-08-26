@@ -715,7 +715,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             // wide sympatry
             if (u < 0.5)
             {
-                proposedCladogenicState = 0;
+                proposedCladogenicState = 3;
                 for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
                 {
                     unsigned int s = nodeChildState[*it]->getState();
