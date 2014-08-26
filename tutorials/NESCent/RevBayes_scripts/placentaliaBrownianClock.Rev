@@ -1,0 +1,105 @@
+#
+# Tutorial -- the phylogenetic comparative method
+# Implementing an autocorrelated relaxed clock using an explicit Brownian motion
+# Nicolas Lartillot -- July 2014
+#
+
+# read the sequence data
+data <- readCharacterData("data/plac40_4fold.nex")
+
+# get some useful variables from the data
+taxaCount <- data.ntaxa()
+names <- data.names()
+nSites <- data.nchar()[1]
+
+#create a tree whose tips match the taxon names given by the dataset
+tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
+
+# work under fixed topology (but we will move the divergence dates)
+# set tau equal to externally given tree
+treeArray <- readTrees("data/chronoplac40.tree")
+fixedTree <- treeArray[1]
+tau.setValue(fixedTree)
+
+# moves on divergence times (only relative dating: no fossils here)
+index <- 1
+moves[index] <- mSubtreeScale(tau, weight=5.0)
+index <- index + 1
+moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
+index <- index + 1
+
+# rate of variation of the log of the rate of substitution
+nu ~ exponential(0.1)
+
+# moves on nu
+moves[index] <- mScale(nu, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+# Brownian motion also can have systematic trend, called drift
+# here, we do not want drift, so we set it equal to 0
+drift <- 0
+
+# create Brownian process along the tree
+lograte ~ brownian(tau,sigma=nu,drift=drift)
+
+# moves on the Brownian process
+moves[index] <- mvRealNodeValTreeSliding(process=lograte,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=1,tune=true,weight=10) 
+index <- index + 1
+moves[index] <- mvRealNodeValTreeTranslation(process=lograte,lambda=0.1,tune=true,weight=10) 
+index <- index + 1
+
+# two useful summary statistics for checking convergence
+# mean and std dev of variation of the process along the tree
+meanlograte := lograte.mean()
+stdevlograte := lograte.stdev()
+
+# equilibrium frequencies 
+bf <- v(1,1,1,1)
+pi ~ dirichlet(bf)
+
+# exchangeabilities
+e <- v(1,1,1,1,1,1)
+er ~ dirichlet(e)
+
+# moves on the substitution process parameters
+moves[index] <- mSimplexElementScale(pi, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+moves[index] <- mSimplexElementScale(er, alpha=10.0, tune=true, weight=1.0)
+index <- index + 1
+
+# rate matrix
+Q := gtr(er,pi)
+
+# in the lognormal clock, rates across branches are given by the exponential of the Brownian motion
+# specifically, the rate along a branch is the mean of the exponential of the value of the Brownian motion at both ends
+
+rate := expBranchTree(tree=tau,process=lograte);
+
+# create the sequence evolution model
+seq ~ substModel(tree=tau, Q=Q, branchRates=rate, nSites=nSites, type="DNA")
+
+# condition on sequence alignment
+seq.clamp(data)
+
+# create model
+mymodel <- model(nu)
+
+# screen monitor: sigma, meanbr and stdevbr, for checking convergence 
+monitors[1] <- screenmonitor(printgen=10, nu, meanlograte, stdevlograte)
+
+# monitoring the dated tree
+monitors[2] <- filemonitor(filename="output/placbrownclock.tree",printgen=10, separator = "	", tau)
+
+# monitoring the *instant* values of the *log* of the rate at each node of the tree
+monitors[3] <- filemonitor(filename="output/placbrownclock.lograte",printgen=10, separator = "	", lograte)
+
+monitors[4] <- modelmonitor(filename="output/placbrownclock.log",printgen=10, separator = "	")
+ 
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=100,tuningInterval=100)
+
+mymcmc.run(100000)
+

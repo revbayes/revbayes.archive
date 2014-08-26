@@ -1,9 +1,9 @@
 /**
  * @file
- * This file contains the implementation of Func_contributors, which is
- * the function used to provide information on contributors.
+ * This file contains the implementation of Func_history, which is
+ * the function used to provide information on history.
  *
- * @brief Implementation of Func_contributors
+ * @brief Implementation of Func_history
  *
  * @author Fredrik Ronquist
  * @license GPL version 3
@@ -11,7 +11,7 @@
 
 #include "Argument.h"
 #include "ArgumentRule.h"
-#include "Func_contributors.h"
+#include "Func_history.h"
 #include "RbException.h"
 #include "RlBoolean.h"
 #include "RlUtils.h"
@@ -23,20 +23,20 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_contributors::Func_contributors( void ) : Function() {
+Func_history::Func_history( void ) : Function() {
     
 }
 
 
 /** Clone object */
-Func_contributors* Func_contributors::clone( void ) const {
+Func_history* Func_history::clone( void ) const {
     
-    return new Func_contributors( *this );
+    return new Func_history( *this );
 }
 
 
 /** Execute function */
-RevPtr<Variable> Func_contributors::execute( void )
+RevPtr<Variable> Func_history::execute( void )
 {
     // Hard-wrapped to 80 columns wide, assuming three-character indent in RBOUT
 #if 0
@@ -45,7 +45,7 @@ RevPtr<Variable> Func_contributors::execute( void )
 #endif
     
     RBOUT( "\n" );
-    RBOUT( "Contributors\n" );
+    RBOUT( "History\n" );
     RBOUT( "============\n" );
     RBOUT( "\n" );
     RBOUT( "The RevBayes project started as an attempt to provide a more general and\n" );
@@ -99,16 +99,13 @@ RevPtr<Variable> Func_contributors::execute( void )
     RBOUT( "of the early development of the project at least names all the relevant\n" );
     RBOUT( "people involved up to the summer of 2014.\n" );
     RBOUT( "\n" );
-    RBOUT( "You can find the contact details of core contributors using the 'contacts()'\n" );
-    RBOUT( "function or through the program website (http://revbayes.net).\n" );
-    RBOUT( "\n" );
-
+    
     return NULL;
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_contributors::getArgumentRules( void ) const {
+const ArgumentRules& Func_history::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -124,15 +121,15 @@ const ArgumentRules& Func_contributors::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_contributors::getClassType(void) {
+const std::string& Func_history::getClassType(void) {
     
-    static std::string revType = "Func_contributors";
+    static std::string revType = "Func_history";
     
 	return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_contributors::getClassTypeSpec(void) {
+const TypeSpec& Func_history::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -140,7 +137,7 @@ const TypeSpec& Func_contributors::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_contributors::getTypeSpec( void ) const {
+const TypeSpec& Func_history::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -149,7 +146,7 @@ const TypeSpec& Func_contributors::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_contributors::getReturnType( void ) const {
+const TypeSpec& Func_history::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     
