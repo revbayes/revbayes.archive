@@ -1008,24 +1008,24 @@ You can use the \R function
 %}
 
 Plot the curve of $m(x) = \text{E}[\exp(\alpha+\beta*x)|y]$ for $x = [1976,1985]$. 
-You can generate draws from the posterior distribution of the expected value for a specific $x$ by recording the current expected value at a iteration $i$ of the Metropolis algorithm $m\_sample(x)[i] = \text{E}[\exp(\alpha[i]+\beta[i]*x)|y]$ and taking the mean of those samples (\cl{m(x) = \text{mean}(m\_sample(x))}) afterwards.
+You can generate draws from the posterior distribution of the expected value for a specific $x$ by recording the current expected value at a iteration $i$ of the Metropolis algorithm $m\_sample(x)[i] = \text{E}[\exp(\alpha[i]+\beta[i]*x)|y]$ and taking the mean of those samples (\cl{m(x) = \text{mean}(m\_sample(x))}) afterwards. Since \RevBayes~provides you with the samples of $m(x) = \text{E}[\exp(\alpha+\beta*x)|y] = \lambda_x$ you can simply plot these posterior curves.
  
-A plot of the posterior mean curve $m(x)=E(\exp(\alpha+\beta*x)|y)$ over a suitable range. 
-A few draws from the posterior curve, i.e. \cl{exp(alpha[i]+beta[i]*x)} for a few i:s would also be nice.
-(These are somewhat cumbersome to do in R, you may need to present sample code).
+%A plot of the posterior mean curve $m(x)=E(\exp(\alpha+\beta*x)|y)$ over a suitable range. 
+%A few draws from the posterior curve, i.e. \cl{exp(alpha[i]+beta[i]*x)} for a few i:s would also be nice.
+%(These are somewhat cumbersome to do in R, you may need to present sample code).
 
  
 Produce a histogram of the predictive distribution of the number of fatalities in 2014 and estimate the posterior mean. 
 The predictive distribution can be approximated simultaneously with the Metropolis algorithm. 
 This means, for any iteration $i$ you simulate draws from the conditional distribution for $x = 2014$ and the current values of $\alpha[i]$ and $\beta[i]$.
  
-Estimate the distribution of the mean of the posterior predictive distribution of the the number of fatalities in 2011. 
+Estimate the distribution of the mean of the posterior predictive distribution of the the number of fatalities in 2014. 
 Therefore, let us denote the expected value of the posterior distribution by $\mu$. 
 Since we do not know this value $\mu$ exactly, we can follow the Bayesian approach and associate a probability for each value $m$ as being the true expected value of the posterior distribution, given the observations $y$ ($P(m = \mu|y)$).
-You can be approximate this distribution by recording the expected value for the number of fatalities in 2011 ($\text{E}[\exp(\alpha+\beta*x)|y]$) in each iteration $i$ of the Metropolis algorithm. 
+You can be approximate this distribution by recording the expected value for the number of fatalities in 2014 ($\text{E}[\exp(\alpha+\beta*x)|y]$) in each iteration $i$ of the Metropolis algorithm. 
 Plot a histogram of the expected values, compute the mean of the expected values and compare it to the previously obtained estimate of the mean of the posterior predictive distribution.
  
-Follow the same approach as for the posterior predictive distribution for $x = 2014$, but this time for $x = 2015$ and estimate the probability of no fatality. 
+Follow the same approach as for the posterior predictive distribution for $x = 2015$, but this time for $x = 2016$ and estimate the probability of no fatality. 
  
  
  
@@ -1122,19 +1122,19 @@ mymcmc.run(generations=3000)
 
 
 
-\subsection*{Output analysis}
+%\subsection*{Output analysis}
+%
+%Run the algorithm for say N = 10000 iterations or more. 
+%
+%a) In 1872, legislation on safety in mines was strengthened. 
+%In 1878 and 1897 legislation on liability of employers for accidents was strengthened. Approximate the probability that the change occurred in the year after either of these changes (expect small numbers).
+%b) How could the information given in a) be used to construct a prior for ?
 
-Run the algorithm for say N = 10000 iterations or more. 
 
-a) In 1872, legislation on safety in mines was strengthened. 
-In 1878 and 1897 legislation on liability of employers for accidents was strengthened. Approximate the probability that the change occurred in the year after either of these changes (expect small numbers).
-b) How could the information given in a) be used to construct a prior for ?
-
-
-\subsection*{Posterior curves}
+%\subsection*{Posterior curves}
 
 %We will now look at ways of visualising the posterior of the rate-function t, t =
-1851; : : : ; 1962. First we plot data together with a few posterior draws:
+%1851; : : : ; 1962. First we plot data together with a few posterior draws:
 %par(mfrow=c(1,1))
 %plot(year,y)
 %I <- (1:10)*500

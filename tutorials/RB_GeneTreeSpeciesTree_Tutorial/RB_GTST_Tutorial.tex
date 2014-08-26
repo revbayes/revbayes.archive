@@ -105,6 +105,24 @@ This is useful to model differences in rates of duplication, loss or transfer am
 In RevBayes so far only models of incomplete lineage sorting have been implemented (models of duplication and loss and transfer will soon be added).
 Thanks to RevBayes modular design, there is quite a lot of flexibility in specifying the model, for instance by allowing different parameters to different branches of the species tree, and the gene tree-species tree model could be combined to other types of models, for instance models of trait evolution.
 
+
+\subsection*{Gene tree discordance is a problem for species tree reconstruction}
+There are several approaches to species tree reconstruction: concatenation and supertree approaches, which have been used for quite some time now, and more recently methods that rely on gene tree-species tree models.\begin{enumerate}
+\item Concatenation simply consists in taking all gene alignments, concatenating them into one super alignment, and then analyzing it as if it were a single gene sequence.
+Its main assumption is therefore that all sites of all genes have evolved according to the same species tree.
+This assumption is not correct because all the processes of discord presented above conspire to make gene trees different from the species tree.
+In practice, this matters: for instance, one can prove that in the presence of incomplete lineage sorting, in some particular area of the parameter space, concatenation will return an incorrect species tree.
+Another example might be found in prokaryotic phylogenetics, where the quest for a tree of life has been very frustrating, to the point that many doubt that one could find a meaningful species tree representing vertical descent.
+Recent models incorporating lateral gene transfer allow tackling this question in a more principled way.
+\item Supertree approaches differ from concatenation notably by discarding sequence information once individual gene trees have been built.
+They combine individual gene trees to obtain a species tree.
+Most supertree methods are not based on an explicit model of the processes causing discordance between gene trees and species tree (although there are exceptions, notably modelling incomplete lineage sorting, see below).
+Instead, they aim at finding a tree that would best describe the distribution of gene trees, according to some fairly arbitrary criterion.
+In practice, these methods have been found to provide reasonable results in many cases, but in simulations are less accurate than concatenation.
+\item Methods that rely on gene tree-species tree models appear very promising as they explicitly model the processes of discord, and can be combined with a model of sequence evolution, models of the co-evolution between gene trees, models of trait evolution... 
+\end{enumerate}
+
+
 \subsection*{Modelling incomplete lineage sorting: the multispecies coalescent}
 Incomplete lineage sorting is a population-level process.
 In a species, at a given time, there are several alleles for a given locus in the genome.
@@ -284,13 +302,568 @@ For instance \citet{demaio} estimate 4 base fitness parameters, which they use t
 In the RevBayes implementation of POMO, base fitnesses can be estimated as well.
 
 \bigskip
-\section*{Inference using the multispecies coalescent and the POMO model}
+\section*{Inference using the multispecies coalescent, the POMO model, and basic concatenation}
 In this section we will perform inference using both the multispecies coalescent and the POMO model.
 Depending on your machine and on the size of the data, successful inference may take some time.
-If this tutorial is done in a classroom environment, it may be wise to convene with a friend that one tries the multispecies coalescent model while the other one tries the POMO model, and that results will be shared.
+If this tutorial is done in a classroom environment, it may be wise to convene with friends that one tries the multispecies coalescent model while another one tries the POMO model, and the third one tries the concatenation approach, and that results will be shared.
+First we will simulate data, and then we will perform inference using the three different approaches.
+
+\subsection*{Simulating data}
+We are going to do inference on simulated data, as produced during the previous section.
+However in addition to the species tree and the gene trees, we will be producing sequence data.
+Below is the RevBayes code necessary to simulate all the data.
+As before, parameters of the simulation can be changed as seems fit, but here we chose parameters that resemble \citet{Leache2011}.
+
+{\begin{framed}
+First we can set the folder in which we will save the output of our work.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+dataFolder<-"/PATH/TO/A/FOLDER/WHERE/TO/SAVE/THE/OUTPUT"
+setwd(dataFolder)
+\end{lstlisting}
+\end{snugshade*}}
+
+Let's simulate a species tree with 6 taxa, 10 gene trees, 5 alleles per species, and along each gene tree one gene alignment 200 bases long.
+It's a small data set, designed for manageable inference during a tutorial, but patient users may want to simulate a larger data set.
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+n_species <- 6
+n_genes <- 10
+n_alleles <- 5
+n_sites <- 200
+n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
+\end{lstlisting}
+\end{snugshade*}}
+
+The species-tree birth-death model:
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0,1.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+tree_height.setValue(0.008)
+# Species tree from birth-death process
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+# Making a backup for future reference:
+trueSpeciesTree <- speciesTree
+\end{lstlisting}
+\end{snugshade*}}
+
+The gene-tree multispecies coalescent model
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+# Build the mapping between sequence names and species names.
+for (i in 1:n_species) {
+	for (j in 1:n_alleles) {
+		taxa[(i-1)*n_alleles+j] <- taxon(taxonName=s_names[i]+"_"+j, speciesName=s_names[i])
+	}
+}
+# Set the effective population size
+Ne ~ gamma(shape=0.5,rate=0.5)
+Ne.setValue(0.004)
+# Simulate gene trees
+for (i in 1:n_genes) {
+   # The gene tree from the multispecies coalescent process
+   # Note that if Ne had been a vector of effective population sizes, 
+   # allowing 1 parameter per branch of the species tree, the same line would work.
+   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+}
+# Making a backup for future reference:
+trueGeneTrees <- geneTrees
+trueNe <- Ne
+\end{lstlisting}
+\end{snugshade*}}
+
+Substitution models will all be based on the GTR model. However, the parameters of the models change from one gene family to the next.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+for (i in 1:n_genes) {
+  er_prior[i] <- v(1,1,1,1,1,1)
+  er[i] ~ dnDirichlet(er_prior[i])
+  sf_prior[i] <- v(1,1,1,1)
+  sf[i] ~ dnDirichlet(sf_prior[i])
+  Q[i] := gtr(er[i],sf[i]) 
+}
+# Making a backup for future reference:
+for (i in 1:n_genes) {
+	trueEr[i] <- er[i]
+	trueSf[i] <- sf[i]
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+Then we assume a strict clock Model, but of course we could assume a relaxed clock.
+Each gene family can have its own rate of evolution, drawn from an exponential distribution.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+for (i in 1:n_genes) {
+  familyRates[i] ~ exponential(1.0)
+}
+# Making a backup for future reference:
+for (i in 1:n_genes) {
+  trueFamilyRates[i] <- familyRates[i] 
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+We add a model of among-site rate variation, handled by a discretized Gamma distribution, one for each gene family:
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+for (i in 1:n_genes) {
+  shape_prior[i] <- 0.05 
+  shape[i] ~ dnExponential( shape_prior[i] )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+Finally we link it all using the PhyloCTMC model, which simulates gene alignments:
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+for (i in 1:n_genes) {
+  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+}
+\end{lstlisting}
+\end{snugshade*}}
+We can then save the simulated data to the folder chosen at the beginning of this script.
+We need to save the species tree, the gene trees, and the gene alignments
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+write(speciesTree, filename="speciesTree")
+for (i in 1:n_genes) {
+	write(geneTrees[i], filename="geneTree_"+i)
+}
+for (i in 1:n_genes) {
+	writeFasta(alns[i], filename="alignment_"+i+".fasta")
+}
+\end{lstlisting}
+\end{snugshade*}}
+\end{framed}}
+
+\subsection*{Inference using the multispecies coalescent }
+Now that we have simulated data, we can run inference under the multispecies coalescent.
+
+{\begin{framed}
+First we clamp the alignments:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+for (i in 1:n_genes) {
+	alns[i].clamp(alns[i])
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+Then we change the starting values, because we want to start from random values, not the values used in the simulation.
+
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+# Redrawing the parameters of the birth-death process:
+speciation.redraw()
+extinction.redraw()
+tree_height.redraw()
+# Redrawing the species tree:
+speciesTree.redraw()
+# Redrawing the parameter Ne:
+Ne.redraw()
+# Redrawing the gene trees:
+for (i in 1:n_genes) {
+   geneTrees[i].redraw()
+}
+# Redrawing the parameters of the substitution models:
+for (i in 1:n_genes) {
+  er[i].redraw()
+  sf[i].redraw()
+}
+# Idem for the family-wise rates of sequence evolution:
+for (i in 1:n_genes) {
+  familyRates[i].redraw()
+}
+# Idem for the family-wise across-site rate variation parameters:
+for (i in 1:n_genes) {
+  shape[i].redraw()
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
+
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+moveIndex <- 0
+# moves for the birth-death parameters
+moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
+moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
+moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
+# moves on the tree topology and node ages
+moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
+moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
+moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+moves[moveIndex++] <- mvTreeScale(speciesTree, delta=1.0, tune=true, weight=3.0)
+moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
+moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
+# moves on the gene tree topologies and node ages
+for (i in 1:n_genes) {
+   moves[moveIndex++] <- mvNNI(geneTrees[i], 1.0)
+   moves[moveIndex++] <- mvFNPR(geneTrees[i], 1.0)
+   moves[moveIndex++] <- mvSubtreeScale(geneTrees[i], 5.0)
+   moves[moveIndex++] <- mvTreeScale(geneTrees[i], delta=1.0, tune=true, weight=3.0)
+   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTrees[i], 10.0)
+   moves[moveIndex++] <- mvRootTimeSlide(geneTrees[i], 1.0, true, 3.0)
+}
+# move on Ne, the effective population size
+moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
+# moves on the parameters of the substitution models
+for (i in 1:n_genes) {
+  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
+  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
+}
+# moves on the family-wise rates
+for (i in 1:n_genes) {
+  moves[moveIndex++] <- mvScale(familyRates[i], lambda=0.8, tune=true, weight=3.0)
+}
+# moves on the across-sites rate variation parameters:
+for (i in 1:n_genes) {
+  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
+}
+\end{lstlisting}
+\end{snugshade*}}
+
+Then we define a few monitors to keep track of how things go. 
+First, basic monitors:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mntrIndex <- 0
+# One monitor to backup the parameters, in case we want to stop and restart the analysis:
+monitors[mntrIndex++] <- modelmonitor(filename="multispeciesCoalescent_clock.log",printgen=10, separator = "	")
+# One monitor to print the species trees sampled in the course of the MCMC:
+monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_species.trees",printgen=10, separator = "	", speciesTree)
+# One monitor for each gene family tree:
+for (i in 1:n_genes) {
+   monitors[mntrIndex++] <- filemonitor(filename="multispeciesCoalescent_clock_gene_"+ i +".trees",printgen=10, separator = "	", geneTrees[i])
+}
+\end{lstlisting}
+\end{snugshade*}}
+We will also compare our reconstructed parameters (trees or other variables) to the true values that were used in the simulation.
+First, examining the species tree and the gene trees.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
+for (i in 1:n_genes) {
+	distGeneTree[i] := symDiff (trueGeneTrees[i], geneTrees[i])
+}
+# We get one average value for all gene trees:
+meanDistGeneTree := mean(distGeneTree)
+\end{lstlisting}
+\end{snugshade*}}
+
+We can also look at the values of some other variables:
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+# For Ne:
+distNe := Ne - trueNe
+# For equilibrium values of the GTR matrices, we want one index of how far we are.
+# To achieve this we need to write some functions:
+clear(i)
+distEqFreq := diffVectorsOfVectors(trueSf, sf)	
+function RealPos diffVectors ( Real[] xvec, Real[] yvec ) { 
+	DI <- 0.0
+	for (i in 1:xvec.size()) {
+		DI <- DI + (xvec[i] - yvec[i])*(xvec[i] - yvec[i])
+	}
+	return DI
+}
+function RealPos diffVectorsOfVectors ( Real[][] xvecvec, Real[][] yvecvec ) { 
+	DA <- 0.0
+	for (i in 1:xvecvec.size()) {
+		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
+	}
+	return DA
+}		
+function RealPos diffVectorsOfVectors ( Simplex[] xvecvec, Simplex[] yvecvec ) { 
+	DA <- 0.0
+	for (i in 1:xvecvec.size()) {
+		DA <- DA + diffVectors(xvecvec[i], yvecvec[i])
+	}
+	return xvecvec[2]
+}
+# Same thing for exchangeability parameters:
+distExchange := diffVectorsOfVectors(trueEr, er)
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distExchange)
+# Same thing for the family-wise rates
+distRates := diffVectors(trueFamilyRates, familyRates)
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distRates)
+# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne, distNe, distSpeciesTree, meanDistGeneTree, distEqFreq)
+# We could do similar things for the few remaining parameters, but really I think that's enough.
+\end{lstlisting}
+\end{snugshade*}}
+
+We then define our model and the mcmc object. We can use any node of our model as a handle, here we choose to use the species tree.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+mymodel <- model(speciesTree)
+# We create the MCMC object
+mymcmc <- mcmc(mymodel, monitors, moves)
+\end{lstlisting}
+\end{snugshade*}}
+
+We finally launch the analysis.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+# If we want to specify the amount of burnin:
+# mymcmc.burnin(generations=200,tuningInterval=100)
+mymcmc.run(generations=400)
+
+\end{lstlisting}
+\end{snugshade*}}
+
+
+After the analysis, we analyze the output. We analyze the tree trace as saved in one of the output files.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+# Let us start by reading in the tree trace
+ treetrace <- readTreeTrace("multispeciesCoalescent_clock_species.trees")
+# and get the summary of the tree trace
+ treetrace.summarize()
+
+# We output the Maximum A Posteriori tree
+ mapTree(treetrace,"primates_clock_MAP.tre")
+
+\end{lstlisting}
+\end{snugshade*}}
+
+Of course, we could do the same analysis with each of the gene trees, possibly using a "for" loop in the rev language.
+
+\end{framed}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Inference using the POMO model }
+We run the POMO model on the same data set simulated under the multispecies coalescent.
+ \begin{framed}
+ First, we need to prepare the data for analysis using POMO: concatenating the alignments, then transforming the state space from 4 bases to the POMO state space.
+ We arbitrarily decide to use a virtual population size of size 10, as suggested in \citet{Demaio2013}.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+# First, concatenating the alignments:
+concatenate<-alns[1]
+for (i in 2:n_genes) {
+	concatenate <- concatenate + alns[i]
+}
+
+virtual_population_size <- 10
+
+# Now, we need to convert the DNA alignment into an alignment in the correct POMO state space.
+
+pomo_concatenate <- pomoStateConvert(concatenate, virtual_population_size, taxa)
+concatenate_n_sites <- pomo_concatenate.nchar()[1]
+
+#######################
+# Preparing the model #
+#######################
+
+# Now we have the data for doing inference using the POMO model.
+# To define a POMO model, one needs several components.
+
+# First, one needs to define a transition matrix for DNA mutations.
+# Here we are going to use a GTR matrix. 
+# So we define the GTR matrix.
+
+er_prior <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_prior)
+
+sf_prior <- v(1,1,1,1)
+sf ~ dnDirichlet(sf_prior)
+
+Q := gtr(er,sf) 
+
+# Second, one can have different fitnesses for A, C, G, T. 
+# Here, we are going to assume that all 4 bases have the same fitness.
+base_fitnesses <- v(1, 1, 1, 1)
+
+# Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
+
+P := pomo(Q, base_fitnesses, virtual_population_size)
+
+# We also need to define root frequencies for all the states.
+# To do that we need two variables:
+
+# First, the proportion of polymorphic sites at the root
+root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+
+# Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
+root_base_frequencies ~ dnDirichlet(sf_prior)
+
+# Now we have all the elements to construct root frequencies for all the states:
+root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size)
+#simplex_root_frequencies := simplex(root_frequencies[1], root_frequencies[2], root_frequencies[3], root_frequencies[4])
+
+
+# Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
+shape_prior <- 0.05 
+shape ~ dnExponential( shape_prior )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+
+# We do not assume variation among branches in rates
+branch_rates <- 1.0
+
+# We do not assume a proportion of invariant
+p_inv ~ beta(alpha=1,beta=1)
+p_inv.setValue(0.000001)
+
+###################
+# PhyloCTMC Model #
+###################
+
+# To link all the parts of the model together we use the phyloCTMC object.
+
+aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
+
+aln.clamp(pomo_concatenate)
+
+################################
+# Changing the starting values #
+################################
+
+# We want to start from random values, not the values used in the simulation.
+
+# Redrawing the parameters of the birth-death process:
+speciation.redraw()
+extinction.redraw()
+tree_height.redraw()
+
+# Redrawing the species tree:
+speciesTree.redraw()
+
+####################
+# Setting up moves #
+####################
+
+# We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, 
+# the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
+
+moveIndex <- 0
+
+# moves for the birth-death parameters
+moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
+moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
+moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
+
+
+# moves on the tree topology and node ages
+moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
+moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
+moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+moves[moveIndex++] <- mvTreeScale(speciesTree, delta=1.0, tune=true, weight=3.0)
+moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
+moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
+
+# moves on the parameters of the substitution model
+moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
+
+# moves on the 4 fitness values
+# SH: These are not stochastic nodes, so moves cannot operate on them!
+#moves[moveIndex++] <- mvScale(base_fitnesses[1],1,true,1.0)
+#moves[moveIndex++] <- mvScale(base_fitnesses[2],1,true,1.0)
+#moves[moveIndex++] <- mvScale(base_fitnesses[3],1,true,1.0)
+#moves[moveIndex++] <- mvScale(base_fitnesses[4],1,true,1.0)
+
+# moves on the parameters of the root frequencies
+moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
+#moves[moveIndex++] <- mvScale(root_polymorphism_proportion, lambda=10, tune=true, weight=2) 
+moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true, weight=2) 
+
+# moves on the across-sites rate variation parameter:
+moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
+
+
+############
+# Monitors #
+############
+
+# We define a few monitors to keep track of how things go.
+
+mntrIndex <- 0
+
+# One monitor to backup the parameters, in case we want to stop and restart the analysis:
+monitors[mntrIndex++] <- modelmonitor(filename="pomo_clock.log",printgen=10, separator = "	")
+
+# One monitor to print the species trees sampled in the course of the MCMC:
+monitors[mntrIndex++] <- filemonitor(filename="pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
+
+# We also want to monitor how far we are from the true values, which we have because we rely on simulations.
+# First, we can compute the distance between the reconstructed and the true species tree:
+distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
+
+
+# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+	
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# First we need to get rid of several variables that are not part of the Pomo model.
+clear(alns)
+clear(geneTrees)
+clear(Ne)
+clear(familyRates)
+clear(trueEr)
+clear(trueFamilyRates)
+clear(trueGeneTrees)
+clear(trueNe)
+clear(trueSf)
+
+# We can use any node of our model as a handle, here we choose to use the species tree.
+ 
+mymodel <- model(speciesTree)
+
+
+
+########
+# MCMC #
+########
+
+# We create the MCMC object
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+
+# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
+# the number of iterations that will be considered for analysis, 
+# and the tuning interval for tuning parameters of moves on scalar variables.
+# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
+# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
+# mymcmc.burnin(generations=200,tuningInterval=100)
+mymcmc.run(generations=40000)
+
+\end{lstlisting}
+\end{snugshade*}}
+
+ 
+ \end{framed}}
+
+\subsection*{Inference using basic concatenation }
+We can also concatenate all alignments and run a partitioned GTR model on it.
+
+
 
 \bigskip
-\subsection*{Batch Mode}
+\section*{Batch Mode}
 
 If you wish to run this exercise in batch mode, the files are provided for you. 
 
