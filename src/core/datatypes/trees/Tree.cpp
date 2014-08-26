@@ -297,7 +297,8 @@ void Tree::setTopology(const Topology *t, bool owns)
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x) {
-    o << x.getNewickRepresentation();
     
+    o << x.getNewickRepresentation();
+        
     return o;
 }

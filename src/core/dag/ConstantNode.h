@@ -173,8 +173,9 @@ bool RevBayesCore::ConstantNode<valueType>::isConstant( void ) const {
 
 
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter ) {
-    // nothing to do
+void RevBayesCore::ConstantNode<valueType>::keepMe( DagNode* affecter )
+{
+    // nothing to do    
 }
 
 
