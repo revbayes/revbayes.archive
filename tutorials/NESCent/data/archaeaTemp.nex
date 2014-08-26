@@ -1,0 +1,43 @@
+#NEXUS
+
+Begin data;
+	Dimensions ntax=33 nchar=1;
+	Format datatype=Continuous;
+	Matrix
+
+Archaeoglobus_fulgidus	85
+Methanopyrus_kandleri	98
+Picrophilus_torridus	55
+Pyrococcus_abyssi	98
+Nanoarchaeum_equitans	90
+Halobacterium_salinarium	37
+Thermococcus_kodakarensis	95
+Haloarcula_marismortui	37
+Aeropyrum_pernix	90
+Thermoplasma_volcanium	60
+Sulfolobus_acidocaldarius	87
+Methanosarcina_barkeri	33.5
+Methanospirillum_hungatei	37
+Methanococcoides_burtonii	21.5
+Methanosaeta_thermophila	61
+Methanocorpusculum_labreanum	37
+Staphylothermus_marinus	87.5
+Pyrobaculum_arsenaticum	95
+Methanobrevibacter_smithii	37
+Metallosphaera_sedula	65
+Methanococcus_maripaludis	37
+Ignicoccus_hospitalis	90
+Caldivirga_maquilingensis	85
+Nitrosopumilus_maritimus	28
+Candidatus_korarchaeum	85
+Thermoproteus_neutrophilus	85
+Desulfurococcus_kamchatkensis	82
+Halorubrum_lacusprofundi	37
+Cenarchaeum_symbiosum	10
+Methanocaldococcus_jannaschii	85
+Methanococcus_voltae	35
+Thermofilum_pendens	88
+Methanothermobacter_thermautotrophicus	65
+;
+End;
+

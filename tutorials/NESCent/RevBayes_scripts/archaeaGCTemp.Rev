@@ -9,7 +9,7 @@
 #########
 
 # read the quantitative trait data 
-contData <- readCharacterData("data/plac40lhtlog.nex")
+contData <- readCharacterData("data/archaeaTemp.nex")
 
 # get some useful variables from the data
 contTaxaCount <- contData.ntaxa()
@@ -17,10 +17,11 @@ nTraits <- contData.nchar()[1]
 
 "number of traits to analyze"
 nTraits
+contData
 
 # read the sequence data
 # the readCharacter function returns a vector of matrices. We just take the first one
-seqData <- readCharacterData("data/plac40_4fold.nex")
+seqData <- readCharacterData("data/archaeaRNA.nex")
 
 # get some useful variables from the data
 taxaCount <- seqData.ntaxa()
@@ -38,7 +39,7 @@ tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
 
 # work under fixed topology
 # set tau equal to externally given tree
-treeArray <- readTrees("data/chronoplac40.tree")
+treeArray <- readTrees("data/chronoarchaea.tree")
 fixedTree <- treeArray[1]
 tau.setValue(fixedTree)
 
@@ -87,7 +88,11 @@ moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=
 index <- index + 1
 
 # moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
+index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=1,tune=true,weight=1) 
 index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
 index <- index + 1
@@ -119,11 +124,11 @@ for (i in 1:(covdim-1))	{
 # get useful outputs from the brownian process
 
 for (i in 1:covdim)	{
-	# mean and stdev of the log rate (i=1) and then each trait
+	# mean and stdev of the log rate (i=1), logit gc (i=2) and then each trait
 	meanX[i] := X.mean(i)
 	stdevX[i] := X.stdev(i)
+	rootX[i] := X.rootVal(i)
 }
-
 
 ######### 
 # substitution process
@@ -165,22 +170,22 @@ seq.clamp(seqData)
 mymodel <- model(kappa)
 
 # screen monitor
-monitors[1] <- screenmonitor(printgen=10, correl, meanX)
+monitors[1] <- screenmonitor(printgen=10, correl, meanX, rootX)
 
 # similar monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/placgc.trace", printgen=10, separator = "	", correl, var, meanX)
+monitors[2] <- filemonitor(filename="output/archaeagctemp.trace", printgen=10, separator = "	", correl, var, meanX, rootX)
 
 # file monitors for the correlation and partial correlation coefficients
-monitors[3] <- filemonitor(filename="output/placgc.correl",printgen=10, separator = "	", correl, pCorrel)
+monitors[3] <- filemonitor(filename="output/archaeagctemp.correl",printgen=10, separator = "	", correl, pCorrel)
 
 # a file monitor just for the covariance matrix
-monitors[4] <- filemonitor(filename="output/placgc.cov",printgen=10, separator = "	", Sigma)
+monitors[4] <- filemonitor(filename="output/archaeagctemp.cov",printgen=10, separator = "	", Sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- filemonitor(filename="output/placgc.traits",printgen=10, separator = "	", X)
+monitors[5] <- filemonitor(filename="output/archaeagctemp.traits",printgen=10, separator = "	", X)
 
 # a model monitor
-monitors[6] <- modelmonitor(filename="output/placgc.log",printgen=10, separator = "	")
+monitors[6] <- modelmonitor(filename="output/archaeagctemp.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
