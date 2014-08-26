@@ -91,7 +91,7 @@ moves[mi++] <- mvSlide(pinvar)
 topology ~ uniformTopology(n_species, names)
 
 # moves on the tree
-moves[mi++] <- mvNNI(topolog)
+moves[mi++] <- mvNNI(topology)
 
 
 #### Specify a prior and moves on the branch lengths #### 
@@ -129,7 +129,7 @@ clockRate <- 1.0
 
 
 # the sequence evolution model
-seq ~ substModel(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, pInv=p_inv, branchRates=clockRate, type="DNA")
+seq ~ phyloCTMC(tree=phylogeny, Q=Q, siteRates=norm_gamma_rates, pInv=pinvar, branchRates=clockRate, type="DNA")
 
 # attach the data
 seq.clamp(data)

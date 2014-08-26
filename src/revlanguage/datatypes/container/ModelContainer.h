@@ -4,11 +4,10 @@
 #include "Container.h"
 #include "IndirectReferenceNode.h"
 #include "ElementLookupNode.h"
-#include "RlDeterministicNode.h"
 #include "RlUserInterface.h"
 #include "TypedDagNode.h"
-#include "TypedUserFunction.h"
 #include "TypeSpec.h"
+#include "UserFunctionNode.h"
 
 #include <iostream>
 #include <vector>
@@ -36,8 +35,6 @@ namespace RevLanguage {
      * (currently 1 and 2) for some functions, but no generic implementation, ensuring
      * that this class can only be used with those dimensions.
      */
-    
-    // Generic template
     template <typename rlType, size_t dim, typename rbType>
     class ModelContainer : public Container {
 
@@ -69,11 +66,12 @@ namespace RevLanguage {
         RevBayesCore::TypedDagNode<rbType>*             getDagNode(void) const;                                             //!< Get the DAG node
         const rbType&                                   getValue(void) const;                                               //!< Get the internal value
         bool                                            hasDagNode(void) const;                                             //!< Do we have a DAG node?
+        bool                                            isAssignable(void) const;                                           //!< Is object or upstream members assignable?
         bool                                            isComposite(void) const;                                            //!< Is this a composite container?
         bool                                            isConstant(void) const;                                             //!< Is this variable and the internally stored deterministic node constant?
-        void                                            makeConstantValue();                                                //!< Convert the container to a constant object
-        void                                            makeConversionValue(RevPtr<Variable> var);                          //!< Convert the container to a conversion object
-        void                                            makeDeterministicValue(UserFunction* fxn, UserFunction* code);      //!< Convert to deterministic object with a userdefined Rev function
+        void                                            makeConstantValue();                                                //!< Convert to constant object
+        void                                            makeConversionValue(RevPtr<Variable> var);                          //!< Convert to conversion object
+        void                                            makeUserFunctionValue(UserFunction* fxn);                           //!< Convert to user-defined Rev function objec
         void                                            printStructure(std::ostream& o, bool verbose=false) const;          //!< Print structure of language object for user
         void                                            replaceVariable(RevObject *newVar);                                 //!< Prepare to replace the internal DAG node
         void                                            setDagNode(RevBayesCore::DagNode *newNode);                         //!< Set or replace the internal dag node (and keep me)
@@ -442,7 +440,22 @@ bool ModelContainer<rlType, dim, rbType>::hasDagNode( void ) const
 }
 
 
-/** Check whether this node is composite by checking the DAG node. */
+/**
+ * Is the object or any of its upstream members or elements
+ * modifiable by the user through assignment? We simply ask
+ * our DAG node.
+ */
+template <typename rlType, size_t dim, typename rbType>
+bool ModelContainer<rlType, dim, rbType>::isAssignable( void ) const
+{
+    if ( this->dagNode == NULL )
+        return false;
+    
+    return dagNode->isAssignable();
+}
+
+
+/** Check whether this container is composite by checking the DAG node type. */
 template <typename rlType, size_t dim, typename rbType>
 bool ModelContainer<rlType, dim, rbType>::isComposite( void ) const
 {
@@ -481,13 +494,12 @@ void ModelContainer<rlType, dim, rbType>::makeConversionValue( RevPtr<Variable> 
     // Create the converter node
     ConverterNode< ModelContainer<rlType, dim, rbType> >* newNode = new ConverterNode< ModelContainer<rlType, dim, rbType> >( "", var, getTypeSpec() );
     
-    // Signal replacement
-    dagNode->replace(newNode);
-    
-    // Delete the value if there are no other references to it.
-    if ( dagNode->decrementReferenceCount() == 0 )
+    // Signal replacement and delete the value if there are no other references to it.
+    if ( dagNode != NULL )
     {
-        delete dagNode;
+        dagNode->replace( newNode );
+        if ( dagNode->decrementReferenceCount() == 0 )
+            delete dagNode;
     }
     
     // Shift the actual node
@@ -495,17 +507,6 @@ void ModelContainer<rlType, dim, rbType>::makeConversionValue( RevPtr<Variable> 
     
     // Increment the reference counter
     dagNode->incrementReferenceCount();
-}
-
-
-/** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
-template <typename rlType, size_t dim, typename rbType>
-void ModelContainer<rlType, dim, rbType>::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
-{
-    TypedUserFunction< rbType >*  rbFxn    = new TypedUserFunction< rbType >( code );
-    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", rbFxn, fxn );
-    
-    setDagNode( detNode );
 }
 
 
@@ -558,6 +559,28 @@ MethodTable ModelContainer<rlType, dim, rbType>::makeMethods( void ) const
     methods.insertInheritedMethods( Container::makeMethods() );
     
     return methods;
+}
+
+
+/** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
+template <typename rlType, size_t dim, typename rbType>
+void ModelContainer<rlType, dim, rbType>::makeUserFunctionValue( UserFunction* fxn )
+{
+    UserFunctionNode< ModelContainer<rlType, dim, rbType> >*  detNode  = new UserFunctionNode< ModelContainer<rlType, dim, rbType> >( "", fxn );
+    
+    // Signal replacement and delete the value if there are no other references to it.
+    if ( dagNode != NULL )
+    {
+        dagNode->replace( detNode );
+        if ( dagNode->decrementReferenceCount() == 0 )
+            delete dagNode;
+    }
+    
+    // Shift the actual node
+    dagNode = detNode;
+    
+    // Increment the reference counter
+    dagNode->incrementReferenceCount();
 }
 
 

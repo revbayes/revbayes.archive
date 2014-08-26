@@ -73,12 +73,13 @@ public:
     virtual RevBayesCore::DagNode*      getDagNode(void) const;                                                                         //!< Get my internal value node (if applicable)
     virtual bool                        hasDagNode(void) const;                                                                         //!< Do I have an internal value node?
     virtual bool                        isAbstract(void) const;                                                                         //!< Is this an abstract type/object?
+    virtual bool                        isAssignable(void) const;                                                                       //!< Is object or upstream members assignable?
     virtual bool                        isConstant(void) const;                                                                         //!< Is this variable and the internally stored deterministic node constant?
     virtual bool                        isConvertibleTo(const TypeSpec& type, bool once) const;                                         //!< Is convertible to type?
     virtual void                        makeConstantValue(void);                                                                        //!< Convert the stored variable to a constant variable (if applicable)
     virtual void                        makeConversionValue(RevPtr<Variable> var);                                                      //!< Convert the object to a conversion object
-    virtual void                        makeDeterministicValue(UserFunction* fxn, UserFunction* code);                                  //!< Convert to deterministic object with a userdefined Rev function
     virtual RevObject*                  makeIndirectReference(void);                                                                    //!< Make an object referencing the dag node of this object
+    virtual void                        makeUserFunctionValue(UserFunction* fxn);                                                       //!< Convert to deterministic object with a userdefined Rev function
     virtual void                        printMemberInfo(std::ostream& o, bool verbose=false) const;                                     //!< Print member info of language object for user
     virtual void                        printStructure(std::ostream& o, bool verbose=false) const;                                      //!< Print structure of language object for user
     virtual void                        replaceVariable(RevObject *newObj);                                                             //!< Replace the internal DAG node and prepare to replace me

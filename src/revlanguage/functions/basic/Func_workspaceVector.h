@@ -130,7 +130,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getType
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getReturnType( void ) const
 {
-    return ModelVector<valType>::getClassTypeSpec();
+    return WorkspaceVector<valType>::getClassTypeSpec();
 }
 
 
