@@ -61,17 +61,17 @@ index <- index + 1
 # traits
 #########
 
-# covariance matrix Sigma (of dimension nTraits)
+# covariance matrix sigma (of dimension nTraits)
 # InverseWishart of parameter Sigma_0 = kappa * I_nTraits, and df=nTraits+2 degrees of freedom
 # where kappa is itself a scale parameter
 
 kappa ~ exponential(1.0)
 df <- nTraits+2
-Sigma ~ invWishart(dim=nTraits, kappa=kappa, df=df)
+sigma ~ invWishart(dim=nTraits, kappa=kappa, df=df)
 
 # multivariate Brownian process along the tree
-# parameterized by Sigma
-X ~ mvtBrownian(tau,Sigma)
+# parameterized by sigma
+br ~ mvtBrownian(tau,sigma)
 
 # moves on kappa
 index <- 1
@@ -79,13 +79,13 @@ moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
 # conjugate Gibbs move on covariance matrix
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=br, kappa=kappa, df=df, weight=1) 
 index <- index + 1
 
 # moves on the Brownian process
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+moves[index] <- mvMultivariatePhyloProcessSliding(process=br,lambda=1,tune=true,weight=100) 
 index <- index + 1
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=br,lambda=0.1,tune=true,weight=1) 
 index <- index + 1
 
 # condition Brownian model on quantitative trait data
@@ -93,30 +93,19 @@ index <- index + 1
 # you need to do this trait by trait
 for (i in 1:nTraits)	{
 	# here we say that the ith entry of the Brownian process should map to the ith. quantitative trait
-	X.clampAt(contData,i,i)
+	br.clampAt(contData,i,i)
 }
 
 # get useful functions of the covariance matrix, to be monitored
-for (i in 1:nTraits)	{
-	var[i] := Sigma.covariance(i,i)
-}
-
-k <- 1;
-for (i in 1:(nTraits-1))	{
-	for (j in (i+1):nTraits)	{
-		correl[k] := Sigma.correlation(i,j)
-		pCorrel[k] := Sigma.partialCorrelation(i,j)
-		k <- k+1
-	}
-}
+# here we will monitor the correlation coefficient between trait 1 and trait 2 (sexual maturity and body mass)
+cor12 := sigma.correlation(1,2)
 
 # get useful outputs from the brownian process
 # the mean and the variance across the tree, for each trait
 for (i in 1:nTraits)	{
-	meanX[i] := X.mean(i)
-	stdevX[i] := X.stdev(i)
+	# mean and stdev of each trait
+	meanbr[i] := br.mean(i)
 }
-
 
 ######### 
 # substitution process
@@ -165,23 +154,17 @@ mymodel <- model(kappa)
 
 # create the monitors
 
-# screen monitor
-monitors[1] <- screenmonitor(printgen=10, clockRate, correl, meanX)
-
-# a trace monitor: like the screen monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/placdatestraitsclock.trace", printgen=10, separator = "	", clockRate, correl, meanX)
-
-# file monitors for the correlation and partial correlation coefficients
-monitors[3] <- filemonitor(filename="output/placdatestraitsclock.correl",printgen=10, separator = "	", correl, pCorrel)
+# on screen, we will monitor only the correlation coefficient and the mean value of each trait
+monitors[1] <- screenmonitor(printgen=10, clockRate, cor12, meanbr)
 
 # a file monitor just for the covariance matrix
-monitors[4] <- filemonitor(filename="output/placdatestraitsclock.cov",printgen=10, separator = "	", Sigma)
+monitors[2] <- filemonitor(filename="output/placdatestraitsclock.cov",printgen=10, separator = "	", sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- filemonitor(filename="output/placdatestraitsclock.traits",printgen=10, separator = "	", X)
+monitors[3] <- filemonitor(filename="output/placdatestraitsclock.traits",printgen=10, separator = "	", br)
 
 # a model monitor
-monitors[6] <- modelmonitor(filename="output/placdatestraitsclock.log",printgen=10, separator = "	")
+monitors[4] <- modelmonitor(filename="output/placdatestraitsclock.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
