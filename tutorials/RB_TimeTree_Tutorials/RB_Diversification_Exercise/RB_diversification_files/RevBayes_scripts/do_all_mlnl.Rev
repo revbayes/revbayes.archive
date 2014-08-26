@@ -1,0 +1,10 @@
+### File: diversification tutorial marginal likelihood batch file
+
+source("RevBayes_scripts/mlnl_Yule_bears.Rev")
+clear()
+
+source("RevBayes_scripts/mlnl_BDR_bears.Rev")
+clear()
+
+source("RevBayes_scripts/mlnl_BDS_bears.Rev")
+clear()

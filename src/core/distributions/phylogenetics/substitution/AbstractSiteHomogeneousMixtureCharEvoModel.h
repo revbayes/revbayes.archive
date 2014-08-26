@@ -344,7 +344,7 @@ template<class charType, class treeType>
 void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::compress( void ) 
 {
     
-    compressed = false;
+//    compressed = false;
     
     charMatrix.clear();
     gapMatrix.clear();
