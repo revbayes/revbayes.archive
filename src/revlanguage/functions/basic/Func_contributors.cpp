@@ -77,7 +77,7 @@ RevPtr<Variable> Func_contributors::execute( void ) {
     RBOUT( "resemblance to MrBayes. Moreover, the MrBayes program was irretrievably     \n");
     RBOUT( "associated with Huelsenbeck and Ronquist, whereas the new code-base had     \n");
     RBOUT( "many new contributors who were adding signicantly to the code; these new    \n");
-    RBOUT( "contributors needed to be acknowledged. (The new name ‘RevBayes’ also       \n");
+    RBOUT( "contributors needed to be acknowledged. (The new name 'RevBayes' also       \n");
     RBOUT( "solved a criticism Joe Felsenstein made about MrBayes, that Thomas Bayes    \n");
     RBOUT( "was a reverend and that calling him a mister seemed, somehow,               \n");
     RBOUT( "disrespectful. Of course, this was the least of his criticisms as he        \n");
