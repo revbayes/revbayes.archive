@@ -661,14 +661,22 @@ void MultispeciesCoalescent::simulateTree( void ) {
         
         std::vector<TopologyNode*> initialIndividualsAtBranch = individualsPerBranch[spNode];
         double branchNe = getNe(spNode->getIndex() );
-        double theta = 1.0 / branchNe;
+/*        double theta = 1.0 / branchNe;
         
         double prevCoalescentTime = 0.0;
         
         size_t j = initialIndividualsAtBranch.size();
         double nPairs = j * (j-1) / 2.0;
         double lambda = nPairs * theta;
-        double u = RbStatistics::Exponential::rv( lambda, *rng);
+        double u = RbStatistics::Exponential::rv( lambda, *rng);*/
+        //Test:
+        double prevCoalescentTime = 0.0;
+        size_t j = initialIndividualsAtBranch.size();
+        double nPairs = j * (j-1) / 2.0;
+        double u = branchNe * RbStatistics::Exponential::rv( nPairs, *rng);
+        
+        
+        //End test
         double nextCoalescentTime = prevCoalescentTime + u;
         
         while ( nextCoalescentTime < branchLength && j > 1 ) {
@@ -697,8 +705,14 @@ void MultispeciesCoalescent::simulateTree( void ) {
             prevCoalescentTime = nextCoalescentTime;
             j--;
             nPairs = j * (j-1) / 2.0;
-            lambda = nPairs * theta ;
-            u = RbStatistics::Exponential::rv( lambda, *rng);
+            
+            //Test:
+            double u = branchNe * RbStatistics::Exponential::rv( nPairs, *rng);
+            //End test
+
+            
+        /*    lambda = nPairs * theta ;
+            u = RbStatistics::Exponential::rv( lambda, *rng);*/
             nextCoalescentTime = prevCoalescentTime + u;
         }
         
