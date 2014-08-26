@@ -39,6 +39,7 @@ Func_contributors* Func_contributors::clone( void ) const {
 RevPtr<Variable> Func_contributors::execute( void )
 {
     // Hard-wrapped to 80 columns wide, assuming three-character indent in RBOUT
+    // Use the lines below to count columns, if you wish
 #if 0
     RBOUT( "00000011111111112222222222333333333344444444445555555555666666666677777777778" );
     RBOUT( "45678901234567890123456789012345678901234567890123456789012345678901234567890" );
@@ -48,45 +49,64 @@ RevPtr<Variable> Func_contributors::execute( void )
     RBOUT( "Contributors\n" );
     RBOUT( "============\n" );
     RBOUT( "\n" );
-    RBOUT( "Sebastian Höhna\n" );
-    RBOUT( "Department of Evolution and Ecology,\n" );
-    RBOUT( "University of California, Davis, USA" );
-    RBOUT( "Sebastian.Hoehna@gmail.com\n" );
+    RBOUT( "The RevBayes project started as an attempt to provide a more general and\n" );
+    RBOUT( "flexible version of the MrBayes software for Bayesian phylogenetic inference.\n" );
+    RBOUT( "This future version of MrBayes was named MrBayes 4, as MrBayes was then in\n" );
+    RBOUT( "version 3. The initial MrBayes 4 kick-off meeting was held in San Diego in\n" );
+    RBOUT( "March of 2005 and involved John Huelsenbeck, Bret Larget, Fredrik Ronquist,\n" );
+    RBOUT( "Donald Simon, and Paul van der Mark. Later, Marc Suchard would also contrib-\n" );
+    RBOUT( "ute to the development of the project." );
+    RBOUT( "\n");
+    RBOUT( "A pilot version of MrBayes 4 was completed in 2007 by van der Mark, who was\n" );
+    RBOUT( "then a postdoc in the lab of Ronquist. MrBayes 4 was first used in a Bayesian" );
+    RBOUT( "island biogeography analysis published in 2008 in Journal of Biogeography by\n" );
+    RBOUT( "Isabel Sanmartin, van der Mark and Ronquist. Several related papers using\n" );
+    RBOUT( "MrBayes 4 followed.\n" );
     RBOUT( "\n" );
-    RBOUT( "Fredrik Ronquist\n" );
-    RBOUT( "Department of Bioinformatics and Genetics,\n" );
-    RBOUT( "Swedish Museum of Natural History, Stockholm, Sweden" );
-    RBOUT( "fredrik.ronquist@nrm.se\n" );
+    RBOUT( "In August of 2007, Huelsenbeck, Ronquist, and Suchard reviewed the code of\n" );
+    RBOUT( "MrBayes 4. The program then had a simple model-specification language but the\n" );
+    RBOUT( "code was experimental and difficult to work with, and the language did not\n" );
+    RBOUT( "yet support more generic modeling and computing.\n" );
     RBOUT( "\n" );
-    RBOUT( "John P. Huelsenbeck\n" );
-    RBOUT( "Department of Integrative Biology,\n" );
-    RBOUT( "University of California, Berkeley, USA" );
-    RBOUT( "johnh@berkeley.edu\n" );
+    RBOUT( "Ronquist took the lead in rewriting the code and generalizing the model\n" );
+    RBOUT( "specification language. The work accelerated in 2009 when Sebastian Höhna\n" );
+    RBOUT( "joined the project as a graduate student. In the summer of 2009, the name of\n" );
+    RBOUT( "the project was changed to RevBayes, as it now had little resemblance to\n" );
+    RBOUT( "MrBayes. The new code base and repository, then at sourceforge, was created\n");
+    RBOUT( "by Höhna, Huelsenbeck and Ronquist. The same summer, Nicolas Lartillot also\n");
+    RBOUT( "started contributing to the discussion on RevBayes. A prototype version of\n");
+    RBOUT( "RevBayes was completed by the summer of 2011 and demonstrated at a workshop\n" );
+    RBOUT( "in Berkeley in August the same year.\n" );
     RBOUT( "\n" );
-    RBOUT( "Michael J. Landis\n" );
-    RBOUT( "Department of Integrative Biology,\n" );
-    RBOUT( "University of California, Berkeley, USA" );
-    RBOUT( "mlandis@berkeley.edu\n" );
+    RBOUT( "At that point, RevBayes did not yet support phylogenetic models. The proto-\n");
+    RBOUT( "type merely showed the syntax of Rev and the ideas behind graphical models.\n" );
+    RBOUT( "Höhna tookover the lead in the development of RevBayes in the summer of\n" );
+    RBOUT( "2011. Höhna rewrote the entire software once again to facilitate phylo-");
+    RBOUT( "genetic models and fast computation of the model graphs. Over the coming\n" );
+    RBOUT( "years, several new people joined the development effort, including\n" );
+    RBOUT( "Bastien Boussau, Tracy Heath, and Michael Landis. Some of the more advanced\n" );
+    RBOUT( "language features were hammered out in 2012 in a group consisting of Höhna,\n" );
+    RBOUT( "Ronquist, and Lars Arvestad.\n" );
     RBOUT( "\n" );
-    RBOUT( "Tracy A. Heath\n" );
-    RBOUT( "Department of Integrative Biology,\n" );
-    RBOUT( "University of California, Berkeley, USA" );
-    RBOUT( "tracyh@berkeley.edu\n" );
+    RBOUT( "A milestone was reached in August of 2014, when the first almost complete\n" );
+    RBOUT( "version of RevBayes was presented to a group of students at a NESCent work-\n" );
+    RBOUT( "shop. The program then included support for most language features, a wide\n" );
+    RBOUT( "range of phylogenetic models, and several popular types of analyses.\n" );
     RBOUT( "\n" );
-    RBOUT( "Bastien Boussau\n" );
-    RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
-    RBOUT( "Université de Lyon, Villeurbanne, France" );
-    RBOUT( "boussau@gmail.com\n" );
+    RBOUT( "We expect the first version of RevBayes with complete Rev language support\n" );
+    RBOUT( "to appear in late 2014, and the release note should appear in print in 2015.\n" );
+    RBOUT( "As the project now quickly accumulates supporters, it is getting more and\n" );
+    RBOUT( "more challenging to keep track of the contributions. Hopefully, this recount\n" );
+    RBOUT( "of the early development of the project at least names all the relevant\n" );
+    RBOUT( "people involved up to the summer of 2014.\n" );
     RBOUT( "\n" );
-    RBOUT( "Nicolas Lartillot\n" );
-    RBOUT( "Bioinformatics and Evolutionary Genomics,\n" );
-    RBOUT( "Université de Lyon, Villeurbanne, France" );
-    RBOUT( "nicolas.lartillot@univ-lyon1.fr\n" );
+    RBOUT( "You can find the contact details of core contributors using the 'contacts()'\n" );
+    RBOUT( "function or through the program website (http://revbayes.net). The github\n" );
+    RBOUT( "page https://github.com/revbayes/revbayes/graphs/contributors shows all code\n" );
+    RBOUT( "contributions since the RevBayes code repository was started on SourceForge\n" );
+    RBOUT( "in August of 2009. The repository was moved to github in July of 2014.\n" );
     RBOUT( "\n" );
-    RBOUT( "\n" );
-    RBOUT( "\n" );
-    RBOUT( "\n" );
-    
+
     return NULL;
 }
 

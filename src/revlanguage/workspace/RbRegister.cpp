@@ -244,10 +244,10 @@
 
 #include "Func_citation.h"
 #include "Func_clear.h"
+#include "Func_contacts.h"
 #include "Func_contributors.h"
 #include "Func_getwd.h"
 #include "Func_help.h"
-#include "Func_history.h"
 #include "Func_ifelse.h"
 #include "Func_license.h"
 #include "Func_ls.h"
@@ -852,10 +852,10 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // regular functions
         addFunction( "citation",                 new Func_citation()                 );
         addFunction( "clear",                    new Func_clear()                    );
+        addFunction( "contacts",                 new Func_contacts()                 );
         addFunction( "contributors",             new Func_contributors()             );
         addFunction( "getwd",                    new Func_getwd()                    );
         addFunction( "help",                     new Func_help()                     );
-        addFunction( "history",                  new Func_history()                  );
         addFunction( "ifelse",                   new Func_ifelse<Real>()             );
         addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
         addFunction( "license",                  new Func_license()                  );
