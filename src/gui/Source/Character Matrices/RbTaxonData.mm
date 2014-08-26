@@ -17,7 +17,7 @@
 
     nameStr = [nameStr stringByReplacingOccurrencesOfString:@"\'" withString:@""];
     nameStr = [nameStr stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-    nameStr = [nameStr stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+    nameStr = [nameStr stringByReplacingOccurrencesOfString:@" "  withString:@"_"];
 }
 
 - (RbDataCell*)dataCellIndexed:(int)idx {
