@@ -153,7 +153,7 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
     
-    std::vector<double> csfInit = std::vector<double>(3, 0.0);
+    std::vector<double> csfInit = std::vector<double>(4, 0.0);
     csfInit[0] = 1.0;
     cladogenicStateFreqs        = new ConstantNode<std::vector<double> >("cladoStateFreqs", new std::vector<double>(csfInit));
     tipProbs.clear();
@@ -247,7 +247,10 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
     if (!node.isTip() && cladogenicEvents)
     {
         const std::vector<double>& cladoProbs = cladogenicStateFreqs->getValue();
-        lnL +=  log( cladoProbs[ cladogenicState[ node.getChild(0).getIndex() ] ] );
+        int s = cladogenicState[ node.getChild(0).getIndex() ];
+        double v = log( cladoProbs[s] );
+//        lnL += v;
+        
     }
     
     if (node.isRoot() && useTail == false)
@@ -882,86 +885,6 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathH
         return true;
 //        bh->print();
     }
-
-    
-    // return hastings ratio
-//    this->proposedLnProb = computeLnProposal(*(this->node), *bh);
-    
-//    return this->storedLnProb - this->proposedLnProb;
-
-    
-//    // get model parameters
-//    const treeType& tree = this->tau->getValue();
-//    double branchLength = node.getBranchLength();
-//
-//    const RateMap* rm = &homogeneousRateMap->getValue();
-// 
-//    // begin update
-//    BranchHistory* h = this->histories[ node.getIndex() ];
-//    
-//    // reject sample path history
-//    std::vector<CharacterEvent*> parentVector = h->getParentCharacters();
-//    std::vector<CharacterEvent*> childVector = h->getChildCharacters();
-//    std::multiset<CharacterEvent*,CharacterEventCompare> history;
-//    
-//    for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
-//    {
-//        size_t i = *it;
-//        std::set<CharacterEvent*> tmpHistory;
-//    
-//        unsigned int currState = parentVector[i]->getState();
-//        unsigned int endState = childVector[i]->getState();
-//        do
-//        {
-//            // delete previously rejected events
-//            tmpHistory.clear();
-//            
-//            currState = parentVector[i]->getState();
-//            double currAge = node.getParent().getAge();
-//            double t = 0.0;
-//            do
-//            {
-//                unsigned int nextState = (currState == 1 ? 0 : 1);
-//                double r = rm->getSiteRate(node, currState, nextState, currAge);
-//                
-//                double dt = RbStatistics::Exponential::rv(r * branchLength, *GLOBAL_RNG);
-//                t += dt;
-//                currAge -= dt * branchLength;
-//                if (t < 1.0)
-//                {
-//                    currState = nextState;
-//                    CharacterEvent* evt = new CharacterEvent(i , nextState, t);
-//                    tmpHistory.insert(evt);
-//                }
-//                else if (currState != endState)
-//                {
-//                    for (std::set<CharacterEvent*>::iterator it_h = tmpHistory.begin(); it_h != tmpHistory.end(); it_h++)
-//                        delete *it_h;
-//                }
-//            }
-//            while(t < 1.0);
-//        }
-//        while (currState != endState);
-//        
-//        for (std::set<CharacterEvent*>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
-//            history.insert(*it);
-//    }
-//    
-//    if (historyContainsExtinction(parentVector, history) == true && forbidExtinction)
-//    {
-//        for (std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h = history.begin(); it_h != history.end(); it_h++)
-//            delete *it_h;
-//        history.clear();
-//        h->clearEvents();
-//        //std::cout << node.getIndex() << " do over\n";
-//        redrawCount++;
-//        samplePathHistory(node, indexSet);
-//    }
-//    else
-//    {
-//        h->updateHistory(history,indexSet);
-//    }
-//    return 0.0;
 }
 
 template<class charType, class treeType>

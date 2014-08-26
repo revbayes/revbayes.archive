@@ -247,11 +247,11 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<GeographyRateModifier>* ddd = NULL;
     ContinuousStochasticNode* dp = NULL;
     ConstantNode<double> *dp_pr = NULL;
-//    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
-//    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
-    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
-    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(1.0));
-    dp  = new ContinuousStochasticNode( "dp", new NormalDistribution(dp_mean, dp_sd) );
+    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
+    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+//    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
+//    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(1.0));
+//    dp  = new ContinuousStochasticNode( "dp", new NormalDistribution(dp_mean, dp_sd) );
 //    ConstantNode<double> *dp2 = new ConstantNode<double>("dp2", new double(0.0));
     dp->setValue(new double(0.00001));
     ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
@@ -286,7 +286,7 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(pi_pr) );
     
     // cladogenic state frequencies
-    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(3,1.0) );
+    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(4,1.0) );
     StochasticNode<std::vector<double> > *csf = new StochasticNode<std::vector<double> >( "csf", new DirichletDistribution(csf_pr) );
 
     
