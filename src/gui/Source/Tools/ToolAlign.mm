@@ -115,9 +115,6 @@
         }
     if ( dataTool == nil )
         return NO;
-    
-    NSLog(@"dataTool=%@", dataTool);
-    getchar();
 
     // calculate how many unaligned data matrices exist
     NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
@@ -131,32 +128,23 @@
         
     // remove all of the files from the temporary directory
     [self removeFilesFromTemporaryDirectory];
-
-    NSLog(@"unalignedData=%@", unalignedData);
-    getchar();
-    
+        
     // and make a temporary directory to contain the alignments
     NSString* temporaryDirectory = NSTemporaryDirectory();
     NSFileManager* fm = [[NSFileManager alloc] init];
     NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
-              alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments"];
+              alnDirectory = [alnDirectory stringByAppendingString:@"/myAlignments"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
-
-    NSLog(@"alnDirectory=%@", alnDirectory);
-    getchar();
 
     // write the alignment files to the temporary directory
     for (size_t i=0; i<[unalignedData count]; i++)
         {
         // have the data object save a fasta file to the temporary directory
         RbData* d = [unalignedData objectAtIndex:i];
-        NSString* dFilePath = [NSString stringWithString:alnDirectory];
-                  dFilePath = [dFilePath stringByAppendingString:@"/"];
+        NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
                   dFilePath = [dFilePath stringByAppendingString:[d name]];
                   dFilePath = [dFilePath stringByAppendingString:@".fas"];
-    NSLog(@"dFilePath=%@", dFilePath);
-    getchar();
         [d writeToFile:dFilePath];
         }
     
