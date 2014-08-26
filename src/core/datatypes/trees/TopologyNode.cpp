@@ -244,6 +244,9 @@ std::string TopologyNode::buildNewickString( void )
     // create the newick string
     std::stringstream o;
     
+    std::fixed(o);
+    o.precision( 6 );
+    
     // test whether this is a internal or external node
     if (tipNode)
     {

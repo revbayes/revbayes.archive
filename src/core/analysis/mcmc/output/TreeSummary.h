@@ -69,28 +69,27 @@ namespace RevBayesCore {
         
         const std::vector<TopologyNode*> &nodes = bestTree->getNodes();
         std::vector<double> pp(nodes.size(),0.0);
-        std::vector<std::vector<double> > ages(nodes.size(),std::vector<double>());
+        std::vector<std::vector<double> > branchLengths(nodes.size(),std::vector<double>());
         double weight = 1.0 / (trace.size()-burnin);
         
         for (size_t i = burnin; i < trace.size(); ++i)
         {
-            
             BranchLengthTree& tree = trace.objectAt( i );
             const TopologyNode& root = tree.getRoot();
             for (size_t j = 0; j < nodes.size(); ++j)
             {
                 if ( root.containsClade(nodes[j], true) )
                 {
+                    size_t cladeIndex = root.getCladeIndex( nodes[j] );
                     pp[j] += weight;
-                    double tmrca = tree.getTmrca(*nodes[j]);
-                    ages[j].push_back(tmrca);
+                    double bl = tree.getBranchLength( cladeIndex );
+                    branchLengths[j].push_back(bl);
                 }
             }
-            
         }
         
         std::vector<double> meanBranchLengths;
-        for (std::vector<std::vector<double> >::iterator it = ages.begin(); it != ages.end(); ++it)
+        for (std::vector<std::vector<double> >::iterator it = branchLengths.begin(); it != branchLengths.end(); ++it)
         {
             double meanBranchLength = 0;
             const std::vector<double> &bl_samples = *it;

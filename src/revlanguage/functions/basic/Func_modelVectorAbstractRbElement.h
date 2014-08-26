@@ -135,7 +135,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_modelVectorAbstractRbElement<valT
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_modelVectorAbstractRbElement<valType>::getReturnType( void ) const
 {
-    return ModelVector<valType>::getClassTypeSpec();
+    return ModelVectorAbstractElement<valType>::getClassTypeSpec();
 }
 
 
