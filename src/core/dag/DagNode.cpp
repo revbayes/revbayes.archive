@@ -99,7 +99,6 @@ DagNode& DagNode::operator=(const DagNode &d)
 
 void DagNode::addChild(DagNode *child) const
 {
-
     children.insert( child );
 }
 

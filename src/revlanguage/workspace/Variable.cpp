@@ -291,6 +291,9 @@ void Variable::printValue(std::ostream& o) const
  */
 void Variable::replaceRevObject( RevObject *newObj ) {
     
+    if ( newObj != NULL && !newObj->isTypeSpec( getRevObjectTypeSpec() ) )
+        throw RbException ( "Cannot set '" + getRevObjectTypeSpec().getType() + "' variable with '" + newObj->getType() + "' object" );
+    
     if (revObject != NULL)
     {
         // I need to tell my children that I'm being exchanged
