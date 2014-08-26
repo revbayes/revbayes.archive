@@ -210,9 +210,9 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     charMatrix(), 
     gapMatrix(),
     patternCounts(),
-    numPatterns( numSites ),
     siteInvariant( numSites, false ),
     invariantSiteIndex( numSites, 0 ),
+    numPatterns( numSites ),
     compressed( c ),
     changedNodes( std::vector<bool>(numNodes,false) ),
     dirtyNodes( std::vector<bool>(numNodes, true) ),
@@ -265,9 +265,9 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     charMatrix( n.charMatrix ), 
     gapMatrix( n.gapMatrix ), 
     patternCounts( n.patternCounts ),
-    numPatterns( n.numPatterns ),
     siteInvariant( n.siteInvariant ),
     invariantSiteIndex( n.invariantSiteIndex ),
+    numPatterns( n.numPatterns ),
     compressed( n.compressed ),
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
@@ -541,19 +541,6 @@ void RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType
     {
         bool inv = true;
         unsigned long c = charMatrix[0][i];
-        
-//        unsigned long val = c;
-//        size_t d = 0;
-//        while ( val > 0 ) // there are still observed states left
-//        {
-//            // remove this state from the observed states
-//            val >>= 1;
-//            
-//            // increment the pointer to the next transition probability
-//            ++d;
-//        } // end-while over all observed states for this character
-//        
-//        invariantSiteIndex[i] = d;
 
         invariantSiteIndex[i] = c;
         
@@ -592,7 +579,7 @@ double RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeTy
     // only necessary if the root is actually dirty
     if ( dirtyNodes[rootIndex] ) 
     {
-                
+        
         // mark as computed
         dirtyNodes[rootIndex] = false;
         
