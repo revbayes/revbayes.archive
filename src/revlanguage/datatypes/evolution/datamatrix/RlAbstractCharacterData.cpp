@@ -275,6 +275,43 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         
         return new Variable( new Natural(n) );
     }
+    else if (name == "removeTaxa")
+    {
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        if ( argument.isTypeSpec( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( argument ).getValue() );
+            dagNode->getValue().excludeTaxon( n );
+        }
+        else if ( argument.isTypeSpec( ModelVector<RlString>::getClassTypeSpec() ) )
+        {
+            const ModelVector<RlString>& x = static_cast<const ModelVector<RlString>&>( argument );
+            RevBayesCore::AbstractCharacterData &v = dagNode->getValue();
+            for ( size_t i=0; i<x.size(); i++ )
+            {
+                std::string n = std::string( static_cast<const RlString&>( x[i] ).getValue() );
+                v.excludeTaxon( n );
+            }
+        }
+        return NULL;
+    }
+    else if (name == "setTaxonName")
+    {
+        const RevObject& current = args[0].getVariable()->getRevObject();
+        if ( current.isTypeSpec( RlString::getClassTypeSpec() ) )
+        {
+            std::string n = std::string( static_cast<const RlString&>( current ).getValue() );
+            const RevObject& newName = args[1].getVariable()->getRevObject();
+            if ( newName.isTypeSpec( RlString::getClassTypeSpec() ) )
+            {
+                std::string name = std::string( static_cast<const RlString&>( newName ).getValue() );
+                dagNode->getValue().setTaxonName( n ,name );
+               // std::cout << "new name: "<< dagNode->getValue().getTaxonData( n ).getTaxonName() << std::endl;
+            }
+        }
+        return NULL;
+    }
+
     //    else if (name == "nexcludedtaxa")
     //    {
     //        int n = (int)deletedTaxa.size();
@@ -463,7 +500,10 @@ MethodTable AbstractCharacterData::makeMethods( void ) const
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules   = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2  = new ArgumentRules();
-    
+    ArgumentRules* removeTaxaArgRules          = new ArgumentRules();
+    ArgumentRules* removeTaxaArgRules2         = new ArgumentRules();
+    ArgumentRules* setTaxonNameArgRules        = new ArgumentRules();
+
 
     ncharArgRules2->push_back(             new ArgumentRule("taxon_index", true, Natural::getClassTypeSpec()         ) );
     excludecharArgRules->push_back(        new ArgumentRule(      "", true, Natural::getClassTypeSpec()              ) );
@@ -472,6 +512,10 @@ MethodTable AbstractCharacterData::makeMethods( void ) const
     includecharArgRules2->push_back(       new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
     setCodonPartitionArgRules->push_back(  new ArgumentRule(      "", true, Natural::getClassTypeSpec()       ) );
     setCodonPartitionArgRules2->push_back( new ArgumentRule(      "", true, ModelVector<Natural>::getClassTypeSpec() ) );
+    removeTaxaArgRules->push_back(         new ArgumentRule(      "", true, RlString::getClassTypeSpec()              ) );
+    removeTaxaArgRules2->push_back(        new ArgumentRule(      "", true, ModelVector<RlString>::getClassTypeSpec() ) );
+    setTaxonNameArgRules->push_back(       new ArgumentRule(      "current", true, RlString::getClassTypeSpec()       ) );
+    setTaxonNameArgRules->push_back(       new ArgumentRule(      "new", true, RlString::getClassTypeSpec()           ) );
 
     
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
@@ -500,7 +544,10 @@ MethodTable AbstractCharacterData::makeMethods( void ) const
     methods.addFunction("setCodonPartition",   new MemberProcedure(RlUtils::Void,        setCodonPartitionArgRules2 ) );
     methods.addFunction("show",                new MemberProcedure(RlUtils::Void,        showdataArgRules           ) );
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
-    
+    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
+    methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
+    methods.addFunction("setTaxonName",        new MemberProcedure(RlUtils::Void,        setTaxonNameArgRules       ) );
+
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
     methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );

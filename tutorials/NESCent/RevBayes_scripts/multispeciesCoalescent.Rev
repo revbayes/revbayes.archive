@@ -62,7 +62,7 @@ moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
 moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
 
 # tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=n_species, names=speciesNames)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=org, nTaxa=n_species, names=speciesNames)
 
 # moves on the tree
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)

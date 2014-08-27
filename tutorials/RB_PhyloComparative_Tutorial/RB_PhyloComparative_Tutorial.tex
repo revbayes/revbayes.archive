@@ -72,11 +72,9 @@ On the cluster, and if you are logged under an X-terminal, you can visualize thi
 \\
 \cmd{njplot chronoplac40.tree}
 \item
-\cmd{plac73\_4fold.nex}: same alignment as above but for 73 placental mammals
+\cmd{archaeaRNA.nex}: an alignment of rRNA sequences of 33 archaeal species.
 \item
-\cmd{plac73masskaryo.nex}: body mass (in log) and number of chromosomes for 73 placental mammals.
-\item
-\cmd{chronoplac73.tree}: a time-calibrated phylogeny for the 73 taxon dataset.
+\cmd{archaeaTemp.nex}: optimal growth temperatures for the 33 archaeal species.
 \end{itemize}
 
 \section{Univariate Brownian evolution of quantitative traits}
@@ -86,11 +84,13 @@ On the cluster, and if you are logged under an X-terminal, you can visualize thi
 As a first preliminary exercise, we wish to reconstruct the evolution of body mass in placental mammals and, in particular, estimate the body mass of their last common ancestor.
 For this, we will assume that the logarithm of body mass follows a simple univariate Brownian motion along the phylogeny.
 In a first step, we will ignore phylogenetic uncertainty:
-thus, we will assume that the Brownian process describing body mass evolution will run along a fixed time-calibrated phylogeny (with fixed divergence times), such as specified in the file \cmd{chronoplac40.tree}.
+thus, we will assume that the Brownian process describing body mass evolution runs along a fixed time-calibrated phylogeny (with fixed divergence times), such as specified in the file \cmd{chronoplac40.tree}.
+
+You may want to take the time to visualize the tree given in \cmd{chronoplac40.tree} as well as the matrix of quantitative traits specified by the \cmd{plac40lhtlog.nex} file, before going into the modeling work described below.
 
 \subsection*{The model and the priors}
 
-A univariate Brownian motion $x(t)$ is parameterized by its starting value at the root of the phylogeny $x(0)$ and a variance parameter $\sigma$. This variance parameter tunes the amplitude of the variation per unit of time. Specifically, along a given time interval $(0,T)$, the value of $X$ at time $T$ is normally distributed, with mean $x(0)$ and variance $\sigma^2 T$:
+A univariate Brownian motion $x(t)$ is parameterized by its starting value at the root of the phylogeny $x(0)$ and a rate parameter $\sigma$. This rate parameter tunes the amplitude of the variation per unit of time. Specifically, along a given time interval $(0,T)$, the value of $X$ at time $T$ is normally distributed, with mean $x(0)$ and variance $\sigma^2 T$:
 \begin{eqnarray*}
 x(T) &\sim& \text{Normal} \left( x(0), \sigma^2 T \right).
 \end{eqnarray*}
@@ -107,7 +107,7 @@ Note that this uniform prior is invariant by translation. Given that our traits 
 
 Finally, the tree topology $\tau$ is, as mentioned above, fixed to some externally given phylogeny. However, in order to fully specify the model in RevBayes, we still need to define a prior on this tree: here, we will simply use a uniform prior, both on the topology and on divergence times.
 
-With this, the entire model is specified: tree $\tau$, variance $\sigma$ and Brownian process $X(t)$:
+The entire model is now specified: tree $\tau$, variance $\sigma$ and Brownian process $x(t)$:
 \begin{eqnarray*}
 \tau &\sim& \text{Uniform},
 \\
@@ -122,7 +122,7 @@ Constraining $\tau$ based on an externally-provided phylogeny and conditioning t
 
 \subsection*{Programming the model in RevBayes}
 
-Doing what has been explained in the last subsection, now in the RevBayes language:
+We just need to reformulate what has been explained in the last subsection, now in the Rev language:
 \begin{itemize}
 \item
 load trait data:
@@ -157,7 +157,7 @@ to accelerate convergence, it can be useful to force initialization of $\sigma$ 
 \\
 \cmd{sigma.setValue(0.1)}
 \item
-define the multivariate Brownian process (to be more transparent, we will call it \cmd{logmass})
+define the multivariate Brownian process, which we will call \cmd{logmass}:
 \\
 \cmd{logmass $\sim$ brownian(tau,sigma)}
 \item
@@ -186,7 +186,7 @@ index <- index + 1
 a sliding move on the Brownian process
 \\
 \cmd{
-moves[index] <- mvRealPhyloProcessSliding(process=logmass, lambda=10, tune=true, weight=100)
+moves[index] <- mvRealNodeValTreeSliding(process=logmass, lambda=10, tune=true, weight=100)
 \\
 index <- index + 1
 }
@@ -195,7 +195,7 @@ a global translation move on the Brownian process:
 % this move applies a random translation across the entire phylogeny:
 \\
 \cmd{
-moves[index] <- mvRealPhyloProcessTranslation(process=logmass,lambda=1,
+moves[index] <- mvRealNodeValTreeTranslation(process=logmass,lambda=1,
 \\
 tune=true,weight=1)
 \\
@@ -248,7 +248,7 @@ and a general model monitor:
 monitors[4] <- modelmonitor(filename="output/placmass.log", printgen=10, separator = " ")
 }
 \end{itemize}
-We can finally create a mcmc, make a burn-in and run it for a good 100 000 cycles:
+We can finally create a mcmc, and run it for a good 100 000 cycles:
 \\
 \cmd{
 mymcmc <- mcmc(mymodel, monitors, moves)
@@ -264,20 +264,24 @@ mymcmc.run(100000)
 \item
 run the model, check convergence and obtain a sample from the posterior distribution
 \item
+take the time to explore the files produced by the run: in particular, the \cmd{.logmass} file in which the sampled histories of body mass evolution are written in the newick format.
+\item
 using \cmd{Tracer}, visualize the posterior distribution on ancestral placental body mass
 \item
 calculate the credible interval for this ancestral body mass
 \item
 sumarize the evolution of body mass along the tree, visualizing it with \cmd{njplot}
+\item
+calculate a 95\% credible interval for the rate of evolution of the logarithm of body mass ($\sigma$)
 \end{itemize}
 
-You can of course conduct a similar inference for each of the three life-history traits given in \cmd{plac40lhtlog.nex}. You could either write three separate models or, alternatively, define (within the same model) three independent univariate Brownian motions running along the same phylogeny (but each with its own $\sigma$ parameter, since nothing tells us that body mass and longevity should evolve at the same rate).
+You can of course conduct a similar inference for each of the three life-history traits given in \cmd{plac40lhtlog.nex}. You could either run the model separately on each trait or, alternatively, define (within the same model) three independent univariate Brownian motions running along the same phylogeny (each with its own $\sigma$ parameter).
 
 
 \section{Correlated evolution of multiple traits}
 \label{multivariate}
 
-Next, we would like to estimate the correlation between the $K=3$ life-history traits, age at sexual maturity, body mass and longevity, such as given in the \cmd{plac40lhtlog.nex} file, and this, while properly taking into account phylogenetic inertia. 
+Next, we would like to estimate the correlation between the $K=3$ life-history traits given in the \cmd{plac40lhtlog.nex} file, while properly taking into account phylogenetic inertia. 
 To do so, we will assume that the traits jointly evolve along the phylogeny as a \emph{multivariate} Brownian process.
 We will estimate the \emph{covariance matrix} of this process. The empirical support in favor of positive or negative correlations between pairs of traits will then be formalized in terms of posterior probabilities of having positive or negative entries in this covariance matrix.
 As a by-product of this correlation analysis, we will also obtain a marginal ancestral reconstruction of the traits along the entire phylogeny, which we will then visualize using graphical software programs.
@@ -298,10 +302,10 @@ On $\Sigma$, we will assume an inverse-Wishart prior:
 \begin{eqnarray*}
 \Sigma &\sim& W^{-1}(\Sigma_0, d).
 \end{eqnarray*}
-The inverse Wishart distribution has two parameters: a symmetric positive matrix $\Sigma_0$, of same dimension as $\Sigma$, and a natural number $d \ge K+1$ (called the number of degrees of freedom). Roughly speaking, the inverse Wishart prior is centered on $\frac{1}{d} \Sigma_0$ and is all the more concentrated around this center than $d$ is large.
+The inverse Wishart distribution has two parameters: a symmetric positive matrix $\Sigma_0$, of same dimension as $\Sigma$, and a natural number $d \ge K$ (called the number of degrees of freedom). When $d > K+1$, the inverse Wishart prior has a well defined mean, which is equal to $\frac{\Sigma_0}{d-K-1}$ and is all the more concentrated around this mean than $d$ is large.
 The choice of this prior is primarily motivated by the fact that it is analytically conjugate to the multivariate normal distribution. It is therefore very convenient when used for the covariance matrix of a Brownian motion.
 
-Since we want a diffuse prior, we will use a small value for $d$, e.g. $d=K+2$.
+Since we want a diffuse prior, we will use a small value for $d$, e.g. $d=K+2$, which is the smallest value for which the mean of the distribution is well-defined.
 In addition, we want the prior to be centered on a diagonal matrix (i.e. we want to be a priori \emph{equi-poised}, or indifferent, with respect to either positive or negative correlations among traits). We may also want our prior to be invariant by linear reparameterizations of traits (linear transformations on the logarithm of life-history traits are equivalent to allometric re-parameterizations of the traits considered in natural units). This invariance will hold if and only if $\Sigma_0$ is proportional to the identity matrix, i.e. if $\Sigma_0 = \kappa I_K$, for some positive real number $\kappa$. This number $\kappa$ will set the amplitude of the variation per unit of time of the traits. Since we have no idea about the scale of $\kappa$, we should use a diffuse prior, e.g. an exponential of mean 100:
 \begin{eqnarray*}
 \kappa &\sim& \text{Exponential}(0.001).
@@ -364,7 +368,7 @@ define the covariance matrix $\Sigma$ as inverse Wishart:
 \\
 \cmd{Sigma $\sim$ invWishart(dim=nTraits, kappa=kappa, df=df)}
 \\
-note that we are using a special constructor for the inverse Wishart: when a natural number $d$ and a positive real number $\kappa$ are given, it is implicitly assumed that the matrix-valued parameter is $\kappa$ times the identity matrix: $\kappa I_d$.
+note that we are using a special constructor for the inverse Wishart: when a natural number $d$ and a positive real number $\kappa$ are given, it is implicitly assumed that the matrix-valued parameter is $\kappa$ times the identity matrix of dimension $d$: $\kappa I_d$.
 \item
 define the multivariate Brownian process:
 \\
@@ -379,7 +383,7 @@ for (i in 1:nTraits)    \{
 \}
 }
 \\
-Here, we give twice the index \cmd{i}: the first corresponds to the entry of the Brownian process, and the second one to the column of the data matrix. In some cases (as we will see below), the Brownian process and the data matrix may not be of same dimension, and therefore, it will be useful to be able to specify arbitrary maps between them.
+Here, we give twice the index \cmd{i} to the \cmd{clampAt} function: the first corresponds to the entry of the Brownian process, and the second one to the column of the data matrix. In some cases (as we will see below), the Brownian process and the data matrix may not be of same dimension, and therefore, it will be useful to be able to specify arbitrary maps between them.
 \end{itemize}
 The model is now entirely specified. We can define the moves on its parameters.
 \begin{itemize}
@@ -399,7 +403,7 @@ index <- index + 1
 a sliding move on the Brownian process
 \\
 \cmd{
-moves[index] <- mvMultivariatePhyloProcessSliding(process=X, lambda=1,
+moves[index] <- mvMultivariateRealNodeValTreeSliding(process=X, lambda=10,
 \\
 tune=true,weight=100)
 \\
@@ -409,7 +413,7 @@ index <- index + 1
 a global translation move on the Brownian process (component-wise, that is, a random global translation across the entire phylogeny is applied to one trait taken at random):
 \\
 \cmd{
-moves[index] <- mvMultivariatePhyloProcessTranslation(process=X, lambda=1,
+moves[index] <- mvMultivariateRealNodeValTreeTranslation(process=X, lambda=1,
 \\
 tune=true, weight=1)
 \\
@@ -454,9 +458,11 @@ note that the variance per unit of time of, say, log body mass is given by the d
 var2 := Sigma.covariance(2,2)
 }
 \item
-we can also get all correlation coefficients as a vector:
+we can also get all correlation coefficients into a single vector:
 \begin{verbatim}
+# initialize a running index
 corrindex <- 1
+# loop over all pairs of traits
 for (i in 1:nTraits)    {
     for (j in i+1:nTraits) {
         correl[corrindex] := Sigma.correlation(i,j)
@@ -562,11 +568,10 @@ the substitution model is conditioned on the molecular sequence data.
 \end{itemize}
 Instead of remaining fixed to a pre-defined value,
 the tree should now be moved during the MCMC.
-If the sequence data are sufficiently informative, they will induce a relatively well-focussed posterior distribution
-over the tree.
-The uncertainty about correlation parameters
-will then be automatically integrated over this posterior distribution.
-
+%If the sequence data are sufficiently informative, they will induce a relatively well-focussed posterior distribution
+%over the tree.
+%The uncertainty about correlation parameters
+%will then be automatically integrated over this posterior distribution.
 Ideally, we would like to move both the toplogy and the divergence times.
 Mixing over tree topologies under a Brownian model is relatively challenging, however
 (it works, but it requires rather long MCMC runs).
@@ -669,8 +674,10 @@ that relies on a more reasonable substitution model -- in particular, using a re
 In the previous model, no consideration was given to the problem of rate variation among lineages --
 we bluntly used a strict clock. This is of course problematic, in particular at the phylogenetic scale considered here (placental mammals), where we know that there is substantial rate variation. In addition, we know that substitution rates across branches are \emph{auto-correlated} in the present case: typically, entire orders, such as rodents, are fast evolving, whereas other orders like Cetartiodactyla are slowly evolving. In other words, nearby lineages along the phylogeny tend to be characterized by similar substitution rates.
 
-You have perhaps already seen an autocorrelated relaxed clock model in the molecular dating session (ACLN). Here, we will derive the autocorrelated clock in a slightly different way. This derivation will be less straightforward, but more useful for what we want to do next.
-Fundamentally, the auto-correlated clock is a model where the logarithm of the instant substitution rate is itself a Brownian motion. Thus, it is exactly like a univariate quantitative trait, such as the logarithm of body mass (section \ref{univariate}). Since the Brownian motion describes the evolution of the log of the rate, we need to exponentiate this Brownian process and average over branches in order to obtain branch-specific substitution rates, which can then be plugged into the substitution model.
+You have perhaps already seen an autocorrelated relaxed clock model in the molecular dating session (ACLN). You could easily recruit it in the present context (a good exercise to try: modify the model suggested in the previous section so as to replace the strict clock by the ACLN model).
+
+Here, however, we will derive the autocorrelated clock in a slightly different way. This derivation will be less straightforward, but more useful for what we want to do next.
+Fundamentally, the auto-correlated clock is a model where the logarithm of the instant substitution rate is itself a Brownian motion. Thus, it is exactly like a univariate quantitative trait, such as the logarithm of body mass (section \ref{univariate}). Next, we need to exponentiate this Brownian process and average over branches in order to obtain branch-specific substitution rates, which are finally plugged into the substitution model.
 
 \subsection*{Programming the model in RevBayes}
 
@@ -753,9 +760,7 @@ multiple regression: controlling for body mass, do you still get some support fo
 \item
 conversely, controlling for longevity, do you get supported correlations of the substitution rate and body mass (or with age at sexual maturity?)
 \item
-how much of the variation in substitution rate is explained by longevity?
-\item
-reconstruct ancestral body size, and compare with the ancestral reconstruction obtained in section \ref{univariate} and \ref{multivariate}. How do you explain the difference? Is this a strong effect?
+compare the credible interval obtained here for the body mass of the last common ancestor of placentals with what was obtained in the very first model (section \ref{univariate}).
 \end{itemize}
 
 \section{A comparative analysis of variation in GC content}
@@ -781,7 +786,7 @@ T& \frac{1 - \gamma}{2} & \kappa \, \frac{\gamma}{2}  &  \frac{\gamma}{2}  & -
 \end{array} \right)
 \end{eqnarray*}
 The model has two parameters: the transition-transversion rate $\kappa$ and the equilbrium GC content $\gamma$. In the following, we will assume that $\kappa$ is constant across the tree (although unknown, and thus endowed with a diffuse prior). In contrast, $\gamma$ will be allowed to vary among lineages, jointly with the overall substitution rate.
-Technically, since $\gamma$ is strictly between 0 and 1, its log-it transform $\ln \frac{\gamma}{1 - \gamma}$ will range over the entire real line. Therefore, we could propose that the log-it transform of $\gamma$ evolves accoding to a Brownian motion.
+Technically, since $\gamma$ is strictly between 0 and 1, its log-it transform $\ln \frac{\gamma}{1 - \gamma}$ will range over the entire real line. Therefore, we could propose that the log-it transform of $\gamma$ evolves according to a Brownian motion.
 
 Putting everything together, we will therefore propose a multivariate Brownian motion $X(t)$, of dimension $K+2$, where $K$ is the number of quantitative traits, and such that:
 \begin{eqnarray*}
@@ -791,7 +796,8 @@ X_2(t) &=& \ln \frac{\gamma(t)}{1 - \gamma(t)}
 \\
 k=1..K, \quad X_{k+2}(t) &=& \ln C_k(t)
 \end{eqnarray*}
-where $r(t)$ is the instant substitution rate and $\gamma(t)$ the instant equilibrium GC composition.
+where $r(t)$ is the instant substitution rate and $\gamma(t)$ the instant equilibrium GC composition
+and $C_k(t)$ is the $k$th. quantitative trait.
 Equivalently, we may re-write this as follows:
 \begin{eqnarray*}
 r(t) &=& e^{X_1(t)}
@@ -858,16 +864,13 @@ branchRates=branchrates, nSites=nSites, type="DNA")
 \item
 program the model in RevBayes
 \item
-run the model on the large placental dataset \cmd{plac73\_4fold.nex},
-using the extended matrix of quantitative traits \cmd{plac73lhtkaryo.nex} (combining life-history and karyotypic traits, see Data section above)
+run the model on the placental dataset
 \item
-investigate the correlation between GC, body mass and number of chromosomes. 
+investigate the correlation between GC and body mass
 \item
 how do you explain these correlations?
 \item
-how much of the variation in GC is explained by body mass and by chromosome number?
-\item
-run the model on the archaeal rRNA dataset \cmd{archaea.nex}, using temperature as the trait.
+run the model on the archaeal rRNA dataset \cmd{archaea.nex}, using temperature as the trait. In that case, no phylogeny is provided, so you may try to run the model without any constraint on the topology.
 \item
 assess the correlation between GC and temperature
 \item
@@ -886,7 +889,7 @@ In the following, we outline some possible extensions or variations, based on th
 
 Fossils have much to say about several aspects of the models and questions we have considered thus far.
 They represent a valuable source of information about divergence times but also about ancestral traits.
-In particular, fossil calibrations could be used in the context of each of the models that have been considered in sections 3 to 6, thus allowing us to do not just relative, but absolute, dating. In principle, any of the approaches that you have seen during the dating session of the workshop could be adapted to the present situation. It is just a matter of gathering the relevant information about mammalian fossils.
+In particular, fossil calibrations could be used in the context of each of the models that have been considered in sections 3 to 6, thus allowing us to do not just relative, but absolute, dating. In principle, most of the approaches that you have seen during the dating session of the workshop could be adapted to the present situation. It is just a matter of gathering the relevant information about mammalian fossils.
 
 More ambitiously, the \emph{total evidence dating} method \citep{Ronquist:2012ea} could be extended so as to now include, not just discrete morphological characters, but also quantitative traits, for both extant and extinct taxa. Morphological characters would be modeled using discrete $M_k$ models, while quantitative traits would be described by multivariate Brownian processes, just as in the previous sections.
 

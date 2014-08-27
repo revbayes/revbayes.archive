@@ -55,10 +55,10 @@ extinction ~ exponential(10.0)
 tree_height ~ unif(0,100.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
-tree_height.setValue(0.008)
+tree_height.setValue(0.08)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -77,7 +77,7 @@ for (i in 1:n_species) {
 
 # Set the effective population size
 Ne ~ gamma(shape=0.1,rate=0.1)
-Ne.setValue(0.004)
+Ne.setValue(0.0000004)
 
 # Simulate gene trees
 for (i in 1:n_genes) {
@@ -220,36 +220,36 @@ for (i in 1:n_genes) {
 # We want to start from random values, not the values used in the simulation.
 
 # Redrawing the parameters of the birth-death process:
-speciation.redraw()
-extinction.redraw()
-tree_height.redraw()
+#speciation.redraw()
+#extinction.redraw()
+#tree_height.redraw()
 
 # Redrawing the species tree:
 speciesTree.redraw()
 
 # Redrawing the parameter Ne:
-Ne.redraw()
+#Ne.redraw()
 
 
 # Redrawing the gene trees:
 for (i in 1:n_genes) {
-   geneTrees[i].redraw()
+#   geneTrees[i].redraw()
 }
 
 # Redrawing the parameters of the substitution models:
 for (i in 1:n_genes) {
-  er[i].redraw()
-  sf[i].redraw()
+#  er[i].redraw()
+#  sf[i].redraw()
 }
 
 # Idem for the family-wise rates of sequence evolution:
 for (i in 1:n_genes) {
-  familyRates[i].redraw()
+#  familyRates[i].redraw()
 }
 
 # Idem for the family-wise across-site rate variation parameters:
 for (i in 1:n_genes) {
-  shape[i].redraw()
+#  shape[i].redraw()
 }
 
 

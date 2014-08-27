@@ -322,9 +322,7 @@ void ConverterNode<rlType>::keepMe( RevBayesCore::DagNode* affecter )
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In keepMe of converter node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-    
-    this->touched = true;
-    
+ 
     // Pass the call on
     this->keepAffected();
 }

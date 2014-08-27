@@ -58,6 +58,7 @@ namespace RevBayesCore {
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         size_t                                          getNumberOfIncludedCharacters(size_t idx) const;                            //!< Number of characters for a specific taxon
         size_t                                          getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        size_t                                          getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const ContinuousTaxonData&                      getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         ContinuousTaxonData&                            getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -75,6 +76,8 @@ namespace RevBayesCore {
         void                                            setFileName(const std::string &fn);                                         //!< Set the file name
         void                                            setFilePath(const std::string &fn);                                         //!< Set the file path
         void                                            setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
+        void                                            setTaxonName(std::string& currentName, std::string& newName);               //!< Change the name of a taxon
+
         
     protected:
         // Utility functions

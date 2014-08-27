@@ -59,7 +59,6 @@ Mcmc* Mcmc::clone( void ) const
 
 void Mcmc::run(size_t kIterations)
 {
-    
     /* Let user know what we are doing */
     if ( generation == 0 )
     {
@@ -85,10 +84,6 @@ void Mcmc::run(size_t kIterations)
         std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
         std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
-    
-    // Initialize objects used in run
-    initializeChain();
-    initializeMonitors();
     
     if ( generation == 0 )
     {
