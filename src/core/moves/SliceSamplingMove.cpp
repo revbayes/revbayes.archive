@@ -26,9 +26,9 @@ SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double window_,
   : AbstractMove(weight_ ,t),
     affectedNodes(),
     nodes(),
-    numAccepted( 0 ),
     variable( n ),
-    window( window_ )
+    window( window_ ),
+    total_movement( 0.0 )
 {
     assert( not variable->isClamped() );
 
@@ -51,9 +51,9 @@ SliceSamplingMove::SliceSamplingMove(const SliceSamplingMove &m)
   : AbstractMove(m),
     affectedNodes( m.affectedNodes ),
     nodes( m.nodes ),
-    numAccepted( m.numAccepted ),
     variable( m.variable ),
-    window ( m.window )
+    window ( m.window ),
+    total_movement( 0.0 )
 {
     
 }
@@ -77,9 +77,9 @@ SliceSamplingMove& SliceSamplingMove::operator=(const RevBayesCore::SliceSamplin
     {
         affectedNodes = m.affectedNodes;
         nodes = m.nodes;
-        numAccepted = m.numAccepted;
         variable = m.variable;
 	window = m.window;
+	total_movement = m.total_movement;
     }
     
     return *this;
@@ -309,8 +309,10 @@ double slice_sample(double x0, slice_function& g,double w, int m)
   assert(g.in_range(x0));
 
   double gx0 = g();
+#ifndef NDEBUG
   volatile double diff = gx0 - g(x0);
   assert(std::abs(diff) < 1.0e-9);
+#endif
 
   // Determine the slice level, in log terms.
 
@@ -332,7 +334,11 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
   slice_function g(variable, heat, raiseLikelihoodOnly, false);
 
-  slice_sample(g.current_value(), g, window, 100);
+  double x1 = g.current_value();
+
+  double x2 = slice_sample(x1, g, window, 100);
+
+  total_movement += std::abs(x2 - x1);
 }
 
 
@@ -386,7 +392,13 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << numTried;
     o << " ";
     
-    // print the number of accepted
+    // print the average distance moved
+    if (numTried > 0)
+    {
+      o<<"Average distance moved = "<<total_movement/numTried<<std::endl;
+    }
+
+    /* / print the number of accepted
     int a_length = 9;
     if (numAccepted > 0) a_length -= (int)log10(numAccepted);
     
@@ -406,7 +418,8 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     }
     o << ratio;
     o << " ";
-    
+    */
+
     //    proposal->printParameterSummary( o );
     o<<"window = "<<window<<std::endl;
     o<<"weight = "<<weight<<std::endl;
@@ -425,7 +438,8 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
  */
 void SliceSamplingMove::resetMoveCounters( void )
 {
-    numAccepted = 0;
+    total_movement = 0.0;
+    numTried = 0;
 }
 
 
@@ -462,11 +476,11 @@ void SliceSamplingMove::swapNode(DagNode *oldN, DagNode *newN)
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
-void SliceSamplingMove::tune( void ) {
-    
-  //    double rate = numAccepted / double(numTried);
-    
-    //    proposal->tune( rate );
-    
+void SliceSamplingMove::tune( void ) 
+{
+  double predicted_window = 4.0*total_movement/numTried;
+
+  if (numTried > 3)
+    window = 0.95*window + 0.05*predicted_window;
 }
 
