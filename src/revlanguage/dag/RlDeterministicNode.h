@@ -126,7 +126,16 @@ void RevLanguage::DeterministicNode<valueType>::printStructureInfo( std::ostream
 }
 
 
-/** Touch this node for recalculation. Here we use lazy evaluation. */
+/**
+ * Touch this node for recalculation. We use lazy evaluation but pass the touched call on
+ * to our function and to downstream nodes, regardless of whether our function is dirty.
+ * This is essential when functions have multiple variable arguments associated with them
+ * and uses specialized code to keep track of which arguments have been touched.
+ *
+ * @todo We should not have to pass the message on when we have already been touched because
+ *       in the next cycle of the algorithm the toucher is us, so the call is identical
+ *       regardless of the toucher in the current call to touchMe.
+ */
 template<class valueType>
 void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *toucher ) {
     
@@ -136,18 +145,11 @@ void RevLanguage::DeterministicNode<valueType>::touchMe( RevBayesCore::DagNode *
     
     this->touched = true;     //!< To be on the safe side; the flag is not used by this class
     
-    
-    // We need to touch the function anyways because it might not be filthy enough.
-    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
-    //    if ( !this->isFunctionDirty() )
-    //    {
-
-    // Essential for lazy evaluation
+    // Essential for lazy evaluation and for keeping track of the source(s) of the touch.
     this->touchFunction( toucher );
     
-    // Dispatch the touch message to downstream nodes
+    // Dispatch the touch message to downstream nodes. TODO: Not needed when we are already touched.
     this->touchAffected();
-    //    }
 }
 
 

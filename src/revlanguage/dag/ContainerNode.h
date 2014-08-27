@@ -499,10 +499,13 @@ void ContainerNode<rlElemType, valueType>::push_back( rlElemType* x )
     newVar->setRevObjectTypeSpec( rlElemType::getClassTypeSpec() );
     
     // Name the new element
-    std::ostringstream s;
-    s << this->name;
-    s << "[" << elements.size() + 1 << "]";
-    newVar->setName( s.str() );
+    if ( this->name != "" )
+    {
+        std::ostringstream s;
+        s << this->name;
+        s << "[" << elements.size() + 1 << "]";
+        newVar->setName( s.str() );
+    }
     
     // Push it onto the end of the vector
     elements.push_back( newVar );
@@ -535,12 +538,15 @@ void ContainerNode<rlElemType, valueType>::push_front( rlElemType* x )
     elements.insert( elements.begin(), new Variable( x ) );
     
     // Rename all the elements because their names are now incorrect
-    for ( size_t i = 0; i < elements.size(); ++i )
+    if ( this->name != "" )
     {
-        std::stringstream s;
-        s << this->name;
-        s << "[" << i + 1 << "]";
-        elements[ i ]->setName( s.str() );
+        for ( size_t i = 0; i < elements.size(); ++i )
+        {
+            std::stringstream s;
+            s << this->name;
+            s << "[" << i + 1 << "]";
+            elements[ i ]->setName( s.str() );
+        }
     }
     
     // Tell everybody we have been changed
@@ -593,12 +599,15 @@ void ContainerNode<rlElemType, valueType>::setName( const std::string& n )
     RevBayesCore::DynamicNode<valueType>::setName( n );
     
     // Rename all the elements
-    for ( size_t i = 0; i < elements.size(); ++i )
+    if ( this->name != "" )
     {
-        std::stringstream s;
-        s << this->name;
-        s << "[" << i + 1 << "]";
-        elements[ i ]->setName( s.str() );
+        for ( size_t i = 0; i < elements.size(); ++i )
+        {
+            std::stringstream s;
+            s << this->name;
+            s << "[" << i + 1 << "]";
+            elements[ i ]->setName( s.str() );
+        }
     }
 }
 

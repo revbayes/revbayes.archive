@@ -432,40 +432,34 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
 }
 
 
-/** touch this node for recalculation */
+/**
+ * Touch this node for recalculation.
+ *
+ * @todo The touchAffected() call only needs to be executed if the node
+ *       has not been touched before the entry to this function. The
+ *       touchFunction call always needs to be executed (at least once
+ *       for each toucher).
+ *
+ * @todo Get rid of the touched flag. It is not used, and any code relying on
+ *       it to be set correctly might well fail.
+ */
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
     
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-    
+   
+    // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
+    // be in a consistent state. Beware! 
     this->touched = true;
     
-    // We need to touch the function anyways because it might not be filthy enough.
-    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
-//    if ( !this->isFunctionDirty() )
-//    {
-        // Essential for lazy evaluation
-        this->touchFunction( toucher );
+    // We need to touch the function always because of specialized touch functionality in some functions, like vector functions.
+    // In principle, it would sufficient to do the touch once for each toucher, but we do not keep track of the touchers here.
+    this->touchFunction( toucher );
         
-        // Dispatch the touch message to downstream nodes
-        this->touchAffected();
-//    }
-
-//#if 0
-//    // Uncomment this code if you do not want to use lazy evaluation
-//
-//    // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
-//    function->touch( toucher );
-//    
-//    // @todo: until now we update directly without lazy evaluation
-//    this->update();
-//    
-//    // we call the affected nodes every time
-//    this->touchAffected();
-//#endif
-
+    // Dispatch the touch message to downstream nodes
+    this->touchAffected();
 }
 
 
