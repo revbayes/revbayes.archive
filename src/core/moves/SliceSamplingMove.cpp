@@ -268,6 +268,37 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
 
 double search_interval(double x0,double& L, double& R, slice_function& g,double logy)
 {
+  //  assert(g(x0) > g(L) and g(x0) > g(R));
+  assert(g(x0) >= logy);
+  assert(L < R);
+  assert(L <= x0 and x0 <= R);
+
+  double L0 = L, R0 = R;
+
+  // std::cerr<<"**    L0 = "<<L0<<"   x0 = "<<x0<<"   R0 = "<<R0<<std::endl;
+  for(int i=0;i<200;i++)
+  {
+    double x1 = L + uniform()*(R-L);
+    double gx1 = g(x1);
+    //   std::cerr<<"    L  = "<<L <<"   x = "<<g.current_value()<<"   R  = "<<R<<std::endl;
+    //   std::cerr<<"    logy  = "<<logy<<"\n"; //  logy_x0 = "<<logy_x0<<" logy_current = "<<g()<<std::endl;
+
+    if (gx1 >= logy) return x1;
+
+    if (x1 > x0) 
+      R = x1;
+    else
+      L = x1;
+  }
+  std::cerr<<"Warning!  Is size of the interval really ZERO?"<<std::endl;
+  double logy_x0 = g(x0);  
+  std::cerr<<"    L0 = "<<L0<<"   x0 = "<<x0<<"   R0 = "<<R0<<std::endl;
+  std::cerr<<"    L  = "<<L <<"   x = "<<g.current_value()<<"   R  = "<<R<<std::endl;
+  std::cerr<<"    logy  = "<<logy<<"  logy_x0 = "<<logy_x0<<"  logy_current = "<<g()<<std::endl;
+
+  std::abort();
+
+  return x0;
 }
 
 double slice_sample(double x0, slice_function& g,double w, int m)
