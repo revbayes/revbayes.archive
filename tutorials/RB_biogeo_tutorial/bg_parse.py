@@ -1,12 +1,13 @@
 import re
 
-def read_events(fn='/Users/mlandis/data/bayarea/output/bg_2rate.events.txt'):
+def read_events(fn):
     f = open(fn,'r')
     lines = f.readlines()
     f.close()
     return(lines)
 
-def get_events(lines):
+def get_events(fn='/Users/mlandis/data/bayarea/output/bg_2rate.events.txt'):
+    lines=read_events(fn)
     events = {}
     for l in lines:
         y = l.split('\t')
@@ -50,7 +51,7 @@ def get_events(lines):
                 events[ taxon_index ][ k ].append(v)
     return events
 
-def get_best(d,idx,f=None,p='posterior'):
+def get_best(d,n=5,f=None,p='posterior'):
     if p not in ['posterior','prior','likelihood']:
         print('WARNING: p=\'' + p + '\' invalid, set p=\'posterior\'')
         p = 'posterior'
@@ -68,7 +69,7 @@ def get_best(d,idx,f=None,p='posterior'):
     for k in d.keys():
         ret[k] = []
     for i in best:
-        for k in d[idx].keys():
+        for k in d[k].keys():
             ret[k].append(d[k][i])
     return(ret)
 
@@ -128,7 +129,7 @@ def get_clado_state(d,minSize=1,freqs=True):
         return
 
     num_char = len(d['nd'][0])
-    v = {'s':0.,'a':0.,'p':0.}
+    v = {'s':0.,'a':0.,'p':0.,'w':0.}
    
     n = 0
     for i,x in enumerate(d['cs']):
@@ -136,10 +137,11 @@ def get_clado_state(d,minSize=1,freqs=True):
             n += 1
             v[x] += 1
 
-    if freqs and n == 0:
-        return([0.]*num_char)
-    for k in v.keys():
-        v[k] = v[k]/n
+    if freqs:
+        if n == 0:
+            return([0.]*num_char)
+        for k in v.keys():
+            v[k] = v[k]/n
 
     return(v)
 

@@ -37,12 +37,6 @@ nSites
 # create a tree whose tips match the taxon names given by the dataset
 tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
 
-# work under fixed topology
-# set tau equal to externally given tree
-treeArray <- readTrees("data/chronoarchaea.tree")
-fixedTree <- treeArray[1]
-tau.setValue(fixedTree)
-
 index <- 1
 
 # moves on the tree: only relative dates
@@ -50,14 +44,10 @@ moves[index] <- mSubtreeScale(tau, weight=5.0)
 index <- index + 1
 moves[index] <- mNodeTimeSlideUniform(tau, weight=10.0)
 index <- index + 1
-
-# if we wanted to, we could also move the tree topology
-# and integrate over the posterior induced by the sequence data
-# but mixing is currently a bit challenging 
-# moves[index] <- mNNI(tau, weight=5.0)
-# index <- index + 1
-# moves[index] <- mFNPR(tau, weight=5.0)
-# index <- index + 1
+moves[index] <- mNNI(tau, weight=5.0)
+index <- index + 1
+moves[index] <- mFNPR(tau, weight=5.0)
+index <- index + 1
 
 ######### 
 # traits
@@ -173,24 +163,27 @@ mymodel <- model(kappa)
 monitors[1] <- screenmonitor(printgen=10, correl, meanX, rootX)
 
 # similar monitor, but directly into file
-monitors[2] <- filemonitor(filename="output/archaeagctemp.trace", printgen=10, separator = "	", correl, var, meanX, rootX)
+monitors[2] <- filemonitor(filename="output/archaeagctemp1.trace", printgen=100, separator = "	", correl, var, meanX, rootX)
 
 # file monitors for the correlation and partial correlation coefficients
-monitors[3] <- filemonitor(filename="output/archaeagctemp.correl",printgen=10, separator = "	", correl, pCorrel)
+monitors[3] <- filemonitor(filename="output/archaeagctemp1.correl",printgen=100, separator = "	", correl, pCorrel)
 
 # a file monitor just for the covariance matrix
-monitors[4] <- filemonitor(filename="output/archaeagctemp.cov",printgen=10, separator = "	", Sigma)
+monitors[4] <- filemonitor(filename="output/archaeagctemp1.cov",printgen=100, separator = "	", Sigma)
 
 # a file monitor for the evolution of traits along the tree (in newick format)
-monitors[5] <- filemonitor(filename="output/archaeagctemp.traits",printgen=10, separator = "	", X)
+monitors[5] <- filemonitor(filename="output/archaeagctemp1.traits",printgen=100, separator = "	", X)
+
+# a file monitor for the evolution of traits along the tree (in newick format)
+monitors[6] <- filemonitor(filename="output/archaeagctemp1.trees",printgen=100, separator = "	", tau)
 
 # a model monitor
-monitors[6] <- modelmonitor(filename="output/archaeagctemp.log",printgen=10, separator = "	")
+monitors[7] <- modelmonitor(filename="output/archaeagctemp1.log",printgen=100, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 mymcmc.burnin(generations=100,tuningInterval=100)
 
-mymcmc.run(100000)
+mymcmc.run(1000000)
 
 

@@ -183,25 +183,18 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
     }
 
     // print function signature(s) if applicable    
-    if (editorMachine.getCurrentState()->getType() == ST_DEF_LIST) {
-        std::string subject = editorMachine.getCurrentState()->getSubject();
-        if (workspaceUtils.isFunction(subject)) {
+    if (editorMachine.getCurrentState()->getType() == ST_DEF_LIST) {        
+        BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, workspaceUtils.getFunctionSignatures(editorMachine.getCurrentState()->getSubject())) {
+            std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
 
-            BOOST_FOREACH(WorkspaceUtils::FunctionSignature sign, workspaceUtils.getFunctionSignatures(subject)) {
-                std::cout << "\n\r" + sign.returnType + " " + sign.name + " (";
-
-                for (size_t i = 0; i < sign.arguments.size(); i++) {
-                    std::cout << sign.arguments[i];
-                    if (i < sign.arguments.size() - 1) {
-                        std::cout << ", ";
-                    }
+            for (size_t i = 0; i < sign.arguments.size(); i++) {
+                std::cout << sign.arguments[i];
+                if (i < sign.arguments.size() - 1) {
+                    std::cout << ", ";
                 }
             }
-            std::cout << ")\n\r";
-            linenoiceSetCursorPos(0);
-            std::cout << prompt << buf;
-            std::cout.flush();
         }
+        std::cout << ")\n\r";
     }
 
 
@@ -221,6 +214,11 @@ tabCompletionInfo getTabCompletionInfo(const char *buf) {
     bufferInfo.completions = completions;
     bufferInfo.matchingCompletions = matches;
     bufferInfo.compMatch = compMatch;
+
+    // make sure any output is displayed correctly
+    linenoiceSetCursorPos(0);
+    std::cout << prompt << buf;
+    std::cout.flush();
 
     return bufferInfo;
 }
@@ -492,8 +490,21 @@ int escapeCallback(const char *buf, size_t len, char c) {
     linenoiceSetCursorPos(0);
     std::cout << nl << TerminalFormatter::makeUnderlined("Available completions") << nl;
 
+    unsigned int startPos = editorMachine.getLinePos(); // place in buffer to start match    
+    while (buf[startPos] == ' ') { // discard extra spaces
+        startPos++;
+    }
+
+    StringVector v;
+
+    //    BOOST_FOREACH(std::string comp, editorMachine.getCurrentState()->getCompletions()) {
+    //        if (boost::starts_with(comp, (buf + startPos))) {
+    //            v.push_back(comp);
+    //        }
+    //    }
+    //    RbClient rbClient;
     tabCompletionInfo tInfo = getTabCompletionInfo(buf);
-    printData(tInfo.completions, 2, 36);
+    printData(tInfo.matchingCompletions, 2, 36);
 
     // debug
     if (debug) {
@@ -516,7 +527,7 @@ int escapeCallback(const char *buf, size_t len, char c) {
         printData(dv, 2);
 
     }
-
+    getTabCompletionInfo(buf);
     // restore prompt
     linenoiceSetCursorPos(0);
     std::cout << nl << nl << prompt << buf;
@@ -626,7 +637,6 @@ void RbClient::startInterpretor(IHelp *help, Options *options, Configuration *co
         } else {
             // interpret Rev statement
             if (result == 0 || result == 2) {
-                prompt = default_prompt;
                 commandLine = cmd;
                 editorMachine.reset();
 
