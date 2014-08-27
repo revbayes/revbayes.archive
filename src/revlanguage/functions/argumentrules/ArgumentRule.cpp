@@ -79,9 +79,6 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  * @todo The constant flag is currently not used correctly in ArgumentRule. Therefore,
  *       we ignore it here for now. This needs to be changed.
  *
- * @todo We need to check whether workspace objects with member variables are
- *       modifiable by the user.
- *
  * @todo To conform to the old code we change the required type of the incoming
  *       variable wrapper here. We need to change this so that we do not change
  *       the wrapper here, but make sure that if the argument variable is inserted
@@ -91,8 +88,9 @@ ArgumentRule* RevLanguage::ArgumentRule::clone( void ) const
  */
 Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
+
     //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-    //    if ( isConstant() || !theVar->isAssignable() )
+    //    if ( isConstant() )
     //        once = true;
 
     RevPtr<Variable> theVar = arg.getVariable();
@@ -110,7 +108,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
                 return Argument( theVar, arg.getLabel(), true );
         }
         else if ( once == false &&
-                 !theVar->isAssignable() &&
+                 theVar->getRevObject().isConstant() &&
                  theVar->getRevObject().isConvertibleTo( *it, true ) &&
                  (*it).isDerivedOf( theVar->getRevObjectTypeSpec() )
                  )
@@ -191,8 +189,6 @@ bool ArgumentRule::hasDefault(void) const {
  * is done in a static or a dynamic context. If the rule is constant, then the argument matching
  * is done in a static context (evaluate-x§once context) regardless of the setting of the once flag.
  * If the argument is constant, we try type promotion if permitted by the variable required type.
- *
- * @todo See the TODOs for fitArgument(...)
  */
 bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once) const
 {
@@ -202,12 +198,11 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
         return false;
     }
     
-//    TODO: Use this code when the constant flag in ArgumentRule is used correctly
-//    if ( isConstant() || !var->isAssignable() )
-//    {
-//        once = true;
-//    }
-
+    if ( isConst || var->getRevObject().isConstant() )
+    {
+        once = true;
+    }
+    
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {
         if ( var->getRevObject().isTypeSpec( *it ) )
@@ -218,7 +213,7 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
         {
             return true;
         }
-        else if ( once == false && !var->isAssignable() &&
+        else if ( once == false && var->getRevObject().isConstant() &&
                   var->getRevObject().isConvertibleTo( *it, true ) &&
                   (*it).isDerivedOf( var->getRevObjectTypeSpec() )
                 )

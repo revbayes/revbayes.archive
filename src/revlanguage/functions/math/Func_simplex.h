@@ -1,3 +1,20 @@
+/**
+ * @file
+ * This file contains the declaration and implementation
+ * of the templated Func_simplex, which is used to create
+ * value simplices.
+ *
+ * @brief Declaration and implementation of Func_simplex
+ *
+ * (c) Copyright 2009- under GPL version 3
+ * @date Last modified: $Date: 2012-06-12 10:25:58 +0200 (Tue, 12 Jun 2012) $
+ * @author The RevBayes Development Core Team
+ * @license GPL version 3
+ * @version 1.0
+ *
+ * $Id: Func_simplex.h 1626 2012-06-12 08:25:58Z hoehna $
+ */
+
 #ifndef Func_simplex_H
 #define Func_simplex_H
 
@@ -7,11 +24,6 @@
 
 namespace RevLanguage {
     
-    /**
-     * @brief Simplex constructor from RealPos values
-     *
-     * This function constructs a simplex from two or more RealPos values.
-     */
     class Func_simplex :  public Function {
         
     public:

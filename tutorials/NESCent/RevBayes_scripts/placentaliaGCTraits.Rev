@@ -73,17 +73,17 @@ kappa ~ exponential(1.0)
 df <- nTraits+4
 covdim <- nTraits+2
 
-sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
+Sigma ~ invWishart(dim=covdim, kappa=kappa, df=df)
 
 # moves on kappa
 moves[index] <- mScale(kappa, lambda=2.0, tune=true, weight=3.0)
 index <- index + 1
 
 # multivariate Brownian process along the tree
-X ~ mvtBrownian(tau,sigma=sigma)
+X ~ mvtBrownian(tau,sigma=Sigma)
 
 # conjugate Gibbs move on covariance matrix
-moves[index] <- mvConjugateInverseWishartBrownian(sigma=sigma, process=X, kappa=kappa, df=df, weight=1) 
+moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
 index <- index + 1
 
 # moves on the Brownian process
@@ -103,13 +103,22 @@ for (i in 1:nTraits)	{
 }
 
 # get useful functions of the covariance matrix
-# here we want,say, the correlation between GC and body mass 
-parcor14 := sigma.partialCorrelation(1,4)
+for (i in 1:covdim)	{
+	var[i] := Sigma.covariance(i,i)
+}
+
+k <- 1;
+for (i in 1:(covdim-1))	{
+	for (j in (i+1):covdim)	{
+		correl[k] := Sigma.correlation(i,j)
+		pCorrel[k] := Sigma.partialCorrelation(i,j)
+		k <- k+1
+	}
+}
 
 # get useful outputs from the brownian process
 
 for (i in 1:covdim)	{
-
 	# mean and stdev of the log rate (i=1) and then each trait
 	meanX[i] := X.mean(i)
 	stdevX[i] := X.stdev(i)
@@ -156,15 +165,22 @@ seq.clamp(seqData)
 mymodel <- model(kappa)
 
 # screen monitor
-monitors[1] <- screenmonitor(printgen=10, meanX, sigma)
+monitors[1] <- screenmonitor(printgen=10, correl, meanX)
 
-# monitoring the covariance matrix
-monitors[2] <- filemonitor(filename="output/placgc.cov",printgen=10, separator = "	", sigma)
+# similar monitor, but directly into file
+monitors[2] <- filemonitor(filename="output/placgc.trace", printgen=10, separator = "	", correl, var, meanX)
 
-# monitoring the brownian evolutionary history
-monitors[3] <- filemonitor(filename="output/placgc.traits",printgen=10, separator = "	", X)
+# file monitors for the correlation and partial correlation coefficients
+monitors[3] <- filemonitor(filename="output/placgc.correl",printgen=10, separator = "	", correl, pCorrel)
 
-monitors[4] <- modelmonitor(filename="output/placgc.log",printgen=10, separator = "	")
+# a file monitor just for the covariance matrix
+monitors[4] <- filemonitor(filename="output/placgc.cov",printgen=10, separator = "	", Sigma)
+
+# a file monitor for the evolution of traits along the tree (in newick format)
+monitors[5] <- filemonitor(filename="output/placgc.traits",printgen=10, separator = "	", X)
+
+# a model monitor
+monitors[6] <- modelmonitor(filename="output/placgc.log",printgen=10, separator = "	")
  
 mymcmc <- mcmc(mymodel, monitors, moves)
 
