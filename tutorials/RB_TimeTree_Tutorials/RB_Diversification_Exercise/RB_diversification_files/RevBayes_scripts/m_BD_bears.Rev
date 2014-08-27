@@ -1,20 +1,6 @@
 ############################################################################################
-#   File: diversification tutorial birth-death, rho ~ Beta(1,14) model specification file
+#   File: diversification tutorial birth-death, rho=10/147 model specification file
 ############################################################################################
-
-## read in the tree 
-T <- readTrees("data/bears_dosReis.tre")[1]
-
-## get useful variables from the tree
-n_taxa <- T.ntips()
-names <- T.names()
-
-## Moves iterator
-mi <- 0 
-
-#######################################
-###### birth-death process model  #####
-#######################################
 
 ### diversification = birth_rate - death_rate
 ### assume an exponential prior distribution 
@@ -39,10 +25,9 @@ birth_rate := diversification / (denom)
 death_rate := (turnover * diversification) / (denom)
 
 ### rho is the probability of sampling species at the present
-### assume rho is drawn from a beta distribution with an expected value of 0.067
-### operate on this parameter using a slide move
-rho ~ dnBeta(1.0, 14.0)
-moves[mi++] <- mvSlide(rho,delta=1.0,tune=true,weight=3.0)
+### fix this to 0.68, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
+### and we have sampled 10
+rho <- 0.68
 
 ### the BDP is conditioned on the root time, we can get this value from our tree and set a constant node
 root_time <- treeHeight(T)
@@ -52,7 +37,3 @@ timetree ~ dnBDP(lambda=birth_rate, mu=death_rate, rootAge=root_time, rho=rho, s
 
 ### clamp the model with the "observed" tree
 timetree.clamp(T)
-
-### workspace model wrapper ###
-mymodel <- model(diversification)
-
