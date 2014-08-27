@@ -421,7 +421,6 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
 
     //    proposal->printParameterSummary( o );
     o<<"  window = "<<window<<std::endl;
-    o<<"  weight = "<<weight<<std::endl;
     
     o << std::endl;
     
