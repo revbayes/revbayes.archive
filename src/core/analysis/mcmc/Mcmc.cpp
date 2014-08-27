@@ -59,7 +59,6 @@ Mcmc* Mcmc::clone( void ) const
 
 void Mcmc::run(size_t kIterations)
 {
-    
     /* Let user know what we are doing */
     if ( generation == 0 )
     {

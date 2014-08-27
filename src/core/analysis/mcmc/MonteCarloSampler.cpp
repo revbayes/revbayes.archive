@@ -95,6 +95,7 @@ MonteCarloSampler::~MonteCarloSampler(void)
 }
 
 
+/** Run burnin and autotune */
 void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
     
     // Initialize objects needed by chain
@@ -109,25 +110,43 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
         movesPerIteration += it->getUpdateWeight();
     }
     
-    std::cout << "Running Monte Carlo Sampler while performing " << movesPerIteration << " proposals per iteration." << std::endl;
+    /* Let user know what we are doing */
+    std::cout << "\nRunning MCMC burnin simulation for " << generations << " iterations" << std::endl;
     
-    size_t printInterval = size_t( round( fmax(1,generations/20.0) ) );
-    
+    if ( scheduleType == "single" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves, with a" << std::endl;
+        std::cout << "single move picked randomly per iteration" << std::endl;
+    }
+    else if ( scheduleType == "random" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves in a random" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+    }
+    else if ( scheduleType == "sequential" )
+    {
+        std::cout << "The simulator uses " << moves.size() << " different moves in a sequential" << std::endl;
+        std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
+    }
+
+    // Print progress bar (68 characters wide)
     if (chainActive)
     {
-        std::cout << "burning in the chain ..." << std::endl;
-        std::cout << "0--------25--------50--------75--------100" << std::endl;
-        std::cout << "*";
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
         std::cout.flush();
     }
     
     // Run the chain
+    size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        
-        if ( k % printInterval == 0 )
+        size_t progress = 68 * (double) k / (double) generations;
+        if ( progress > numStars )
         {
-            std::cout << "**";
+            for ( ;  numStars < progress; ++numStars )
+                std::cout << "*";
             std::cout.flush();
         }
         
