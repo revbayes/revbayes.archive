@@ -18,8 +18,4 @@ Saimiri_sciureus	AAGCTTCACCGGCGCAATGATCCTAATAATCGCTCACGGGTTTACTTCGTCTATGCTATTCTG
 ;
 end;
 
-begin assumptions;
-	charset firsthalf = 1 - 449;
-	charset secondhalf = 450 - 898;
-end;
 
