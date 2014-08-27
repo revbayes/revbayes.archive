@@ -35,7 +35,7 @@ setwd(dataFolder)
 n_species <- 10
 n_genes <- 10
 n_alleles <- 5
-n_sites <- 500
+n_sites <- 100
 n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 
 ######################
@@ -53,10 +53,10 @@ extinction ~ exponential(10.0)
 tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
-tree_height.setValue(0.008)
+tree_height.setValue(0.8)
 
 # Species tree from birth-death process
-speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -74,7 +74,7 @@ for (i in 1:n_species) {
 
 # Set the effective population size
 Ne ~ gamma(shape=0.5,rate=0.5)
-Ne.setValue(0.004)
+Ne.setValue(0.00000000004)
 
 # Simulate gene trees
 for (i in 1:n_genes) {
@@ -181,16 +181,16 @@ for (i in 1:n_genes) {
 
 # We need to save the species tree, the gene trees, and the gene alignments
 # Saving the species tree
-write(speciesTree, filename="speciesTree")
+write(speciesTree, filename=dataFolder+"speciesTree")
 
 # Saving the gene trees
 for (i in 1:n_genes) {
-	write(geneTrees[i], filename="geneTree_"+i)
+	write(geneTrees[i], filename=dataFolder+"geneTree_"+i)
 }
 
 # Saving the gene alignments
 for (i in 1:n_genes) {
-	writeFasta(alns[i], filename="alignment_"+i+".fasta")
+	writeFasta(alns[i], filename=dataFolder+"alignment_"+i+".fasta")
 }
 
 #####################################################
@@ -199,11 +199,40 @@ for (i in 1:n_genes) {
 #####################################################
 #####################################################
 
+#########
+# Preparing the data
+#########
+
 # First, concatenating the alignments:
 concatenate<-alns[1]
 for (i in 2:n_genes) {
 	concatenate <- concatenate + alns[i]
 }
+
+#Take a look at the current concatenate:
+write(concatenate)
+
+
+# Then, select one allele per species.
+# All alleles are equivalent, there is no reason to choose randomly among them.
+# So we choose allele number one for each species, and discard all the other alleles.
+for (i in 1:n_species) {
+	for (j in 2:n_alleles) {
+		write(s_names[i]+"_"+j)
+		concatenate.removeTaxa(s_names[i]+"_"+j)
+	}
+}
+
+# Take a look at the current concatenate:
+write(concatenate)
+
+# Finally we need to rename the remaining taxa.
+for (i in 1:n_species) {
+	concatenate.setTaxonName(s_names[i]+"_1", s_names[i])
+}
+
+# Writing the concatenate
+writeFasta(concatenate, filename=dataFolder+"concatenate.fasta")
 concatenate_n_sites <- concatenate.nchar()[1]
 
 # Second, one needs to define a transition matrix for DNA mutations.
@@ -263,11 +292,6 @@ moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 # moves on the parameters of the substitution model
 moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
 moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
-
-# moves on the parameters of the root frequencies
-moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
-#moves[moveIndex++] <- mvScale(root_polymorphism_proportion, lambda=10, tune=true, weight=2) 
-moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true, weight=2) 
 
 # moves on the across-sites rate variation parameter:
 moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
