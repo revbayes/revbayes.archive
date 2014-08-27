@@ -45,8 +45,8 @@ namespace RevBayesCore {
         //protected methods that are overwritten from the base class
         void                                                    performMove(double heat, bool raiseLikelihoodOnly);                                     //!< Perform the move.
         void                                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
-        double                                                  Pr(double, double);
-        double                                                  Pr(double);
+        double                                                  Pr(double, double, bool);
+        double                                                  Pr(double, bool);
 
     private:
 
@@ -55,7 +55,7 @@ namespace RevBayesCore {
         std::set<DagNode*>                                      nodes;                                                                                  //!< The set of nodes this move is working on
         unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
         StochasticNode<double>*                                 variable;                                                                               //!< The variable the Proposal is working on
-        double window;
+        double                                                  window;
     };
 }
 
