@@ -305,6 +305,18 @@ bool RevObject::isAbstract( void ) const
 
 
 /**
+ * Is the object or any of its upstream members or elements
+ * modifiable by the user through assignment? By default we
+ * return true, which is the safest option if a derived class
+ * forgets to override this function.
+ */
+bool RevObject::isAssignable( void ) const
+{
+    return true;
+}
+
+
+/**
  * The default implementation is that the variable is constant. Only variables which actually store
  * internally DAG nodes have to ask the DAG nodes if they are constant.
  */
@@ -353,17 +365,6 @@ void RevObject::makeConversionValue( RevPtr<Variable> var )
 }
 
 
-/**
- * Convert the object to a deterministic object with a userdefined Rev function inside it.
- */
-void RevObject::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
-{
-    std::ostringstream msg;
-    msg << "The type '" << getClassType() << "' not supported in deterministic nodes (yet)";
-    throw RbException( msg );
-}
-
-
 /** Get a deterministic lookup of an element. Default implementation throws an error */
 RevObject* RevObject::makeElementLookup( const RevPtr<Variable>& var, const std::vector< RevPtr<Variable> >& indices )
 {
@@ -408,6 +409,17 @@ MethodTable RevObject::makeMethods(void) const
     methods.addFunction("get", new MemberProcedure(RevObject::getClassTypeSpec(), getArgRules) );
     
     return methods;
+}
+
+
+/**
+ * Convert the object to a deterministic object with a user-defined Rev function inside it.
+ */
+void RevObject::makeUserFunctionValue( UserFunction* fxn )
+{
+    std::ostringstream msg;
+    msg << "The type '" << getClassType() << "' not supported in user-defined function nodes (yet)";
+    throw RbException( msg );
 }
 
 

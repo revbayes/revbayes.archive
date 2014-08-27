@@ -62,7 +62,7 @@ void Mcmc::run(size_t kIterations)
     /* Let user know what we are doing */
     if ( generation == 0 )
     {
-        std::cout << "Running MCMC simulation for " << kIterations << " iterations" << std::endl;
+        std::cout << "\nRunning MCMC simulation for " << kIterations << " iterations" << std::endl;
     }
     else
     {
