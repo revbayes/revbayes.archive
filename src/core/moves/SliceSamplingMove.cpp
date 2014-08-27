@@ -347,6 +347,12 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
   total_movement += std::abs(x2 - x1);
 
   numPr += g.get_num_evals();
+
+  if (autoTuning and numTried > 3)
+  {
+    double predicted_window = 4.0*total_movement/numTried;
+    window = 0.95*window + 0.05*predicted_window;
+  }
 }
 
 
