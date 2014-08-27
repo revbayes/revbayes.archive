@@ -112,7 +112,6 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateContent( Environment& env )
 #ifdef DEBUG_PARSER
         printf( "Adding argument with label \"%s\".\n", (*i)->getLabel().c_str() );
 #endif
-        
         const RlString& theLabel = (*it)->getLabel();
         RevPtr<Variable> theVar = (*it)->getExpression().evaluateContent(env);
         
@@ -230,7 +229,6 @@ RevPtr<Variable> SyntaxFunctionCall::evaluateDynamicContent( Environment& env )
 #ifdef DEBUG_PARSER
         printf( "Adding argument with label \"%s\".\n", (*it)->getLabel().c_str() );
 #endif
-        
         const RlString& theLabel = (*it)->getLabel();
         RevPtr<Variable> theVar = (*it)->getExpression().evaluateDynamicContent(env);
         
