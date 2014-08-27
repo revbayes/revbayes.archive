@@ -47,7 +47,7 @@ namespace RevBayesCore {
     class PathRejectionSampleProposal : public Proposal {
         
     public:
-        PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
+        PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
         PathRejectionSampleProposal( const PathRejectionSampleProposal& p );
         
         // Basic utility functions
@@ -92,6 +92,7 @@ namespace RevBayesCore {
         bool                                    fixNodeIndex;
         bool                                    sampleNodeIndex;
         bool                                    sampleSiteIndexSet;
+        bool                                    useTail;
         
         bool                                    printDebug;
         
@@ -108,14 +109,15 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
     node(nd),
     lambda(l),
     sampleNodeIndex(true),
-    sampleSiteIndexSet(true)
+    sampleSiteIndexSet(true),
+    useTail(ut)
 {
     nodes.insert(ctmc);
     nodes.insert(tau);
@@ -142,6 +144,7 @@ RevBayesCore::PathRejectionSampleProposal<charType, treeType>::PathRejectionSamp
         lambda = m.lambda;
         sampleNodeIndex = m.sampleNodeIndex;
         sampleSiteIndexSet  = m.sampleSiteIndexSet;
+        useTail = m.useTail;
         
         numNodes =  m.numNodes;
         numCharacters = m.numCharacters;
@@ -215,11 +218,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::computeLnP
     fillStateCounts(currState, counts);
 
     double branchLength = nd.getBranchLength();
-    if (nd.isRoot())
+    if (nd.isRoot() && useTail)
     {
-        return 0.0;
         branchLength = nd.getAge() * 5;
     }
+    else
+        return 0.0;
 
     double currAge = 0.0;
     if (nd.isRoot())
@@ -317,11 +321,12 @@ double RevBayesCore::PathRejectionSampleProposal<charType, treeType>::doProposal
     // get model parameters
 //    const treeType& tree = this->tau->getValue();
     double branchLength = node->getBranchLength();
-    if (node->isRoot())
+    if (node->isRoot() && useTail)
     {
-        return 0.0;
         branchLength = node->getAge() * 5;
     }
+    else
+        return 0.0;
     
     const RateMap& rm = qmap->getValue();
 

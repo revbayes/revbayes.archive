@@ -3,8 +3,21 @@
 #		  likelihoods under the pure birth (Yule) model 
 ############################################################################################
 
+## read in the tree 
+T <- readTrees("data/bears_dosReis.tre")[1]
+
+## get useful variables from the tree
+n_taxa <- T.ntips()
+names <- T.names()
+
+## Moves iterator
+mi <- 0 
+
 ### load the model from file 
 source("RevBayes_scripts/m_Yule_bears.Rev")
+
+### workspace model wrapper ###
+mymodel <- model(birth_rate)
 
 ### compute power posterior distributions
 pow_p <- powerPosterior(mymodel, moves, "output/Yule_bears_powp.out", cats=100) 
