@@ -120,40 +120,38 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
     return name;
 }
 
-double SliceSamplingMove::Pr(double heat)
+/// Compute probability of Markov blanket
+double SliceSamplingMove::Pr(double heat, bool raiseLikelihoodOnly)
 {
     double lnPrior = 0.0;
     double lnLikelihood = 0.0;
 
-    // compute the probability of the current value for each node
+    // 1. compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
         lnPrior += (*it)->getLnProbability();
-    }
     
-    // then we recompute the probability for all the affected nodes
+    // 2. then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
         if ( (*it)->isClamped() )
-        {
-            
             lnLikelihood += (*it)->getLnProbability();
-            
-        }
         else
-        {
             lnPrior += (*it)->getLnProbability();
-        }
     }
 
-    return lnPrior + (heat * lnLikelihood);
+    // 3. exponentiate with the chain heat
+    double lnPosterior;
+    if ( raiseLikelihoodOnly )
+        lnPosterior = heat * lnLikelihood + lnPrior;
+    else
+        lnPosterior = heat * (lnLikelihood + lnPrior);
+
+    return lnPosterior;
 }
 
-double SliceSamplingMove::Pr( double x , double heat )
+double SliceSamplingMove::Pr( double x , double heat, bool raiseLikelihoodOnly )
 {
-    double &val = variable->getValue();
-
-    val = x;
+    variable->getValue() = x;
 
     // first we touch all the nodes
     // that will set the flags for recomputation
@@ -164,7 +162,7 @@ double SliceSamplingMove::Pr( double x , double heat )
     
     assert( not variable->isClamped() );
 
-    double Pr_ = Pr(heat);
+    double Pr_ = Pr(heat, raiseLikelihoodOnly);
     
     // call accept for each node  --  automatically includes affected nodes
     for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
@@ -177,139 +175,39 @@ double SliceSamplingMove::Pr( double x , double heat )
 
 void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
-    double storedValue;
+    double storedValue = variable->getValue();
+
+    // Get random number generator    
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
 
     //-------------------- Propose a new value--------------------------
-    double lnHastingsRatio;
-    {
-      // Get random number generator    
-      RandomNumberGenerator* rng     = GLOBAL_RNG;
-      
-      double &val = variable->getValue();
-      
-      // copy value
-      storedValue = val;
-      
-      // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-      double u = rng->uniform01();
-      const double lambda = 1.0;
-      double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-      val *= scalingFactor;
+    // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
+    double u = rng->uniform01();
+    const double lambda = 1.0;
+    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+    double newValue = storedValue * scalingFactor;
       
       // compute the Hastings ratio
-      lnHastingsRatio = log( scalingFactor );
-    }
+    double lnHastingsRatio = log( scalingFactor );
 
     //--------------------------------------------------------------------
-    
-    // first we touch all the nodes
-    // that will set the flags for recomputation
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        (*it)->touch();
-    }
-    
-    double lnPriorRatio = 0.0;
-    double lnLikelihoodRatio = 0.0;
-    
-    // compute the probability of the current value for each node
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        lnPriorRatio += (*it)->getLnProbabilityRatio();
-    }
-    
-    // then we recompute the probability for all the affected nodes
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
-    {
-        if ( (*it)->isClamped() )
-        {
-            
-            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-            
-        }
-        else
-        {
-            lnPriorRatio += (*it)->getLnProbabilityRatio();
-        }
-    }
-    
-    // exponentiate with the chain heat
-    double lnPosteriorRatio;
-    if ( raiseLikelihoodOnly )
-    {
-        lnPosteriorRatio = heat * lnLikelihoodRatio + lnPriorRatio;
-    }
+    double p1 = Pr(heat, raiseLikelihoodOnly);
+    assert( std::abs(p1 - Pr(storedValue, heat, raiseLikelihoodOnly)) < 1.0e-8);
+    double p3 = Pr(newValue, heat, raiseLikelihoodOnly);
+
+    double ratio = (p3 - p1) + lnHastingsRatio;
+
+    if (ratio > 0.0 or rng->uniform01() < exp(ratio))
+    { /* accept */ }
     else
     {
-        lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
-    }
-	
-    if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) 
-    {
-		
-        variable->setValue( new double(storedValue) );
-	
-	// call restore for each node
-	for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-	{
-	    (*i)->restore();
-	}
-    }
-    else
-    {
-        // finally add the Hastings ratio
-        double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-    
-        if (lnAcceptanceRatio >= 0.0)
-        {
-            numAccepted++;
-        
-            // call accept for each node
-            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-            {
-                (*i)->keep();
-            }
-        
-        }
-        else if (lnAcceptanceRatio < -300.0)
-        {
-            variable->setValue( new double(storedValue) );
-        
-            // call restore for each node
-            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-            {
-                (*i)->restore();
-            }
-        }
-        else
-        {
-            double r = exp(lnAcceptanceRatio);
-            // Accept or reject the move
-            double u = GLOBAL_RNG->uniform01();
-            if (u < r)
-            {
-                numAccepted++;
-            
-                // call accept for each node
-                for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-                {
-                    (*i)->keep();
-                }
-            }
-            else
-            {
-	        variable->setValue( new double(storedValue) );
-            
-                // call restore for each node
-                for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-                {
-                    (*i)->restore();
-                }
-            }
-        }
-
+      /* reject */
+      double p4 = Pr(storedValue, heat, raiseLikelihoodOnly);
+      assert( std::abs(p1 - p4) < 1.0e-8);
     }
 
+    //    std::cerr<<"p1 = "<<p1<<"     p3 = "<<p3<<std::endl;
+    //    std::cerr<<"x1 = "<<storedValue<<"    x-proposed = "<<newValue<<"       x-new = "<<variable->getValue()<<std::endl;
 }
 
 
