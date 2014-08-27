@@ -474,7 +474,7 @@ void SliceSamplingMove::tune( void )
 {
   double predicted_window = 4.0*total_movement/numTried;
 
-  if (numTried > 3)
-    window = 0.95*window + 0.05*predicted_window;
+  double p = exp(-double(numTried)*0.5);
+  window = p*window + (1.0-p)*predicted_window;
 }
 
