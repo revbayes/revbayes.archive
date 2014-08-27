@@ -147,6 +147,7 @@ struct interval
   interval(bool hl,double l, bool hu, double u):has_lower_bound(hl),lower_bound(l),has_upper_bound(hu),upper_bound(u) {}
 };
 
+/// This object allow computing the probability of the current point, and also store the variable's range
 class slice_function: public interval
 {
   StochasticNode<double>* variable;
@@ -329,7 +330,7 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 
 void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
-  slice_function g(variable, heat, raiseLikelihoodOnly);
+  slice_function g(variable, heat, raiseLikelihoodOnly, false);
 
   slice_sample(g.current_value(), g, window, 100);
 }
