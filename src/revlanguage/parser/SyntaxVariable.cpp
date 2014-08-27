@@ -522,7 +522,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
     bool dynamicLookup = false;
     for ( std::vector< RevPtr<Variable> >::iterator it = oneOffsetIndexVars.begin(); it != oneOffsetIndexVars.end(); ++it )
     {
-        if ( (*it)->getRevObject().hasDagNode() && (*it)->isAssignable() )
+        if ( (*it)->getRevObject().hasDagNode() && !(*it)->getRevObject().getDagNode()->isImmutable() )
         {
             dynamicLookup = true;
             break;
@@ -533,7 +533,7 @@ RevPtr<Variable> SyntaxVariable::evaluateDynamicContent( Environment& env)
     // If it does have a DAG node, we need a dynamic lookup if it is named, regardless of whether we have constant indices
     if ( theVar->getRevObject().hasDagNode() == false )
         dynamicLookup = false;
-    else if ( theVar->isAssignable() )
+    else if ( !theVar->getRevObject().getDagNode()->isImmutable() )
         dynamicLookup = true;
 
     // Get dynamic element from container or subscript operator

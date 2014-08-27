@@ -300,8 +300,8 @@ bool TestPomoModel::run( void ) {
         
     GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree> *phyloCTMC = new GeneralBranchHeterogeneousCharEvoModel<PolymorphicState, TimeTree>(tau, 58, true, concatenatedSimSeqsPol->getNumberOfCharacters());
     phyloCTMC->setClockRate( clockRate );
-    phyloCTMC->setRateMatrix( q );
     phyloCTMC->setRootFrequencies( rf );
+    phyloCTMC->setRateMatrix( q );
     StochasticNode< AbstractCharacterData > *charactermodel = new StochasticNode< AbstractCharacterData >("CharacterModel", phyloCTMC );
     charactermodel->clamp( concatenatedSimSeqsPol );
     

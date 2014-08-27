@@ -60,23 +60,6 @@ MultivariateRealNodeValTree* MultivariateRealNodeValTree::clone(void) const {
 /* Map calls to member methods */
 RevLanguage::RevPtr<Variable> MultivariateRealNodeValTree::executeMethod(std::string const &name, const std::vector<Argument> &args) {
     
-    /*
-    if (name == "rootVal") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double rootval = this->dagNode->getValue().getRootVal(k->getValue());
-        return new Variable( new Real( rootval ) );
-    }
-    else if (name == "mean") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double mean = this->dagNode->getValue().getMean(k->getValue());
-        return new Variable( new Real( mean ) );
-    }
-    else if (name == "stdev") {        
-        RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        double stdev = this->dagNode->getValue().getStdev(k->getValue());
-        return new Variable( new Real( stdev ) );
-    }    
-    */
     if (name == "newick") {        
         RevBayesCore::TypedDagNode< int >* k = static_cast<const Integer &>( args[0].getVariable()->getRevObject() ).getDagNode();
         std::string newick = this->dagNode->getValue().getNewick(k->getValue());
@@ -158,7 +141,7 @@ RevLanguage::MethodTable MultivariateRealNodeValTree::makeMethods(void) const
     
     methods.addFunction("stdev", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
     
-    methods.addFunction("rootVal", new MemberProcedure(Real::getClassTypeSpec(), argRules ) );
+    methods.addFunction("rootVal", new MemberFunction<MultivariateRealNodeValTree,RealPos>(  this, argRules ) );
     
     methods.addFunction("newick", new MemberProcedure(RlString::getClassTypeSpec(), argRules ) );
     

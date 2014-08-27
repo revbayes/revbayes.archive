@@ -97,16 +97,13 @@ void Model::printValue(std::ostream &o) const {
         o << "=";
     o << std::endl << std::endl;
     
+    o << "List of nodes" << std::endl;
+    o << "- - - - - - -" << std::endl << std::endl;
+
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
         if ( (*it)->getName() != "" )
-        {
-#ifdef DEBUG_STRUCTURE
             o << (*it)->getName() <<  " <" << (*it) << "> :" << std::endl;
-#else
-            o << (*it)->getName() << ":" << std::endl;
-#endif
-        }
         else
             o << "<" << (*it) << "> :" << std::endl;
         
