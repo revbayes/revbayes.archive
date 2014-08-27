@@ -14,7 +14,7 @@ moves[mi++] <- mvScale(birth_rate,lambda=1.0,tune=true,weight=3.0)
 ### rho is the probability of sampling species at the present
 ### fix this to 0.68, since there are ~147 described species of caniforms (bears, dogs, mustelids, pinnipeds, etc.)
 ### and we have sampled 10
-rho <- 0.68
+rho <- 0.068
 
 ### the BDP is conditioned on the root time, we can get this value from our tree and set a constant node
 root_time <- treeHeight(T)
@@ -26,5 +26,3 @@ timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=rho, rootAge=root_time, sampling
 ### clamp the model with the "observed" tree
 timetree.clamp(T)
 
-### workspace model wrapper ###
-mymodel <- model(birth_rate)
