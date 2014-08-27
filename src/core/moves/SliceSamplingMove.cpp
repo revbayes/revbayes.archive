@@ -381,7 +381,7 @@ void SliceSamplingMove::swapNode(DagNode *oldN, DagNode *newN)
  */
 void SliceSamplingMove::tune( void ) {
     
-    double rate = numAccepted / double(numTried);
+  //    double rate = numAccepted / double(numTried);
     
     //    proposal->tune( rate );
     
