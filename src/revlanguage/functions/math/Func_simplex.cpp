@@ -1,3 +1,11 @@
+//
+//  Func_simplex.cpp
+//  RevBayesCore
+//
+//  Created by Sebastian Hoehna on 9/8/12.
+//  Copyright 2012 __MyCompanyName__. All rights reserved.
+//
+
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
 #include "Func_simplex.h"
@@ -12,35 +20,31 @@
 
 using namespace RevLanguage;
 
-
-/** Default constructor */
-Func_simplex::Func_simplex( void ) :
-    Function()
-{
+Func_simplex::Func_simplex() : Function() {
+    
 }
 
-/** Clone object */
-Func_simplex* Func_simplex::clone( void ) const
-{
+/* Clone object */
+Func_simplex* Func_simplex::clone( void ) const {
+    
     return new Func_simplex( *this );
 }
 
 
-/** Execute function: Construct simplex from RealPos values. */
-RevPtr<Variable> Func_simplex::execute( void )
-{
+/** Execute function: We rely on getValue and overloaded push_back to provide functionality */
+RevPtr<Variable> Func_simplex::execute( void ) {
+    
     std::vector<const RevBayesCore::TypedDagNode<double>* > params;
-    for ( size_t i = 0; i < args.size(); i++ )
-    {
+    for ( size_t i = 0; i < args.size(); i++ ) {
         const RealPos &val = static_cast<const RealPos &>( args[i].getVariable()->getRevObject() );
         params.push_back( val.getDagNode() );
     }
     
-    RevBayesCore::SimplexFunction* func = new RevBayesCore::SimplexFunction( params );
+    RevBayesCore::SimplexFunction *func = new RevBayesCore::SimplexFunction( params );
     
-    DeterministicNode<std::vector<double> >* detNode = new DeterministicNode<std::vector<double> >( "", func, this->clone() );
+    DeterministicNode<std::vector<double> > *detNode = new DeterministicNode<std::vector<double> >("", func, this->clone());
     
-    Simplex* theSimplex = new Simplex( detNode );
+    Simplex *theSimplex = new Simplex( detNode );
         
     return new Variable( theSimplex );
 }
@@ -52,11 +56,12 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet )
-    {
-        argumentRules.push_back( new ArgumentRule( "x1", false, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new ArgumentRule( "x2", false, RealPos::getClassTypeSpec() ) );
-        argumentRules.push_back( new Ellipsis ( RealPos::getClassTypeSpec() ) );
+    if ( !rulesSet ) {
+        std::vector<TypeSpec> types;
+        types.push_back( RealPos::getClassTypeSpec() );
+        types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "", true, types ) );
+        argumentRules.push_back( new Ellipsis (     RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -64,34 +69,35 @@ const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
 }
 
 
-/** Get Rev type of object (static) */
-const std::string& Func_simplex::getClassType( void )
-{
+/** Get Rev type of object */
+const std::string& Func_simplex::getClassType(void) { 
+    
     static std::string revType = "Func_simplex";
     
 	return revType; 
 }
 
 
-/** Get Rev type spec of object (static) */
-const TypeSpec& Func_simplex::getClassTypeSpec( void )
-{
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+/** Get class type spec describing type of object */
+const TypeSpec& Func_simplex::getClassTypeSpec(void) { 
+    
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
 
-/** Get Rev type spec of object from an instance */
-const TypeSpec& Func_simplex::getTypeSpec( void ) const
-{
-    return getClassTypeSpec();
+/** Get type spec */
+const TypeSpec& Func_simplex::getTypeSpec( void ) const {
+    
+    static TypeSpec typeSpec = getClassTypeSpec();
+    
+    return typeSpec;
 }
 
 
-/** Get return type of function */
-const TypeSpec& Func_simplex::getReturnType( void ) const
-{
+/** Get return type */
+const TypeSpec& Func_simplex::getReturnType( void ) const {
+    
     return Simplex::getClassTypeSpec();
 }
-

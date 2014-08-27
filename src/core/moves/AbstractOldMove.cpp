@@ -119,6 +119,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
 #ifdef DEBUG_MCMC_DETAILS
                     std::cerr << "Accepting move" << std::endl;
 #endif
+                
                     accept();
                 }
                 else
@@ -126,6 +127,7 @@ void AbstractOldMove::perform( double heat, bool raiseLikelihoodOnly )
 #ifdef DEBUG_MCMC_DETAILS
                     std::cerr << "Rejecting move" << std::endl;
 #endif
+                
                     reject();
                 }
             }

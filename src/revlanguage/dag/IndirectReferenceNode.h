@@ -321,7 +321,7 @@ void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
 
 #ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
+    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
 
     // Touch myself
