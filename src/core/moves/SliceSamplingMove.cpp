@@ -121,6 +121,12 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
     return name;
 }
 
+double uniform()
+{
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    return rng->uniform01();
+}
+
 struct interval
 {
   bool has_lower_bound;
@@ -212,16 +218,56 @@ public:
 std::pair<double,double> 
 find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, double w,int m)
 {
+  assert(g.in_range(x0));
+
+  double u = uniform()*w;
+  double L = x0 - u;
+  double R = x0 + (w-u);
+
+  // Expand the interval until its ends are outside the slice, or until
+  // the limit on steps is reached.
+
+  //  std::cerr<<"!!    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
+  if (m>1) {
+    int J = uniform()*m;
+    int K = (m-1)-J;
+
+    while (J>0 and (not g.below_lower_bound(L)) and g(L)>logy) {
+      L -= w;
+      J--;
+      //      std::cerr<<" g("<<L<<") = "<<g()<<" > "<<logy<<"\n";
+      //      std::cerr<<"<-    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
+    }
+
+    while (K>0 and (not g.above_upper_bound(R)) and g(R)>logy) {
+      R += w;
+      K--;
+      //      std::cerr<<" g("<<R<<") = "<<g()<<" > "<<logy<<"\n";
+      //      std::cerr<<"->    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
+    }
+  }
+  else {
+    while ((not g.below_lower_bound(L)) and g(L)>logy)
+      L -= w;
+
+    while ((not g.above_upper_bound(R)) and g(R)>logy)
+      R += w;
+  }
+
+  // Shrink interval to lower and upper bounds.
+
+  if (g.below_lower_bound(L)) L = g.lower_bound;
+  if (g.above_upper_bound(R)) R = g.upper_bound;
+
+  assert(L < R);
+
+  //  std::cerr<<"[]    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
+
+  return std::pair<double,double>(L,R);
 }
 
 double search_interval(double x0,double& L, double& R, slice_function& g,double logy)
 {
-}
-
-double uniform()
-{
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-    return rng->uniform01();
 }
 
 double slice_sample(double x0, slice_function& g,double w, int m)
