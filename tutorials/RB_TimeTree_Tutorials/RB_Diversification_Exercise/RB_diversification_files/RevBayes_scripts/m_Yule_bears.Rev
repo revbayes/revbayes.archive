@@ -26,5 +26,3 @@ timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=rho, rootAge=root_time, sampling
 ### clamp the model with the "observed" tree
 timetree.clamp(T)
 
-### workspace model wrapper ###
-mymodel <- model(birth_rate)
