@@ -62,6 +62,10 @@ namespace RevBayesCore {
         size_t                                              numTaxa;
         double                                              logTreeTopologyProb;
         
+      //  std::map<std::string, TopologyNode * > speciesNames2speciesNodes;
+       // std::map< std::string, TopologyNode*> individualNames2geneTreeTips;
+       // std::map< const TopologyNode *, std::set< TopologyNode* > > individualsPerBranch;
+       // std::map<double, TopologyNode*> speciesAge2speciesNodes;*/
     };
     
 }

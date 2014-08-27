@@ -433,11 +433,15 @@ void RevBayesCore::DeterministicNode<valueType>::touchFunction( DagNode* toucher
 
 
 /**
- * touch this node for recalculation.
+ * Touch this node for recalculation.
  *
  * @todo The touchAffected() call only needs to be executed if the node
  *       has not been touched before the entry to this function. The
- *       touchFunction call always needs to be executed.
+ *       touchFunction call always needs to be executed (at least once
+ *       for each toucher).
+ *
+ * @todo Get rid of the touched flag. It is not used, and any code relying on
+ *       it to be set correctly might well fail.
  */
 template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
@@ -445,12 +449,13 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher ) {
 #ifdef DEBUG_DAG_MESSAGES
     std::cerr << "In touchMe of deterministic node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
-    
+   
+    // To be on the safe side, we set the touched flag here, but the flag is not used by this class and may not
+    // be in a consistent state. Beware! 
     this->touched = true;
     
-    // We need to touch the function anyways because it might not be filthy enough.
-    // For example, the vector function wants to know if an additional elements has been touched to store the index to its touchedElementIndices.
-    // Essential for lazy evaluation
+    // We need to touch the function always because of specialized touch functionality in some functions, like vector functions.
+    // In principle, it would sufficient to do the touch once for each toucher, but we do not keep track of the touchers here.
     this->touchFunction( toucher );
         
     // Dispatch the touch message to downstream nodes

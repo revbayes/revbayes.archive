@@ -312,6 +312,32 @@ void DagNode::incrementReferenceCount( void ) const
 }
 
 
+/**
+ * This function returns true if the DAG node is
+ * a node that is modifiable by the user through
+ * assignment. This occurs when the node is named
+ * or at least one of the parents is assignable.
+ *
+ * @todo The current code really belongs to the
+ *       language layer but it is convenient to
+ *       implement it here. See if it is possible
+ *       to move it to the language layer.
+ */
+bool DagNode::isAssignable( void ) const
+{
+    const std::set<const DagNode*>& parents = getParents();
+    
+    if ( getName() != "" )
+        return true;
+    
+    for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+        if ( (*it)->isAssignable() )
+            return true;
+
+    return false;
+}
+
+
 bool DagNode::isClamped( void ) const
 {
 
@@ -326,35 +352,9 @@ bool DagNode::isConstant( void ) const
 }
 
 
-/**
- * This function returns true if the DAG node is a node
- * that is modifiable by the user through assignment.
- * This occurs when the node is unnamed and none of the
- * parents are assignable.
- *
- * @todo This is a language feature but it is terribly
- *       convenient to implement it here. See if there
- *       is a way to move it to the language layer.
- */
-bool DagNode::isAssignable( void ) const
-{
-    const std::set<const DagNode*>& parents = getParents();
-    
-    if ( getName() != "" )
-        return true;
-    
-    for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
-        if ( (*it)->isAssignable() )
-            return true;
-    
-    return false;
-}
-
-
 /** Is this a non-applicable (NA) value? */
 bool DagNode::isNAValue( void ) const
 {
-
     return false;
 }
 
@@ -367,14 +367,12 @@ bool DagNode::isNAValue( void ) const
  */
 bool DagNode::isSimpleNumeric( void ) const 
 {
-    
     return false;
 }
 
 
 bool DagNode::isStochastic( void ) const
 {
-
     return false;
 }
 

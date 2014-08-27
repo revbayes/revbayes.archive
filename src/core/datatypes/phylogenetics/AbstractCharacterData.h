@@ -54,6 +54,7 @@ namespace RevBayesCore {
         virtual size_t                          getNumberOfIncludedCharacters(void) const = 0;                              //!< Number of characters
         virtual size_t                          getNumberOfIncludedCharacters(size_t idx) const = 0;                        //!< Number of characters for a specific taxon
         virtual size_t                          getNumberOfTaxa(void) const = 0;                                            //!< Number of taxa
+        virtual size_t                          getNumberOfIncludedTaxa(void) const = 0;                                    //!< Number of included taxa
         virtual AbstractTaxonData&              getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractTaxonData&        getTaxonData(size_t tn) const = 0;                                          //!< Return a reference to a sequence in the character matrix
         virtual AbstractTaxonData&              getTaxonData(const std::string &tn) = 0;                                    //!< Return a reference to a sequence in the character matrix
@@ -71,7 +72,9 @@ namespace RevBayesCore {
         virtual void                            setFileName(const std::string &fn) = 0;                                     //!< Set the file name
         virtual void                            setFilePath(const std::string &fn) = 0;                                     //!< Set the file path
         virtual void                            setHomologyEstablished(bool tf) = 0;                                        //!< Set whether the homology of the characters has been established
-    
+        virtual void                            setTaxonName(std::string& currentName, std::string& newName) = 0;           //!< Change the name of a taxon
+
+        
     protected:
                                                 AbstractCharacterData() {}                                                                                      //!< Constructor requires character type
 

@@ -22,7 +22,7 @@ RbVersion::RbVersion( void ) {
 }
 
 std::string RbVersion::getDate( void ) const {
-    return "2014-08-23";
+    return "2014-08-27";
 }
 
 std::string RbVersion::getVersion( void ) const {
@@ -37,8 +37,9 @@ std::string RbVersion::getHeader( void ) const {
     header += "RevBayes version " + getVersion() + " (" + getDate() + ")\n";
     header += "\n";
     header += "RevBayes provides an interactive environment for Bayesian\n";
-    header += "phylogenetic inference. It is based on probabilistic graphical\n";
-    header += "model concepts, and uses its own interpreted language, Rev.\n";
+    header += "phylogenetic modeling and inference. It is based on probabi-\n";
+    header += "listic graphical model concepts and uses its own interpreted\n";
+    header += "language, Rev.\n";
     header += "\n";
     header += "RevBayes is free software released under the GPL license,\n";
     header += "version 3. Type 'license()' for details.\n";
