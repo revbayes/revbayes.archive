@@ -152,7 +152,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
     }
     
     throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
-                        getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
+                        getArgumentTypeSpec()[0].getType() + " with label '" + getArgumentLabel() + "'" );
 }
 
 
@@ -197,8 +197,10 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
     {
         return false;
     }
-    
-    if ( isConst || var->getRevObject().isConstant() )
+  
+    // @Fredrik: This does not work because isConst is used differently so far. (Sebastian)
+//    if ( isConst || var->getRevObject().isConstant() )
+    if ( var->getRevObject().isConstant() )
     {
         once = true;
     }
