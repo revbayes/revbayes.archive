@@ -49,9 +49,7 @@ TreeChangeEventHandler& TreeChangeEventHandler::operator=(const TreeChangeEventH
 
 void TreeChangeEventHandler::addListener(TreeChangeEventListener *l) 
 {
-
     listeners.insert( l );
-
 }
 
 
@@ -69,18 +67,15 @@ void TreeChangeEventHandler::fire(const TopologyNode &n)
 
 const std::set<TreeChangeEventListener*>& TreeChangeEventHandler::getListeners( void ) const 
 {
-
     return listeners;
 }
 
 
 void TreeChangeEventHandler::removeListener(TreeChangeEventListener *l) 
 {
-
     std::set<TreeChangeEventListener*>::iterator pos = listeners.find( l );
     if ( pos != listeners.end() ) 
     {
         listeners.erase( l );
     }
-    
 }
