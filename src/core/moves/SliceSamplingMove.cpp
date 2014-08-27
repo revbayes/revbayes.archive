@@ -206,12 +206,14 @@ public:
     return variable->getValue();
   }
 
-  slice_function(StochasticNode<double> *n, double h, bool r)
+  slice_function(StochasticNode<double> *n, double h, bool r, bool pos_only=true)
     :variable(n),
      heat(h),
      raiseLikelihoodOnly(r)
   {
     variable->getAffectedNodes( affectedNodes );
+
+    has_lower_bound = pos_only;
   }
 };
 
@@ -327,40 +329,9 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 
 void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
-    double storedValue = variable->getValue();
+  slice_function g(variable, heat, raiseLikelihoodOnly);
 
-    // Get random number generator    
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-
-    //-------------------- Propose a new value--------------------------
-    // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-    double u = rng->uniform01();
-    const double lambda = 1.0;
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    double newValue = storedValue * scalingFactor;
-      
-      // compute the Hastings ratio
-    double lnHastingsRatio = log( scalingFactor );
-
-    //--------------------------------------------------------------------
-    slice_function f(variable, heat, raiseLikelihoodOnly);
-    double p1 = f();
-    assert( std::abs(p1 - f(storedValue) ) < 1.0e-8);
-    double p3 = f(newValue);
-
-    double ratio = (p3 - p1) + lnHastingsRatio;
-
-    if (ratio > 0.0 or rng->uniform01() < exp(ratio))
-    { /* accept */ }
-    else
-    {
-      /* reject */
-      double p4 = f(storedValue);
-      assert( std::abs(p1 - p4) < 1.0e-8);
-    }
-
-    //    std::cerr<<"p1 = "<<p1<<"     p3 = "<<p3<<std::endl;
-    //    std::cerr<<"x1 = "<<storedValue<<"    x-proposed = "<<newValue<<"       x-new = "<<variable->getValue()<<std::endl;
+  slice_sample(g.current_value(), g, window, 100);
 }
 
 
