@@ -154,8 +154,11 @@ class slice_function: public interval
   double heat;
   bool raiseLikelihoodOnly;
   std::set<DagNode*> affectedNodes;
+  int num_evals;
 
 public:
+
+  int get_num_evals() const {return num_evals;}
 
   double operator()() 
   {
@@ -186,6 +189,8 @@ public:
 
   double operator()(double x)
   {
+    num_evals++;
+
     variable->getValue() = x;
 
     // first we touch all the nodes
@@ -207,10 +212,11 @@ public:
     return variable->getValue();
   }
 
-  slice_function(StochasticNode<double> *n, double h, bool r, bool pos_only=true)
+  slice_function(StochasticNode<double> *n, double h, bool r, bool pos_only=false)
     :variable(n),
      heat(h),
-     raiseLikelihoodOnly(r)
+     raiseLikelihoodOnly(r),
+     num_evals(0)
   {
     variable->getAffectedNodes( affectedNodes );
 
@@ -339,6 +345,8 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
   double x2 = slice_sample(x1, g, window, 100);
 
   total_movement += std::abs(x2 - x1);
+
+  numPr += g.get_num_evals();
 }
 
 
@@ -393,36 +401,21 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the average distance moved
+    o<<"\n";
     if (numTried > 0)
     {
-      o<<"Average distance moved = "<<total_movement/numTried<<std::endl;
+      o<<"  Ave. |x2-x1| = "<<total_movement/numTried<<std::endl;
     }
 
-    /* / print the number of accepted
-    int a_length = 9;
-    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
-    
-    for (int i = 0; i < a_length; ++i) {
-        o << " ";
+    // print the average distance moved
+    if (numTried > 0)
+    {
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/numTried<<std::endl;
     }
-    o << numAccepted;
-    o << " ";
-    
-    // print the acceptance ratio
-    double ratio = numAccepted / (double)numTried;
-    if (numTried == 0) ratio = 0;
-    int r_length = 5;
-    
-    for (int i = 0; i < r_length; ++i) {
-        o << " ";
-    }
-    o << ratio;
-    o << " ";
-    */
 
     //    proposal->printParameterSummary( o );
-    o<<"window = "<<window<<std::endl;
-    o<<"weight = "<<weight<<std::endl;
+    o<<"  window = "<<window<<std::endl;
+    o<<"  weight = "<<weight<<std::endl;
     
     o << std::endl;
     
@@ -440,6 +433,7 @@ void SliceSamplingMove::resetMoveCounters( void )
 {
     total_movement = 0.0;
     numTried = 0;
+    numPr = 0;
 }
 
 
