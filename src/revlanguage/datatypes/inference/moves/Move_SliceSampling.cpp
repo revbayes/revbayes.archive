@@ -63,7 +63,7 @@ void Move_SliceSampling::constructInternalObject( void )
     
     // finally create the internal move object
     
-    value = new RevBayesCore::SliceSamplingMove(node_ ,weight_ ,tune_);
+    value = new RevBayesCore::SliceSamplingMove(node_ , window_, weight_ ,tune_);
 }
 
 
