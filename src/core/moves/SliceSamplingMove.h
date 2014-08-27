@@ -54,6 +54,7 @@ namespace RevBayesCore {
         StochasticNode<double>*                                 variable;                                                                               //!< The variable the Proposal is working on
         double                                                  window;                                                                                 //!< Window width for slice sampling
 	double                                                  total_movement;                                                                         //!< total distance moved under auto-tuning
+	int                                                     numPr;                                                                                  //!< Number of probability evaluations
     };
 }
 
