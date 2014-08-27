@@ -1,6 +1,5 @@
 #include "DagNode.h"
 #include "SliceSamplingMove.h"
-#include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbMathLogic.h"
@@ -21,13 +20,13 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-SliceSamplingMove::SliceSamplingMove( Proposal *p, double w, bool t ) : AbstractMove(w,t),
+SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double w, bool t ) : AbstractMove(w,t),
     affectedNodes(),
     nodes(),
     numAccepted( 0 ),
-    proposal( p )
+    variable( n )
 {
-    nodes = proposal->getNodes();
+    nodes.insert( n );
     
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
@@ -39,7 +38,6 @@ SliceSamplingMove::SliceSamplingMove( Proposal *p, double w, bool t ) : Abstract
 
 /**
  * Copy constructor.
- * We need to create a deep copy of the proposal here.
  *
  * \param[in]   m   The object to copy.
  *
@@ -48,7 +46,7 @@ SliceSamplingMove::SliceSamplingMove(const SliceSamplingMove &m) : AbstractMove(
     affectedNodes( m.affectedNodes ),
     nodes( m.nodes ),
     numAccepted( m.numAccepted ),
-    proposal( m.proposal->clone() )
+    variable( m.variable )
 {
     
 }
@@ -59,7 +57,6 @@ SliceSamplingMove::SliceSamplingMove(const SliceSamplingMove &m) : AbstractMove(
  */
 SliceSamplingMove::~SliceSamplingMove( void )
 {
-    delete proposal;
 }
 
 
@@ -72,13 +69,10 @@ SliceSamplingMove& SliceSamplingMove::operator=(const RevBayesCore::SliceSamplin
     
     if ( this != &m )
     {
-        // free memory
-        delete proposal;
-        
         affectedNodes = m.affectedNodes;
         nodes = m.nodes;
         numAccepted = m.numAccepted;
-        proposal = m.proposal->clone();
+        variable = m.variable;
     }
     
     return *this;
@@ -93,7 +87,6 @@ SliceSamplingMove& SliceSamplingMove::operator=(const RevBayesCore::SliceSamplin
  */
 SliceSamplingMove* SliceSamplingMove::clone( void ) const 
 {
-    
     return new SliceSamplingMove( *this );
 }
 
@@ -105,7 +98,6 @@ SliceSamplingMove* SliceSamplingMove::clone( void ) const
  */
 const std::set<DagNode*>& SliceSamplingMove::getDagNodes( void ) const
 {
-    
     return nodes;
 }
 
@@ -117,23 +109,44 @@ const std::set<DagNode*>& SliceSamplingMove::getDagNodes( void ) const
  */
 const std::string& SliceSamplingMove::getMoveName( void ) const 
 {
-    
-    return proposal->getProposalName();
+    static std::string name = "SliceSampling";
+
+    return name;
 }
 
 
 
 void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
-    // Propose a new value
-    proposal->prepareProposal();
-    double lnHastingsRatio = proposal->doProposal();
+    double storedValue;
+
+    //-------------------- Propose a new value--------------------------
+    double lnHastingsRatio;
+    {
+      // Get random number generator    
+      RandomNumberGenerator* rng     = GLOBAL_RNG;
+      
+      double &val = variable->getValue();
+      
+      // copy value
+      storedValue = val;
+      
+      // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
+      double u = rng->uniform01();
+      const double lambda = 1.0;
+      double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+      val *= scalingFactor;
+      
+      // compute the Hastings ratio
+      lnHastingsRatio = log( scalingFactor );
+    }
+
+    //--------------------------------------------------------------------
     
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        
         (*it)->touch();
     }
     
@@ -172,19 +185,19 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
         lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
     }
 	
-	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
+    if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) 
+    {
 		
-            proposal->undoProposal();
-            
-            // call restore for each node
-            for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-            {
-                (*i)->restore();
-            }
+        variable->setValue( new double(storedValue) );
+	
+	// call restore for each node
+	for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+	{
+	    (*i)->restore();
 	}
+    }
     else
     {
-    
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
     
@@ -201,7 +214,7 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
         }
         else if (lnAcceptanceRatio < -300.0)
         {
-            proposal->undoProposal();
+            variable->setValue( new double(storedValue) );
         
             // call restore for each node
             for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
@@ -223,12 +236,10 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
                 {
                     (*i)->keep();
                 }
-            
-                proposal->cleanProposal();
             }
             else
             {
-                proposal->undoProposal();
+	        variable->setValue( new double(storedValue) );
             
                 // call restore for each node
                 for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
@@ -314,7 +325,8 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << ratio;
     o << " ";
     
-    proposal->printParameterSummary( o );
+    //    proposal->printParameterSummary( o );
+    //    o<<"window = "<<window
     
     o << std::endl;
     
@@ -359,8 +371,7 @@ void SliceSamplingMove::swapNode(DagNode *oldN, DagNode *newN)
         (*it)->getAffectedNodes( affectedNodes );
     }
     
-    proposal->swapNode(oldN, newN);
-    
+    variable = static_cast<StochasticNode<double>* >(newN) ;
 }
 
 
@@ -372,7 +383,7 @@ void SliceSamplingMove::tune( void ) {
     
     double rate = numAccepted / double(numTried);
     
-    proposal->tune( rate );
+    //    proposal->tune( rate );
     
 }
 

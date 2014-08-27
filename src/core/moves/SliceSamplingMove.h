@@ -2,6 +2,7 @@
 #define SliceSamplingMove_H
 
 #include "AbstractMove.h"
+#include "StochasticNode.h"
 
 #include <set>
 #include <vector>
@@ -25,7 +26,7 @@ namespace RevBayesCore {
     class SliceSamplingMove : public AbstractMove {
         
     public:
-        SliceSamplingMove(Proposal *p, double w, bool autoTune = false);                                                                           //!< Constructor
+        SliceSamplingMove( StochasticNode<double> *p, double w, bool autoTune = false);                                                                           //!< Constructor
         SliceSamplingMove(const SliceSamplingMove &m);                                                                                        //!< Copy constructor
         virtual                                                 ~SliceSamplingMove(void);                                                           //!< Destructor
 
@@ -51,7 +52,7 @@ namespace RevBayesCore {
         std::set<DagNode*>                                      affectedNodes;                                                                          //!< The affected nodes by this move.
         std::set<DagNode*>                                      nodes;                                                                                  //!< The set of nodes this move is working on
         unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
-        Proposal*                                               proposal;                                                                               //!< The proposal distribution
+        StochasticNode<double>*                                 variable;                                                                               //!< The variable the Proposal is working on
     };
     
 }
