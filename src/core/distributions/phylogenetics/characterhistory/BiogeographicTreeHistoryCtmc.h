@@ -74,6 +74,7 @@ namespace RevBayesCore {
         const std::vector<int>&                             getCladogenicStates(void);
         int                                                 getCladogenicState(const TopologyNode& nd);
         void                                                setCladogenicState(const TopologyNode& nd, int s);
+        virtual const std::vector<double>&                  getCladogenicStateFrequencies(void);
         
         // epoch info
         const std::vector<double>&                          getEpochs(void) const;
@@ -251,7 +252,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
         double v = 0.0;
         if (s > 0)
             v = log( cladoProbs[s-1] );
-//        lnL += v;
+        lnL += v;
         
     }
     
@@ -410,6 +411,21 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
 }
 
 template<class charType, class treeType>
+const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogenicStateFrequencies( void ) {
+    
+    if (cladogenicStateFreqs != NULL )
+    {
+        
+        return cladogenicStateFreqs->getValue();
+    }
+    else
+    {
+        throw RbException("BUG: Reached end of a non-void function in BiogeographicTreeHistoryCtmc.");
+    }
+    
+}
+
+template<class charType, class treeType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeValue( void )
 {
 //    if (this->dagNode->isClamped())
@@ -516,7 +532,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
             samplePathHistoryCount++;
         } while (samplePathHistory(*nd,indexSet) == false && samplePathHistoryCount < 100);
         
-        this->histories[i]->print();
+//        this->histories[i]->print();
     }
     
     double lnL = this->computeLnProbability();
@@ -618,10 +634,10 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
             homogeneousRateMap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix, *it);
             unsigned int desS1 = nodeChildState[*it]->getState();
             
-            double u = GLOBAL_RNG->uniform01();
-            double g0 = nodeTpMatrix[0][desS1];
-            double g1 = nodeTpMatrix[1][desS1];
-            
+//            double u = GLOBAL_RNG->uniform01();
+//            double g0 = nodeTpMatrix[0][desS1];
+//            double g1 = nodeTpMatrix[1][desS1];
+//            
             unsigned int s = 0;
 //            if (u < g1 / (g0 + g1))
             
@@ -1003,13 +1019,11 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogen
     if (csf != NULL)
     {
         cladogenicEvents = true;
-//        this->addParameter( cladogenicStateFreqs );
         cladogenicStateFreqs = csf;
     }
     else
     {
         cladogenicEvents = false;
-//        this->removeParameter( cladogenicStateFreqs );
         cladogenicStateFreqs = NULL;
         
     }

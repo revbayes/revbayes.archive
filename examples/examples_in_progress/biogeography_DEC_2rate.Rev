@@ -41,7 +41,7 @@ Q           := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidE
 
 # csf models the cladogenic state frequencies (sympatry, peripatry, allopatry)
 #csf         ~ dnDirichlet([1,1,1])
-csf ~  dnDirichlet([1,1,1,1])
+csf ~  dnDirichlet([1,1,1])
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
 M           ~  dnPhyloDACTMC(tree=tree, Q=Q, C=csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)
