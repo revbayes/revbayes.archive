@@ -71,21 +71,21 @@
 \textbf{\it{\Large Gene tree-Species tree reconstruction}}\\\vspace{2mm}
 \end{center}
 
-\section*{Overview: Gene tree-species tree models}
+\section{Overview: Gene tree-species tree models}
 
-Ever since Zuckerkandl and Pauling, people have recognised that phylogenies reconstructed from homologous gene sequences could differ from species phylogenies.
+Ever since Zuckerkandl and Pauling \citep{Zuckerkandl1965a}, people have recognised that phylogenies reconstructed from homologous gene sequences could differ from species phylogenies.
 As molecular sequences accumulated, the link between gene trees and species trees started to be modelled. 
 The first models were based on parsimony, and aimed for instance at reconciling a gene tree with a species tree by minimizing the number of events of gene duplication and gene loss. 
 In the past dozen years, probabilistic models have been proposed to reconstruct gene trees and species trees in a rigorous statistical framework.
 Models and algorithms have quickly grown in complexity, to model biological processes with increasing realism, to accommodate several processes at the same time, or to handle genome-scale data sets.
-In this overview we will not detail these models, and we invite the interested reader to take a look at recent reviews (e.g. \citep{Szollosi2014}).
+In this overview we will not detail these models, and we invite the interested reader to take a look at recent reviews (e.g. \citep{Szollosi28072014}).
 
-\subsection*{Processes of discord}
+\subsection{Processes of discord}
 There are several reasons why a gene tree may differ from a species tree. 
 Of course, a gene tree may differ from the species tree just because a mistake was made during the analysis of the gene sequences, at any point in a pipeline going from the sequencing itself to the tree reconstruction.
 Such a mistake would produce an incorrect gene tree.
 Here we do not mean this kind of discord, but rather discord that has comes from a real biological process that builds true gene histories that differ from true species histories.
-These processes include gene duplication, gene loss, gene transfer (used loosely here to also include reticulation, hybridization between species), and incomplete lineage sorting (\ref{fig1}). 
+These processes include gene duplication, gene loss, gene transfer (used loosely here to also include reticulation, hybridization between species), and incomplete lineage sorting (Fig. \ref{fig1}). 
 Incomplete lineage sorting will be discussed in more details in the following subsection.
 
 \begin{figure}[h!]
@@ -106,7 +106,7 @@ In RevBayes so far only models of incomplete lineage sorting have been implement
 Thanks to RevBayes modular design, there is quite a lot of flexibility in specifying the model, for instance by allowing different parameters to different branches of the species tree, and the gene tree-species tree model could be combined to other types of models, for instance models of trait evolution.
 
 
-\subsection*{Gene tree discordance is a problem for species tree reconstruction}
+\subsection{Gene tree discordance is a problem for species tree reconstruction}
 There are several approaches to species tree reconstruction: concatenation and supertree approaches, which have been used for quite some time now, and more recently methods that rely on gene tree-species tree models.\begin{enumerate}
 \item Concatenation simply consists in taking all gene alignments, concatenating them into one super alignment, and then analyzing it as if it were a single gene sequence.
 Its main assumption is therefore that all sites of all genes have evolved according to the same species tree.
@@ -123,7 +123,7 @@ In practice, these methods have been found to provide reasonable results in many
 \end{enumerate}
 
 
-\subsection*{Modelling incomplete lineage sorting: the multispecies coalescent}
+\subsection{Modelling incomplete lineage sorting: the multispecies coalescent}
 Incomplete lineage sorting is a population-level process.
 In a species, at a given time, there are several alleles for a given locus in the genome.
 These alleles have their own history, they diverged from each other at various times in the past.
@@ -131,8 +131,8 @@ This history can differ from the species history, because several alleles can pe
 In all cases, incongruence between the gene tree and the species tree occurs when alleles persist over the course of several speciation events.
 When reconstructing a gene tree, one therefore gets the history of the alleles that have been sampled (at best), not necessarily the history of the species. 
 
-In 2003, Rannala and Yang proposed a powerful way to model the sorting of alleles along a phylogeny of several species \citep{Rannal2003}, the multispecies coalescent (Fig. \ref{fig2}).
-This model is at the origin of most model-based approaches to reconstruct gene and species trees \citep{Liu2007,}.
+In 2003, Rannala and Yang proposed a powerful way to model the sorting of alleles along a phylogeny of several species \citep{Rannala2003a}, the multispecies coalescent (Fig. \ref{fig2}).
+This model is at the origin of most model-based approaches to reconstruct gene and species trees \citep{Edwards2007,Heled2010}.
 The multispecies coalescent appropriately models the evolution of a population of alleles along a species tree.
 Along the species tree, it allows different branch lengths, in units of time, and also allows different effective population sizes.
 Computing the probability of a gene tree given a species tree and other parameters is quite easy.
@@ -161,7 +161,7 @@ Once branch lengths on the species tree are measured in coalescent time units, i
 \begin{figure}[h!]
 \centering
 \fbox{\includegraphics[width=5.8in,angle=0]{figures/RannalaYang.pdf}}
-\caption{\small The multispecies coalescent. A) A gene tree, including 3 human alleles, 2 Chimp alleles, one Gorilla allele, and one Orang-outan allele. $\tau$ parameters are speciation times, $t$ parameters are divergence time in the gene tree, the grey squares represent the ancestral populations, with their respeciive sizes.  B) The corresponding species tree. In this model, the speciation times define minimal boundaries for allele divergence times. [Replicated from Fig.~1 in \citet{Rannala2003}.]}
+\caption{\small The multispecies coalescent. A) A gene tree, including 3 human alleles, 2 Chimp alleles, one Gorilla allele, and one Orang-outan allele. $\tau$ parameters are speciation times, $t$ parameters are divergence time in the gene tree, the grey squares represent the ancestral populations, with their respeciive sizes.  B) The corresponding species tree. In this model, the speciation times define minimal boundaries for allele divergence times. [Replicated from Fig.~1 in \citet{Rannala2003a}.]}
 \label{fig2}
 \end{figure}
 
@@ -257,18 +257,18 @@ speciesTree.rescale(0.1)
 
 
 \bigskip
-\section*{Alternatives to the multispecies coalescent model}
-\subsection*{Strengths and weaknesses of the multispecies coalescent}
+\section{Alternatives to the multispecies coalescent model}
+\subsection{Strengths and weaknesses of the multispecies coalescent}
 
 The multispecies coalescent model is an elegant model. 
 As we have seen above, we can easily simulate data under this model.
 Inference using this model, combined with a model of sequence evolution, is also possible, and when it works, is very informative.
-Not only can we get a dated species tree and dated gene trees from the multispecies coalescent, we can also get extant and ancestral effective population sizes \citep{Liu, Heled}.
+Not only can we get a dated species tree and dated gene trees from the multispecies coalescent, we can also get extant and ancestral effective population sizes \citep{Edwards2007,Heled2010}.
 However inferring many parameters is difficult, and convergence can be difficult to reach with such models.
 In particular, the strong interdependence that exists between the gene trees and the species tree makes it easy for algorithms to fall into local maxima.
 As a consequence, there are ongoing efforts to develop methods for which inference would be easier, albeit at the cost of approximations and simplifications.
 
-\subsection*{Alternatives to the multispecies coalescent}
+\subsection{Alternatives to the multispecies coalescent}
 An easy way to simplify the problem is to consider that parts of it are already solved.
 For instance, several approaches assume that rooted gene trees are available.
 The problem then becomes markedly easier, but inference is then highly dependent on the quality of the input gene trees. 
@@ -276,19 +276,19 @@ Often, such methods also make other simplifying assumptions, and e.g. do not try
 These methods usually are much faster than the multispecies coalescent, should be more robust against local maxima, but are less ambitious about the amount of information they can get from the data, and are can be sensitive to the quality of the input gene trees.
 
 Another approach is to use methods that mathematically bypass estimating gene trees altogether.
-To our knowledge, there are three such approaches: SNAPP\citep{Bryant}, POMO\citep{Demaio}, and XX\citep{Kubatko}.
+To our knowledge, there are three such approaches: SNAPP \citep{Bryant2012}, POMO \citep{DeMaio2013}, and SVDQuartets \citep{Chifman2014}.
 They differ in the way the algorithms work, but they are all based on the same idea, which is integrating out gene trees.
 To achieve that they extend the model of sequence evolution, which usually models substitution events, to also model population-level processes.
 In RevBayes, so far only the POMO model has been implemented and will be discussed in the following part.
 
-\subsection*{The POMO model}
+\subsection{The POMO model}
 POMO models allele frequency changes along with mutations with a single transition matrix.
 It extends the usual $4\times4$ DNA substitution matrix to incorporate polymorphic states.
 In doing so, it makes a first important approximation: it only considers biallelic states.
 For instance, it considers sites at which either an A or a C is found in a population, but it won't consider sites at which 3 different states, e.g. A, C, T, are observed in a population.
 Then it makes a second approximation, which introduces a single virtual population size in lieu of the branchwise effective population sizes.
 This virtual population size is not inferred, but is fixed to some low number.
-In practice, \citet{Demaio} consider that a virtual population size of 10 individuals should produce good results.
+In practice, \citet{DeMaio2013} consider that a virtual population size of 10 individuals should produce good results.
 This virtual population size directly constrains the types of polymorphic states that can be considered.
 With 10 individuals for instance, only frequencies such as $(100\%A)$, $(10\%A, 90\%C)$, $(20\%A, 80\%C)$, $(30\%A, 70\%C)$, ..., $(90\%A, 10\%C)$, $(100\%C)$ can be considered.
 The POMO matrix models transitions among all these states, polymorphic ones as well as monomorphic ones, and has a size that depends on the virtual population size.
@@ -298,17 +298,17 @@ Mutations only occur to transit from a monoallelic state to a biallelic state.
 
 The POMO model therefore makes several approximations to avoid estimating gene trees.
 Fewer parameters need to be estimated, as neither gene trees nor population sizes are estimated, but other parameters can be introduced into the model.
-For instance \citet{demaio} estimate 4 base fitness parameters, which they use to model GC-biased gene conversion, which tends to increase the GC content of recombining sequences.
+For instance \citet{DeMaio2013} estimate 4 base fitness parameters, which they use to model GC-biased gene conversion, which tends to increase the GC content of recombining sequences.
 In the RevBayes implementation of POMO, base fitnesses can be estimated as well.
 
 \bigskip
-\section*{Inference using the multispecies coalescent, the POMO model, and basic concatenation}
+\section{Inference using the multispecies coalescent, the POMO model, and basic concatenation}
 In this section we will perform inference using both the multispecies coalescent and the POMO model.
 Depending on your machine and on the size of the data, successful inference may take some time.
 If this tutorial is done in a classroom environment, it may be wise to convene with friends that one tries the multispecies coalescent model while another one tries the POMO model, and the third one tries the concatenation approach, and that results will be shared.
 First we will simulate data, and then we will perform inference using the three different approaches.
 
-\subsection*{Simulating data}
+\subsection{Simulating data}
 We are going to do inference on simulated data, as produced during the previous section.
 However in addition to the species tree and the gene trees, we will be producing sequence data.
 Below is the RevBayes code necessary to simulate all the data.
@@ -451,7 +451,7 @@ for (i in 1:n_genes) {
 \end{snugshade*}}
 \end{framed}}
 
-\subsection*{Inference using the multispecies coalescent }
+\subsection{Inference using the multispecies coalescent }
 Now that we have simulated data, we can run inference under the multispecies coalescent.
 
 {\begin{framed}
@@ -650,11 +650,11 @@ Of course, we could do the same analysis with each of the gene trees, possibly u
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Inference using the POMO model }
+\subsection{Inference using the POMO model }
 We run the POMO model on the same data set simulated under the multispecies coalescent.
- \begin{framed}
+ {\begin{framed}
  First, we need to prepare the data for analysis using POMO: concatenating the alignments, then transforming the state space from 4 bases to the POMO state space.
- We arbitrarily decide to use a virtual population size of size 10, as suggested in \citet{Demaio2013}.
+ We arbitrarily decide to use a virtual population size of size 10, as suggested in \citet{DeMaio2013}.
  {\tt \begin{snugshade*}
 \begin{lstlisting}
 # First, concatenating the alignments:
@@ -669,17 +669,16 @@ virtual_population_size <- 10
 
 pomo_concatenate <- pomoStateConvert(concatenate, virtual_population_size, taxa)
 concatenate_n_sites <- pomo_concatenate.nchar()[1]
+\end{lstlisting}
+\end{snugshade*}}
+Now we have the data for doing inference using the POMO model.
+To define a POMO model, one needs several components.
+First, one needs to define a transition matrix for DNA mutations.
+Here we are going to use a GTR matrix. 
 
-#######################
-# Preparing the model #
-#######################
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 
-# Now we have the data for doing inference using the POMO model.
-# To define a POMO model, one needs several components.
-
-# First, one needs to define a transition matrix for DNA mutations.
-# Here we are going to use a GTR matrix. 
-# So we define the GTR matrix.
 
 er_prior <- v(1,1,1,1,1,1)
 er ~ dnDirichlet(er_prior)
@@ -688,30 +687,51 @@ sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
 Q := gtr(er,sf) 
+\end{lstlisting}
+\end{snugshade*}}
 
-# Second, one can have different fitnesses for A, C, G, T. 
-# Here, we are going to assume that all 4 bases have the same fitness.
+Second, one can have different fitnesses for A, C, G, T. 
+Here, we are going to assume that all 4 bases have the same fitness.
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 base_fitnesses <- v(1, 1, 1, 1)
-
-# Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
-
+\end{lstlisting}
+\end{snugshade*}}
+Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 P := pomo(Q, base_fitnesses, virtual_population_size)
+\end{lstlisting}
+\end{snugshade*}}
 
-# We also need to define root frequencies for all the states.
-# To do that we need two variables:
+We also need to define root frequencies for all the states.
+To do that we need two variables:
 
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 # First, the proportion of polymorphic sites at the root
 root_polymorphism_proportion ~ beta(alpha=1,beta=1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
 root_base_frequencies ~ dnDirichlet(sf_prior)
+\end{lstlisting}
+\end{snugshade*}}
 
-# Now we have all the elements to construct root frequencies for all the states:
+Now we have all the elements to construct root frequencies for all the states:
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+
 root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size)
 #simplex_root_frequencies := simplex(root_frequencies[1], root_frequencies[2], root_frequencies[3], root_frequencies[4])
 
+\end{lstlisting}
+\end{snugshade*}}
 
-# Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories
+Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories:
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+
 shape_prior <- 0.05 
 shape ~ dnExponential( shape_prior )
 norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
@@ -722,22 +742,23 @@ branch_rates <- 1.0
 # We do not assume a proportion of invariant
 p_inv ~ beta(alpha=1,beta=1)
 p_inv.setValue(0.000001)
+\end{lstlisting}
+\end{snugshade*}}
 
-###################
-# PhyloCTMC Model #
-###################
-
-# To link all the parts of the model together we use the phyloCTMC object.
+Combining it all with the PhyloCTMC Model and clamp the model to the data:
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 
 aln ~ phyloCTMC(tree=speciesTree, Q=P, rootFreq=root_frequencies, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, nSites=concatenate_n_sites, type="Standard")
 
 aln.clamp(pomo_concatenate)
+\end{lstlisting}
+\end{snugshade*}}
 
-################################
-# Changing the starting values #
-################################
+Changing the starting values, we want to start from random values, not the values used in the simulation:
 
-# We want to start from random values, not the values used in the simulation.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 
 # Redrawing the parameters of the birth-death process:
 speciation.redraw()
@@ -747,12 +768,14 @@ tree_height.redraw()
 # Redrawing the species tree:
 speciesTree.redraw()
 
-####################
-# Setting up moves #
-####################
 
-# We need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, 
-# the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
+\end{lstlisting}
+\end{snugshade*}}
+
+
+Then we need to set up moves for the birth-death parameters, the species tree topology, the gene tree topologies, the parameter Ne, the parameters of the substitution models, the rates on the gene trees.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 
 moveIndex <- 0
 
@@ -788,14 +811,12 @@ moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true,
 
 # moves on the across-sites rate variation parameter:
 moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
+\end{lstlisting}
+\end{snugshade*}}
 
-
-############
-# Monitors #
-############
-
-# We define a few monitors to keep track of how things go.
-
+Then we define a few monitors to keep track of how things go:
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
@@ -811,13 +832,11 @@ distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree, meanDistGeneTree, and distEqFreq:
 monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
-	
-
-#############
-# THE Model #
-#############
-
-# We define our model.
+\end{lstlisting}
+\end{snugshade*}}
+We define our model:
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 # First we need to get rid of several variables that are not part of the Pomo model.
 clear(alns)
 clear(geneTrees)
@@ -832,32 +851,23 @@ clear(trueSf)
 # We can use any node of our model as a handle, here we choose to use the species tree.
  
 mymodel <- model(speciesTree)
+\end{lstlisting}
+\end{snugshade*}}
 
+We create and run the MCMC object
 
-
-########
-# MCMC #
-########
-
-# We create the MCMC object
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
 mymcmc <- mcmc(mymodel, monitors, moves)
-
-
-# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
-# the number of iterations that will be considered for analysis, 
-# and the tuning interval for tuning parameters of moves on scalar variables.
-# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
-# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 # mymcmc.burnin(generations=200,tuningInterval=100)
 mymcmc.run(generations=40000)
-
 \end{lstlisting}
 \end{snugshade*}}
 
  
  \end{framed}}
 
-\subsection*{Inference using basic concatenation }
+\subsection{Inference using basic concatenation }
 We can also concatenate all alignments and run a partitioned GTR model on it.
 
 
@@ -888,7 +898,7 @@ Questions about this tutorial can be directed to: \\\vspace{-10mm}
 
 Version dated: \today
 
-\nocite{sukumaran10,rannala96,robert02,rodrigue08,ronquist09,Rubinstein1981,simon01,Smith1993,Suchard2005,verdinelli95,wong08,Yang2007,Yang2005,yang97b}
+%\nocite{sukumaran10,rannala96,robert02,rodrigue08,ronquist09,Rubinstein1981,simon01,Smith1993,Suchard2005,verdinelli95,wong08,Yang2007,Yang2005,yang97b}
 %\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -898,7 +908,7 @@ Version dated: \today
 {\renewcommand{\bibsection}{\section*{Relevant References}}
 
 
-\bibliography{bib_tex/master_refs}
+\bibliography{bib_tex/biblio.bib}
 
 
 
