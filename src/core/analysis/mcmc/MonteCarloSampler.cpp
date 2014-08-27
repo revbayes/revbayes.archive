@@ -153,7 +153,7 @@ void MonteCarloSampler::burnin(size_t generations, size_t tuningInterval) {
         nextCycle(false);
         
         // check for autotuning
-        if ( k % tuningInterval == 0 )
+        if ( k % tuningInterval == 0 && k != generations )
         {
             
             schedule->tune();
