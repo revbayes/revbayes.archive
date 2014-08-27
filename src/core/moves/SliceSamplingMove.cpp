@@ -5,6 +5,7 @@
 #include "RbMathLogic.h"
 
 #include <cmath>
+#include <cassert>
 #include <iomanip>
 #include <sstream>
 #include <iostream>
@@ -20,19 +21,22 @@ using namespace RevBayesCore;
  * \param[in]    w   The weight how often the proposal will be used (per iteration).
  * \param[in]    t   If auto tuning should be used.
  */
-SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double w, bool t ) : AbstractMove(w,t),
+SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double window_, double weight_, bool t ) 
+  : AbstractMove(weight_ ,t),
     affectedNodes(),
     nodes(),
     numAccepted( 0 ),
-    variable( n )
+    variable( n ),
+    window( window_ )
 {
+    assert( not variable->isClamped() );
+
     nodes.insert( n );
     
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         (*it)->getAffectedNodes( affectedNodes );
     }
-    
 }
 
 
@@ -42,11 +46,13 @@ SliceSamplingMove::SliceSamplingMove( StochasticNode<double> *n, double w, bool 
  * \param[in]   m   The object to copy.
  *
  */
-SliceSamplingMove::SliceSamplingMove(const SliceSamplingMove &m) : AbstractMove(m),
+SliceSamplingMove::SliceSamplingMove(const SliceSamplingMove &m) 
+  : AbstractMove(m),
     affectedNodes( m.affectedNodes ),
     nodes( m.nodes ),
     numAccepted( m.numAccepted ),
-    variable( m.variable )
+    variable( m.variable ),
+    window ( m.window )
 {
     
 }
@@ -66,13 +72,13 @@ SliceSamplingMove::~SliceSamplingMove( void )
  */
 SliceSamplingMove& SliceSamplingMove::operator=(const RevBayesCore::SliceSamplingMove &m)
 {
-    
     if ( this != &m )
     {
         affectedNodes = m.affectedNodes;
         nodes = m.nodes;
         numAccepted = m.numAccepted;
         variable = m.variable;
+	window = m.window;
     }
     
     return *this;
@@ -114,7 +120,60 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
     return name;
 }
 
+double SliceSamplingMove::Pr(double heat)
+{
+    double lnPrior = 0.0;
+    double lnLikelihood = 0.0;
 
+    // compute the probability of the current value for each node
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        lnPrior += (*it)->getLnProbability();
+    }
+    
+    // then we recompute the probability for all the affected nodes
+    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    {
+        if ( (*it)->isClamped() )
+        {
+            
+            lnLikelihood += (*it)->getLnProbability();
+            
+        }
+        else
+        {
+            lnPrior += (*it)->getLnProbability();
+        }
+    }
+
+    return lnPrior + (heat * lnLikelihood);
+}
+
+double SliceSamplingMove::Pr( double x , double heat )
+{
+    double &val = variable->getValue();
+
+    val = x;
+
+    // first we touch all the nodes
+    // that will set the flags for recomputation
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        (*it)->touch();
+    }
+    
+    assert( not variable->isClamped() );
+
+    double Pr_ = Pr(heat);
+    
+    // call accept for each node  --  automatically includes affected nodes
+    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+    {
+        (*i)->keep();
+    }
+
+    return Pr_;
+}
 
 void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
@@ -326,7 +385,8 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << " ";
     
     //    proposal->printParameterSummary( o );
-    //    o<<"window = "<<window
+    o<<"window = "<<window<<std::endl;
+    o<<"weight = "<<weight<<std::endl;
     
     o << std::endl;
     
