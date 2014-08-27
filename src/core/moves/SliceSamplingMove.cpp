@@ -123,11 +123,22 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
 
 struct interval
 {
-  bool has_lower;
-  double lower;
+  bool has_lower_bound;
+  double lower_bound;
 
-  bool has_upper;
-  double upper;
+  bool has_upper_bound;
+  double upper_bound;
+
+  /// check if a value is below the lower bound on the range
+  bool below_lower_bound(double x) const { return (has_lower_bound and x<lower_bound); }
+  /// check if a value is above the upper bound on the range
+  bool above_upper_bound(double x) const { return (has_upper_bound and x>upper_bound); }
+  /// check if a value is in the range or not
+  bool in_range(double x) const  { return (not below_lower_bound(x) and not above_upper_bound(x));}
+
+  interval():has_lower_bound(false),lower_bound(0),has_upper_bound(false),upper_bound(0.0) {}
+  interval(double l, double u):has_lower_bound(true),lower_bound(l),has_upper_bound(true),upper_bound(u) {}
+  interval(bool hl,double l, bool hu, double u):has_lower_bound(hl),lower_bound(l),has_upper_bound(hu),upper_bound(u) {}
 };
 
 class slice_function: public interval
