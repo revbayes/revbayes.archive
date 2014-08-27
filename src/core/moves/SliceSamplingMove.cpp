@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
+#include <utility>
 
 using namespace RevBayesCore;
 
@@ -119,6 +120,60 @@ const std::string& SliceSamplingMove::getMoveName( void ) const
 
     return name;
 }
+
+struct interval
+{
+  bool has_lower;
+  double lower;
+
+  bool has_upper;
+  double upper;
+};
+
+struct slice_function: public interval
+{
+  double operator()(double) {}
+  double operator()() {}
+};
+
+std::pair<double,double> 
+find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, double w,int m)
+{
+}
+
+double search_interval(double x0,double& L, double& R, slice_function& g,double logy)
+{
+}
+
+double uniform()
+{
+    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    return rng->uniform01();
+}
+
+double slice_sample(double x0, slice_function& g,double w, int m)
+{
+  assert(g.in_range(x0));
+
+  double gx0 = g();
+  volatile double diff = gx0 - g(x0);
+  assert(std::abs(diff) < 1.0e-9);
+
+  // Determine the slice level, in log terms.
+
+  double logy = gx0 + log(uniform()); // - exponential(1.0);
+
+  // Find the initial interval to sample from.
+
+  std::pair<double,double> interval = find_slice_boundaries_stepping_out(x0,g,logy,w,m);
+  double L = interval.first;
+  double R = interval.second;
+
+  // Sample from the interval, shrinking it on each rejection
+
+  return search_interval(x0,L,R,g,logy);
+}
+
 
 /// Compute probability of Markov blanket
 double SliceSamplingMove::Pr(double heat, bool raiseLikelihoodOnly)
