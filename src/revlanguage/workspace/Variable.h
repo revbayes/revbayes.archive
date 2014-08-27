@@ -53,6 +53,7 @@ namespace RevLanguage {
         RevPtr<Variable>        getReferencedVariable(void) const;                      //!< Get the referenced variable
         RevObject&              getRevObject(void) const;                               //!< Get the value of the variable (non-const to return non-const value)
         const TypeSpec&         getRevObjectTypeSpec(void) const;                       //!< Get the required Rev object type spec
+        bool                    isAssignable(void) const;                               //!< Is variable or upstream members assignable?
         bool                    isControlVar(void) const;                               //!< Is this a control variable?
         bool                    isNAVar(void) const { return revObject == NULL; }       //!< Is this an NA variable?
         bool                    isReferenceVar(void) const;                             //!< Is this a reference variable?
