@@ -52,13 +52,12 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         RevObject*                              cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*>& nodesMap ) const;  //!< Clone the model DAG connected to this node
         bool                                    hasDagNode(void) const;                                                     //!< Return true because we have an internal DAG node
-        bool                                    isAssignable(void) const;                                                   //!< Is object or upstream members assignable?
         bool                                    isConstant(void) const;                                                     //!< Is this variable and the internally stored deterministic node constant?
         bool                                    isNAObject(void) const;                                                     //!< Is this an NA object?
-        void                                    makeConstantValue(void);                                                    //!< Convert to constant object
-        void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert to conversion object
+        void                                    makeConstantValue(void);                                                    //!< Convert the object to a constant object
+        void                                    makeConversionValue(RevPtr<Variable> var);                                  //!< Convert the object to a conversion object
+        void                                    makeDeterministicValue(UserFunction* fxn, UserFunction* code);              //!< Make deterministic clone with a userdefined Rev function
         ModelObject<rbType>*                    makeIndirectReference(void);                                                //!< Make reference to object
-        void                                    makeUserFunctionValue(UserFunction* fxn);                                   //!< Convert to user-defined Rev function object
         virtual void                            printStructure(std::ostream& o, bool verbose=false) const;                  //!< Print structure of language object for user
         void                                    printValue(std::ostream& o) const;                                          //!< Print value for user
         void                                    setDagNode(RevBayesCore::DagNode *newNode);                                 //!< Set or replace the internal dag node (and keep me)
@@ -89,13 +88,14 @@ namespace RevLanguage {
 #include "Cloner.h"
 #include "ConstantNode.h"
 #include "ConverterNode.h"
+#include "DeterministicNode.h"
 #include "IndirectReferenceNode.h"
 #include "MemberProcedure.h"
 #include "NAValueNode.h"
 #include "RlDeterministicNode.h"
 #include "RlUtils.h"
 #include "StochasticNode.h"
-#include "UserFunctionNode.h"
+#include "TypedUserFunction.h"
 #include "Variable.h"
 #include "Workspace.h"
 
@@ -405,21 +405,6 @@ bool RevLanguage::ModelObject<rbType>::hasMember(std::string const &name) const
 }
 
 
-/**
- * Is the object or any of its upstream members or elements
- * modifiable by the user through assignment? We simply ask
- * our DAG node.
- */
-template <typename rbType>
-bool RevLanguage::ModelObject<rbType>::isAssignable( void ) const
-{
-    if ( dagNode == NULL )
-        return false;
-    
-    return dagNode->isAssignable();
-}
-
-
 template <typename rbType>
 bool RevLanguage::ModelObject<rbType>::isConstant( void ) const {
     
@@ -472,18 +457,34 @@ void RevLanguage::ModelObject<rbType>::makeConversionValue( RevPtr<Variable> var
     // Create the converter node
     ConverterNode< ModelObject<rbType> >* newNode = new ConverterNode< ModelObject<rbType> >( "", var, getTypeSpec() );
 
-    // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
+    // Signal replacement
+    dagNode->replace(newNode);
+    
+    // Delete the value if there are no other references to it.
+    if ( dagNode->decrementReferenceCount() == 0 )
     {
-        dagNode->replace( newNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
-            delete dagNode;
+        delete dagNode;
     }
     
     // Shift the actual node
     dagNode = newNode;
     
     // Increment the reference counter
+    dagNode->incrementReferenceCount();
+}
+
+
+/** Convert a model object to a deterministic object, the value of which is determined by a userdefined Rev function */
+template <typename rbType>
+void RevLanguage::ModelObject<rbType>::makeDeterministicValue( UserFunction* fxn, UserFunction* code )
+{
+    TypedUserFunction< rbType >*  rbFxn    = new TypedUserFunction< rbType >( code );
+    DeterministicNode< rbType >*  detNode  = new DeterministicNode< rbType >("", rbFxn, fxn );
+    
+    if ( dagNode != NULL && dagNode->decrementReferenceCount() == 0 )
+        delete dagNode;
+
+    dagNode = detNode;
     dagNode->incrementReferenceCount();
 }
 
@@ -539,28 +540,6 @@ RevLanguage::MethodTable RevLanguage::ModelObject<rbType>::makeMethods(void) con
     methods.insertInheritedMethods( RevObject::makeMethods() );
     
     return methods;
-}
-
-
-/** Convert a model object to a deterministic object, the value of which is determined by a user-defined Rev function */
-template <typename rbType>
-void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn )
-{
-    UserFunctionNode< ModelObject<rbType> >*  detNode = new UserFunctionNode< ModelObject<rbType> >( "", fxn );
-    
-    // Signal replacement and delete the value if there are no other references to it.
-    if ( dagNode != NULL )
-    {
-        dagNode->replace( detNode );
-        if ( dagNode->decrementReferenceCount() == 0 )
-            delete dagNode;
-    }
-    
-    // Shift the actual node
-    dagNode = detNode;
-    
-    // Increment the reference counter
-    dagNode->incrementReferenceCount();
 }
 
 
