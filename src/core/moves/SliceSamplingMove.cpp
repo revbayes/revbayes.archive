@@ -130,10 +130,72 @@ struct interval
   double upper;
 };
 
-struct slice_function: public interval
+class slice_function: public interval
 {
-  double operator()(double) {}
-  double operator()() {}
+  StochasticNode<double>* variable;
+  double heat;
+  bool raiseLikelihoodOnly;
+  std::set<DagNode*> affectedNodes;
+
+public:
+
+  double operator()() 
+  {
+    double lnPrior = 0.0;
+    double lnLikelihood = 0.0;
+
+    // 1. compute the probability of the current value for each node
+    lnPrior += variable->getLnProbability();
+    
+    // 2. then we recompute the probability for all the affected nodes
+    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    {
+        if ( (*it)->isClamped() )
+            lnLikelihood += (*it)->getLnProbability();
+        else
+            lnPrior += (*it)->getLnProbability();
+    }
+
+    // 3. exponentiate with the chain heat
+    double lnPosterior;
+    if ( raiseLikelihoodOnly )
+        lnPosterior = heat * lnLikelihood + lnPrior;
+    else
+        lnPosterior = heat * (lnLikelihood + lnPrior);
+
+    return lnPosterior;
+  }
+
+  double operator()(double x)
+  {
+    variable->getValue() = x;
+
+    // first we touch all the nodes
+    // that will set the flags for recomputation
+    variable->touch();
+    
+    assert( not variable->isClamped() );
+
+    double Pr_ = (*this)();
+    
+    // call accept for each node  --  automatically includes affected nodes
+    variable->keep();
+
+    return Pr_;
+  }
+
+  double current_value() const
+  {
+    return variable->getValue();
+  }
+
+  slice_function(StochasticNode<double> *n, double h, bool r)
+    :variable(n),
+     heat(h),
+     raiseLikelihoodOnly(r)
+  {
+    variable->getAffectedNodes( affectedNodes );
+  }
 };
 
 std::pair<double,double> 
@@ -175,59 +237,6 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-/// Compute probability of Markov blanket
-double SliceSamplingMove::Pr(double heat, bool raiseLikelihoodOnly)
-{
-    double lnPrior = 0.0;
-    double lnLikelihood = 0.0;
-
-    // 1. compute the probability of the current value for each node
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-        lnPrior += (*it)->getLnProbability();
-    
-    // 2. then we recompute the probability for all the affected nodes
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
-    {
-        if ( (*it)->isClamped() )
-            lnLikelihood += (*it)->getLnProbability();
-        else
-            lnPrior += (*it)->getLnProbability();
-    }
-
-    // 3. exponentiate with the chain heat
-    double lnPosterior;
-    if ( raiseLikelihoodOnly )
-        lnPosterior = heat * lnLikelihood + lnPrior;
-    else
-        lnPosterior = heat * (lnLikelihood + lnPrior);
-
-    return lnPosterior;
-}
-
-double SliceSamplingMove::Pr( double x , double heat, bool raiseLikelihoodOnly )
-{
-    variable->getValue() = x;
-
-    // first we touch all the nodes
-    // that will set the flags for recomputation
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        (*it)->touch();
-    }
-    
-    assert( not variable->isClamped() );
-
-    double Pr_ = Pr(heat, raiseLikelihoodOnly);
-    
-    // call accept for each node  --  automatically includes affected nodes
-    for (std::set<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
-    {
-        (*i)->keep();
-    }
-
-    return Pr_;
-}
-
 void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
 {
     double storedValue = variable->getValue();
@@ -246,9 +255,10 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
     double lnHastingsRatio = log( scalingFactor );
 
     //--------------------------------------------------------------------
-    double p1 = Pr(heat, raiseLikelihoodOnly);
-    assert( std::abs(p1 - Pr(storedValue, heat, raiseLikelihoodOnly)) < 1.0e-8);
-    double p3 = Pr(newValue, heat, raiseLikelihoodOnly);
+    slice_function f(variable, heat, raiseLikelihoodOnly);
+    double p1 = f();
+    assert( std::abs(p1 - f(storedValue) ) < 1.0e-8);
+    double p3 = f(newValue);
 
     double ratio = (p3 - p1) + lnHastingsRatio;
 
@@ -257,7 +267,7 @@ void SliceSamplingMove::performMove( double heat, bool raiseLikelihoodOnly )
     else
     {
       /* reject */
-      double p4 = Pr(storedValue, heat, raiseLikelihoodOnly);
+      double p4 = f(storedValue);
       assert( std::abs(p1 - p4) < 1.0e-8);
     }
 
