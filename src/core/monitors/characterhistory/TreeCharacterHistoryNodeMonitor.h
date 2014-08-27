@@ -188,6 +188,8 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
             ss << "p";
         else if (cladoState == 2)
             ss << "a";
+        else if (cladoState == 3)
+            ss << "w";
         else
             ss << "NA";
         
@@ -433,7 +435,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
     int cladoCount = 0;
     for (size_t i = 0; i < nds.size(); i++)
     {
-        if (state == q->getCladogenicState(*nds[i]))
+        if (!nds[i]->isTip() && state == q->getCladogenicState(nds[i]->getChild(0)))
             cladoCount++;
     }
     ss << cladoCount;
@@ -519,7 +521,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::monitor(
             {
                 outStream << separator << buildNumEventsForTreeStr(s);
             }
-            for (unsigned s = 0; s < 3; s++)
+            for (unsigned s = 0; s < 4; s++)
             {
                 outStream << separator << buildCladoForTreeStr(s);
             }
@@ -592,7 +594,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::printHea
         {
             outStream << separator << "t_s" << s;
         }
-        for (size_t s = 0; s < 3; s++)
+        for (size_t s = 0; s < 4; s++)
         {
             outStream << separator << "t_c" << s;
         }

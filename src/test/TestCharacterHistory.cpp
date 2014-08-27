@@ -142,7 +142,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 1;
+    mcmcGenerations *= 10;
     //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
     
@@ -247,11 +247,11 @@ bool TestCharacterHistory::run_exp(void) {
     DeterministicNode<GeographyRateModifier>* ddd = NULL;
     ContinuousStochasticNode* dp = NULL;
     ConstantNode<double> *dp_pr = NULL;
-//    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
-//    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
-    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
-    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(1.0));
-    dp  = new ContinuousStochasticNode( "dp", new NormalDistribution(dp_mean, dp_sd) );
+    dp_pr = new ConstantNode<double>( "distancePowerPrior", new double(10.0));
+    dp = new ContinuousStochasticNode("distancePower", new ExponentialDistribution(dp_pr));
+//    ConstantNode<double> *dp_mean   = new ConstantNode<double>("dp_mean", new double(0.0));
+//    ConstantNode<double> *dp_sd     = new ConstantNode<double>("dp_sd", new double(1.0));
+//    dp  = new ContinuousStochasticNode( "dp", new NormalDistribution(dp_mean, dp_sd) );
 //    ConstantNode<double> *dp2 = new ConstantNode<double>("dp2", new double(0.0));
     dp->setValue(new double(0.00001));
     ddd = new DeterministicNode<GeographyRateModifier>("dddFunction", new DistanceDependentDispersalFunction(dp, ta, useAdjacency, useAvailable, useDistances));
@@ -464,10 +464,10 @@ bool TestCharacterHistory::run_exp(void) {
     if (useCladogenesis)
         monitoredNodes.insert( csf );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".parameters.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 10, filepath + "rb" + ss.str() + ".events.txt", "\t"));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 10, filepath + "rb" + ss.str() + ".counts.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
     
     monitors.push_back(new FileMonitor(tau, 10, filepath + "rb" + ss.str() + ".trees.txt", "\t"));
