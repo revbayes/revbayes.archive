@@ -66,7 +66,7 @@ namespace RevLanguage {
     private:
         RevPtr<Variable>                        variable;                                           //!< The base variable
         IndexVector                             oneOffsetIndices;                                   //!< The indices
-        typename rlElemType::valueType*         value;                                              //!< Current value
+        RevPtr<Variable>                        element;                                            //!< Current element
     };
     
 }
@@ -88,7 +88,7 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const std::string&    
     RevBayesCore::DynamicNode<typename rlElemType::valueType>( n ),
     variable( var ),
     oneOffsetIndices(),
-    value( NULL )
+    element( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -118,7 +118,7 @@ ElementLookupNode<rlType, rlElemType>::ElementLookupNode( const ElementLookupNod
     RevBayesCore::DynamicNode<typename rlElemType::valueType>( n ),
     variable( n.variable ),
     oneOffsetIndices( n.oneOffsetIndices ),
-    value( NULL )
+    element( NULL )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
 
@@ -161,8 +161,7 @@ ElementLookupNode<rlType, rlElemType>::~ElementLookupNode( void )
             delete indexNode;
     }
     
-    // Delete the value. The variable will delete itself (smart pointer)
-    delete value;
+    // The variable and the element will delete themselves if needed (smart pointers)
 }
 
 
@@ -353,7 +352,7 @@ typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::getValue(
     if ( this->touched )
         update();
     
-    return *value;
+    return static_cast< RevBayesCore::TypedDagNode<typename rlElemType::valueType>* >( element->getRevObject().getDagNode() )->getValue();
 }
 
 
@@ -368,7 +367,7 @@ const typename rlElemType::valueType& ElementLookupNode<rlType, rlElemType>::get
     if ( this->touched )
         const_cast<ElementLookupNode<rlType, rlElemType>*>( this )->update();
     
-    return *value;
+    return static_cast< RevBayesCore::TypedDagNode<typename rlElemType::valueType>* >( element->getRevObject().getDagNode() )->getValue();
 }
 
 
@@ -544,19 +543,14 @@ void ElementLookupNode<rlType, rlElemType>::touchMe( RevBayesCore::DagNode *touc
 template<typename rlType, typename rlElemType>
 void ElementLookupNode<rlType, rlElemType>::update()
 {
-    // Free memory
-    delete value;
-    
     // Compute indices
     std::vector<size_t> theOneOffsetIndices;
     for( indexIterator it = oneOffsetIndices.begin(); it != oneOffsetIndices.end(); ++it )
         theOneOffsetIndices.push_back( size_t( (*it)->getValue() ) );
     
     // Get the element
-    RevPtr<Variable> theElement = variable->getRevObject().getElement( theOneOffsetIndices );
+    element = variable->getRevObject().getElement( theOneOffsetIndices );
     
-    value = RevBayesCore::Cloner<typename rlElemType::valueType, IsDerivedFrom<typename rlElemType::valueType, RevBayesCore::Cloneable>::Is >::createClone( static_cast<rlElemType&>( theElement->getRevObject() ).getValue() );
-
     // We are clean!
     this->touched = false;
 }

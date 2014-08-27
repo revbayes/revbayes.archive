@@ -292,7 +292,7 @@ RevBayesCore::AbstractSiteHomogeneousMixtureCharEvoModel<charType, treeType>::Ab
     branchHeterogeneousSubstitutionMatrices     = n.branchHeterogeneousSubstitutionMatrices;
     rateVariationAcrossSites                    = n.rateVariationAcrossSites;
 
-    // We don'e want tau to die before we die, or it can't remove us as listener
+    // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     tau->incrementReferenceCount();
     
