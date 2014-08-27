@@ -60,6 +60,7 @@ namespace RevBayesCore {
         virtual size_t                              getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
         virtual size_t                              getNumberOfCharacters(size_t idx) const = 0;                                //!< Number of characters for a specific taxon
         virtual size_t                              getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
+        virtual size_t                              getNumberOfIncludedTaxa(void) const = 0;                                    //!< Number of included taxa
         virtual size_t                              getNumberOfTaxa(void) const = 0;                                            //!< Number of taxa
         virtual AbstractDiscreteTaxonData&          getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&    getTaxonData(size_t tn) const = 0;                                          //!< Return a reference to a sequence in the character matrix

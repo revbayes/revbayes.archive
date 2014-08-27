@@ -424,8 +424,22 @@ size_t ContinuousCharacterData::getNumberOfTaxa(void) const
     return sequenceNames.size();
 }
 
+/**
+ * Get the number of included taxa currently stored in this object.
+ *
+ * \return       The number of included taxa.
+ */
+size_t ContinuousCharacterData::getNumberOfIncludedTaxa(void) const
+{
+    if (getNumberOfTaxa() > 0)
+    {
+        return getNumberOfTaxa() - deletedTaxa.size();
+    }
+    return 0;
 
-/** 
+}
+
+/**
  * Get the taxon data object with index tn.
  *
  * \return     A const reference to the taxon data object at position tn.
@@ -751,6 +765,31 @@ void ContinuousCharacterData::setHomologyEstablished(bool tf)
 {
     
     homologyEstablished = tf;
+    
+}
+
+
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] currentName    self explanatory.
+ * \param[in] newName        self explanatory.
+ */
+void ContinuousCharacterData::setTaxonName(std::string& currentName, std::string& newName)
+{
+    ContinuousTaxonData t = getTaxonData( currentName );
+    t.setTaxonName(newName);
+    
+    size_t numTax = sequenceNames.size();
+    for (size_t i = 0; i < numTax ; ++i)
+    {
+        if ( sequenceNames[i] == currentName) {
+            sequenceNames[i] = newName;
+            break;
+        }
+    }
+    taxonMap.erase( currentName );
+    taxonMap.insert( std::pair<std::string, ContinuousTaxonData >( newName, t ) );
     
 }
 

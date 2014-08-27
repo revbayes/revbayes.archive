@@ -65,6 +65,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfIncludedCharacters(size_t idx) const;                            //!< Number of characters for a specific taxon
         size_t                                              getNumberOfStates(void) const;                                              //!< Get the number of states for the characters in this matrix
         size_t                                              getNumberOfTaxa(void) const;                                                //!< Number of taxa
+        size_t                                              getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         DiscreteTaxonData<charType>&                        getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const DiscreteTaxonData<charType>&                  getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         DiscreteTaxonData<charType>&                        getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
@@ -82,7 +83,8 @@ namespace RevBayesCore {
         void                                                setFileName(const std::string &fn);                                         //!< Set the file name
         void                                                setFilePath(const std::string &fn);                                         //!< Set the file name
         void                                                setHomologyEstablished(bool tf);                                            //!< Set whether the homology of the characters has been established
-        
+        void                                                updateNames();                                                              //!< Update the sequence names when individual taxa have changed names
+        void                                                setTaxonName(std::string& currentName, std::string& newName);               //!< Change the name of a taxon
     protected:
         // Utility functions
         size_t                                              indexOfTaxonWithName(std::string& s) const;                                 //!< Get the index of the taxon
@@ -690,6 +692,23 @@ size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfTaxa(void) cons
 }
 
 
+/**
+ * Get the number of included taxa currently stored in this object.
+ *
+ * \return       The number of included taxa.
+ */
+template<class charType>
+size_t RevBayesCore::DiscreteCharacterData<charType>::getNumberOfIncludedTaxa(void) const
+{
+    if (getNumberOfTaxa() > 0)
+    {
+        return getNumberOfTaxa() - deletedTaxa.size();
+    }
+    return 0;
+    
+}
+
+
 /** 
  * Get the taxon data object with index tn.
  *
@@ -1126,6 +1145,30 @@ void RevBayesCore::DiscreteCharacterData<charType>::setHomologyEstablished(bool 
     
 }
 
+/**
+ * Change the name of a taxon
+ *
+ * \param[in] currentName    self explanatory.
+ * \param[in] newName        self explanatory.
+ */
+template<class charType>
+void RevBayesCore::DiscreteCharacterData<charType>::setTaxonName(std::string& currentName, std::string& newName)
+{
+    DiscreteTaxonData<charType> t = getTaxonData( currentName );
+    t.setTaxonName(newName);
+
+    size_t numTax = sequenceNames.size();
+    for (size_t i = 0; i < numTax ; ++i)
+    {
+        if ( sequenceNames[i] == currentName) {
+            sequenceNames[i] = newName;
+            break;
+        }
+    }
+    taxonMap.erase( currentName );
+    taxonMap.insert( std::pair<std::string, DiscreteTaxonData<charType> >( newName, t ) );
+    
+}
 
 
 #endif
