@@ -42,7 +42,6 @@ namespace RevLanguage {
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void) {}                                                         //!< Redraw (or not)
-        void                                    update(void);                                                           //!< Update current value
         
         // Parent DAG nodes management functions
         std::set<const RevBayesCore::DagNode*>  getParents(void) const;                                                                     //!< Get the set of parents
@@ -56,7 +55,6 @@ namespace RevLanguage {
         
     private:
         const RevBayesCore::TypedDagNode<typename rlType::valueType>*   referencedNode;                                 //!< DAG node of referenced variable
-        typename rlType::valueType*                                     value;                                          //!< Current value
     };
     
 }
@@ -78,8 +76,7 @@ using namespace RevLanguage;
 template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const std::string& n, RevBayesCore::TypedDagNode<typename rlType::valueType>* var ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    referencedNode( var ),
-    value( NULL )
+    referencedNode( var )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -96,8 +93,7 @@ IndirectReferenceNode<rlType>::IndirectReferenceNode( const std::string& n, RevB
 template<typename rlType>
 IndirectReferenceNode<rlType>::IndirectReferenceNode( const IndirectReferenceNode<rlType>& n ) :
     RevBayesCore::DynamicNode<typename rlType::valueType>( n ),
-    referencedNode( n.referencedNode ),
-    value( NULL )
+    referencedNode( n.referencedNode )
 {
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
@@ -118,9 +114,6 @@ IndirectReferenceNode<rlType>::~IndirectReferenceNode( void )
     referencedNode->removeChild( this );
     if ( referencedNode->decrementReferenceCount() == 0 )
         delete referencedNode;
-
-    // Delete our internal value
-    delete value;
 }
 
 
@@ -191,31 +184,20 @@ std::set<const RevBayesCore::DagNode*> IndirectReferenceNode<rlType>::getParents
 }
 
 
-/** Get the value (non-const version) */
+/** Get the value (non-const version). We need a const cast here for the refereneNode but this should be safe. */
 template<typename rlType>
 typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void )
 {
-    if ( this->touched )
-        update();
-    
-    return *value;
+    return const_cast< RevBayesCore::TypedDagNode<typename rlType::valueType>* >( referencedNode )->getValue();
 }
 
 
-/**
- * Get the value (const version). Note that we need to type-cast here to get access to the
- * update function in case we have been touched and have not updated before. This is required
- * by the lazy evaluation mechanism.
- */
+/** Get the value (const version) */
 template<typename rlType>
-const typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void ) const {
-    
-    if ( this->touched )
-        const_cast<IndirectReferenceNode<rlType>*>( this )->update();
-    
-    return *value;
+const typename rlType::valueType& IndirectReferenceNode<rlType>::getValue( void ) const
+{
+    return static_cast< const RevBayesCore::TypedDagNode<typename rlType::valueType>* >( referencedNode )->getValue();
 }
-
 
 
 /**
@@ -288,10 +270,8 @@ void IndirectReferenceNode<rlType>::printStructureInfo( std::ostream& o, bool ve
 
 
 /**
- * Restore the old value of the node and tell affected. We simply copy behavior
- * in DeterministicNode. However, it is doubtful that this call is needed.
- *
- * @todo Is this call really needed?
+ * Restore the old value of the node and tell affected. Simply pass the call
+ * on to others.
  */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
@@ -301,32 +281,23 @@ void IndirectReferenceNode<rlType>::restoreMe( RevBayesCore::DagNode *restorer )
     std::cerr << "In restoreMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
     
-    // we probably need to recompute our value; this will clear any touched flags
-    this->update();
-    
     // dispatch call to others
     this->restoreAffected();
 }
 
 
 /**
- * Touch this node for recalculation.
- *
- * @todo Can we test here for being touched and only pass the call
- *       on if we are not touched? It is not safe in DeterministicNode
- *       so we always pass the call on here, to be safe.
+ * Touch this node for recalculation. We cannot be touched without
+ * our referenced node being touched, so we do not need to do anything
+ * here except to pass the message on.
  */
 template<typename rlType>
 void IndirectReferenceNode<rlType>::touchMe( RevBayesCore::DagNode *toucher )
 {
-
 #ifdef DEBUG_DAG_MESSAGES
-    std::cerr << "In touchMe of container node " << this->getName() << " <" << this << ">" << std::endl;
+    std::cerr << "In touchMe of indirect reference node " << this->getName() << " <" << this << ">" << std::endl;
 #endif
 
-    // Touch myself
-    this->touched = true;
-    
     // Dispatch the touch message to downstream nodes
     this->touchAffected();
 }
@@ -349,33 +320,17 @@ void IndirectReferenceNode<rlType>::swapParent(const RevBayesCore::DagNode* oldP
     // Replace the referenced node with new parent
     referencedNode = static_cast< const RevBayesCore::TypedDagNode<typename rlType::valueType>* >( newParent );
     
-    // Detach old parent and adopt new parent
+    // Detach old parent
     oldParent->removeChild( this );
     if( oldParent->decrementReferenceCount() == 0 )
         delete oldParent;
-    
+
+    // Adopt new parent
     newParent->addChild( this );
     newParent->incrementReferenceCount();
     
     // Tell everybody we have been changed
     this->touch();
-}
-
-
-/**
- * Update our value. We assume that the caller knows
- * that an update is really needed. We need to work
- * with pointers to be able to hande abstract value
- * types.
- */
-template<typename rlType>
-void IndirectReferenceNode<rlType>::update()
-{
-    delete value;
-    value = RevBayesCore::Cloner<typename rlType::valueType, IsDerivedFrom<typename rlType::valueType, RevBayesCore::Cloneable>::Is >::createClone( referencedNode->getValue() );
-
-    // We are clean!
-    this->touched = false;
 }
 
 
