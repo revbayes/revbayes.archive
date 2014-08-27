@@ -51,9 +51,9 @@ namespace RevBayesCore {
         // parameters
         std::set<DagNode*>                                      affectedNodes;                                                                          //!< The affected nodes by this move.
         std::set<DagNode*>                                      nodes;                                                                                  //!< The set of nodes this move is working on
-        unsigned int                                            numAccepted;                                                                            //!< Number of times accepted
         StochasticNode<double>*                                 variable;                                                                               //!< The variable the Proposal is working on
-        double                                                  window;
+        double                                                  window;                                                                                 //!< Window width for slice sampling
+	double                                                  total_movement;                                                                         //!< total distance moved under auto-tuning
     };
 }
 
