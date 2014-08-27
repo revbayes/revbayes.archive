@@ -142,7 +142,7 @@ bool TestCharacterHistory::run_exp(void) {
     // settings
     ////////////
     
-    mcmcGenerations *= 1;
+    mcmcGenerations *= 10;
     //    mcmcGenerations=35;
     unsigned int burn = (unsigned int)(mcmcGenerations * .2);
     
@@ -286,7 +286,7 @@ bool TestCharacterHistory::run_exp(void) {
     StochasticNode<std::vector<double> > *pi = new StochasticNode<std::vector<double> >( "pi", new DirichletDistribution(pi_pr) );
     
     // cladogenic state frequencies
-    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(4,1.0) );
+    ConstantNode<std::vector<double> > *csf_pr = new ConstantNode<std::vector<double> >( "csf_pr", new std::vector<double>(3,1.0) );
     StochasticNode<std::vector<double> > *csf = new StochasticNode<std::vector<double> >( "csf", new DirichletDistribution(csf_pr) );
 
     
@@ -464,10 +464,10 @@ bool TestCharacterHistory::run_exp(void) {
     if (useCladogenesis)
         monitoredNodes.insert( csf );
     
-    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".mcmc.txt", "\t"));
+    monitors.push_back(new FileMonitor(monitoredNodes, 10, filepath + "rb" + ss.str() + ".parameters.txt", "\t"));
     monitors.push_back(new ScreenMonitor(monitoredNodes, 10, "\t" ) );
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".tree_chars.txt", "\t"));
-    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 100, filepath + "rb" + ss.str() + ".num_events.txt", "\t", true, true, true, false, true, true, false));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 10, filepath + "rb" + ss.str() + ".events.txt", "\t"));
+    monitors.push_back(new TreeCharacterHistoryNodeMonitor<StandardState,TimeTree>(charactermodel, tau, 10, filepath + "rb" + ss.str() + ".counts.txt", "\t", true, true, true, false, true, true, false));
     monitors.push_back(new TreeCharacterHistoryNhxMonitor<StandardState,TimeTree>(charactermodel, tau, ta, 100, mcmcGenerations, burn, filepath + "rb" + ss.str() + ".nhx.txt", "\t"));
     
     monitors.push_back(new FileMonitor(tau, 10, filepath + "rb" + ss.str() + ".trees.txt", "\t"));
