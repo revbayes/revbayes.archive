@@ -8,6 +8,7 @@
 
 #include "TimeAtlas.h"
 #include "TimeAtlasDataReader.h"
+#include <sstream>
 #include <string>
 
 using namespace RevBayesCore;

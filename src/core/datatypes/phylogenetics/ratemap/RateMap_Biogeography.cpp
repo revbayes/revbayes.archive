@@ -15,7 +15,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
     geographyRateModifier()
 {
     useGeographyRateModifier = false;
-//    useUnnormalizedRates = false;
+    useUnnormalizedRates = false;
     branchHeterogeneousClockRates = false;
     branchHeterogeneousGainLossRates = false;
     forbidExtinction = fe;
@@ -410,12 +410,12 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node,
         unsigned s = from[i]->getState();
         double v = availableAreaVector[ epochIdx * this->numCharacters + i ];
         
-        if (forbidExtinction && s == 1 && counts[1] == 1)
+        if (forbidExtinction && s == 1 && counts[1] == 0)
             sum += 0.0;
         else if (s == 1 && v > 0)
             sum += glr[0];
         else if (s == 1 && v == 0)
-            sum += 10e10;
+            sum += 1e10;
         else  if (s == 0)
             sum += glr[1] * v;
     }

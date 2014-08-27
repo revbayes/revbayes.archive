@@ -214,6 +214,23 @@ The $\beta$ parameter rescales the importance of geographic distance between two
 Importantly, $\eta(\cdot) = 1$ when $\beta=0$, meaning geographic distance between areas is irrelevant.
 Moreover, when $\beta > 0$, $\eta(\cdot) < 1$ when area $a$ is relatively distant and $\eta(\cdot) > 1$ when area $a$ is relatively close.
 
+In addition to dispersal and extinction, the DEC model allows cladogenic range evolution events.
+For each internal node in the three, one of two events can occur: peripatry or allopatry.
+Say the range of a species approaching an internal node, i.e. that is about to speciate, is 1110.
+Under peripatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
+Under allopatric cladogenesis, the ancestral range is split evenly among daughter lineages, e.g. one lineage may inherit 1100 and the other inherit 0010.
+Only under peripatric cladogenesis where the ancestral range is size one do both daughter lineages inherit the same range; this cladogenesis is sometimes called narrow sympatric cladogenesis.
+Widespread sympatric cladogenesis is allowed, where both daughter lineages inherit the entire ancestral species range \citep{landis13}.
+For a complete description on cladogenic events, see \citet{matzke14}.
+Ideally, the probability of cladogenic events is linked to a birth-death process (see \citet{goldberg11}), but the DEC model ignores speciation events hidden by extinction or incomplete taxon sampling and assigns equal probabilities to all cladogenic event types. 
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=5in]{figures/bg_dec_dag}
+\caption{Graphical model of DEC.}
+\end{figure}
+
 Let's consider what happens to the size of \textbf{Q} when the number of areas, $N$, becomes large.
 For three areas, \textbf{Q} is size $8 \times 8$.
 For ten areas, \textbf{Q} is size $1024 \times 1024$, which approaches the largest size matrix that can be exponentiated in a practical amount of time.
@@ -456,23 +473,31 @@ RevBayes > grm := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAvailable=true, 
 \end{snugshade}
 
 Now we need a deterministic node to represent the rate matrix, {\bf Q}.
-To determine the value of this node, we'll use the function {\tt fnBiogeoDEC} to assign our model parameters to transition rates as described in the introduction.
+To determine the value of this node, we'll use the function {\tt fnBiogeoDE} to assign our model parameters to transition rates as described in the introduction.
 As input, we'll pass our gain and loss rates, {\tt glr}, and our geographical rate modifier, {\tt grm}.
 In addition, we'll inform the function of the number of areas in our analysis and whether we will allow species to be absent in all areas (i.e. have the null range).
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > Q_like := fnBiogeoDEC(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+RevBayes > Q := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm, numAreas=4, forbidExtinction=true)
+\end{lstlisting}
+\end{snugshade}
+
+To extract some information for the frequencies of different cladogenic event types (sympatric, peripatric, allopatric), we will create a Dirichlet-distributed stochastic node.
+
+\begin{snugshade}
+\begin{lstlisting}
+RevBayes > csf ~ dnDirichlet([1,1,1])
 \end{lstlisting}
 \end{snugshade}
 
 For the model's final node, we create the stochastic node for the continuous-time Markov chain (CTMC).
 This node's distribution is {\tt dnPhyloDACTMC} where {\tt DA} indicates the CTMC uses data-augmentation to compute the likelihood rather than Felsenstein's pruning algorithm.
-To create the distribution, we must pass it our {\tt tree} and {\tt Q\_like} objects, but additionally inform the distribution that it will be using a biogeographic model, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), and that it will assign zero probability to a transition away from the null range state.
+To create the distribution, we must pass it our {\tt tree} and {\tt Q} objects, but additionally inform the distribution that it will be using a biogeographic model, that it will introduce the simple cladogenic range evolution events described in \citet{ree08} ({\tt useCladogenesis=true}), and that it will assign zero probability to a transition away from the null range state.
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > M ~ dnPhyloDACTMC(tree=tree, Q=Q_like, type="biogeo", forbidExtinction=true, useCladogenesis=true)
+RevBayes > M ~ dnPhyloDACTMC(tree=tree, Q=Q, C=csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)
 \end{lstlisting}
 \end{snugshade}
 
@@ -518,9 +543,10 @@ The arguments for {\tt mvScale} are fairly typical as far as RevBayes {\tt Move}
 
 \begin{snugshade}
 \begin{lstlisting}
-RevBayes > moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=2.0)
-RevBayes > moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=2.0)
-RevBayes > moves[3] <- mvScale(x=dp, 	  lambda=0.5, tune=false, weight=2.0)
+RevBayes > moves[1] <- mvScale(x=glr[1], lambda=0.5, tune=false, weight=5.0)
+RevBayes > moves[2] <- mvScale(x=glr[2], lambda=0.5, tune=false, weight=5.0)
+RevBayes > moves[3] <- mvScale(x=dp, 	 lambda=0.5, tune=false, weight=5.0)
+RevBayes > moves[4] <- mvSimplexElementScale(csf, alpha=10.0, tune=false, weight=4.0)
 \end{lstlisting}
 \end{snugshade}
 
@@ -548,10 +574,10 @@ Let's create the character history moves as follows.
 \begin{snugshade}
 \begin{lstlisting}
 RevBayes > n_nodes  <- tree.nnodes()
-RevBayes > moves[4] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-RevBayes > moves[5] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
-RevBayes > moves[6] <- mvNodeCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
-RevBayes > moves[7] <- mvPathCHRS(ctmc=M, qmap=Q_like, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+RevBayes > moves[5] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+RevBayes > moves[6] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", weight=2.0*n_nodes)
+RevBayes > moves[7] <- mvNodeCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
+RevBayes > moves[8] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=1.0, type="biogeo", weight=n_nodes)
 \end{lstlisting}
 \end{snugshade}
 
@@ -565,7 +591,7 @@ The first two {\tt Monitor} objects are fairly standard and found in most RevBay
 RevBayes > mnScreen
    Mntr_Screen function (RevObject ..., Natural printgen, Bool posterior, Bool
    likelihood, Bool prior)
-RevBayes > monitors[1] <- mnScreen(printgen=10, glr, dp, pi)
+RevBayes > monitors[1] <- mnScreen(printgen=10, glr, dp, csf)
 RevBayes > mnModel
    Mntr_Model function (String filename, Natural printgen, String separator,
    Bool posterior, Bool likelihood, Bool prior, Bool append, Bool
@@ -744,22 +770,21 @@ Every 20 iterations, this monitor re-prints the column headers.
 RevBayes > my_mcmc.run(generations=10000)
 Running MCMC simulation for 10000 iterations
 The simulator uses 7 different moves in a random
-move schedule with 227 moves per iteration
+move schedule with 241 moves per iteration
 
-Iteration    |      Posterior   |     Likelihood   |          Prior   |             dp   |         glr[1]   |         glr[2]
-------------------------------------------------------------------------------------------------------------------------------
-0            |       -62.0361   |       -62.7415   |       0.705411   |       0.088045   |        0.42587   |        0.10632
-10           |       -70.7471   |       -67.1729   |       -3.57427   |       0.390041   |       0.485809   |       0.172352
-20           |       -55.9579   |       -55.2502   |      -0.707682   |      0.0961152   |       0.509127   |       0.156301
-30           |       -85.1181   |       -86.6207   |        1.50257   |      0.0539629   |       0.335096   |        0.15146
-40           |       -38.3381   |       -40.4898   |        2.15172   |      0.0146533   |       0.339345   |       0.121605
-50           |        -93.582   |        -88.499   |       -5.08294   |      0.0172905   |       0.776815   |       0.404963
-
+Iteration |  Posterior| Likelihood|      Prior|     glr[1]|     glr[2]|         dp|     csf[1]|     csf[2]|     csf[3]
+----------------------------------------------------------------------------------------------------------------------
+0         |   -73.8091|   -72.0884|   -1.72064|   0.561081|   0.163257|   0.207816|   0.800911|   0.148279|  0.0508098
+10        |   -71.6553|   -70.6763|  -0.978973|   0.535445|   0.137321|   0.185221|    0.80819|   0.115359|  0.0764516
+20        |   -52.0561|   -52.3781|   0.322018|   0.488219|  0.0825952|   0.157074|   0.782565|  0.0289439|   0.188491
+30        |   -78.4143|   -77.8396|  -0.574688|   0.489703|   0.184283|   0.143573|   0.929565| 0.00712045|  0.0633148
+40        |   -49.9196|   -51.6664|    1.74683|   0.368131|   0.135512|  0.0817632|   0.652166|  0.0559583|   0.291875
+50        |   -84.4542|   -83.1119|   -1.34227|   0.593591|   0.206547|  0.0941784|   0.724901|   0.105702|   0.169397
 ...
 \end{lstlisting}
 \end{snugshade}
 
-For the complex 2-rate model, our three model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively.
+For the complex 2-rate model, our model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively, and the frequencies for sympatry, peripatry, and allopatry, {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]}, respectively. 
 If you notice the value of some parameter is rarely updated from iteration to iteration, the MCMC is probably mixing poorly therefore it's not generating samples from the posterior distribution (the MCMC's stationary distribution).
 In this case, you may want to re-run the analysis with different arguments for the {\tt Move} object assigned to that parameter.
 
@@ -770,14 +795,13 @@ As with the {\tt ScreenMonitor}, columns are model or parameter values and rows 
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-Iteration	Posterior	Likelihood	Prior	glr[1]	glr[2]	dp
-0	-62.0361	-62.7415	0.705411	0.425870	0.106320	0.0880450
-10	-70.7471	-67.1729	-3.57427	0.485809	0.172352	0.3900410
-20	-55.9579	-55.2502	-0.707682	0.509127	0.156301	0.0961152
-30	-85.1181	-86.6207	1.502570	0.335096	0.151460	0.0539629
-40	-38.3381	-40.4898	2.151720	0.339345	0.121605	0.0146533
-50	-93.5820	-88.4990	-5.08294	0.776815	0.404963	0.0172905
-
+Iteration  Posterior  Likelihood  Prior  glr[1]  glr[2]  dp  csf[1]  csf[2]  csf[3]
+0   -73.8091  -72.0884  -1.72064  0.561081  0.163257  0.207816  0.800911  0.148279  0.050809
+10  -71.6553  -70.6763  -0.97897  0.535445  0.137321  0.185221  0.808190  0.115359  0.076451
+20  -52.0561  -52.3781   0.32201  0.488219  0.082595  0.157074  0.782565  0.028943  0.188491
+30  -78.4143  -77.8396  -0.57468  0.489703  0.184283  0.143573  0.929565  0.007120  0.063314
+40  -49.9196  -51.6664   1.74683  0.368131  0.135512  0.081763  0.652166  0.055958  0.291875
+50  -84.4542  -83.1119  -1.34227  0.593591  0.206547  0.094178  0.724901  0.105702  0.169397
 ...
 \end{lstlisting}
 \end{framed}
@@ -787,6 +811,7 @@ Open Tracer, select the fields for the posterior probability and area gain rate,
 \begin{figure}[H]
 \centering
 \includegraphics[width=3in]{figures/joint_rgain_posterior}
+\caption{Joint-marginal distribution of posterior and area gain rate, $\lambda_1$.}
 \end{figure}
 
 Here, we see a strong negative correlation between the posterior probability and the area gain rate, which is expected.
@@ -800,13 +825,13 @@ Open {\tt bg\_2rate.counts.txt}.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-Iteration	Posterior	Likelihood	Prior	t_s0	t_s1	t_c0	t_c1	t_c2	b0_s0	b0_s1	b0_c	...
-0	-60.5999	-60.2078	-0.392113	16	14	37	0	0	1	1	0	...
-10	-62.4151	-61.9919	-0.42319	16	14	31	6	0	1	0	1	...
-20	-86.6285	-82.9437	-3.68483	26	23	37	0	0	2	2	0	...
-30	-49.4231	-50.3783	0.955262	12	12	35	2	0	1	1	0	...
-40	-100.982	-95.9841	-4.99809	36	31	35	0	2	1	1	0	...
-50	-80.9566	-76.9377	-4.01884	24	23	37	0	0	2	2	0	...
+Iteration	Posterior	Likelihood	Prior	t_s0	t_s1	t_c0	t_c1	t_c2	b0_s0	b0_s1	b0_c	..
+0	-73.8091	-72.0884	-1.72064	19	18	37	0	0	1	1	0	...
+10	-71.6553	-70.6763	-0.978973	17	17	37	0	0	1	1	0	...
+20	-52.0561	-52.3781	0.322018	12	10	37	0	0	1	1	0	...
+30	-78.4143	-77.8396	-0.574688	24	20	37	0	0	2	1	0	...
+40	-49.9196	-51.6664	1.746830	10	9	37	0	0	1	1	0	...
+50	-84.4542	-83.1119	-1.34227	22	21	37	0	0	1	1	0	...
 ...
 \end{lstlisting}
 \end{framed}
@@ -821,6 +846,7 @@ Open Tracer, select the fields for the posterior probability and the number of g
 \begin{figure}[H]
 \centering
 \includegraphics[width=3in]{figures/joint_ngain_posterior}
+\caption{Joint-marginal distribution of posterior and number dispersal events summed over the tree.}
 \end{figure}
 
 
@@ -832,13 +858,13 @@ Open {\tt bg\_2rate.events.txt}.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-Iteration	Posterior	Likelihood	Prior	Tree
-0	-60.5999	-60.2078	-0.392113	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.92 ...
-10	-62.4151	-61.9919	-0.42319	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.09 ...
-20	-86.6285	-82.9437	-3.68483	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.30 ...
-30	-49.4231	-50.3783	0.955262	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={}]:1.08 ...
-40	-100.982	-95.9841	-4.99809	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={{t:0.16 ...
-50	-80.9566	-76.9377	-4.01884	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;ev={}]:1.08 ...
+Iteration  Posterior  Likelihood  Prior  Tree
+0   -73.8091  -72.0884  -1.72064  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0100;ev={{t:0.488207 ...
+10  -71.6553  -70.6763  -0.97897  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:1.0853,P ...
+20  -52.0561  -52.3781   0.32201  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0110;ev={{t:0.627439 ...
+30  -78.4143  -77.8396  -0.57468  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:1.0853,P ...
+40  -49.9196  -51.6664   1.74683  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0110;ev={{t:0.166634 ...
+50  -84.4542  -83.1119  -1.34227  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0100;ev={{t:0.070469 ...
 
 ...
 \end{lstlisting}
@@ -848,16 +874,16 @@ Each iteration records the data-augmented character history (stochastic mapping)
 
 \begin{snugshade}
 \begin{lstlisting}
-[&index=19;nd=0110;pa=0100;ch0=0010;ch1=0110;cs=p;bn=18;ev={{t:0.139594,a:0.974127,s:1,i:2}}]
+[&index=19;nd=0110;pa=0100;ch0=0110;ch1=0010;cs=p;bn=17;ev={{t:0.804201,a:0.444834,s:1,i:2}}]
 \end{lstlisting}
 \end{snugshade}
 
 {\tt index=19} indicates this branch leads to the node indexed 19.
 The branch began in the ancestral state {\tt pa=0100} and terminated in the state {\tt nd=0110}.
-Since this node is not a tip node, it represents a speciation event, so the daughter ranges are also given, {\tt ch0=0010} and {\tt ch1=0110}.
+Since this node is not a tip node, it represents a speciation event, so the daughter ranges are also given, {\tt ch0=0110} and {\tt ch1=0010}.
 The cladogenic state for this speciation event was peripatric, {\tt cs=p}, rather than sympatric (wide or narrow; {\tt s}) or allopatric ({\tt a}).
 Anagenic dispersal and extinction events occurring along the lineage leading to node 19 are recorded in {\tt events}, where each event has a time (relative to the absolute branch length), absolute age, state (into), and character index ({\tt t}, {\tt a}, {\tt s}, {\\t i}, resp.).
-For this posterior sample of the character history for the branch leading to node 19, area 2 was gained at age 0.974127, which is near the tips of the tree.
+For this posterior sample of the character history for the branch leading to node 19, the species range expanded into Maui at age 0.444834, which is near the tips of the tree.
 
 To manipulate this data format, we'll use Python scripts. Below are a few examples of interesting posterior features.
 
@@ -865,13 +891,13 @@ Open a python console and read in the events.
 
 \begin{snugshade}
 \begin{lstlisting}
+> cd tutorials/RB_biogeo_tutorial/python
 > python27
 
 ...
 
->>> import bg_parse
->>> ll=read_events()
->>> dd=get_events(ll)
+>>> from bg_parse import *
+>>> dd=get_events()
 \end{lstlisting}
 \end{snugshade}
 
@@ -883,8 +909,8 @@ Each branch is a dictionary whose keys are various parts of the MCMC state and w
 ['ch1', 'iteration', 'bn', 'nd', 'ch0', 'prior', 'posterior', 'cs', 'ev', 'likelihood']
 >>> dd[19]['posterior'][0:5]
 [-60.5999, -62.4151, -86.6285, -49.4231, -100.982]
->>> dd[19]['cs'][0:5]
-['s', 'p', 's', 's', 's']
+>>> dd[19]['nd'][0:5]
+[[0, 1, 0, 0], [0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 1, 1, 0]]
 \end{lstlisting}
 \end{snugshade}
 
@@ -892,7 +918,7 @@ To get the $n=1$ highest-valued sample for a branch by its posterior value
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_best(dd[19],n=1,p='posterior')
-{'prior': [2.25647], 'iteration': [940], 'bn': [18], 'nd': [[0, 0, 1, 0]], 'ch0': [[0, 0, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-36.9044], 'cs': ['s'], 'ev': [[{'age': 0.705193, 'state': 1, 'idx': 2, 'time': 0.477281}, {'age': 0.607798, 'state': 0, 'idx': 1, 'time': 0.599575}]], 'likelihood': [-39.1609]}
+{'prior': [-0.953907], 'iteration': [5470], 'bn': [18], 'nd': [[0, 0, 1, 0]], 'ch0': [[0, 0, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-36.8795], 'pa': ['0100'], 'cs': ['s'], 'ev': [[{'age': 0.773692, 'state': 1, 'idx': 2, 'time': 0.39127}, {'age': 0.694034, 'state': 0, 'idx': 1, 'time': 0.491293}]], 'likelihood': [-35.9256]}
 \end{lstlisting}
 \end{snugshade}
 
@@ -900,10 +926,10 @@ To get the probability that area $i$ and area $j$ are both part of the species r
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_area_pair(dd[19],k='nd')
-[[0.07892107892107893, 0.014985014985014986, 0.06793206793206794, 0.0],
-[0.014985014985014986, 0.3956043956043956, 0.3546453546453546, 0.0],
-[0.06793206793206794, 0.3546453546453546, 0.952047952047952, 0.0],
-[0.0, 0.0, 0.0, 0.0]]
+[[0.0429, 0.0089, 0.0329, 0.0],
+ [0.0089, 0.2727, 0.2247, 0.0],
+ [0.0329, 0.2247, 0.9440, 0.0],
+ [0.0,       0.0,    0.0, 0.0]]
 \end{lstlisting}
 \end{snugshade}
 showing area 3 was occupied with probability 0.95 and both areas 2 and 3 were occupied with probability 0.35.
@@ -949,6 +975,7 @@ Phylowood generates interactive animations to explore biogeographic reconstructi
 \begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figures/phw_mrca}
+\caption{Phylowood frame showing posterior ancestral range of root node.}
 \end{figure}
 
 \noindent \\ \impmark Click the Play button to view the animation. \\
@@ -962,6 +989,7 @@ The animation will play the timeframe corresponding to the slider.
 \begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figures/phw_all}
+\caption{Phylowood frame showing distribution of extant taxon ranges.}
 \end{figure}
 
 \noindent \\ \impmark Pan and zoom around the map.\\
@@ -989,6 +1017,7 @@ Phylowood also offers a masking effect that persists until an unmask command is 
 \begin{figure}[H]
 \centering
 \includegraphics[width=4in]{figures/phw_br19}
+\caption{Phylowood frame highlighting the posterior range for the most recent common ancestor of {\it P. mauiensis} and {\it P. hawaiiensis}.}
 \end{figure}
 
 Now that the masking effects are in place, you're free to interact with other map components.
