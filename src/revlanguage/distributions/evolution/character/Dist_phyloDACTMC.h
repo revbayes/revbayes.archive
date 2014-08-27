@@ -5,6 +5,7 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlRateMap.h"
 #include "RlTypedDistribution.h"
+#include "RlSimplex.h"
 #include "TimeTree.h"
 
 namespace RevLanguage {
@@ -40,6 +41,7 @@ namespace RevLanguage {
         
         RevPtr<const Variable>                          tree;
         RevPtr<const Variable>                          q;
+        RevPtr<const Variable>                          cladoStateFreqs;
         RevPtr<const Variable>                          forbidExtinction;
         RevPtr<const Variable>                          useCladogenesis;
         RevPtr<const Variable>                          type;
@@ -91,12 +93,19 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     {
         bool fe = static_cast<const RlBoolean&>(forbidExtinction->getRevObject()).getValue();
         bool uc = static_cast<const RlBoolean&>(useCladogenesis->getRevObject()).getValue();
+        const RevBayesCore::TypedDagNode< std::vector< double > > *csf = NULL;
+        
+        if ( cladoStateFreqs->getRevObject() != RevNullObject::getInstance() )
+        {
+            csf = static_cast<const Simplex &>( cladoStateFreqs->getRevObject() ).getDagNode();
+        }
         
         // (const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true)
         RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState, typename treeType::valueType>(tau, nStates, nChars, false, fe, uc);
         
         RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
         dist->setRateMap( rm );
+        dist->setCladogenicStateFrequencies( csf );
         
         d = dist;
     }
@@ -158,9 +167,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDACTMC<treeType>::getMemb
         
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "tree"               , true, treeType::getClassTypeSpec() ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "Q"                  , true, RateMap::getClassTypeSpec() ) );
-//        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nStates"            , true, Natural::getClassTypeSpec() ) );
-//        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "nChars"             , true, Natural::getClassTypeSpec() ) );
-//        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "ambiguous"   , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "C"                  , true, Simplex::getClassTypeSpec(), NULL ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         distCharStateEvolutionMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , true, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
@@ -258,6 +265,10 @@ void RevLanguage::Dist_phyloDACTMC<treeType>::setConstMemberVariable(const std::
     else if (name == "useCladogenesis")
     {
         useCladogenesis = var;
+    }
+    else if (name == "C")
+    {
+        cladoStateFreqs = var;
     }
     else {
         Distribution::setConstMemberVariable(name, var);

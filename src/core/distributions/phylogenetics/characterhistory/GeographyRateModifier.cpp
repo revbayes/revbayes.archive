@@ -251,7 +251,7 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     else if (r == 0.0 && s == 1)
     {
         
-        ;
+        r = 1e-10;
     }
     
     return r;
@@ -273,7 +273,7 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     else if (r == 0.0 && to == 1)
     {
         
-        ;
+        r = 1e-10;
     }
     
     return r;
