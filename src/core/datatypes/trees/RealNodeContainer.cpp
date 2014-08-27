@@ -107,7 +107,6 @@ void RealNodeContainer::recursiveClampAt(const TopologyNode& from, const Continu
         if (data->getCharacter(dataindex,l).getMean() != -1000) {
            (*this)[index] = data->getCharacter(dataindex,l).getMean();
             clampVector[index] = true;
-            std::cerr << "taxon : " << index << '\t' << taxon << " trait value : " << (*this)[index] << '\n';
         }
         else    {
             std::cerr << "taxon : " << taxon << " is missing for trait " << l+1 << '\n';
@@ -201,10 +200,7 @@ void RealNodeContainer::recursiveGetStatsOverTips(const TopologyNode& from, doub
 
 std::string RealNodeContainer::getNewick() const {
 
-    std::ostringstream s;
-    s << recursiveGetNewick(getTimeTree()->getRoot());
-    s << ";";
-    return s.str();
+    return recursiveGetNewick(getTimeTree()->getRoot());
 }
 
 std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) const {
@@ -213,9 +209,6 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
     
     if (from.isTip())   {
         s << getTimeTree()->getTipNames()[from.getIndex()] << "_";
-        std::cerr << from.getIndex() << '\t' << getTimeTree()->getTipNames()[from.getIndex()] << "_";
-        std::cerr << (*this)[from.getIndex()] << '\n';
-        exit(1);
     }
     else    {
         s << "(";
@@ -230,20 +223,10 @@ std::string RealNodeContainer::recursiveGetNewick(const TopologyNode& from) cons
         s << ")";
     }
     s << (*this)[from.getIndex()];
-    if (from.isTip() && (! isClamped(from.getIndex()))) {
-        std::cerr << "leaf is not clamped\n";
-        // get taxon index
-        size_t index = from.getIndex();
-        std::cerr << "index : " << index << '\n';
-        std::string taxon = tree->getTipNames()[index];
-        std::cerr << "taxon : " << index << '\t' << taxon << '\n';
-        std::cerr << " trait value : " << (*this)[index] << '\n';        
-        exit(1);
-    }
-//    if (!from.isRoot()) {
+    if (!from.isRoot()) {
         s << ":";
         s << getTimeTree()->getBranchLength(from.getIndex());
-//    }
+    }
     
     return s.str();
 }

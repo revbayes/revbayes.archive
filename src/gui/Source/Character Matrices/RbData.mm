@@ -504,7 +504,6 @@
             {
             RbTaxonData* td = [self getDataForTaxonIndexed:i];
             [outStr appendString:@">"];
-NSLog(@"taxonName=%@", [td taxonName]);
             [outStr appendString:[td taxonName]];
             [outStr appendString:@"\n"];
             for (int j=0; j<[td numCharacters]; j++)
