@@ -71,6 +71,8 @@
 \textbf{\it{\Large Gene tree-Species tree reconstruction}}\\\vspace{2mm}
 \end{center}
 
+\tableofcontents
+
 \section{Overview: Gene tree-species tree models}
 
 Ever since Zuckerkandl and Pauling \citep{Zuckerkandl1965a}, people have recognised that phylogenies reconstructed from homologous gene sequences could differ from species phylogenies.
@@ -165,13 +167,14 @@ Once branch lengths on the species tree are measured in coalescent time units, i
 \label{fig2}
 \end{figure}
 
+\vspace{20mm}
 
 {\begin{framed}
 \begin{center}
 The exercises assume you have a working installation of RevBayes.
 The first exercise aims at understanding the impact of the parameters of the multispecies coalescent.
 The other exercises will introduce methods to reconstruct species trees and gene trees using the multispecies coalescent or closely-related models.
-Apart from the first exercise which requires copying and pasting from this document, scripts are all placed in \emph{$tutorials/RB_GeneTreeSpeciesTree_Tutorial/RB_tutorial_files/RevBayes_scripts/$}, in four folders. 
+Scripts are all placed in {\footnotesize \emph{$tutorials/RB\_GeneTreeSpeciesTree\_Tutorial/RB\_GeneTreeSpeciesTree\_tutorial\_files/RevBayes\_scripts/$}}, in five folders. 
 \emph{It is highly recommended to start RevBayes from each of these folders when doing the exercises.}
 \end{center}
 \end{framed}}
@@ -190,6 +193,11 @@ Apart from the first exercise which requires copying and pasting from this docum
 n_species <- 10
 n_genes <- 10
 n_alleles <- 5
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
 \end{lstlisting}
 \end{snugshade*}}
 \item We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to \citet{Leache2011}):
@@ -225,25 +233,45 @@ for (i in 1:n_genes) {
 }
 \end{lstlisting}
 \end{snugshade*}}
+
+We write the data to file,  in the "dataFolder" directory.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+
+# We need to save the species tree and the gene trees
+write(speciesTree, filename=dataFolder+"speciesTree")
+
+# Saving the gene trees
+for (i in 1:(n_genes)) {
+	write(geneTrees[i], filename=dataFolder+"geneTree_"+i+".tree")
+}
+
+\end{lstlisting}
+\end{snugshade*}}
+
+
 \item We can compute symmetric differences between all these gene trees. The symmetric difference between two trees is the total number of partitions found in one tree but not in the other one. In our case, the maximal difference is as follows:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 maxDiff <- 2 * (n_species*n_alleles - 2)
 \end{lstlisting}
 \end{snugshade*}}
-\item That will give us a reference for comparing with the values we get on our gene trees. We can build a function for computing all pairwise symmetric differences between our gene trees, and getting the mean.
+\item That will give us a reference for comparing with the values we get on our gene trees. We can build a function for computing all pairwise symmetric differences between our gene trees, and getting the mean. Caveat: in the current state of the Rev language, we have to use variable names that have never been used before in the workspace (hence the use of "k" and "l" for loop indices instead of "i" and "j" that have been used before. Alternatively we could have done a "clear(i)" and a "clear(j)" if we really wanted to use these variable names). 
+
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-function RealPos symDiffVector ( Real[] vec ) { 
+function RealPos symDiffVector ( TimeTree[] vec ) {
 	ndiff <- 1
-	for (k in 1:(n_genes-1)) {
-		for (j in (k+1):n_genes) {
-			diff[ndiff]<-symDiff (geneTrees[k], geneTrees[j]) 
+	for (k in 1:(vec.size()-1)) {
+		for (l in (k+1):vec.size()) {
+			diff[ndiff]<-symDiff (vec[k], vec[l])
 			ndiff <- ndiff+1
 		}
 	}
 	return (mean(diff))
 }
+
+
 #We can then use this function on our gene trees:
 symDiffVector(geneTrees)
 \end{lstlisting}
@@ -315,6 +343,14 @@ In the RevBayes implementation of POMO, base fitnesses can be estimated as well.
 In this section we will perform inference using the multispecies coalescent, the POMO model, and concatenation.
 Depending on your machine and on the size of the data, successful inference may take some time.
 If this tutorial is done in a classroom environment, it may be wise to convene with friends that one tries the multispecies coalescent model while another one tries the POMO model, and the third one tries the concatenation approach, and that results will be shared.
+In case you want to compare the results between machines or between RevBayes sessions, you have to make sure that you are using the same random seed in all sessions. This is easily done by setting the seed using 
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+seed(x, y)
+\end{lstlisting}
+\end{snugshade*}}
+where $x$ and $y$ are two integer numbers of your choice.
+
 First we will simulate data, and then we will perform inference using the three different approaches.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,7 +364,7 @@ As before, parameters of the simulation can be changed as seems fit, but here we
 
 {\begin{framed}
 \begin{center}
-\emph{WARNING: The following script may be less up to date than the simulation scripts named "MultiSpeciesCoalescentSimulatingTreesAndAlignments.Rev".}
+\emph{WARNING: The following script may be less up to date than the simulation scripts named "UnderstandingMultiSpeciesCoalescent/MultiSpeciesCoalescentSimulatingTreesAndAlignments.Rev".}
 \end{center}
 \end{framed}}
 \vspace{5mm}
@@ -1042,24 +1078,38 @@ mymcmc.run(generations=4000)
 \end{lstlisting}
 \end{snugshade*}}
 
-
-
  \end{framed}}
 
 \bigskip
-\section*{Batch Mode}
+
+
+\section{Batch Mode}
 
 If you wish to run these exercises in batch mode, the files are provided for you. 
 
 You can carry out these batch commands by providing the file name when you execute the \cl{rb} binary in your unix terminal (this will overwrite all of your existing run files).
 \exs{\cl{\$ rb NameOfTheFile.Rev}}
 
+
+\section{Things to think about}
+How did the different methods perform? 
+Did you expect to see these differences?
+It has been shown that the concatenation approach could be inconsistent under some conditions of population size and of divergence times \citep{Degnan2006}. 
+Do you find that concatenation performs worse that its competitors?
+Which models seem to "mix" better?
+In particular, does the full multispecies coalescent mix well?
+Why can we expect this model in particular would have difficulties mixing?
+
+
 \bigskip
-\section*{Useful Links}
+\section{Useful Links}
 
 \begin{itemize}
 \item RevBayes: \href{https://github.com/revbayes/code}{https://github.com/revbayes/code} \\ \vspace{-7mm}
 \item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
+\item NJplot, a lightweight tree plotting program: \href{http://doua.prabi.fr/software/njplot}{http://doua.prabi.fr/software/njplot} \\ \vspace{-7mm}
+\item Seaview, a program to handle alignments and trees: \href{http://doua.prabi.fr/software/seaview}{http://doua.prabi.fr/software/seaview} \\ \vspace{-7mm}
+
 \end{itemize}
 
 Questions about this tutorial can be directed to: \\\vspace{-10mm}
