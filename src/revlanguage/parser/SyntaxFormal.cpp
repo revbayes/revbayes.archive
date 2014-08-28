@@ -178,7 +178,11 @@ void SyntaxFormal::printValue(std::ostream& o) const
 }
 
 
-/** Set the protected flag of the formal argument specification */
+/**
+ * Set the protected flag of the formal argument specification.
+ *
+ * @todo Support the protected modifier of member variable slots.
+ */
 void SyntaxFormal::setIsProtected( bool prot )
 {
 //    argRule->setIsProtected( prot );
