@@ -203,7 +203,7 @@ unsigned int PolymorphicState::computeState(std::string symbol) const {
 
 std::string PolymorphicState::getDatatype( void ) const {
     
-    return "DNA";
+    return "Pomo";
 }
 
 
