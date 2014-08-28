@@ -44,21 +44,21 @@ s[1] <- 0.0
 ## The probability of sampling at the present (rho)
 ## (this is still in a vector, with a single element as required by the model fxn)
 ## We use a strongly informative prior with an expected value of rho that is very small
-###rho[1] ~ dnBeta(1.0, 999.0)
+###rho[1] ~ dnBeta(1.0, 9999.0)
 rho[1] <- 1e-6
 
 ## Creating vectors of n_intervals deterministic nodes for the changing parameters
-## R0 and delta (delta = becomeUninfectiousRate in BEAST2)
+## Re and delta (delta = becomeUninfectiousRate in BEAST2)
 ## for contemporaneous seqs, delta=mu
 for(i in 1:n_intervals){
 	delta[i] ~ dnLnorm(1.0, 1.25) 
 	delta[i].setValue(1.0)
-	R0[i] ~ dnLnorm(1.0, 1.25)
-	R0[i].setValue(2.0)
+	Re[i] ~ dnLnorm(1.0, 1.25)
+	Re[i].setValue(2.0)
 }
 
-## The vector of birth-rates (lambda) is a deterministic variable of R0 and delta
-lambda := R0 * delta
+## The vector of birth-rates (lambda) is a deterministic variable of Re and delta
+lambda := Re * delta
 
 ## print some information to the screen...
 "absolute_times"
@@ -67,15 +67,15 @@ absolute_times
 "delta"
 delta
 
-"R0"
-R0
+"Re"
+Re
 
 "lambda"
 lambda
 
 ## Some deterministic nodes to monitor to screen ##
 mean_d := mean(delta)
-mean_r := mean(R0)
+mean_r := mean(Re)
 mean_l := mean(lambda)
 
 ## the Birth-death-skyline distribution ##
@@ -123,13 +123,13 @@ mi <- 0
 ### moves on dnSkySerialBDP() parameters ###
 for(i in 1:n_intervals){
 	moves[mi++] <- mvScale(delta[i], lambda=1.0, tune=true, weight=1.0)
-	moves[mi++] <- mvScale(R0[i], lambda=0.1, tune=true, weight=1.0)
+	moves[mi++] <- mvScale(Re[i], lambda=0.1, tune=true, weight=1.0)
 	moves[mi++] <- mvScale(delta[i], lambda=2.0, tune=false, weight=1.0)
-	moves[mi++] <- mvScale(R0[i], lambda=0.2, tune=false, weight=1.0)
+	moves[mi++] <- mvScale(Re[i], lambda=0.2, tune=false, weight=1.0)
 }
 moves[mi++] <- mvVectorScale(delta,lambda=1.0,tune=true,weight=2.0*n_intervals) 
-moves[mi++] <- mvVectorScale(R0,lambda=1.0,tune=true,weight=2.0*n_intervals) 
-moves[mi++] <- mvVectorSingleElementScale(R0,lambda=30.0,tune=true,weight=2.0) 
+moves[mi++] <- mvVectorScale(Re,lambda=1.0,tune=true,weight=2.0*n_intervals) 
+moves[mi++] <- mvVectorSingleElementScale(Re,lambda=30.0,tune=true,weight=2.0) 
 moves[mi++] <- mvVectorSingleElementScale(delta,lambda=30.0,tune=true,weight=2.0) 
 moves[mi++] <- mvOriginTimeSlide(origin, timetree, delta=3.75, tune=true, weight=3.0)
 moves[mi++] <- mvOriginTimeSlide(origin, timetree, delta=10.0, tune=false, weight=1.0)
@@ -157,7 +157,7 @@ mymodel <- model(er)
 monitors[1] <- filemonitor(filename="output/hcv_skybdp_mcmc.log", posterior=true, prior=true, 
 							likelihood=true, printgen=10, sep="	",
 							origin, th, rho, lambda, er, sf, shape, absolute_times,
-							R0, delta, mean_l, mean_r, mean_d)
+							Re, delta, mean_l, mean_r, mean_d)
 monitors[2] <- filemonitor(filename="output/hcv_skybdp_mcmc.trees",printgen=10, separator="	", timetree)
 monitors[3] <- screenmonitor(printgen=10, origin, mean_l, th, mean_r, mean_d)
 
@@ -165,20 +165,20 @@ monitors[3] <- screenmonitor(printgen=10, origin, mean_l, th, mean_r, mean_d)
 mymcmc <- mcmc(mymodel, monitors, moves)
 
 ### pre-burnin to tune the proposals ###
-mymcmc.burnin(generations=2000,tuningInterval=150)
+#mymcmc.burnin(generations=2000,tuningInterval=150)
 
 ### run the MCMC ###
-mymcmc.run(generations=40000)
+#mymcmc.run(generations=40000)
 
 ### display proposal acceptance rates and tuning ###
-mymcmc.operatorSummary()
+#mymcmc.operatorSummary()
 
 ### summarize the trees ###
-tt <- readTreeTrace("output/hcv_skybdp_mcmc.trees", "clock")
-tt.summarize()
+#tt <- readTreeTrace("output/hcv_skybdp_mcmc.trees", "clock")
+#tt.summarize()
 # write MAP tree to file
-mapTree(tt, "output/hcv_skybdp_MAP.tre")
+#mapTree(tt, "output/hcv_skybdp_MAP.tre")
 
 "kthxbye"
-q()
+#q()
 
