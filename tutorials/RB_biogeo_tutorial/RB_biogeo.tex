@@ -161,19 +161,21 @@ The rates in the transition matrix for three areas might appear as
 
 \[
 \textbf{Q} = 
-	\begin{array}{r|ccccccc}
-		& 001 & 010 & 011 & 100 & 101 & 110 & 111 \\
+	\begin{array}{r|cccccccc}
+		& 000 & 001 & 010 & 011 & 100 & 101 & 110 & 111 \\
 		\hline
-		001 & - & 0 & \lambda & 0 & \lambda & 0 & 0 \\
-		010  & 0 & - & \lambda & 0 & 0 & \lambda & 0 \\
-		011  & \lambda & \lambda & - & 0 & 0 & 0 & \lambda \\
-		100  & 0 & 0 & 0 & - & \lambda & \lambda & 0 \\
-		101  & \lambda & 0 & 0 & \lambda & - & 0 & \lambda \\
-		110  & 0 & \lambda & 0 & \lambda & 0 & - & \lambda \\
-		111  & 0 & 0 & 0 & \lambda & \lambda & \lambda & - \\								
+		000 & - & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+		001 & \lambda_0 & - & 0 & \lambda_1 & 0 & \lambda_1 & 0 & 0 \\
+		010 & \lambda_0 & 0 & - & \lambda_1 & 0 & 0 & \lambda_1 & 0 \\
+		011 & 0 & \lambda_0 & \lambda_0 & - & 0 & 0 & 0 & \lambda_1 \\
+		100 & \lambda_0 & 0 & 0 & 0 & - & \lambda_1 & \lambda_1 & 0 \\
+		101 & 0 & \lambda_0 & 0 & 0 & \lambda_0 & - & 0 & \lambda_1 \\
+		110 & 0 & 0 & \lambda_0 & 0 & \lambda_0 & 0 & - & \lambda_1 \\
+		111 & 0 & 0 & 0 & \lambda_0 & 0 & \lambda_0 & \lambda_0 & - \\								
 	\end{array},
 \]
-where $\lambda$ is the rate of area gain or loss. This can also be represented compactly as the rate function
+where $\lambda_1$ and $\lambda_0$ are the rates of area gain and loss, respectively.
+When the rate of area gain and loss are equal ($\lambda_0=\lambda_1$), this can be represented compactly as the rate function
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
 \begin{cases}
@@ -215,14 +217,18 @@ Importantly, $\eta(\cdot) = 1$ when $\beta=0$, meaning geographic distance betwe
 Moreover, when $\beta > 0$, $\eta(\cdot) < 1$ when area $a$ is relatively distant and $\eta(\cdot) > 1$ when area $a$ is relatively close.
 
 In addition to dispersal and extinction, the DEC model allows cladogenic range evolution events.
-For each internal node in the three, one of two events can occur: peripatry or allopatry.
-Say the range of a species approaching an internal node, i.e. that is about to speciate, is 1110.
+For each internal node in the tree, one of four cladogenic events can occur: narrow sympatry, peripatry, allopatry, and wide sympatry.
+Say the range of a species approaching an internal node, i.e. that is about to speciate, is 1000.
+Since the species range is size one, this always results in narrow sympatry, where both daughter lineages inherit the ancestral species range.
+Now suppose the ancestral range is 1110.
 Under peripatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
 Under allopatric cladogenesis, the ancestral range is split evenly among daughter lineages, e.g. one lineage may inherit 1100 and the other inherit 0010.
-Only under peripatric cladogenesis where the ancestral range is size one do both daughter lineages inherit the same range; this cladogenesis is sometimes called narrow sympatric cladogenesis.
-Widespread sympatric cladogenesis is allowed, where both daughter lineages inherit the entire ancestral species range \citep{landis13}.
-For a complete description on cladogenic events, see \citet{matzke14}.
-Ideally, the probability of cladogenic events is linked to a birth-death process (see \citet{goldberg11}), but the DEC model ignores speciation events hidden by extinction or incomplete taxon sampling and assigns equal probabilities to all cladogenic event types. 
+Both daughter lineages inherit the entire ancestral species range following widespread sympatric cladogenic events.
+For a general description on cladogenic events, see \citet{matzke14}.
+
+The DEC model ignores speciation events hidden by extinction or incomplete taxon sampling and assigns equal probabilities to all cladogenic event types.
+Since a range of size zero typically means the species is exinct, the probability of cladogenic events would ideally be linked to a birth-death process, as it is in the GeoSSE model \citep{goldberg11}.
+Unfortunately, since this sort of model scales poorly, DEC models remain the only option when the geography has more than two or three areas.
 
 
 \begin{figure}[H]
@@ -244,11 +250,11 @@ Remember matrix exponentiation integrates over all \textit{unobserved} transitio
 The likelihood of beginning in character $i$ and ending in character $j$ can be computed easily when the explicit series of event types and times are known.
 While we will never know the exact history of events, we can use stochastic mapping in conjunction with Markov chain Monte Carlo (MCMC) to repeatedly sample range evolution histories that are consistent with the ranges observed in the study taxa at the tips of the phylogeny.
 
-This is the strategy used in BayArea to infer the posterior distribution approximated is 
+This is the strategy we will use to infer the posterior distribution approximated is 
 \newline{Prob$\left( \textbf{X}_{aug}, \theta \mid \textbf{X}_{obs}, T, M \right)$}, where $\textbf{X}_{obs}$ is the range data observed at the tips, $\textbf{X}_{aug}$ is the distribution of ancestral range reconstructions over the phylogeny, $T$, where $\textbf{X}_{aug}$ is inferred jointly with the parameters, $\theta$, assuming the range evolution model, $M$, that describes $\textbf{Q}$ above.
 Ancestral range reconstructions are often of primary interest in phylogenetic biogeographic analyses, which are generated with support values as a by-product of the MCMC analysis.
 
-The rest of the tutorial will describe how to assemble the input, run the analysis, assess the output, and visualize the results.
+The rest of this tutorial will describe how to assemble the input, run the analysis, assess the output, and visualize the results.
 
 \newpage
 
@@ -262,8 +268,7 @@ We'll use this dataset for three reasons.
 First, it is relatively small, meaning we can produce results quickly.
 Second, the Hawaiian archipelago can be broken into naturally discrete areas and has a well-characterized geographical history that is uncomplicated to model.
 Third, it has previously been analyzed, which provides some basis for comparison to other methods.
-
-The model will assume presence-absence characters are recorded without error.
+To simplify things, this model will assume we live in a gentler world where presence-absence characters are known without error.
 
 \subsection{Nexus file}
 
@@ -389,7 +394,7 @@ The {\tt dispersalValues} for Oahu, Maui, and Hawaii are all equal to {\tt [ 0,0
 
 \section{RevBayes Analysis}
 
-There are five major parts to the analysis.
+There are six major parts to the analysis.
 
 First, we need to read in the input files and assign analysis settings.
 Second, we need to construct our model.
@@ -429,16 +434,16 @@ RevBayes > atlas <- readAtlas(in_fp + area_fn)
 \end{lstlisting}
 \end{snugshade}
 
-Verify the data and tree share the same number of taxa and the data and atlas share the same number of characters
-
-\begin{snugshade}
-\begin{lstlisting}
-RevBayes > data.ntaxa() == tree.ntips()
-   true
-RevBayes > data.nchar() == atlas.nareas()
-   true
-\end{lstlisting}
-\end{snugshade}
+%Verify the data and tree share the same number of taxa and the data and atlas share the same number of characters
+%
+%\begin{snugshade}
+%\begin{lstlisting}
+%RevBayes > data.ntaxa() == tree.ntips()
+%   true
+%RevBayes > data.nchar() == atlas.nareas()
+%   true
+%\end{lstlisting}
+%\end{snugshade}
 
 
 \subsection{Creating the model}
@@ -446,9 +451,9 @@ RevBayes > data.nchar() == atlas.nareas()
 Here, we will compose our rate matrix, {\bf Q}, parameterized by the transition rates, $\lambda$, and the distance dependent dispersal power parameter, $\beta$.
 
 First, for $\lambda$, we will create a vector of two rates, where {\tt glr[1]} corresponds to the rate of area loss (local extinction) and {\tt glr[2]} corresponds to the rate of area gain (dispersal).
-Importantly, we must assign prior distributions to these parameters.
-Here, we'll use an exponential distribution with rate 10.0, which has a mean of 0.1.
-Because our tree is in units of millions of years, this means our prior expectation is that any given species undergoes one dispersal event and one extinction event per area per ten million years.
+Each rate will be drawn from an exponential distribution with rate 10.0 (mean 0.1).
+Because our tree is in units of millions of years, this means our prior expectation is that any given species undergoes one dispersal or extinction event per area per ten million years.
+
 To introduce this to the model, type
 \begin{snugshade}
 \begin{lstlisting}
@@ -483,7 +488,10 @@ RevBayes > Q := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm
 \end{lstlisting}
 \end{snugshade}
 
-To extract some information for the frequencies of different cladogenic event types (sympatric, peripatric, allopatric), we will create a Dirichlet-distributed stochastic node.
+To extract information for the frequencies of different cladogenic event types, we will create a Dirichlet-distributed stochastic node.
+The simplex is over three events, peripatry (index 0), allopatry (index 1), and widespread sympatry (index 2), but not over narrow sympatry whose range size is one.
+The prior parameter {\tt [1,1,1]} is known as a flat prior, meaning all event types are expected to occur at equal frequency.
+If there is information in the data of a dominant cladogenic mode of range evolution, the posterior simplex values in {\tt csf} will reflect this.
 
 \begin{snugshade}
 \begin{lstlisting}
@@ -749,12 +757,12 @@ In the next section, we'll take some special interest in the 19th branch, the mo
 \begin{snugshade}
 \begin{lstlisting}
 RevBayes > names = tree.names()
-RevBayes > names[18]
-   P_mauiensis_Eke
-RevBayes > names[19]
-   P_hawaiiensis_WaikamoiL1
-RevBayes > mrcaIndex(tree=tree,clade=clade(names[18],names[19]))
-   19
+RevBayes > names[15]
+   P_kaduana_PuuKukuiAS
+RevBayes > names[16]
+   P_hathewayi_1
+RevBayes > mrcaIndex(tree=tree,clade=clade(names[15],names[16]))
+   23
 \end{lstlisting}
 \end{snugshade}
 

@@ -185,11 +185,11 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType, treeType>::b
         if (cladoState == 0)
             ss << "s";
         else if (cladoState == 1)
-            ss << "p";
-        else if (cladoState == 2)
-            ss << "a";
-        else if (cladoState == 3)
             ss << "w";
+        else if (cladoState == 2)
+            ss << "p";
+        else if (cladoState == 3)
+            ss << "a";
         else
             ss << "NA";
         
