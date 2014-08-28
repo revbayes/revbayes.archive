@@ -382,7 +382,7 @@ RevPtr<Variable> SyntaxVariable::evaluateLHSContent( Environment& env, const std
         else
         {
             // Find or create the variable
-            if ( env.existsVariable( identifier ) )
+            if ( env.existsVariableInFrame( identifier ) )
                 theVar = env.getVariable( identifier );
             else    // add it
             {
@@ -700,15 +700,15 @@ size_t SyntaxVariable::getIndex( const RevPtr<Variable>& indexVar, Environment& 
  * if it does not include an expression that is not function-
  * safe.
  */
-bool SyntaxVariable::isFunctionSafe( const Environment& env ) const
+bool SyntaxVariable::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
-    if ( functionCall != NULL && !functionCall->isFunctionSafe( env ) )
+    if ( functionCall != NULL && !functionCall->isFunctionSafe( env, localVars ) )
         return false;
     
-    if ( expression != NULL && !expression->isFunctionSafe( env ) )
+    if ( expression != NULL && !expression->isFunctionSafe( env, localVars ) )
         return false;
 
-    if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env ) )
+    if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env, localVars ) )
         return false;
     
     return true;
@@ -782,22 +782,45 @@ void SyntaxVariable::printValue(std::ostream& o) const
  * If this element is a named variable expression, we simply check the
  * external environment to see whether the variable exists there.
  */
-bool SyntaxVariable::retrievesExternVar( const Environment& env ) const
+bool SyntaxVariable::retrievesExternVar( const Environment& env, std::set<std::string>& localVars, bool inLHS ) const
 {
     if ( baseVariable != NULL )
-        return baseVariable->retrievesExternVar( env );
+        return baseVariable->retrievesExternVar( env, localVars, inLHS );
     
     if ( expression!= NULL )
-        return expression->retrievesExternVar( env );
+        return expression->retrievesExternVar( env, localVars, false );
     
-    if ( functionCall == NULL )
+    if ( functionCall != NULL )
+        return false;
+
+    // Named variable. Check if it is already defined as a local variable.
+    if ( localVars.find( identifier ) != localVars.end() )
+        return false;
+
+    // Check whether we can and should add it as a local variable.
+    if ( !env.existsVariable( identifier ) )
     {
-        // Named variable; look for it in the environment
-        if ( env.existsVariable( identifier ) )
-            return true;
+        if ( !inLHS )
+            throw RbException( "No variable named '" + identifier + "'" );
+
+        localVars.insert( identifier );
+
+        return false;
     }
-    
-    return false;
+    else
+    {
+        // If we are in an LHS expression, we should add the variable to
+        // the local variables
+        if ( inLHS )
+        {
+            localVars.insert( identifier );
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
 
 

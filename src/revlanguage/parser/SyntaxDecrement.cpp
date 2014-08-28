@@ -115,14 +115,16 @@ RevPtr<Variable> SyntaxDecrement::evaluateContent( Environment& env )
  * if the variable expression is safe, and the
  * decrement is not to an external variable.
  */
-bool SyntaxDecrement::isFunctionSafe( const Environment& env ) const
+bool SyntaxDecrement::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     // Check variable
-    if ( !variable->isFunctionSafe( env ) )
+    if ( !variable->isFunctionSafe( env, localVars ) )
         return false;
     
     // Check whether assignment is to external variable (not function safe)
-    if ( variable->retrievesExternVar( env ) )
+    // We are not allowed to add the variable to the local variables, it must
+    // exist before the decrement is attempted
+    if ( variable->retrievesExternVar( env, localVars, false ) )
         return false;
     
     // All tests passed
