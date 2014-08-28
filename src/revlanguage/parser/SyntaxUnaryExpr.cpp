@@ -170,10 +170,10 @@ bool SyntaxUnaryExpr::isConstExpression( void ) const
  * opposed to a procedure)? The unary expression is safe
  * if its single operand is safe.
  */
-bool SyntaxUnaryExpr::isFunctionSafe( const Environment& env ) const
+bool SyntaxUnaryExpr::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     // Check the operand
-    if ( operand->isFunctionSafe( env ) )
+    if ( operand->isFunctionSafe( env, localVars ) )
         return true;
     else
         return false;

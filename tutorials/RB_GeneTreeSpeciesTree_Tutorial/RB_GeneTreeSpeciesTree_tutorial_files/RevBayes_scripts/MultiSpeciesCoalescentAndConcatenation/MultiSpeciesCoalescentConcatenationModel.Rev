@@ -43,6 +43,9 @@ for (i in 1:n_species) {
 	s_names[i] <- "Species_"+i
 }
 
+# Getting the true species tree
+trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
+
 
 concatenate_n_sites <- concatenate.nchar()[1]
 

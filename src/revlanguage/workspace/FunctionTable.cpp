@@ -56,38 +56,26 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
 }
 
 
-/** Add function to table */
-void FunctionTable::addFunction( const std::string name, Function *func )
+/**
+ * Add function to table. We do various tests to ensure that the
+ * function does not violate consistency rules, and we throw an
+ * error if it does not have a distinct formal so that it cannot
+ * overload existing functions, if its name is not unique.
+ *
+ * Note that we do not check parent frames, so the function can
+ * hide (override if you wish) parent functions.
+ */
+void FunctionTable::addFunction( const std::string& name, Function *func )
 {
+    // Test function compliance with basic rules
+    testFunctionValidity( name, func );
+    
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
 
     retVal = equal_range(name);
     for (std::multimap<std::string, Function *>::iterator i=retVal.first; i!=retVal.second; i++) 
     {
-        if ( i->second->isProcedure() != func->isProcedure() )
-        {
-            // Construct an error message
-            std::ostringstream msg;
-            if ( func->isProcedure() )
-                msg << "Procedure ";
-            else
-                msg << "Function ";
-            
-            msg << name << " =  ";
-            i->second->printValue(msg);
-            msg << " cannot overload ";
-            if ( i->second->isProcedure() )
-                msg << " procedure ";
-            else
-                msg << " function ";
-            msg << name << " = ";
-            func->printValue(msg);
-            
-            // throw the error message
-            throw RbException(msg.str());
-        }
-
         if (!isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()))
         {
             std::ostringstream msg;
@@ -95,6 +83,7 @@ void FunctionTable::addFunction( const std::string name, Function *func )
             i->second->printValue(msg);
             msg << " cannot overload " << name << " = ";
             func->printValue(msg);
+            msg << " : signatures are identical" << std::endl;
             
             // throw the error message
             throw RbException(msg.str());
@@ -178,6 +167,33 @@ bool FunctionTable::existsFunction(std::string const &name) const {
     }
     
     return true;
+}
+
+
+/**
+ * Does a function with the given name and signature exist in
+ * this frame?
+ */
+bool FunctionTable::existsFunctionInFrame( std::string const &name, const ArgumentRules& r ) const
+{
+    std::map<std::string, Function *>::const_iterator it = find( name );
+    
+    // If the name does not exist, the answer is no
+    if ( it == end() )
+        return false;
+
+    // The name exists, so we cycle through the functions and check whether the signature is distinct
+    std::pair<std::multimap<std::string, Function *>::const_iterator,
+              std::multimap<std::string, Function *>::const_iterator> range;
+    range = equal_range( name );
+
+    for ( it = range.first; it != range.second; ++it )
+    {
+        if ( !isDistinctFormal( it->second->getArgumentRules(), r ) )
+            return true;
+    }
+    
+    return false;
 }
 
 
@@ -354,8 +370,8 @@ Function& FunctionTable::findFunction(const std::string& name, const std::vector
  * throwing an error. Compare with the getFunction(name) function, which will throw an error
  * if the function name is overloaded.
  */
-const Function& FunctionTable::getFirstFunction( const std::string& name ) {
-    
+const Function& FunctionTable::getFirstFunction( const std::string& name ) const
+{
     // find the template function
     const std::vector<Function *>& theFunctions = findFunctions(name);
     
@@ -527,3 +543,112 @@ void FunctionTable::printValue(std::ostream& o, bool env) const {
     }
 }
 
+
+/**
+ * Replace function. Unlike the addFunction function, we do not throw an error if the
+ * function exists. Instead we replace the existing function.
+ *
+ * Note that we make the same tests as in the addFunction() function to make sure that
+ * the consistency of the function table is maintained.
+ */
+void FunctionTable::replaceFunction( const std::string& name, Function *func )
+{
+    // Test the function
+    testFunctionValidity( name, func );
+    
+    // Find the function to be replaced
+    std::pair<std::multimap<std::string, Function *>::iterator,
+              std::multimap<std::string, Function *>::iterator> range;
+
+    range = equal_range( name );
+    for ( std::multimap<std::string, Function *>::iterator it = range.first; it != range.second; ++it )
+    {
+        if ( !isDistinctFormal( it->second->getArgumentRules(), func->getArgumentRules() ) )
+        {
+            delete it->second;
+            it->second = func;
+            return;
+        }
+    }
+    
+    // No match; simply insert the function
+    insert(std::pair<std::string, Function* >( name, func ) );
+    
+    // Name the function so that it is aware of what it is called
+    func->setName( name );
+}
+
+
+/**
+ * Test whether the function can be added to the table. To be added, it needs to follow
+ * these rules:
+ *
+ *    1. A function cannot overload a procedure, and vice versa
+ *    2. A function or procedure overloading an existing function or procedure
+ *       must have the same return type
+ *
+ * @todo We currently have a number of functions (from templated C++ code) with different
+ *       return types registered as overloaded functions in RbRegister. Fix this.
+ */
+void FunctionTable::testFunctionValidity( const std::string& name, Function* func ) const
+{
+    // We only need to make these tests if the function name already exists
+    if ( existsFunction( name ) )
+    {
+        const Function& fxn = getFirstFunction( name );
+        
+        // Functions need to be of same type (procedure or function)
+        if ( fxn.isProcedure() != func->isProcedure() )
+        {
+            // Construct an error message
+            std::ostringstream msg;
+            if ( func->isProcedure() )
+                msg << "Procedure ";
+            else
+                msg << "Function ";
+            
+            msg << name << " =  ";
+            func->printValue(msg);
+            
+            msg << " cannot overload ";
+            if ( fxn.isProcedure() )
+                msg << " procedure ";
+            else
+                msg << " function ";
+            msg << name << " = ";
+            fxn.printValue(msg);
+            msg << " : procedure/function mismatch" << std::endl;
+            
+            // throw the error message
+            throw RbException(msg.str());
+        }
+        
+        // Functions must have same return type
+#if 0
+        if ( fxn.getReturnType() != func->getReturnType() )
+        {
+            // Construct an error message
+            std::ostringstream msg;
+            if ( func->isProcedure() )
+                msg << "Procedure ";
+            else
+                msg << "Function ";
+            
+            msg << name << " =  ";
+            func->printValue(msg);
+            
+            msg << " cannot overload ";
+            if ( fxn.isProcedure() )
+                msg << " procedure ";
+            else
+                msg << " function ";
+            msg << name << " = ";
+            fxn.printValue(msg);
+            msg << " : return types differ" << std::endl;
+            
+            // throw the error message
+            throw RbException(msg.str());
+        }
+#endif
+    }
+}

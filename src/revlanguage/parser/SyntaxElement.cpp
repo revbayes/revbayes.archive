@@ -56,7 +56,7 @@ bool SyntaxElement::isConstExpression( void ) const
  * (as opposed to a procedure)? Most elements are safe,
  * so we return true by default.
  */
-bool SyntaxElement::isFunctionSafe( const Environment& env ) const
+bool SyntaxElement::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     return true;
 }
@@ -69,7 +69,7 @@ bool SyntaxElement::isFunctionSafe( const Environment& env ) const
  * to a procedure). Most elements do not retrieve variables,
  * so we return false by default.
  */
-bool SyntaxElement::retrievesExternVar( const Environment& env ) const
+bool SyntaxElement::retrievesExternVar( const Environment& env, std::set<std::string>& localVars, bool inLHS ) const
 {
     return false;
 }
