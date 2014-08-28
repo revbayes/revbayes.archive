@@ -69,7 +69,7 @@ def get_best(d,n=5,f=None,p='posterior'):
     for k in d.keys():
         ret[k] = []
     for i in best:
-        for k in d[k].keys():
+        for k in d.keys():
             ret[k].append(d[k][i])
     return(ret)
 

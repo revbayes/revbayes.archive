@@ -589,9 +589,9 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
             double g0 = nodeTpMatrix[ancS][0] * trunkTpMatrix[0][desS1] * budTpMatrix[0][desS2];
             double g1 = nodeTpMatrix[ancS][1] * trunkTpMatrix[1][desS1] * budTpMatrix[1][desS2];
 
-            // Expected frequency s=0 after cladogenesis given s=1 prior to speciation, \sum_c (p_c * E(x))
+            // "Overcount", then thin through cladogenesis below
+            // Expected freq(X=0|C) after cladogenesis given X=1 prior to speciation
             double c0 = csf[0] * 0.5 * (1 + 1.0/numCharacters) + csf[1] * 0.5 * 0.5 + csf[2] * (1.0);
-            
             g0 *= c0;
             
             unsigned int s = 0;

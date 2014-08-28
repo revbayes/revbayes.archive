@@ -17,7 +17,7 @@ tree			<- vtree[1]
 data			<- vdata
 
 # MCMC settings
-nGens           <- 10000
+nGens           <- 25000
 fBurn           <- 0.2
 
 
@@ -40,8 +40,7 @@ grm         := fnBiogeoGRM(atlas=atlas, distancePower=dp, useAdjacency=true, use
 Q           := fnBiogeoDE(gainLossRates=glr, geoRateMod=grm, numAreas=4, forbidExtinction=true)
 
 # csf models the cladogenic state frequencies (sympatry, peripatry, allopatry)
-#csf         ~ dnDirichlet([1,1,1])
-csf ~  dnDirichlet([1,1,1])
+csf 		~  dnDirichlet([1,1,1])
 
 # M is focal model, the range data given the tree, the atlas, and the DEC process
 M           ~  dnPhyloDACTMC(tree=tree, Q=Q, C=csf, type="biogeo", forbidExtinction=true, useCladogenesis=true)

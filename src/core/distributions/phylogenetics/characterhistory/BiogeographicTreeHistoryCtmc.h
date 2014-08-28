@@ -154,8 +154,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
     
-    std::vector<double> csfInit = std::vector<double>(3, 0.0);
-    csfInit[0] = 1.0;
+    std::vector<double> csfInit = std::vector<double>(3, 0.33);
+//    csfInit[0] = 1.0;
     cladogenicStateFreqs        = new ConstantNode<std::vector<double> >("cladoStateFreqs", new std::vector<double>(csfInit));
     tipProbs.clear();
     redrawCount                 = 0;
