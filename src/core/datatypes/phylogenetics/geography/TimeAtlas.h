@@ -27,6 +27,9 @@ namespace RevBayesCore {
         std::vector<double>                             getEpochs(void) const;
         std::vector<std::vector<GeographicArea*> >      getAreas(void) const;
         std::string                                     getFilename(void) const;
+        std::string                                     getDatatype(void) const;  
+        size_t                                          getNumEpochs(void) const;
+        size_t                                          getNumAreas(void) const;
         
     protected:
         std::vector<std::vector<GeographicArea*> >      areas;

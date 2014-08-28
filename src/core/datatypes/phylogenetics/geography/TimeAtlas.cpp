@@ -70,6 +70,16 @@ std::string TimeAtlas::getFilename(void) const
     return filename;
 }
 
+size_t TimeAtlas::getNumEpochs(void) const
+{
+    return epochs.size();
+}
+
+size_t TimeAtlas::getNumAreas(void) const
+{
+    return areas[0].size();
+}
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const TimeAtlas& x) {
     
     std::stringstream s;
