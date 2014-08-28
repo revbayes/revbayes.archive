@@ -410,24 +410,24 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
  * functions). For all other statement types, we simply check the
  * expressions and statements that are enclosed in the statement.
  */
-bool SyntaxStatement::isFunctionSafe( const Environment& env ) const
+bool SyntaxStatement::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     if ( statementType == Return )
     {
-        if( !expression->isFunctionSafe( env ) || expression->retrievesExternVar( env ) )
+        if( !expression->isFunctionSafe( env, localVars ) || expression->retrievesExternVar( env, localVars, false ) )
             return false;
         else
             return true;
     }
     
-    if ( expression != NULL && !expression->isFunctionSafe( env ) )
+    if ( expression != NULL && !expression->isFunctionSafe( env, localVars ) )
         return false;
 
     if ( statements1 != NULL )
     {
         for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
         {
-            if ( !(*it)->isFunctionSafe( env ) )
+            if ( !(*it)->isFunctionSafe( env, localVars ) )
                 return false;
         }
     }
@@ -436,7 +436,7 @@ bool SyntaxStatement::isFunctionSafe( const Environment& env ) const
     {
         for ( std::list<SyntaxElement*>::iterator it = statements2->begin(); it != statements2->end(); ++it )
         {
-            if ( !(*it)->isFunctionSafe( env ) )
+            if ( !(*it)->isFunctionSafe( env, localVars ) )
                 return false;
         }
     }

@@ -48,19 +48,21 @@ namespace RevLanguage {
         virtual                    ~SyntaxVariableDecl();                                                                   //!< Virtual destructor
         
         // Assignment operator
-        SyntaxVariableDecl&         operator=(const SyntaxVariableDecl& x);                 //!< Assignment operator
+        SyntaxVariableDecl&         operator=(const SyntaxVariableDecl& x);                     //!< Assignment operator
         
         // Basic utility functions
-        SyntaxVariableDecl*         clone() const;                                          //!< Clone object
-        void                        printValue(std::ostream& o) const;                      //!< Print info about object
+        SyntaxVariableDecl*         clone() const;                                              //!< Clone object
+        void                        printValue(std::ostream& o) const;                          //!< Print info about object
         
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env);                      //!< Get semantic value
+        RevPtr<Variable>            evaluateContent(Environment& env);                          //!< Get semantic value
+        bool                        isFunctionSafe(const Environment&       env,
+                                                   std::set<std::string>&   localVars) const;   //!< Is this element safe in a function?
         
     protected:
-        std::string                 elementTypeName;                                        //!< Element type of the variable
-        std::list<SyntaxElement*>*  lengthExpr;                                             //!< Lengths in different dimensions
-        std::string                 variableName;                                           //!< Variable name
+        std::string                 elementTypeName;                                            //!< Element type of the variable
+        std::list<SyntaxElement*>*  lengthExpr;                                                 //!< Lengths in different dimensions
+        std::string                 variableName;                                               //!< Variable name
     
     };
     

@@ -375,7 +375,7 @@ bool SyntaxFunctionCall::isConstExpression(void) const {
  * is safe if all argument expressions are function-safe, and
  * none of them retrieves an external variable.
  */
-bool SyntaxFunctionCall::isFunctionSafe( const Environment& env ) const
+bool SyntaxFunctionCall::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     // Protect from self-checking if recursive. If that case, the function
     // does not exist yet and we tentatively assume it is safe
@@ -385,7 +385,7 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env ) const
     if ( env.isProcedure( functionName ) )
     {
         // Check base variable
-        if ( baseVariable != NULL && ( !baseVariable->isFunctionSafe( env ) || baseVariable->SyntaxElement::retrievesExternVar( env ) ) )
+        if ( baseVariable != NULL && ( !baseVariable->isFunctionSafe( env, localVars ) || baseVariable->SyntaxElement::retrievesExternVar( env, localVars, false ) ) )
             return false;
         
         // Iterate over all arguments
@@ -393,7 +393,7 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env ) const
         {
             // Return false if argument expression is not function-safe or retrieves an external variable
             SyntaxLabeledExpr* expr = *it;
-            if ( !expr->isFunctionSafe( env ) || expr->retrievesExternVar( env ) )
+            if ( !expr->isFunctionSafe( env, localVars ) || expr->retrievesExternVar( env, localVars, false ) )
                 return false;
         }
         
@@ -401,7 +401,7 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env ) const
     else
     {
         // Check base variable
-        if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env ) )
+        if ( baseVariable != NULL && !baseVariable->isFunctionSafe( env, localVars ) )
             return false;
         
         // Iterate over all arguments
@@ -409,7 +409,7 @@ bool SyntaxFunctionCall::isFunctionSafe( const Environment& env ) const
         {
             // Return false if argument expression is not function-safe
             SyntaxLabeledExpr* expr = *it;
-            if ( !expr->isFunctionSafe( env ) )
+            if ( !expr->isFunctionSafe( env, localVars ) )
                 return false;
         }
         

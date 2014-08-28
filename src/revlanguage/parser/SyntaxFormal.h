@@ -27,28 +27,28 @@ namespace RevLanguage {
     class SyntaxFormal : public SyntaxElement {
 
     public:
-        SyntaxFormal(const std::string& lbl, SyntaxElement* defaultVal);                            //!< Implicit type
-        SyntaxFormal(const std::string& type, const std::string& lbl, SyntaxElement* defaultVal);   //!< Explicit type or type modifier (const, mutable etc)
-        SyntaxFormal(const SyntaxFormal& x);                                                                        //!< Copy constructor
+        SyntaxFormal(const std::string& lbl, SyntaxElement* defaultVal);                                //!< Implicit type
+        SyntaxFormal(const std::string& type, const std::string& lbl, SyntaxElement* defaultVal);       //!< Explicit type or type modifier (const, mutable etc)
+        SyntaxFormal(const SyntaxFormal& x);                                                            //!< Copy constructor
 	    
-        virtual                    ~SyntaxFormal();                                                                 //!< Destructor
+        virtual                    ~SyntaxFormal();                                                     //!< Destructor
 
         // Assignment operator
-        SyntaxFormal&               operator=(const SyntaxFormal& x);                                               //!< Assignment operator
+        SyntaxFormal&               operator=(const SyntaxFormal& x);                                   //!< Assignment operator
 
         // Basic utility functions
-        SyntaxFormal*               clone() const;                                                                  //!< Clone object
-        void                        printValue(std::ostream& o) const;                                              //!< Print info about object
+        SyntaxFormal*               clone() const;                                                      //!< Clone object
+        void                        printValue(std::ostream& o) const;                                  //!< Print info about object
 
         // Regular functions
-        const ArgumentRule*         getArgumentRule(void) const;                                                    //!< Get the argument rule
-        ArgumentRule*               getArgumentRule(void);                                                          //!< Get the argument rule (non-const to return non-const rule)
-        const std::string&          getLabel(void) const;                                                           //!< Get label
-        RevPtr<Variable>            evaluateContent( Environment& env );                                            //!< Get semantic value
-        void                        setIsProtected( bool prot = true );                                             //!< Set protected flag of the formal argument specification
+        const ArgumentRule*         getArgumentRule(void) const;                                        //!< Get the argument rule
+        ArgumentRule*               getArgumentRule(void);                                              //!< Get the argument rule (non-const to return non-const rule)
+        const std::string&          getLabel(void) const;                                               //!< Get label
+        RevPtr<Variable>            evaluateContent( Environment& env );                                //!< Get semantic value
+        void                        setIsProtected( bool prot = true );                                 //!< Set protected flag of the formal argument specification
         
     protected:
-        ArgumentRule*               argRule;                                                                        //!< The argument rule version of the formal
+        ArgumentRule*               argRule;                                                            //!< The argument rule version of the formal
     };
     
 }
