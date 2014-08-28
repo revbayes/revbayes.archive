@@ -1,0 +1,95 @@
+################################################################################
+#
+# RevBayes Example: Simulation and species tree inference using the Multispecies coalescent approach.
+#
+# 							SCRIPT 2
+# 
+# This file: Specifies the full Multispecies coalescent model, simulates data, 
+# and then performs inference using the Multispecies coalescent model.
+# The species tree is distributed according to a birth-death process.
+# Gene trees are distributed according to the Multispecies coalescent model running along this species tree.
+# We assume a single effective population size for the entire tree.
+# Gene sequences are distributed according to a Continuous Time Markov Chain (GTR) 
+# with a relaxed clock (independent rates), and rate variation across sites.
+#
+# authors: Bastien Boussau and Sebastian Hoehna
+#
+################################################################################
+
+
+dataFolder <- "data/"
+
+#####################
+# Data preparation
+#####################
+
+# We need to reload some important variables:
+n_species <- 10
+n_genes <- 10
+n_alleles <- 5
+n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
+
+# Getting the gene trees
+
+for (i in 1:n_genes) {
+	trueGeneTrees[i] <- readTrees(file=dataFolder+"geneTree_"+i+".tree")[1]
+	geneTreeRootAges[i] <- trueGeneTrees[i].rootAge()
+}
+
+
+#######################
+# Specifying the model
+#######################
+
+# Birth-Death process priors
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+
+
+# To be on the safe side, we specify a very shot species tree.
+# A species tree larger than the gene trees has probability 0.
+minGeneTreeRootAge <- min(geneTreeRootAges)
+tree_height ~ unif(0.0,abs(minGeneTreeRootAge)/10)
+#while (tree_height > minGeneTreeRootAge/100) {
+#	tree_height.redraw()
+#}
+write("Starting species tree height: "+tree_height)
+
+# Species tree from birth-death process
+#We assume 1,000,000 generations
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+
+trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
+
+#trueSpeciesTree.rescale(0.0000001)
+speciesTree.clamp(trueSpeciesTree)
+
+write("Proposed starting species tree: ")
+write( speciesTree)
+
+###########################################
+# Gene-Tree multispecies coalescent model #
+###########################################
+
+# Build the mapping between sequence names and species names.
+for (i in 1:n_species) {
+	for (j in 1:n_alleles) {
+		taxa[(i-1)*n_alleles+j] <- taxon(taxonName=s_names[i]+"_"+j, speciesName=s_names[i])
+	}
+}
+
+# Set the effective population size
+Ne ~ unif(0.0,10000)
+
+# Link the gene trees to the species tree and Ne
+for (i in 1:n_genes) {
+   geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   geneTrees[i].clamp(trueGeneTrees[i])
+}
+
+

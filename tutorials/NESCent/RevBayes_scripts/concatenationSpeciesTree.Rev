@@ -53,10 +53,12 @@ extinction ~ exponential(10.0)
 tree_height ~ unif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
-tree_height.setValue(0.8)
 
 # Species tree from birth-death process
+#We assume 100,000 generations
+tree_height.setValue(1)
 speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+speciesTree.rescale(1000000)
 
 # Making a backup for future reference:
 trueSpeciesTree <- speciesTree
@@ -73,8 +75,8 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ gamma(shape=0.5,rate=0.5)
-Ne.setValue(0.00000000004)
+Ne ~ gamma(shape=1,rate=1)
+Ne.setValue(10000)
 
 # Simulate gene trees
 for (i in 1:n_genes) {
@@ -82,6 +84,8 @@ for (i in 1:n_genes) {
    # Note that if Ne had been a vector of effective population sizes, 
    # allowing 1 parameter per branch of the species tree, the same line would work.
    geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+   #We rescale the gene tree with a mutation rate of 10-8 per generation
+   geneTrees[i].rescale(0.0000001)
 }
 
 # For fun, let's look at the symmetric differences between the simulated gene tree topologies:
@@ -285,7 +289,7 @@ moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
 moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
 moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
 moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
-moves[moveIndex++] <- mvTreeScale(speciesTree, delta=1.0, tune=true, weight=3.0)
+moves[moveIndex++] <- mvTreeScale(speciesTree, tree_height, delta=1.0, tune=true, weight=3.0)
 moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
 moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
 

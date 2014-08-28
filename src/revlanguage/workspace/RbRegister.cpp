@@ -366,6 +366,7 @@
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_mean.h"
+#include "Func_min.h"
 #include "Func_normalize.h"
 #include "Func_power.h"
 #include "Func_powermix.h"
@@ -1088,6 +1089,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()   );
         addFunction( "mapTree",                     new Func_mapTree<TimeTree>()           );
+        addFunction( "print",                       new Func_write()                       );
         addFunction( "readAtlas",                   new Func_readAtlas()                   );
         addFunction( "readCharacterData",           new Func_readCharacterData()           );
         addFunction( "readTaxonData",               new Func_TaxonReader()                 );
@@ -1127,6 +1129,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         // mean function
 		addFunction( "mean",        new Func_mean()  );
         
+        // min function
+		addFunction( "min",        new Func_min()  );
+
         // normalize vector function
 		addFunction( "normalize", new Func_normalize()  );
 
