@@ -591,7 +591,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
 
             // "Overcount", then thin through cladogenesis below
             // Expected freq(X=0|C) after cladogenesis given X=1 prior to speciation
-            double c0 = csf[0] * 0.5 * (1 + 1.0/numCharacters) + csf[1] * 0.5 * 0.5 + csf[2] * (1.0);
+            double c0 = csf[0] * 0.5 * (1 + 1.0/numCharacters) + csf[1] * 0.5 + csf[2] * (1.0);
             g0 *= c0;
             
             unsigned int s = 0;
