@@ -83,7 +83,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
         RevBayesCore::TypedDagNode<double>* neNode = static_cast<const RealPos &>( Ne->getRevObject() ).getDagNode();
         d->setNe( neNode );
     }
-    
+    d->redrawValue();
     
     return d;
 }

@@ -17,9 +17,8 @@
 ################################################################################
 
 
-# If we want to set the seed, we can use the following command:
-#seed(25,42)
-seed(33666, 21502) ## PRODUCES A BUG!!!!
+# If we want to set the seed, we can use the following command, with numbers of our choice:
+# seed(25,42)
 printSeed()
 
 #source("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/tutorials/RB_GeneTreeSpeciesTree_Tutorial/RB_tutorial_files/RevBayes_scripts/MultiSpeciesCoalescent/MultiSpeciesCoalescentSimulatingTreesAndAlignments.Rev")
@@ -61,6 +60,8 @@ moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
 moves[moveIndex++] <- mvTreeScale(speciesTree, tree_height, delta=1.0, tune=true, weight=3.0)
 moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
 
+# move on Ne, the effective population size
+moves[moveIndex++] <- mvScale(Ne,lambda=1,tune=true,weight=1.0)
 
 ############
 # Monitors #
@@ -81,9 +82,17 @@ monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"concatenation_clock_sp
 trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
 distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
 
+# Second, the distance between the true Ne and the sampled Ne
+distNe := trueNe - Ne
+
+# Distance between species tree parameters:
+distDiv := trueSpeciation/trueExtinction - speciation/extinction
+
+# Distance between species tree ages:
+distAge := trueRootAge - tree_height
 
 # We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, distNe, Ne, distDiv, distAge)
 	
 
 #############

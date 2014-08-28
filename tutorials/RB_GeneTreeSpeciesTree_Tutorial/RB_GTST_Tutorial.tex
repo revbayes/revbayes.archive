@@ -71,6 +71,8 @@
 \textbf{\it{\Large Gene tree-Species tree reconstruction}}\\\vspace{2mm}
 \end{center}
 
+\tableofcontents
+
 \section{Overview: Gene tree-species tree models}
 
 Ever since Zuckerkandl and Pauling \citep{Zuckerkandl1965a}, people have recognised that phylogenies reconstructed from homologous gene sequences could differ from species phylogenies.
@@ -165,7 +167,17 @@ Once branch lengths on the species tree are measured in coalescent time units, i
 \label{fig2}
 \end{figure}
 
+\vspace{20mm}
 
+{\begin{framed}
+\begin{center}
+The exercises assume you have a working installation of RevBayes.
+The first exercise aims at understanding the impact of the parameters of the multispecies coalescent.
+The other exercises will introduce methods to reconstruct species trees and gene trees using the multispecies coalescent or closely-related models.
+Scripts are all placed in {\footnotesize \emph{$tutorials/RB\_GeneTreeSpeciesTree\_Tutorial/RB\_GeneTreeSpeciesTree\_tutorial\_files/RevBayes\_scripts/$}}, in five folders. 
+\emph{It is highly recommended to start RevBayes from each of these folders when doing the exercises.}
+\end{center}
+\end{framed}}
 \vspace{5mm}
 
 {\begin{framed}
@@ -181,6 +193,11 @@ Once branch lengths on the species tree are measured in coalescent time units, i
 n_species <- 10
 n_genes <- 10
 n_alleles <- 5
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
 \end{lstlisting}
 \end{snugshade*}}
 \item We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to \citet{Leache2011}):
@@ -216,25 +233,45 @@ for (i in 1:n_genes) {
 }
 \end{lstlisting}
 \end{snugshade*}}
+
+We write the data to file,  in the "dataFolder" directory.
+{\tt \begin{snugshade*}
+\begin{lstlisting}
+
+# We need to save the species tree and the gene trees
+write(speciesTree, filename=dataFolder+"speciesTree")
+
+# Saving the gene trees
+for (i in 1:(n_genes)) {
+	write(geneTrees[i], filename=dataFolder+"geneTree_"+i+".tree")
+}
+
+\end{lstlisting}
+\end{snugshade*}}
+
+
 \item We can compute symmetric differences between all these gene trees. The symmetric difference between two trees is the total number of partitions found in one tree but not in the other one. In our case, the maximal difference is as follows:
 {\tt \begin{snugshade*}
 \begin{lstlisting}
 maxDiff <- 2 * (n_species*n_alleles - 2)
 \end{lstlisting}
 \end{snugshade*}}
-\item That will give us a reference for comparing with the values we get on our gene trees. We can build a function for computing all pairwise symmetric differences between our gene trees, and getting the mean.
+\item That will give us a reference for comparing with the values we get on our gene trees. We can build a function for computing all pairwise symmetric differences between our gene trees, and getting the mean. Caveat: in the current state of the Rev language, we have to use variable names that have never been used before in the workspace (hence the use of "k" and "l" for loop indices instead of "i" and "j" that have been used before. Alternatively we could have done a "clear(i)" and a "clear(j)" if we really wanted to use these variable names). 
+
 {\tt \begin{snugshade*}
 \begin{lstlisting}
-function RealPos symDiffVector ( Real[] vec ) { 
+function RealPos symDiffVector ( TimeTree[] vec ) {
 	ndiff <- 1
-	for (k in 1:(n_genes-1)) {
-		for (j in (k+1):n_genes) {
-			diff[ndiff]<-symDiff (geneTrees[k], geneTrees[j]) 
+	for (k in 1:(vec.size()-1)) {
+		for (l in (k+1):vec.size()) {
+			diff[ndiff]<-symDiff (vec[k], vec[l])
 			ndiff <- ndiff+1
 		}
 	}
 	return (mean(diff))
 }
+
+
 #We can then use this function on our gene trees:
 symDiffVector(geneTrees)
 \end{lstlisting}
@@ -303,16 +340,35 @@ In the RevBayes implementation of POMO, base fitnesses can be estimated as well.
 
 \bigskip
 \section{Inference using the multispecies coalescent, the POMO model, and basic concatenation}
-In this section we will perform inference using both the multispecies coalescent and the POMO model.
+In this section we will perform inference using the multispecies coalescent, the POMO model, and concatenation.
 Depending on your machine and on the size of the data, successful inference may take some time.
 If this tutorial is done in a classroom environment, it may be wise to convene with friends that one tries the multispecies coalescent model while another one tries the POMO model, and the third one tries the concatenation approach, and that results will be shared.
+In case you want to compare the results between machines or between RevBayes sessions, you have to make sure that you are using the same random seed in all sessions. This is easily done by setting the seed using 
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+seed(x, y)
+\end{lstlisting}
+\end{snugshade*}}
+where $x$ and $y$ are two integer numbers of your choice.
+
 First we will simulate data, and then we will perform inference using the three different approaches.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Simulating data}
 We are going to do inference on simulated data, as produced during the previous section.
 However in addition to the species tree and the gene trees, we will be producing sequence data.
 Below is the RevBayes code necessary to simulate all the data.
 As before, parameters of the simulation can be changed as seems fit, but here we chose parameters that resemble \citet{Leache2011}.
+
+{\begin{framed}
+\begin{center}
+\emph{WARNING: The following script may be less up to date than the simulation scripts named "UnderstandingMultiSpeciesCoalescent/MultiSpeciesCoalescentSimulatingTreesAndAlignments.Rev".}
+\end{center}
+\end{framed}}
+\vspace{5mm}
+
 
 {\begin{framed}
 First we can set the folder in which we will save the output of our work.
@@ -328,10 +384,10 @@ It's a small data set, designed for manageable inference during a tutorial, but 
 
  {\tt \begin{snugshade*}
 \begin{lstlisting}
-n_species <- 6
+n_species <- 10
 n_genes <- 10
 n_alleles <- 5
-n_sites <- 200
+n_sites <- 100
 n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 \end{lstlisting}
 \end{snugshade*}}
@@ -451,8 +507,20 @@ for (i in 1:n_genes) {
 \end{snugshade*}}
 \end{framed}}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Inference using the multispecies coalescent }
-Now that we have simulated data, we can run inference under the multispecies coalescent.
+{\begin{framed}
+\begin{center}
+\emph{WARNING: The following script may be less up to date than the simulation script named "MultiSpeciesCoalescentWithSequences/MultiSpeciesCoalescentWithSequencesMCMC.Rev".}
+In the following we perform inference from the alignments, but we could also do inference directly from the gene trees, as can be seen in the script "MultiSpeciesCoalescent/MultiSpeciesCoalescentMCMC.Rev".
+\end{center}
+\end{framed}}
+\vspace{5mm}
+
+
+Now that we have simulated data, we can run inference under the multispecies coalescent, using the sequences as input data.
 
 {\begin{framed}
 First we clamp the alignments:
@@ -651,6 +719,15 @@ Of course, we could do the same analysis with each of the gene trees, possibly u
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Inference using the POMO model }
+
+{\begin{framed}
+\begin{center}
+\emph{WARNING: The following script may be less up to date than the simulation script named "MultiSpeciesCoalescentAndPomo/MultiSpeciesCoalescentPomoMCMC.Rev".}
+\end{center}
+\end{framed}}
+\vspace{5mm}
+
+
 We run the POMO model on the same data set simulated under the multispecies coalescent.
  {\begin{framed}
  First, we need to prepare the data for analysis using POMO: concatenating the alignments, then transforming the state space from 4 bases to the POMO state space.
@@ -863,29 +940,176 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 mymcmc.run(generations=40000)
 \end{lstlisting}
 \end{snugshade*}}
-
- 
  \end{framed}}
 
 \subsection{Inference using basic concatenation }
+
+{\begin{framed}
+\begin{center}
+\emph{WARNING: The following script may be less up to date than the simulation scripts named "MultiSpeciesCoalescentAndConcatenation/MultiSpeciesCoalescentConcatenationMCMC.Rev".}
+\end{center}
+\end{framed}}
+\vspace{5mm}
 We can also concatenate all alignments and run a partitioned GTR model on it.
 
 
+ {\begin{framed}
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+
+# Birth-Death process priors.
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0.0,100.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+
+# Species tree from birth-death process
+#We assume 1000,000 generations
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
+\end{lstlisting}
+\end{snugshade*}}
+Second, one needs to define a transition matrix for DNA mutations, and we use a GTR matrix for that.
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+er_prior <- v(1,1,1,1,1,1)
+er ~ dnDirichlet(er_prior)
+
+sf_prior <- v(1,1,1,1)
+sf ~ dnDirichlet(sf_prior)
+
+Q := gtr(er,sf) 
+\end{lstlisting}
+\end{snugshade*}}
+
+Adding an across site rate variation model, the usual Gamma distribution discretized in 4 categories.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+shape_prior <- 0.05 
+shape ~ dnExponential( shape_prior )
+norm_gamma_rates := discretizeGamma( shape, shape, 4, false )
+
+# We do not assume variation among branches in rates
+branch_rates <- 1.0
+
+# We do not assume a proportion of invariant
+p_inv ~ beta(alpha=1,beta=1)
+p_inv.setValue(0.000001)
+\end{lstlisting}
+\end{snugshade*}}
+
+To link all the parts of the model together we use the phyloCTMC object and clamp it to the concatenate.
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+
+
+aln ~ phyloCTMC(tree=speciesTree, Q=Q, branchRates=branch_rates, siteRates=norm_gamma_rates, pInv=p_inv, type="DNA")
+
+aln.clamp( concatenate )
+\end{lstlisting}
+\end{snugshade*}}
+
+Then we define the moves.
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+
+moveIndex <- 0
+
+# moves for the birth-death parameters
+moves[moveIndex++] <- mvScale(speciation,lambda=1,tune=true,weight=1.0) # In the revLanguage, table indices start at 1
+moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
+moves[moveIndex++] <- mvSlide(tree_height,delta=1.0,true,2.0)
+
+# moves on the tree topology and node ages
+moves[moveIndex++] <- mvNNI(speciesTree, 2.0)
+moves[moveIndex++] <- mvNarrow(speciesTree, 5.0)
+moves[moveIndex++] <- mvFNPR(speciesTree, 2.0)
+moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+moves[moveIndex++] <- mvTreeScale(speciesTree, tree_height, delta=1.0, tune=true, weight=3.0)
+moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
+
+# moves on the parameters of the substitution model
+moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
+
+# moves on the across-sites rate variation parameter:
+moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
+\end{lstlisting}
+\end{snugshade*}}
+
+We define a few monitors to keep track of how things go.
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+
+mntrIndex <- 0
+
+# One monitor to backup the parameters, in case we want to stop and restart the analysis:
+monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"concatenation_clock.log",printgen=10, separator = "	")
+
+# One monitor to print the species trees sampled in the course of the MCMC:
+monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"concatenation_clock_species.trees",printgen=10, separator = "	", speciesTree)
+
+# We also want to monitor how far we are from the true values, which we have because we rely on simulations.
+# First, we can compute the distance between the reconstructed and the true species tree:
+distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
+
+
+# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree)
+	
+\end{lstlisting}
+\end{snugshade*}}
+We define the model and launch the MCMC.
+
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+mymodel <- model(speciesTree)
+
+# We create the MCMC object
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+#mymcmc.burnin(generations=200,tuningInterval=100)
+mymcmc.run(generations=4000)
+
+
+\end{lstlisting}
+\end{snugshade*}}
+
+ \end{framed}}
 
 \bigskip
-\section*{Batch Mode}
 
-If you wish to run this exercise in batch mode, the files are provided for you. 
+
+\section{Batch Mode}
+
+If you wish to run these exercises in batch mode, the files are provided for you. 
 
 You can carry out these batch commands by providing the file name when you execute the \cl{rb} binary in your unix terminal (this will overwrite all of your existing run files).
-\exs{\cl{\$ rb full\_analysis.Rev}}
+\exs{\cl{\$ rb NameOfTheFile.Rev}}
+
+
+\section{Things to think about}
+How did the different methods perform? 
+Did you expect to see these differences?
+It has been shown that the concatenation approach could be inconsistent under some conditions of population size and of divergence times \citep{Degnan2006}. 
+Do you find that concatenation performs worse that its competitors?
+Which models seem to "mix" better?
+In particular, does the full multispecies coalescent mix well?
+Why can we expect this model in particular would have difficulties mixing?
+
 
 \bigskip
-\section*{Useful Links}
+\section{Useful Links}
 
 \begin{itemize}
 \item RevBayes: \href{https://github.com/revbayes/code}{https://github.com/revbayes/code} \\ \vspace{-7mm}
 \item Tree Thinkers: \href{http://treethinkers.org/}{http://treethinkers.org} \\ \vspace{-7mm}
+\item NJplot, a lightweight tree plotting program: \href{http://doua.prabi.fr/software/njplot}{http://doua.prabi.fr/software/njplot} \\ \vspace{-7mm}
+\item Seaview, a program to handle alignments and trees: \href{http://doua.prabi.fr/software/seaview}{http://doua.prabi.fr/software/seaview} \\ \vspace{-7mm}
+
 \end{itemize}
 
 Questions about this tutorial can be directed to: \\\vspace{-10mm}
