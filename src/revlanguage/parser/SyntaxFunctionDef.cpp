@@ -3,6 +3,8 @@
 #include "RbUtil.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
+#include "UserFunctionDef.h"
+#include "UserInterface.h"
 #include "UserProcedure.h"
 #include "Workspace.h"
 
@@ -133,15 +135,41 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
     for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
         stmts->push_back( (*it)->clone() );
 
-    // Create the function
+    // Create the function definition
+    UserFunctionDef* functionDef = new UserFunctionDef( argRules, returnType, stmts );
+    
+    // Create the function or the procedure
     Function* theFunction;
     if ( isProcedureDef )
-        theFunction = new UserProcedure( argRules, returnType, stmts );
+        theFunction = new UserProcedure( functionDef );
     else
-        theFunction = new UserFunction( argRules, returnType, stmts );
+        theFunction = new UserFunction( functionDef );
     
     // Insert the function/procedure in the (user) workspace
-    env.addFunction( functionName, theFunction );
+    if ( env.getFunctionTable().existsFunctionInFrame( functionName, *argRules ) )
+    {
+        bool ok;
+        if ( isProcedureDef )
+            ok = UserInterface::userInterface().ask( "Replace existing procedure with same signature?" );
+        else
+            ok = UserInterface::userInterface().ask( "Replace existing function with same signature?" );
+
+        if ( ok )
+        {
+            env.getFunctionTable().replaceFunction( functionName, theFunction );
+        }
+        else
+        {
+            if ( isProcedureDef )
+                RBOUT( "Registering of procedure canceled" );
+            else
+                RBOUT( "Registering of function canceled" );
+        }
+    }
+    else
+    {
+        env.addFunction( functionName, theFunction );
+    }
 
     // No return value 
     return NULL;

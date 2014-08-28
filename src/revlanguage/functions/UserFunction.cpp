@@ -7,6 +7,7 @@
 #include "Signals.h"
 #include "TypeSpec.h"
 #include "UserFunction.h"
+#include "UserFunctionDef.h"
 #include "Workspace.h"
 
 #include <sstream>
@@ -14,76 +15,10 @@
 using namespace RevLanguage;
 
 /** Basic constructor */
-UserFunction::UserFunction( const ArgumentRules*        argRules,
-                            const TypeSpec&             retType ,
-                            std::list<SyntaxElement*>*  stmts   )   :
+UserFunction::UserFunction( UserFunctionDef* def ) :
     Function(),
-    argumentRules( argRules ),
-    returnType( retType ),
-    code( stmts )
+    functionDef( def )
 {
-}
-
-
-/** Copy constructor */
-UserFunction::UserFunction( const UserFunction& x ) :
-    Function( x ),
-    argumentRules( new ArgumentRules( *x.argumentRules ) ),
-    returnType( x.returnType ),
-    code( NULL )
-{
-    // Create a new list for the code
-    code = new std::list<SyntaxElement*>();
-    for ( std::list<SyntaxElement*>::const_iterator it = x.code->begin(); it != x.code->end(); ++it )
-    {
-        SyntaxElement* element = (*it)->clone();
-        code->push_back( element );
-    }
-}
-
-
-/** Assignment operator. Deal with argument rules and code. */
-UserFunction& UserFunction::operator=( const UserFunction &f )
-{
-    if ( this != &f ) {
-        
-        // Call the base class assignment operator
-        Function::operator=(f);
-
-        delete argumentRules;
-        argumentRules = new ArgumentRules(*f.argumentRules);
-        
-        for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++)
-        {
-            SyntaxElement* theSyntaxElement = *it;
-            delete theSyntaxElement;
-        }
-        code->clear();
-        
-        // Create a new list for the code
-        for (std::list<SyntaxElement*>::const_iterator i=f.code->begin(); i!=f.code->end(); i++)
-        {
-            SyntaxElement* element = (*i)->clone();
-            code->push_back(element);
-        }
-    }
-    
-    return *this;
-}
-
-
-/** Destructor */
-UserFunction::~UserFunction()
-{
-    delete argumentRules;
-    
-    for (std::list<SyntaxElement*>::iterator it = code->begin(); it != code->end(); it++)
-    {
-        SyntaxElement* theSyntaxElement = *it;
-        delete theSyntaxElement;
-    }
-    
-    delete code;
 }
 
 
@@ -101,7 +36,7 @@ RevPtr<Variable> UserFunction::execute( void )
     // If the return type object has a DAG node inside it, we return an appropriate model/container/factor object
     // with a deterministic node inside it. Otherwise we return a "flat" RevObject without a dag node inside it.
 
-    RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( returnType.getType() );
+    RevObject* retVal = Workspace::userWorkspace().makeNewDefaultObject( getReturnType().getType() );
 
     if ( retVal->hasDagNode() )
     {
@@ -141,7 +76,8 @@ RevPtr<Variable> UserFunction::executeCode( void )
     RevPtr<Variable> retVar = NULL;
     
     // Execute code
-    for ( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
+    const std::list<SyntaxElement*>& code = functionDef->getCode();
+    for ( std::list<SyntaxElement*>::const_iterator it = code.begin(); it != code.end(); ++it )
     {
         SyntaxElement* theSyntaxElement = *it;
         retVar = theSyntaxElement->evaluateContent( *functionFrame );
@@ -158,7 +94,7 @@ RevPtr<Variable> UserFunction::executeCode( void )
 }
 
 
-/** Get Rev type of object */
+/** Get Rev type (static) */
 const std::string& UserFunction::getClassType(void)
 {
     static std::string revType = "UserFunction";
@@ -167,17 +103,10 @@ const std::string& UserFunction::getClassType(void)
 }
 
 
-/** Get a reference to the code for execution outside of this class */
-const std::list<SyntaxElement*>& UserFunction::getCode(void) const
-{
-    return *code;
-}
-
-
-/** Get class type spec describing type of object */
+/** Get Rev type spec (static) */
 const TypeSpec& UserFunction::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
 	return revTypeSpec; 
 }
@@ -198,25 +127,23 @@ std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
 }
 
 
-/** Get type spec */
+/** Get Rev type spec (from an instance) */
 const TypeSpec& UserFunction::getTypeSpec( void ) const
 {
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
+    return getClassTypeSpec();
 }
 
 
 /** Get argument rules */
 const ArgumentRules& UserFunction::getArgumentRules(void) const
 {
-    return *argumentRules;
+    return functionDef->getArgumentRules();
 }
 
 
 /** Get return type */
 const TypeSpec& UserFunction::getReturnType(void) const
 {
-    return returnType;
+    return functionDef->getReturnType();
 }
 

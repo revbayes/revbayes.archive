@@ -16,12 +16,12 @@ namespace RevLanguage {
      * @brief Function definition syntax element
      *
      * This syntax element holds function definitions, that is, user-defined
-     * Rev functions. Member variables include the function name, the formal
-     * argument specifications, the return type and the code.
+     * Rev functions or procedures. Member variables include the function name,
+     * the formal argument specifications, the return type and the code.
      *
      * The semantic content of a function definition is void, but evaluating
-     * it results in the user-defined function being inserted in the function
-     * table in the environment.
+     * it results in the user-defined function or procedure being inserted in
+     * the function table in the environment.
      */
     class SyntaxFunctionDef : public SyntaxElement {
 
