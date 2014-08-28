@@ -37,7 +37,7 @@ setwd(dataFolder)
 n_species <- 10
 n_genes <- 10
 n_alleles <- 5
-n_sites <- 200
+n_sites <- 100
 n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
 
 ######################
@@ -173,7 +173,7 @@ for (i in 1:n_genes) {
 # To link all the parts of the model together we use the phyloCTMC object.
 
 for (i in 1:n_genes) {
-  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="DNA")
+  alns[i] ~ phyloCTMC(tree=geneTrees[i], Q=Q[i],  branchRates=familyRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites, type="Standard")
 }
 
 
@@ -230,7 +230,7 @@ for (i in 2:n_genes) {
 # First, let's decide on the size of the virtual population.
 # De Maio, Schlötterer and Kosiol (2013) consider 10 is already pretty good.
 
-virtual_population_size <- 2
+virtual_population_size <- 10
 
 # Now, we need to convert the DNA alignment into an alignment in the correct POMO state space.
 
@@ -407,7 +407,7 @@ mymodel <- model(speciesTree)
 ########
 
 # We create the MCMC object
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc <- mcmc(mymodel, monitors, moves, moveschedule="single")
 
 
 # We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 

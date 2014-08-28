@@ -1,11 +1,11 @@
 ################################################################################
 #
-# RevBayes Example: Simulation and species tree inference using the Multispecies coalescent approach.
+# RevBayes Example: Simulation and species tree inference using the POMO model.
 #
 # 							SCRIPT 3
-# 
+#
 # This file: Specifies the full Multispecies coalescent model, simulates data, 
-# and then performs inference using the Multispecies coalescent model.
+# and then performs inference using the POMO model.
 # The species tree is distributed according to a birth-death process.
 # Gene trees are distributed according to the Multispecies coalescent model running along this species tree.
 # We assume a single effective population size for the entire tree.
@@ -16,25 +16,39 @@
 #
 ################################################################################
 
-
-# If we want to set the seed, we can use the following command, with numbers of our choice:
-# seed(25,42)
+# If we want to set the seed, we can use the following command:
+seed(43667, 21502)
 printSeed()
 
-#source("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/tutorials/RB_GeneTreeSpeciesTree_Tutorial/RB_tutorial_files/RevBayes_scripts/MultiSpeciesCoalescent/MultiSpeciesCoalescentSimulatingTreesAndAlignments.Rev")
 source("MultiSpeciesCoalescentSimulatingTreesAndAlignments.Rev")
+
 clear()
 
 dataFolder <- "data/"
 
-#source("/Users/boussau/sharedFolderLinux/revBayes/revbayes-code-git/tutorials/RB_GeneTreeSpeciesTree_Tutorial/RB_tutorial_files/RevBayes_scripts/MultiSpeciesCoalescent/MultiSpeciesCoalescentModel.Rev")
-source("MultiSpeciesCoalescentModel.Rev")
+source("MultiSpeciesCoalescentPomoModel.Rev")
 
-####################################################################
-####################################################################
-## Species tree reconstruction using the  Multispecies Coalescent ##
-####################################################################
-####################################################################
+############################################
+############################################
+## Species tree reconstruction using POMO ##
+############################################
+############################################
+
+
+################################
+# Changing the starting values #
+################################
+
+# We want to start from random values, not the values used in the simulation.
+
+# Redrawing the parameters of the birth-death process:
+#speciation.redraw()
+#extinction.redraw()
+#tree_height.redraw()
+
+# Redrawing the species tree:
+#speciesTree.redraw()
+
 
 
 ####################
@@ -60,8 +74,17 @@ moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
 moves[moveIndex++] <- mvTreeScale(speciesTree, tree_height, delta=1.0, tune=true, weight=3.0)
 moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
 
-# move on Ne, the effective population size
-moves[moveIndex++] <- mvScale(Ne,lambda=1,tune=true,weight=1.0)
+# moves on the parameters of the substitution model
+moves[moveIndex++] <- mvSimplexElementScale(er, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
+
+# moves on the parameters of the root frequencies
+moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvScale(root_polymorphism_proportion, lambda=10, tune=true, weight=2) 
+moves[moveIndex++] <- mvSlide(root_polymorphism_proportion, delta=10, tune=true, weight=2) 
+
+# moves on the across-sites rate variation parameter:
+moves[moveIndex++] <- mvScale(shape, lambda=0.8, tune=true, weight=3.0)
 
 ############
 # Monitors #
@@ -72,18 +95,14 @@ moves[moveIndex++] <- mvScale(Ne,lambda=1,tune=true,weight=1.0)
 mntrIndex <- 0
 
 # One monitor to backup the parameters, in case we want to stop and restart the analysis:
-monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"concatenation_clock.log",printgen=10, separator = "	")
+monitors[mntrIndex++] <- modelmonitor(filename=dataFolder+"pomo_clock.log",printgen=10, separator = "	")
 
 # One monitor to print the species trees sampled in the course of the MCMC:
-monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"concatenation_clock_species.trees",printgen=10, separator = "	", speciesTree)
+monitors[mntrIndex++] <- filemonitor(filename=dataFolder+"pomo_clock_species.trees",printgen=10, separator = "	", speciesTree)
 
 # We also want to monitor how far we are from the true values, which we have because we rely on simulations.
 # First, we can compute the distance between the reconstructed and the true species tree:
-trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
 distSpeciesTree := symDiff (trueSpeciesTree, speciesTree)
-
-# Second, the distance between the true Ne and the sampled Ne
-distNe := trueNe - Ne
 
 # Distance between species tree parameters:
 distDiv := trueSpeciation/trueExtinction - speciation/extinction
@@ -91,8 +110,8 @@ distDiv := trueSpeciation/trueExtinction - speciation/extinction
 # Distance between species tree ages:
 distAge := trueRootAge - tree_height
 
-# We can use one monitor that will output on the screen one parameter, Ne, distNe, distSpeciesTree:
-monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, distNe, Ne, distDiv, distAge)
+# We can use one monitor that will output on the screen one parameter, distSpeciesTree:
+monitors[mntrIndex++] <- screenmonitor(printgen=10, distSpeciesTree, distDiv, distAge )
 	
 
 #############
@@ -110,7 +129,7 @@ mymodel <- model(speciesTree)
 ########
 
 # We create the MCMC object
-mymcmc <- mcmc(mymodel, monitors, moves)
+mymcmc <- mcmc(mymodel, monitors, moves, moveschedule="single")
 
 
 # We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
@@ -119,7 +138,9 @@ mymcmc <- mcmc(mymodel, monitors, moves)
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 #mymcmc.burnin(generations=200,tuningInterval=100)
-mymcmc.run(generations=400000)
+mymcmc.run(generations=4000)
+
+
 
 
 

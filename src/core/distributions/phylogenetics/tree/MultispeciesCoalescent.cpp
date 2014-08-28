@@ -662,6 +662,7 @@ void MultispeciesCoalescent::simulateTree( void ) {
         
         std::vector<TopologyNode*> initialIndividualsAtBranch = individualsPerBranch[spNode];
         double branchNe = getNe(spNode->getIndex() );
+
         double theta = 1.0 / branchNe;
         
         double prevCoalescentTime = 0.0;
