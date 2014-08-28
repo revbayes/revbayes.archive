@@ -150,19 +150,20 @@ bool SyntaxDivisionAssignment::isAssignment( void ) const
  * if its lhs and rhs expressions are safe, and the
  * assignment is not to an external variable.
  */
-bool SyntaxDivisionAssignment::isFunctionSafe( const Environment& env ) const
+bool SyntaxDivisionAssignment::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     // Check lhs and rhs expressions
-    if ( !lhsExpression->isFunctionSafe( env ) || !rhsExpression->isFunctionSafe( env ) )
+    if ( !lhsExpression->isFunctionSafe( env, localVars ) || !rhsExpression->isFunctionSafe( env, localVars ) )
         return false;
     
     // Check whether assignment is to external variable (not function-safe)
-    if ( lhsExpression->retrievesExternVar( env ) )
+    if ( lhsExpression->retrievesExternVar( env, localVars, true ) )
         return false;
     
     // All tests passed
     return true;
 }
+
 
 /**
  * Print info about the syntax element

@@ -100,6 +100,7 @@
 #include "RlMove.h"
 
 /* Moves on real values */
+#include "Move_SliceSampling.h"
 #include "Move_Scale.h"
 #include "Move_Slide.h"
 
@@ -506,12 +507,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         /* Moves on real values */
         addTypeWithConstructor("mvScale",               new Move_Scale() );
         addTypeWithConstructor("mvSlide",               new Move_Slide() );
+        addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
         
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mScale",                new Move_Scale() );
         addTypeWithConstructor("mSlide",                new Move_Slide() );
+        addTypeWithConstructor("mSlice",                new Move_SliceSampling() );
         
-
         /* Moves on integer values */
         addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
         addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
