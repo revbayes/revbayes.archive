@@ -110,9 +110,12 @@ class SyntaxFunctionCall;
         size_t                              getIndex(const RevPtr<Variable>& var, Environment& env) const;                          //!< Get the index from an index variable (statically)
         const std::string&                  getIdentifier(void) { return identifier; }                                              //!< Get identifier
         std::string                         getFullName(Environment& env) const;                                                    //!< Get full name, with indices and base obj
-        bool                                isFunctionSafe(const Environment& env) const;                                           //!< Is this element safe in a function?
+        bool                                isFunctionSafe(const Environment&       env,
+                                                           std::set<std::string>&   localVars) const;                               //!< Is this element safe in a function?
         bool                                isMemberVariable(void) const { return baseVariable != NULL; }                           //!< Is the variable a member variable?
-        bool                                retrievesExternVar(const Environment& env) const;                                       //!< Does this element retrieve an external variable?
+        bool                                retrievesExternVar(const Environment&       env,
+                                                               std::set<std::string>&   localVars,
+                                                               bool                     inLHS) const;                               //!< Does this element retrieve an external variable?
         void                                setBaseVariable( SyntaxVariable* var);                                                  //!< Set the base variable
         
     protected:
