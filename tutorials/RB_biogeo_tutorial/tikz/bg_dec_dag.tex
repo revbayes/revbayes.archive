@@ -5,11 +5,11 @@
 \node [font=\Large]                  at (tp_dec.text)[above=2.0]     {root};
 \node [font=\Large]                  at (tp_dec.two)[above=2.0]      {internal};
 \node [font=\Large]                  at (tp_dec.three)[above=1.9]    {tip};
-\node [obnode]     (tn_dec)          at ($(tp_dec.three)-(0,1.2)$)       {$\mathcal{S}_{ij}$};
-\node [snode]      (in_dec)          at ($(tp_dec.two)-(0,1.2)$)         {$\mathcal{S}_{ij}$};
-\node [snode]      (rn_dec)          at ($(tp_dec.text)-(0,1.2)$)        {$\mathcal{S}_{ij}$};
-\node [font=\scriptsize,snode] (pin_dec) at ($(in_dec)+(0,2)$)               {$\mathcal{S}_{\tilde{p}(i)j}$};
-\node [font=\scriptsize,snode] (ptn_dec) at ($(tn_dec)+(0,2)$)               {$\mathcal{S}_{\tilde{p}(i)j}$};
+\node [obnode]     (tn_dec)          at ($(tp_dec.three)-(0,1.2)$)       {$X_{ij}$};
+\node [snode]      (in_dec)          at ($(tp_dec.two)-(0,1.2)$)         {$X_{ij}$};
+\node [snode]      (rn_dec)          at ($(tp_dec.text)-(0,1.2)$)        {$X_{ij}$};
+\node [font=\scriptsize,snode] (pin_dec) at ($(in_dec)+(0,2)$)               {$X_{\tilde{p}(i)j}$};
+\node [font=\scriptsize,snode] (ptn_dec) at ($(tn_dec)+(0,2)$)               {$X_{\tilde{p}(i)j}$};
 \draw [taro] (ptn_dec) -- (tn_dec) ;
 \draw [taro] (pin_dec) -- (in_dec) ;
 \node at ($(tp_dec.two)-(-2.0,2.6)$) {$i \in$ internals};
@@ -38,16 +38,8 @@
 \draw [taro] (pn_c) -- (in_dec) ;
 \draw [taro] (pn_c) edge[bend left](rn_dec);
 \draw [taro] (pn_c) edge[bend right](tn_dec);
-\draw [dtaro] (pn_c_pr) -- (pn_c);
+\draw [taro] (pn_c_pr) -- (pn_c);
 % attach psi
-\node[detnode] (topo) at (-2,0) {\Large $\Psi$};
+\node[constnode] (topo) at (-4,0) {\Large T};
 \draw[-,line width=2pt] (topo) -- (tp_dec) ;
-\node[snode] (birth) at ($(topo)-(-1.5,2)$) {$\lambda$};
-\node[snode] (death) at ($(topo)-(1.5,2)$) {$\mu$};
-\node[constnode] (birthpr) at ($(birth)-(0,2)$) {$b$};
-\node[constnode] (deathpr) at ($(death)-(0,2)$) {$d$};
-\draw[taro] (birthpr)--(birth);
-\draw[taro] (deathpr)--(death);
-\draw[taro] (birth)--(topo);
-\draw[taro] (death)--(topo);
 \end{tikzpicture}
