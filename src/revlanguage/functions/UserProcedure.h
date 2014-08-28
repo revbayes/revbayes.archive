@@ -3,31 +3,31 @@
 
 #include "ArgumentRules.h"
 #include "RlFunction.h"
-#include "SyntaxElement.h"
+#include "TypeSpec.h"
 
 #include <list>
+#include <set>
 #include <string>
-#include <vector>
+
 
 namespace RevLanguage {
-    
+
+    class UserFunctionDef;
     
     /**
-     * The UserProcedure class holds information about the definition of a user procedure.
-     * A procedure need not know how to create a deterministic variable, it just executes
-     * the code in static procedure calls.
+     * @brief Class holding user procedures
+     *
+     * The UserProcedure class holds information about and executes user procedures. A procedure
+     * does not have to know how to create a deterministic variable, it just executes the code
+     * in static procedure calls. Another difference is taht a user procedure does not have to
+     * be able to return its parameters, since this function is only used in parent management
+     * in model DAGs.
      */
     class UserProcedure :  public Function {
         
     public:
-        UserProcedure(const ArgumentRules*          argRules,
-                      const TypeSpec&               retType,
-                      std::list<SyntaxElement*>*    stmts);                                 //!< Basic constructor
-        UserProcedure(const UserProcedure& x);
-        virtual                                     ~UserProcedure();                       //!< Destructor
-        
-        // Overloaded operators
-        UserProcedure&                               operator=(const UserProcedure& f);     //!< Assignment operator
+        UserProcedure(UserFunctionDef* def);                                                //!< Standard constructor
+        virtual                                     ~UserProcedure() {}                     //!< Virtual destructor
         
         // Basic utility functions
         UserProcedure*                              clone(void) const;                      //!< Clone the object
@@ -38,14 +38,11 @@ namespace RevLanguage {
         // Regular functions
         virtual RevPtr<Variable>                    execute(void);                          //!< Execute function
         const ArgumentRules&                        getArgumentRules(void) const;           //!< Get argument rules
-        const std::list<SyntaxElement*>&            getCode(void) const;                    //!< Get a reference to the code
         const TypeSpec&                             getReturnType(void) const;              //!< Get type spec of return value
         
     protected:
-        
-        const ArgumentRules*                        argumentRules;                          //!< The argument rules
-        const TypeSpec                              returnType;                             //!< The return type spec
-        std::list<SyntaxElement*>*                  code;                                   //!< The code
+        // Member variable
+        RevPtr<UserFunctionDef>                     functionDef;                            //!< The definition of the procedure
     };
     
 }

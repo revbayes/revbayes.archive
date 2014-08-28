@@ -339,6 +339,16 @@ bool Environment::existsVariable(const std::string& name) const
 }
 
 
+/** Does variable exist in the the current frame? */
+bool Environment::existsVariableInFrame(const std::string& name) const
+{
+    if (variableTable.find(name) == variableTable.end())
+        return false;
+    else
+        return true;
+}
+
+
 /** Generate a unique variable name */
 std::string Environment::generateUniqueVariableName(void)
 {

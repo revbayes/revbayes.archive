@@ -3,6 +3,8 @@
 #include "RbUtil.h"
 #include "SyntaxFunctionDef.h"
 #include "UserFunction.h"
+#include "UserFunctionDef.h"
+#include "UserInterface.h"
 #include "UserProcedure.h"
 #include "Workspace.h"
 
@@ -101,17 +103,24 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
 {
     // Get argument rules from the formals
     ArgumentRules* argRules = new ArgumentRules();
-
     for ( std::list<SyntaxFormal*>::iterator it = formalArgs->begin(); it !=formalArgs->end(); ++it )
         argRules->push_back( (*it)->getArgumentRule()->clone() );
 
     // Check whether statements are function-safe if we are a function
     if ( !isProcedureDef )
     {
-        // Check first that all statements are function-safe
+        // Load labeled formals as local variables
+        std::set<std::string> localVars;
+        for ( ArgumentRules::iterator it = argRules->begin(); it != argRules->end(); ++it )
+        {
+            if ( (*it)->getArgumentLabel() != "" )
+                localVars.insert( (*it)->getArgumentLabel() );
+        }
+
+        // Now check that all statements are function-safe
         for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
         {
-            if ( !(*it)->isFunctionSafe( env ) )
+            if ( !(*it)->isFunctionSafe( env, localVars ) )
             {
                 std::ostringstream msg;
                 msg << "The code of the function includes statements that modify or potentially modify" << std::endl;
@@ -123,7 +132,7 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
 
         // Finally check whether last statement (if there is one) retrieves an external variable
         std::list<SyntaxElement*>::const_reverse_iterator rit = code->rbegin();
-        if ( rit != code->rend() && (*rit)->retrievesExternVar( env ) )
+        if ( rit != code->rend() && (*rit)->retrievesExternVar( env, localVars, false ) )
             throw RbException( "The code is not function-safe." );
     }
 
@@ -133,15 +142,41 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
     for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
         stmts->push_back( (*it)->clone() );
 
-    // Create the function
+    // Create the function definition
+    UserFunctionDef* functionDef = new UserFunctionDef( argRules, returnType, stmts );
+    
+    // Create the function or the procedure
     Function* theFunction;
     if ( isProcedureDef )
-        theFunction = new UserProcedure( argRules, returnType, stmts );
+        theFunction = new UserProcedure( functionDef );
     else
-        theFunction = new UserFunction( argRules, returnType, stmts );
+        theFunction = new UserFunction( functionDef );
     
     // Insert the function/procedure in the (user) workspace
-    env.addFunction( functionName, theFunction );
+    if ( env.getFunctionTable().existsFunctionInFrame( functionName, *argRules ) )
+    {
+        bool ok;
+        if ( isProcedureDef )
+            ok = UserInterface::userInterface().ask( "Replace existing procedure with same signature" );
+        else
+            ok = UserInterface::userInterface().ask( "Replace existing function with same signature" );
+
+        if ( ok )
+        {
+            env.getFunctionTable().replaceFunction( functionName, theFunction );
+        }
+        else
+        {
+            if ( isProcedureDef )
+                RBOUT( "Registering of procedure canceled" );
+            else
+                RBOUT( "Registering of function canceled" );
+        }
+    }
+    else
+    {
+        env.addFunction( functionName, theFunction );
+    }
 
     // No return value 
     return NULL;
