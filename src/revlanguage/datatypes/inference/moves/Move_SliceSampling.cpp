@@ -57,7 +57,7 @@ void Move_SliceSampling::constructInternalObject( void )
     // now allocate a new sliding move
     double window_ = static_cast<const RealPos &>( window->getRevObject() ).getValue();
     double weight_ = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const RealPos &>( x->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* tmp = static_cast<const Real &>( x->getRevObject() ).getDagNode();
     RevBayesCore::ContinuousStochasticNode *node_ = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
     bool tune_ = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
@@ -113,7 +113,7 @@ const MemberRules& Move_SliceSampling::getMemberRules(void) const
     
     if ( !rulesSet ) 
     {
-        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, RealPos::getClassTypeSpec() ) );
+        scalingMoveMemberRules.push_back( new ArgumentRule( "x", false, Real::getClassTypeSpec() ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "window", true, RealPos::getClassTypeSpec() , new RealPos(1.0) ) );
         scalingMoveMemberRules.push_back( new ArgumentRule( "tune"  , true, RlBoolean::getClassTypeSpec(), new RlBoolean( true ) ) );
         
