@@ -1,6 +1,7 @@
 #include "MoveOld.h"
 #include "DagNode.h"
 #include "RbException.h"
+#include "StringUtilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -146,25 +147,20 @@ void MoveOld::printSummary( std::ostream &o ) const
     o << std::setprecision(4);
     
     // print the name
-    const std::string &n = getMoveName();
-    size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
+    std::string n = getMoveName();
+    StringUtilities::fillWithSpaces(n,40,true);
+    
     o << n;
-    for (size_t i = 0; i < spaces; ++i) {
-        o << " ";
-    }
     o << " ";
    
     // print the DagNode name
-    const std::string &dn_name = (*nodes.begin())->getName();
-    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
+    std::string dn_name = (*nodes.begin())->getName();
+    StringUtilities::fillWithSpaces(dn_name,20,true);
     o << dn_name;
-    for (size_t i = 0; i < spaces; ++i) {
-        o << " ";
-    }
     o << " ";
     
     // print the weight
-    int w_length = 4 - (int)log10(weight);
+    int w_length = 4 - (int)log10(weight+1);
     for (int i = 0; i < w_length; ++i)
     {
         o << " ";
@@ -173,7 +169,7 @@ void MoveOld::printSummary( std::ostream &o ) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
+    int t_length = 9 - (int)log10(numTried+1);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
@@ -183,7 +179,7 @@ void MoveOld::printSummary( std::ostream &o ) const
     
     // print the number of accepted
     int a_length = 9;
-    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    if (numAccepted > 0) a_length -= (int)log10(numAccepted+1);
     
     for (int i = 0; i < a_length; ++i)
     {

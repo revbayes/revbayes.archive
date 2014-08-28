@@ -85,10 +85,6 @@ void Mcmc::run(size_t kIterations)
         std::cout << "move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     
-    // Initialize objects used in run
-    initializeChain();
-    initializeMonitors();
-    
     if ( generation == 0 )
     {
         // Monitor
