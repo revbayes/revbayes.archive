@@ -85,7 +85,8 @@ namespace RevLanguage {
         RevPtr<Variable>                    evaluateDynamicContent(Environment& env);                                   //!< Get semantic value (dynamic)
         void                                setBaseVariable(SyntaxVariable* var) { baseVariable = var; }                //!< Set base variable
         bool                                isConstExpression(void) const;                                              //!< Is this a constant expression?
-        bool                                isFunctionSafe(const Environment& env) const;                               //!< Is this element safe in a function?
+        bool                                isFunctionSafe(const Environment&       env,
+                                                           std::set<std::string>&   localVars) const;                   //!< Is this element safe in a function?
  
     protected:
         std::list<SyntaxLabeledExpr*>*      arguments;                                                                  //!< The arguments passed to the function

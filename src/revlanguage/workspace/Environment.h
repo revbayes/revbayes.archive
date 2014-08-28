@@ -60,6 +60,7 @@ namespace RevLanguage {
         RevPtr<Variable>                    executeFunction(const std::string& name, const std::vector<Argument>& args);        //!< Execute function
         bool                                existsFunction(const std::string &name) const;                                      //!< Does a function exists with given name?
         bool                                existsVariable(const std::string& name) const;                                      //!< Does variable exist?
+        bool                                existsVariableInFrame(const std::string& name) const;                               //!< Does variable exist in this frame?
         std::string                         generateUniqueVariableName(void);                                                   //!< Automatically generate a unique variable name
         const Function&                     getFunction(const std::string& name);                                               //!< Get function reference
         Function&                           getFunction(const std::string& name, const std::vector<Argument>& args, bool once); //!< Get function reference
