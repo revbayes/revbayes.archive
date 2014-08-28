@@ -11,7 +11,6 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RlAbstractDiscreteCharacterData.h"
-#include "RlDnaState.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
 #include "PolymorphicStateConverter.h"

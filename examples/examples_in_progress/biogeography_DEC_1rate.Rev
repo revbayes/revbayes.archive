@@ -17,7 +17,7 @@ tree			<- vtree[1]
 data			<- vdata
 
 # MCMC settings
-nGens           <- 10000
+nGens           <- 25000
 fBurn           <- 0.2
 
 

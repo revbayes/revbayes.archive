@@ -41,6 +41,13 @@ for (i in 1:n_genes) {
 	geneTreeRootAges[i] <- trueGeneTrees[i].rootAge()
 }
 
+# Getting the true species tree
+trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
+
+trueNe <- 0.01
+trueSpeciation <- 2.0
+trueExtinction <- 0.3
+trueRootAge <- trueSpeciesTree.rootAge()
 
 #######################
 # Specifying the model
@@ -51,23 +58,25 @@ speciation ~ exponential(10.0)
 extinction ~ exponential(10.0)
 
 
-# To be on the safe side, we specify a very shot species tree.
+
 # A species tree larger than the gene trees has probability 0.
-minGeneTreeRootAge <- min(geneTreeRootAges)
-tree_height ~ unif(0.0,abs(minGeneTreeRootAge)/10)
-#while (tree_height > minGeneTreeRootAge/100) {
-#	tree_height.redraw()
-#}
+# To be sure to start from a state with a non-null probability, we start from the true values.
+tree_height ~ unif(0.0,100.0)
+tree_height.setValue(trueRootAge)
+
 write("Starting species tree height: "+tree_height)
+write("Compared to smallest gene tree height: " + min(geneTreeRootAges) )
+
 
 # Species tree from birth-death process
-#We assume 1,000,000 generations
 speciesTree ~ cBDP(lambda=speciation, mu=extinction, rootAge=tree_height, nTaxa=n_species, names=s_names)
 
-trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
 
+# We rescale by the mutation rate we used in the simulation
 #trueSpeciesTree.rescale(0.0000001)
-speciesTree.clamp(trueSpeciesTree)
+
+speciesTree.setValue(trueSpeciesTree)
+
 
 write("Proposed starting species tree: ")
 write( speciesTree)
@@ -84,7 +93,9 @@ for (i in 1:n_species) {
 }
 
 # Set the effective population size
-Ne ~ unif(0.0,10000)
+Ne ~ unif(0.0,10)
+Ne.setValue(trueNe)
+
 
 # Link the gene trees to the species tree and Ne
 for (i in 1:n_genes) {

@@ -41,9 +41,10 @@ RevPtr<Variable> Func_biogeo_grm::execute() {
     const RevBayesCore::TimeAtlas* atlas = &( static_cast<const RlAtlas&>( this->args[0].getVariable()->getRevObject() ).getValue() );
     
     RevBayesCore::TypedDagNode<double>* dp = static_cast<const Real&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    bool uadj   = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    bool udd    = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getValue();
     bool uav    = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
-    bool udd    = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
+    bool uadj   = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
+
 
     RevBayesCore::DistanceDependentDispersalFunction* f = new RevBayesCore::DistanceDependentDispersalFunction(dp, atlas, uadj, true, udd);
     
@@ -65,9 +66,9 @@ const ArgumentRules& Func_biogeo_grm::getArgumentRules( void ) const {
         
         argumentRules.push_back( new ArgumentRule( "atlas", true, RlAtlas::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "distancePower", false, Real::getClassTypeSpec(), new Real(1e-5) ) );
-        argumentRules.push_back( new ArgumentRule( "useAdjacency", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
-        argumentRules.push_back( new ArgumentRule( "useAvailable", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         argumentRules.push_back( new ArgumentRule( "useDistances", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "useAvailable", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "useAdjacency", false, RlBoolean::getClassTypeSpec(), new RlBoolean(true) ) );
         
         rulesSet = true;
     }

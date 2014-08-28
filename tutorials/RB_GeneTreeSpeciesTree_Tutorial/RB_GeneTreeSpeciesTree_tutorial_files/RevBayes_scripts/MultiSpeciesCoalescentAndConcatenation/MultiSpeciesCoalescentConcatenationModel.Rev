@@ -43,6 +43,9 @@ for (i in 1:n_species) {
 	s_names[i] <- "Species_"+i
 }
 
+# Getting the true species tree
+trueSpeciesTree <- readTrees(dataFolder+"speciesTree.tree")[1]
+
 
 concatenate_n_sites <- concatenate.nchar()[1]
 
@@ -70,7 +73,7 @@ for (i in 1:n_species) {
 ###############################
 
 
-# Birth-Death process priors, similar to Leaché and Rannala, Syst. Biol. 2011 60:2, pp126-137.
+# Birth-Death process priors.
 speciation ~ exponential(10.0)
 extinction ~ exponential(10.0)
 tree_height ~ unif(0.0,100.0)

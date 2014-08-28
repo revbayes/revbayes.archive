@@ -81,7 +81,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
 {
     
     // compute auxilliary variables
-    double N2 = (double) (N*N);
+    double N2 = 1.0;//(double) (N*N);
     int Nminus1 = (int)N-1;
     double Nminus1d = (double) Nminus1;
     for (size_t i = 0 ; i < 4; i++) 
@@ -257,225 +257,24 @@ void RateMatrix_Pomo::buildRateMatrix(void)
         if (k==0) {
             f2 = s[1];
         }
-        else if (k==2 || k==4) {
+        else if (k==1 || k==3) {
             f2 = s[2];
         }
         else {
             f2 = s[3];
         }
         
-        for (size_t i = 4; i < N ; ++i){
-            for (size_t j = i+1; j < N; j++){
-                if ( j==(i+1) ){
-                    (*theRateMatrix)[i+Nminus1*k][j+Nminus1*k] = (f1*i/(f1*i + f2*(N-i)) * (N-i)/N);
-                    std::cout << "Hehe " << 4+j+Nminus1*k-1 << " HHH " <<4+i+Nminus1*k-1 <<std::endl;
-                    (*theRateMatrix)[j+Nminus1*k][i+Nminus1*k] = (f2*j/(f2*j + f1*(N-j)) * (N-j)/N);
-                }
-                /*else{
-                    (*theRateMatrix)[4+i+9*k,4+j+9*k] = M[4+j+9*k, 4+i+9*k] = 0;
-                }*/
-            }
-            
+        for (size_t i = 1; i <= N-2 ; ++i){
+            size_t j = i+1;
+            (*theRateMatrix)[3+i+Nminus1*k][3+j+Nminus1*k] = (f1*i/(f1*i + f2*(N-i)) * (N-i)/N);
+            (*theRateMatrix)[3+j+Nminus1*k][3+i+Nminus1*k] = (f2*j/(f2*j + f1*(N-j)) * (N-j)/N);
         }
-      /*  Diagonal 
-       for (i in 1:9){
-            (*theRateMatrix)[4+j+9*k,4+i+9*k] <- 1 - sum((*theRateMatrix)[4+j+9*k,(1:58)[-(4+i+9*k)]])
-        }*/
+
     }
     
-    
-    
-    
-    /*
-    double cell1, cell2;
-    //First, the B^N_AC matrix
-    //The 4..4+Nminus1 states are the AC matrix
-    //Cell 4,4 is its first cell.
-    size_t firstCell = 4;
-    //case i = 0: moving from 1A to 2As
-    double temp = 1.0;
-   // temp = 1+s[0]-s[1];
-    //XXXXXXXXXXXX >>>>>>> PARIS
-//    (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
-    (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(0, 1, temp);
-        for (size_t i=1; i< N-1; i++)
-    {
-      //  temp = i*(1+s[0]-s[1]);
-        //Loosing one A, from iA to (i-1)A
-        //cell1 = (N - i) /  (temp + N - i) * i / N;
-        temp = (double) (N-i-1);
-        cell1 = computeEntryFromMoranProcessWithSelection(1, 0, temp);
-        (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
-        //Gaining one A, from iA to (i+1)A
-        //cell2 = temp / (temp + N - i) * (N-i) / N;
-        if (i != 8 ) {
-            temp = (double) (i+1);
-            cell2 = computeEntryFromMoranProcessWithSelection(0, 1, temp);
-        }
-        else {
-            cell2 = 0.0;
-        }
-        (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
-    }
-
-    //Then, the B^N_AG matrix
-    //The 4+Nminus1..4+2Nminus1 states are the AG matrix
-    //Cell 4+N,4+N is its first cell.
-    firstCell = 4+Nminus1;
-    //case i = 0: moving from 1A to 2As
-   // temp = 1+s[0]-s[2];
-   // (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
-    temp = 1.0;
-    (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(0, 2, temp);
-        for (size_t i=1; i< N-1; i++)
-    {
-       // temp = i*(1+s[0]-s[2]);
-        //Loosing one A, from iA to (i-1)A
-        //cell1 = (N - i) /  (temp + N - i) * i / N;
-        temp = (double) (N-i-1);
-        cell1 = computeEntryFromMoranProcessWithSelection(2, 0, temp);
-        (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
-
-        //Gaining one A, from iA to (i+1)A
-        //cell2 = temp / (temp + N - i) * (N-i) / N;
-        if (i != 8 ) {
-        temp = (double) (i+1);
-        cell2 = computeEntryFromMoranProcessWithSelection(0, 2, temp);
-        }
-        else {
-            cell2 = 0.0;
-        }
-        (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
-    }
-
-    //Then, the B^N_AT matrix
-    //The 4+2Nminus1..4+3Nminus1 states are the AT matrix
-    //Cell 4+N,4+N is its first cell.
-    firstCell = 4+2*Nminus1;
-    //case i = 0: moving from 1A to 2As
-   // temp = 1+s[0]-s[3];
-//    (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
-    temp = 1.0;
-    (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(0, 3, temp);
-        for (size_t i=1; i< N-1; i++) 
-    {
-        //temp = i*(1+s[0]-s[3]);
-        //Loosing one A, from iA to (i-1)A
-        //cell1 = (N - i) /  (temp + N - i) * i / N;
-        temp = (double) (N-i-1);
-        cell1 = computeEntryFromMoranProcessWithSelection(3, 0, temp);
-        (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
-        //Gaining one A, from iA to (i+1)A
-        //cell2 = temp / (temp + N - i) * (N-i) / N;
-        if (i != 8 ) {
-        temp = (double) (i+1);
-        cell2 = computeEntryFromMoranProcessWithSelection(0, 3, temp);
-        }
-        else {
-            cell2 = 0.0;
-        }
-        (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
-    }
-
-    //Then, the B^N_CG matrix
-    //The 4+3Nminus1..4+4Nminus1 states are the CG matrix
-    //Cell 4+N,4+N is its first cell.
-    firstCell = 4+3*Nminus1;
-    //case i = 0: moving from 1C to 2Cs
-  //  temp = 1+s[1]-s[2];
-   // (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
-     temp = 1.0;
-    (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(1, 2, temp);
-        for (size_t i=1; i< N-1; i++) 
-    {
-      //  temp = i*(1+s[1]-s[2]);
-        //Loosing one C, from iC to (i-1)C
-    //    cell1 = (N - i) /  (temp + N - i) * i / N;
-        temp = (double) (N-i-1);
-        cell1 = computeEntryFromMoranProcessWithSelection(2, 1, temp);
-        (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
-        //Gaining one C, from iC to (i+1)C
-        if (i != 8 ) {
-            temp = (double) (i+1);
-            cell2 = computeEntryFromMoranProcessWithSelection(1, 2, temp);
-        }
-        else {
-            cell2 = 0.0;
-        }
-       // cell2 = temp / (temp + N - i) * (N-i) / N;
-        (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
-    }
-
-    //Then, the B^N_CT matrix
-    //The 4+4Nminus1..4+5Nminus1 states are the CT matrix
-    //Cell 4+N,4+N is its first cell.
-    firstCell = 4+4*Nminus1;
-    //case i = 0: moving from 1C to 2Cs
-   // temp = 1+s[1]-s[3];
-   // (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
-    temp = 1.0;
-    (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(1, 3, temp);
-        for (size_t i=1; i< N-1; i++) 
-    {
-       // temp = i*(1+s[1]-s[3]);
-        //Loosing one C, from iC to (i-1)C
-        //cell1 = (N - i) /  (temp + N - i) * i / N;
-        temp = (double) (N-i-1);
-        cell1 = computeEntryFromMoranProcessWithSelection(3, 1, temp);
-        (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
-        //Gaining one C, from iC to (i+1)C
-       // cell2 = temp / (temp + N - i) * (N-i) / N;
-        if (i != 8 ) {
-            temp = (double) (i+1);
-            cell2 = computeEntryFromMoranProcessWithSelection(1, 3, temp);
-        }
-        else {
-            cell2 = 0.0;
-        }
-        (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
-    }
-
-    //Then, the B^N_GT matrix
-    //The 4+5Nminus1..4+6Nminus1 states are the GT matrix
-    //Cell 4+N,4+N is its first cell.
-    firstCell = 4+5*Nminus1;
-    //case i = 0: moving from 1G to 2Gs
-   // temp = 1+s[2]-s[3];
-   // (*theRateMatrix)[firstCell][firstCell+1] = temp / (temp + N - 1) * (N-1) / N;
-    temp = 1.0;
-    (*theRateMatrix)[firstCell][firstCell+1] = computeEntryFromMoranProcessWithSelection(2, 3, temp);
-        for (size_t i=1; i< N-1; i++)
-    {
-      //  temp = i*(1+s[2]-s[3]);
-        //Loosing one G, from iG to (i-1)G
-       // cell1 = (N - i) /  (temp + N - i) * i / N;
-        temp = (double) (N-i-1);
-        cell1 = computeEntryFromMoranProcessWithSelection(3, 2, temp);
-        (*theRateMatrix)[firstCell+i][firstCell+i-1] = cell1;
-        //Gaining one G, from iG to (i+1)G
-        if (i != 8 ) {
-        temp = (double) (i+1);
-     //   cell2 = temp / (temp + N - i) * (N-i) / N;
-        cell2 = computeEntryFromMoranProcessWithSelection(2, 3, temp);
-        }
-        else {
-            cell2 = 0.0;
-        }
-        if (i != 8 ) {
-            (*theRateMatrix)[firstCell+i][firstCell+i+1] = cell2;
-        }
-        (*theRateMatrix)[firstCell+i][firstCell+i] = 0 - cell1 - cell2 - (*theRateMatrix)[firstCell+i][0] - (*theRateMatrix)[firstCell+i][1] - (*theRateMatrix)[firstCell+i][2] - (*theRateMatrix)[firstCell+i][3];
-    }
-    
-    */
     
     //In the first 4 rows/columns, the diagonal is defined such that the sum by line is 1.
-    double sum = 0.0;
+   /* double sum = 0.0;
     for (size_t i=0; i< matrixSize; i++)
     {
         sum += (*theRateMatrix)[0][i];
@@ -501,8 +300,9 @@ void RateMatrix_Pomo::buildRateMatrix(void)
     {
         sum += (*theRateMatrix)[3][i];
     }
-    (*theRateMatrix)[3][3] = 0-sum;
+    (*theRateMatrix)[3][3] = 0-sum;*/
     
+    /*
     for (size_t i=0; i< matrixSize; i++)
     {
         for (size_t j=0; j< matrixSize; j++)
@@ -510,7 +310,7 @@ void RateMatrix_Pomo::buildRateMatrix(void)
         (*theRateMatrix)[i][j] *= (double) N;
         }
     }
-
+    */
     
     // set the diagonal values
     setDiagonal();
