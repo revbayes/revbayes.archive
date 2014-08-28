@@ -148,7 +148,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 78 "./grammar.y"
+#line 79 "./grammar.y"
 {
     char*                                           c_string;
     std::string*                                    string;
