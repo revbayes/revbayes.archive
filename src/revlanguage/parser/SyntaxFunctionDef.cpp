@@ -150,9 +150,9 @@ RevPtr<Variable> SyntaxFunctionDef::evaluateContent( Environment& env )
     {
         bool ok;
         if ( isProcedureDef )
-            ok = UserInterface::userInterface().ask( "Replace existing procedure with same signature?" );
+            ok = UserInterface::userInterface().ask( "Replace existing procedure with same signature" );
         else
-            ok = UserInterface::userInterface().ask( "Replace existing function with same signature?" );
+            ok = UserInterface::userInterface().ask( "Replace existing function with same signature" );
 
         if ( ok )
         {
