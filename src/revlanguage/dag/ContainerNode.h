@@ -61,6 +61,7 @@ namespace RevLanguage {
         double                                  getLnProbabilityRatio(void);                                            //!< Get ln prob ratio (0.0)
         valueType&                              getValue(void);                                                         //!< Get the value
         const valueType&                        getValue(void) const;                                                   //!< Get the value (const)
+        bool                                    isComposite(void) const;                                                //!< Is this DAG node composite?
         bool                                    isConstant(void) const;                                                 //!< Is this DAG node constant?
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;          //!< Print structure info
         void                                    redraw(void);                                                           //!< Redraw (or not)
@@ -365,6 +366,16 @@ const valueType& ContainerNode<rlElemType, valueType>::getValue( void ) const {
     return value;
 }
 
+
+/**
+ * This node is used to keep track of a composite language object (a container),
+ * so we need to return true.
+ */
+template<typename rlElemType, typename valueType>
+bool ContainerNode<rlElemType, valueType>::isComposite( void ) const
+{
+    return true;
+}
 
 
 /**

@@ -188,7 +188,7 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     {
         presentTime = ra;
         
-        if ( ra != value->getRoot().getAge() )
+        if ( ra != rootAge->getValue() )
         {
             return RbConstants::Double::neginf;
         }

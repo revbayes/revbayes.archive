@@ -275,7 +275,7 @@ RevPtr<Variable> AbstractCharacterData::executeMethod(std::string const &name, c
         
         return new Variable( new Natural(n) );
     }
-    else if (name == "removeTaxa")
+    else if (name == "removeTaxa" || name == "removeTaxon" )
     {
         const RevObject& argument = args[0].getVariable()->getRevObject();
         if ( argument.isTypeSpec( RlString::getClassTypeSpec() ) )
@@ -546,6 +546,8 @@ MethodTable AbstractCharacterData::makeMethods( void ) const
     methods.addFunction("ishomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
     methods.addFunction("removeTaxa",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
+    methods.addFunction("removeTaxon",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules       ) );
+    methods.addFunction("removeTaxon",          new MemberProcedure(RlUtils::Void,        removeTaxaArgRules2        ) );
     methods.addFunction("setTaxonName",        new MemberProcedure(RlUtils::Void,        setTaxonNameArgRules       ) );
 
     // Add method for call "size" as a function
