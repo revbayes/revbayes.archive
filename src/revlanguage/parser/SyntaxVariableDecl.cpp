@@ -14,7 +14,7 @@
 using namespace RevLanguage;
 
 /** Basic constructor. Construct from type name, lengths specification, and variable identifier. */
-SyntaxVariableDecl::SyntaxVariableDecl( const std::string &elemType, std::list<SyntaxElement*>* lengths, const std::string &varName) :
+SyntaxVariableDecl::SyntaxVariableDecl( const std::string& elemType, std::list<SyntaxElement*>* lengths, const std::string& varName) :
     SyntaxElement(),
     elementTypeName( elemType ),
     lengthExpr( lengths ),
@@ -38,7 +38,7 @@ SyntaxVariableDecl::SyntaxVariableDecl( const SyntaxVariableDecl& x ) :
 
 
 /** Destructor deletes operands */
-SyntaxVariableDecl::~SyntaxVariableDecl()
+SyntaxVariableDecl::~SyntaxVariableDecl( void )
 {
     for (std::list<SyntaxElement*>::iterator it = lengthExpr->begin(); it != lengthExpr->end(); ++it )
         delete (*it);
@@ -84,7 +84,7 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const
  * Here we evaluate the length specification (statically) and create the
  * requested variable.
  *
- * @todo Resize the container to the length specification
+ * @todo Resize the container to the lengths specification
  */
 RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
 {
@@ -146,6 +146,18 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
     env.addVariable( variableName, new Variable( newObject ) );
     
     return NULL;
+}
+
+
+/**
+ * Is the syntax element safe for use in a function (as
+ * opposed to a procedure)? The element is safe but we
+ * need to add the variable to the local variables
+ */
+bool SyntaxVariableDecl::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
+{
+    localVars.insert( variableName );
+    return true;
 }
 
 

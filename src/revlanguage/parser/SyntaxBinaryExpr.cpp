@@ -189,10 +189,10 @@ bool SyntaxBinaryExpr::isConstExpression( void ) const
  * opposed to a procedure)? The binary expression is safe
  * if its operands are safe.
  */
-bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env ) const
+bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     // Check operands
-    if ( leftOperand->isFunctionSafe( env ) && rightOperand->isFunctionSafe( env ) )
+    if ( leftOperand->isFunctionSafe( env, localVars ) && rightOperand->isFunctionSafe( env, localVars ) )
         return true;
 
     // At least one operand not safe
