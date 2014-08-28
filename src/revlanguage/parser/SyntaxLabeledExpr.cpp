@@ -76,9 +76,9 @@ bool SyntaxLabeledExpr::isConstExpression( void ) const
  * Is this syntax element safe for inclusion in a function definition? Simply
  * delegate to the expression.
  */
-bool SyntaxLabeledExpr::isFunctionSafe( const Environment& env ) const
+bool SyntaxLabeledExpr::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
-    return expression->isFunctionSafe( env );
+    return expression->isFunctionSafe( env, localVars );
 }
 
 
@@ -96,10 +96,13 @@ void SyntaxLabeledExpr::printValue( std::ostream& o ) const
 
 /**
  * Does this syntax element retrieve an external variable? Simply
- * delegate to the expression.
+ * delegate to the expression. The inLHS flag should always be
+ * false if we reach this element, and we pass it on as false.
+ * This is because procedures are not allowed in LHS expressions,
+ * and only procedures need to use this call.
  */
-bool SyntaxLabeledExpr::retrievesExternVar( const Environment& env ) const
+bool SyntaxLabeledExpr::retrievesExternVar( const Environment& env, std::set<std::string>& localVars, bool inLHS ) const
 {
-    return expression->retrievesExternVar( env );
+    return expression->retrievesExternVar( env, localVars, false );
 }
 
