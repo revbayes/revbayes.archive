@@ -343,6 +343,14 @@ In the RevBayes implementation of POMO, base fitnesses can be estimated as well.
 In this section we will perform inference using the multispecies coalescent, the POMO model, and concatenation.
 Depending on your machine and on the size of the data, successful inference may take some time.
 If this tutorial is done in a classroom environment, it may be wise to convene with friends that one tries the multispecies coalescent model while another one tries the POMO model, and the third one tries the concatenation approach, and that results will be shared.
+In case you want to compare the results between machines or between RevBayes sessions, you have to make sure that you are using the same random seed in all sessions. This is easily done by setting the seed using 
+ {\tt \begin{snugshade*}
+\begin{lstlisting}
+seed(x, y)
+\end{lstlisting}
+\end{snugshade*}}
+where $x$ and $y$ are two integer numbers of your choice.
+
 First we will simulate data, and then we will perform inference using the three different approaches.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
