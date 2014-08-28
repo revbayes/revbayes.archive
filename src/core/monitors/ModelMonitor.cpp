@@ -152,11 +152,6 @@ void ModelMonitor::monitor(unsigned long gen)
             DagNode *node = *i;
             
             // print the value
-//            std::cerr << "<" << node << "> ";
-//            node->printName( std::cerr, ", " );
-//            node->printValue( std::cerr, separator);
-//            std::cerr << std::endl;
-
             node->printValue(outStream,separator);
         }
         
@@ -267,7 +262,7 @@ void ModelMonitor::resetDagNodes( void )
             // only simple numeric variable can be monitored (i.e. only integer and real numbers)
             if ( (*it)->isSimpleNumeric() && !(*it)->isClamped())
             {
-                if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
+                if ( (!stochasticNodesOnly && !(*it)->isConstant() && (*it)->getName() != "" && !(*it)->isComposite() ) || ( (*it)->isStochastic() && !(*it)->isClamped() ) )
                 {
                     if ( varNames.find( (*it)->getName() ) == varNames.end() )
                     {
