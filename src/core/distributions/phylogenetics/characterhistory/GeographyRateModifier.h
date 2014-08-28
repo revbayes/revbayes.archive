@@ -96,6 +96,8 @@ namespace RevBayesCore
         std::set<CharacterEvent*> absent;
         
     };
+    
+    std::ostream& operator<<(std::ostream& o, const GeographyRateModifier& x);
 }
 
 #endif /* defined(__rb_mlandis__GeographyRateModifier__) */
