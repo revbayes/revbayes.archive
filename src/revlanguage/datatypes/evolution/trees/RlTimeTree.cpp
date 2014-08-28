@@ -74,6 +74,11 @@ RevLanguage::RevPtr<RevLanguage::Variable> TimeTree::executeMethod(std::string c
         
         return NULL;
     }
+    else if (name == "rootAge")
+    {
+        double a = this->dagNode->getValue().getRoot().getAge();
+        return new Variable( new RealPos( a ) );
+    }
     
     return ModelObject<RevBayesCore::TimeTree>::executeMethod( name, args );
 }
@@ -136,7 +141,7 @@ RevLanguage::MethodTable TimeTree::makeMethods( void ) const
     methods.addFunction("ntips", new MemberProcedure(Natural::getClassTypeSpec(),          ntipsArgRules   ) );
 
     ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("rootAge", new MemberFunction<TimeTree, RealPos>(this,          heightArgRules   ) );
+    methods.addFunction("rootAge", new MemberProcedure(RealPos::getClassTypeSpec(),          heightArgRules   ) );
 
     ArgumentRules* namesArgRules = new ArgumentRules();
     methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
