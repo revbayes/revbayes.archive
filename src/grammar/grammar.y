@@ -22,6 +22,7 @@
 #include "Environment.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "Probability.h"
 #include "Parser.h"
 #include "RlBoolean.h"
 #include "RlString.h"
@@ -898,7 +899,14 @@ constant    :   FALSE
                     real->setPrecision(prec);
                     real->setScientific(sci);
                     */
-                    if ($1 >= 0.0) {
+                    
+                    if ($1 >= 0.0 && $1 <= 1.0) {
+                        #ifdef DEBUG_BISON_FLEX
+                        printf("Parser inserting RealPos constant in syntax tree \n");
+                        #endif
+                        $$ = new SyntaxConstant(new Probability($1) );
+                    }
+                    else if ($1 >= 0.0) {
 #ifdef DEBUG_BISON_FLEX
                         printf("Parser inserting RealPos constant in syntax tree \n");
 #endif
