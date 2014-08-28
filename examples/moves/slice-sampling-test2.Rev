@@ -1,0 +1,29 @@
+mi1 <- 0
+mi2 <- 0
+
+v ~ norm(0.0, 3.0)
+moves1[mi1++] <- mSlice(v)
+moves2[mi2++] <- mSlide(v)
+for(i in 1:9)
+{
+  x[i] ~ norm(0.0, exp(v))
+  moves1[mi1++] <- mSlice(x[i])
+  moves2[mi2++] <- mSlide(x[i])
+}
+
+monitors1 <- [modelmonitor(file="xv-slice.p")]
+monitors2 <- [modelmonitor(file="xv-slide.p")]
+
+mymcmc1 <- mcmc(model(v), moves1, monitors1)
+mymcmc1.burnin(10000,100)
+mymcmc1.run(200000)
+mymcmc1.operatorSummary()
+
+mymcmc2 <- mcmc(model(v), moves2, monitors2)
+mymcmc2.burnin(10000,100)
+mymcmc2.burnin(10000,100)
+mymcmc2.burnin(10000,100)
+mymcmc2.burnin(10000,100)
+mymcmc2.run(2000000)
+mymcmc2.operatorSummary()
+q()
