@@ -218,6 +218,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
         size_t nodeIndex = nd.getIndex();
         fillLikelihoodVector(nd);
         double nodeLnProb = historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
+//        std::cout << nodeLnProb << "\n";
         this->lnProb += nodeLnProb;
     }
     return this->lnProb;
