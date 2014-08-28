@@ -224,7 +224,7 @@ Now suppose the ancestral range is 1110.
 Under peripatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
 Under allopatric cladogenesis, the ancestral range is split evenly among daughter lineages, e.g. one lineage may inherit 1100 and the other inherit 0010.
 Both daughter lineages inherit the entire ancestral species range following widespread sympatric cladogenic events.
-For a general description on cladogenic events, see \citet{matzke14}.
+For a general description on cladogenic events, see \citet{matzke13}.
 
 The DEC model ignores speciation events hidden by extinction or incomplete taxon sampling and assigns equal probabilities to all cladogenic event types.
 Since a range of size zero typically means the species is exinct, the probability of cladogenic events would ideally be linked to a birth-death process, as it is in the GeoSSE model \citep{goldberg11}.
@@ -269,6 +269,8 @@ First, it is relatively small, meaning we can produce results quickly.
 Second, the Hawaiian archipelago can be broken into naturally discrete areas and has a well-characterized geographical history that is uncomplicated to model.
 Third, it has previously been analyzed, which provides some basis for comparison to other methods.
 To simplify things, this model will assume we live in a gentler world where presence-absence characters are known without error.
+
+For larger datasets to play with, see {\tt data/sim\_aus\_50tip\_33area.nex} and {\tt data/sim\_aus\_50tip\_33area.atlas.txt} for a simulated model where all cladogenic events were sympatric (wide or narrow). 
 
 \subsection{Nexus file}
 
@@ -339,36 +341,37 @@ This procedure is not part of the tutorial, but you should be aware that area de
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 {
-  "name":"HawaiianArchipelago10my",
-  "epochs":
-  [{
-    "name":"epoch1",
-    "start_age":5.5,
-    "end_age":3.7,
-    "areas":
-      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50, "dispersalValues": [ 1,0,0,0 ] },
-       { "name": "Oahu",   "latitude":21.47, "longitude": -157.98, "dispersalValues": [ 0,0,0,0 ] },
-       { "name": "Maui",   "latitude":20.80, "longitude": -156.33, "dispersalValues": [ 0,0,0,0 ] },
-       { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 0,0,0,0 ] }]
-  },
-  {
-    "name":"epoch2",
-    ...
-  },
-  {
-    "name":"epoch3",
-    ...
-  },
-  {
-    "name":"epoch4",
-    "start_age":0.5,
-    "end_age":0.0,
-    "areas":
-      [{ "name": "Kauai",  "latitude":22.08, "longitude": -159.50, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Oahu",   "latitude":21.47, "longitude": -157.98, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Maui",   "latitude":20.80, "longitude": -156.33, "dispersalValues": [ 1,1,1,1 ] },
-       { "name": "Hawaii", "latitude":19.57, "longitude": -155.50, "dispersalValues": [ 1,1,1,1 ] }]
-  }]
+	"name":"HawaiianArchipelago5my",
+	"epochs": [
+		{
+			"name":"epoch1",
+			"start_age":100.0,
+			"end_age":3.7,
+			"areas":
+			[{ "name":"Kauai",  "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 1,0,0,0 ] },
+			{ "name": "Oahu",   "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 0,0,0,0 ] },
+			{ "name": "Maui",   "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 0,0,0,0 ] },
+			{ "name": "Hawaii", "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 0,0,0,0 ] }]
+		},
+		{
+			"name":"epoch2",
+			...
+		},
+		{
+			"name":"epoch3",
+			...
+		},
+		{
+			"name":"epoch4",
+			"start_age":0.5,
+			"end_age":0.0,
+			"areas":
+			[{ "name":"Kauai",  "latitude":22.0833, "longitude": -159.5000, "dispersalValues": [ 1,1,1,1 ] },
+			{ "name": "Oahu",   "latitude":21.4722, "longitude": -157.9772, "dispersalValues": [ 1,1,1,1 ] },
+			{ "name": "Maui",   "latitude":20.8000, "longitude": -156.3333, "dispersalValues": [ 1,1,1,1 ] },
+			{ "name": "Hawaii", "latitude":19.5667, "longitude": -155.5000, "dispersalValues": [ 1,1,1,1 ] }]
+		}
+	]
 }
 \end{lstlisting}
 \end{framed}
@@ -386,6 +389,7 @@ Each area is assigned a {\tt latitude} and {\tt longitude} to represent its geog
 If a centroid does not represent the distance between areas, splitting the area into multiple smaller areas is reasonable.
 The data augmentation approach used in this analysis allows you to use more areas as desired, whereas matrix exponentiation methods are limited to approximately ten areas.
 The distance between any two areas' coordinates inform to distance-dependent dispersal parameter ($\beta$ from the $\eta(\cdot)$ function) for range expansion events, so coordinates roughly close to the center of the area suffice.
+Here, the {\tt latitude} and {\tt longitude} change in each of the four epochs, where they begin at the current location of Hawaii and drift northwesterly until they reach their current positions.
 
 In addition, each area is marked as habitable or not using the {\tt dispersalValues} array.
 The elements in the array correspond to the other areas defined in the analysis.
@@ -515,7 +519,7 @@ Now {\tt M} has a defined likelihood value.
 \begin{lstlisting}
 RevBayes > M.clamp(data)
 RevBayes > M.lnProb
-   -76.0193
+   -56.0288
 \end{lstlisting}
 \end{snugshade}
 
@@ -691,10 +695,9 @@ One might prefer to analytically compute the marginal likelihood as
 \]
 but the marginal likelihood is the same intractable quantity we intentionally avoid computing when using MCMC in a Bayesian context.
 Instead, we must estimate the marginal likelihood from our posterior distribution samples.
-Here, we will use thermodynamic integration \citep{lartillot06} and stepping-stone approximation \citep{xi11}.
+Here, we will use thermodynamic integration \citep{lartillot06} and stepping-stone approximation \citep{xie10}.
 The exact details of these techniques will not be covered here, but there is an important practical point to mention: both methods rely on computing a number of ``power posterior'' distributions.
 Computing more power posteriors increases the marginal likelihood estimator's accuracy at the cost of computational time.
-(For more discussion on model selection and marginal likelihood estimation in RevBayes, see XXXX).
 
 Moving on, we'll compute the Bayes factor to compare a simple one-rate model, which asserts the rate of area gain and loss are always equal, to a two-rate model which allows these rates to vary independently.
 Rather than specifying the model manually, we will load (source) the model definition from a file then enter the commands to compute its marginal likelihood.
@@ -775,24 +778,26 @@ Every 20 iterations, this monitor re-prints the column headers.
 
 \begin{snugshade}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-RevBayes > my_mcmc.run(generations=10000)
-Running MCMC simulation for 10000 iterations
-The simulator uses 7 different moves in a random
+RevBayes > my_mcmc.run(generations=25000)
+
+Running MCMC simulation for 25000 iterations
+The simulator uses 8 different moves in a random
 move schedule with 241 moves per iteration
 
-Iteration |  Posterior| Likelihood|      Prior|     glr[1]|     glr[2]|         dp|     csf[1]|     csf[2]|     csf[3]
-----------------------------------------------------------------------------------------------------------------------
-0         |   -73.8091|   -72.0884|   -1.72064|   0.561081|   0.163257|   0.207816|   0.800911|   0.148279|  0.0508098
-10        |   -71.6553|   -70.6763|  -0.978973|   0.535445|   0.137321|   0.185221|    0.80819|   0.115359|  0.0764516
-20        |   -52.0561|   -52.3781|   0.322018|   0.488219|  0.0825952|   0.157074|   0.782565|  0.0289439|   0.188491
-30        |   -78.4143|   -77.8396|  -0.574688|   0.489703|   0.184283|   0.143573|   0.929565| 0.00712045|  0.0633148
-40        |   -49.9196|   -51.6664|    1.74683|   0.368131|   0.135512|  0.0817632|   0.652166|  0.0559583|   0.291875
-50        |   -84.4542|   -83.1119|   -1.34227|   0.593591|   0.206547|  0.0941784|   0.724901|   0.105702|   0.169397
+Iteration   |   Posterior  |          dp  |      glr[1]  |      glr[2]  |      csf[1]  |      csf[2]  |      csf[3]
+-------------------------------------------------------------------------------------------------------------------
+0           |    -51.3307  |   0.0570518  |    0.175137  |   0.0580957  |    0.330891  |    0.255308  |    0.413801
+10          |    -54.4257  |   0.0416423  |    0.166936  |    0.178402  |   0.0549136  |    0.148854  |    0.796233
+20          |    -58.0696  |   0.0991853  |    0.136495  |    0.122135  |    0.308418  |    0.448892  |    0.242689
+30          |    -46.5049  |     0.10676  |   0.0958918  |   0.0959592  |    0.543837  |    0.363871  |   0.0922922
+40          |    -42.8697  |    0.173549  |    0.158565  |   0.0662419  |    0.569416  |    0.126439  |    0.304145
+50          |    -43.5319  |    0.117868  |    0.196497  |   0.0523307  |    0.440269  |    0.257171  |     0.30256
+
 ...
 \end{lstlisting}
 \end{snugshade}
 
-For the complex 2-rate model, our model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively, and the frequencies for sympatry, peripatry, and allopatry, {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]}, respectively. 
+For the complex 2-rate model, our model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively, and the frequencies for peripatry, allopatry, and widespread sympatry {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]}, respectively. 
 If you notice the value of some parameter is rarely updated from iteration to iteration, the MCMC is probably mixing poorly therefore it's not generating samples from the posterior distribution (the MCMC's stationary distribution).
 In this case, you may want to re-run the analysis with different arguments for the {\tt Move} object assigned to that parameter.
 
@@ -803,13 +808,14 @@ As with the {\tt ScreenMonitor}, columns are model or parameter values and rows 
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-Iteration  Posterior  Likelihood  Prior  glr[1]  glr[2]  dp  csf[1]  csf[2]  csf[3]
-0   -73.8091  -72.0884  -1.72064  0.561081  0.163257  0.207816  0.800911  0.148279  0.050809
-10  -71.6553  -70.6763  -0.97897  0.535445  0.137321  0.185221  0.808190  0.115359  0.076451
-20  -52.0561  -52.3781   0.32201  0.488219  0.082595  0.157074  0.782565  0.028943  0.188491
-30  -78.4143  -77.8396  -0.57468  0.489703  0.184283  0.143573  0.929565  0.007120  0.063314
-40  -49.9196  -51.6664   1.74683  0.368131  0.135512  0.081763  0.652166  0.055958  0.291875
-50  -84.4542  -83.1119  -1.34227  0.593591  0.206547  0.094178  0.724901  0.105702  0.169397
+Iteration  Posterior  Likelihood    Prior  glr[1]  glr[2]  dp  csf[1]  csf[2]  csf[3]
+0           -51.3307    -56.0288  4.69806  0.175137  0.0580957  0.057051  0.330891  0.255308  0.413801
+10          -54.4257    -58.1568  3.73110  0.166936  0.1784020  0.041642  0.054913  0.148854  0.796233
+20          -58.0696    -62.0923  4.02274  0.136495  0.1221350  0.099185  0.308418  0.448892  0.242689
+30          -46.5049    -51.1197  4.61480  0.095891  0.0959592  0.106760  0.543837  0.363871  0.092292
+40          -42.8697    -46.4870  3.61735  0.158565  0.0662419  0.173549  0.569416  0.126439  0.304145
+50          -43.5319    -47.4659  3.93394  0.196497  0.0523307  0.117868  0.440269  0.257171  0.302560
+
 ...
 \end{lstlisting}
 \end{framed}
@@ -823,6 +829,14 @@ Open Tracer, select the fields for the posterior probability and area gain rate,
 \end{figure}
 
 Here, we see a strong negative correlation between the posterior probability and the area gain rate, which is expected.
+Next, click the Estimates tab then select the three {\tt csf} parameters.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=3in]{figures/clado_freq_posterior}
+\caption{Mean values for the cladogenic state frequency simplex, where {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]} correspond to peripatry, allopatry, and wide sympatry whose mean posterior values are 0.45, 0.30, and 0.25, respectively.}
+\end{figure}
+
 
 \subsection{Biogeographic event counts from {\tt mnCharHistoryNewick}}
 
@@ -833,13 +847,13 @@ Open {\tt bg\_2rate.counts.txt}.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
-Iteration	Posterior	Likelihood	Prior	t_s0	t_s1	t_c0	t_c1	t_c2	b0_s0	b0_s1	b0_c	..
-0	-73.8091	-72.0884	-1.72064	19	18	37	0	0	1	1	0	...
-10	-71.6553	-70.6763	-0.978973	17	17	37	0	0	1	1	0	...
-20	-52.0561	-52.3781	0.322018	12	10	37	0	0	1	1	0	...
-30	-78.4143	-77.8396	-0.574688	24	20	37	0	0	2	1	0	...
-40	-49.9196	-51.6664	1.746830	10	9	37	0	0	1	1	0	...
-50	-84.4542	-83.1119	-1.34227	22	21	37	0	0	1	1	0	...
+Iteration  Posterior  Likelihood    Prior	t_s0	t_s1	t_c0	t_c1	t_c2	t_c3	b0_s0	b0_s1	b0_c	...
+0           -51.3307    -56.0288  4.69806	9	9	18	0	0	0	1	1	0	...	
+10          -54.4257    -58.1568  3.73110	9	10	17	0	0	1	1	1	0	...
+20          -58.0696    -62.0923  4.02274	11	9	15	2	1	0	2	1	1	...
+30          -46.5049    -51.1197  4.61480	8	8	18	0	0	0	1	1	0	...
+40          -42.8697    -46.4870  3.61735	7	7	18	0	0	0	1	1	0	...
+50          -43.5319    -47.4659  3.93394	7	7	18	0	0	0	1	1	0	...
 ...
 \end{lstlisting}
 \end{framed}
@@ -867,12 +881,13 @@ Open {\tt bg\_2rate.events.txt}.
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
 Iteration  Posterior  Likelihood  Prior  Tree
-0   -73.8091  -72.0884  -1.72064  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0100;ev={{t:0.488207 ...
-10  -71.6553  -70.6763  -0.97897  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:1.0853,P ...
-20  -52.0561  -52.3781   0.32201  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0110;ev={{t:0.627439 ...
-30  -78.4143  -77.8396  -0.57468  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:1.0853,P ...
-40  -49.9196  -51.6664   1.74683  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0110;ev={{t:0.166634 ...
-50  -84.4542  -83.1119  -1.34227  ((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0100;ev={{t:0.070469 ...
+Iteration	Posterior	Likelihood	Prior	Tree
+0	-51.3307	-56.0288	4.69806	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:0.96 ...
+10	-54.4257	-58.1568	3.7311	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:0.96 ...
+20	-58.0696	-62.0923	4.02274	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:0.96 ...
+30	-46.5049	-51.1197	4.6148	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:0.96 ...
+40	-42.8697	-46.4870	3.61735	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:0.96 ...
+50	-43.5319	-47.4659	3.93394	((((((((P_hawaiiensis_WaikamoiL1[&index=18;nd=0010;pa=0010;ev={}]:0.96 ...
 
 ...
 \end{lstlisting}
@@ -882,16 +897,16 @@ Each iteration records the data-augmented character history (stochastic mapping)
 
 \begin{snugshade}
 \begin{lstlisting}
-[&index=19;nd=0110;pa=0100;ch0=0110;ch1=0010;cs=p;bn=17;ev={{t:0.804201,a:0.444834,s:1,i:2}}]
+[&index=23;nd=0110;pa=0010;ch0=0010;ch1=0110;cs=p;bn=16;ev={{t:0.2513,a:1.1195,s:1,i:1}}
 \end{lstlisting}
 \end{snugshade}
 
-{\tt index=19} indicates this branch leads to the node indexed 19.
+{\tt index=23} indicates this branch leads to the node indexed 23.
 The branch began in the ancestral state {\tt pa=0100} and terminated in the state {\tt nd=0110}.
-Since this node is not a tip node, it represents a speciation event, so the daughter ranges are also given, {\tt ch0=0110} and {\tt ch1=0010}.
+Since this node is not a tip node, it represents a speciation event, so the daughter ranges are also given, {\tt ch0=0010} and {\tt ch1=0110}.
 The cladogenic state for this speciation event was peripatric, {\tt cs=p}, rather than sympatric (wide or narrow; {\tt s}) or allopatric ({\tt a}).
-Anagenic dispersal and extinction events occurring along the lineage leading to node 19 are recorded in {\tt events}, where each event has a time (relative to the absolute branch length), absolute age, state (into), and character index ({\tt t}, {\tt a}, {\tt s}, {\\t i}, resp.).
-For this posterior sample of the character history for the branch leading to node 19, the species range expanded into Maui at age 0.444834, which is near the tips of the tree.
+Anagenic dispersal and extinction events occurring along the lineage leading to node 19 are recorded in {\tt events}, where each event has a time (relative to the absolute branch length), absolute age, state (into), and character index ({\tt t}, {\tt a}, {\tt s}, {\tt i}, resp.).
+For this posterior sample of the character history for the branch leading to node 22, the species range expanded into Oahu at age 1.1195.
 
 To manipulate this data format, we'll use Python scripts. Below are a few examples of interesting posterior features.
 
@@ -899,7 +914,7 @@ Open a python console and read in the events.
 
 \begin{snugshade}
 \begin{lstlisting}
-> cd tutorials/RB_biogeo_tutorial/python
+> cd scripts
 > python27
 
 ...
@@ -913,20 +928,18 @@ Open a python console and read in the events.
 Each branch is a dictionary whose keys are various parts of the MCMC state and whose values the MCMC samples.
 \begin{snugshade}
 \begin{lstlisting}
->>> dd[19].keys()
+>>> dd[23].keys()
 ['ch1', 'iteration', 'bn', 'nd', 'ch0', 'prior', 'posterior', 'cs', 'ev', 'likelihood']
->>> dd[19]['posterior'][0:5]
-[-60.5999, -62.4151, -86.6285, -49.4231, -100.982]
->>> dd[19]['nd'][0:5]
-[[0, 1, 0, 0], [0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 1, 1, 0]]
+>>> dd[23]['posterior'][0:5]
+[-48.6952, -60.1832, -53.2286, -57.5778, -53.4633]
 \end{lstlisting}
 \end{snugshade}
 
 To get the $n=1$ highest-valued sample for a branch by its posterior value
 \begin{snugshade}
 \begin{lstlisting}
->>> get_best(dd[19],n=1,p='posterior')
-{'prior': [-0.953907], 'iteration': [5470], 'bn': [18], 'nd': [[0, 0, 1, 0]], 'ch0': [[0, 0, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-36.8795], 'pa': ['0100'], 'cs': ['s'], 'ev': [[{'age': 0.773692, 'state': 1, 'idx': 2, 'time': 0.39127}, {'age': 0.694034, 'state': 0, 'idx': 1, 'time': 0.491293}]], 'likelihood': [-35.9256]}
+>>> get_best(dd[23],n=1,p='posterior')
+{'prior': [4.48225], 'iteration': [14890], 'bn': [22], 'nd': [[0, 1, 1, 0]], 'ch0': [[0, 1, 1, 0]], 'ch1': [[0, 0, 1, 0]], 'posterior': [-34.7139], 'pa': ['0100'], 'cs': ['p'], 'ev': [[{'age': 1.5637, 'state': 1, 'idx': 2, 'time': 0.8611}]], 'likelihood': [-39.1962]}
 \end{lstlisting}
 \end{snugshade}
 
@@ -934,27 +947,34 @@ To get the probability that area $i$ and area $j$ are both part of the species r
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_area_pair(dd[19],k='nd')
-[[0.0429, 0.0089, 0.0329, 0.0],
- [0.0089, 0.2727, 0.2247, 0.0],
- [0.0329, 0.2247, 0.9440, 0.0],
- [0.0,       0.0,    0.0, 0.0]]
+[[0.0112, 0.0012, 0.0112, 0.0000],
+ [0.0012, 0.1511, 0.1487, 0.0000],
+ [0.0112, 0.1487, 0.9976, 0.0000],
+ [0.0000, 0.0000, 0.0000, 0.0000]]
 \end{lstlisting}
 \end{snugshade}
-showing area 3 was occupied with probability 0.95 and both areas 2 and 3 were occupied with probability 0.35.
+showing area 3 was occupied nearly with probability 1.0 and both areas 2 and 3 were occupied with probability 0.15.
+Note, Hawaii was submerged approximately 1.5 million years ago, and thus the probability of being in that area is 0.0.
 
 If the range is size one during a speciation event, the cladogenic event state is always sympatric, ``s''.
 But given the opportunity for non-sympatric events, i.e. that the range is larger than size one, we can get the probability of cladogenic state using
 For the probability for cladogenic event state given the range was larger than size one
 \begin{snugshade}
 \begin{lstlisting}
->>> get_clado_state(dd[19],minSize=1)
-{'a': 0.027972027972027972, 'p': 0.2037962037962038, 's': 0.7682317682317682}
->>> get_clado_state(dd[19],minSize=2)
-{'a': 0.0673076923076923, 'p': 0.49038461538461536, 's': 0.4423076923076923}
+>>> get_clado_state(dd[23])
+{'a': 0.0224, 'p': 0.1463, 's': 0.5130, 'w': 0.3183}
+>>> get_clado_state(dd[23],minSize=2)
+{'a': 0.0460, 'p': 0.3005, 's': 0.0, 'w': 0.6535
+>>> get_clado_state(get_best(dd[23],n=100),minSize=2)
+{'a': 0.1290, 'p': 0.6774, 's': 0.0, 'w': 0.1935}
 \end{lstlisting}
 \end{snugshade}
 
-For more examples, see {\tt bg\_parse.py}
+Depending on your question, different aspects of the posterior cladogenic state will interest you.
+Narrow sympatry is the favored ancestral state, but wide sympatry is favored for ranges of size $n>1$.
+However, when we look at the 100 most probable samples, peripatry becomes most favored.
+
+More script functions are found in {\tt bg\_parse.py}.
 
 \subsection{New Hampshire extended format file (\texttt{my\_run.nhx})}
 
@@ -1024,7 +1044,7 @@ Phylowood also offers a masking effect that persists until an unmask command is 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=4in]{figures/phw_br19}
+\includegraphics[width=4in]{figures/phw_br23}
 \caption{Phylowood frame highlighting the posterior range for the most recent common ancestor of {\it P. mauiensis} and {\it P. hawaiiensis}.}
 \end{figure}
 
@@ -1033,355 +1053,6 @@ In addition, the area of marker sizes is only distributed among unmasked lineage
 
 \noindent \\ \impmark Visit \texttt{https://github.com/mlandis/phylowood/wiki} to learn more about Phylowood.
 
-%
-%\subsection{BayArea-Fig}
-%
-%BayArea-Fig is a simple Javascript utility to help generate ancestral range reconstruction figures for publications.
-%BayArea 1.0.2 does not automatically generate the NEXUS settings block for BayArea-Fig, so I added the following block to \texttt{my\_run.nhx}.
-%
-%%\noindent \\ \impmark  Add the following code after the \texttt{\#NEXUS} header in \texttt{my\_run.nhx} and save the file.
-%\begin{framed}
-%\begin{lstlisting}
-%Begin bayarea-fig;
-%	mapheight 100
-%	mapwidth 150
-%	canvasheight 2000
-%	canvaswidth 2000
-%	minareaval 0.1
-%	areacolors blue red
-%	areatypes 0 1 0 0 0 1 1 0 0 0 0 1 1 1 0 0 0 0 1 1 1 1 0 0 0 0 1 1 1 1 1 1 1
-%	areanames West East
-%End;
-%\end{lstlisting}
-%\end{framed}
-%
-%\noindent \\ \impmark  Open \texttt{http://mlandis.github.io/bayarea-fig} in a web browser.
-%
-%\noindent \\ \impmark  Drag and drop \texttt{my\_run.nhx} into the text field. \\
-%
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=4in]{figures/bayarea-fig}
-%\end{figure}
-%
-%The generated figure reports the marginal area probabilities for each node in the phylogeny with a miniature map.
-%Because of the limited real estate in the figure, you may only wish to show a subset of ancestral ranges.
-%
-%\noindent \\ \impmark  Click unwanted ancestral ranges to delete them. \\
-%
-%Depending on the purpose for the figure, you may wish to alter its size.
-%The \texttt{mapheight}, \texttt{mapwidth}, \texttt{canvasheight}, and \texttt{canvaswidth} settings give the height and widths for the node-maps and the entire figure, respectively.
-%
-%If you would like to differentiate areas (e.g. East from West, as above), give an ordered list of colors using the \texttt{areacolors} setting.
-%Next, in the order areas appear in the $\texttt{GEO}$ block, provide \texttt{areatypes} a list of assigments to area types.
-%In the above example ``0'' corresponds to the 0th \texttt{areacolors} group, ``blue'', and ``1'' corresponds to the 1st group, ``red''.
-%
-%\noindent \\ \impmark Add a new color as the third \texttt{areacolors} entry. Add ``Tasmania'' as a third entry to \texttt{areanames}. Change the last area in \texttt{areatypes} to equal 2. \\
-%
-%We've seen that ancestral range reconstructions contain a great deal of uncertainty.
-%Filtering out low probability ranges may make your figure easier to interpret.
-%If the marginal probability of presence for a node-area pair is less than \texttt{minareaval}, it is not shown.
-%The probabilities and the threshold value are shown in the upper left corner.
-%
-%After arranging your figure, you'll want to save it to file.
-%How to accomplish this varies across operating systems and web browsers.
-%Generally, the figure is most easily saved from the browser by printing the file to pdf.
-%In this case the image size is equal to the paper size.
-%If the standard $8.5 \times 11$ inch image is too small, you will need to create and apply a sufficiently large custom paper size.
-
 \bibliography{bayes}
 
-%\newpage
-%\begin{sidewaysfigure}
-%\centering
-%\includegraphics[width=9in]{figures/bg_mol_dag}
-%\caption{Joint inference of range and molecular data. This figure explodes the module components in Figure \ref{fig:bm_mod}}
-%\label{fig:bm_dag}
-%\end{sidewaysfigure}
-
 \end{document}
-
-
-% old stuff
-
-
-%{\it If you want to construct your own data matrix, I'll go over these topics below: collecting species occurrence data, identifying the total geographic region to include for analysis, and discretizing the geography into areas.}
-%
-%\subsubsection{Collecting species occurrence data}
-%
-%Species occurrence data minimally reports the latitude and longitude of a species of interest.
-%For our analysis, a species is present in an area so long as that area contains a single occurrence record.
-%For large areas, presence-absence characters are fairly robust to small measurement errors in geographical coordinates or imperfect sampling.
-%[ I expect taxon sampling to be rel. unbiased since all biodiversity recorded per ``area''. ]
-%I recommend querying the Global Biodiversity Information Facility (GBIF) database for a preliminary species occurrence dataset.
-%
-%[ Query georeference data ]
-%Steps...
-%
-%[ Note gross outliers ]
-%Some occurrence data may refer to museum or zoo specimens, or may be entirely erroneous (e.g. set to the default (latitude, longitude) of (0$^\circ$,0$^\circ$).
-%
-%[ Download data ]
-%
-%The default GBIF species occurrence query results are stored in the tab-delimited file, occurrence.txt.
-%Using your favorite scripting language, you can easily extract the list of geographical coordinates per species.
-%Because species names vary slightly between GBIF submissions, you should also take care to combine mismatched entries.
-%Here is an example of the extracted (and cleaned) species occurrence data contained in occurrence.txt.
-%
-%\begin{framed}
-%\begin{lstlisting}
-%Canis lupus	-23.57222	132.78139
-%Canis lupus	-13.75433	136.85133
-%Canis aureus	33.06980	35.28452
-%Canis aureus	32.02343	35.51647
-%Canis latrans	45.89355	-69.99026
-%...
-%\end{lstlisting}
-%\end{framed}
-%
-%Species with few or no GBIF occurrence records should be considered suspicious and supplemented with occurrence data reported in the scientific literature or (if applicable) taxon-specific biodiversity databases.
-%
-%So your work is useful, wait until after constructing the presence-absence data matrix to assess whether additional species occurrence records are required.
-%
-%\subsubsection{Identifying the total geographic region}
-%
-%Here we'd like to identify the geographic region(s) on Earth that extant and ancestral taxa may have occupied.
-%For example, if you are studying purely terrestrial species, you may wish to exclude regions that contain no land.
-%These regions will later be discretized into areas, then assigned presence-absence range data from the species occurrence records.
-%The region(s) should minimally envelope all species occurrence data.
-%
-%[ Image ]
-%
-%You should consider two things before choosing to exclude certain regions from the analysis.
-%First, is the region intermediate to the ranges of extant taxa?
-%For instance, if sister taxa are endemic to North and South America respectively, then Central America may be considered for omission.
-%However, this would forbid ancestral ranges from passing through the omitted region and greatly affect inference.
-%Second, is the region 
-%The range evolution model assumes a taxon is extinct when it is absent in all areas in the analysis.
-%Extinction is always correctly considered when the set of areas covers the entire globe.
-%
-%\subsubsection{Discretizing the geography into areas}
-%
-%Geographic space is inherently continuous, so discretizing the geography into areas is a somewhat arbitrary process.
-%Not much research has been done exploring how to best declare areas, so this section will introduce various strategies you may wish to consider.
-%
-%[ Image ]
-%
-%{\it Natural discretization.}
-%Some regions are clearly discretized into areas, such as island archipelagos.
-%Other regions contain suggested areas, such as those delimited by mountain ranges and bodies of water.
-%Dispersal barriers will depend on the life history traits of your study taxa.
-%Marking islands with presence-absence characters is quite easy while determining whether a point is within a polygon on the surface of a sphere is a more challenging problem in geometry.
-%
-%{\it Published discretization.}
-%Biogeographic methods have defined areas in a variety of ways, using area cladograms, areas of endemism, etc.
-%It may be tempting to use areas from previous biogeographic analyses for a BayArea (or other) statistical biogeographic analysis, but be wary.
-%For instance, if parsimony-uninformative areas are discarded, then the inference of range expansion and contraction rates will surely be affected, which directly affects the ancestral range reconstructions.
-%
-%{\it Uniform discretization.}
-%If you are unable to apply a satisfying rationale to define your areas, you could apply a uniform discretization over the geography.
-%This strategy will treat the Earth as a sphere then discretize it using geodesic tiling (equilateral triangles).
-%In this approach, all areas are equal in size and shape.
-%The symmetry of uniform discretization offers some aid to easily identify which species are present in which areas.
-%The following Python script generates a geodesic tiling, excludes water (or land) areas, converts species occurrence data into presence-absence characters, and writes files for the data matrix and area coordinates (below).
-
-
-%
-%Open the \texttt{my\_run.parameters.txt} in Tracer.
-%First, we see the effective sample size is only moderate for $50 \times 10^6$ cycles when sampling every 1000 cycles.
-%This is because the vast majority of MCMC updates are range history updates.
-%
-%\noindent \\ \impmark  Highlight the ``gain'' and ``loss'' parameters then click Joint-Marginal.
-%
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=2.5in]{figures/loss_gain}
-%\end{figure}
-%
-%The Joint-Marginal of rate of area gain and loss parameters shows strong positive correlation.
-%This correlation arises partly because the proportion of occupied areas is greatly influenced by the ratio of rate of area gain to rate of area loss.
-%For example, when the rates of area gain and loss are equal, range sizes tend to equal half the total number of areas.
-%
-%\noindent \\ \impmark Highlight the ``loss'' and ``numLoss'' parameters then click Joint-Marginal. Do the same for ``gain'' and ``numGain''. \\
-%
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=2.5in]{figures/loss_numloss}
-%\end{figure}
-%
-%Again, we see strong positive correlation.
-%This is reassuring, since we expect to see many sampled range gain and loss events when the corresponding rates are high.
-%
-%\noindent \\ \impmark  Highlight the ``gain'' and ``distP'' parameters then click Joint-Marginal. Do the same for ``loss'' and ``distP''.\\
-%
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=2.5in]{figures/gain_distp}
-%\end{figure}
-%
-%For the simulated data we don't see any strong correlation between either rate of loss or gain and the distance power parameter, but this is not always the case.
-%Large distance power parameters sometimes results in rates of area gain and loss being underestimated in value, resulting in a mild negative correlation.
-%
-%\noindent \\ \impmark Highlight all parameters and click Estimates.
-%
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=2.5in]{figures/hpd}
-%\end{figure}
-%
-%This gives you a handy selection of summary statistics.
-%Of course we typically don't know the true parameter values, but we should be reassured to learn the true parameter values for gain, loss, and distP (0.1, 0.7, and 4.0, respectively) reside within their corresponding 95\% HPD Intervals.
-%It's also interesting to note that the distance power parameter has a much wider interval that the rate parameters, suggesting there is less information in the data for this parameter.
-%
-
-
-%The Gelman-Rubin convergence diagnostic tests whether two MCMC analyses converged to the same distribution (e.g. the posterior).
-%It does this by computing potential scale reduction factors (PSRFs) for all parameters, which compares the within-chain parameter variance to the between-chain parameter variance.
-%There's no hard rule, but PSRF values close to 1.0 show convergence while PSRF values greater than 1.1 raise concern.
-%Below, we can quickly compute the PSRFs for \texttt{my\_run.parameters.txt} and \texttt{my\_other\_run.parameters.txt} using the R package, coda.
-%
-%\noindent \\ \impmark Open the R console and enter the following commands.
-%\begin{framed}
-%\begin{lstlisting}
-%> install.packages('coda')
-%...
-%> library('coda')
-%> run1 = mcmc(read.table('my_run.parameters.txt',header=T))
-%> run2 = mcmc(read.table('my_other_run.parameters.txt',header=T))
-%> gelman.diag(mcmc.list(run1,run2))
-%>
-%Potential scale reduction factors:
-%
-%        Point est. Upper C.I.
-%n              NaN        NaN
-%lnL           1.00       1.00
-%gain          1.01       1.01
-%loss          1.00       1.01
-%gain.p        1.00       1.01
-%loss.p        1.00       1.01
-%distP         1.00       1.00
-%numGain       1.01       1.02
-%numLoss       1.00       1.01
-%
-%Multivariate psrf
-%
-%1
-%\end{listing}
-%\end{framed}
-
-%\subsection{Sampled range histories (\texttt{my\_run.area\_states.txt})}
-%
-%This file reports the stochastically mapped range histories sampled every \texttt{historySampleFrequency} iterations.
-%From this we can compute the {\it marginal} posterior probability of any given area being occupied simply by finding the frequency the area was marked present (1), which we'll call the {\it marginal area posterior probability}.
-%You may be interested in not only the marginal posterior of area occupancy, but the marginal posterior of the joint distribution of areas, which we'll call the {\it marginal range posterior probability}.
-%For example, say your range contains 4 areas, and taxon A is present only in areas 1 and 2 for half of all MCMC samples and only present in areas 3 and 4 for the remaining half.
-%The marginal area posterior range would report a 0.5 probability of any given area being occupied.
-%The marginal range posterior would give you richer information, that the range was either composed of areas 1 and 2 or of 3 and 4, but never 1 and 3, 1 and 4, 2 and 3, or 2 and 4.
-%
-%Here we will use Python to report the marginal range probability for the range belonging to the most recent common ancestor (MRCA) shared by the species named \texttt{t1} and \texttt{t2} ordered by their posterior probabilities. We'll call this node MRCA(t1,t5).
-%
-%\noindent \\ \impmark Change directories to \texttt{examples}.
-%
-%\begin{framed}
-%\begin{lstlisting}
-%> cd examples
-%\end{lstlisting}
-%\end{framed}
-%
-%\noindent \\ \impmark Open the Python console and enter the following commands.
-%
-%\begin{framed}
-%\begin{lstlisting}
-%>>> from pp_range import *
-%>>> range_dict = make_range_dict('my_run.area_states.txt', fburn=0.25)
-%>>> area_coords = get_area_coords('my_geo.txt')
-%>>> idx_list = get_node_idx_list('my_run.area_states.txt')
-%>>> node_key = get_node_key('my_tree.txt', 't1', 't5', idx_list)
-%>>> best_ranges = get_best_ranges(range_dict, node_key)
-%>>> prob_area_pairs = make_posterior_area_pairs(range_dict, node_key)
-%>>> best_area_pairs = get_best_area_pairs(prob_area_pairs)
-%>>> best_areas = get_best_area_pairs(prob_area_pairs, show_marginal=True)
-%\end{lstlisting}
-%\end{framed}
-%
-%\noindent \\ \impmark To list the five most probable ranges for MRCA(t1,t5), type
-%\begin{framed}
-%\begin{lstlisting}
-%>>> best_ranges[0:5]
-%[('000000000000000000000000001111000', 0.022660623833644103),
-% ('000000000000000000000000001011000', 0.01759530791788836),
-% ('000000000000000000000000011111000', 0.01652892561983452),
-% ('000000000000000000000000011011000', 0.0146627565982403),
-% ('000000000000000000010000001111000', 0.01226339642761916)]
-%
-%>>> sum([p[1] for p in best_ranges[0:5]])
-%0.08371101039722645
-%\end{lstlisting}
-%\end{framed}
-%
-%The second column gives the probability of the entire MRCA(t1,t5) range shown in the first column.
-%There's a fair deal of uncertainty the MRCA(t1,t5) range reconstruction, since these best five ranges only account for about 0.08 of the probability.
-%
-%\noindent \\ \impmark To list the five most probable area co-occurrences in the MRCA(t1,t5) range, type
-%\begin{framed}
-%\begin{lstlisting}
-%>>> best_area_pairs[0:5]
-%[((26, 29), 0.60650493201812505),
-% ((26, 28), 0.57717941882164425),
-% ((28, 29), 0.54385497200746136),
-% ((26, 27), 0.42282058117834981),
-% ((27, 28), 0.41242335377232475)]
-% 
-%>>> best_areas[0:5]
-%[((26, 26), 0.78459077579311998),
-% ((29, 29), 0.77179418821647394),
-% ((28, 28), 0.74193548387096575),
-% ((26, 29), 0.60650493201812505),
-% ((26, 28), 0.57717941882164425)]
-%
-%\end{lstlisting}
-%\end{framed}
-%
-%Note the values in \texttt{best\_areas} are the marginal area probabilities.
-%These correspond to the diagonal entries in the heatmap below and to the values in \texttt{my\_run.area\_probs.txt} and \texttt{my\_run.nhx}.
-%
-%\noindent \\ \impmark To visualize these probabilities as a heatmap, type
-%\begin{framed}
-%\begin{lstlisting}
-%>>> title_str = 'Prob(areas i,j co-occur in MRCA(t1,t5) range)'
-%>>> plot_posterior_area_pair(prob_area_pairs, title_str)
-%\end{lstlisting}
-%\end{framed}
-%
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=4in]{figures/range_area_pair_pp}
-%\end{figure}
-%
-%As indicated from the list produced by \texttt{get\_best\_area\_pairs()}, we see the inference gives moderate support for areas 26, 28, and 29 being co-occupied by MRCA(t1,t5).
-%Referring to \texttt{my\_geo.txt}, we see these areas are geographically close and located in south-eastern Australia.
-%You can also retrieve the coordinates through the \texttt{area\_coords} dictionary.
-%
-%\noindent \\ \impmark To query the geographical coordinates for an area, type
-%\begin{framed}
-%\begin{lstlisting}
-%>>> area_coords[26]
-%{'lat': -32.5, 'lon': 137.5}
-%
-%>>> area_coords[28]
-%{'lat': -32.5, 'lon': 147.5}
-%
-%>>> area_coords[29]
-%{'lat': -32.5, 'lon': 152.5}
-%\end{lstlisting}
-%\end{framed}
-%
-%\subsection{Posterior probabilities of range histories (\texttt{my\_run.area\_probs.txt})}
-%
-%Each row of this tab-delimited file contains information about that node's range.
-%The rows are ordered in postorder traversal (aka pruningwise).
-%The first column gives the taxon name.
-%The remaining columns correspond to areas, maintaining the same order as all other files (e.g. the second column is the first area, the $n$th column is the ($n-1$)th area).
-%These entries report the marginal area probability of the taxon (row) occupying the area (column).
-%These probabilities are computed the frequency that the area was marked present from the data contained in \texttt{my\_run.area\_probs.txt}, a quantity that cannot be computed until the MCMC analysis completes.
-%Because MCMC does not accurately sample from posterior during burn-in, some number of initial cycles are discarded as specified by the \texttt{probBurnIn} flag.

@@ -55,11 +55,6 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
         }
     }
     
-    // initialize distance dependence
-    geographicDistances.resize(numEpochs * numAreas * numAreas, 0.0);
-    geographicDistancePowers.resize(numEpochs * numAreas * numAreas, 1.0);
-    if (useDistanceDependence)
-        initializeDistances();
 
 //    // initialize provided area dispersal/extinction rates
 //    dispersalValues.resize(numEpochs * numAreas * numAreas, 1.0);
@@ -79,6 +74,12 @@ GeographyRateModifier::GeographyRateModifier(const TimeAtlas* ta, bool uadj, boo
 
     if (useAreaAdjacency || useAreaAvailable)
        initializeAdjacentAreas();
+    
+    // initialize distance dependence
+    geographicDistances.resize(numEpochs * numAreas * numAreas, 0.0);
+    geographicDistancePowers.resize(numEpochs * numAreas * numAreas, 1.0);
+    if (useDistanceDependence)
+        initializeDistances();
     
     // unimplemented, but helps for computations for large N
     //computeAllPairwiseDistanceOrder();
@@ -331,6 +332,16 @@ void GeographyRateModifier::initializeDistances(void)
                 double d = computePairwiseDistances(i, j, k);
                 geographicDistances[epochOffset*i + areaOffset*j + k] = d;
                 geographicDistances[epochOffset*i + areaOffset*k + j] = d;
+                if (j != k && d == 0.0)
+                {
+                    if (adjacentAreaVector[epochOffset*i + areaOffset*j + k] > 0 ||
+                        adjacentAreaVector[epochOffset*i + areaOffset*k + j] > 0)
+                    {
+                        std::stringstream ss;
+                        ss << "ERROR: Areas " << i << " and " << j << " have zero distance";
+                        throw RbException(ss.str());
+                    }
+                }
             }
         }
     }

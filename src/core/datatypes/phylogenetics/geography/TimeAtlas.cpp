@@ -96,6 +96,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const TimeAtlas& x) {
     o << "Origination:                   " << x.getFilename() << std::endl;
     o << "Number of epochs:              " << x.getEpochs().size() << std::endl;
     o << "Number of areas:               " << x.getAreas()[0].size() << std::endl;
+    o << std::endl;
     
     return o;
 }
