@@ -114,8 +114,6 @@ numSamples(0),
 maxGen(mg),
 burn(b) {
     
-    std::cout << g << " " << mg << "\n";
-    
     nodes.push_back(s);
     nodes.push_back(t);
     
