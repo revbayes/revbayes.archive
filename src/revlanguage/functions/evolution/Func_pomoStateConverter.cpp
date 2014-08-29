@@ -1,44 +1,44 @@
 
 //
-//  Func_polymorphicStateConverter.cpp
+//  Func_pomoStateConverter.cpp
 //  RevBayesCore
 //
 //  Created by Bastien Boussau on 22/8/14.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "Func_polymorphicStateConverter.h"
+#include "Func_pomoStateConverter.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
-#include "PolymorphicStateConverter.h"
+#include "PomoStateConverter.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_polymorphicStateConverter::Func_polymorphicStateConverter( void ) : Function( ) {
+Func_pomoStateConverter::Func_pomoStateConverter( void ) : Function( ) {
     
 }
 
 
 /** Clone object */
-Func_polymorphicStateConverter* Func_polymorphicStateConverter::clone( void ) const {
+Func_pomoStateConverter* Func_pomoStateConverter::clone( void ) const {
     
-    return new Func_polymorphicStateConverter( *this );
+    return new Func_pomoStateConverter( *this );
 }
 
 
-RevPtr<Variable> Func_polymorphicStateConverter::execute() {
+RevPtr<Variable> Func_pomoStateConverter::execute() {
     
     const RevBayesCore::TypedDagNode<RevBayesCore::AbstractCharacterData>* aln = static_cast<const AbstractCharacterData&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode< int >* n = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
 
 
-    RevBayesCore::PolymorphicStateConverter* c = new RevBayesCore::PolymorphicStateConverter(  );
+    RevBayesCore::PomoStateConverter* c = new RevBayesCore::PomoStateConverter(  );
     
     RevBayesCore::TypedDagNode< std::vector<RevBayesCore::Taxon> >* taxa  = static_cast< const ModelVector<Taxon> &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     
@@ -58,7 +58,7 @@ RevPtr<Variable> Func_polymorphicStateConverter::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_polymorphicStateConverter::getArgumentRules( void ) const {
+const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -77,15 +77,15 @@ const ArgumentRules& Func_polymorphicStateConverter::getArgumentRules( void ) co
 }
 
 
-const std::string& Func_polymorphicStateConverter::getClassType(void) {
+const std::string& Func_pomoStateConverter::getClassType(void) {
     
-    static std::string revType = "Func_polymorphicStateConverter";
+    static std::string revType = "Func_pomoStateConverter";
     
 	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_polymorphicStateConverter::getClassTypeSpec(void) {
+const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -94,7 +94,7 @@ const TypeSpec& Func_polymorphicStateConverter::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& Func_polymorphicStateConverter::getReturnType( void ) const {
+const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = AbstractDiscreteCharacterData::getClassTypeSpec();
     
@@ -102,7 +102,7 @@ const TypeSpec& Func_polymorphicStateConverter::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_polymorphicStateConverter::getTypeSpec( void ) const {
+const TypeSpec& Func_pomoStateConverter::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

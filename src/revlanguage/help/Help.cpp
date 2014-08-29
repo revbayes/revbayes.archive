@@ -326,7 +326,8 @@ std::string Help::replaceString(std::string subject, const std::string& search, 
 }
 
 
-bool Help::isHelpAvailableForQuery(std::string query) {
+bool Help::isHelpAvailableForQuery(std::string query)
+{
     return false;
 }
 

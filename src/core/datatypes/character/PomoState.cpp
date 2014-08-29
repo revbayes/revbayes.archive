@@ -1,19 +1,19 @@
 /**
  * @file
- * This file contains the implementation of PolymorphicState, which is
+ * This file contains the implementation of PomoState, which is
  * the base class for the DNA character data type plus two-state polymorphic states in RevBayes.
  *
- * @brief Implementation of PolymorphicState
+ * @brief Implementation of PomoState
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: PolymorphicState.cpp 1568 2012-05-24 07:58:04Z hoehna $
+ * $Id: PomoState.cpp 1568 2012-05-24 07:58:04Z hoehna $
  */
 
-#include "PolymorphicState.h"
+#include "PomoState.h"
 #include "RbException.h"
 #include <assert.h>
 #include <sstream>
@@ -25,25 +25,25 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-PolymorphicState::PolymorphicState(void) : DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( 10 ) {
+PomoState::PomoState(void) : DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( 10 ) {
     
 }
 
 /** Constructor with virtual population size */
-PolymorphicState::PolymorphicState(unsigned int vps): DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( vps ) {
+PomoState::PomoState(unsigned int vps): DiscreteCharacterState(), state( 0xFF ), virtualPopulationSize ( vps ) {
     
     
 }
 
 
 /** Copy constructor */
-PolymorphicState::PolymorphicState(const PolymorphicState& s) : DiscreteCharacterState(), state( s.state ), virtualPopulationSize ( s.virtualPopulationSize ) {
+PomoState::PomoState(const PomoState& s) : DiscreteCharacterState(), state( s.state ), virtualPopulationSize ( s.virtualPopulationSize ) {
     
 }
 
 
 /** Constructor that sets the observation */
-PolymorphicState::PolymorphicState(std::string s) : DiscreteCharacterState() {
+PomoState::PomoState(std::string s) : DiscreteCharacterState() {
     
     //assert( s <= 15 );
     
@@ -52,9 +52,9 @@ PolymorphicState::PolymorphicState(std::string s) : DiscreteCharacterState() {
 
 
 /** Equals comparison */
-bool PolymorphicState::operator==(const CharacterState& x) const {
+bool PomoState::operator==(const CharacterState& x) const {
     
-    const PolymorphicState* derivedX = dynamic_cast<const PolymorphicState*>( &x );
+    const PomoState* derivedX = dynamic_cast<const PomoState*>( &x );
     
     if (derivedX != NULL) {
         return derivedX->state == state;
@@ -65,15 +65,15 @@ bool PolymorphicState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool PolymorphicState::operator!=(const CharacterState& x) const {
+bool PomoState::operator!=(const CharacterState& x) const {
     
     return !operator==(x);
 }
 
 
-bool PolymorphicState::operator<(const CharacterState &x) const {
+bool PomoState::operator<(const CharacterState &x) const {
     
-    const PolymorphicState* derivedX = static_cast<const PolymorphicState*>(&x);
+    const PomoState* derivedX = static_cast<const PomoState*>(&x);
     if ( derivedX != NULL )
     {
         unsigned int myState = state;
@@ -84,53 +84,53 @@ bool PolymorphicState::operator<(const CharacterState &x) const {
 }
 
 
-void PolymorphicState::operator++( void ) {
+void PomoState::operator++( void ) {
     
     state += 1;
     
 }
 
 
-void PolymorphicState::operator++( int i ) {
+void PomoState::operator++( int i ) {
     
     state += 1;
     
 }
 
 
-void PolymorphicState::operator--( void ) {
+void PomoState::operator--( void ) {
     
     state -= 1;
     
 }
 
 
-void PolymorphicState::operator--( int i ) {
+void PomoState::operator--( int i ) {
     
     state -= 1;
     
 }
 
 
-void PolymorphicState::addState(std::string symbol) {
+void PomoState::addState(std::string symbol) {
     
     state = computeState( symbol );
     
 }
 
-void PolymorphicState::addState(char symbol) {
+void PomoState::addState(char symbol) {
     
     state = computeState( boost::lexical_cast<std::string>( symbol )  );
 }
 
 
-PolymorphicState* PolymorphicState::clone( void ) const {
+PomoState* PomoState::clone( void ) const {
     
-    return new PolymorphicState( *this );
+    return new PomoState( *this );
 }
 
 
-unsigned int PolymorphicState::computeState(std::string symbol) const {
+unsigned int PomoState::computeState(std::string symbol) const {
     /* Example with only ten states:
      A C G T A10C90 A20C80 A30C70...A90C10 A10G90 A20G80...A10T90...C10G90...C10T90...G10T90 
      */
@@ -201,13 +201,13 @@ unsigned int PolymorphicState::computeState(std::string symbol) const {
 }
 
 
-std::string PolymorphicState::getDatatype( void ) const {
+std::string PomoState::getDatatype( void ) const {
     
     return "Pomo";
 }
 
 
-unsigned int PolymorphicState::getNumberObservedStates(void) const  {
+unsigned int PomoState::getNumberObservedStates(void) const  {
     ///PROBABLY DOES NOT WORK FOR POLYMORPHIC STATES.
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
@@ -221,23 +221,23 @@ unsigned int PolymorphicState::getNumberObservedStates(void) const  {
 }
 
 
-size_t PolymorphicState::getNumberOfStates( void ) const {
+size_t PomoState::getNumberOfStates( void ) const {
     
     return 4 + 6 * (virtualPopulationSize - 1);
 }
 
 
-unsigned long PolymorphicState::getState( void ) const {
+unsigned long PomoState::getState( void ) const {
     return (unsigned long)state;
 }
 
 
-size_t  PolymorphicState::getStateIndex(void) const {
+size_t  PomoState::getStateIndex(void) const {
     return (size_t)state;
 }
 
 
-const std::string& PolymorphicState::getStateLabels( void ) const {
+const std::string& PomoState::getStateLabels( void ) const {
     
     static std::string labels = "A C G T ";
     std::string acgt( "ACGT" );
@@ -258,7 +258,7 @@ const std::string& PolymorphicState::getStateLabels( void ) const {
     return labels;
 }
 
-std::string PolymorphicState::getStringValue(void) const  {
+std::string PomoState::getStringValue(void) const  {
     
     int stepSize = 100 / virtualPopulationSize - 1;
     if (state < 5) {
@@ -277,11 +277,11 @@ std::string PolymorphicState::getStringValue(void) const  {
         }
     }
     int stateMinus5 = state - 5;
-    int typeOfPolymorphicState = stateMinus5 / stepSize;
+    int typeOfPomoState = stateMinus5 / stepSize;
     int typeOfFrequency = stateMinus5 % stepSize +1;
     int freqi = typeOfFrequency*virtualPopulationSize;
     int freqj = 100 - freqi;
-    switch ( typeOfPolymorphicState )
+    switch ( typeOfPomoState )
     {
         case 0: //AC
             return "A"+ boost::lexical_cast<std::string>(freqi) + "C" + boost::lexical_cast<std::string>(freqj) ;
@@ -301,19 +301,19 @@ std::string PolymorphicState::getStringValue(void) const  {
 
 
 
-bool PolymorphicState::isAmbiguous( void ) const {
+bool PomoState::isAmbiguous( void ) const {
     
     return getNumberObservedStates() > 1;
 }
 
 
-bool PolymorphicState::isGapState( void ) const {
+bool PomoState::isGapState( void ) const {
     
     return state == 0x0;
 }
 
 
-void PolymorphicState::setGapState(bool tf) {
+void PomoState::setGapState(bool tf) {
     
     if ( tf )
     {
@@ -326,33 +326,33 @@ void PolymorphicState::setGapState(bool tf) {
 }
 
 
-void PolymorphicState::setState(size_t pos, bool val) {
+void PomoState::setState(size_t pos, bool val) {
     
-    throw RbException( "setState(size_t pos, bool val) is not implemented in PolymorphicState" );
+    throw RbException( "setState(size_t pos, bool val) is not implemented in PomoState" );
 }
 
-void PolymorphicState::setState(std::string symbol)
+void PomoState::setState(std::string symbol)
 {
     state = computeState( symbol ) ;
 }
 
 
-void PolymorphicState::setState(char symbol) {
+void PomoState::setState(char symbol) {
     state = computeState(  boost::lexical_cast<std::string>(symbol) ) ;
 }
 
-void PolymorphicState::setState(size_t stateIndex) {
+void PomoState::setState(size_t stateIndex) {
     state = (int)stateIndex ;
 }
 
 
-void PolymorphicState::setToFirstState( void ) {
+void PomoState::setToFirstState( void ) {
     
     state = 1;
     
 }
 
-void PolymorphicState::setVirtualPopulationSize(unsigned int populationSize)
+void PomoState::setVirtualPopulationSize(unsigned int populationSize)
 {
     if (populationSize > 100) {
         throw RbException( "The virtual population size should be < 100 and should be a divisor of 100." );

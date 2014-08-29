@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the logarithm function, f(a,b) = a^b.
- *
- * @brief Declaration of the power function.
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-06-20 22:57:09 +0200 (Wed, 20 Jun 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-08-13, version 1.0
- *
- * $Id: RandomNumberFactory.h 1643 2012-06-20 20:57:09Z hoehna $
- */
-
 #ifndef PowerFunction_H
 #define PowerFunction_H
 
@@ -22,6 +6,16 @@
 
 namespace RevBayesCore {
     
+    
+    /**
+     * The power function, f(a,b) = a^b.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-08-29, version 1.0
+     *
+     */
     class PowerFunction : public ContinuousFunction {
         
     public:
