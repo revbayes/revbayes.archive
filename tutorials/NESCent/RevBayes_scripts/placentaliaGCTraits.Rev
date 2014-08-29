@@ -70,6 +70,7 @@ index <- index + 1
 # where kappa is itself a scaling factor
 
 kappa ~ exponential(1.0)
+kappa.setValue(0.1)
 df <- nTraits+4
 covdim <- nTraits+2
 
@@ -87,7 +88,11 @@ moves[index] <- mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=
 index <- index + 1
 
 # moves on the Brownian process
+moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=10,tune=true,weight=100) 
+index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+index <- index + 1
+moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=1,tune=true,weight=1) 
 index <- index + 1
 moves[index] <- mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
 index <- index + 1
@@ -147,6 +152,10 @@ branchGC := tanhBranchTree(tree=tau,process=X,traitindex=2)
 
 # the transition / transversion ratio
 tstv ~ exponential(0.1)
+
+# a move on this transition transversion rate
+moves[index] <- mScale(tstv, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
 
 # each branch has its own substitution matrix, which is a T92 matrix
 # defined by a transition/transversion ratio and an equilibrium GC
