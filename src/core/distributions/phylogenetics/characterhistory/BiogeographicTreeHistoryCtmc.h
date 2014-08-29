@@ -831,12 +831,12 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
         if (cladogenicState[node.getIndex()] == 0 || cladogenicEvents == false)
             budState.push_back(new CharacterEvent(*nodeState[i]));
         
-        // peripatry, allopatry: sparse
+        // subset sympatry, allopatry: sparse
         else
             budState.push_back(new CharacterEvent(i,0,0.0));
     }
     
-    // peripatry: add bud area
+    // subset sympatry: add bud area
     if (cladogenicState[node.getIndex()] == 1)
     {
         budState[budAreaIndex]->setState(1);
