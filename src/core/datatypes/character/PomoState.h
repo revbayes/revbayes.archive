@@ -1,21 +1,21 @@
 /**
  * @file
- * This file contains the declaration of PolymorphicState, which is
+ * This file contains the declaration of PomoState, which is
  * the class for the DNA data types plus two-state polymorphic states in RevBayes.
  * Instead of the usual coding by bitfields, we choose coding by ints.
  *
- * @brief Declaration of PolymorphicState
+ * @brief Declaration of PomoState
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
  * @author The RevBayes Development Core Team
  * @license GPL version 3
  *
- * $Id: PolymorphicState.h 1568 2012-05-24 07:58:04Z hoehna $
+ * $Id: PomoState.h 1568 2012-05-24 07:58:04Z hoehna $
  */
 
-#ifndef PolymorphicState_H
-#define PolymorphicState_H
+#ifndef PomoState_H
+#define PomoState_H
 
 #include "DiscreteCharacterState.h"
 #include <ostream>
@@ -23,13 +23,13 @@
 
 namespace RevBayesCore {
     
-    class PolymorphicState : public DiscreteCharacterState {
+    class PomoState : public DiscreteCharacterState {
         
     public:
-        PolymorphicState(void);                                     //!< Default constructor
-        PolymorphicState(unsigned int vps);                                     //!< Constructor with virtual population size
-        PolymorphicState(const PolymorphicState& s);                        //!< Copy constructor
-        PolymorphicState(std::string s);                                   //!< Constructor with an observation
+        PomoState(void);                                     //!< Default constructor
+        PomoState(unsigned int vps);                                     //!< Constructor with virtual population size
+        PomoState(const PomoState& s);                        //!< Copy constructor
+        PomoState(std::string s);                                   //!< Constructor with an observation
         
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality
@@ -39,7 +39,7 @@ namespace RevBayesCore {
         void                            operator--();                                       //!< Decrement
         void                            operator--(int i);                                  //!< Decrement
         
-        PolymorphicState*                       clone(void) const;                                  //!< Get a copy of this object
+        PomoState*                       clone(void) const;                                  //!< Get a copy of this object
         
         // Discrete character observation functions
         void                            addState(std::string symbol);                       //!< Add a character state to the set of character states
