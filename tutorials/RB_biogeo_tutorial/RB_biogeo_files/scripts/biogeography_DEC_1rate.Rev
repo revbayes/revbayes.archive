@@ -3,10 +3,10 @@
 ############
 
 # analysis input/output
-in_fp           <- "/Users/mlandis/Documents/code/revbayes-code/examples/data/"
+in_fp           <- "./input/"
 data_fn         <- "psychotria_range.nex"
 area_fn         <- "hawaii_dynamic.atlas.txt"
-out_fp          <- "/Users/mlandis/data/bayarea/output/"
+out_fp          <- "./"
 out_str         <- "bg_1rate"
 
 # input objects
