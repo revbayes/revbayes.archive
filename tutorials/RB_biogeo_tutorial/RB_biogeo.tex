@@ -18,6 +18,7 @@
 \usepackage{placeins}
 \usepackage{rotating}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
 \definecolor{shadecolor}{RGB}{240,240,240}
 
 
@@ -58,29 +59,25 @@
 
 \section{Introduction}
 
-Using RevBayes, this lab describes how to perform Bayesian inference of historical biogeography using RevBayes. The analysis jointly infers the posterior range evolution parameters and ancestral ranges using the data augmentation approach described in \citet{landis13}.
-To generate hypotheses, we will explore the resulting posterior using Tracer, an MCMC analysis tool created by Andrew Rambaut, and Phylowood, a Javascript web service that animates and filters phylogenetic biogeography reconstructions \citep{landis14}.
-Finally, we will quantify and plot certain qualities of the inferred biogeographic posterior using R. \\
+This lab describes how to perform Bayesian inference of historical biogeography using RevBayes. The analysis jointly infers the posterior range evolution parameters and ancestral ranges using the data augmentation approach described in \citet{landis13}.
+To examine the posterior, we'll use Python scripts, Tracer by Andrew Rambaut, to summarize MCMC output files, and Phylowood, a Javascript web service that animates and filters phylogenetic biogeography reconstructions \citep{landis14}.
 
 
-\noindent \textbf{Outline} \\
-1) Brief overview of model and method \\
-2) Historical biogeography analysis \\
-2.a) Input \\
-2.b) MCMC inference \\
-3) Review results. \\
-3.a) Parameter output \\
-3.b) Ancestral range output \\
-3.c) Visualize ancestral range reconstructions. \\
-
-%\noindent \textbf{By the end of this lab you should know how to} \\
-%- Describe how the model and method work \\
-%- Identify the data needed for a historical biogeographic analysis \\
-%- Configure and run an MCMC analysis \\
-%- Compute Bayes factors under competing models \\
-%- Review the MCMC tracer file \\
-%- Generate a Phylowood animation \\
-%- Extract useful information from the posterior distribution in R \\
+\subsection*{\textbf{Outline}}
+\begin{tabular}{ll}
+{\bf I. Introduction} & \\
+& a) Workspace setup \\
+& b) Range evolution models and data augmentation \\
+{\bf II. DEC in RevBayes} & \\
+& a) Tree, range, and geographic input \\
+& b) DEC as a graphical model \\
+& c) Monitors, moves, and MCMC \\
+& d) Model selection with Bayes factors \\
+{\bf III. Output and Analysis} & \\
+& a) MCMC output in Tracer \\
+& b) Ancestral range output \\
+& c) Animate ancestral ranges \\
+\end{tabular}
 
 \noindent \\ \impmark These little arrows indicate lines containing key information to progress through the lab. The rest of the text gives context for why we're taking these steps or what to make of results.
 
@@ -104,40 +101,16 @@ The practical part of the lab will analyze a small dataset of 19 taxa distribute
 Parts of the lab will require entering terminal commands, which will assume you are using the Unix shell \texttt{bash}.
 Just ask for help if the commands don't seem to work.
 
-\noindent \\ \impmark Portions of this lab require {\tt R} is installed, along with the {\tt stringr} and {\tt ggplot2} packages.
+\noindent \\ \impmark Portions of this lab require Python is installed. No packages are needed.
 
 \noindent \\ \impmark This tutorial will assume you have successfully installed RevBayes and can be called from your current working directory.
 
-\noindent \\ \impmark Download and unzip the lab zip file, \texttt{bayarea\_lab.zip}, into \texttt{\char`\~/apps/bayarea\_1.0.2}.
+\noindent \\ \impmark Download and unzip the lab zip file, {\tt RB\_biogeo\_files.zip}.
 
-\noindent \\ \impmark Copy all files into \texttt{./examples/}
-
-\begin{framed}
-\begin{lstlisting}
-> ls bayarea_lab
-my_data.txt                 my_run.area_states.txt
-my_geo.txt                  my_run.nhx
-my_lab_run.sh               my_run.parameters.txt
-my_other_run.parameters.txt my_tree.txt
-my_run.area_probs.txt       pp_range.py
-
-> cp bayarea_lab/* ./examples
-\end{lstlisting}
-\end{framed}
-
-\noindent \\ \impmark Move the shell script, \texttt{my\_lab\_run.sh}, into the main app directory, and set the file to be executable
-
-\begin{framed}
-\begin{lstlisting}
-> mv examples/my_lab_run.sh .
-> chmod 766 my_lab_run.sh
-\end{lstlisting}
-\end{framed}
 
 %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%
 \section{Model and method}
-
 
 This section contains a brief description of the data, model, parameters, and method used in BayArea.
 
@@ -217,11 +190,11 @@ Importantly, $\eta(\cdot) = 1$ when $\beta=0$, meaning geographic distance betwe
 Moreover, when $\beta > 0$, $\eta(\cdot) < 1$ when area $a$ is relatively distant and $\eta(\cdot) > 1$ when area $a$ is relatively close.
 
 In addition to dispersal and extinction, the DEC model allows cladogenic range evolution events.
-For each internal node in the tree, one of four cladogenic events can occur: narrow sympatry, peripatry, allopatry, and wide sympatry.
+For each internal node in the tree, one of four cladogenic events can occur: narrow sympatry, subset sympatry, allopatry, and wide sympatry.
 Say the range of a species approaching an internal node, i.e. that is about to speciate, is 1000.
 Since the species range is size one, this always results in narrow sympatry, where both daughter lineages inherit the ancestral species range.
 Now suppose the ancestral range is 1110.
-Under peripatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
+Under subset sympatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
 Under allopatric cladogenesis, the ancestral range is split evenly among daughter lineages, e.g. one lineage may inherit 1100 and the other inherit 0010.
 Both daughter lineages inherit the entire ancestral species range following widespread sympatric cladogenic events.
 For a general description on cladogenic events, see \citet{matzke13}.
@@ -493,7 +466,7 @@ RevBayes > Q := fnBiogeoDE(gainLossRates=glr, rootFrequencies=pi, geoRateMod=grm
 \end{snugshade}
 
 To extract information for the frequencies of different cladogenic event types, we will create a Dirichlet-distributed stochastic node.
-The simplex is over three events, peripatry (index 0), allopatry (index 1), and widespread sympatry (index 2), but not over narrow sympatry whose range size is one.
+The simplex is over three events, subset sympatry (index 0), allopatry (index 1), and widespread sympatry (index 2), but not over narrow sympatry whose range size is one.
 The prior parameter {\tt [1,1,1]} is known as a flat prior, meaning all event types are expected to occur at equal frequency.
 If there is information in the data of a dominant cladogenic mode of range evolution, the posterior simplex values in {\tt csf} will reflect this.
 
@@ -797,7 +770,7 @@ Iteration   |   Posterior  |          dp  |      glr[1]  |      glr[2]  |      c
 \end{lstlisting}
 \end{snugshade}
 
-For the complex 2-rate model, our model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively, and the frequencies for peripatry, allopatry, and widespread sympatry {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]}, respectively. 
+For the complex 2-rate model, our model parameters are {\tt dp}, the distance power parameter, and the rates of area loss and gain, {\tt glr[1]} and {\tt glr[2]}, respectively, and the frequencies for subset sympatry, allopatry, and widespread sympatry {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]}, respectively. 
 If you notice the value of some parameter is rarely updated from iteration to iteration, the MCMC is probably mixing poorly therefore it's not generating samples from the posterior distribution (the MCMC's stationary distribution).
 In this case, you may want to re-run the analysis with different arguments for the {\tt Move} object assigned to that parameter.
 
@@ -834,7 +807,7 @@ Next, click the Estimates tab then select the three {\tt csf} parameters.
 \begin{figure}[H]
 \centering
 \includegraphics[width=3in]{figures/clado_freq_posterior}
-\caption{Mean values for the cladogenic state frequency simplex, where {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]} correspond to peripatry, allopatry, and wide sympatry whose mean posterior values are 0.45, 0.30, and 0.25, respectively.}
+\caption{Mean values for the cladogenic state frequency simplex, where {\tt csf[1]}, {\tt csf[2]}, and {\tt csf[3]} correspond to subset sympatry, allopatry, and wide sympatry whose mean posterior values are 0.45, 0.30, and 0.25, respectively.}
 \end{figure}
 
 
@@ -859,7 +832,7 @@ Iteration  Posterior  Likelihood    Prior	t_s0	t_s1	t_c0	t_c1	t_c2	t_c3	b0_s0	b0
 \end{framed}
 
 For example, {\tt b2\_s1} gives the number of areas that are gained for the branch leading to the node indexed 2.
-{\tt b2\_c} gives the cladogenic event type that gives rise to the node indexed 2, where sympatry, peripatry, and allopatry are recorded as {\tt 0}, {\tt 1}, and {\tt 2} respectively. The columns {\tt t\_s0} and {\tt t\_s1} give the sum of events over all branches. {\tt t\_c0}, {\tt t\_c1}, and {\tt t\_c2} give the total number of sympatric, peripatric, and allopatric cladogenic events over the entire tree.
+{\tt b2\_c} gives the cladogenic event type that gives rise to the node indexed 2, where narrow sympatry, subset sympatry, allopatry, and widespread sympatry are recorded as {\tt 0}, {\tt 1}, {\tt 2}, and {\tt 3}, respectively. The columns {\tt t\_s0} and {\tt t\_s1} give the sum of events over all branches. {\tt t\_c0}, {\tt t\_c1}, and {\tt t\_c2} give the total number of narrow sympatric, subset sympatric, allopatric, and widespread sympatric cladogenic events over the entire tree.
 
 Because the expected number of gain events should be proportional to the area gain rate, we expect to see the same negative correlation between posterior probability and number of events as we did with the posterior and rate in the {\tt parameters.txt} file.
 
@@ -897,14 +870,14 @@ Each iteration records the data-augmented character history (stochastic mapping)
 
 \begin{snugshade}
 \begin{lstlisting}
-[&index=23;nd=0110;pa=0010;ch0=0010;ch1=0110;cs=p;bn=16;ev={{t:0.2513,a:1.1195,s:1,i:1}}
+[&index=23;nd=0110;pa=0010;ch0=0010;ch1=0110;cs=s;bn=16;ev={{t:0.2513,a:1.1195,s:1,i:1}}
 \end{lstlisting}
 \end{snugshade}
 
 {\tt index=23} indicates this branch leads to the node indexed 23.
 The branch began in the ancestral state {\tt pa=0100} and terminated in the state {\tt nd=0110}.
 Since this node is not a tip node, it represents a speciation event, so the daughter ranges are also given, {\tt ch0=0010} and {\tt ch1=0110}.
-The cladogenic state for this speciation event was peripatric, {\tt cs=p}, rather than sympatric (wide or narrow; {\tt s}) or allopatric ({\tt a}).
+The cladogenic state for this speciation event was subset sympatric, {\tt cs=s}, rather than sympatric (wide or narrow; {\tt w} or  {\tt n}) or allopatric ({\tt a}).
 Anagenic dispersal and extinction events occurring along the lineage leading to node 19 are recorded in {\tt events}, where each event has a time (relative to the absolute branch length), absolute age, state (into), and character index ({\tt t}, {\tt a}, {\tt s}, {\tt i}, resp.).
 For this posterior sample of the character history for the branch leading to node 22, the species range expanded into Oahu at age 1.1195.
 
@@ -956,23 +929,23 @@ To get the probability that area $i$ and area $j$ are both part of the species r
 showing area 3 was occupied nearly with probability 1.0 and both areas 2 and 3 were occupied with probability 0.15.
 Note, Hawaii was submerged approximately 1.5 million years ago, and thus the probability of being in that area is 0.0.
 
-If the range is size one during a speciation event, the cladogenic event state is always sympatric, ``s''.
+If the range is size one during a speciation event, the cladogenic event state is always narrow sympatric, ``n''.
 But given the opportunity for non-sympatric events, i.e. that the range is larger than size one, we can get the probability of cladogenic state using
 For the probability for cladogenic event state given the range was larger than size one
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_clado_state(dd[23])
-{'a': 0.0224, 'p': 0.1463, 's': 0.5130, 'w': 0.3183}
+{'a': 0.0224, 's': 0.1463, 'n': 0.5130, 'w': 0.3183}
 >>> get_clado_state(dd[23],minSize=2)
-{'a': 0.0460, 'p': 0.3005, 's': 0.0, 'w': 0.6535
+{'a': 0.0460, 's': 0.3005, 'n': 0.0, 'w': 0.6535
 >>> get_clado_state(get_best(dd[23],n=100),minSize=2)
-{'a': 0.1290, 'p': 0.6774, 's': 0.0, 'w': 0.1935}
+{'a': 0.1290, 's': 0.6774, 'n': 0.0, 'w': 0.1935}
 \end{lstlisting}
 \end{snugshade}
 
 Depending on your question, different aspects of the posterior cladogenic state will interest you.
 Narrow sympatry is the favored ancestral state, but wide sympatry is favored for ranges of size $n>1$.
-However, when we look at the 100 most probable samples, peripatry becomes most favored.
+However, when we look at the 100 most probable samples, subset sympatry becomes most favored.
 
 More script functions are found in {\tt bg\_parse.py}.
 
