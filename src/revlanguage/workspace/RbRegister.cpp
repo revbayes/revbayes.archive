@@ -266,6 +266,7 @@
 #include "Func_seq.h"
 #include "Func_setwd.h"
 #include "Func_structure.h"
+#include "Func_system.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
 
@@ -888,6 +889,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction( "setwd",                    new Func_setwd()                    );
         addFunction( "str",                      new Func_structure()                );
         addFunction( "structure",                new Func_structure()                );
+        addFunction( "system",                   new Func_system()                   );
         addFunction( "type",                     new Func_type()                     );
 
         // vector functions
