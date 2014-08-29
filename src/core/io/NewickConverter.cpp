@@ -76,7 +76,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     ss.get(c);
     
     // the initial character has to be '('
-    if ( c != '(') {
+    if ( c != '(')
+    {
         throw RbException("Error while converting Newick tree. We expected an opening parenthesis, but didn't get one.");
     }
     

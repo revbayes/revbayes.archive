@@ -814,11 +814,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnDPP",           new Dist_dpp<Natural>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Integer>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Probability>() );
+        addDistribution( "dnDPP",           new Dist_dpp<Simplex>() );
         addDistribution( "dpp",             new Dist_dpp<Real>() );
 		addDistribution( "dpp",             new Dist_dpp<RealPos>() );
 		addDistribution( "dpp",             new Dist_dpp<Natural>() );
 		addDistribution( "dpp",             new Dist_dpp<Integer>() );
 		addDistribution( "dpp",             new Dist_dpp<Probability>() );
+        addDistribution( "dpp",             new Dist_dpp<Simplex>() );
         
         // mixture distribution
         addDistribution( "dnMixture",       new Dist_mixture<Real>() );
@@ -1176,6 +1178,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Simplex>( )  );
 
         // return a distcretized (by quantile) and normalized vector from a continuous distribution
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
