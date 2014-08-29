@@ -148,20 +148,7 @@ The rates in the transition matrix for three areas might appear as
 	\end{array},
 \]
 where $\lambda_1$ and $\lambda_0$ are the rates of area gain and loss, respectively.
-When the rate of area gain and loss are equal ($\lambda_0=\lambda_1$), this can be represented compactly as the rate function
-\[
-q^{(a)}_{\textbf{y},\textbf{z}} =
-\begin{cases}
-\lambda & \text{\textbf{y} and \textbf{z} differ in exactly one area}  \\
-0 & \text{\textbf{y} and \textbf{z} differ in more than one area}
-\end{cases},
-\]
-where $\textbf{y}$ and $\textbf{z}$ are the ``from'' and ``to'' ranges and $a$ is the area that changes.
-For example, $q^{(1)}_{011,111}$ is the rate of range expansion for $011 \rightarrow 111$ to gain area $1$.
-Note the rate of more than one event occurring simultaneously is zero, so a range must expand twice by one area in order to expand by two areas.
-This model is analogous to the Jukes-Cantor model for three independent characters with binary states, except the all-zero ``null range'' is forbidden.
-
-There are several simple ways to extend this model. For example, the rate of area gain and area loss ($\lambda_0$ and $\lambda_1$, resp.) may differ as
+This matrix can be represented compactly as the rate function
 \[
 q^{(a)}_{\textbf{y},\textbf{z}} =
 \begin{cases}
@@ -171,7 +158,11 @@ q^{(a)}_{\textbf{y},\textbf{z}} =
 \end{cases}.
 \]
 
-In addition, you may want to assign transition probabilities to entering the all-zero null range, but treat it as an absorbing state with that has a zero probability of being exited. 
+where $\textbf{y}$ and $\textbf{z}$ are the ``from'' and ``to'' ranges and $a$ is the area that changes.
+For example, $q^{(1)}_{011,111}$ is the rate of range expansion for $011 \rightarrow 111$ to gain area $1$.
+Note the rate of more than one event occurring simultaneously is zero, so a range must expand twice by one area in order to expand by two areas.
+This model is analogous to the Jukes-Cantor model for three independent characters with binary states, except the all-zero ``null range'' is forbidden.
+
 Lastly, we may reasonably expect that a range expansion event into an area depends on which nearby areas are currently inhabited, which imposes non-independence between characters.
 The transition rate might then appear as
 \[
@@ -197,7 +188,7 @@ Now suppose the ancestral range is 1110.
 Under subset sympatric cladogenesis, one lineage identically inherits the ancestral species range, 1110, while the other lineage inherits only a single area, e.g. 0100.
 Under allopatric cladogenesis, the ancestral range is split evenly among daughter lineages, e.g. one lineage may inherit 1100 and the other inherit 0010.
 Both daughter lineages inherit the entire ancestral species range following widespread sympatric cladogenic events.
-For a general description on cladogenic events, see \citet{matzke13}.
+For a general description of state transitions for cladogenic events, see \citet{matzke13}.
 
 The DEC model ignores speciation events hidden by extinction or incomplete taxon sampling and assigns equal probabilities to all cladogenic event types.
 Since a range of size zero typically means the species is exinct, the probability of cladogenic events would ideally be linked to a birth-death process, as it is in the GeoSSE model \citep{goldberg11}.
@@ -216,12 +207,13 @@ For ten areas, \textbf{Q} is size $1024 \times 1024$, which approaches the large
 This is problematic, meaning we need an alternative method to integrate over historical range evolution events.
 
 You may wonder why matrix exponentiation works fine for molecular substitution models and large multiple sequence alignments.
-Because recombination degrades linkage disequilibrium over geological timescales, molecular substitution models typically assume each site in the multiple sequence alignment evolves independently.
+Molecular substitution models typically assume each site in the multiple sequence alignment evolves independently, which may be justified because recombination degrades linkage disequilibrium over geological timescales.
 Conveniently, this keeps \textbf{Q} small even for datasets with many sites.
 
 Remember matrix exponentiation integrates over all \textit{unobserved} transition events during time $t$.
 The likelihood of beginning in character $i$ and ending in character $j$ can be computed easily when the explicit series of event types and times are known.
 While we will never know the exact history of events, we can use stochastic mapping in conjunction with Markov chain Monte Carlo (MCMC) to repeatedly sample range evolution histories that are consistent with the ranges observed in the study taxa at the tips of the phylogeny.
+This technique is an adaptation of the data-augmented phylogenetic method first described by \citet{robinson03}, and was first applied to tertiary structure-dependent evolution of protein-coding nucleotide sequences.
 
 This is the strategy we will use to infer the posterior distribution approximated is 
 \newline{Prob$\left( \textbf{X}_{aug}, \theta \mid \textbf{X}_{obs}, T, M \right)$}, where $\textbf{X}_{obs}$ is the range data observed at the tips, $\textbf{X}_{aug}$ is the distribution of ancestral range reconstructions over the phylogeny, $T$, where $\textbf{X}_{aug}$ is inferred jointly with the parameters, $\theta$, assuming the range evolution model, $M$, that describes $\textbf{Q}$ above.
@@ -280,7 +272,7 @@ Range data is stored in standard Nexus format.
 In the {\tt data} block, the first line gives the dimensions of the data matrix and the second line indicates we will be using binary characters.
 The four characters correspond to areas defined by the geography file (next subsection).
 Rows in the {\tt matrix} block correspond to taxa and their range data, while columns give in which areas each taxon is present (1) or absent (0).
-For example, taxon {\tt P\_fauriei2} is present only in area 2.
+For example, taxon {\tt P\_hexandra\_Oahu} is present only in area 2.
 
 The {\tt trees} block gives the tree describing the shared ancestry of the study species.
 Because range evolution occurs in units of geological time, the analysis in this tutorial requires a high-quality time-calibrated phylogeny.
