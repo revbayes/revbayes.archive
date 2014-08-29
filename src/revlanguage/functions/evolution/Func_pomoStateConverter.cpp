@@ -13,7 +13,7 @@
 #include "RlAbstractDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "RlTaxon.h"
-#include "pomoStateConverter.h"
+#include "PomoStateConverter.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
