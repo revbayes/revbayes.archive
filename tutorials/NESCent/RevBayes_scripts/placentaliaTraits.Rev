@@ -4,40 +4,27 @@
 # Nicolas Lartillot -- July 2014
 #
 
-# read the data 
+# read the continous trait data 
 contData <- readCharacterData("data/plac40lhtlog.nex")
 
-# output a brief summary
-contData
-
-# get some useful variables from the data
-taxaCount <- contData.ntaxa()
-names <- contData.names()
+# get number of traits 
 nTraits <- contData.nchar()[1]
 
-"number of traits to analyze"
-nTraits
-
-#create a tree whose tips match the taxon names given by the dataset
-tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
-
 # work under fixed topology
-# set tau equal to externally given tree
 treeArray <- readTrees("data/chronoplac40.tree")
-fixedTree <- treeArray[1]
-tau.setValue(fixedTree)
+psi <- treeArray[1]
 
 # covariance matrix sigma (of dimension nTraits)
 # InverseWishart of parameter Sigma_0 = kappa * I_nTraits, and df=nTraits+2 degrees of freedom
 # where kappa is itself a scale parameter
 
-kappa ~ exponential(1.0)
+kappa ~ dnLogUniform(min=0.001,max=1000)
 df <- nTraits+2
 Sigma ~ invWishart(dim=nTraits, kappa=kappa, df=df)
 
 # multivariate Brownian process along the tree
 # parameterized by sigma
-X ~ mvtBrownian(tau,Sigma)
+X ~ mvtBrownian(psi,Sigma)
 
 # moves on kappa
 index <- 1
