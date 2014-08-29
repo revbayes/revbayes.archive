@@ -99,25 +99,25 @@ Since we have not much prior information about the possible values of $\sigma$, 
 \begin{eqnarray*}
 \sigma &\sim& \text{Exponential}(0.001).
 \end{eqnarray*}
+Alternatively, we can formalize the idea that we are totally ignorant about the \emph{scale} of $\sigma$. In other words, we could use a log-uniform prior:
+\begin{eqnarray*}
+\sigma &\sim& \frac{1}{\sigma}.
+\end{eqnarray*}
 
 Concerning the initial value $x(0)$ of the Brownian process at the root of the phylogeny,
 the current version of RevBayes only implements a uniform prior.
 This is done by default (no need to explicitly define it).
-Note that this uniform prior is invariant by translation. Given that our traits have been log-transformed, this means that the prior is invariant upon changing the units in which the traits are measured: it is insensitive to the fact that, for example, body mass has been given in kilograms, and not in grams.
 
-Finally, the tree topology $\tau$ is, as mentioned above, fixed to some externally given phylogeny. However, in order to fully specify the model in RevBayes, we still need to define a prior on this tree: here, we will simply use a uniform prior, both on the topology and on divergence times.
-
+Finally, the tree topology $\tau$ is, as mentioned above, fixed to some externally given phylogeny.
 The entire model is now specified: tree $\tau$, variance $\sigma$ and Brownian process $x(t)$:
 \begin{eqnarray*}
-\tau &\sim& \text{Uniform},
-\\
-\sigma &\sim& \text{Exponential}(0.001),
+\sigma &\sim& \frac{1}{\sigma},
 \\
 x(0) &\sim& \text{Uniform},
 \\
 x(t) &\sim& \text{Brownian} \left( x(0), \, \tau, \, \sigma \right).
 \end{eqnarray*}
-Constraining $\tau$ based on an externally-provided phylogeny and conditioning the model on empirical data by clamping $x(t)$ at the tips of the phylogeny, we can then run a MCMC to sample from the joint posterior distribution on $\sigma$ and $x$. Once this is done, we can obtain posterior means, medians or credible intervals for the value of body mass or other life-history traits for specific ancestors.
+Conditioning the model on empirical data by clamping $x(t)$ at the tips of the phylogeny, we can then run a MCMC to sample from the joint posterior distribution on $\sigma$ and $x$. Once this is done, we can obtain posterior means, medians or credible intervals for the value of body mass or other life-history traits for specific ancestors.
 
 
 \subsection*{Programming the model in RevBayes}
@@ -129,29 +129,16 @@ load trait data:
 \\
 \cmd{contData <- readCharacterData("data/plac40lhtlog.nex")}
 \item
-get taxon number and taxon names:
+load the time-tree from file:
 \\
-\cmd{
-nTaxa <- contData.ntaxa()
+\cmd{treeArray <- readTrees("data/chronoplac40.tree"
 \\
-names <- contData.names()
+psi <- treeArray[1]
 }
 \item
-define a uniformly-distirbuted time-tree:
+define $\sigma$, with a truncated log-uniform prior:
 \\
-\cmd{tau $\sim$ uniformTimeTree(originTime = 1.0, taxonNames = names)}
-\item
-set this tree equal to the one defined in \cmd{chronoplac40.tree}:
-\\
-\cmd{treeArray <- readTrees("data/chronoplac40.tree")
-\\
-fixedTree <- treeArray[1]
-\\
-tau.setValue(fixedTree)}
-\item
-define $\sigma$:
-\\
-\cmd{sigma $\sim$ \text{Exponential}(0.001)}
+\cmd{sigma $\sim$ \text{dnLogUniform}(min=0.001,max=1000)}
 \\
 to accelerate convergence, it can be useful to force initialization of $\sigma$ to a small value:
 \\
@@ -192,7 +179,6 @@ index <- index + 1
 }
 \item
 a global translation move on the Brownian process:
-% this move applies a random translation across the entire phylogeny:
 \\
 \cmd{
 moves[index] <- mvRealNodeValTreeTranslation(process=logmass,lambda=1,
@@ -201,8 +187,6 @@ tune=true,weight=1)
 \\
 index <- index + 1
 }
-%\\
-%Note that the translation move concerns the entire phylogeny: therefore, its tuning parameter is smaller than that used %for the single-node sliding move above.
 \item
 before creating the model, we define summary statistics, to be monitored during the MCMC: the mean and the standard deviation of the trait across the tree:
 \\
@@ -264,15 +248,11 @@ mymcmc.run(100000)
 \item
 run the model, check convergence and obtain a sample from the posterior distribution
 \item
-take the time to explore the files produced by the run: in particular, the \cmd{.logmass} file in which the sampled histories of body mass evolution are written in the newick format.
-\item
 using \cmd{Tracer}, visualize the posterior distribution on ancestral placental body mass
 \item
-calculate the credible interval for this ancestral body mass
+calculate the 95\% credible interval for ancestral body mass
 \item
-sumarize the evolution of body mass along the tree, visualizing it with \cmd{njplot}
-\item
-calculate a 95\% credible interval for the rate of evolution of the logarithm of body mass ($\sigma$)
+calculate the 95\% credible interval for the rate of evolution of the log of body mass ($\sigma$)
 \end{itemize}
 
 You can of course conduct a similar inference for each of the three life-history traits given in \cmd{plac40lhtlog.nex}. You could either run the model separately on each trait or, alternatively, define (within the same model) three independent univariate Brownian motions running along the same phylogeny (each with its own $\sigma$ parameter).
@@ -306,15 +286,13 @@ The inverse Wishart distribution has two parameters: a symmetric positive matrix
 The choice of this prior is primarily motivated by the fact that it is analytically conjugate to the multivariate normal distribution. It is therefore very convenient when used for the covariance matrix of a Brownian motion.
 
 Since we want a diffuse prior, we will use a small value for $d$, e.g. $d=K+2$, which is the smallest value for which the mean of the distribution is well-defined.
-In addition, we want the prior to be centered on a diagonal matrix (i.e. we want to be a priori \emph{equi-poised}, or indifferent, with respect to either positive or negative correlations among traits). We may also want our prior to be invariant by linear reparameterizations of traits (linear transformations on the logarithm of life-history traits are equivalent to allometric re-parameterizations of the traits considered in natural units). This invariance will hold if and only if $\Sigma_0$ is proportional to the identity matrix, i.e. if $\Sigma_0 = \kappa I_K$, for some positive real number $\kappa$. This number $\kappa$ will set the amplitude of the variation per unit of time of the traits. Since we have no idea about the scale of $\kappa$, we should use a diffuse prior, e.g. an exponential of mean 100:
+In addition, we want the prior to be centered on a diagonal matrix (i.e. we want to be a priori \emph{equi-poised}, or indifferent, with respect to either positive or negative correlations among traits). We may also want our prior to be invariant by linear reparameterizations of traits (linear transformations on the logarithm of life-history traits are equivalent to allometric re-parameterizations of the traits considered in natural units). This invariance will hold if and only if $\Sigma_0$ is proportional to the identity matrix, i.e. if $\Sigma_0 = \kappa I_K$, for some positive real number $\kappa$. This number $\kappa$ will set the amplitude of the variation per unit of time of the traits. Since we have no idea about the scale of $\kappa$, we can use a log-uniform prior:
 \begin{eqnarray*}
-\kappa &\sim& \text{Exponential}(0.001).
+\kappa &\sim& \frac{1}{\kappa}.
 \end{eqnarray*}
 This completes our model:
 \begin{eqnarray*}
-\tau &\sim& \text{Uniform},
-\\
-\kappa &\sim& \text{Exponential}(0.001),
+\kappa &\sim& \frac{1}{\kappa},
 \\
 \Sigma &\sim& W^{-1}(\Sigma_0 = \kappa I_K , \, d = K+2),
 \\
@@ -322,43 +300,22 @@ X(0) &\sim& \text{Uniform},
 \\
 X(t) &\sim& \text{Brownian}(X(0), \, \tau, \, \Sigma).
 \end{eqnarray*}
-As in the univariate case, we can then constrain $\tau$, clamp $X$ and sample from the joint distribution over the parameters of the model by MCMC.
+As in the univariate case, we can then clamp $X$ at the tips of the phylogeny and sample from the joint distribution over the parameters of the model by MCMC.
 Once this is done, we can estimate marginal posterior probabilities (e.g. for positive or negative covariance among traits) and infer ancestral traits.
 
 \subsection*{Programming the model in RevBayes}
 
-We go through the same series of steps as in the univariate case:
+You may find it convenient to program this multivariate model by first copying the script of the univariate model (\cmd{placentaliaMass.Rev}).
+Then, you can edit the new script and introduce the modifications that would change the univariate model
+into its multivariate counterpart.
+
+In the following, only those aspects of the multivariate model that differ from the univariate case are outlined.
+Essentially, instead of a univariate Brownian motion parameterized by a scalar parameter, you now need to:
 \begin{itemize}
-\item
-load trait data:
-\\
-\cmd{contData <- readCharacterData("data/plac40lhtlog.nex")}
-\item
-get number of traits, number of taxa and taxon names:
-\\
-\cmd{
-nTraits <- contData.nchar()[1]
-\\
-nTaxa <- contData.ntaxa()
-\\
-names <- contData.names()
-}
-\item
-define a uniformly-distirbuted time-tree:
-\\
-\cmd{tau $\sim$ uniformTimeTree(originTime = 1.0, taxonNames = names)}
-\item
-set this tree equal to the one defined in \cmd{chronoplac40.tree}:
-\\
-\cmd{treeArray <- readTrees("data/chronoplac40.tree")
-\\
-fixedTree <- treeArray[1]
-\\
-tau.setValue(fixedTree)}
 \item
 define $\kappa$:
 \\
-\cmd{kappa $\sim$ \text{Exponential}(0.001)}
+\cmd{kappa $\sim$ \text{dnLogUniform}(min=0.001,max=1000)}
 \item
 define the number of degrees of freedom as $d = K+2$:
 \\
@@ -367,8 +324,6 @@ define the number of degrees of freedom as $d = K+2$:
 define the covariance matrix $\Sigma$ as inverse Wishart:
 \\
 \cmd{Sigma $\sim$ invWishart(dim=nTraits, kappa=kappa, df=df)}
-\\
-note that we are using a special constructor for the inverse Wishart: when a natural number $d$ and a positive real number $\kappa$ are given, it is implicitly assumed that the matrix-valued parameter is $\kappa$ times the identity matrix of dimension $d$: $\kappa I_d$.
 \item
 define the multivariate Brownian process:
 \\
@@ -471,11 +426,10 @@ for (i in 1:nTraits)    {
 }
 \end{verbatim}
 \item
-we could be interested in tracking several summary statistics also for the Brownian motion, in particular the mean and the standard deviation along the tree, separately for each trait:
+we could be interested in tracking several summary statistics also for the Brownian motion, in particular the mean along the tree, separately for each trait:
 \begin{verbatim}
 for (i in 1:nTraits)    {
         meanX[i] := X.mean(i)
-        stdevX[i] := X.stdev(i)
 }
 \end{verbatim}
 \end{itemize}
@@ -538,14 +492,7 @@ estimate the posterior mean, median and 95\% credible interval for this correlat
 \item
 does the credible inrerval overlap 0? What does that say about the empirical support for the correlation between body mass and longevity?
 \item
-which fraction of the total variance in longevity among placental mammals is explained by body-mass?
-\item
-sumarize evolution of body size and longevity along the tree, visualizing it with \cmd{njplot}
-\item
 calculate the credible interval for body size of the last common ancestor of placental mammals
-\item
-as mentioned above, it would be easy to make an \emph{uncorrelated} version of the same model, either by constraining $\Sigma$ to be a diagonal matrix or by creating three independent Brownian models of dimension 1, one for each trait (the latter is easier under the current version of \cmd{RevBayes}, if you want to try it after the workshop). Would this uncorrelated model have a better or a poorer fit than the covariant model constructed above? Why?
-So, do we need to explicitly compute a Bayes factor in the present case?
 \end{itemize}
 
 
