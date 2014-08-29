@@ -277,7 +277,22 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractCharacterData >* RevLangu
     }
     else if ( dt == "Pomo" )
     {
-        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::PomoState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::PomoState, typename treeType::valueType>(tau, 20, true, n);
+        
+        // we get the number of states from the rate matrix (we don't know, because Pomo is flexible about its rates)
+        // set the rate matrix
+        size_t nChars = 1;
+        if ( q->getRevObject().isTypeSpec( ModelVectorAbstractElement<RateMatrix>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateMatrix> >* rm = static_cast<const ModelVectorAbstractElement<RateMatrix> &>( q->getRevObject() ).getDagNode();
+            nChars = rm->getValue()[0].getNumberOfStates();
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
+            nChars = rm->getValue().getNumberOfStates();
+        }
+
+        RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::PomoState, typename treeType::valueType> *dist = new RevBayesCore::GeneralBranchHeterogeneousCharEvoModel<RevBayesCore::PomoState, typename treeType::valueType>(tau, nChars, true, n);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
