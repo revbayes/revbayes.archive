@@ -7,29 +7,17 @@
 # read the data 
 contData <- readCharacterData("data/plac40lhtlog.nex")
 
-# output a brief summary
-contData
-
-# get some useful variables from the data
-taxaCount <- contData.ntaxa()
-names <- contData.names()
-
-#create a tree whose tips match the taxon names given by the dataset
-tau ~ uniformTimeTree( originTime = 1.0, taxonNames = names)
-
 # work under fixed topology
-# set tau equal to externally given tree
 treeArray <- readTrees("data/chronoplac40.tree")
-fixedTree <- treeArray[1]
-tau.setValue(fixedTree)
+psi <- treeArray[1]
 
 # sigma: variance per unit of time of the Brownian motion
-sigma ~ exponential(0.001)
+sigma ~ dnLogUniform(min=0.001,max=1000)
 sigma.setValue(0.1)
 
 # univariate Brownian process along the tree
 # parameterized by sigma
-logmass ~ brownian(tau,sigma)
+logmass ~ brownian(psi,sigma)
 
 # moves on sigma 
 index <- 1
