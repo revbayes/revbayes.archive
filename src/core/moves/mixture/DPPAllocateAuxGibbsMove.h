@@ -111,14 +111,18 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 	int numAuxiliary = numAuxCat; 
 	double lnCPOverNumAux = log( cp/( (double)numAuxiliary ) );
 	// loop over elements, remove i from current table, and try in all others
-	for(int i=0; i<numElements; i++){
+	for(int i=0; i<numElements; i++)
+    {
+        
 		std::vector<valueType> tempTables;
 		std::vector<double> lnProb;
 		int currentTable = allocVec[i];
 		numPerTab[currentTable] -= 1;
-		for(int j=0; j<numTables; j++){
+		for(int j=0; j<numTables; j++)
+        {
 			int numSeated = numPerTab[j];
-			if(numSeated > 0){
+			if(numSeated > 0)
+            {
 				valueType newV = tableVals[j];
 				tempTables.push_back(newV);
 				elementVals[i] = newV;
@@ -126,12 +130,15 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void ) 
 				double tabLnL = getLnProbabilityForMove(); // get lnL after changing value
 				lnProb.push_back( log(numSeated) + tabLnL );
 			}
-			else{
-				tableVals[j] = NULL;
+			else
+            {
+				tableVals[j] = valueType();
 				numPerTab[j] = 0;
 			}
 		}
-		for(int j=0; j<numAuxiliary; j++){
+        
+		for(int j=0; j<numAuxiliary; j++)
+        {
 			g0->redrawValue();
 			valueType newV = g0->getValue();
 			tempTables.push_back(newV);
