@@ -84,7 +84,7 @@ To examine the posterior, we'll use Python scripts, Tracer by Andrew Rambaut, to
 \subsection{Handy links for this lab}
 
 \begin{tabular}{ll}
-Lab zip file & [ NESCent URL ] \\
+Lab zip file & \url{https://github.com/revbayes/revbayes/raw/development/tutorials/RB\_Biogeography\_tutorial/RB\_biogeo\_files.zip} \\
 RevBayes & \url{https://github.com/revbayes/revbayes} \\
 Phylowood software & \url{http://mlandis.github.io/phylowood} \\
 Phylowood manual & \url{https://github.com/mlandis/phylowood/wiki} \\
@@ -376,7 +376,7 @@ Finally, we'll analyze our MCMC output.
 
 \setlength{\parindent}{0pt}
 
-Open the RevBayes console
+\noindent \\ \impmark Open the RevBayes console
 
 \begin{snugshade}
 \begin{lstlisting}
@@ -788,7 +788,7 @@ Iteration  Posterior  Likelihood    Prior  glr[1]  glr[2]  dp  csf[1]  csf[2]  c
 \end{lstlisting}
 \end{framed}
 
-Open Tracer, select the fields for the posterior probability and area gain rate, {\tt glr[2]}, then click the Joint-Marginal tab.
+\noindent \\ \impmark Open Tracer, select the fields for the posterior probability and area gain rate, {\tt glr[2]}, then click the Joint-Marginal tab.
 
 \begin{figure}[H]
 \centering
@@ -811,7 +811,7 @@ Next, click the Estimates tab then select the three {\tt csf} parameters.
 Recording stochastic mappings in a Tracer-compatible format requires some summarization.
 This monitor generates a tab-delimited file where the number of events of each type for each branch is recorded.
 
-Open {\tt bg\_2rate.counts.txt}.
+\noindent \\ \impmark Open {\tt bg\_2rate.counts.txt} in a text editor.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
@@ -844,7 +844,7 @@ Open Tracer, select the fields for the posterior probability and the number of g
 
 For more detailed data exploration, this analysis also provides annotated Newick strings with the complete character mappings for the tree.
 
-Open {\tt bg\_2rate.events.txt}.
+\noindent \\ \impmark Open {\tt bg\_2rate.events.txt} in a text editor.
 
 \begin{framed}
 \begin{lstlisting}[basicstyle=\tiny \listingsfont, columns=texcl]
@@ -878,7 +878,7 @@ For this posterior sample of the character history for the branch leading to nod
 
 To manipulate this data format, we'll use Python scripts. Below are a few examples of interesting posterior features.
 
-Open a python console and read in the events.
+\noindent \\ \impmark  Open a Python console and read in the events.
 
 \begin{snugshade}
 \begin{lstlisting}
@@ -892,7 +892,7 @@ Open a python console and read in the events.
 \end{lstlisting}
 \end{snugshade}
 
-
+By default, {\tt get\_events()} extracts a dictionary where each node index maps to a branch's character history as reported in {\tt ../input/bg\_2rate.events.txt}. 
 Each branch is a dictionary whose keys are various parts of the MCMC state and whose values the MCMC samples.
 \begin{snugshade}
 \begin{lstlisting}
@@ -911,18 +911,18 @@ To get the $n=1$ highest-valued sample for a branch by its posterior value
 \end{lstlisting}
 \end{snugshade}
 
-To get the probability that area $i$ and area $j$ are both part of the species range as the branch for node 19 terminates, just before the speciation event
+To get the probability that area $i$ and area $j$ are both part of the species range as the branch for node 23 terminates, just before the speciation event
 \begin{snugshade}
 \begin{lstlisting}
->>> get_area_pair(dd[19],k='nd')
-[[0.0112, 0.0012, 0.0112, 0.0000],
- [0.0012, 0.1511, 0.1487, 0.0000],
- [0.0112, 0.1487, 0.9976, 0.0000],
+>>> get_area_pair(dd[23])
+[[0.0816, 0.0188, 0.0628, 0.0000],
+ [0.0188, 0.7081, 0.4390, 0.0000],
+ [0.0628, 0.4390, 0.7141, 0.0000],
  [0.0000, 0.0000, 0.0000, 0.0000]]
 \end{lstlisting}
 \end{snugshade}
-showing area 3 was occupied nearly with probability 1.0 and both areas 2 and 3 were occupied with probability 0.15.
-Note, Hawaii was submerged approximately 1.5 million years ago, and thus the probability of being in that area is 0.0.
+showing area 3 was occupied nearly with probability 0.71 and both areas 2 and 3 were occupied with probability 0.44.
+Note, Hawaii was submerged until approximately 0.5 million years ago, and thus the probability of being in that area is 0.0.
 
 If the range is size one during a speciation event, the cladogenic event state is always narrow sympatric, ``n''.
 But given the opportunity for non-sympatric events, i.e. that the range is larger than size one, we can get the probability of cladogenic state using
@@ -930,11 +930,11 @@ For the probability for cladogenic event state given the range was larger than s
 \begin{snugshade}
 \begin{lstlisting}
 >>> get_clado_state(dd[23])
-{'a': 0.0224, 's': 0.1463, 'n': 0.5130, 'w': 0.3183}
+{'a': 0.0224, 's': 0.1463, 'w': 0.3183, 'n': 0.5130}
 >>> get_clado_state(dd[23],minSize=2)
-{'a': 0.0460, 's': 0.3005, 'n': 0.0, 'w': 0.6535
+{'a': 0.0460, 's': 0.3005, 'w': 0.6535, 'n': 0.0000}
 >>> get_clado_state(get_best(dd[23],n=100),minSize=2)
-{'a': 0.1290, 's': 0.6774, 'n': 0.0, 'w': 0.1935}
+{'a': 0.1290, 's': 0.6774, 'w': 0.1936, 'n': 0.0000}
 \end{lstlisting}
 \end{snugshade}
 
