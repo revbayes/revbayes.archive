@@ -633,7 +633,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
                 }
             }
             
-            // peripatry
+            // subset sympatry
             else if (uIdx == 1)
             {
                 proposedCladogenicState = 2;

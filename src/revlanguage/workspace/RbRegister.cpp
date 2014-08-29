@@ -104,6 +104,9 @@
 #include "Move_Scale.h"
 #include "Move_Slide.h"
 
+/* Compound Moves on Real Values */
+//#include "Move_ScalerUpDown.h"
+
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
 #include "Move_RandomIntegerWalk.h"
@@ -508,6 +511,9 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvScale",               new Move_Scale() );
         addTypeWithConstructor("mvSlide",               new Move_Slide() );
         addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
+		
+		// compound moves on real values
+//        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
         
         // nonstandard forms (for backward compatibility)
         addTypeWithConstructor("mScale",                new Move_Scale() );
@@ -554,6 +560,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
         addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Simplex>() );
         addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Real>( ) );
         addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RealPos>( ) );
@@ -816,11 +823,13 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
 		addDistribution( "dnDPP",           new Dist_dpp<Natural>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Integer>() );
 		addDistribution( "dnDPP",           new Dist_dpp<Probability>() );
+        addDistribution( "dnDPP",           new Dist_dpp<Simplex>() );
         addDistribution( "dpp",             new Dist_dpp<Real>() );
 		addDistribution( "dpp",             new Dist_dpp<RealPos>() );
 		addDistribution( "dpp",             new Dist_dpp<Natural>() );
 		addDistribution( "dpp",             new Dist_dpp<Integer>() );
 		addDistribution( "dpp",             new Dist_dpp<Probability>() );
+        addDistribution( "dpp",             new Dist_dpp<Simplex>() );
         
         // mixture distribution
         addDistribution( "dnMixture",       new Dist_mixture<Real>() );
@@ -1178,6 +1187,7 @@ void RevLanguage::Workspace::initializeGlobalWorkspace(void)
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Integer>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Natural>( )  );
         addFunction("numUniqueInVector",  new Func_numUniqueInVector<Probability>( )  );
+        addFunction("numUniqueInVector",  new Func_numUniqueInVector<Simplex>( )  );
 
         // return a distcretized (by quantile) and normalized vector from a continuous distribution
         addFunction( "fnNormalizedQuantile",             new Func_fnNormalizedQuantile<Real>()    );
