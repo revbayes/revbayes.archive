@@ -82,28 +82,35 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     }
     
     TopologyNode *node = new TopologyNode(); 
-    while ( ss.good() && ss.peek() != ')' ) {
+    while ( ss.good() && ss.peek() != ')' )
+    {
         
         TopologyNode *childNode;
-        if (ss.peek() == '(' ) {
+        if (ss.peek() == '(' )
+        {
             // we received an internal node
             int depth = 0;
             std::string child = "";
-            do {
+            do
+            {
                 ss.get(c);
                 child += c;
-                if ( c == '(' ) {
+                if ( c == '(' )
+                {
                     depth++;
                 }
-                else if ( c == ')' ) {
+                else if ( c == ')' )
+                {
                     depth--;
                 }
+                
             } while ( ss.good() && depth > 0 );
         
             // construct the child node
             childNode = createNode( child, nodes, brlens );
         }
-        else {
+        else
+        {
             // construct the node
             childNode = new TopologyNode();
         }
@@ -121,9 +128,11 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         childNode->setName( lbl );
         
         // read the optional node parameters
-        if ( ss.peek() == '[' ) {
+        if ( ss.peek() == '[' )
+        {
             
-            do {
+            do
+            {
                 
                 ss.ignore();
                 // ignore the '&' before parameter name
@@ -167,10 +176,12 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         }
         
         // read the optional branch length
-        if ( ss.peek() == ':' ) {
+        if ( ss.peek() == ':' )
+        {
             ss.ignore();
             std::string time = "";
-            while ( ss.good() && (c = char( ss.peek( ) ) ) != ';' && c != ','  && c != ')') {
+            while ( ss.good() && (c = char( ss.peek( ) ) ) != ';' && c != ','  && c != ')')
+            {
                 time += char( ss.get() );
             }
             
@@ -181,15 +192,18 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             nodes.push_back( childNode );
             brlens.push_back( d );
         }
-        else {
+        else
+        {
             nodes.push_back( childNode );
             brlens.push_back( 0.0 );
         }
         
         // skip comma
-        if ( char( ss.peek() ) == ',' ) {
+        if ( char( ss.peek() ) == ',' )
+        {
             ss.ignore();
         }
+        
     }
     
     // remove closing parenthesis
@@ -197,15 +211,18 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     
     // read the optional label
     std::string lbl = "";
-    while ( ss.good() && (c = char( ss.peek() )) != ':' && c != ';' && c != ',' && c != '[') {
+    while ( ss.good() && (c = char( ss.peek() )) != ':' && c != ';' && c != ',' && c != '[')
+    {
         lbl += char( ss.get() );
     }
     node->setName( lbl );
     
     // read the optional node parameters
-    if ( char( ss.peek() ) == '[' ) {
+    if ( char( ss.peek() ) == '[' )
+    {
         
-        do {
+        do
+        {
             
             ss.ignore();
 
@@ -249,10 +266,12 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
     }
     
     // read the optinal  branch length
-    if ( char( ss.peek() ) == ':' ) {
+    if ( char( ss.peek() ) == ':' )
+    {
         ss.ignore();
         std::string time = "";
-        while ( ss.good() && (c = char( ss.peek() )) != ';' && c != ',') {
+        while ( ss.good() && (c = char( ss.peek() )) != ';' && c != ',')
+        {
             time += char( ss.get() );
         }
         
@@ -263,7 +282,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
         nodes.push_back( node );
         brlens.push_back( d );
     }
-    else {
+    else
+    {
         nodes.push_back( node );
         brlens.push_back( 0.0 );
     }
@@ -273,7 +293,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
 }
 
 
-AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n) {
+AdmixtureTree* NewickConverter::getAdmixtureTreeFromNewick(std::string const &n)
+{
     
     // create and allocate the tree object
     AdmixtureTree *t = new AdmixtureTree();
