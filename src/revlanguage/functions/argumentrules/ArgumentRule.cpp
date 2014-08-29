@@ -93,7 +93,8 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
 {
     //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
     //    if ( isConstant() || !theVar->isAssignable() )
-    //        once = true;
+    if ( isConstant() )
+        once = true;
 
     RevPtr<Variable> theVar = arg.getVariable();
     
@@ -204,9 +205,10 @@ bool ArgumentRule::isArgumentValid(const RevPtr<const Variable> &var, bool once)
     
 //    TODO: Use this code when the constant flag in ArgumentRule is used correctly
 //    if ( isConstant() || !var->isAssignable() )
-//    {
-//        once = true;
-//    }
+    if ( isConstant() )
+    {
+        once = true;
+    }
 
     for ( std::vector<TypeSpec>::const_iterator it = argTypeSpecs.begin(); it != argTypeSpecs.end(); ++it )
     {

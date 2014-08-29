@@ -57,7 +57,7 @@ const std::string& Dist_dirichlet::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Simplex>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
