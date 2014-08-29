@@ -1,5 +1,5 @@
 //
-//  PolymorphicStateConverter.cpp
+//  PomoStateConverter.cpp
 //  RevBayes
 //
 //  Created by Bastien on 12/08/14.
@@ -8,7 +8,7 @@
 
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
-#include "PolymorphicStateConverter.h"
+#include "PomoStateConverter.h"
 using namespace RevBayesCore;
 
 
@@ -17,23 +17,23 @@ using namespace RevBayesCore;
  *
  * The default constructor does nothing except allocating the object.
  */
-PolymorphicStateConverter::PolymorphicStateConverter( void )
+PomoStateConverter::PomoStateConverter( void )
 {
     
 }
 
 
 /**
- * Data converter from DNA into PolymorphicState.
+ * Data converter from DNA into PomoState.
  *
- * This function concverts a DNA matrix into a PolymorphicState matrix of given virtualPopulationSize,
+ * This function concverts a DNA matrix into a PomoState matrix of given virtualPopulationSize,
  * using the given mapping between sequence name and species name.
  */
-DiscreteCharacterData<PolymorphicState>* PolymorphicStateConverter::convertData(
+DiscreteCharacterData<PomoState>* PomoStateConverter::convertData(
                                                                                 const AbstractCharacterData &d,
                                                                                 const unsigned int virtualPopulationSize,
                                                                                 const std::map<std::string, std::string> sequenceNameToSpeciesName) {
-    DiscreteCharacterData<PolymorphicState>* data = new DiscreteCharacterData<PolymorphicState> ();
+    DiscreteCharacterData<PomoState>* data = new DiscreteCharacterData<PomoState> ();
     //First, build a vector of frequencies according to the Pomo model
     std::vector<double> tempFreq (5, 0.0);
     std::vector< std::vector<double> > frequencies ( 4+ (virtualPopulationSize-1) * 6, tempFreq);
@@ -85,7 +85,7 @@ DiscreteCharacterData<PolymorphicState>* PolymorphicStateConverter::convertData(
     for (size_t i = 0 ; i < frequencies[j].size(); ++i) {
         std::cout << frequencies[j][i] << ",";
     }
-        PolymorphicState* pol = new PolymorphicState(virtualPopulationSize);
+        PomoState* pol = new PomoState(virtualPopulationSize);
         pol->setState((size_t) (j+1) );
         std::cout << "  "<<pol->getStringValue() <<std::endl;
     }*/
@@ -105,7 +105,7 @@ DiscreteCharacterData<PolymorphicState>* PolymorphicStateConverter::convertData(
     std::vector<double> counts (5, 0.0); //A C G T -
     std::vector<double> countsBackup (5, 0.0); //A C G T -
     for (std::map<std::string, std::vector<std::string> >::const_iterator it = speciesNameToSequenceNames.begin(); it != speciesNameToSequenceNames.end(); it++) {
-        DiscreteTaxonData<PolymorphicState> tax (it->first);
+        DiscreteTaxonData<PomoState> tax (it->first);
         for (size_t c = 0; c < d.getNumberOfCharacters(); ++c) {
             for (std::vector<std::string>::const_iterator seq = it->second.begin(); seq != it->second.end(); seq++) {
                 size_t index = d.getIndexOfTaxon(*seq);
@@ -130,7 +130,7 @@ DiscreteCharacterData<PolymorphicState>* PolymorphicStateConverter::convertData(
                 counts[chIndex]++;
             }
             //Now we have all the counts for this species,
-            //we need to use these counts to build a PolymorphicState
+            //we need to use these counts to build a PomoState
             tax.addCharacter(*convertCounts(counts, virtualPopulationSize, frequencies) );
             //Resetting counts
             counts = countsBackup;
@@ -145,7 +145,7 @@ DiscreteCharacterData<PolymorphicState>* PolymorphicStateConverter::convertData(
 }
 
 
-PolymorphicState* PolymorphicStateConverter::convertCounts(std::vector<double> &counts,
+PomoState* PomoStateConverter::convertCounts(std::vector<double> &counts,
                                                            const unsigned int virtualPopulationSize,
                                                            std::vector< std::vector<double> > &frequencies) {
     
@@ -162,7 +162,7 @@ PolymorphicState* PolymorphicStateConverter::convertCounts(std::vector<double> &
     }
     //If the site is all gaps
     if (counts[4] == 1.0) {
-        PolymorphicState* pol = new PolymorphicState();
+        PomoState* pol = new PomoState();
         pol->setState((size_t)0);
         return pol;
     }
@@ -183,7 +183,7 @@ PolymorphicState* PolymorphicStateConverter::convertCounts(std::vector<double> &
             }*/
         }
     }
-    PolymorphicState* pol = new PolymorphicState(virtualPopulationSize);
+    PomoState* pol = new PomoState(virtualPopulationSize);
     pol->setState((size_t) (index+1) );
  //   std::cout << "  "<<pol->getStringValue() <<std::endl;;
     return pol;

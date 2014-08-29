@@ -1,36 +1,34 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage polymorphicStateConverter, which
- * is used to convert a DNA alignment into a POMO alignment.
- *
- * @brief Declaration and implementation of polymorphicStateConverter
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func_polymorphicStateConverter.h 1406 2012-04-20 02:06:14Z Boussau $
- */
-
-
-#ifndef Func_polymorphicStateConverter_H
-#define Func_polymorphicStateConverter_H
+#ifndef Func_powerVector_H
+#define Func_powerVector_H
 
 #include "RlFunction.h"
 
+#include <map>
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_polymorphicStateConverter :  public Function {
+    
+    /**
+     * The RevLanguage wrapper of the exponentiation/power function for vectors.
+     *
+     * The RevLanguage wrapper of the power function connects
+     * the variables/parameters of the function and creates the internal PowerVectorFunction object.
+     * Please read the PowerVectorFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-08-29, version 1.0
+     *
+     */
+    class Func_powerVector :  public Function {
         
     public:
-        Func_polymorphicStateConverter( void );
+        Func_powerVector( void );
         
         // Basic utility functions
-        Func_polymorphicStateConverter*                 clone(void) const;                                                              //!< Clone the object
+        Func_powerVector*                               clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
